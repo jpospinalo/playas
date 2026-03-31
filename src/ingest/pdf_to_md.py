@@ -31,11 +31,12 @@ logger = logging.getLogger(__name__)
 # ------------------------------------------------------------------
 
 IMAGE_RESOLUTION_SCALE = 2.0
-MIN_IMAGE_PIXELS = 350
-MIN_BLOCK_REPEATS = 2          # ≥ 2 occurrences triggers repeated-block removal
-NOISE_CHAR_RATIO = 0.45        # fraction of non-alphanum chars that marks a line as noise
-IMAGE_LOW_VARIANCE = 100.0     # grayscale pixel variance below which an image is discarded
-IMAGE_CONTEXT_WINDOW = 300     # chars around an image reference searched for semantic words
+MIN_IMAGE_PIXELS = 180
+MIN_BLOCK_REPEATS = 3  # ≥ 3 occurrences triggers repeated-block removal
+NOISE_CHAR_RATIO = 0.28  # fraction of non-alphanum chars that marks a line as noise
+IMAGE_LOW_VARIANCE = 100.0  # grayscale pixel variance below which an image is discarded
+IMAGE_CONTEXT_WINDOW = 900  # chars around an image reference searched for semantic words
+MIN_IMAGE_SIDE_WITHOUT_CONTEXT = 256
 
 # ------------------------------------------------------------------
 # OCR correction table
@@ -46,28 +47,38 @@ IMAGE_CONTEXT_WINDOW = 300     # chars around an image reference searched for se
 
 _OCR_CORRECTIONS: list[tuple[re.Pattern[str], str]] = [
     # "ción" / "ciones" — the most common accented suffix in Spanish
-    (re.compile(r'ci6nes\b'), 'ciones'),
-    (re.compile(r'ci6n\b'), 'ción'),
+    (re.compile(r"ci6nes\b"), "ciones"),
+    (re.compile(r"ci6n\b"), "ción"),
     # Generic "Xón" / "Xós" where X is a letter (catches ión, ución, etc.)
-    (re.compile(r'([A-Za-záéíóúüñÁÉÍÓÚÜÑ])6n\b'), r'\1ón'),
-    (re.compile(r'([A-Za-záéíóúüñÁÉÍÓÚÜÑ])6s\b'), r'\1ós'),
+    (re.compile(r"([A-Za-záéíóúüñÁÉÍÓÚÜÑ])6n\b"), r"\1ón"),
+    (re.compile(r"([A-Za-záéíóúüñÁÉÍÓÚÜÑ])6s\b"), r"\1ós"),
     # Digit 6 sandwiched between two lowercase letters → ó
-    (re.compile(r'([a-záéíóúüñ])6([a-záéíóúüñ])'), r'\1ó\2'),
+    (re.compile(r"([a-záéíóúüñ])6([a-záéíóúüñ])"), r"\1ó\2"),
 ]
 
 # ------------------------------------------------------------------
 # Header / footer keyword set
 # ------------------------------------------------------------------
 
-_HEADER_FOOTER_KEYWORDS: frozenset[str] = frozenset({
-    'radicación', 'radicacion',
-    'tribunal', 'expediente',
-    'magistrado', 'magistrada',
-    'pág.', 'página', 'pagina',
-    'sala', 'consejo de estado',
-    'juzgado', 'sentencia',
-    'república de colombia', 'republica de colombia',
-})
+_HEADER_FOOTER_KEYWORDS: frozenset[str] = frozenset(
+    {
+        "radicación",
+        "radicacion",
+        "tribunal",
+        "expediente",
+        "magistrado",
+        "magistrada",
+        "pág.",
+        "página",
+        "pagina",
+        "sala",
+        "consejo de estado",
+        "juzgado",
+        "sentencia",
+        "república de colombia",
+        "republica de colombia",
+    }
+)
 
 # ------------------------------------------------------------------
 # Internal-reference patterns (line-level)
@@ -76,36 +87,36 @@ _HEADER_FOOTER_KEYWORDS: frozenset[str] = frozenset({
 _INTERNAL_REF_PATTERNS: list[re.Pattern[str]] = [
     # ── page / folio references ────────────────────────────────────────────
     # Optional leading footnote number: "3 Ver págs. 2-6..." or "Ver págs. 2-6..."
-    re.compile(r'(?i)^\s*\d{0,2}\s*ver\s+p[aá]gs?\.?\s*\d'),
-    re.compile(r'(?i)^\s*\d{0,2}\s*ver\s+considerando\b'),
-    re.compile(r'(?i)^\s*p[aá]g[s.]?\s*\d+\s*[-–]\s*\d+\s*$'),
-    re.compile(r'(?i)^\s*folio[s]?\s+\d+'),
-    re.compile(r'(?i)^\s*cuaderno\s+\d+'),
-    re.compile(r'(?i)\barchivo\s+\S+\.pdf\b'),
-    re.compile(r'(?i)^\s*expediente\s+n[°º]?\s*\d'),
-    re.compile(r'(?i)^\s*p[aá]g\.?\s*\d+\s*$'),             # bare "Pág. 12" lines
-
+    re.compile(r"(?i)^\s*\d{0,2}\s*ver\s+p[aá]gs?\.?\s*\d"),
+    re.compile(r"(?i)^\s*\d{0,2}\s*ver\s+considerando\b"),
+    re.compile(r"(?i)^\s*p[aá]g[s.]?\s*\d+\s*[-–]\s*\d+\s*$"),
+    re.compile(r"(?i)^\s*folio[s]?\s+\d+"),
+    re.compile(r"(?i)^\s*cuaderno\s+\d+"),
+    re.compile(r"(?i)\barchivo\s+\S+\.pdf\b"),
+    re.compile(r"(?i)^\s*expediente\s+n[°º]?\s*\d"),
+    re.compile(r"(?i)^\s*p[aá]g\.?\s*\d+\s*$"),  # bare "Pág. 12" lines
     # ── footnote body lines — PDF / OneDrive references ────────────────────
-    re.compile(r'(?i)^\s*\d{0,2}\s*ver\s+pdf\b'),            # "9 Ver PDF 50..."
-    re.compile(r'(?i)\bver\s+pdf\s*:?\s*\d+\b'),              # "Ver PDF: 17 del..."
-    re.compile(r'(?i)^\s*\d{1,2}\s+https?://'),               # "33 https://..."
-    re.compile(r'(?i)^\s*\d{1,2}\s+escuchar\b'),
-
+    re.compile(r"(?i)^\s*\d{0,2}\s*ver\s+pdf\b"),  # "9 Ver PDF 50..."
+    re.compile(r"(?i)\bver\s+pdf\s*:?\s*\d+\b"),  # "Ver PDF: 17 del..."
+    re.compile(r"(?i)^\s*\d{1,2}\s+https?://"),  # "33 https://..."
+    re.compile(r"(?i)^\s*\d{1,2}\s+escuchar\b"),
     # ── numbered footnote body lines — common legal-citation starters ───────
     # "1 En adelante DIMAR" / "2 En adelante DADSA"
-    re.compile(r'(?i)^\s*\d{1,2}\s+en adelante\b'),
+    re.compile(r"(?i)^\s*\d{1,2}\s+en adelante\b"),
     # "15 Al respecto ver: Consejo de Estado..."
-    re.compile(r'(?i)^\s*\d{1,2}\s+al respecto\b'),
-    # "31 Corte Constitucional..." / "40 Consejo De Estado..." / "41 Sección Primera..."
-    re.compile(r'(?i)^\s*\d{1,2}\s+(corte constitucional|consejo de estado|sección primera|sala plena)\b'),
+    re.compile(r"(?i)^\s*\d{1,2}\s+al respecto\b"),
+    # "31 Corte Constitucional, sentencia T-123..." / "40 Consejo de Estado, radicación..."
+    re.compile(
+        r"(?i)^\s*\d{1,2}\s+(corte constitucional|consejo de estado|sección primera|sala plena)\b.*\b(sentencia|radicaci[oó]n|expediente|m\.p\.|mp\.|c\.p\.|cp\.)\b"
+    ),
     # "32 Vale la pena anotar que..."
-    re.compile(r'(?i)^\s*\d{1,2}\s+vale la pena\b'),
+    re.compile(r"(?i)^\s*\d{1,2}\s+vale la pena\b"),
     # "16 Presentación de la demanda: 21 de julio de 2016..."
-    re.compile(r'(?i)^\s*\d{1,2}\s+presentación de la demanda\b'),
+    re.compile(r"(?i)^\s*\d{1,2}\s+presentación de la demanda\b"),
     # "38 T-519 de 1992..." / "39 SU-540 de 2007..."
-    re.compile(r'(?i)^\s*\d{1,2}\s+[A-Za-z]{1,3}-\d{3,}\b'),
+    re.compile(r"(?i)^\s*\d{1,2}\s+[A-Za-z]{1,3}-\d{3,}\b"),
     # "37 M.P. Álvaro Tafur Galvis"
-    re.compile(r'(?i)^\s*\d{1,2}\s+m\.p\.\b'),
+    re.compile(r"(?i)^\s*\d{1,2}\s+m\.p\.\b"),
 ]
 
 # ------------------------------------------------------------------
@@ -116,8 +127,8 @@ _INTERNAL_REF_PATTERNS: list[re.Pattern[str]] = [
 # not a footnote marker).
 
 _FOOTNOTE_LEGAL_CONTEXT: re.Pattern[str] = re.compile(
-    r'(?i)(ley|artículo|articulo|decreto|numeral|inciso|parágrafo'
-    r'|paragrafo|literal|ordinal|resolución|resolucion)\s*$'
+    r"(?i)(ley|artículo|articulo|decreto|numeral|inciso|parágrafo"
+    r"|paragrafo|literal|ordinal|resolución|resolucion)\s*$"
 )
 
 # ------------------------------------------------------------------
@@ -125,17 +136,17 @@ _FOOTNOTE_LEGAL_CONTEXT: re.Pattern[str] = re.compile(
 # ------------------------------------------------------------------
 
 _IMAGE_CONTEXT_RE: re.Pattern[str] = re.compile(
-    r'(?i)\b(figura|tabla|imagen|gráfico|grafico|ilustración'
-    r'|ilustracion|foto|fotografía|fotografia|esquema|diagrama)\b'
+    r"(?i)\b(figura|tabla|imagen|gráfico|grafico|ilustración"
+    r"|ilustracion|foto|fotografía|fotografia|esquema|diagrama"
+    r"|anexo|evidencia|inspección|inspeccion|registro|mapa|plano"
+    r"|croquis|acta)\b"
 )
 
 # ------------------------------------------------------------------
 # Markdown structure line detector (used in noise filter)
 # ------------------------------------------------------------------
 
-_MD_STRUCTURE_RE: re.Pattern[str] = re.compile(
-    r'^\s*(#{1,6}\s|[-*|!]|\d+\.|---)'
-)
+_MD_STRUCTURE_RE: re.Pattern[str] = re.compile(r"^\s*(#{1,6}\s|[-*|!]|\d+\.|---)")
 
 # ------------------------------------------------------------------
 # Rutas absolutas derivadas de la ubicación del archivo
@@ -164,7 +175,7 @@ def _fix_ocr_chars(text: str) -> str:
     que los hashes hexadecimales de los nombres de archivo se corrompan.
     """
     # Tokenise: split text into alternating [plain, image_ref, plain, ...]
-    img_token_re = re.compile(r'(!\[[^\]]*\]\([^)]+\))')
+    img_token_re = re.compile(r"(!\[[^\]]*\]\([^)]+\))")
     parts = img_token_re.split(text)
 
     result_parts: list[str] = []
@@ -177,7 +188,7 @@ def _fix_ocr_chars(text: str) -> str:
                 part = pattern.sub(replacement, part)
             result_parts.append(part)
 
-    return ''.join(result_parts)
+    return "".join(result_parts)
 
 
 def _remove_noisy_lines(text: str, noise_ratio: float = NOISE_CHAR_RATIO) -> str:
@@ -197,12 +208,59 @@ def _remove_noisy_lines(text: str, noise_ratio: float = NOISE_CHAR_RATIO) -> str
         if _MD_STRUCTURE_RE.match(stripped):
             cleaned.append(line)
             continue
-        non_linguistic = sum(
-            1 for c in stripped if not c.isalnum() and not c.isspace()
-        )
+        non_linguistic = sum(1 for c in stripped if not c.isalnum() and not c.isspace())
         if non_linguistic / len(stripped) < noise_ratio:
             cleaned.append(line)
-    return '\n'.join(cleaned)
+    return "\n".join(cleaned)
+
+
+def _remove_repeated_header_footer_lines(text: str) -> str:
+    """Elimina líneas repetidas de header/footer detectadas por keywords.
+
+    Se consideran candidatas las líneas que contienen alguna palabra clave de
+    ``_HEADER_FOOTER_KEYWORDS``. Si una candidata se repite al menos dos veces,
+    se elimina. Se conserva como máximo una ocurrencia cuando la línea parece
+    contenido integrado (frase extensa con puntuación de cierre).
+    """
+
+    def _normalize(line: str) -> str:
+        return re.sub(r"\s+", " ", line.strip().lower())
+
+    def _has_keyword(normalized: str) -> bool:
+        return any(keyword in normalized for keyword in _HEADER_FOOTER_KEYWORDS)
+
+    def _looks_integrated_content(line: str) -> bool:
+        stripped = line.strip()
+        if len(stripped) < 60:
+            return False
+        if stripped.isupper():
+            return False
+        words = re.findall(r"[A-Za-záéíóúüñÁÉÍÓÚÜÑ]+", stripped)
+        return len(words) >= 10 and stripped[-1] in ".:;!?"
+
+    lines = text.splitlines()
+    candidate_counts: Counter[str] = Counter()
+    candidate_flags: list[tuple[bool, str]] = []
+
+    for line in lines:
+        normalized = _normalize(line)
+        is_candidate = bool(normalized) and _has_keyword(normalized)
+        candidate_flags.append((is_candidate, normalized))
+        if is_candidate:
+            candidate_counts[normalized] += 1
+
+    kept_integrated: set[str] = set()
+    cleaned: list[str] = []
+
+    for line, (is_candidate, normalized) in zip(lines, candidate_flags):
+        if not is_candidate or candidate_counts[normalized] < 2:
+            cleaned.append(line)
+            continue
+        if normalized not in kept_integrated and _looks_integrated_content(line):
+            kept_integrated.add(normalized)
+            cleaned.append(line)
+
+    return "\n".join(cleaned)
 
 
 def _reconstruct_paragraphs(text: str) -> str:
@@ -218,13 +276,13 @@ def _reconstruct_paragraphs(text: str) -> str:
     """
     # Pass 1: rejoin hyphenated word breaks
     text = re.sub(
-        r'([A-Za-záéíóúüñÁÉÍÓÚÜÑ])-\n([a-záéíóúüñ])',
-        r'\1\2',
+        r"([A-Za-záéíóúüñÁÉÍÓÚÜÑ])-\n([a-záéíóúüñ])",
+        r"\1\2",
         text,
     )
 
     # Pass 2: join across paragraph boundaries
-    paragraphs = text.split('\n\n')
+    paragraphs = text.split("\n\n")
     result: list[str] = []
     i = 0
     while i < len(paragraphs):
@@ -235,16 +293,14 @@ def _reconstruct_paragraphs(text: str) -> str:
             next_para = paragraphs[i + 1]
             stripped_next = next_para.strip()
 
-            last_char = stripped_current[-1] if stripped_current else ''
-            first_char = stripped_next[0] if stripped_next else ''
+            last_char = stripped_current[-1] if stripped_current else ""
+            first_char = stripped_next[0] if stripped_next else ""
 
-            ends_without_terminator = last_char not in '.;:?!'
+            ends_without_terminator = last_char not in ".;:?!"
             next_starts_lower = bool(first_char) and first_char.islower()
-            current_is_heading = stripped_current.startswith('#')
-            next_is_special = stripped_next.startswith(('#', '-', '*')) or (
-                len(stripped_next) > 1
-                and stripped_next[0].isdigit()
-                and stripped_next[1] == '.'
+            current_is_heading = stripped_current.startswith("#")
+            next_is_special = stripped_next.startswith(("#", "-", "*")) or (
+                len(stripped_next) > 1 and stripped_next[0].isdigit() and stripped_next[1] == "."
             )
 
             if (
@@ -253,14 +309,14 @@ def _reconstruct_paragraphs(text: str) -> str:
                 and not current_is_heading
                 and not next_is_special
             ):
-                result.append(stripped_current + ' ' + stripped_next)
+                result.append(stripped_current + " " + stripped_next)
                 i += 2
                 continue
 
         result.append(current)
         i += 1
 
-    return '\n\n'.join(result)
+    return "\n\n".join(result)
 
 
 def _remove_footnote_numbers(text: str) -> str:
@@ -279,36 +335,50 @@ def _remove_footnote_numbers(text: str) -> str:
     # When the matched word is one of these, the trailing digit is likely an article
     # number written without a space — leave it untouched.
     _CITATION_WORD = re.compile(
-        r'(?i)^(ley|artículo|articulo|decreto|numeral|inciso|parágrafo'
-        r'|paragrafo|literal|ordinal|resolución|resolucion)$'
+        r"(?i)^(ley|artículo|articulo|decreto|numeral|inciso|parágrafo"
+        r"|paragrafo|literal|ordinal|resolución|resolucion)$"
     )
 
     # Pass 1: word + 1–2 trailing digits  (e.g. "DIMAR2", "jurisdicción14")
     word_digit = re.compile(
-        r'([A-Za-záéíóúüñÁÉÍÓÚÜÑ]{2,})(\d{1,2})\b(?!\d)',
+        r"([A-Za-záéíóúüñÁÉÍÓÚÜÑ]{2,})(\d{1,2})\b(?!\d)",
         re.UNICODE,
     )
 
-    def _replace_word(m: re.Match[str]) -> str:
-        word_part = m.group(1)
-        preceding = text[max(0, m.start() - 40) : m.start()]
-        # Protect: preceding context ends with a legal reference word
-        if _FOOTNOTE_LEGAL_CONTEXT.search(preceding):
-            return m.group(0)
-        # Protect: the word itself is a legal citation term (e.g. "artículo14"
-        # where 14 could be the actual article number written without a space)
-        if _CITATION_WORD.match(word_part):
-            return m.group(0)
-        return word_part
-
-    text = word_digit.sub(_replace_word, text)
-
     # Pass 2: 4-digit year immediately followed by a single footnote digit
     # e.g. "20228" = year 2022 + footnote marker 8
-    year_digit = re.compile(r'\b((?:1[89]\d\d|20\d\d))(\d)\b(?!\d)')
-    text = year_digit.sub(r'\1', text)
+    year_digit = re.compile(r"\b((?:1[89]\d\d|20\d\d))(\d)\b(?!\d)")
 
-    return text
+    def _clean_plain_segment(segment: str) -> str:
+        def _replace_word(m: re.Match[str]) -> str:
+            word_part = m.group(1)
+            preceding = segment[max(0, m.start() - 40) : m.start()]
+            # Protect: preceding context ends with a legal reference word
+            if _FOOTNOTE_LEGAL_CONTEXT.search(preceding):
+                return m.group(0)
+            # Protect: the word itself is a legal citation term (e.g. "artículo14"
+            # where 14 could be the actual article number written without a space)
+            if _CITATION_WORD.match(word_part):
+                return m.group(0)
+            return word_part
+
+        segment = word_digit.sub(_replace_word, segment)
+        segment = year_digit.sub(r"\1", segment)
+        return segment
+
+    # Protect Markdown image and link references.
+    # Tokens captured intact and restored without transformation.
+    md_token_re = re.compile(r"(!?\[[^\]]*\]\([^)]+\))")
+    parts = md_token_re.split(text)
+
+    result_parts: list[str] = []
+    for i, part in enumerate(parts):
+        if i % 2 == 1:
+            result_parts.append(part)
+        else:
+            result_parts.append(_clean_plain_segment(part))
+
+    return "".join(result_parts)
 
 
 def _remove_internal_references(text: str) -> str:
@@ -329,18 +399,14 @@ def _remove_internal_references(text: str) -> str:
     # Only removes the prefix when it is followed by a lowercase letter
     # (i.e. the text continues — not a proper noun or chapter heading).
     text = re.sub(
-        r'(?im)^\s*p[aá]g\.?\s*\d+\s+(?=[a-záéíóúüñ])',
-        '',
+        r"(?im)^\s*p[aá]g\.?\s*\d+\s+(?=[a-záéíóúüñ])",
+        "",
         text,
     )
 
     lines = text.splitlines()
-    cleaned = [
-        line
-        for line in lines
-        if not any(p.search(line) for p in _INTERNAL_REF_PATTERNS)
-    ]
-    return '\n'.join(cleaned)
+    cleaned = [line for line in lines if not any(p.search(line) for p in _INTERNAL_REF_PATTERNS)]
+    return "\n".join(cleaned)
 
 
 def _clean_markdown(text: str) -> str:
@@ -358,8 +424,8 @@ def _clean_markdown(text: str) -> str:
 def _remove_repeated_blocks(text: str, min_occurrences: int = MIN_BLOCK_REPEATS) -> str:
     """Detecta y elimina bloques de texto repetidos (encabezados/pies de página).
 
-    Elimina bloques que aparecen ``≥ min_occurrences`` veces (umbral = 2
-    para mayor sensibilidad).  La comparación normaliza las referencias a
+    Elimina bloques que aparecen ``≥ min_occurrences`` veces (umbral = 3).
+    La comparación normaliza las referencias a
     imágenes para que bloques idénticos salvo por el nombre del fichero de
     imagen se reconozcan como duplicados.
     """
@@ -398,9 +464,10 @@ def _filter_images(
     3. **Baja varianza**: imagen casi uniforme (fondo blanco, marca de
        agua).  Calculado en escala de grises con ``statistics.variance``
        sobre todos los píxeles; umbral ``IMAGE_LOW_VARIANCE``.
-    4. **Sin contexto semántico**: ninguna palabra clave de figura/tabla
-       aparece en las ``IMAGE_CONTEXT_WINDOW`` caracteres adyacentes a
-       la referencia en el Markdown.
+    4. **Sin contexto semántico**: para imágenes pequeñas (lado mayor
+       < ``MIN_IMAGE_SIDE_WITHOUT_CONTEXT``), ninguna palabra clave de
+       figura/tabla aparece en las ``IMAGE_CONTEXT_WINDOW`` caracteres
+       adyacentes a la referencia en el Markdown.
     """
     md_dir = md_path.parent
     img_pattern = re.compile(r"!\[[^\]]*\]\(([^)]+)\)")
@@ -439,12 +506,14 @@ def _filter_images(
 
             # Criterion 4: no semantic context word nearby
             if not should_remove:
-                pos = match.start()
-                window_start = max(0, pos - IMAGE_CONTEXT_WINDOW)
-                window_end = min(len(md_text), pos + IMAGE_CONTEXT_WINDOW)
-                context = md_text[window_start:window_end]
-                if not _IMAGE_CONTEXT_RE.search(context):
-                    should_remove = True
+                max_side = max(w, h)
+                if max_side < MIN_IMAGE_SIDE_WITHOUT_CONTEXT:
+                    pos = match.start()
+                    window_start = max(0, pos - IMAGE_CONTEXT_WINDOW)
+                    window_end = min(len(md_text), pos + IMAGE_CONTEXT_WINDOW)
+                    context = md_text[window_start:window_end]
+                    if not _IMAGE_CONTEXT_RE.search(context):
+                        should_remove = True
 
         if should_remove:
             refs_to_remove.append(match.group(0))
@@ -467,6 +536,7 @@ def _build_converter() -> DocumentConverter:
     pipeline_options.generate_page_images = False
     pipeline_options.generate_picture_images = True
     pipeline_options.do_ocr = True
+    pipeline_options.ocr_options.lang = ["es"]
     pipeline_options.do_table_structure = True
 
     return DocumentConverter(
@@ -488,11 +558,12 @@ def convert_pdfs_to_markdown() -> list[Path]:
        1. ``_fix_ocr_chars``              — corrección de artefactos OCR
        2. ``_remove_noisy_lines``         — eliminación de líneas con ruido
        3. ``_remove_internal_references`` — referencias a páginas/folios (antes de unir párrafos)
-       4. ``_reconstruct_paragraphs``     — reconstrucción de párrafos cortados
-       5. ``_remove_footnote_numbers``    — eliminación de marcadores de nota
-       6. ``_remove_repeated_blocks``     — encabezados y pies repetidos
-       7. ``_filter_images``              — filtrado por tamaño/varianza/contexto
-       8. ``_clean_markdown``             — limpieza estructural final
+       4. ``_remove_repeated_header_footer_lines`` — líneas repetidas de header/footer por keywords
+       5. ``_reconstruct_paragraphs``     — reconstrucción de párrafos cortados
+       6. ``_remove_footnote_numbers``    — eliminación de marcadores de nota
+       7. ``_remove_repeated_blocks``     — encabezados y pies repetidos
+       8. ``_filter_images``              — filtrado por tamaño/varianza/contexto
+       9. ``_clean_markdown``             — limpieza estructural final
 
     Devuelve la lista de archivos ``.md`` generados.
     """
@@ -524,6 +595,7 @@ def convert_pdfs_to_markdown() -> list[Path]:
         md_text = _fix_ocr_chars(md_text)
         md_text = _remove_noisy_lines(md_text)
         md_text = _remove_internal_references(md_text)  # before paragraph join
+        md_text = _remove_repeated_header_footer_lines(md_text)
         md_text = _reconstruct_paragraphs(md_text)
         md_text = _remove_footnote_numbers(md_text)
         md_text = _remove_repeated_blocks(md_text)
