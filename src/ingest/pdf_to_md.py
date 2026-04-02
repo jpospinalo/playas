@@ -662,72 +662,113 @@ def _remove_internal_references_scored(text: str) -> str:
 
 
 # ------------------------------------------------------------------
-# 4b. FOOTNOTE CITATION BLOCK REMOVAL
+# 4b. CITED-DECISION FOOTNOTE BLOCK REMOVAL
 # ------------------------------------------------------------------
-
-_CITATION_ANCHOR_RE = re.compile(
-    r"(?i)Radicaci[oó]n:\s*\d{2,}|"
-    r"Referencia:\s*medio\s+de\s+control|"
-    r"[A-ZÁÉÍÓÚÜÑ][a-záéíóúüñ]+\s+[A-ZÁÉÍÓÚÜÑ][a-záéíóúüñ]+\s+[A-ZÁÉÍÓÚÜÑ]"
-    r"[a-záéíóúüñ]+\.\s+Bogot[aá]"
-)
-
-_CITATION_FRAGMENT_RE = re.compile(
-    r"(?i)^("
-    r"\d{5}-\d+\.\s*Demandante:|"           # "00987-01.  Demandante:"
-    r"General\s+de\b|"                       # "General de"
-    r"Delegad[oa]\s+para\b|"                 # "Delegada para"
-    r"la\s+Naci[oó]n$|"                      # "la Nación"
-    r"Procuradur[ií]a$|"                     # "Procuraduría"
-    r"Nacional\s+de\s+Licencias\b|"          # "Nacional de Licencias"
-    r"-$|"                                   # bare dash
-    r"Ambientales\s+y\s+Agrarios|"
-    r"Asuntos$|"
-    r"Naci[oó]n\s*-\s*Ministerio\b|"        # "Nación - Ministerio..."
-    r".*-\s*ANLA\b|"                         # "...ANLA - otros"
-    r".*-\s*otros\.\s*$"                     # "...Autoridad - otros."
-    r")"
-)
 
 
 def _remove_footnote_citation_blocks(text: str) -> str:
-    """Remove multi-paragraph footnote citation blocks from cited decisions.
+    """Remove long footnote blocks from cited decisions that Docling
+    inlines as if they were part of the current document.
 
-    These blocks contain the cited decision's metadata (Radicación, parties,
-    judge name) spread across many short fragmented lines produced by
-    multi-column OCR.  They are identified by an anchor line containing a
-    recognizable citation pattern, followed by short fragment lines.
+    Detection strategy: look for runs of paragraphs whose numbering
+    (``N.``) is **non-sequential** relative to the main document.  In
+    Colombian tribunal documents, the main body uses consecutive paragraph
+    numbers (1, 2, 3 …).  When a long cited decision is inlined, its own
+    paragraph numbers (e.g. 78–95) appear, creating a forward jump followed
+    by a backward jump back to the main numbering.  The entire forward-jump
+    block is footnote content and is removed.
+
+    Additionally, paragraphs between the start of a quote (``'``) and the
+    resumption of the main numbering that contain citation metadata
+    (``Radicación:``, ``Demandante:``, person-name-city patterns) or that
+    are very short fragment lines are also removed.
     """
     paragraphs = text.split("\n\n")
     to_remove: set[int] = set()
 
+    _para_num_re = re.compile(r"^['\u2018\u201C\-\s]*(\d{1,3})\.\s")
+
+    # Build a list of (index, number) for all numbered paragraphs.
+    numbered: list[tuple[int, int]] = []
     for idx, para in enumerate(paragraphs):
         stripped = para.strip()
-        if not stripped:
-            continue
-
-        if not _CITATION_ANCHOR_RE.search(stripped):
-            continue
-
         if stripped.startswith("#") or stripped.startswith("|"):
             continue
+        m = _para_num_re.match(stripped)
+        if m:
+            numbered.append((idx, int(m.group(1))))
 
-        # Found an anchor.  Mark it and scan forward for fragment lines.
-        to_remove.add(idx)
-        for j in range(idx + 1, min(idx + 20, len(paragraphs))):
-            frag = paragraphs[j].strip()
-            if not frag:
-                continue
-            if frag.startswith("#") or frag.startswith("|"):
-                break
-            if re.match(r"^\d{1,3}\.\s", frag):
-                break
-            if _CITATION_FRAGMENT_RE.match(frag):
-                to_remove.add(j)
-            elif len(frag) < 70 and not re.match(r"^\d{1,3}\.\s", frag):
-                to_remove.add(j)
+    # Pass 1: detect forward-jump / backward-jump discontinuities.
+    # Walk through the numbered paragraphs.  When num[i] jumps forward
+    # by more than 5 compared to num[i-1], and later jumps back, all
+    # paragraphs in that span are footnote content.
+    i = 1
+    while i < len(numbered):
+        prev_idx, prev_num = numbered[i - 1]
+        cur_idx, cur_num = numbered[i]
+
+        gap = cur_num - prev_num
+        if gap > 5:
+            # Forward jump detected.  Find where the numbering jumps back.
+            jump_start_idx = cur_idx
+            jump_end_idx = cur_idx
+            for j in range(i + 1, len(numbered)):
+                j_idx, j_num = numbered[j]
+                if j_num < cur_num:
+                    # Backward jump: this is the end of the cited block.
+                    jump_end_idx = j_idx
+                    break
+                jump_end_idx = j_idx + 1
             else:
-                break
+                i += 1
+                continue
+
+            # Mark all paragraphs between the forward jump and the
+            # backward jump as footnote content (inclusive of boundaries).
+            for k in range(jump_start_idx, jump_end_idx):
+                para_s = paragraphs[k].strip() if k < len(paragraphs) else ""
+                if para_s.startswith("#") or para_s.startswith("|"):
+                    continue
+                if para_s.startswith("!["):
+                    continue
+                to_remove.add(k)
+
+        i += 1
+
+    # Pass 2: remove citation-metadata fragments (short orphan lines from
+    # multi-column OCR of footnote citation headers).
+    _citation_meta_re = re.compile(
+        r"(?i)Radicaci[oó]n:\s*\d|Referencia:\s*medio\s+de\s+control|"
+        r"Demandante:|Demandados?:|Ponente:|Magistrad[oa]\s+ponente:"
+    )
+    _person_city_re = re.compile(
+        r"^[A-ZÁÉÍÓÚÜÑ][a-záéíóúüñ]+\s+[A-ZÁÉÍÓÚÜÑ][a-záéíóúüñ]+\s+"
+        r"[A-ZÁÉÍÓÚÜÑ][a-záéíóúüñ]+\.\s+Bogot[aá]"
+    )
+
+    for idx, para in enumerate(paragraphs):
+        if idx in to_remove:
+            continue
+        stripped = para.strip()
+        if not stripped or stripped.startswith("#") or stripped.startswith("|"):
+            continue
+
+        if _citation_meta_re.search(stripped) or _person_city_re.match(stripped):
+            if stripped.startswith("#"):
+                continue
+            to_remove.add(idx)
+            for j in range(idx + 1, min(idx + 20, len(paragraphs))):
+                frag = paragraphs[j].strip()
+                if not frag:
+                    continue
+                if frag.startswith("#") or frag.startswith("|"):
+                    break
+                if re.match(r"^\d{1,3}\.\s", frag):
+                    break
+                if len(frag) < 70:
+                    to_remove.add(j)
+                else:
+                    break
 
     if not to_remove:
         return text
@@ -1756,51 +1797,24 @@ def _split_heading_body(text: str) -> str:
 
     This function detects the pattern and inserts a paragraph break after
     the heading title so downstream consumers see a clean heading.
-
-    It also re-infers the first paragraph number that Docling absorbed into
-    the heading.  For example, if ``2. Afirmó...`` follows the split body,
-    the body is prepended with ``1.`` so the numbering sequence is complete.
     """
     lines = text.splitlines()
     result: list[str] = []
-    i = 0
-    while i < len(lines):
-        line = lines[i]
+    for line in lines:
         m = _HEADING_BODY_RE.match(line)
         if m:
-            result.append(m.group(1))
             body = m.group(2) + line[m.end():]
-            body = _maybe_prepend_number(body, lines, i + 1)
-            result.append(body)
+            # Don't split if the "body" is just one all-caps word that
+            # belongs to the heading itself (e.g. "## I. ANTECEDENTES").
+            first_word = body.split()[0] if body.split() else ""
+            if first_word.isupper() and len(body.split()) <= 2:
+                result.append(line)
+            else:
+                result.append(m.group(1))
+                result.append(body)
         else:
             result.append(line)
-        i += 1
     return "\n".join(result)
-
-
-def _maybe_prepend_number(body: str, lines: list[str], start_idx: int) -> str:
-    """If the paragraphs following a split heading start at number N+1
-    (e.g. ``2. Afirmó...``), prepend ``N.`` to *body* so the list is
-    complete.  Docling absorbs the first list number into the heading's
-    section number (``1.1.``), leaving the body without its ordinal.
-    """
-    next_num = _find_next_paragraph_number(lines, start_idx)
-    if next_num is not None and next_num >= 2:
-        expected = next_num - 1
-        if not re.match(r"^\d+\.\s", body):
-            body = f"{expected}. {body}"
-    return body
-
-
-def _find_next_paragraph_number(lines: list[str], start_idx: int) -> int | None:
-    """Scan forward from *start_idx* for the first line that starts with a
-    legal paragraph number (``N. ``).  Returns the number or ``None``.
-    """
-    for j in range(start_idx, min(start_idx + 15, len(lines))):
-        m = re.match(r"^(\d{1,3})\.\s", lines[j])
-        if m:
-            return int(m.group(1))
-    return None
 
 
 def _clean_markdown(text: str) -> str:
