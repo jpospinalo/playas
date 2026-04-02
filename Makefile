@@ -1,7 +1,7 @@
 .PHONY: install lint format typecheck test test-cov pipeline app clean help
 
 install:  ## Instalar dependencias (incluidas las de desarrollo)
-	uv sync --dev
+	uv sync --group dev
 
 lint:  ## Verificar errores de estilo y lógica con ruff
 	uv run ruff check src/ tests/ evaluation/
