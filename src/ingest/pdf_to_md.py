@@ -1627,19 +1627,29 @@ def _remove_footnote_numbers(text: str) -> str:
 
 
 def _remove_repeated_blocks(text: str, min_occurrences: int = MIN_BLOCK_REPEATS) -> str:
-    """Detect and remove repeated text blocks (headers/footers)."""
+    """Detect and remove repeated text blocks (headers/footers).
+
+    Image references are stripped for the purpose of comparing textual
+    content, but paragraphs whose *only* content is an image reference
+    (i.e. normalize to empty) are never considered repeated.
+    """
     paragraphs = text.split("\n\n")
 
     def _normalize(block: str) -> str:
         s = re.sub(r"!\[[^\]]*\]\([^)]+\)", "", block)
         return s.strip()
 
-    counts: Counter[str] = Counter(_normalize(p) for p in paragraphs if _normalize(p))
+    counts: Counter[str] = Counter(
+        _normalize(p) for p in paragraphs if _normalize(p)
+    )
     repeated = {norm for norm, count in counts.items() if count >= min_occurrences}
 
     result: list[str] = []
     for p in paragraphs:
         norm = _normalize(p)
+        if not norm:
+            result.append(p)
+            continue
         if norm in repeated:
             continue
         result.append(p)
@@ -1675,7 +1685,18 @@ def _filter_images(
     md_path: Path,
     min_pixels: int = MIN_IMAGE_PIXELS,
 ) -> str:
-    """Filter out irrelevant images from markdown and delete their files."""
+    """Filter out irrelevant images from markdown and delete their files.
+
+    Removal criteria (applied in order):
+    1. Too small (both dimensions below ``MIN_IMAGE_PIXELS``) — icons, bullets.
+    2. Exact duplicate (same pixel hash already seen).
+    3. Near-blank (pixel variance below ``IMAGE_LOW_VARIANCE``).
+
+    Large, unique, non-blank images are always **kept** regardless of whether
+    surrounding text contains caption keywords.  Legal documents routinely
+    include maps, satellite photos and evidence images without explicit
+    captions, so a semantic-context gate would discard substantive content.
+    """
     md_dir = md_path.parent
     img_pattern = re.compile(r"!\[[^\]]*\]\(([^)]+)\)")
 
@@ -1687,6 +1708,7 @@ def _filter_images(
         img_file = (md_dir / img_ref).resolve()
 
         if not img_file.exists() or not img_file.is_file():
+            refs_to_remove.append(match.group(0))
             continue
 
         try:
@@ -1696,6 +1718,7 @@ def _filter_images(
                 gray = img.convert("L")
                 pixels = list(gray.getdata())
         except Exception:
+            refs_to_remove.append(match.group(0))
             continue
 
         should_remove = False
@@ -1709,14 +1732,6 @@ def _filter_images(
 
             if len(pixels) > 1 and statistics.variance(pixels) < IMAGE_LOW_VARIANCE:
                 should_remove = True
-
-            if not should_remove:
-                pos = match.start()
-                window_start = max(0, pos - IMAGE_CONTEXT_WINDOW)
-                window_end = min(len(md_text), pos + IMAGE_CONTEXT_WINDOW)
-                context = md_text[window_start:window_end]
-                if not _IMAGE_CONTEXT_RE.search(context):
-                    should_remove = True
 
         if should_remove:
             refs_to_remove.append(match.group(0))
