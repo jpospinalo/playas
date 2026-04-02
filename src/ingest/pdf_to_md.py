@@ -611,6 +611,23 @@ def _score_internal_reference(line: str) -> int:
     if re.search(r"(?i)^\s*\d{1,2}\s+por (el|la|lo) cual\b", line):
         score += 3
 
+    # === Bare footnote number (just digits, possibly with trailing quote) ===
+    if re.match(r"^\s*\d{1,2}\s*['\u2018\u2019\u201C\u201D]?\s*$", stripped):
+        score += 3
+
+    # Footnote-embedded citation metadata (from fragmented multi-column OCR)
+    if re.match(
+        r"(?i)^\s*\d{0,2}\s*(radicaci[oó]n|demandante|demandados?|ponente"
+        r"|magistrad[oa]|secretari[oa])\s*:", stripped
+    ):
+        if len(stripped) < 120:
+            score += 3
+
+    # Decree/resolution title footnotes: "Por medio del cual se expide..."
+    if re.match(r"(?i)^por\s+medio\s+del\s+cual\s+se\b", stripped):
+        if len(stripped) < 120:
+            score += 3
+
     # === Lower confidence signals (+1) ===
     if re.search(r"(?i)^\s*p[aá]g\.?\s*\d+\s*$", line):
         score += 1
@@ -1298,8 +1315,20 @@ def _fix_ocr_chars(text: str) -> str:
     return "".join(result_parts)
 
 
+_INSTITUTIONAL_NOISE_RE = re.compile(
+    r"^("
+    r"\d{7,}\s*\S{0,30}$"              # phone number + short label
+    r"|[A-Za-z]*@\S+$"                  # social media handle
+    r"|[XxYy][\s@]?\S{0,30}$"          # platform handle "X@...", "YeuTube"
+    r"|(?:YouTube|YeuTube|Facebook|Instagram|Twitter)\b.*$"
+    r")",
+    re.IGNORECASE,
+)
+
+
 def _remove_noisy_lines(text: str, noise_ratio: float = NOISE_CHAR_RATIO) -> str:
-    """Remove lines with high ratio of non-linguistic characters."""
+    """Remove lines with high ratio of non-linguistic characters
+    and institutional noise (phone numbers, social handles)."""
     cleaned: list[str] = []
     for line in text.splitlines():
         stripped = line.strip()
@@ -1309,57 +1338,119 @@ def _remove_noisy_lines(text: str, noise_ratio: float = NOISE_CHAR_RATIO) -> str
         if _MD_STRUCTURE_RE.match(stripped):
             cleaned.append(line)
             continue
+        if _INSTITUTIONAL_NOISE_RE.match(stripped):
+            continue
         non_linguistic = sum(1 for c in stripped if not c.isalnum() and not c.isspace())
         if non_linguistic / len(stripped) < noise_ratio:
             cleaned.append(line)
     return "\n".join(cleaned)
 
 
+_DANGLING_TAIL_RE = re.compile(
+    r"(?i)\b(y|e|o|u|que|de|del|la|el|los|las|en|con|por|para|su|sus"
+    r"|una|un|al|como|sin|ni|sobre|bajo|ante|entre|desde|hasta"
+    r"|dicha|dicho|dichas|dichos|cuyo|cuya|cuyos|cuyas"
+    r"|esta|este|estos|estas|aquel|aquella|todo|toda|cada"
+    r"|ser|siendo|ha|han|fue|ser[aá]|deber[aá]|podr[aá])\s*$"
+)
+
+
 def _reconstruct_paragraphs(text: str) -> str:
-    """Reconstruct paragraphs broken by page splits."""
-    # Pass 1: rejoin hyphenated word breaks
+    """Reconstruct paragraphs broken by page splits.
+
+    Runs two sub-passes:
+    1. Rejoin hyphenated word breaks (intra-line).
+    2. Merge paragraph pairs split across page boundaries.
+       The merge loop runs up to 3 iterations so that chains
+       (A broken→B broken→C) are joined progressively.
+    """
     text = re.sub(
         r"([A-Za-záéíóúüñÁÉÍÓÚÜÑ])-\n([a-záéíóúüñ])",
         r"\1\2",
         text,
     )
 
-    # Pass 2: join across paragraph boundaries
-    paragraphs = text.split("\n\n")
-    result: list[str] = []
-    i = 0
-    while i < len(paragraphs):
-        current = paragraphs[i]
-        stripped_current = current.strip()
+    for _pass in range(3):
+        paragraphs = text.split("\n\n")
+        result: list[str] = []
+        merged_any = False
+        i = 0
+        while i < len(paragraphs):
+            current = paragraphs[i]
+            stripped_current = current.strip()
 
-        if i + 1 < len(paragraphs):
-            next_para = paragraphs[i + 1]
-            stripped_next = next_para.strip()
-
-            last_char = stripped_current[-1] if stripped_current else ""
-            first_char = stripped_next[0] if stripped_next else ""
-
-            ends_without_terminator = last_char not in ".;:?!"
-            next_starts_lower = bool(first_char) and first_char.islower()
-            current_is_heading = stripped_current.startswith("#")
-            next_is_special = stripped_next.startswith(("#", "-", "*")) or (
-                len(stripped_next) > 1 and stripped_next[0].isdigit() and stripped_next[1] == "."
-            )
-
-            if (
-                ends_without_terminator
-                and next_starts_lower
-                and not current_is_heading
-                and not next_is_special
-            ):
-                result.append(stripped_current + " " + stripped_next)
-                i += 2
+            if not stripped_current:
+                i += 1
                 continue
 
-        result.append(current)
-        i += 1
+            # Look ahead, skipping empty paragraphs
+            j = i + 1
+            while j < len(paragraphs) and not paragraphs[j].strip():
+                j += 1
 
-    return "\n\n".join(result)
+            if j < len(paragraphs):
+                stripped_next = paragraphs[j].strip()
+
+                if _should_merge_paragraphs(stripped_current, stripped_next):
+                    result.append(stripped_current + " " + stripped_next)
+                    merged_any = True
+                    i = j + 1
+                    continue
+
+            result.append(current)
+            i += 1
+
+        text = "\n\n".join(result)
+        if not merged_any:
+            break
+
+    return text
+
+
+def _should_merge_paragraphs(current: str, next_para: str) -> bool:
+    """Decide whether two paragraphs split by a page break should be merged."""
+    if not current or not next_para:
+        return False
+    if current.startswith("#"):
+        return False
+
+    # Protect headings, bullet lists, and legal numbered items
+    if next_para.startswith("#"):
+        return False
+    if re.match(r"^- \?", next_para):
+        return False
+    if re.match(r"^[*\-]\s+[A-ZÁÉÍÓÚÜÑ]", next_para):
+        return False
+    if len(next_para) > 1 and next_para[0].isdigit() and next_para[1] in ".)":
+        return False
+
+    last_char = current[-1]
+    first_char = next_para[0]
+
+    # Treat quote-period endings as terminators: "texto.'", "texto.'"
+    tail = current[-3:] if len(current) >= 3 else current
+    if re.search(r"[.;:?!]['\u2019\u201D\"]\s*$", tail):
+        return False
+
+    ends_without_terminator = last_char not in '.;:?!"\')»'
+    next_starts_lower = first_char.islower()
+
+    if ends_without_terminator and next_starts_lower:
+        return True
+
+    # "- que acredite" where the dash is a page-break OCR artifact
+    if re.match(r"^-\s+[a-záéíóúüñ]", next_para) and ends_without_terminator:
+        return True
+
+    # Dangling tail: current ends with a conjunction / preposition / article
+    if _DANGLING_TAIL_RE.search(current):
+        return True
+
+    # Comma at end + lowercase continuation
+    if last_char == "," and next_starts_lower:
+        return True
+
+    return False
 
 
 def _remove_footnote_numbers(text: str) -> str:
@@ -1424,9 +1515,36 @@ def _remove_footnote_numbers(text: str) -> str:
 
     text = word_space_digit.sub(_replace_spaced, text)
 
-    # Pass 3: year + trailing footnote digit — "20228" → "2022"
+    # Pass 3: closing-paren/quote + spaced footnote — "INVEMAR) 13" → "INVEMAR)"
+    paren_space_fn = re.compile(
+        r"([)\]\u2019\u201D'\"])"      # closing bracket/quote
+        r"(\s+)"
+        r"(\d{1,2})"                    # footnote marker
+        r"(?=\s|[.,;:!?\)\]]|$)"
+    )
+    text = paren_space_fn.sub(r"\1", text)
+
+    # Pass 4: year + trailing footnote digit — "20228" → "2022"
     year_digit = re.compile(r"\b((?:1[89]\d\d|20\d\d))(\d)\b(?!\d)")
     text = year_digit.sub(r"\1", text)
+
+    # Pass 5: year/number + spaced footnote — "2021 32 ," → "2021,"
+    year_space_fn = re.compile(
+        r"(\b(?:1[89]\d\d|20\d\d))"   # 4-digit year
+        r"(\s+)"
+        r"(\d{1,2})"                   # footnote marker
+        r"(?=\s*[.,;:!?\)\]]|\s+[a-záéíóúüñ]|\s*$)"
+    )
+    text = year_space_fn.sub(r"\1", text)
+
+    # Pass 6: hyphenated-code + spaced footnote — "CPT-CAM-012-21 34" → "CPT-CAM-012-21"
+    code_space_fn = re.compile(
+        r"(\b[A-Z][\w-]*-\d{2,4})"    # code ending in digits "CPT-CAM-012-21"
+        r"(\s+)"
+        r"(\d{1,2})"                   # footnote marker
+        r"(?=\s|[.,;:!?\)\]]|$)"
+    )
+    text = code_space_fn.sub(r"\1", text)
 
     return text
 
@@ -1450,6 +1568,29 @@ def _remove_repeated_blocks(text: str, min_occurrences: int = MIN_BLOCK_REPEATS)
         result.append(p)
 
     return "\n\n".join(result)
+
+
+def _relativize_image_refs(md_text: str, md_path: Path) -> str:
+    """Convert absolute image paths produced by ``save_as_markdown`` to
+    relative paths so the markdown stays portable.
+
+    Docling emits ``![Image](C:\\abs\\path\\_artifacts\\img.png)`` when
+    given an absolute ``md_path``.  This rewrites each ref to use only
+    the path relative to the directory containing the ``.md`` file.
+    """
+    md_dir = md_path.parent
+
+    def _rel(m: re.Match[str]) -> str:
+        alt = m.group(1)
+        raw_path = m.group(2)
+        try:
+            abs_img = Path(raw_path).resolve()
+            rel = abs_img.relative_to(md_dir)
+            return f"![{alt}]({rel.as_posix()})"
+        except (ValueError, OSError):
+            return m.group(0)
+
+    return re.sub(r"!\[([^\]]*)\]\(([^)]+)\)", _rel, md_text)
 
 
 def _filter_images(
@@ -1583,18 +1724,20 @@ def convert_pdfs_to_markdown() -> list[Path]:
             conv_result = converter.convert(pdf_path)
 
             # Step 2: Initial markdown extraction.
-            # Docling creates an ``{stem}_artifacts/`` directory for images
-            # next to the ``.md`` file.  We use the PDF stem directly so
-            # that the artifacts directory is ``{stem}_artifacts/`` and the
-            # final markdown keeps working image references.
+            # Docling requires an *absolute* ``md_path`` to correctly
+            # place the ``{stem}_artifacts/`` image directory next to
+            # the ``.md`` file.  With relative paths it doubles the
+            # directory nesting.  After saving we relativize image refs
+            # so the markdown stays portable.
             doc_stem = pdf_path.stem
-            md_path = BRONZE_DIR / f"{doc_stem}.md"
+            md_path = (BRONZE_DIR / f"{doc_stem}.md").resolve()
             conv_result.document.save_as_markdown(
                 md_path,
                 image_mode=ImageRefMode.REFERENCED,
             )
 
             original_md = md_path.read_text(encoding="utf-8")
+            original_md = _relativize_image_refs(original_md, md_path)
 
             # Step 3: Document profiling
             profile = profile_legal_document(original_md)
@@ -1676,13 +1819,14 @@ def process_single_pdf(
         conv_result = converter.convert(pdf_path)
 
         doc_stem = pdf_path.stem
-        md_path = output_dir / f"{doc_stem}.md"
+        md_path = (output_dir / f"{doc_stem}.md").resolve()
         conv_result.document.save_as_markdown(
             md_path,
             image_mode=ImageRefMode.REFERENCED,
         )
 
         original_md = md_path.read_text(encoding="utf-8")
+        original_md = _relativize_image_refs(original_md, md_path)
         profile = profile_legal_document(original_md)
         cleaned_md = adaptive_cleanup(original_md, profile, md_path)
         blocks = segment_legal_sections(cleaned_md)
