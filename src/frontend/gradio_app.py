@@ -19,6 +19,7 @@ load_dotenv()
 # Utilidades
 # ---------------------------------------------------------------------
 
+
 def format_context(docs: list[Document]) -> str:
     """
     Devuelve un texto en Markdown con el contenido de los chunks recuperados.
@@ -77,7 +78,7 @@ def clean_answer(answer: str) -> str:
         return answer
 
     patterns = [
-        r"\s*\(fuente:[^)]+\)\s*$",        # (fuente: doc1, doc2)
+        r"\s*\(fuente:[^)]+\)\s*$",  # (fuente: doc1, doc2)
         r"\s*\((?:doc|chunk)[^)]*\)\s*$",  # (doc2, doc3) o (chunk_3, chunk_4)
     ]
     for p in patterns:
@@ -135,6 +136,7 @@ def respond(
 # ---------------------------------------------------------------------
 # Construcción de la app
 # ---------------------------------------------------------------------
+
 
 def build_app() -> gr.Blocks:
     with gr.Blocks() as demo:
@@ -216,4 +218,3 @@ Interactúa con un sistema RAG basado en cuentos de Edgar Allan Poe.
 if __name__ == "__main__":
     app = build_app()
     app.launch(server_name="0.0.0.0", server_port=7860, theme="soft")
-

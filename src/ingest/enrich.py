@@ -28,6 +28,7 @@ GEMINI_MODEL = os.getenv("GEMINI_MODEL")
 # 1. Modelos de salida (schema)
 # ---------------------------------------------------------------------
 
+
 class Entity(BaseModel):
     type: str = Field(
         description="Tipo de entidad: PERSON, LOCATION, DATE u otro valor descriptivo."
@@ -50,6 +51,7 @@ class ChunkMetadata(BaseModel):
 # ---------------------------------------------------------------------
 # 2. Rate limiter simple
 # ---------------------------------------------------------------------
+
 
 @dataclass
 class RateLimiter:
@@ -81,6 +83,7 @@ class RateLimiter:
 # 3. Cliente Gemini y lógica de enriquecimiento
 # ---------------------------------------------------------------------
 
+
 class GeminiEnricher:
     """
     Encapsula la llamada a Gemini/Gemma para enriquecer chunks con resumen,
@@ -94,8 +97,7 @@ class GeminiEnricher:
     ) -> None:
         if not GOOGLE_API_KEY:
             raise RuntimeError(
-                "GOOGLE_API_KEY no está definida. "
-                "Asegúrate de declararla en el archivo .env."
+                "GOOGLE_API_KEY no está definida. Asegúrate de declararla en el archivo .env."
             )
 
         self.client = genai.Client(api_key=GOOGLE_API_KEY)
@@ -141,10 +143,10 @@ class GeminiEnricher:
             prompt = base_prompt + (
                 "Responde SOLO con los campos solicitados en formato JSON con esta forma:\n"
                 "{\n"
-                '  \"summary\": \"...\",\n'
-                '  \"keywords\": [\"...\"],\n'
-                '  \"entities\": [\n'
-                '    {\"type\": \"...\", \"text\": \"...\"}\n'
+                '  "summary": "...",\n'
+                '  "keywords": ["..."],\n'
+                '  "entities": [\n'
+                '    {"type": "...", "text": "..."}\n'
                 "  ]\n"
                 "}\n"
             )
@@ -166,10 +168,10 @@ class GeminiEnricher:
         prompt = base_prompt + (
             "Responde SOLO con un JSON válido (sin texto adicional) con esta forma exacta:\n"
             "{\n"
-            '  \"summary\": \"texto del resumen\",\n'
-            '  \"keywords\": [\"palabra1\", \"palabra2\"],\n'
-            '  \"entities\": [\n'
-            '    {\"type\": \"PERSON\", \"text\": \"Ejemplo de nombre\"}\n'
+            '  "summary": "texto del resumen",\n'
+            '  "keywords": ["palabra1", "palabra2"],\n'
+            '  "entities": [\n'
+            '    {"type": "PERSON", "text": "Ejemplo de nombre"}\n'
             "  ]\n"
             "}\n"
             "No incluyas comentarios, explicaciones ni texto fuera del JSON.\n"
@@ -213,10 +215,10 @@ class GeminiEnricher:
         return ChunkMetadata(**data)
 
 
-
 # ---------------------------------------------------------------------
 # 4. Utilidades de I/O
 # ---------------------------------------------------------------------
+
 
 def iter_jsonl_chunks(input_path: str) -> Iterator[dict]:
     """Itera sobre los registros de un archivo .jsonl."""
@@ -239,6 +241,7 @@ def write_jsonl(records: list[dict], output_path: str) -> None:
 # ---------------------------------------------------------------------
 # 5. Pipeline principal
 # ---------------------------------------------------------------------
+
 
 def enrich_directory(
     silver_chunk_dir: str = "data/silver/chunked",
@@ -275,12 +278,7 @@ def enrich_directory(
         enriched_records: list[dict] = []
 
         for chunk in iter_jsonl_chunks(input_path):
-            text = (
-                chunk.get("page_content")
-                or chunk.get("text")
-                or chunk.get("content")
-                or ""
-            )
+            text = chunk.get("page_content") or chunk.get("text") or chunk.get("content") or ""
             if not text.strip():
                 continue
 
@@ -342,9 +340,7 @@ if __name__ == "__main__":
     gold_dir = "data/gold"
 
     # Si no hay archivos .jsonl en gold, lanzar el proceso de enriquecimiento
-    if (not os.path.isdir(gold_dir)) or not any(
-        f.endswith(".jsonl") for f in os.listdir(gold_dir)
-    ):
+    if (not os.path.isdir(gold_dir)) or not any(f.endswith(".jsonl") for f in os.listdir(gold_dir)):
         print(f"No se encontraron archivos .jsonl en {gold_dir}. Iniciando enriquecimiento...")
         enrich_directory(
             silver_chunk_dir="data/silver/chunked",
@@ -355,4 +351,3 @@ if __name__ == "__main__":
 
     # Mostrar ejemplo (si ya hay algo enriquecido)
     print_example_from_gold(gold_dir)
-

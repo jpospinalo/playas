@@ -22,6 +22,7 @@ SILVER_DIR = DATA_DIR / "silver"
 # Funciones principales
 # ---------------------------------------------------------------------
 
+
 def load_documents() -> list[Document]:
     """
     Carga Markdowns de data/bronze/ y genera la capa SILVER (JSONL).
