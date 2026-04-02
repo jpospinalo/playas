@@ -28,12 +28,11 @@ from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from urllib.parse import unquote
 
-from PIL import Image
-
 from docling.datamodel.base_models import InputFormat
 from docling.datamodel.pipeline_options import PdfPipelineOptions
 from docling.document_converter import DocumentConverter, PdfFormatOption
 from docling_core.types.doc import ImageRefMode
+from PIL import Image
 
 warnings.filterwarnings("ignore", category=FutureWarning)
 
@@ -290,7 +289,7 @@ def _detect_multi_column(lines: list[str]) -> bool:
         return False
 
     avg_len = sum(lengths) / len(lengths)
-    short_lines = sum(1 for l in lengths if l < avg_len * 0.4)
+    short_lines = sum(1 for length in lengths if length < avg_len * 0.4)
 
     # High ratio of short lines may indicate multi-column
     return short_lines / len(lengths) > 0.35
@@ -299,7 +298,7 @@ def _detect_multi_column(lines: list[str]) -> bool:
 def _detect_heading_consistency(text: str) -> float:
     """Measure consistency of markdown heading usage (0-1)."""
     lines = text.splitlines()
-    headings = [l for l in lines if l.strip().startswith("#")]
+    headings = [line for line in lines if line.strip().startswith("#")]
 
     if len(headings) < 2:
         return 0.5  # Neutral if insufficient data
@@ -480,7 +479,7 @@ def detect_repeated_page_furniture(pages: list[str]) -> set[str]:
     line_counts: Counter[str] = Counter()
 
     for page in pages:
-        page_lines = [l.strip() for l in page.splitlines() if l.strip()]
+        page_lines = [line.strip() for line in page.splitlines() if line.strip()]
         if len(page_lines) < 4:
             continue
 
@@ -1250,13 +1249,13 @@ def _score_paragraph_reconstruction(original: str, cleaned: str) -> float:
 
 def _score_footer_removal(cleaned_md: str) -> float:
     """Score footer/header removal effectiveness on the cleaned text."""
-    lines = [l.strip() for l in cleaned_md.splitlines() if l.strip()]
+    lines = [line.strip() for line in cleaned_md.splitlines() if line.strip()]
     if not lines:
         return 50.0
 
     # Count lines that look like remaining footnote bodies
     footnote_body_re = re.compile(r"^\d{1,2}\s{2,}")
-    remaining = sum(1 for l in lines if footnote_body_re.match(l))
+    remaining = sum(1 for line in lines if footnote_body_re.match(line))
     ratio = remaining / len(lines)
     return max(0.0, min(100.0, 100 - ratio * 1000))
 
@@ -1401,12 +1400,12 @@ def _remove_figure_legend_clusters(text: str) -> str:
     result: list[str] = []
 
     for para in paragraphs:
-        lines = [l.strip() for l in para.splitlines() if l.strip()]
+        lines = [line.strip() for line in para.splitlines() if line.strip()]
         if len(lines) < 3:
             result.append(para)
             continue
 
-        short_count = sum(1 for l in lines if len(l) < 35)
+        short_count = sum(1 for line in lines if len(line) < 35)
         if short_count < 3 or short_count / len(lines) < 0.6:
             result.append(para)
             continue

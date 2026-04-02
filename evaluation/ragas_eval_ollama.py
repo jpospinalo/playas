@@ -5,19 +5,15 @@ from __future__ import annotations
 import json
 import os
 import warnings
-from typing import Any, Dict, List, Tuple
+from typing import Any
 
 from datasets import Dataset
+from langchain_ollama import ChatOllama, OllamaEmbeddings
 from ragas import evaluate
-from ragas.run_config import RunConfig
 from ragas.metrics import (
-    context_precision,
-    context_recall,
-    faithfulness,
     answer_relevancy,
 )
-
-from langchain_ollama import ChatOllama, OllamaEmbeddings
+from ragas.run_config import RunConfig
 
 from src.backend.generator import generate_answer
 
@@ -49,7 +45,7 @@ TEST_ITEMS: List[Dict[str, str]] = [
 ]
 """
 
-TEST_ITEMS: List[Dict[str, str]] = [
+TEST_ITEMS: list[dict[str, str]] = [
     {
         "question": "¿Cómo se llamaba el gato del cuento 'El gato negro'?",
         "ground_truth": "El gato del narrador se llamaba Plutón.",
@@ -64,8 +60,8 @@ TEST_ITEMS: List[Dict[str, str]] = [
 MAX_CONTEXT_DOCS = 2  # solo 2 chunks por pregunta para pruebas rápidas
 
 
-def build_eval_dataset() -> Tuple[Dataset, List[Dict[str, Any]]]:
-    rows: List[Dict[str, Any]] = []
+def build_eval_dataset() -> tuple[Dataset, list[dict[str, Any]]]:
+    rows: list[dict[str, Any]] = []
 
     for item in TEST_ITEMS:
         question = item["question"]
@@ -192,7 +188,7 @@ class JsonStrictOllama(ChatOllama):
         relevantes para RAGAS, sin cambiar la estructura.
         """
         if isinstance(data, dict):
-            new: Dict[str, Any] = {}
+            new: dict[str, Any] = {}
             for k, v in data.items():
                 if k == "verdict":
                     new[k] = cls._normalize_verdict(v)
@@ -309,7 +305,7 @@ def get_ragas_models():
       modificable con OLLAMA_EMBED_BASE_URL y OLLAMA_EMBED_MODEL.
     """
     judge_base_url = os.getenv("OLLAMA_EVAL_BASE_URL")
-        
+
     judge_model_name = os.getenv("OLLAMA_EVAL_MODEL")
 
     embed_base_url = os.getenv("OLLAMA_EMBED_BASE_URL")
@@ -337,7 +333,7 @@ def get_ragas_models():
 #  4. Ejecutar evaluación RAGAS (por ahora solo context_precision)
 # ============================================================
 
-def run_ragas_evaluation(dataset: Dataset) -> Dict[str, Any]:
+def run_ragas_evaluation(dataset: Dataset) -> dict[str, Any]:
     """
     Ejecuta RAGAS sobre el dataset dado usando:
 
@@ -354,8 +350,8 @@ def run_ragas_evaluation(dataset: Dataset) -> Dict[str, Any]:
     ]
 
     for m in metrics:
-        setattr(m, "llm", llm_judge)
-        setattr(m, "embeddings", embeddings)
+        m.llm = llm_judge
+        m.embeddings = embeddings
 
     run_config = RunConfig(
         timeout=600,
@@ -374,7 +370,7 @@ def run_ragas_evaluation(dataset: Dataset) -> Dict[str, Any]:
     )
 
     df = res.to_pandas()
-    all_results: Dict[str, Any] = {}
+    all_results: dict[str, Any] = {}
 
     for m in metrics:
         name = m.name
@@ -414,7 +410,7 @@ def main(
 
     results = run_ragas_evaluation(dataset)
 
-    metrics_summary: Dict[str, Any] = {
+    metrics_summary: dict[str, Any] = {
         "n_samples": len(rows),
         "metrics": {name: vals["mean"] for name, vals in results.items()},
     }

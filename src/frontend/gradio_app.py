@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import re
 from pathlib import Path
-from typing import Any, Dict, List, Tuple
+from typing import Any
 
 import gradio as gr
 from dotenv import load_dotenv
@@ -19,7 +19,7 @@ load_dotenv()
 # Utilidades
 # ---------------------------------------------------------------------
 
-def format_context(docs: List[Document]) -> str:
+def format_context(docs: list[Document]) -> str:
     """
     Devuelve un texto en Markdown con el contenido de los chunks recuperados.
     Solo muestra page_content, recortado a 500 caracteres por fragmento.
@@ -27,7 +27,7 @@ def format_context(docs: List[Document]) -> str:
     if not docs:
         return "No se encontraron fragmentos de contexto."
 
-    partes: List[str] = []
+    partes: list[str] = []
     for i, d in enumerate(docs, start=1):
         texto = (d.page_content or "").strip().replace("\n", " ")
         if len(texto) > 500:
@@ -37,7 +37,7 @@ def format_context(docs: List[Document]) -> str:
     return "\n\n---\n\n".join(partes)
 
 
-def format_sources(docs: List[Document]) -> str:
+def format_sources(docs: list[Document]) -> str:
     """
     Construye el bloque 'Fuentes' mostrando solo una fuente
     (el primer título encontrado en los metadatos).
@@ -91,8 +91,8 @@ def respond(
     k: int,
     k_candidates: int,
     show_context: bool,
-    history: List[Dict[str, Any]] | None,
-) -> Tuple[List[Dict[str, Any]], str]:
+    history: list[dict[str, Any]] | None,
+) -> tuple[list[dict[str, Any]], str]:
     """
     Función principal de respuesta para Gradio.
 

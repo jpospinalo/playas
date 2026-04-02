@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import List
 
 from dotenv import load_dotenv
 from langchain_core.documents import Document
@@ -23,7 +22,7 @@ SILVER_DIR = DATA_DIR / "silver"
 # Funciones principales
 # ---------------------------------------------------------------------
 
-def load_documents() -> List[Document]:
+def load_documents() -> list[Document]:
     """
     Carga Markdowns de data/bronze/ y genera la capa SILVER (JSONL).
 
@@ -40,7 +39,7 @@ def load_documents() -> List[Document]:
         print(f"No se encontraron archivos .md en {BRONZE_DIR}")
         return []
 
-    raw_docs: List[Document] = []
+    raw_docs: list[Document] = []
     for md_path in md_files:
         content = md_path.read_text(encoding="utf-8")
         doc = Document(

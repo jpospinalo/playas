@@ -2,13 +2,9 @@
 
 from __future__ import annotations
 
-import warnings
-
-warnings.filterwarnings("ignore", category=FutureWarning)
-
 import os
+import warnings
 from functools import lru_cache
-from typing import List, Tuple
 
 from dotenv import load_dotenv
 from langchain_core.documents import Document
@@ -18,6 +14,8 @@ from langchain_core.runnables import RunnableLambda, RunnablePassthrough
 from langchain_google_genai import ChatGoogleGenerativeAI
 
 from .retriever import get_ensemble_retriever
+
+warnings.filterwarnings("ignore", category=FutureWarning)
 
 # ---------------------------------------------------------------------
 # Configuración
@@ -39,12 +37,12 @@ def _get_llm() -> ChatGoogleGenerativeAI:
 # ---------------------------------------------------------------------
 
 
-def _build_context_block(docs: List[Document]) -> str:
+def _build_context_block(docs: list[Document]) -> str:
     """
     Convierte la lista de documentos en un bloque de contexto legible,
     incluyendo metadatos básicos (source, chunk_id).
     """
-    bloques: List[str] = []
+    bloques: list[str] = []
     for i, d in enumerate(docs, start=1):
         meta = d.metadata or {}
         source = meta.get("source", "desconocido")
@@ -124,7 +122,7 @@ def generate_answer(
     question: str,
     k: int = 5,
     k_candidates: int = 8,
-) -> Tuple[str, List[Document]]:
+) -> tuple[str, list[Document]]:
     """
     1) Usa un chain RAG (retriever + prompt + LLM) para generar la respuesta.
     2) Recupera también los documentos usados (top-k del ensemble).

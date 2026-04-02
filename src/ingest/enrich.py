@@ -6,8 +6,8 @@ import json
 import os
 import time
 from collections import deque
+from collections.abc import Iterator
 from dataclasses import dataclass
-from typing import Dict, Iterator, List, Optional
 
 from dotenv import load_dotenv
 from google import genai
@@ -39,10 +39,10 @@ class ChunkMetadata(BaseModel):
     summary: str = Field(
         description="Resumen muy breve del contenido del chunk (máx. ~40 palabras)."
     )
-    keywords: List[str] = Field(
+    keywords: list[str] = Field(
         description="Lista de 5 a 10 palabras o frases clave relevantes para búsqueda."
     )
-    entities: List[Entity] = Field(
+    entities: list[Entity] = Field(
         description="Lista de entidades nombradas (personas, lugares, fechas, etc.)."
     )
 
@@ -105,7 +105,7 @@ class GeminiEnricher:
     def enrich_chunk(
         self,
         text: str,
-        doc_metadata: Optional[Dict] = None,
+        doc_metadata: dict | None = None,
     ) -> ChunkMetadata:
         """
         Enriquecimiento de un solo chunk de texto usando Gemini/Gemma.
@@ -218,9 +218,9 @@ class GeminiEnricher:
 # 4. Utilidades de I/O
 # ---------------------------------------------------------------------
 
-def iter_jsonl_chunks(input_path: str) -> Iterator[Dict]:
+def iter_jsonl_chunks(input_path: str) -> Iterator[dict]:
     """Itera sobre los registros de un archivo .jsonl."""
-    with open(input_path, "r", encoding="utf-8") as f:
+    with open(input_path, encoding="utf-8") as f:
         for line in f:
             line = line.strip()
             if not line:
@@ -228,7 +228,7 @@ def iter_jsonl_chunks(input_path: str) -> Iterator[Dict]:
             yield json.loads(line)
 
 
-def write_jsonl(records: List[Dict], output_path: str) -> None:
+def write_jsonl(records: list[dict], output_path: str) -> None:
     """Escribe una lista de registros en formato .jsonl."""
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     with open(output_path, "w", encoding="utf-8") as f:
@@ -272,7 +272,7 @@ def enrich_directory(
 
         print(f"Procesando {input_path} -> {output_path}")
 
-        enriched_records: List[Dict] = []
+        enriched_records: list[dict] = []
 
         for chunk in iter_jsonl_chunks(input_path):
             text = (
@@ -284,7 +284,7 @@ def enrich_directory(
             if not text.strip():
                 continue
 
-            base_meta: Dict = chunk.get("metadata") or {}
+            base_meta: dict = chunk.get("metadata") or {}
 
             # En caso de que metadata esté vacío, intentar reconstruir lo básico
             if not base_meta:
@@ -325,7 +325,7 @@ def print_example_from_gold(gold_dir: str) -> None:
             continue
 
         path = os.path.join(gold_dir, file_name)
-        with open(path, "r", encoding="utf-8") as f:
+        with open(path, encoding="utf-8") as f:
             first_line = f.readline().strip()
             if not first_line:
                 continue

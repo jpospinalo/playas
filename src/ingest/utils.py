@@ -1,14 +1,13 @@
 # src/utils.py
 
-from pathlib import Path
-from collections import defaultdict
-from typing import List
 import json
+from collections import defaultdict
+from pathlib import Path
 
 from langchain_core.documents import Document
 
 
-def _save_docs_jsonl_file(docs: List[Document], path: Path) -> None:
+def _save_docs_jsonl_file(docs: list[Document], path: Path) -> None:
     """Guarda una lista de Documents en un único archivo .jsonl."""
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", encoding="utf-8") as f:
@@ -20,7 +19,7 @@ def _save_docs_jsonl_file(docs: List[Document], path: Path) -> None:
             f.write(json.dumps(row, ensure_ascii=False) + "\n")
 
 
-def save_docs_jsonl_per_file(docs: List[Document], dir_path: Path) -> None:
+def save_docs_jsonl_per_file(docs: list[Document], dir_path: Path) -> None:
     """
     Guarda un .jsonl por archivo original (agrupando por metadata['source']).
 
@@ -41,9 +40,9 @@ def save_docs_jsonl_per_file(docs: List[Document], dir_path: Path) -> None:
         _save_docs_jsonl_file(group_docs, out_path)
 
 
-def _load_docs_jsonl_file(path: Path) -> List[Document]:
+def _load_docs_jsonl_file(path: Path) -> list[Document]:
     """Carga un archivo .jsonl y devuelve una lista de Documents."""
-    docs: List[Document] = []
+    docs: list[Document] = []
     with path.open("r", encoding="utf-8") as f:
         for line in f:
             row = json.loads(line)
@@ -56,15 +55,15 @@ def _load_docs_jsonl_file(path: Path) -> List[Document]:
     return docs
 
 
-def load_all_docs_from_dir(dir_path: Path) -> List[Document]:
+def load_all_docs_from_dir(dir_path: Path) -> list[Document]:
     """Carga todos los .jsonl de un directorio."""
-    docs: List[Document] = []
+    docs: list[Document] = []
     for jsonl_path in sorted(dir_path.glob("*.jsonl")):
         docs.extend(_load_docs_jsonl_file(jsonl_path))
     return docs
 
 
-def load_docs_by_source(dir_path: Path, source_name: str) -> List[Document]:
+def load_docs_by_source(dir_path: Path, source_name: str) -> list[Document]:
     """
     Carga solo los documentos de un archivo concreto.
 

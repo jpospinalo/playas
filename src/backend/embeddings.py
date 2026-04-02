@@ -1,7 +1,7 @@
 # src/backend/embeddings.py
 
 import os
-from typing import List, cast
+from typing import cast
 
 import requests
 from chromadb.api.types import Documents, EmbeddingFunction, Embeddings
@@ -52,8 +52,8 @@ class OllamaEmbeddings(LCEmbeddings):
     def __init__(self) -> None:
         self._client = OllamaEmbeddingClient()
 
-    def embed_documents(self, texts: List[str]) -> List[List[float]]:
+    def embed_documents(self, texts: list[str]) -> list[list[float]]:
         return [self._client.embed([t])[0] for t in texts]
 
-    def embed_query(self, text: str) -> List[float]:
+    def embed_query(self, text: str) -> list[float]:
         return self._client.embed([text])[0]

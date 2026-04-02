@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 import os
-from typing import Any, Dict, List, Tuple
+from typing import Any
 
 import chromadb
 from dotenv import load_dotenv
@@ -30,14 +30,15 @@ EMBED_FN = OllamaEmbeddingFunction()
 # Utilidad: sanear metadatos
 # ---------------------------------------------------------------------
 
-def sanitize_metadata(meta: Dict[str, Any]) -> Dict[str, Any]:
+
+def sanitize_metadata(meta: dict[str, Any]) -> dict[str, Any]:
     """
     Adapta metadatos a los tipos permitidos por Chroma 1.x.
 
     Chroma solo acepta valores: str, int, float, bool o None.
     Cualquier lista o dict se convierte en un JSON string.
     """
-    safe: Dict[str, Any] = {}
+    safe: dict[str, Any] = {}
     for k, v in meta.items():
         if isinstance(v, (str, int, float, bool)) or v is None:
             safe[k] = v
@@ -50,9 +51,10 @@ def sanitize_metadata(meta: Dict[str, Any]) -> Dict[str, Any]:
 # Carga de documentos GOLD
 # ---------------------------------------------------------------------
 
+
 def load_gold_documents(
     gold_dir: str = GOLD_DIR,
-) -> Tuple[List[str], List[str], List[Dict[str, Any]]]:
+) -> tuple[list[str], list[str], list[dict[str, Any]]]:
     """
     Lee todos los .jsonl de la carpeta GOLD y devuelve:
 
@@ -63,16 +65,16 @@ def load_gold_documents(
         - texts      : contenido textual a indexar
         - metadatas  : metadatos saneados para Chroma
     """
-    ids: List[str] = []
-    texts: List[str] = []
-    metadatas: List[Dict[str, Any]] = []
+    ids: list[str] = []
+    texts: list[str] = []
+    metadatas: list[dict[str, Any]] = []
 
     for file_name in os.listdir(gold_dir):
         if not file_name.endswith(".jsonl"):
             continue
 
         path = os.path.join(gold_dir, file_name)
-        with open(path, "r", encoding="utf-8") as f:
+        with open(path, encoding="utf-8") as f:
             for line_idx, line in enumerate(f):
                 line = line.strip()
                 if not line:
@@ -80,16 +82,11 @@ def load_gold_documents(
 
                 rec = json.loads(line)
 
-                text = (
-                    rec.get("page_content")
-                    or rec.get("text")
-                    or rec.get("content")
-                    or ""
-                )
+                text = rec.get("page_content") or rec.get("text") or rec.get("content") or ""
                 if not text.strip():
                     continue
 
-                meta: Dict[str, Any] = rec.get("metadata", {}) or {}
+                meta: dict[str, Any] = rec.get("metadata", {}) or {}
 
                 # ID del chunk
                 chunk_id = meta.get("chunk_id") or f"{file_name}_line_{line_idx}"
@@ -116,6 +113,7 @@ def load_gold_documents(
 # Construir / cargar vector store en Chroma
 # ---------------------------------------------------------------------
 
+
 def build_or_load_vectorstore(
     gold_dir: str = GOLD_DIR,
     collection_name: str = CHROMA_COLLECTION_NAME,
@@ -133,8 +131,7 @@ def build_or_load_vectorstore(
     collection = client.get_or_create_collection(name=collection_name)
 
     print(
-        f"[Chroma] Colección '{collection_name}' tiene actualmente "
-        f"{collection.count()} documentos."
+        f"[Chroma] Colección '{collection_name}' tiene actualmente {collection.count()} documentos."
     )
 
     ids, texts, metadatas = load_gold_documents(gold_dir)
@@ -144,11 +141,11 @@ def build_or_load_vectorstore(
     existing = collection.get(ids=ids, include=[])
     existing_ids = set(existing.get("ids", []))
 
-    new_ids: List[str] = []
-    new_texts: List[str] = []
-    new_metadatas: List[Dict[str, Any]] = []
+    new_ids: list[str] = []
+    new_texts: list[str] = []
+    new_metadatas: list[dict[str, Any]] = []
 
-    for i, t, m in zip(ids, texts, metadatas):
+    for i, t, m in zip(ids, texts, metadatas, strict=False):
         if i in existing_ids:
             continue
         new_ids.append(i)
@@ -156,10 +153,7 @@ def build_or_load_vectorstore(
         new_metadatas.append(m)
 
     if not new_ids:
-        print(
-            "[Chroma] Todos los chunks de GOLD ya están indexados. "
-            "No se añade nada nuevo."
-        )
+        print("[Chroma] Todos los chunks de GOLD ya están indexados. No se añade nada nuevo.")
         return collection
 
     print(
@@ -183,6 +177,7 @@ def build_or_load_vectorstore(
 # ---------------------------------------------------------------------
 # Prueba rápida desde línea de comandos
 # ---------------------------------------------------------------------
+
 
 def test_query(query: str, n_results: int = 3) -> None:
     """
