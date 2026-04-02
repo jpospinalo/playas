@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import re
 from pathlib import Path
-from typing import List, Dict, Any
+from typing import Any
 
 from langchain_core.documents import Document
 
@@ -23,7 +23,7 @@ def normalize_text(text: str) -> str:
     return text.strip()
 
 
-def normalize_metadata(meta: Dict[str, Any]) -> Dict[str, Any]:
+def normalize_metadata(meta: dict[str, Any]) -> dict[str, Any]:
     """
     Normaliza la metadata partiendo del campo 'source'.
 
@@ -44,14 +44,14 @@ def normalize_metadata(meta: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
-def normalize_documents(docs: List[Document]) -> List[Document]:
+def normalize_documents(docs: list[Document]) -> list[Document]:
     """
     Aplica normalize_text y normalize_metadata a una lista de Documents.
 
     Devuelve:
         Lista de Document normalizados (nuevo objeto por cada entrada).
     """
-    normalized: List[Document] = []
+    normalized: list[Document] = []
 
     for d in docs:
         text = normalize_text(d.page_content)

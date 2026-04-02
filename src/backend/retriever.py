@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import os
 import re
-from typing import Any, Dict, List, Tuple
+from typing import Any
 
 import chromadb
 import requests
@@ -37,7 +37,8 @@ EMBEDDINGS = OllamaEmbeddings()
 # Utilidades: cargar docs de Chroma
 # ---------------------------------------------------------------------
 
-def load_all_docs_from_chroma() -> List[Document]:
+
+def load_all_docs_from_chroma() -> list[Document]:
     """
     Lee todos los documentos de la colección en Chroma y los devuelve
     como objetos LangChain Document.
@@ -47,17 +48,18 @@ def load_all_docs_from_chroma() -> List[Document]:
 
     raw = collection.get(include=["documents", "metadatas"])
 
-    docs: List[Document] = []
+    docs: list[Document] = []
     ids = raw.get("ids", [])
 
     for text, meta, _id in zip(
         raw.get("documents", []),
         raw.get("metadatas", []),
         ids,
+        strict=False,
     ):
         if not text:
             continue
-        metadata: Dict[str, Any] = meta or {}
+        metadata: dict[str, Any] = meta or {}
         metadata.setdefault("id", _id)
         docs.append(Document(page_content=text, metadata=metadata))
 
@@ -67,6 +69,7 @@ def load_all_docs_from_chroma() -> List[Document]:
 # ---------------------------------------------------------------------
 # Constructores de retrievers simples
 # ---------------------------------------------------------------------
+
 
 def get_vector_retriever(k: int = 3):
     """
@@ -98,26 +101,27 @@ def get_bm25_retriever(k: int = 3):
 # HybridEnsembleRetriever propio
 # ---------------------------------------------------------------------
 
+
 class HybridEnsembleRetriever(BaseRetriever):
     """
     Retriever híbrido que combina varios retrievers usando
     Weighted Reciprocal Rank Fusion (RRF).
     """
 
-    retrievers: List[BaseRetriever]
-    weights: List[float]
+    retrievers: list[BaseRetriever]
+    weights: list[float]
     c: int = 160  # constante RRF
     id_key: str | None = "chunk_id"
 
-    def _get_relevant_documents(self, query: str) -> List[Document]:
+    def _get_relevant_documents(self, query: str) -> list[Document]:
         # 1) Obtener resultados de cada retriever
-        all_results: List[List[Document]] = [r.invoke(query) for r in self.retrievers]
+        all_results: list[list[Document]] = [r.invoke(query) for r in self.retrievers]
 
         # 2) Fusión de rankings con RRF ponderado
-        scores: Dict[str, float] = {}
-        doc_by_id: Dict[str, Document] = {}
+        scores: dict[str, float] = {}
+        doc_by_id: dict[str, Document] = {}
 
-        for docs, w in zip(all_results, self.weights):
+        for docs, w in zip(all_results, self.weights, strict=False):
             for rank, doc in enumerate(docs, start=1):
                 # Identificador estable para el doc
                 if self.id_key and self.id_key in (doc.metadata or {}):
@@ -154,6 +158,7 @@ def get_ensemble_retriever(
 # ---------------------------------------------------------------------
 # Reranker con modelo de Ollama
 # ---------------------------------------------------------------------
+
 
 class OllamaReranker:
     """
@@ -221,8 +226,8 @@ Responde SOLO con un número (puede tener decimales), sin texto adicional.
             score = 10.0
         return score
 
-    def rerank(self, query: str, docs: List[Document], top_k: int = 3) -> List[Document]:
-        scored: List[Tuple[float, Document]] = []
+    def rerank(self, query: str, docs: list[Document], top_k: int = 3) -> list[Document]:
+        scored: list[tuple[float, Document]] = []
         for d in docs:
             s = self._score_one(query, d)
             scored.append((s, d))
@@ -234,6 +239,7 @@ Responde SOLO con un número (puede tener decimales), sin texto adicional.
 # ---------------------------------------------------------------------
 # Ejemplo de uso desde terminal
 # ---------------------------------------------------------------------
+
 
 def demo(
     query: str = "¿cómo se llamaba el gato del cuento?",

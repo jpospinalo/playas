@@ -2,46 +2,42 @@
 
 from __future__ import annotations
 
-import warnings
-warnings.filterwarnings("ignore", category=FutureWarning)
-
 import asyncio
 import json
 import os
 import time
 import warnings
-from typing import Any, Dict, List, Tuple, ClassVar
+from typing import Any, ClassVar
 
 from datasets import Dataset
+from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_ollama import OllamaEmbeddings
 from ragas import evaluate
-from ragas.run_config import RunConfig
 from ragas.metrics import (
+    answer_relevancy,
     context_precision,
     context_recall,
     faithfulness,
-    answer_relevancy,
 )
-
-from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain_ollama import OllamaEmbeddings
+from ragas.run_config import RunConfig
 
 from src.backend.generator import generate_answer
 
-
+warnings.filterwarnings("ignore", category=FutureWarning)
 
 # ============================================================
 #  1. Ítems de prueba
 # ============================================================
-'''
+"""
 TEST_ITEMS: List[Dict[str, str]] = [
     {
         "question": "¿Cómo se llamaba el gato del cuento 'El gato negro'?",
         "ground_truth": "El gato del narrador se llamaba Plutón.",
     },
 ]
-'''
+"""
 
-TEST_ITEMS: List[Dict[str, str]] = [
+TEST_ITEMS: list[dict[str, str]] = [
     {
         "question": "¿Cómo se llamaba el gato del cuento 'El gato negro'?",
         "ground_truth": "El gato del narrador se llamaba Plutón.",
@@ -68,8 +64,8 @@ TEST_ITEMS: List[Dict[str, str]] = [
 MAX_CONTEXT_DOCS = 3  # solo 2 chunks por pregunta para ahorrar tokens
 
 
-def build_eval_dataset() -> Tuple[Dataset, List[Dict[str, Any]]]:
-    rows: List[Dict[str, Any]] = []
+def build_eval_dataset() -> tuple[Dataset, list[dict[str, Any]]]:
+    rows: list[dict[str, Any]] = []
 
     for item in TEST_ITEMS:
         question = item["question"]
@@ -97,6 +93,7 @@ def build_eval_dataset() -> Tuple[Dataset, List[Dict[str, Any]]]:
 # ============================================================
 #  3. LLM evaluador: Gemini con rate limit y limpieza JSON
 # ============================================================
+
 
 class RateLimitedGemini(ChatGoogleGenerativeAI):
     """
@@ -164,7 +161,7 @@ class RateLimitedGemini(ChatGoogleGenerativeAI):
     def _postprocess_result(self, result):
         gens = getattr(result, "generations", [])
 
-        flat: List[Any] = []
+        flat: list[Any] = []
         for item in gens:
             if isinstance(item, list):
                 flat.extend(item)
@@ -206,7 +203,6 @@ class RateLimitedGemini(ChatGoogleGenerativeAI):
         return self._postprocess_result(res)
 
 
-
 def get_ragas_models():
     """
     - LLM evaluador: Gemini (solo para RAGAS).
@@ -237,7 +233,8 @@ def get_ragas_models():
 #  4. Ejecutar evaluación RAGAS (4 métricas)
 # ============================================================
 
-def run_ragas_evaluation(dataset: Dataset) -> Dict[str, Any]:
+
+def run_ragas_evaluation(dataset: Dataset) -> dict[str, Any]:
     llm_judge, embeddings = get_ragas_models()
 
     metrics = [
@@ -268,7 +265,7 @@ def run_ragas_evaluation(dataset: Dataset) -> Dict[str, Any]:
     )
 
     df = res.to_pandas()
-    all_results: Dict[str, Any] = {}
+    all_results: dict[str, Any] = {}
 
     for m in metrics:
         name = m.name
@@ -287,6 +284,7 @@ def run_ragas_evaluation(dataset: Dataset) -> Dict[str, Any]:
 # ============================================================
 #  5. Guardar JSONs y punto de entrada
 # ============================================================
+
 
 def _ensure_parent_dir(path: str) -> None:
     parent = os.path.dirname(path)
@@ -308,7 +306,7 @@ def main(
 
     results = run_ragas_evaluation(dataset)
 
-    metrics_summary: Dict[str, Any] = {
+    metrics_summary: dict[str, Any] = {
         "n_samples": len(rows),
         "metrics": {name: vals["mean"] for name, vals in results.items()},
     }

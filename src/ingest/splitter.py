@@ -5,7 +5,6 @@ from __future__ import annotations
 import logging
 import warnings
 from pathlib import Path
-from typing import List
 
 from langchain_core.documents import Document
 from langchain_text_splitters import RecursiveCharacterTextSplitter
@@ -35,10 +34,10 @@ SILVER_CHUNKED_DIR.mkdir(parents=True, exist_ok=True)
 # ---------------------------------------------------------------------
 
 def chunk_documents(
-    docs: List[Document] | None = None,
+    docs: list[Document] | None = None,
     chunk_size: int = 1000,
     chunk_overlap: int = 200,
-) -> List[Document]:
+) -> list[Document]:
     """
     Genera la capa de documentos fragmentados (chunked).
 
@@ -66,7 +65,7 @@ def chunk_documents(
         separators=["\n\n", "\n", ".", " ", ""],
     )
 
-    all_chunks: List[Document] = []
+    all_chunks: list[Document] = []
 
     for doc_idx, doc in enumerate(docs):
         base_meta = dict(doc.metadata) if doc.metadata else {}
