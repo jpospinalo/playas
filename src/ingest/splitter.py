@@ -22,8 +22,8 @@ logging.getLogger("langchain").setLevel(logging.WARNING)
 
 # Rutas base
 DATA_DIR = Path("data")
-SILVER_DIR = DATA_DIR / "silver"              # documentos completos, limpios
-SILVER_CHUNKED_DIR = SILVER_DIR / "chunked"   # documentos chunked
+SILVER_DIR = DATA_DIR / "silver"  # documentos completos, limpios
+SILVER_CHUNKED_DIR = SILVER_DIR / "chunked"  # documentos chunked
 
 SILVER_DIR.mkdir(parents=True, exist_ok=True)
 SILVER_CHUNKED_DIR.mkdir(parents=True, exist_ok=True)
@@ -32,6 +32,7 @@ SILVER_CHUNKED_DIR.mkdir(parents=True, exist_ok=True)
 # ---------------------------------------------------------------------
 # Funciones principales
 # ---------------------------------------------------------------------
+
 
 def chunk_documents(
     docs: list[Document] | None = None,

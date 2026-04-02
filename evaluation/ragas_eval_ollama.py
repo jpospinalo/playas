@@ -93,6 +93,7 @@ def build_eval_dataset() -> tuple[Dataset, list[dict[str, Any]]]:
 #  3. Juez en Ollama con limpieza estricta de JSON
 # ============================================================
 
+
 class JsonStrictOllama(ChatOllama):
     """
     Variante de ChatOllama pensada para RAGAS.
@@ -333,6 +334,7 @@ def get_ragas_models():
 #  4. Ejecutar evaluación RAGAS (por ahora solo context_precision)
 # ============================================================
 
+
 def run_ragas_evaluation(dataset: Dataset) -> dict[str, Any]:
     """
     Ejecuta RAGAS sobre el dataset dado usando:
@@ -343,9 +345,9 @@ def run_ragas_evaluation(dataset: Dataset) -> dict[str, Any]:
     llm_judge, embeddings = get_ragas_models()
 
     metrics = [
-        #context_precision,
+        # context_precision,
         # context_recall,
-        #faithfulness,
+        # faithfulness,
         answer_relevancy,
     ]
 
@@ -389,6 +391,7 @@ def run_ragas_evaluation(dataset: Dataset) -> dict[str, Any]:
 # ============================================================
 #  5. Guardar JSONs y punto de entrada
 # ============================================================
+
 
 def _ensure_parent_dir(path: str) -> None:
     parent = os.path.dirname(path)
