@@ -9,8 +9,8 @@ from langchain_core.documents import Document
 @pytest.fixture
 def sample_document() -> Document:
     return Document(
-        page_content="El corazón delator. Texto de prueba para testing.",
-        metadata={"source": "El_corazon_delator-Poe_Edgar_Allan.pdf"},
+        page_content="Sentencia de prueba. Fundamentos juridicos para validacion.",
+        metadata={"source": "sentencia_camara_federal_2024.pdf"},
     )
 
 
@@ -18,10 +18,10 @@ def sample_document() -> Document:
 def sample_chunks() -> list[Document]:
     return [
         Document(
-            page_content=f"Chunk {i}. Contenido de prueba.",
+            page_content=f"Chunk {i}. Extracto juridico de prueba.",
             metadata={
-                "source": "El_cuervo-Poe_Edgar_Allan.pdf",
-                "chunk_id": f"El_cuervo-Poe_Edgar_Allan_chunk_{i}",
+                "source": "fallo_laboral_2023.pdf",
+                "chunk_id": f"fallo_laboral_2023_chunk_{i}",
                 "chunk_index": i,
             },
         )

@@ -1,5 +1,6 @@
 # tests/unit/test_generator.py
 from langchain_core.documents import Document
+
 from src.backend.generator import _build_context_block
 
 
