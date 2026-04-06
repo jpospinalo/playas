@@ -8,7 +8,7 @@ Sistema de **Recuperación Aumentada por Generación (RAG)** especializado en ju
 
 ![Pipeline de RAG de jurisprudencia](docs/images/pipeline.png)
 
-El pipeline transforma documentos PDF crudos en chunks semánticos listos para embeddings, pasando por cuatro etapas:
+El pipeline transforma documentos PDF crudos en chunks semánticos listos para embeddings, pasando por tres etapas de ingestión:
 
 ### 1. Raw PDF → Clean Markdown
 
@@ -20,15 +20,15 @@ Las imágenes detectadas en el documento se extraen y almacenan en `data/bronze/
 
 El Markdown limpio se segmenta en secciones usando expresiones regulares sobre los encabezados (`#`, `##`, `###`). Cada sección produce un **chunk grande** que contiene únicamente el texto de ese bloque temático. Estos chunks son la unidad de granularidad gruesa: preservan el contexto completo de cada parte del fallo sin mezclar información de secciones distintas.
 
-### 3. Smart Chunking
+### 3. Smart Chunking + Enrichment
 
-Cada chunk de sección se subdivide en **subchunks de 200–400 tokens**, tamaño óptimo para los modelos de embeddings. Sobre cada subchunk, **Gemini** genera metadatos enriquecidos:
+Cada chunk de sección se subdivide en **subchunks de 200–400 tokens** y, en el mismo paso, **Gemini** genera metadatos enriquecidos sobre cada subchunk:
 
 - Resumen conciso del fragmento.
 - Palabras clave jurídicas relevantes.
-- Tipo de sección a la que pertenece.
+- Entidades nombradas (personas, lugares, fechas).
 
-Este enriquecimiento mejora la precisión del retrieval al inyectar señal semántica explícita en cada chunk antes de calcular el embedding.
+El resultado se escribe directamente en `data/gold/`, eliminando la capa intermedia `silver/chunked/`. Este enriquecimiento mejora la precisión del retrieval al inyectar señal semántica explícita en cada chunk antes de calcular el embedding.
 
 ### 4. Embeddings
 
@@ -67,17 +67,15 @@ rag_playas/
 │   ├── raw/             ← PDFs originales
 │   ├── bronze/          ← Markdown limpio (con imágenes en bronze/images/)
 │   ├── silver/          ← documentos normalizados (JSONL por archivo)
-│   │   └── chunked/     ← chunks por sección
-│   └── gold/            ← chunks enriquecidos (resumen, keywords, tipo de sección)
+│   └── gold/            ← chunks enriquecidos (resumen, keywords, entidades)
 │
 ├── src/
 │   ├── config.py        ← configuración centralizada desde variables de entorno
 │   ├── ingest/
-│   │   ├── pdf_to_md.py ← convierte PDFs (raw) a Markdown (bronze)
-│   │   ├── loaders.py   ← carga Markdown de bronze y genera capa silver
-│   │   ├── normalize.py ← limpieza y normalización de metadata
-│   │   ├── splitter.py  ← divide documentos en chunks por sección
-│   │   └── enrich.py    ← smart chunking + enriquecimiento con Gemini (capa gold)
+│   │   ├── pdf_to_md.py              ← convierte PDFs (raw) a Markdown (bronze)
+│   │   ├── loaders.py                ← carga Markdown de bronze y genera capa silver
+│   │   ├── normalize.py              ← limpieza y normalización de metadata
+│   │   └── splitter_and_enrich.py   ← chunking + enriquecimiento con Gemini (silver → gold)
 │   ├── backend/
 │   │   ├── embeddings.py   ← cliente Ollama compartido
 │   │   ├── vectorstore.py  ← construye/actualiza la colección en Chroma
@@ -190,22 +188,19 @@ OLLAMA_EMBEDDING_MODEL=embeddinggemma
 ## Ejecución del pipeline
 
 ```bash
-# 1) PDF → Markdown limpio  →  data/bronze/
+# 1) PDF → Markdown limpio          →  data/bronze/
 uv run python -m src.ingest.pdf_to_md
 
-# 2) Normalización           →  data/silver/
+# 2) Normalización + secciones      →  data/silver/
 uv run python -m src.ingest.loaders
 
-# 3) Chunks por sección      →  data/silver/chunked/
-uv run python -m src.ingest.splitter
+# 3) Chunking + enriquecimiento     →  data/gold/
+uv run python -m src.ingest.splitter_and_enrich
 
-# 4) Smart chunking + gold   →  data/gold/
-uv run python -m src.ingest.enrich
-
-# 5) Indexar en ChromaDB
+# 4) Indexar en ChromaDB
 uv run python -m src.backend.vectorstore
 
-# 6) Interfaz Gradio
+# 5) Interfaz Gradio
 uv run python -m src.frontend.gradio_app
 ```
 
