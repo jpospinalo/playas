@@ -1,7 +1,6 @@
-# src/config.py
-"""Central configuration loaded from environment variables.
+"""Central configuration for the RAG package, loaded from environment variables.
 
-All modules should import their settings from here instead of
+All modules in rag/ should import their settings from here instead of
 calling os.getenv() directly.
 """
 
@@ -10,10 +9,10 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-load_dotenv()
+BASE_DIR = Path(__file__).resolve().parent.parent  # project root
+load_dotenv(BASE_DIR / ".env")
 
 # ── Paths ──────────────────────────────────────────────────────────────────
-BASE_DIR = Path(__file__).resolve().parent.parent
 DATA_DIR = BASE_DIR / "data"
 RAW_DIR = DATA_DIR / "raw"
 BRONZE_DIR = DATA_DIR / "bronze"
@@ -32,7 +31,6 @@ OLLAMA_RERANKER_MODEL: str = os.getenv("OLLAMA_RERANKER_MODEL", "mistral")
 
 # ── Gemini ─────────────────────────────────────────────────────────────────
 GEMINI_MODEL: str = os.getenv("GEMINI_MODEL", "gemini-2.0-flash")
-GEMINI_ENRICHER_MODEL: str = os.getenv("GEMINI_ENRICHER_MODEL", GEMINI_MODEL)
 
 # ── Retriever ──────────────────────────────────────────────────────────────
 DEFAULT_K: int = int(os.getenv("DEFAULT_K", "4"))

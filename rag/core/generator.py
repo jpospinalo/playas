@@ -1,4 +1,4 @@
-# src/backend/generator.py
+# rag/core/generator.py
 
 from __future__ import annotations
 

@@ -1,4 +1,4 @@
-# src/backend/vectorstore.py
+# rag/core/vectorstore.py
 
 from __future__ import annotations
 
