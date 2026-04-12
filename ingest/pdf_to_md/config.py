@@ -111,7 +111,7 @@ COASTAL_PATTERN: re.Pattern[str] = re.compile(
 # Directory paths
 # ------------------------------------------------------------------
 
-BASE_DIR = Path(__file__).resolve().parent.parent.parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent.parent  # project root
 DATA_DIR = BASE_DIR / "data"
 RAW_DIR = DATA_DIR / "raw"
 BRONZE_DIR = DATA_DIR / "bronze"

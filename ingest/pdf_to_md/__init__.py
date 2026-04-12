@@ -3,8 +3,8 @@ PDF-to-Markdown pipeline for Spanish coastal/beach legal documents.
 
 Public API — import from this package directly:
 
-    from src.ingest.pdf_to_md import convert_pdfs_to_markdown, process_single_pdf
-    from src.ingest.pdf_to_md import LegalDocumentProfile, LegalBlock, DocumentQualityReport
+    from ingest.pdf_to_md import convert_pdfs_to_markdown, process_single_pdf
+    from ingest.pdf_to_md import LegalDocumentProfile, LegalBlock, DocumentQualityReport
 """
 
 from .cleaner import adaptive_cleanup

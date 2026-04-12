@@ -15,18 +15,14 @@ from collections import deque
 from dataclasses import dataclass
 from pathlib import Path
 
-from dotenv import load_dotenv
 from google import genai
 from google.genai import types as genai_types
 from langchain_core.documents import Document
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from pydantic import BaseModel, Field
 
-from src.config import GEMINI_ENRICHER_MODEL, GOLD_DIR, SILVER_DIR
-
+from .config import GEMINI_ENRICHER_MODEL, GOLD_DIR, SILVER_DIR
 from .utils import _load_docs_jsonl_file, save_docs_jsonl_per_file
-
-load_dotenv()
 
 logger = logging.getLogger(__name__)
 
