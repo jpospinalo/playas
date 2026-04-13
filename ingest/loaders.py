@@ -66,11 +66,15 @@ def load_documents() -> list[Document]:
             found = bool(s.page_content)
             status = f"{len(s.page_content):>6} chars" if found else "  vacío      "
             marker = "✓" if found else "✗"
-            print(f"    {marker} Sección {m['section_index']} – {m['section_name']:<30} {heading!r:<45} {status}")
+            print(
+                f"    {marker} Sección {m['section_index']} – {m['section_name']:<30} {heading!r:<45} {status}"
+            )
         sectioned_docs.extend(sections)
 
     detected = sum(1 for d in sectioned_docs if d.page_content)
-    print(f"\nSecciones detectadas: {detected}/{len(sectioned_docs)} con contenido ({len(docs)} documentos)")
+    print(
+        f"\nSecciones detectadas: {detected}/{len(sectioned_docs)} con contenido ({len(docs)} documentos)"
+    )
 
     save_docs_jsonl_per_file(sectioned_docs, SILVER_DIR)
     print(f"Guardado en: {SILVER_DIR}\n")
