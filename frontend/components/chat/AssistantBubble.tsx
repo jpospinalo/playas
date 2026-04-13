@@ -131,7 +131,7 @@ export function AssistantBubble({ text, sources }: AssistantBubbleProps) {
               });
             }}
           >
-            doc&nbsp;{n}
+            {n}
           </button>
         );
       },
