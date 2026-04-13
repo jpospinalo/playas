@@ -173,9 +173,7 @@ PROMPT_NO_SYSTEM = ChatPromptTemplate.from_messages(
     [
         (
             "human",
-            "INSTRUCCIONES:\n"
-            "{instructions}\n\n"
-            + _HUMAN_TEMPLATE,
+            "INSTRUCCIONES:\n{instructions}\n\n" + _HUMAN_TEMPLATE,
         )
     ]
 )
