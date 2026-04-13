@@ -28,7 +28,9 @@ class LegalDocumentProfile:
 class LegalBlock:
     """A semantically segmented block of legal text."""
 
-    section_type: str  # metadata | facts | claims | legal_basis | evidence | analysis | decision | citations
+    section_type: (
+        str  # metadata | facts | claims | legal_basis | evidence | analysis | decision | citations
+    )
     text: str
     score: float = 0.0
     coastal_relevance: float = 0.0

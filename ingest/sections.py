@@ -82,11 +82,7 @@ _LEADING_ENUM = re.compile(
 
 def _strip_accents(text: str) -> str:
     """Convert accented characters to their ASCII base (e.g. á → a)."""
-    return "".join(
-        c
-        for c in unicodedata.normalize("NFD", text)
-        if unicodedata.category(c) != "Mn"
-    )
+    return "".join(c for c in unicodedata.normalize("NFD", text) if unicodedata.category(c) != "Mn")
 
 
 def normalize_heading(text: str) -> str:
@@ -230,7 +226,9 @@ def split_by_sections(doc: Document) -> list[Document]:
     # Build one Document per section
     result: list[Document] = []
     for section_idx in range(1, 5):
-        content = "\n\n".join(chunk.strip() for chunk in section_chunks[section_idx] if chunk.strip())
+        content = "\n\n".join(
+            chunk.strip() for chunk in section_chunks[section_idx] if chunk.strip()
+        )
         meta = {
             **base_meta,
             "section_index": section_idx,

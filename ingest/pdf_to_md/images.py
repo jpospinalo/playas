@@ -136,7 +136,10 @@ def filter_images(
             if remove_reason is None and IMAGE_REQUIRE_SEMANTIC_CONTEXT:
                 pos = match.start()
                 context = md_text[max(0, pos - IMAGE_CONTEXT_WINDOW) : pos + IMAGE_CONTEXT_WINDOW]
-                if not IMAGE_CONTEXT_RE.search(context) and area < IMAGE_MIN_AREA_KEEP_WITHOUT_CONTEXT:
+                if (
+                    not IMAGE_CONTEXT_RE.search(context)
+                    and area < IMAGE_MIN_AREA_KEEP_WITHOUT_CONTEXT
+                ):
                     remove_reason = "no_semantic_context"
 
         analyzed.append(
