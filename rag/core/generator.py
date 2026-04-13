@@ -218,7 +218,11 @@ def generate_answer(
     answer = chain.invoke({"context": context, "question": question}).strip()
 
     if not docs and not answer:
-        return "No se encontraron fragmentos relevantes en la base de conocimiento.", [], retrieval_query
+        return (
+            "No se encontraron fragmentos relevantes en la base de conocimiento.",
+            [],
+            retrieval_query,
+        )
 
     return answer, docs, retrieval_query
 
