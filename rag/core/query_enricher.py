@@ -239,9 +239,7 @@ def enrich_query(question: str) -> EnrichedQuery:
             return _fallback(question)
         return result
     except Exception:
-        logger.warning(
-            "Query enrichment failed; falling back to original query.", exc_info=True
-        )
+        logger.warning("Query enrichment failed; falling back to original query.", exc_info=True)
         return _fallback(question)
 
 
@@ -267,7 +265,5 @@ async def enrich_query_async(question: str) -> EnrichedQuery:
             return _fallback(question)
         return result
     except Exception:
-        logger.warning(
-            "Query enrichment failed; falling back to original query.", exc_info=True
-        )
+        logger.warning("Query enrichment failed; falling back to original query.", exc_info=True)
         return _fallback(question)
