@@ -32,6 +32,14 @@ OLLAMA_RERANKER_MODEL: str = os.getenv("OLLAMA_RERANKER_MODEL", "mistral")
 # ── Gemini ─────────────────────────────────────────────────────────────────
 GEMINI_MODEL: str = os.getenv("GEMINI_MODEL", "gemini-2.0-flash")
 
+# ── OpenRouter ──────────────────────────────────────────────────────────────
+OPENROUTER_API_KEY: str | None = os.getenv("OPENROUTER_API_KEY") or None
+OPENROUTER_MODEL: str = os.getenv("OPENROUTER_MODEL", "openrouter/auto")
+
+# ── Query enrichment ────────────────────────────────────────────────────────
+QUERY_ENRICHMENT_ENABLED: bool = os.getenv("QUERY_ENRICHMENT_ENABLED", "true").lower() == "true"
+QUERY_ENRICHMENT_HYDE: bool = os.getenv("QUERY_ENRICHMENT_HYDE", "false").lower() == "true"
+
 # ── Retriever ──────────────────────────────────────────────────────────────
 DEFAULT_K: int = int(os.getenv("DEFAULT_K", "4"))
 DEFAULT_K_CANDIDATES: int = int(os.getenv("DEFAULT_K_CANDIDATES", "10"))

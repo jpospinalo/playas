@@ -16,21 +16,18 @@ from __future__ import annotations
 
 import json
 import logging
-import os
 import re
 
-from dotenv import load_dotenv
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_google_genai import ChatGoogleGenerativeAI
 from pydantic import BaseModel, Field, ValidationError
 
-load_dotenv()
+from rag.config import QUERY_ENRICHMENT_ENABLED as ENRICHMENT_ENABLED
+from rag.config import QUERY_ENRICHMENT_HYDE as ENRICHMENT_HYDE
+
+from .llm_factory import get_active_provider, get_enrichment_llm
 
 logger = logging.getLogger(__name__)
-
-ENRICHMENT_ENABLED: bool = os.getenv("QUERY_ENRICHMENT_ENABLED", "true").lower() == "true"
-ENRICHMENT_HYDE: bool = os.getenv("QUERY_ENRICHMENT_HYDE", "false").lower() == "true"
 
 # ---------------------------------------------------------------------------
 # Legal concept vocabulary (used in the prompt as a closed-list hint)
@@ -158,15 +155,14 @@ def _parse_json_response(text: str, question: str) -> EnrichedQuery:
         return _fallback(question)
 
 
-def _build_prompt_for_model(model_name: str, include_hyde: bool) -> ChatPromptTemplate:
-    """Return the appropriate prompt template for *model_name*.
+def _build_prompt(include_hyde: bool) -> ChatPromptTemplate:
+    """Return the appropriate prompt template for the active provider.
 
-    Gemma models do not support a dedicated system role; instructions are
-    folded into the single human turn — the same pattern used in generator.py.
+    When the provider does not support a dedicated system role (e.g. Gemma via
+    Google GenAI), instructions are folded into the single human turn.
     """
     human_body = _build_human_body(include_hyde)
-    model = (model_name or "").lower()
-    if model.startswith("gemma-"):
+    if not get_active_provider().supports_system_role:
         return ChatPromptTemplate.from_messages(
             [("human", f"INSTRUCCIONES:\n{{instructions}}\n\n{human_body}")]
         ).partial(instructions=_ENRICHMENT_SYSTEM)
@@ -175,18 +171,6 @@ def _build_prompt_for_model(model_name: str, include_hyde: bool) -> ChatPromptTe
             ("system", _ENRICHMENT_SYSTEM),
             ("human", human_body),
         ]
-    )
-
-
-# ---------------------------------------------------------------------------
-# LLM — separate instance from the generation LLM to allow independent caching
-# ---------------------------------------------------------------------------
-
-
-def _get_enrichment_llm() -> ChatGoogleGenerativeAI:
-    return ChatGoogleGenerativeAI(
-        model=os.getenv("GEMINI_MODEL", "gemini-2.0-flash"),
-        temperature=0.0,
     )
 
 
@@ -205,15 +189,12 @@ def _fallback(question: str) -> EnrichedQuery:
 # ---------------------------------------------------------------------------
 
 
-def _is_gemma(model_name: str) -> bool:
-    return (model_name or "").lower().startswith("gemma-")
-
-
 def enrich_query(question: str) -> EnrichedQuery:
     """Synchronously enrich *question* for better RAG retrieval.
 
-    Gemma models don't support function calling, so JSON is requested via the
-    prompt and parsed manually.  Gemini models use ``with_structured_output``.
+    Uses ``with_structured_output`` when the active provider supports tool
+    calling, otherwise requests JSON via the prompt and parses it manually
+    (e.g. Gemma via Google GenAI).
 
     If enrichment is disabled or any error occurs, returns a fallback
     :class:`EnrichedQuery` whose ``expanded_query`` equals the original
@@ -223,11 +204,11 @@ def enrich_query(question: str) -> EnrichedQuery:
         return _fallback(question)
 
     try:
-        model_name = os.getenv("GEMINI_MODEL", "gemini-2.0-flash")
-        prompt = _build_prompt_for_model(model_name, ENRICHMENT_HYDE)
-        llm = _get_enrichment_llm()
+        provider = get_active_provider()
+        prompt = _build_prompt(ENRICHMENT_HYDE)
+        llm = get_enrichment_llm()
 
-        if _is_gemma(model_name):
+        if not provider.supports_structured_output:
             raw: str = (prompt | llm | StrOutputParser()).invoke({"question": question})
             return _parse_json_response(raw, question)
 
@@ -249,11 +230,11 @@ async def enrich_query_async(question: str) -> EnrichedQuery:
         return _fallback(question)
 
     try:
-        model_name = os.getenv("GEMINI_MODEL", "gemini-2.0-flash")
-        prompt = _build_prompt_for_model(model_name, ENRICHMENT_HYDE)
-        llm = _get_enrichment_llm()
+        provider = get_active_provider()
+        prompt = _build_prompt(ENRICHMENT_HYDE)
+        llm = get_enrichment_llm()
 
-        if _is_gemma(model_name):
+        if not provider.supports_structured_output:
             raw: str = await (prompt | llm | StrOutputParser()).ainvoke({"question": question})
             return _parse_json_response(raw, question)
 

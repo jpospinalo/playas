@@ -3,35 +3,18 @@
 from __future__ import annotations
 
 import asyncio
-import os
 import warnings
 from collections.abc import AsyncIterator
-from functools import lru_cache
 
-from dotenv import load_dotenv
 from langchain_core.documents import Document
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_google_genai import ChatGoogleGenerativeAI
 
+from .llm_factory import get_active_provider, get_generation_llm
 from .query_enricher import enrich_query, enrich_query_async
 from .retriever import get_ensemble_retriever
 
 warnings.filterwarnings("ignore", category=FutureWarning)
-
-# ---------------------------------------------------------------------
-# Configuración
-# ---------------------------------------------------------------------
-
-load_dotenv()
-
-
-@lru_cache(maxsize=1)
-def _get_llm() -> ChatGoogleGenerativeAI:
-    return ChatGoogleGenerativeAI(
-        model=os.getenv("GEMINI_MODEL", "gemini-2.0-flash"),
-        temperature=0.1,
-    )
 
 
 # ---------------------------------------------------------------------
@@ -180,9 +163,13 @@ PROMPT_NO_SYSTEM = ChatPromptTemplate.from_messages(
 )
 
 
-def _get_prompt_for_model(model_name: str) -> ChatPromptTemplate:
-    model = (model_name or "").lower()
-    if model.startswith("gemma-"):
+def _get_prompt() -> ChatPromptTemplate:
+    """Return the appropriate prompt template for the active provider.
+
+    When the provider does not support a dedicated system role (e.g. Gemma via
+    Google GenAI), the system instructions are folded into the human turn.
+    """
+    if not get_active_provider().supports_system_role:
         return PROMPT_NO_SYSTEM.partial(instructions=BASE_INSTRUCTIONS)
     return PROMPT_WITH_SYSTEM
 
@@ -213,8 +200,8 @@ def generate_answer(
     docs = candidates
     context = _build_context_block(docs)
 
-    prompt = _get_prompt_for_model(os.getenv("GEMINI_MODEL", "gemini-2.0-flash"))
-    chain = prompt | _get_llm() | StrOutputParser()
+    prompt = _get_prompt()
+    chain = prompt | get_generation_llm() | StrOutputParser()
     answer = chain.invoke({"context": context, "question": question}).strip()
 
     if not docs and not answer:
@@ -256,10 +243,10 @@ async def generate_answer_stream(
     docs = candidates
     context = _build_context_block(docs)
 
-    prompt = _get_prompt_for_model(os.getenv("GEMINI_MODEL", "gemini-2.0-flash"))
+    prompt = _get_prompt()
     messages = prompt.format_messages(context=context, question=question)
 
-    async for chunk in _get_llm().astream(messages):
+    async for chunk in get_generation_llm().astream(messages):
         if chunk.content:
             yield chunk.content, None, None
 
@@ -283,7 +270,7 @@ def demo(question: str = "¿quién era Leonora?") -> None:
     print("\n=== CONSULTA ENRIQUECIDA (usada en recuperación) ===")
     print(expanded_query)
 
-    print("\n=== RESPUESTA (Gemini) ===")
+    print(f"\n=== RESPUESTA ({get_active_provider().model_name}) ===")
     print(answer)
 
     print("\n=== CONTEXTO UTILIZADO ===")
