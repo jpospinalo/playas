@@ -2,6 +2,8 @@
 
 Sistema de **Recuperación Aumentada por Generación (RAG)** especializado en jurisprudencia sobre playas y bienes de uso público en Colombia. Procesa sentencias en PDF, las estructura semánticamente y expone una **API REST** para consultas en lenguaje natural, consumida por un frontend Next.js.
 
+Consulta aquí el [registro de archivos indexados](docs/archivos-indexados.md)
+
 ---
 
 ## Pipeline de ingesta
@@ -29,6 +31,8 @@ Cada chunk de sección se subdivide en **subchunks de 200–400 tokens** y **Gem
 - Entidades nombradas (personas, lugares, fechas).
 
 El resultado se escribe en `data/gold/`. Este enriquecimiento mejora la precisión del retrieval al inyectar señal semántica explícita en cada chunk antes de calcular el embedding.
+
+Consulta [la lista de archivos ya indexados](docs/archivos-indexados.md) para ver cuáles documentos han sido enriquecidos.
 
 ### 4. Embeddings
 
@@ -71,7 +75,7 @@ rag_playas/
 │   ├── pyproject.toml
 │   ├── config.py                ← variables de entorno para el paquete ingest
 │   ├── pdf_to_md/               ← conversión PDF → Markdown (Docling)
-│   ├── loaders.py               ← carga Markdown de bronze → silver
+│   ├── loaders.py               ← carga Markdown de bronze → silver (incluye metadatos del CSV)
 │   ├── normalize.py             ← limpieza y normalización de metadata
 │   ├── sections.py              ← segmentación por secciones
 │   ├── splitter_and_enrich.py   ← chunking + enriquecimiento con Gemini (silver → gold)
@@ -81,7 +85,7 @@ rag_playas/
 │   └── package.json
 │
 ├── data/
-│   ├── raw/                     ← PDFs originales
+│   ├── raw/                     ← PDFs originales + metadata.csv (metadatos legales)
 │   ├── bronze/                  ← Markdown limpio (con imágenes en bronze/images/)
 │   ├── silver/                  ← documentos normalizados (JSONL por archivo)
 │   └── gold/                    ← chunks enriquecidos (resumen, keywords, entidades)
@@ -108,10 +112,10 @@ rag_playas/
 
 ### Gestión de dependencias
 
-| Capa | Herramienta | Archivo principal |
-|---|---|---|
+| Capa   | Herramienta                                | Archivo principal                                                        |
+| ------ | ------------------------------------------ | ------------------------------------------------------------------------ |
 | Python | [uv](https://docs.astral.sh/uv/) workspace | `pyproject.toml` (raíz) + `rag/pyproject.toml` + `ingest/pyproject.toml` |
-| Node | [Bun](https://bun.sh/) workspace | `package.json` (raíz) + `frontend/package.json` |
+| Node   | [Bun](https://bun.sh/) workspace           | `package.json` (raíz) + `frontend/package.json`                          |
 
 El entorno virtual Python (`.venv`) y los `node_modules` residen en la raíz del proyecto. Los archivos de lock (`uv.lock`, `bun.lock`) también quedan en la raíz.
 
@@ -211,7 +215,7 @@ Cada paso puede ejecutarse individualmente o todos de un solo comando:
 # 1) PDF → Markdown limpio          →  data/bronze/
 uv run python -m ingest.pdf_to_md
 
-# 2) Normalización + secciones      →  data/silver/
+# 2) Normalización + secciones + metadatos CSV →  data/silver/
 uv run python -m ingest.loaders
 
 # 3) Chunking + enriquecimiento     →  data/gold/
@@ -232,10 +236,10 @@ bash scripts/run_pipeline.sh
 
 La API queda disponible en `http://localhost:8080`. Endpoints:
 
-| Método | Ruta | Descripción |
-|---|---|---|
-| `GET` | `/api/health` | Liveness check |
-| `POST` | `/api/query` | Consulta jurídica → respuesta + fuentes |
+| Método | Ruta          | Descripción                             |
+| ------ | ------------- | --------------------------------------- |
+| `GET`  | `/api/health` | Liveness check                          |
+| `POST` | `/api/query`  | Consulta jurídica → respuesta + fuentes |
 
 Ejemplo de request:
 
