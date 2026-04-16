@@ -192,11 +192,11 @@ Lanza Ollama en Docker en el puerto `11434` y descarga el modelo `embeddinggemma
 # ChromaDB (EC2)
 CHROMA_HOST=<ip-elastica-chroma>
 CHROMA_PORT=8000
-CHROMA_COLLECTION=rag_playas
+CHROMA_COLLECTION_NAME=rag_playas
 
 # Ollama (EC2)
-OLLAMA_BASE_URL=http://<ip-elastica-ollama>:11434
-OLLAMA_EMBEDDING_MODEL=embeddinggemma
+OLLAMA_EMBED_BASE_URLL=http://<ip-elastica-ollama>:11434
+OLLAMA_EMBED_MODEL=embeddinggemma
 
 # Gemini
 GOOGLE_API_KEY=<tu-api-key>
