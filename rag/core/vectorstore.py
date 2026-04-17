@@ -10,8 +10,9 @@ from typing import Any
 import chromadb
 from dotenv import load_dotenv
 
+from ..config import GOLD_PREFIX
+from ..s3_client import list_keys, read_text
 from .embeddings import OllamaEmbeddingFunction
-from rag.s3_client import list_keys, read_text
 
 # ---------------------------------------------------------------------
 # Constantes y configuración
@@ -22,8 +23,6 @@ load_dotenv()
 CHROMA_HOST = os.getenv("CHROMA_HOST")
 CHROMA_PORT = int(os.getenv("CHROMA_PORT", "8000"))
 CHROMA_COLLECTION_NAME = os.getenv("CHROMA_COLLECTION_NAME")
-
-from rag.config import GOLD_PREFIX
 
 EMBED_FN = OllamaEmbeddingFunction()
 
