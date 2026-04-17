@@ -13,5 +13,5 @@ sudo docker run -d \
   -v ollama:/root/.ollama \
   ollama/ollama
 
-sudo docker exec -it ollama ollama pull embeddinggemma:latest
+sudo docker exec ollama ollama pull embeddinggemma:latest
 
