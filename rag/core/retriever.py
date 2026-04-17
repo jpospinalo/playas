@@ -70,9 +70,8 @@ def _get_bm25_base() -> BM25Retriever:
     """
     global _bm25_base
     if _bm25_base is None:
-        from rank_bm25 import BM25Okapi
-
         from langchain_community.retrievers.bm25 import default_preprocessing_func
+        from rank_bm25 import BM25Okapi
 
         docs = load_all_docs_from_chroma()
 

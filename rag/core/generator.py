@@ -43,11 +43,16 @@ def _build_context_block(docs: list[Document]) -> str:
 
         header = f"[doc{i} | source={source} | chunk_id={chunk_id}]"
         meta_lines: list[str] = []
-        if corporacion: meta_lines.append(f"Corporación: {corporacion}")
-        if magistrado:  meta_lines.append(f"Magistrado ponente: {magistrado}")
-        if tema:        meta_lines.append(f"Tema principal: {tema}")
-        if section:     meta_lines.append(f"Sección: {section}")
-        if summary:     meta_lines.append(f"Resumen: {summary}")
+        if corporacion:
+            meta_lines.append(f"Corporación: {corporacion}")
+        if magistrado:
+            meta_lines.append(f"Magistrado ponente: {magistrado}")
+        if tema:
+            meta_lines.append(f"Tema principal: {tema}")
+        if section:
+            meta_lines.append(f"Sección: {section}")
+        if summary:
+            meta_lines.append(f"Resumen: {summary}")
 
         parts = [header]
         if meta_lines:
@@ -308,9 +313,12 @@ def demo(
         magistrado  = meta.get("Magistrado ponente", "")
         section     = meta.get("section_name", "")
         print(f"\n[doc{i}] {src} | {chunk_id}")
-        if corporacion: print(f"        Corporación: {corporacion}")
-        if magistrado:  print(f"        Magistrado:  {magistrado}")
-        if section:     print(f"        Sección:     {section}")
+        if corporacion:
+            print(f"        Corporación: {corporacion}")
+        if magistrado:
+            print(f"        Magistrado:  {magistrado}")
+        if section:
+            print(f"        Sección:     {section}")
         print("       ", d.page_content[:200].replace("\n", " "), "...")
 
 
