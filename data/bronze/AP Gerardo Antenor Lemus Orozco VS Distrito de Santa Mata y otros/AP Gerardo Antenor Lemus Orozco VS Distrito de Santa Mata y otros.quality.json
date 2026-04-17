@@ -7,7 +7,7 @@
   "section_segmentation_score": 75.65289256198346,
   "coastal_entity_score": 100.0,
   "final_quality": 80.68230073770037,
-  "processing_time_seconds": 33.70991587638855,
+  "processing_time_seconds": 32.395132064819336,
   "section_counts": {
     "analysis": 128,
     "decision": 7,
