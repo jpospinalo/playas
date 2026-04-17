@@ -299,5 +299,6 @@ make test           # tests unitarios
 make test-cov       # tests + cobertura
 make pipeline       # ejecutar pipeline completo de ingesta
 make app            # lanzar la API FastAPI
+make frontend       # lanzar frontend con NextJS
 make help           # ver todos los comandos
 ```
