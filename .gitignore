@@ -46,7 +46,7 @@ htmlcov/
 coverage.xml
 
 # 9) Skills
-.agents/
+skills/
 skills-lock.json
 
 # 10) Frontend
