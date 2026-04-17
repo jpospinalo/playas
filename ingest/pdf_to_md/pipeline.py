@@ -20,6 +20,7 @@ from docling.datamodel.pipeline_options import PdfPipelineOptions
 from docling.document_converter import DocumentConverter, PdfFormatOption
 from docling_core.types.doc import ImageRefMode
 
+from ..s3_client import download_file, list_keys, upload_directory, upload_file
 from .cleaner import adaptive_cleanup
 from .config import BRONZE_PREFIX, IMAGE_RESOLUTION_SCALE, RAW_PREFIX
 from .images import relativize_image_refs
@@ -27,7 +28,6 @@ from .models import DocumentQualityReport
 from .profiler import profile_legal_document
 from .quality import evaluate_document_quality
 from .segmenter import extract_coastal_legal_entities, segment_legal_sections
-from ingest.s3_client import download_file, list_keys, upload_directory, upload_file
 
 warnings.filterwarnings("ignore", category=FutureWarning)
 

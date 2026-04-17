@@ -6,7 +6,6 @@ directory paths for the PDF-to-Markdown pipeline.
 from __future__ import annotations
 
 import re
-from pathlib import Path
 
 # ------------------------------------------------------------------
 # Image processing
