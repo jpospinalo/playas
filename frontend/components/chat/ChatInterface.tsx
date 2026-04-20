@@ -11,8 +11,17 @@ import { MessageList } from "@/components/chat/MessageList";
 const SCROLL_THRESHOLD = 100; // px from bottom to consider "at bottom"
 
 export function ChatInterface() {
-  const { messages, input, loading, isStreaming, error, setInput, submit, resetChat } =
-    useChat();
+  const {
+    messages,
+    input,
+    loading,
+    isStreaming,
+    stageMessage,
+    error,
+    setInput,
+    submit,
+    resetChat,
+  } = useChat();
 
   /*
    * textareaRef lives here so ChatInterface can focus the input
@@ -96,7 +105,7 @@ export function ChatInterface() {
             <MessageList messages={messages} />
 
             {/* Show loading bubble only while waiting for the first token */}
-            {loading && !isStreaming && <LoadingBubble />}
+            {loading && !isStreaming && <LoadingBubble label={stageMessage} />}
 
             {error && (
               <div

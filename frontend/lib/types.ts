@@ -27,7 +27,10 @@ export interface QueryResponse {
 
 // ── SSE stream event types ─────────────────────────────────────────────────
 
+export type AgentStage = "enriching" | "retrieving" | "generating";
+
 export type StreamEvent =
   | { type: "token"; content: string }
-  | { type: "sources"; sources: SourceDocument[] }
+  | { type: "sources"; sources: SourceDocument[]; enriched_query?: string | null }
+  | { type: "status"; stage: AgentStage; message?: string }
   | { type: "error"; detail: string };

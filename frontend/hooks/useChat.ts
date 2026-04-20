@@ -2,24 +2,34 @@
 
 import { useRef, useState } from "react";
 import { queryRagStream } from "@/lib/api";
-import type { Message } from "@/lib/types";
+import type { AgentStage, Message } from "@/lib/types";
 
 export interface UseChatReturn {
   messages: Message[];
   input: string;
   loading: boolean;
   isStreaming: boolean;
+  stage: AgentStage | null;
+  stageMessage: string | null;
   error: string | null;
   setInput: (value: string) => void;
   submit: (question: string) => Promise<void>;
   resetChat: () => void;
 }
 
+const DEFAULT_STAGE_MESSAGES: Record<AgentStage, string> = {
+  enriching: "Reformulando la consulta…",
+  retrieving: "Buscando jurisprudencia relevante…",
+  generating: "Analizando las sentencias…",
+};
+
 export function useChat(): UseChatReturn {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [isStreaming, setIsStreaming] = useState(false);
+  const [stage, setStage] = useState<AgentStage | null>(null);
+  const [stageMessage, setStageMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   // Track whether the first token has been received to flip isStreaming exactly once.
   const streamingStartedRef = useRef(false);
@@ -35,6 +45,8 @@ export function useChat(): UseChatReturn {
     setInput("");
     setLoading(true);
     setIsStreaming(false);
+    setStage(null);
+    setStageMessage(null);
     setError(null);
     streamingStartedRef.current = false;
 
@@ -53,6 +65,8 @@ export function useChat(): UseChatReturn {
           if (!streamingStartedRef.current) {
             streamingStartedRef.current = true;
             setIsStreaming(true);
+            setStage(null);
+            setStageMessage(null);
           }
           setMessages((prev) =>
             prev.map((m) =>
@@ -61,6 +75,9 @@ export function useChat(): UseChatReturn {
                 : m
             )
           );
+        } else if (event.type === "status") {
+          setStage(event.stage);
+          setStageMessage(event.message ?? DEFAULT_STAGE_MESSAGES[event.stage]);
         } else if (event.type === "sources") {
           setMessages((prev) =>
             prev.map((m) =>
@@ -82,6 +99,8 @@ export function useChat(): UseChatReturn {
     } finally {
       setLoading(false);
       setIsStreaming(false);
+      setStage(null);
+      setStageMessage(null);
     }
   }
 
@@ -90,9 +109,22 @@ export function useChat(): UseChatReturn {
     setInput("");
     setLoading(false);
     setIsStreaming(false);
+    setStage(null);
+    setStageMessage(null);
     setError(null);
     streamingStartedRef.current = false;
   }
 
-  return { messages, input, loading, isStreaming, error, setInput, submit, resetChat };
+  return {
+    messages,
+    input,
+    loading,
+    isStreaming,
+    stage,
+    stageMessage,
+    error,
+    setInput,
+    submit,
+    resetChat,
+  };
 }
