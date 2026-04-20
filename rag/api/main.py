@@ -1,6 +1,9 @@
-"""FastAPI application for the RAG Playas legal jurisprudence system.
+"""FastAPI application para el sistema RAG de jurisprudencia de playas.
 
-Replaces the Gradio interface with a REST API consumed by the Next.js frontend.
+Expone tres endpoints sobre el agente LangGraph:
+  GET  /api/health          — liveness check
+  POST /api/query           — respuesta completa (JSON)
+  POST /api/query/stream    — streaming SSE con tokens del LLM
 
 Run with:
     uv run uvicorn rag.api.main:app --reload --port 8080
@@ -10,34 +13,49 @@ from __future__ import annotations
 
 import json
 import re
+import uuid
 from contextlib import asynccontextmanager
 from pathlib import Path
+from typing import Any
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from langchain_core.documents import Document
+from langchain_core.messages import AIMessage, HumanMessage
 
 from rag.api.schemas import QueryRequest, QueryResponse, SourceDocument
-from rag.core.generator import generate_answer, generate_answer_stream
 from rag.core.retriever import init_retrievers
+
+# ── Singleton del grafo ─────────────────────────────────────────────────────
+
+_graph: Any = None
+
+
+def get_graph() -> Any:
+    if _graph is None:
+        raise RuntimeError("El grafo no ha sido compilado. Verifica el lifespan de la app.")
+    return _graph
+
 
 # ── Lifespan ───────────────────────────────────────────────────────────────
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """
-    Pre-calienta los componentes costosos al arrancar:
-      - Conexión HTTP a Chroma (singleton)
-      - Índice BM25 completo (construido una sola vez desde el corpus de Chroma)
-      - Vectorstore LangChain-Chroma (singleton)
-
-    Esto elimina la penalización de arranque en la primera petición.
+    """Pre-calienta los componentes costosos al arrancar:
+    - Conexión HTTP a Chroma (singleton)
+    - Índice BM25 completo (construido una sola vez desde el corpus de Chroma)
+    - Vectorstore LangChain-Chroma (singleton)
+    - Grafo LangGraph compilado (singleton con MemorySaver)
     """
     import asyncio
 
+    from rag.core.agent import build_graph
+
+    global _graph
     await asyncio.to_thread(init_retrievers)
+    _graph = build_graph()
     yield
 
 
@@ -47,7 +65,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title="RAG Playas API",
     description="Sistema de consulta de jurisprudencia española en materia de playas",
-    version="0.1.0",
+    version="0.2.0",
     lifespan=lifespan,
 )
 
@@ -64,7 +82,7 @@ app.add_middleware(
 
 
 def _clean_answer(answer: str) -> str:
-    """Remove trailing citation suffixes added by some LLM configurations."""
+    """Elimina sufijos de citación que algunos LLMs añaden al final."""
     patterns = [
         r"\s*\(fuente:[^)]+\)\s*$",
         r"\s*\((?:doc|chunk)[^)]*\)\s*$",
@@ -93,6 +111,24 @@ def _doc_to_source(doc: Document) -> SourceDocument:
     )
 
 
+def _make_config(thread_id: str | None, recursion_limit: int = 10) -> dict:
+    """Construye el config de LangGraph con thread_id y recursion_limit."""
+    tid = thread_id or str(uuid.uuid4())
+    return {
+        "configurable": {"thread_id": tid},
+        "recursion_limit": recursion_limit,
+    }
+
+
+def _extract_answer_from_state(state: dict) -> str:
+    """Extrae el contenido del último AIMessage del state."""
+    messages = state.get("messages", [])
+    for msg in reversed(messages):
+        if isinstance(msg, AIMessage) and msg.content:
+            return str(msg.content)
+    return ""
+
+
 # ── Routes ─────────────────────────────────────────────────────────────────
 
 
@@ -104,67 +140,105 @@ async def health() -> dict:
 
 @app.post("/api/query", response_model=QueryResponse)
 async def query(request: QueryRequest) -> QueryResponse:
-    """
-    Submit a legal question and receive a RAG-generated answer with source fragments.
+    """Consulta jurídica completa (respuesta JSON).
 
-    The retriever performs hybrid BM25 + vector search (in parallel) before
-    feeding the top-k documents as context to the Gemini LLM.
-    Uses a single retrieval pass — no duplicate retriever invocations.
+    Ejecuta el agente LangGraph hasta completar el ciclo enrich → retrieve → generate.
+    Soporta memoria multi-turno si se proporciona `thread_id`.
     """
+    graph = get_graph()
+    config = _make_config(request.thread_id)
+
     try:
-        answer_raw, docs, enriched_query = generate_answer(
-            question=request.question,
-            k=request.k,
-            k_candidates=request.k_candidates,
+        final_state = await graph.ainvoke(
+            {
+                "question": request.question,
+                "messages": [HumanMessage(content=request.question)],
+                "sources": [],
+            },
+            config=config,
         )
     except Exception as exc:
         raise HTTPException(status_code=500, detail=str(exc)) from exc
 
+    answer_raw = _extract_answer_from_state(final_state)
+    if not answer_raw:
+        answer_raw = "No se encontraron fragmentos relevantes en la base de conocimiento."
+
+    sources = final_state.get("sources") or []
+    enriched_query = final_state.get("enriched_query")
+
     return QueryResponse(
         answer=_clean_answer(answer_raw),
-        sources=[_doc_to_source(d) for d in docs],
+        sources=[_doc_to_source(d) for d in sources],
         enriched_query=enriched_query,
     )
 
 
 @app.post("/api/query/stream")
 async def query_stream(request: QueryRequest):
-    """
-    SSE streaming endpoint: emite tokens del LLM en tiempo real y envía
-    los documentos fuente como evento final antes de cerrar el stream.
+    """Streaming SSE: emite tokens del LLM en tiempo real.
 
     Formato de eventos SSE:
       data: {"type": "token",   "content": "<fragmento>"}
-      data: {"type": "sources", "sources": [...]}
+      data: {"type": "sources", "sources": [...], "enriched_query": "..."}
       data: [DONE]
 
-    El retriever se invoca una sola vez antes de iniciar el streaming.
+    Los tokens del nodo `agent` se emiten en tiempo real. Al finalizar se envía
+    un evento con los documentos fuente y la consulta enriquecida.
     """
+    graph = get_graph()
+    config = _make_config(request.thread_id)
 
     async def event_generator():
         try:
-            async for token, docs, enriched_query in generate_answer_stream(
-                question=request.question,
-                k=request.k,
-                k_candidates=request.k_candidates,
+            # Multi-stream: combinamos los tokens del LLM ("messages") con los
+            # eventos custom de progreso ("custom") que emiten los nodos vía
+            # get_stream_writer. Cada chunk viene como (mode, payload).
+            async for mode, payload in graph.astream(
+                {
+                    "question": request.question,
+                    "messages": [HumanMessage(content=request.question)],
+                    "sources": [],
+                },
+                config=config,
+                stream_mode=["messages", "custom"],
             ):
-                if docs is None:
-                    payload = json.dumps({"type": "token", "content": token})
-                    yield f"data: {payload}\n\n"
-                else:
-                    sources = [_doc_to_source(d).model_dump() for d in docs]
-                    payload = json.dumps(
-                        {
-                            "type": "sources",
-                            "sources": sources,
-                            "enriched_query": enriched_query,
-                        }
-                    )
-                    yield f"data: {payload}\n\n"
-                    yield "data: [DONE]\n\n"
+                if mode == "messages":
+                    chunk, metadata = payload
+                    # Solo emitir tokens del nodo "agent" o "generate" (no
+                    # enriquecimiento ni ToolMessages)
+                    node = metadata.get("langgraph_node", "")
+                    if node in ("agent", "generate") and isinstance(chunk, AIMessage):
+                        if isinstance(chunk.content, str) and chunk.content:
+                            event = json.dumps({"type": "token", "content": chunk.content})
+                            yield f"data: {event}\n\n"
+                elif mode == "custom":
+                    # Eventos de estado emitidos por los nodos
+                    if isinstance(payload, dict) and payload.get("type") == "status":
+                        event = json.dumps(payload)
+                        yield f"data: {event}\n\n"
+
+            # Recuperar el state final para sources y enriched_query
+            final_state = await graph.aget_state(config)
+            values = final_state.values if hasattr(final_state, "values") else {}
+
+            sources_raw = values.get("sources") or []
+            enriched_query = values.get("enriched_query")
+
+            sources_payload = [_doc_to_source(d).model_dump() for d in sources_raw]
+            event = json.dumps(
+                {
+                    "type": "sources",
+                    "sources": sources_payload,
+                    "enriched_query": enriched_query,
+                }
+            )
+            yield f"data: {event}\n\n"
+            yield "data: [DONE]\n\n"
+
         except Exception as exc:
-            payload = json.dumps({"type": "error", "detail": str(exc)})
-            yield f"data: {payload}\n\n"
+            event = json.dumps({"type": "error", "detail": str(exc)})
+            yield f"data: {event}\n\n"
 
     return StreamingResponse(
         event_generator(),
