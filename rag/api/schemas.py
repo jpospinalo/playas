@@ -11,6 +11,14 @@ class QueryRequest(BaseModel):
     k_candidates: int = Field(
         default=8, ge=4, le=20, description="Candidatos iniciales del retriever"
     )
+    thread_id: str | None = Field(
+        default=None,
+        description=(
+            "Identificador de hilo de conversación. Si se proporciona, el agente mantiene "
+            "el historial de mensajes entre requests (memoria multi-turno). "
+            "Si es None, cada request es independiente."
+        ),
+    )
 
 
 class SourceDocument(BaseModel):
