@@ -10,9 +10,13 @@ export default function LandingPage() {
       <LandingNav />
       <main id="main-content" className="flex flex-1 flex-col">
         <Hero />
-        <hr className="mx-auto w-full max-w-5xl border-border px-6" />
+        <div className="mx-auto w-full max-w-5xl px-6" aria-hidden="true">
+          <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent" />
+        </div>
         <HowItWorks />
-        <hr className="mx-auto w-full max-w-5xl border-border px-6" />
+        <div className="mx-auto w-full max-w-5xl px-6" aria-hidden="true">
+          <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent" />
+        </div>
         <WhyRag />
       </main>
       <LandingFooter />

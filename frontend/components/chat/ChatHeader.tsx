@@ -17,8 +17,8 @@ export function ChatHeader({ onNewChat }: ChatHeaderProps) {
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            width="14"
-            height="14"
+            width="13"
+            height="13"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
@@ -32,12 +32,17 @@ export function ChatHeader({ onNewChat }: ChatHeaderProps) {
           Inicio
         </Link>
 
-        <span
-          className="font-[family-name:var(--font-display)] text-center text-sm font-semibold uppercase tracking-widest text-foreground"
-          translate="no"
-        >
-          RAG <span className="text-accent">PLAYAS</span>
-        </span>
+        <div className="flex flex-col items-center gap-0.5">
+          <span
+            className="font-[family-name:var(--font-display)] text-center text-sm font-semibold uppercase tracking-[0.18em] text-foreground"
+            translate="no"
+          >
+            RAG <span className="text-accent">PLAYAS</span>
+          </span>
+          <span className="text-[10px] font-medium tracking-wide text-muted/70 uppercase">
+            Jurisprudencia Costera
+          </span>
+        </div>
 
         {onNewChat ? (
           <button
@@ -47,8 +52,8 @@ export function ChatHeader({ onNewChat }: ChatHeaderProps) {
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              width="14"
-              height="14"
+              width="13"
+              height="13"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
