@@ -26,25 +26,15 @@ from rag.config import QUERY_ENRICHMENT_ENABLED as ENRICHMENT_ENABLED
 from rag.config import QUERY_ENRICHMENT_HYDE as ENRICHMENT_HYDE
 
 from .llm_factory import get_active_provider, get_enrichment_llm
+from .prompts import (
+    ENRICHER_HUMAN_BODY,
+    ENRICHER_HYDE_CLAUSE,
+    ENRICHER_LEGAL_CONCEPTS,
+    ENRICHER_SYSTEM,
+)
 
 logger = logging.getLogger(__name__)
 
-# ---------------------------------------------------------------------------
-# Legal concept vocabulary (used in the prompt as a closed-list hint)
-# ---------------------------------------------------------------------------
-
-_LEGAL_CONCEPT_LABELS: list[str] = [
-    "deslinde_amojonamiento",
-    "concesion_permiso",
-    "acceso_publico",
-    "sancion_administrativa",
-    "licencia_ambiental",
-    "dominio_publico_bienes_uso_publico",
-    "servidumbre_transito",
-    "construccion_edificacion",
-    "uso_aprovechamiento",
-    "competencia_jurisdiccion",
-]
 
 # ---------------------------------------------------------------------------
 # Pydantic output schema
@@ -81,46 +71,17 @@ class EnrichedQuery(BaseModel):
 
 
 # ---------------------------------------------------------------------------
-# Prompt construction
+# Prompt construction — strings importados desde rag/core/prompts.py
 # ---------------------------------------------------------------------------
 
-_ENRICHMENT_SYSTEM = """\
-Eres un experto en jurisprudencia colombiana sobre playas, zonas costeras, \
-dominio público marítimo-terrestre y bienes de uso público.
-
-Tu única tarea es enriquecer consultas jurídicas para mejorar la recuperación \
-de documentos en un sistema RAG especializado en sentencias del Consejo de Estado \
-y Tribunales Administrativos colombianos. NO respondas la consulta.\
-"""
-
-_HYDE_CLAUSE = (
-    "\n4. `hyde_passage`: un párrafo breve (3–5 oraciones) que simule un extracto real "
-    "de sentencia del Consejo de Estado o Tribunal Administrativo colombiano que respondería "
-    "la consulta. Usar terminología y estilo judicial colombiano auténtico.\n"
-)
+_ENRICHMENT_SYSTEM = ENRICHER_SYSTEM
 
 
 def _build_human_body(include_hyde: bool) -> str:
     """Returns the task instructions block (without the system framing)."""
-    concepts = ", ".join(_LEGAL_CONCEPT_LABELS)
-    hyde_section = _HYDE_CLAUSE if include_hyde else ""
-    return (
-        "Dada la siguiente consulta de un abogado, produce un objeto JSON con estos campos:\n\n"
-        "1. `expanded_query`: cadena de búsqueda enriquecida (50–120 tokens) que combine "
-        "la consulta original con términos jurídicos precisos del derecho colombiano de costas. "
-        "Incluye sinónimos legales, nombres de instituciones relevantes (Consejo de Estado, "
-        "Tribunal Administrativo, DIMAR, ANLA, Superintendencia de Notariado), "
-        "normas clave (Decreto 2811/1974, Ley 99/1993, Código Civil arts. 674-677) "
-        "y conceptos directamente relacionados con el problema planteado.\n\n"
-        "2. `legal_concepts`: lista de 1–3 etiquetas que clasifiquen el tipo de problema "
-        f"jurídico. Elegir únicamente de: {concepts}.\n\n"
-        "3. `sub_questions`: 0–3 sub-preguntas focalizadas que descompongan la consulta "
-        "en aspectos jurídicos independientes. Omitir (lista vacía) si la consulta "
-        "ya es suficientemente específica."
-        f"{hyde_section}\n\n"
-        "Responde ÚNICAMENTE con el objeto JSON, sin texto adicional ni bloques markdown.\n\n"
-        "Consulta: {{question}}"
-    )
+    concepts = ", ".join(ENRICHER_LEGAL_CONCEPTS)
+    hyde_section = ENRICHER_HYDE_CLAUSE if include_hyde else ""
+    return ENRICHER_HUMAN_BODY.format(concepts=concepts, hyde_section=hyde_section)
 
 
 # ---------------------------------------------------------------------------
