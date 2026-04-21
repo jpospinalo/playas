@@ -9,7 +9,7 @@ export function LandingFooter() {
             className="font-[family-name:var(--font-display)] font-semibold text-foreground"
             translate="no"
           >
-            RAG PLAYAS
+            Agente de Jurisprudencia Costera
           </span>
           <span aria-hidden="true">&middot;</span>
           <span>&copy; {new Date().getFullYear()}</span>

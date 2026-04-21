@@ -34,14 +34,14 @@ export function LandingNav() {
         <Link
           href="/"
           className="flex items-center gap-2 rounded-md px-1 py-0.5 transition-opacity duration-150 hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
-          aria-label="RAG Playas — inicio"
+          aria-label="Agente de Jurisprudencia Costera — inicio"
         >
           <ScalesIcon />
           <span
-            className="font-[family-name:var(--font-display)] text-base font-semibold uppercase tracking-[0.2em] text-foreground"
+            className="font-[family-name:var(--font-display)] text-base font-semibold tracking-wide text-foreground"
             translate="no"
           >
-            RAG <span className="text-accent">PLAYAS</span>
+            Agente de Jurisprudencia <span className="text-accent">Costera</span>
           </span>
         </Link>
         <Link
