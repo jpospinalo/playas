@@ -108,8 +108,7 @@ AGENT_FALLBACK_HUMAN_TEMPLATE: str = (
     "</context>\n\n"
     "<question>\n"
     "{question}\n"
-    "</question>\n\n"
-    + AGENT_HUMAN_CITATION_REMINDER
+    "</question>\n\n" + AGENT_HUMAN_CITATION_REMINDER
 )
 
 # ---------------------------------------------------------------------------
