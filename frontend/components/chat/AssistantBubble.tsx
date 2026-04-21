@@ -152,8 +152,8 @@ export function AssistantBubble({ text, sources }: AssistantBubbleProps) {
         className="max-w-[88%] min-w-0 break-words rounded-2xl rounded-tl-sm bg-surface px-5 py-4 text-sm leading-relaxed text-foreground shadow-sm"
         style={{
           border: "1px solid var(--border)",
-          borderLeftColor: "var(--accent)",
-          borderLeftWidth: "2px",
+          borderLeftColor: "var(--navy)",
+          borderLeftWidth: "3px",
         }}
       >
         <div className="rag-prose relative" ref={proseRef}>

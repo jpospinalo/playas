@@ -1,17 +1,19 @@
 import type { Metadata, Viewport } from "next";
-import { Cormorant_Garamond, Inter } from "next/font/google";
+import { EB_Garamond, Lato } from "next/font/google";
 import "./globals.css";
 
-const cormorant = Cormorant_Garamond({
+const ebGaramond = EB_Garamond({
   variable: "--font-display",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
+  style: ["normal", "italic"],
   display: "swap",
 });
 
-const inter = Inter({
+const lato = Lato({
   variable: "--font-sans",
   subsets: ["latin"],
+  weight: ["300", "400", "700"],
   display: "swap",
 });
 
@@ -38,7 +40,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#18182b",
+  themeColor: "#1E3A8A",
 };
 
 export default function RootLayout({
@@ -49,7 +51,7 @@ export default function RootLayout({
   return (
     <html
       lang="es"
-      className={`${cormorant.variable} ${inter.variable} h-full antialiased`}
+      className={`${ebGaramond.variable} ${lato.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-background text-foreground">
         <a href="#main-content" className="skip-link">
