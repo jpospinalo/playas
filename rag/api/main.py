@@ -25,6 +25,7 @@ from langchain_core.documents import Document
 from langchain_core.messages import AIMessage, HumanMessage
 
 from rag.api.schemas import QueryRequest, QueryResponse, SourceDocument
+from rag.config import CONTEXT_LIMIT_TOKENS
 from rag.core.retriever import init_retrievers
 
 # ── Singleton del grafo ─────────────────────────────────────────────────────
@@ -129,6 +130,26 @@ def _extract_answer_from_state(state: dict) -> str:
     return ""
 
 
+def _estimate_context_tokens(messages: list) -> int:
+    """Estimación rápida de tokens en el historial (~4 chars/token).
+
+    Solo cuenta los mensajes acumulados en state (HumanMessages + AIMessages),
+    no el system prompt ni los docs del turno actual, que son overhead fijo.
+    """
+    total_chars = 0
+    for m in messages:
+        content = m.content
+        if isinstance(content, str):
+            total_chars += len(content)
+        elif isinstance(content, list):
+            for part in content:
+                if isinstance(part, str):
+                    total_chars += len(part)
+                elif isinstance(part, dict):
+                    total_chars += len(str(part.get("text", "")))
+    return total_chars // 4
+
+
 # ── Routes ─────────────────────────────────────────────────────────────────
 
 
@@ -166,11 +187,14 @@ async def query(request: QueryRequest) -> QueryResponse:
 
     sources = final_state.get("sources") or []
     enriched_query = final_state.get("enriched_query")
+    context_tokens = _estimate_context_tokens(final_state.get("messages", []))
 
     return QueryResponse(
         answer=_clean_answer(answer_raw),
         sources=[_doc_to_source(d) for d in sources],
         enriched_query=enriched_query,
+        context_tokens=context_tokens,
+        context_limit=CONTEXT_LIMIT_TOKENS,
     )
 
 
@@ -224,6 +248,7 @@ async def query_stream(request: QueryRequest):
 
             sources_raw = values.get("sources") or []
             enriched_query = values.get("enriched_query")
+            context_tokens = _estimate_context_tokens(values.get("messages", []))
 
             sources_payload = [_doc_to_source(d).model_dump() for d in sources_raw]
             event = json.dumps(
@@ -231,6 +256,8 @@ async def query_stream(request: QueryRequest):
                     "type": "sources",
                     "sources": sources_payload,
                     "enriched_query": enriched_query,
+                    "context_tokens": context_tokens,
+                    "context_limit": CONTEXT_LIMIT_TOKENS,
                 }
             )
             yield f"data: {event}\n\n"

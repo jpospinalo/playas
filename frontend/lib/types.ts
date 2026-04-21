@@ -25,6 +25,8 @@ export interface QueryRequest {
 export interface QueryResponse {
   answer: string;
   sources: SourceDocument[];
+  context_tokens: number;
+  context_limit: number;
 }
 
 // ── SSE stream event types ─────────────────────────────────────────────────
@@ -33,6 +35,6 @@ export type AgentStage = "enriching" | "retrieving" | "generating";
 
 export type StreamEvent =
   | { type: "token"; content: string }
-  | { type: "sources"; sources: SourceDocument[]; enriched_query?: string | null }
+  | { type: "sources"; sources: SourceDocument[]; enriched_query?: string | null; context_tokens?: number; context_limit?: number }
   | { type: "status"; stage: AgentStage; message?: string }
   | { type: "error"; detail: string };
