@@ -1,3 +1,14 @@
+"use client";
+
+import { motion } from "motion/react";
+
+const EASE = [0.16, 1, 0.3, 1] as const;
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 20 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.55, ease: EASE } },
+};
+
 const STEPS = [
   {
     number: "1",
@@ -78,22 +89,40 @@ export function HowItWorks() {
       className="mx-auto w-full max-w-5xl px-6 py-24"
       aria-labelledby="how-it-works-heading"
     >
-      <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-accent">
-        Cómo funciona
-      </p>
-      <h2
-        id="how-it-works-heading"
-        className="font-[family-name:var(--font-display)] mb-14 max-w-xl text-pretty text-3xl font-semibold leading-snug text-foreground"
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-80px" }}
+        transition={{ duration: 0.5, ease: EASE }}
       >
-        Arquitectura RAG: respuestas ancladas en documentos reales.
-      </h2>
+        <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-accent">
+          Cómo funciona
+        </p>
+        <h2
+          id="how-it-works-heading"
+          className="font-[family-name:var(--font-display)] mb-14 max-w-xl text-pretty text-3xl font-semibold leading-snug text-foreground"
+        >
+          Arquitectura RAG: respuestas ancladas en documentos reales.
+        </h2>
+      </motion.div>
 
-      <ol className="relative grid gap-10 md:grid-cols-3" role="list">
+      <motion.ol
+        className="relative grid gap-10 md:grid-cols-3"
+        role="list"
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true, margin: "-60px" }}
+        transition={{ staggerChildren: 0.14 }}
+      >
         {/* Connecting line — desktop only */}
-        <li aria-hidden="true" className="pointer-events-none absolute left-0 right-0 top-[22px] hidden border-t border-dashed border-border md:block" style={{ left: "calc(1/6 * 100%)", right: "calc(1/6 * 100%)" }} />
+        <li
+          aria-hidden="true"
+          className="pointer-events-none absolute left-0 right-0 top-[22px] hidden border-t border-dashed border-border md:block"
+          style={{ left: "calc(1/6 * 100%)", right: "calc(1/6 * 100%)" }}
+        />
 
         {STEPS.map((step) => (
-          <li key={step.number} className="flex flex-col gap-4">
+          <motion.li key={step.number} className="flex flex-col gap-4" variants={fadeUp}>
             <div className="relative flex items-center gap-3">
               <div
                 className="relative z-10 flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-border bg-surface text-accent shadow-sm"
@@ -101,19 +130,20 @@ export function HowItWorks() {
               >
                 {step.icon}
               </div>
-              <span className="font-[family-name:var(--font-display)] text-2xl font-semibold text-border select-none" aria-hidden="true">
+              <span
+                className="font-[family-name:var(--font-display)] text-2xl font-semibold text-border select-none"
+                aria-hidden="true"
+              >
                 {step.number}
               </span>
             </div>
             <h3 className="font-[family-name:var(--font-display)] text-balance text-xl font-semibold text-foreground">
               {step.title}
             </h3>
-            <p className="text-sm leading-relaxed text-muted">
-              {step.description}
-            </p>
-          </li>
+            <p className="text-sm leading-relaxed text-muted">{step.description}</p>
+          </motion.li>
         ))}
-      </ol>
+      </motion.ol>
     </section>
   );
 }

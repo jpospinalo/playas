@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useMemo, useCallback } from "react";
+import { motion } from "motion/react";
 import ReactMarkdown, { type Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
 import type { SourceDocument } from "@/lib/types";
@@ -147,7 +148,12 @@ export function AssistantBubble({ text, sources }: AssistantBubbleProps) {
       : null;
 
   return (
-    <div className="flex justify-start animate-message-in">
+    <motion.div
+      className="flex justify-start"
+      initial={{ opacity: 0, y: 10, x: -8 }}
+      animate={{ opacity: 1, y: 0, x: 0 }}
+      transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+    >
       <div
         className="max-w-[88%] min-w-0 break-words rounded-2xl rounded-tl-sm bg-surface px-5 py-4 text-sm leading-relaxed text-foreground shadow-sm"
         style={{
@@ -184,6 +190,6 @@ export function AssistantBubble({ text, sources }: AssistantBubbleProps) {
         </div>
         <SourcesAccordion sources={sources} />
       </div>
-    </div>
+    </motion.div>
   );
 }

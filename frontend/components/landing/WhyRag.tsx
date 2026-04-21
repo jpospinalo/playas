@@ -1,3 +1,9 @@
+"use client";
+
+import { motion } from "motion/react";
+
+const EASE = [0.16, 1, 0.3, 1] as const;
+
 export function WhyRag() {
   return (
     <section
@@ -5,7 +11,13 @@ export function WhyRag() {
       aria-labelledby="why-rag-heading"
     >
       <div className="grid gap-10 md:grid-cols-[1fr_auto] md:items-start">
-        <div className="max-w-2xl">
+        <motion.div
+          className="max-w-2xl"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-80px" }}
+          transition={{ duration: 0.55, ease: EASE }}
+        >
           <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-accent">
             Por qué RAG
           </p>
@@ -28,12 +40,16 @@ export function WhyRag() {
             precisión, liberando al profesional para centrarse en el análisis y
             la estrategia.
           </p>
-        </div>
+        </motion.div>
 
-        {/* Callout card */}
-        <aside
+        {/* Callout card — slides in from the right */}
+        <motion.aside
           className="rounded-xl border border-accent/20 bg-accent-light px-6 py-5 md:w-64"
           aria-label="Principio fundamental"
+          initial={{ opacity: 0, x: 24 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true, margin: "-80px" }}
+          transition={{ duration: 0.55, ease: EASE, delay: 0.12 }}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -58,7 +74,7 @@ export function WhyRag() {
           <p className="mt-2 text-xs leading-relaxed text-accent/80">
             Principio de honestidad epistémica del sistema RAG.
           </p>
-        </aside>
+        </motion.aside>
       </div>
     </section>
   );
