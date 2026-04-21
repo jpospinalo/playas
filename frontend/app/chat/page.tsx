@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { ChatInterface } from "@/components/chat/ChatInterface";
 
 export const metadata: Metadata = {
-  title: "Consulta | RAG Playas",
+  title: "Consulta | Agente de Jurisprudencia Costera",
   description:
     "Realice consultas jurídicas sobre jurisprudencia colombiana en materia de playas, bienes de uso público costero y derecho marítimo.",
   robots: { index: false, follow: false },

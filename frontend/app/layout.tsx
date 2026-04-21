@@ -19,22 +19,22 @@ const lato = Lato({
 
 export const metadata: Metadata = {
   title: {
-    default: "RAG Playas — Jurisprudencia Costera de Colombia",
-    template: "%s | RAG Playas",
+    default: "Agente de Jurisprudencia Costera — Colombia",
+    template: "%s | Agente de Jurisprudencia Costera",
   },
   description:
     "Consulte jurisprudencia colombiana en materia de playas, bienes de uso público costero y derecho marítimo mediante inteligencia artificial fundamentada en fuentes verificadas.",
   openGraph: {
     type: "website",
     locale: "es_CO",
-    siteName: "RAG Playas",
-    title: "RAG Playas — Jurisprudencia Costera de Colombia",
+    siteName: "Agente de Jurisprudencia Costera",
+    title: "Agente de Jurisprudencia Costera — Colombia",
     description:
       "Respuestas jurídicas fundamentadas en jurisprudencia colombiana verificada sobre playas y derecho marítimo.",
   },
   twitter: {
     card: "summary",
-    title: "RAG Playas",
+    title: "Agente de Jurisprudencia Costera",
     description: "Jurisprudencia costera colombiana con IA.",
   },
 };

@@ -34,13 +34,10 @@ export function ChatHeader({ onNewChat }: ChatHeaderProps) {
 
         <div className="flex flex-col items-center gap-0.5">
           <span
-            className="font-[family-name:var(--font-display)] text-center text-sm font-semibold uppercase tracking-[0.18em] text-foreground"
+            className="font-[family-name:var(--font-display)] text-center text-sm font-semibold tracking-wide text-foreground"
             translate="no"
           >
-            RAG <span className="text-accent">PLAYAS</span>
-          </span>
-          <span className="text-[10px] font-medium tracking-wide text-muted/70 uppercase">
-            Jurisprudencia Costera
+            Agente de Jurisprudencia <span className="text-accent">Costera</span>
           </span>
         </div>
 
