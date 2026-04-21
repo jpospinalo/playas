@@ -31,6 +31,8 @@ export function useChat(): UseChatReturn {
   const [stage, setStage] = useState<AgentStage | null>(null);
   const [stageMessage, setStageMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  // Stable thread_id for the entire chat session. Regenerated on resetChat().
+  const threadIdRef = useRef<string>(crypto.randomUUID());
   // Track whether the first token has been received to flip isStreaming exactly once.
   const streamingStartedRef = useRef(false);
 
@@ -59,7 +61,7 @@ export function useChat(): UseChatReturn {
     ]);
 
     try {
-      for await (const event of queryRagStream({ question: q })) {
+      for await (const event of queryRagStream({ question: q, thread_id: threadIdRef.current })) {
         if (event.type === "token") {
           // Flip to streaming on first token so LoadingBubble disappears.
           if (!streamingStartedRef.current) {
@@ -113,6 +115,7 @@ export function useChat(): UseChatReturn {
     setStageMessage(null);
     setError(null);
     streamingStartedRef.current = false;
+    threadIdRef.current = crypto.randomUUID();
   }
 
   return {
