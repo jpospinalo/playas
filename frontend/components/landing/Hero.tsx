@@ -1,4 +1,19 @@
+"use client";
+
 import Link from "next/link";
+import { motion } from "motion/react";
+
+const EASE = [0.16, 1, 0.3, 1] as const;
+
+const container = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.1, delayChildren: 0.05 } },
+};
+
+const item = {
+  hidden: { opacity: 0, y: 18 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.55, ease: EASE } },
+};
 
 function ShieldCheckIcon() {
   return (
@@ -22,26 +37,38 @@ function ShieldCheckIcon() {
 
 export function Hero() {
   return (
-    <section className="mx-auto w-full max-w-5xl px-6 pb-28 pt-20 md:pt-36">
-      {/* Trust badge */}
-      <div className="mb-7 inline-flex items-center gap-1.5 rounded-full border border-accent/30 bg-accent-light px-3 py-1 text-xs font-semibold text-accent">
-        <ShieldCheckIcon />
-        Fuentes verificadas · Consejo de Estado de Colombia
-      </div>
+    <motion.section
+      className="mx-auto w-full max-w-5xl px-6 pb-28 pt-20 md:pt-36"
+      variants={container}
+      initial="hidden"
+      animate="show"
+    >
+      <motion.div variants={item} className="mb-7">
+        <span className="inline-flex items-center gap-1.5 rounded-full border border-accent/30 bg-accent-light px-3 py-1 text-xs font-semibold text-accent">
+          <ShieldCheckIcon />
+          Fuentes verificadas ·
+        </span>
+      </motion.div>
 
-      <h1 className="font-[family-name:var(--font-display)] text-balance mb-7 text-5xl font-semibold leading-[1.15] tracking-tight text-foreground md:text-6xl lg:text-[4.25rem]">
+      <motion.h1
+        variants={item}
+        className="font-[family-name:var(--font-display)] text-balance mb-7 text-5xl font-semibold leading-[1.15] tracking-tight text-foreground md:text-6xl lg:text-[4.25rem]"
+      >
         La jurisprudencia costera
         <br className="hidden md:block" />
         <span className="text-navy"> al alcance de su consulta.</span>
-      </h1>
+      </motion.h1>
 
-      <p className="mb-10 max-w-2xl text-pretty text-lg leading-relaxed text-muted">
+      <motion.p
+        variants={item}
+        className="mb-10 max-w-2xl text-pretty text-lg leading-relaxed text-muted"
+      >
         Acceda a jurisprudencia colombiana sobre playas, bienes de uso público
         costero y derecho marítimo. Respuestas fundamentadas en fuentes
         verificadas, sin búsquedas manuales, sin ambigüedad.
-      </p>
+      </motion.p>
 
-      <div className="flex flex-wrap items-center gap-4">
+      <motion.div variants={item} className="flex flex-wrap items-center gap-4">
         <Link
           href="/chat"
           className="inline-flex items-center gap-2 rounded-md bg-navy px-6 py-3 text-sm font-medium text-white shadow-sm transition-colors duration-150 hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
@@ -69,23 +96,34 @@ export function Hero() {
         >
           Conocer la metodología
         </a>
-      </div>
+      </motion.div>
 
-      {/* Metadata row */}
-      <div className="mt-12 flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-border pt-6 text-xs text-muted">
+      <motion.div
+        variants={item}
+        className="mt-12 flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-border pt-6 text-xs text-muted"
+      >
         <span className="flex items-center gap-1.5">
-          <span className="h-1.5 w-1.5 rounded-full bg-accent/60" aria-hidden="true" />
+          <span
+            className="h-1.5 w-1.5 rounded-full bg-accent/60"
+            aria-hidden="true"
+          />
           Búsqueda híbrida BM25 + vectorial
         </span>
         <span className="flex items-center gap-1.5">
-          <span className="h-1.5 w-1.5 rounded-full bg-accent/60" aria-hidden="true" />
+          <span
+            className="h-1.5 w-1.5 rounded-full bg-accent/60"
+            aria-hidden="true"
+          />
           Citas a fuentes con referencia explícita
         </span>
         <span className="flex items-center gap-1.5">
-          <span className="h-1.5 w-1.5 rounded-full bg-accent/60" aria-hidden="true" />
+          <span
+            className="h-1.5 w-1.5 rounded-full bg-accent/60"
+            aria-hidden="true"
+          />
           Sin alucinaciones — respuestas ancladas al corpus
         </span>
-      </div>
-    </section>
+      </motion.div>
+    </motion.section>
   );
 }

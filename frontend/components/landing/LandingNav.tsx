@@ -1,4 +1,9 @@
+"use client";
+
 import Link from "next/link";
+import { motion } from "motion/react";
+
+const EASE = [0.16, 1, 0.3, 1] as const;
 
 function ScalesIcon() {
   return (
@@ -26,7 +31,12 @@ function ScalesIcon() {
 
 export function LandingNav() {
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-surface/95 backdrop-blur-sm shadow-[0_1px_0_0_var(--border)]">
+    <motion.header
+      className="sticky top-0 z-50 border-b border-border bg-surface/95 backdrop-blur-sm shadow-[0_1px_0_0_var(--border)]"
+      initial={{ y: -8, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.4, ease: EASE }}
+    >
       <nav
         className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4"
         aria-label="Navegación principal"
@@ -51,6 +61,6 @@ export function LandingNav() {
           Iniciar consulta
         </Link>
       </nav>
-    </header>
+    </motion.header>
   );
 }

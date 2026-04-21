@@ -1,3 +1,19 @@
+"use client";
+
+import { motion } from "motion/react";
+
+const EASE = [0.16, 1, 0.3, 1] as const;
+
+const container = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.09, delayChildren: 0.15 } },
+};
+
+const item = {
+  hidden: { opacity: 0, y: 12 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.45, ease: EASE } },
+};
+
 const EXAMPLE_QUESTIONS = [
   "¿Cuál es el régimen jurídico de las playas en Colombia?",
   "¿Qué regula la Ley 99 de 1993 en materia de zonas costeras?",
@@ -10,11 +26,19 @@ interface EmptyStateProps {
 
 export function EmptyState({ onSelectExample }: EmptyStateProps) {
   return (
-    <div className="flex flex-1 flex-col items-center justify-center px-6 py-16 text-center animate-fade-in">
-      {/* Scales of justice icon */}
-      <div
+    <motion.div
+      className="flex flex-1 flex-col items-center justify-center px-6 py-16 text-center"
+      variants={container}
+      initial="hidden"
+      animate="show"
+    >
+      {/* Scales icon — spring pop */}
+      <motion.div
         className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl border border-border bg-surface shadow-sm"
         aria-hidden="true"
+        initial={{ scale: 0.7, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ type: "spring", stiffness: 280, damping: 18, delay: 0.05 }}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -34,29 +58,39 @@ export function EmptyState({ onSelectExample }: EmptyStateProps) {
           <path d="M12 3v18" />
           <path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2" />
         </svg>
-      </div>
+      </motion.div>
 
-      <h2 className="font-[family-name:var(--font-display)] mb-2 text-xl font-semibold text-foreground">
+      <motion.h2
+        variants={item}
+        className="font-[family-name:var(--font-display)] mb-2 text-xl font-semibold text-foreground"
+      >
         Asistente de Jurisprudencia Costera
-      </h2>
-      <p className="mb-1 max-w-xs text-sm leading-relaxed text-muted">
+      </motion.h2>
+
+      <motion.p variants={item} className="mb-1 max-w-xs text-sm leading-relaxed text-muted">
         Consultas respondidas con base exclusiva en el corpus de
         jurisprudencia colombiana indexado.
-      </p>
-      <p className="mb-8 max-w-xs text-xs leading-relaxed text-muted/60">
-        Cada respuesta incluye referencia explícita a las fuentes utilizadas.
-      </p>
+      </motion.p>
 
-      <p className="mb-3 text-[11px] font-semibold uppercase tracking-widest text-muted/50">
+      <motion.p variants={item} className="mb-8 max-w-xs text-xs leading-relaxed text-muted/60">
+        Cada respuesta incluye referencia explícita a las fuentes utilizadas.
+      </motion.p>
+
+      <motion.p
+        variants={item}
+        className="mb-3 text-[11px] font-semibold uppercase tracking-widest text-muted/50"
+      >
         Consultas frecuentes
-      </p>
-      <ul
+      </motion.p>
+
+      <motion.ul
         className="flex w-full max-w-sm flex-col gap-2"
         role="list"
         aria-label="Consultas de ejemplo"
+        variants={container}
       >
         {EXAMPLE_QUESTIONS.map((q) => (
-          <li key={q}>
+          <motion.li key={q} variants={item}>
             <button
               type="button"
               onClick={() => onSelectExample(q)}
@@ -82,9 +116,9 @@ export function EmptyState({ onSelectExample }: EmptyStateProps) {
                 {q}
               </span>
             </button>
-          </li>
+          </motion.li>
         ))}
-      </ul>
-    </div>
+      </motion.ul>
+    </motion.div>
   );
 }
