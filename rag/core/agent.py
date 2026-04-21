@@ -29,7 +29,6 @@ Optimizaciones de latencia:
 from __future__ import annotations
 
 import asyncio
-import operator
 from typing import Annotated, Any
 
 from langchain_core.documents import Document
@@ -58,8 +57,9 @@ class AgentState(TypedDict):
     messages: Annotated[list[BaseMessage], add_messages]
     question: str
     enriched_query: str | None
-    # Reducer operator.add: acumula docs entre prefetch + tool calls adicionales
-    sources: Annotated[list[Document], operator.add]
+    # Sin reducer: overwrite. enrich_query_node lo resetea al inicio de cada turno;
+    # retrieve_prefetch_node y la tool retrieve lo sobrescriben con los docs del turno.
+    sources: list[Document]
 
 
 # ---------------------------------------------------------------------------
@@ -124,7 +124,8 @@ async def enrich_query_node(state: AgentState) -> dict:
     """Reescribe la pregunta del usuario para mejorar el recall del retriever."""
     _emit_status("enriching", "Reformulando la consulta…")
     enriched: EnrichedQuery = await enrich_query_async(state["question"])
-    return {"enriched_query": enriched.expanded_query}
+    # Resetear sources al inicio de cada turno para no arrastrar docs de turnos anteriores.
+    return {"enriched_query": enriched.expanded_query, "sources": []}
 
 
 async def retrieve_prefetch_node(state: AgentState) -> dict:

@@ -18,6 +18,8 @@ export interface QueryRequest {
   k?: number;
   /** Initial retriever candidates (4–20, default 8) */
   k_candidates?: number;
+  /** Conversation thread identifier. Reuse across requests to maintain multi-turn context. */
+  thread_id?: string;
 }
 
 export interface QueryResponse {
