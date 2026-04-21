@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useChat } from "@/hooks/useChat";
 import { ChatHeader } from "@/components/chat/ChatHeader";
 import { ChatInput } from "@/components/chat/ChatInput";
+import { ContextWarning } from "@/components/chat/ContextWarning";
 import { EmptyState } from "@/components/chat/EmptyState";
 import { LoadingBubble } from "@/components/chat/LoadingBubble";
 import { MessageList } from "@/components/chat/MessageList";
@@ -11,8 +12,18 @@ import { MessageList } from "@/components/chat/MessageList";
 const SCROLL_THRESHOLD = 100; // px from bottom to consider "at bottom"
 
 export function ChatInterface() {
-  const { messages, input, loading, isStreaming, error, setInput, submit, resetChat } =
-    useChat();
+  const {
+    messages,
+    input,
+    loading,
+    isStreaming,
+    stageMessage,
+    error,
+    contextPercent,
+    setInput,
+    submit,
+    resetChat,
+  } = useChat();
 
   /*
    * textareaRef lives here so ChatInterface can focus the input
@@ -96,7 +107,7 @@ export function ChatInterface() {
             <MessageList messages={messages} />
 
             {/* Show loading bubble only while waiting for the first token */}
-            {loading && !isStreaming && <LoadingBubble />}
+            {loading && !isStreaming && <LoadingBubble label={stageMessage} />}
 
             {error && (
               <div
@@ -139,6 +150,8 @@ export function ChatInterface() {
           </button>
         </div>
       )}
+
+      <ContextWarning percent={contextPercent} onNewChat={resetChat} />
 
       <ChatInput
         value={input}

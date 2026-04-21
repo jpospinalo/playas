@@ -18,16 +18,23 @@ export interface QueryRequest {
   k?: number;
   /** Initial retriever candidates (4–20, default 8) */
   k_candidates?: number;
+  /** Conversation thread identifier. Reuse across requests to maintain multi-turn context. */
+  thread_id?: string;
 }
 
 export interface QueryResponse {
   answer: string;
   sources: SourceDocument[];
+  context_tokens: number;
+  context_limit: number;
 }
 
 // ── SSE stream event types ─────────────────────────────────────────────────
 
+export type AgentStage = "enriching" | "retrieving" | "generating";
+
 export type StreamEvent =
   | { type: "token"; content: string }
-  | { type: "sources"; sources: SourceDocument[] }
+  | { type: "sources"; sources: SourceDocument[]; enriched_query?: string | null; context_tokens?: number; context_limit?: number }
+  | { type: "status"; stage: AgentStage; message?: string }
   | { type: "error"; detail: string };

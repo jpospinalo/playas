@@ -40,3 +40,8 @@ QUERY_ENRICHMENT_HYDE: bool = os.getenv("QUERY_ENRICHMENT_HYDE", "false").lower(
 # ── Retriever ──────────────────────────────────────────────────────────────
 DEFAULT_K: int = int(os.getenv("DEFAULT_K", "4"))
 DEFAULT_K_CANDIDATES: int = int(os.getenv("DEFAULT_K_CANDIDATES", "10"))
+
+# ── Contexto de conversación ────────────────────────────────────────────────
+# Ventana de contexto del modelo de generación (tokens). Ajustar según el
+# modelo activo; los avisos del frontend se derivan de este valor.
+CONTEXT_LIMIT_TOKENS: int = int(os.getenv("CONTEXT_LIMIT_TOKENS", "200000"))
