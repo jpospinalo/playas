@@ -40,3 +40,11 @@ class QueryResponse(BaseModel):
             "Útil para depuración y evaluación del enriquecimiento."
         ),
     )
+    context_tokens: int = Field(
+        default=0,
+        description="Estimación de tokens acumulados en el historial de la conversación.",
+    )
+    context_limit: int = Field(
+        default=200_000,
+        description="Ventana de contexto máxima del modelo activo (tokens).",
+    )

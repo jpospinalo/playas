@@ -12,6 +12,8 @@ export interface UseChatReturn {
   stage: AgentStage | null;
   stageMessage: string | null;
   error: string | null;
+  /** Porcentaje de la ventana de contexto consumida (0–100). */
+  contextPercent: number;
   setInput: (value: string) => void;
   submit: (question: string) => Promise<void>;
   resetChat: () => void;
@@ -31,6 +33,7 @@ export function useChat(): UseChatReturn {
   const [stage, setStage] = useState<AgentStage | null>(null);
   const [stageMessage, setStageMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [contextPercent, setContextPercent] = useState(0);
   // Stable thread_id for the entire chat session. Regenerated on resetChat().
   const threadIdRef = useRef<string>(crypto.randomUUID());
   // Track whether the first token has been received to flip isStreaming exactly once.
@@ -86,6 +89,9 @@ export function useChat(): UseChatReturn {
               m.id === assistantId ? { ...m, sources: event.sources } : m
             )
           );
+          if (event.context_tokens != null && event.context_limit) {
+            setContextPercent(Math.round((event.context_tokens / event.context_limit) * 100));
+          }
         } else if (event.type === "error") {
           throw new Error(event.detail);
         }
@@ -114,6 +120,7 @@ export function useChat(): UseChatReturn {
     setStage(null);
     setStageMessage(null);
     setError(null);
+    setContextPercent(0);
     streamingStartedRef.current = false;
     threadIdRef.current = crypto.randomUUID();
   }
@@ -126,6 +133,7 @@ export function useChat(): UseChatReturn {
     stage,
     stageMessage,
     error,
+    contextPercent,
     setInput,
     submit,
     resetChat,

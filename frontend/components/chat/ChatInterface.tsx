@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useChat } from "@/hooks/useChat";
 import { ChatHeader } from "@/components/chat/ChatHeader";
 import { ChatInput } from "@/components/chat/ChatInput";
+import { ContextWarning } from "@/components/chat/ContextWarning";
 import { EmptyState } from "@/components/chat/EmptyState";
 import { LoadingBubble } from "@/components/chat/LoadingBubble";
 import { MessageList } from "@/components/chat/MessageList";
@@ -18,6 +19,7 @@ export function ChatInterface() {
     isStreaming,
     stageMessage,
     error,
+    contextPercent,
     setInput,
     submit,
     resetChat,
@@ -148,6 +150,8 @@ export function ChatInterface() {
           </button>
         </div>
       )}
+
+      <ContextWarning percent={contextPercent} onNewChat={resetChat} />
 
       <ChatInput
         value={input}
