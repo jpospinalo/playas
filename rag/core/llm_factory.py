@@ -6,9 +6,10 @@ requires implementing ``LLMProvider`` and adding one condition to
 ``query_enricher.py``.
 
 Provider selection order (first available key wins):
-1. ``OPENROUTER_API_KEY`` → :class:`OpenRouterProvider`
-2. ``GOOGLE_API_KEY``     → :class:`GeminiProvider`
-3. Neither                → :exc:`RuntimeError`
+1. ``OPENAI_API_KEY``    → :class:`OpenAIProvider`
+2. ``OPENROUTER_API_KEY`` → :class:`OpenRouterProvider`
+3. ``GOOGLE_API_KEY``     → :class:`GeminiProvider`
+4. None set               → :exc:`RuntimeError`
 """
 
 from __future__ import annotations
@@ -147,6 +148,45 @@ class LLMProvider(ABC):
 
 
 # ---------------------------------------------------------------------------
+# OpenAI provider
+# ---------------------------------------------------------------------------
+
+
+class OpenAIProvider(LLMProvider):
+    """LLM provider backed by ``langchain_openai.ChatOpenAI`` using the OpenAI API.
+
+    Model is read from ``OPENAI_MODEL`` (default ``gpt-4o-mini``).
+    OpenAI models support system roles and function/tool calling natively.
+    """
+
+    def __init__(self) -> None:
+        from rag import config
+
+        if not config.OPENAI_API_KEY:
+            raise RuntimeError(
+                "OPENAI_API_KEY no está configurada. "
+                "Agrégala a tu archivo .env antes de usar OpenAI."
+            )
+        self._api_key = config.OPENAI_API_KEY
+        self._model = config.OPENAI_MODEL
+
+    @property
+    def model_name(self) -> str:
+        return self._model
+
+    def create_llm(self, temperature: float, use_case: str = "") -> BaseChatModel:
+        from langchain_openai import ChatOpenAI
+
+        return ChatOpenAI(
+            model=self._model,
+            temperature=temperature,
+            api_key=self._api_key,  # type: ignore[arg-type]
+            stream_usage=True,
+            callbacks=[TokenUsageLogger(self._model, use_case)],
+        )
+
+
+# ---------------------------------------------------------------------------
 # Gemini (Google GenAI) provider
 # ---------------------------------------------------------------------------
 
@@ -242,17 +282,20 @@ def get_provider() -> LLMProvider:
     """Return the appropriate :class:`LLMProvider` based on available API keys.
 
     Selection order:
-    1. ``OPENROUTER_API_KEY`` → :class:`OpenRouterProvider`
-    2. ``GOOGLE_API_KEY``     → :class:`GeminiProvider`
-    3. Neither set            → :exc:`RuntimeError`
+    1. ``OPENAI_API_KEY``     → :class:`OpenAIProvider`
+    2. ``OPENROUTER_API_KEY`` → :class:`OpenRouterProvider`
+    3. ``GOOGLE_API_KEY``     → :class:`GeminiProvider`
+    4. Ninguna configurada    → :exc:`RuntimeError`
     """
+    if os.environ.get("OPENAI_API_KEY"):
+        return OpenAIProvider()
     if os.environ.get("OPENROUTER_API_KEY"):
         return OpenRouterProvider()
     if os.environ.get("GOOGLE_API_KEY"):
         return GeminiProvider()
     raise RuntimeError(
-        "No LLM API key found. Set OPENROUTER_API_KEY (preferred) or GOOGLE_API_KEY "
-        "in your .env file."
+        "No se encontró ninguna API key de LLM. "
+        "Configura OPENAI_API_KEY, OPENROUTER_API_KEY o GOOGLE_API_KEY en tu archivo .env."
     )
 
 
