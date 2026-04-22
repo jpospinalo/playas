@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { AnimatePresence, motion } from "motion/react";
 import { useChat } from "@/hooks/useChat";
 import { ChatHeader } from "@/components/chat/ChatHeader";
 import { ChatInput } from "@/components/chat/ChatInput";
@@ -107,16 +108,24 @@ export function ChatInterface() {
             <MessageList messages={messages} />
 
             {/* Show loading bubble only while waiting for the first token */}
-            {loading && !isStreaming && <LoadingBubble label={stageMessage} />}
+            <AnimatePresence>
+              {loading && !isStreaming && <LoadingBubble label={stageMessage} />}
+            </AnimatePresence>
 
-            {error && (
-              <div
-                role="alert"
-                className="animate-message-in rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
-              >
-                {error}
-              </div>
-            )}
+            <AnimatePresence>
+              {error && (
+                <motion.div
+                  role="alert"
+                  className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -4 }}
+                  transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                >
+                  {error}
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             {/* Scroll-to-bottom sentinel */}
             <div ref={messagesEndRef} aria-hidden="true" />
