@@ -29,6 +29,10 @@ OLLAMA_RERANKER_MODEL: str = os.getenv("OLLAMA_RERANKER_MODEL", "mistral")
 # ── Gemini ─────────────────────────────────────────────────────────────────
 GEMINI_MODEL: str = os.getenv("GEMINI_MODEL", "gemini-2.0-flash")
 
+# ── OpenAI ──────────────────────────────────────────────────────────────────
+OPENAI_API_KEY: str | None = os.getenv("OPENAI_API_KEY") or None
+OPENAI_MODEL: str = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
+
 # ── OpenRouter ──────────────────────────────────────────────────────────────
 OPENROUTER_API_KEY: str | None = os.getenv("OPENROUTER_API_KEY") or None
 OPENROUTER_MODEL: str = os.getenv("OPENROUTER_MODEL", "openrouter/auto")
