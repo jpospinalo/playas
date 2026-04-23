@@ -32,6 +32,32 @@ export async function queryRag(
 }
 
 /**
+ * Llama al backend para generar un título con IA y actualizar Firestore.
+ * Retorna el título generado, o un fragmento del mensaje si falla.
+ */
+export async function generateConversationTitle(
+  firstMessage: string,
+  conversationId: string
+): Promise<string> {
+  try {
+    const authHeaders = await getAuthHeaders();
+    const res = await fetch(`${API_URL}/api/conversations/generate-title`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", ...authHeaders },
+      body: JSON.stringify({
+        first_message: firstMessage,
+        conversation_id: conversationId,
+      }),
+    });
+    if (!res.ok) return firstMessage.slice(0, 50);
+    const data = (await res.json()) as { title?: string };
+    return data.title ?? firstMessage.slice(0, 50);
+  } catch {
+    return firstMessage.slice(0, 50);
+  }
+}
+
+/**
  * Async generator que conecta al endpoint SSE de streaming y emite eventos
  * tipados a medida que llegan.
  *
