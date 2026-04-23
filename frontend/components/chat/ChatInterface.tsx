@@ -24,6 +24,10 @@ export function ChatInterface() {
   const [authModalMode, setAuthModalMode] = useState<"recommendation" | "explicit">("recommendation");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
+  // Si el usuario no autenticado hace clic en FeedbackButton, guardamos la
+  // intención para re-abrir FeedbackModal automáticamente tras el login.
+  const pendingFeedbackRef = useRef(false);
+  const [authModalSubtitle, setAuthModalSubtitle] = useState<string | undefined>(undefined);
   // Evita mostrar el modal de recomendación más de una vez por sesión
   const hasPromptedRef = useRef(false);
 
@@ -53,13 +57,21 @@ export function ChatInterface() {
     }
   }, [authLoading, user]);
 
-  // Cerrar el modal automáticamente cuando el usuario se autentica
+  // Cerrar el modal de auth cuando el usuario se autentica.
+  // Si había intención de calificar, re-abrir FeedbackModal.
   useEffect(() => {
-    if (user) setShowAuthModal(false);
+    if (user) {
+      setShowAuthModal(false);
+      if (pendingFeedbackRef.current) {
+        pendingFeedbackRef.current = false;
+        setShowFeedbackModal(true);
+      }
+    }
   }, [user]);
 
-  function openAuthModal() {
+  function openAuthModal(subtitle?: string) {
     setAuthModalMode("explicit");
+    setAuthModalSubtitle(subtitle);
     setShowAuthModal(true);
   }
 
@@ -153,6 +165,7 @@ export function ChatInterface() {
         <AuthModal
           open={showAuthModal}
           mode={authModalMode}
+          subtitle={authModalSubtitle}
           onClose={() => setShowAuthModal(false)}
         />
         <FeedbackModal
@@ -207,12 +220,22 @@ export function ChatInterface() {
         )}
         </main>
 
-        {/* Botón flotante de feedback — visible cuando hay mensajes y el usuario está autenticado */}
+        {/* Botón flotante de feedback — visible cuando hay mensajes */}
         <AnimatePresence>
-          {messages.length > 0 && user && (
+          {messages.length > 0 && (
             <div className="pointer-events-none absolute bottom-20 right-4 z-20">
               <div className="pointer-events-auto">
-                <FeedbackButton onClick={() => setShowFeedbackModal(true)} />
+                <FeedbackButton
+                  onClick={() => {
+                    if (user) {
+                      setShowFeedbackModal(true);
+                    } else {
+                      // Guardar intención y pedir login con mensaje contextual
+                      pendingFeedbackRef.current = true;
+                      openAuthModal("Debes iniciar sesión para calificar el sistema.");
+                    }
+                  }}
+                />
               </div>
             </div>
           )}
