@@ -31,6 +31,12 @@ export interface QueryResponse {
   context_limit: number;
 }
 
+export interface FeedbackRequest {
+  rating: number;
+  comment?: string;
+  conversation_id?: string;
+}
+
 // ── SSE stream event types ─────────────────────────────────────────────────
 
 export type AgentStage = "enriching" | "retrieving" | "generating";

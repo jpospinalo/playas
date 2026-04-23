@@ -11,6 +11,8 @@ import { ChatHeader } from "@/components/chat/ChatHeader";
 import { ChatInput } from "@/components/chat/ChatInput";
 import { ContextWarning } from "@/components/chat/ContextWarning";
 import { EmptyState } from "@/components/chat/EmptyState";
+import { FeedbackButton } from "@/components/chat/FeedbackButton";
+import { FeedbackModal } from "@/components/chat/FeedbackModal";
 import { LoadingBubble } from "@/components/chat/LoadingBubble";
 import { MessageList } from "@/components/chat/MessageList";
 
@@ -21,6 +23,7 @@ export function ChatInterface() {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authModalMode, setAuthModalMode] = useState<"recommendation" | "explicit">("recommendation");
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [showFeedbackModal, setShowFeedbackModal] = useState(false);
   // Evita mostrar el modal de recomendación más de una vez por sesión
   const hasPromptedRef = useRef(false);
 
@@ -152,6 +155,11 @@ export function ChatInterface() {
           mode={authModalMode}
           onClose={() => setShowAuthModal(false)}
         />
+        <FeedbackModal
+          open={showFeedbackModal}
+          conversationId={conversationId}
+          onClose={() => setShowFeedbackModal(false)}
+        />
         <ChatHeader
           onNewChat={resetChat}
           onOpenAuth={openAuthModal}
@@ -198,6 +206,17 @@ export function ChatInterface() {
           </div>
         )}
         </main>
+
+        {/* Botón flotante de feedback — visible cuando hay mensajes y el usuario está autenticado */}
+        <AnimatePresence>
+          {messages.length > 0 && user && (
+            <div className="pointer-events-none absolute bottom-20 right-4 z-20">
+              <div className="pointer-events-auto">
+                <FeedbackButton onClick={() => setShowFeedbackModal(true)} />
+              </div>
+            </div>
+          )}
+        </AnimatePresence>
 
         {/* Floating scroll-to-bottom button — visible when user has scrolled up */}
         {showScrollButton && messages.length > 0 && (

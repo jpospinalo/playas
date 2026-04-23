@@ -1,5 +1,5 @@
 import { auth } from "@/lib/firebase";
-import type { QueryRequest, QueryResponse, StreamEvent } from "@/lib/types";
+import type { FeedbackRequest, QueryRequest, QueryResponse, StreamEvent } from "@/lib/types";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080";
 
@@ -55,6 +55,23 @@ export async function generateConversationTitle(
   } catch {
     return firstMessage.slice(0, 50);
   }
+}
+
+/** Envía el feedback del usuario al backend para guardarlo en Firestore. */
+export async function submitFeedback(request: FeedbackRequest): Promise<{ id: string }> {
+  const authHeaders = await getAuthHeaders();
+  const res = await fetch(`${API_URL}/api/feedback`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...authHeaders },
+    body: JSON.stringify(request),
+  });
+
+  if (!res.ok) {
+    const detail = await res.text().catch(() => "");
+    throw new Error(detail.trim() || `Error del servidor (${res.status})`);
+  }
+
+  return res.json() as Promise<{ id: string }>;
 }
 
 /**
