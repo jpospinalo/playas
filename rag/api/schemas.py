@@ -19,6 +19,14 @@ class QueryRequest(BaseModel):
             "Si es None, cada request es independiente."
         ),
     )
+    conversation_id: str | None = Field(
+        default=None,
+        description=(
+            "ID del documento de conversación en Firestore. "
+            "Si el MemorySaver está vacío (reinicio del servidor) y se proporciona este campo, "
+            "el backend hidrata el estado de LangGraph desde el historial de Firestore."
+        ),
+    )
 
 
 class SourceDocument(BaseModel):

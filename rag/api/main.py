@@ -18,12 +18,13 @@ from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import Any
 
-from fastapi import FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from langchain_core.documents import Document
 from langchain_core.messages import AIMessage, HumanMessage
 
+from rag.api.auth import get_optional_user
 from rag.api.schemas import QueryRequest, QueryResponse, SourceDocument
 from rag.config import CONTEXT_LIMIT_TOKENS
 from rag.core.retriever import init_retrievers
@@ -160,7 +161,10 @@ async def health() -> dict:
 
 
 @app.post("/api/query", response_model=QueryResponse)
-async def query(request: QueryRequest) -> QueryResponse:
+async def query(
+    request: QueryRequest,
+    _user: dict | None = Depends(get_optional_user),
+) -> QueryResponse:
     """Consulta jurídica completa (respuesta JSON).
 
     Ejecuta el agente LangGraph hasta completar el ciclo enrich → retrieve → generate.
@@ -199,7 +203,10 @@ async def query(request: QueryRequest) -> QueryResponse:
 
 
 @app.post("/api/query/stream")
-async def query_stream(request: QueryRequest):
+async def query_stream(
+    request: QueryRequest,
+    _user: dict | None = Depends(get_optional_user),
+):
     """Streaming SSE: emite tokens del LLM en tiempo real.
 
     Formato de eventos SSE:
