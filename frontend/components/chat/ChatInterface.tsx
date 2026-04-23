@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
+import { useAuth } from "@/components/providers/AuthProvider";
+import { AuthModal } from "@/components/common/AuthModal";
 import { useChat } from "@/hooks/useChat";
 import { ChatHeader } from "@/components/chat/ChatHeader";
 import { ChatInput } from "@/components/chat/ChatInput";
@@ -13,6 +15,12 @@ import { MessageList } from "@/components/chat/MessageList";
 const SCROLL_THRESHOLD = 100; // px from bottom to consider "at bottom"
 
 export function ChatInterface() {
+  const { user, loading: authLoading } = useAuth();
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [authModalMode, setAuthModalMode] = useState<"recommendation" | "explicit">("recommendation");
+  // Evita mostrar el modal de recomendación más de una vez por sesión
+  const hasPromptedRef = useRef(false);
+
   const {
     messages,
     input,
@@ -25,6 +33,25 @@ export function ChatInterface() {
     submit,
     resetChat,
   } = useChat();
+
+  // Mostrar recomendación de auth una vez al entrar sin sesión
+  useEffect(() => {
+    if (!authLoading && !user && !hasPromptedRef.current) {
+      hasPromptedRef.current = true;
+      setAuthModalMode("recommendation");
+      setShowAuthModal(true);
+    }
+  }, [authLoading, user]);
+
+  // Cerrar el modal automáticamente cuando el usuario se autentica
+  useEffect(() => {
+    if (user) setShowAuthModal(false);
+  }, [user]);
+
+  function openAuthModal() {
+    setAuthModalMode("explicit");
+    setShowAuthModal(true);
+  }
 
   /*
    * textareaRef lives here so ChatInterface can focus the input
@@ -91,7 +118,12 @@ export function ChatInterface() {
 
   return (
     <div className="relative flex flex-1 flex-col overflow-hidden">
-      <ChatHeader onNewChat={resetChat} />
+      <AuthModal
+        open={showAuthModal}
+        mode={authModalMode}
+        onClose={() => setShowAuthModal(false)}
+      />
+      <ChatHeader onNewChat={resetChat} onOpenAuth={openAuthModal} />
 
       <main
         ref={scrollContainerRef}
