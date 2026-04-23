@@ -48,6 +48,39 @@ class FeedbackResponse(BaseModel):
     id: str = Field(..., description="ID del documento de feedback creado en Firestore")
 
 
+class AdminFeedbackItem(BaseModel):
+    id: str
+    userId: str
+    userEmail: str
+    rating: int
+    comment: str | None
+    conversationId: str | None
+    conversationTitle: str | None
+    createdAt: str = Field(..., description="ISO 8601 timestamp")
+
+
+class AdminFeedbackResponse(BaseModel):
+    items: list[AdminFeedbackItem]
+    total: int
+    avg_rating: float
+    distribution: dict[str, int] = Field(
+        ..., description="Distribución de ratings: {'1': n, '2': n, ...}"
+    )
+
+
+class AdminUserItem(BaseModel):
+    uid: str
+    email: str
+    displayName: str | None
+    role: str
+    createdAt: str = Field(..., description="ISO 8601 timestamp")
+
+
+class AdminUsersResponse(BaseModel):
+    items: list[AdminUserItem]
+    total: int
+
+
 class QueryResponse(BaseModel):
     answer: str = Field(..., description="Respuesta generada por el modelo")
     sources: list[SourceDocument] = Field(
