@@ -25,12 +25,14 @@ interface AuthModalProps {
   open: boolean;
   /** Modo: recomendación al entrar a /chat o acción explícita del usuario */
   mode?: "recommendation" | "explicit";
+  /** Subtítulo opcional para el modo explicit */
+  subtitle?: string;
   onClose: () => void;
 }
 
 type Tab = "login" | "register";
 
-export function AuthModal({ open, mode = "explicit", onClose }: AuthModalProps) {
+export function AuthModal({ open, mode = "explicit", subtitle, onClose }: AuthModalProps) {
   const { signIn, signUp } = useAuth();
   const [tab, setTab] = useState<Tab>("login");
   const [email, setEmail] = useState("");
@@ -141,12 +143,17 @@ export function AuthModal({ open, mode = "explicit", onClose }: AuthModalProps) 
                 </p>
               </div>
             ) : (
-              <h2
-                id="auth-modal-title"
-                className="mb-5 font-[family-name:var(--font-display)] text-lg font-semibold text-foreground"
-              >
-                {tab === "login" ? "Iniciar sesión" : "Crear cuenta"}
-              </h2>
+              <div className="mb-5">
+                <h2
+                  id="auth-modal-title"
+                  className="font-[family-name:var(--font-display)] text-lg font-semibold text-foreground"
+                >
+                  {tab === "login" ? "Iniciar sesión" : "Crear cuenta"}
+                </h2>
+                {subtitle && (
+                  <p className="mt-1 text-sm text-muted">{subtitle}</p>
+                )}
+              </div>
             )}
 
             {/* Tabs */}
