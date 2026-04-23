@@ -20,6 +20,8 @@ export interface QueryRequest {
   k_candidates?: number;
   /** Conversation thread identifier. Reuse across requests to maintain multi-turn context. */
   thread_id?: string;
+  /** Firestore conversation document ID. Used by the backend to hydrate LangGraph state on server restart. */
+  conversation_id?: string;
 }
 
 export interface QueryResponse {

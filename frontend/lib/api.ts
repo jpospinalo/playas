@@ -1,13 +1,23 @@
+import { auth } from "@/lib/firebase";
 import type { QueryRequest, QueryResponse, StreamEvent } from "@/lib/types";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080";
 
+/** Obtiene el encabezado Authorization si hay sesión activa. */
+async function getAuthHeaders(): Promise<Record<string, string>> {
+  const user = auth.currentUser;
+  if (!user) return {};
+  const token = await user.getIdToken(/* forceRefresh */ true);
+  return { Authorization: `Bearer ${token}` };
+}
+
 export async function queryRag(
   request: QueryRequest
 ): Promise<QueryResponse> {
+  const authHeaders = await getAuthHeaders();
   const res = await fetch(`${API_URL}/api/query`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...authHeaders },
     body: JSON.stringify(request),
   });
 
@@ -22,10 +32,10 @@ export async function queryRag(
 }
 
 /**
- * Async generator that connects to the SSE streaming endpoint and yields
- * typed events as they arrive.
+ * Async generator que conecta al endpoint SSE de streaming y emite eventos
+ * tipados a medida que llegan.
  *
- * Usage:
+ * Uso:
  *   for await (const event of queryRagStream({ question: "..." })) {
  *     if (event.type === "token") { ... }
  *     else if (event.type === "sources") { ... }
@@ -34,9 +44,10 @@ export async function queryRag(
 export async function* queryRagStream(
   request: QueryRequest
 ): AsyncGenerator<StreamEvent> {
+  const authHeaders = await getAuthHeaders();
   const res = await fetch(`${API_URL}/api/query/stream`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...authHeaders },
     body: JSON.stringify(request),
   });
 
@@ -58,7 +69,7 @@ export async function* queryRagStream(
 
       buffer += decoder.decode(value, { stream: true });
 
-      // SSE events are separated by double newlines
+      // Los eventos SSE están separados por doble salto de línea
       const parts = buffer.split("\n\n");
       buffer = parts.pop() ?? "";
 

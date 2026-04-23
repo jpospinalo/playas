@@ -67,7 +67,6 @@ export function ContextWarning({ percent, onNewChat }: ContextWarningProps) {
               ? "color-mix(in srgb, var(--accent) 15%, transparent)"
               : "transparent",
             color: "var(--accent)",
-            focusVisibleOutlineColor: "var(--accent)",
           }}
           aria-label="Iniciar una nueva conversación"
         >
