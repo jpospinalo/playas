@@ -36,6 +36,18 @@ class SourceDocument(BaseModel):
     metadata: dict = Field(default_factory=dict, description="Metadatos adicionales del fragmento")
 
 
+class FeedbackRequest(BaseModel):
+    rating: int = Field(..., ge=1, le=5, description="Calificación entre 1 y 5")
+    comment: str | None = Field(default=None, description="Comentario opcional del usuario")
+    conversation_id: str | None = Field(
+        default=None, description="ID del documento de conversación activa en Firestore"
+    )
+
+
+class FeedbackResponse(BaseModel):
+    id: str = Field(..., description="ID del documento de feedback creado en Firestore")
+
+
 class QueryResponse(BaseModel):
     answer: str = Field(..., description="Respuesta generada por el modelo")
     sources: list[SourceDocument] = Field(

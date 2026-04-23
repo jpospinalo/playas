@@ -26,6 +26,7 @@ from langchain_core.messages import AIMessage, HumanMessage
 
 from rag.api.auth import get_optional_user
 from rag.api.routes.conversations import router as conversations_router
+from rag.api.routes.feedback import router as feedback_router
 from rag.api.schemas import QueryRequest, QueryResponse, SourceDocument
 from rag.config import CONTEXT_LIMIT_TOKENS
 from rag.core.retriever import init_retrievers
@@ -81,6 +82,7 @@ app.add_middleware(
 )
 
 app.include_router(conversations_router)
+app.include_router(feedback_router)
 
 
 # ── Helpers ────────────────────────────────────────────────────────────────
