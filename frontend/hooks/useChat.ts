@@ -91,8 +91,11 @@ export function useChat(): UseChatReturn {
       messageCount: 0,
     });
 
-    // Generar título con IA en background sin bloquear el stream
-    generateConversationTitle(firstQuestion, newRef.id).catch(() => {});
+    // Obtener token ahora (user no es null en este punto) y generar título en background.
+    // Pasar el token directamente evita una race condition con auth.currentUser.
+    user.getIdToken().then((token) => {
+      generateConversationTitle(firstQuestion, newRef.id, token).catch(() => {});
+    }).catch(() => {});
 
     return newRef.id;
   }

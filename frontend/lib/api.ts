@@ -34,16 +34,21 @@ export async function queryRag(
 /**
  * Llama al backend para generar un título con IA y actualizar Firestore.
  * Retorna el título generado, o un fragmento del mensaje si falla.
+ *
+ * @param authToken Token pre-obtenido para evitar race conditions con auth.currentUser.
  */
 export async function generateConversationTitle(
   firstMessage: string,
-  conversationId: string
+  conversationId: string,
+  authToken: string,
 ): Promise<string> {
   try {
-    const authHeaders = await getAuthHeaders();
     const res = await fetch(`${API_URL}/api/conversations/generate-title`, {
       method: "POST",
-      headers: { "Content-Type": "application/json", ...authHeaders },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${authToken}`,
+      },
       body: JSON.stringify({
         first_message: firstMessage,
         conversation_id: conversationId,

@@ -59,7 +59,8 @@ export function useConversations(): {
         setConversations(convs);
         setLoading(false);
       },
-      () => {
+      (err) => {
+        console.error("[useConversations] Error en onSnapshot:", err);
         setLoading(false);
       }
     );

@@ -129,7 +129,7 @@ export function ChatHeader({ onNewChat, onOpenAuth, onToggleSidebar, sidebarOpen
                 </div>
               ) : (
                 <button
-                  onClick={onOpenAuth}
+                  onClick={() => onOpenAuth?.()}
                   className="rounded-md px-2 py-1 text-xs text-muted transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
                 >
                   Iniciar sesión
