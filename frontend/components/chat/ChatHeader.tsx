@@ -11,16 +11,12 @@ interface ChatHeaderProps {
 }
 
 export function ChatHeader({ onNewChat, onOpenAuth, onToggleSidebar, sidebarOpen }: ChatHeaderProps) {
-  const { user, loading, signOut } = useAuth();
-
-  // Inicial del email para el avatar
-  const initial = user?.email?.[0]?.toUpperCase() ?? "";
+  const { user, loading } = useAuth();
 
   return (
     <header className="shrink-0 border-b border-border bg-surface/95 backdrop-blur-sm">
-      <div className="mx-auto grid max-w-3xl grid-cols-[1fr_auto_1fr] items-center px-4 py-3">
-        {/* Izquierda: toggle sidebar + volver al inicio */}
-        <div className="-ml-1 flex items-center gap-0.5">
+      <div className="flex h-12 items-center justify-between gap-3 px-3">
+        <div className="flex min-w-0 items-center gap-1">
           {onToggleSidebar && user && (
             <button
               onClick={onToggleSidebar}
@@ -45,46 +41,25 @@ export function ChatHeader({ onNewChat, onOpenAuth, onToggleSidebar, sidebarOpen
               </svg>
             </button>
           )}
+
           <Link
             href="/"
+            className="flex min-w-0 items-center gap-1.5 rounded-lg px-2 py-1.5 transition-colors hover:bg-accent/8 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
             aria-label="Volver a la página principal"
-            className="flex w-fit items-center gap-1.5 rounded-md px-2 py-1 text-xs text-muted transition-colors duration-150 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
+            translate="no"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="13"
-              height="13"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-            >
-              <path d="m15 18-6-6 6-6" />
-            </svg>
-            Inicio
+            <span className="font-display truncate text-sm font-semibold tracking-wide text-foreground">
+              Agente de Jurisprudencia <span className="text-accent">Costera</span>
+            </span>
           </Link>
         </div>
 
-        {/* Centro: título */}
-        <div className="flex flex-col items-center gap-0.5">
-          <span
-            className="font-display text-center text-sm font-semibold tracking-wide text-foreground"
-            translate="no"
-          >
-            Agente de Jurisprudencia <span className="text-accent">Costera</span>
-          </span>
-        </div>
-
-        {/* Derecha: nuevo chat + auth */}
-        <div className="-mr-1 ml-auto flex items-center gap-1">
+        <div className="ml-auto flex shrink-0 items-center gap-1">
           {onNewChat && (
             <button
               onClick={onNewChat}
               aria-label="Iniciar nueva conversación"
-              className="flex w-fit items-center gap-1.5 rounded-md px-2 py-1 text-xs text-muted transition-colors duration-150 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
+              className="flex w-fit items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium text-muted transition-colors hover:bg-accent/8 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -105,37 +80,13 @@ export function ChatHeader({ onNewChat, onOpenAuth, onToggleSidebar, sidebarOpen
             </button>
           )}
 
-          {/* Estado de autenticación */}
-          {!loading && (
-            <>
-              {user ? (
-                <div className="flex items-center gap-1.5">
-                  {/* Avatar con inicial */}
-                  <span
-                    aria-label={`Sesión iniciada como ${user.email}`}
-                    title={user.email ?? ""}
-                    className="flex h-6 w-6 items-center justify-center rounded-full bg-accent/10 text-[10px] font-semibold text-accent"
-                  >
-                    {initial}
-                  </span>
-                  <button
-                    onClick={() => signOut()}
-                    aria-label="Cerrar sesión"
-                    title="Cerrar sesión"
-                    className="rounded-md px-2 py-1 text-xs text-muted transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
-                  >
-                    Salir
-                  </button>
-                </div>
-              ) : (
-                <button
-                  onClick={() => onOpenAuth?.()}
-                  className="rounded-md px-2 py-1 text-xs text-muted transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
-                >
-                  Iniciar sesión
-                </button>
-              )}
-            </>
+          {!loading && !user && (
+            <button
+              onClick={() => onOpenAuth?.()}
+              className="rounded-lg px-2.5 py-1.5 text-xs font-medium text-muted transition-colors hover:bg-accent/8 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+            >
+              Iniciar sesión
+            </button>
           )}
         </div>
       </div>
