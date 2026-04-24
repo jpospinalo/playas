@@ -17,12 +17,15 @@ import { LoadingBubble } from "@/components/chat/LoadingBubble";
 import { MessageList } from "@/components/chat/MessageList";
 
 const SCROLL_THRESHOLD = 100; // px from bottom to consider "at bottom"
+const SIDEBAR_STORAGE_KEY = "rag-playas:chat-sidebar-expanded";
+const MOBILE_SIDEBAR_QUERY = "(max-width: 767px)";
 
 export function ChatInterface() {
   const { user, loading: authLoading } = useAuth();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authModalMode, setAuthModalMode] = useState<"recommendation" | "explicit">("recommendation");
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarTransitionEnabled, setSidebarTransitionEnabled] = useState(false);
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
   // Si el usuario no autenticado hace clic en FeedbackButton, guardamos la
   // intención para re-abrir FeedbackModal automáticamente tras el login.
@@ -48,12 +51,48 @@ export function ChatInterface() {
 
   const { conversations, loading: conversationsLoading } = useConversations();
 
+  useEffect(() => {
+    const stored = window.localStorage.getItem(SIDEBAR_STORAGE_KEY);
+    let transitionFrame = 0;
+
+    const preferenceFrame = window.requestAnimationFrame(() => {
+      if (stored !== null) {
+        setSidebarOpen(stored === "true");
+      }
+      transitionFrame = window.requestAnimationFrame(() => {
+        setSidebarTransitionEnabled(true);
+      });
+    });
+
+    return () => {
+      window.cancelAnimationFrame(preferenceFrame);
+      if (transitionFrame) window.cancelAnimationFrame(transitionFrame);
+    };
+  }, []);
+
+  const toggleSidebar = useCallback(() => {
+    setSidebarOpen((current) => {
+      const next = !current;
+      window.localStorage.setItem(SIDEBAR_STORAGE_KEY, String(next));
+      return next;
+    });
+  }, []);
+
+  const closeSidebarOnMobile = useCallback(() => {
+    if (window.matchMedia(MOBILE_SIDEBAR_QUERY).matches) {
+      setSidebarOpen(false);
+    }
+  }, []);
+
   // Mostrar recomendación de auth una vez al entrar sin sesión
   useEffect(() => {
     if (!authLoading && !user && !hasPromptedRef.current) {
       hasPromptedRef.current = true;
-      setAuthModalMode("recommendation");
-      setShowAuthModal(true);
+      const frame = window.requestAnimationFrame(() => {
+        setAuthModalMode("recommendation");
+        setShowAuthModal(true);
+      });
+      return () => window.cancelAnimationFrame(frame);
     }
   }, [authLoading, user]);
 
@@ -61,11 +100,14 @@ export function ChatInterface() {
   // Si había intención de calificar, re-abrir FeedbackModal.
   useEffect(() => {
     if (user) {
-      setShowAuthModal(false);
-      if (pendingFeedbackRef.current) {
-        pendingFeedbackRef.current = false;
-        setShowFeedbackModal(true);
-      }
+      const frame = window.requestAnimationFrame(() => {
+        setShowAuthModal(false);
+        if (pendingFeedbackRef.current) {
+          pendingFeedbackRef.current = false;
+          setShowFeedbackModal(true);
+        }
+      });
+      return () => window.cancelAnimationFrame(frame);
     }
   }, [user]);
 
@@ -147,15 +189,16 @@ export function ChatInterface() {
           activeConversationId={conversationId}
           loading={conversationsLoading}
           isExpanded={sidebarOpen}
+          transitionEnabled={sidebarTransitionEnabled}
           onSelectConversation={async (conv) => {
             await loadConversation(conv);
-            setSidebarOpen(false);
+            closeSidebarOnMobile();
           }}
           onNewChat={() => {
             resetChat();
-            setSidebarOpen(false);
+            closeSidebarOnMobile();
           }}
-          onToggleSidebar={() => setSidebarOpen((v) => !v)}
+          onToggleSidebar={toggleSidebar}
         />
       )}
 
@@ -175,7 +218,7 @@ export function ChatInterface() {
         <ChatHeader
           onNewChat={user ? undefined : resetChat}
           onOpenAuth={openAuthModal}
-          onToggleSidebar={user ? () => setSidebarOpen((v) => !v) : undefined}
+          onToggleSidebar={user ? toggleSidebar : undefined}
           sidebarOpen={sidebarOpen}
         />
 
