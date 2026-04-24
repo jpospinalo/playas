@@ -22,7 +22,7 @@ export function ChatInterface() {
   const { user, loading: authLoading } = useAuth();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authModalMode, setAuthModalMode] = useState<"recommendation" | "explicit">("recommendation");
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
   // Si el usuario no autenticado hace clic en FeedbackButton, guardamos la
   // intención para re-abrir FeedbackModal automáticamente tras el login.
@@ -141,24 +141,23 @@ export function ChatInterface() {
   return (
     <div className="relative flex flex-1 overflow-hidden">
       {/* Sidebar de conversaciones */}
-      <AnimatePresence>
-        {sidebarOpen && user && (
-          <ConversationSidebar
-            conversations={conversations}
-            activeConversationId={conversationId}
-            loading={conversationsLoading}
-            onSelectConversation={async (conv) => {
-              await loadConversation(conv);
-              setSidebarOpen(false);
-            }}
-            onNewChat={() => {
-              resetChat();
-              setSidebarOpen(false);
-            }}
-            onClose={() => setSidebarOpen(false)}
-          />
-        )}
-      </AnimatePresence>
+      {user && (
+        <ConversationSidebar
+          conversations={conversations}
+          activeConversationId={conversationId}
+          loading={conversationsLoading}
+          isExpanded={sidebarOpen}
+          onSelectConversation={async (conv) => {
+            await loadConversation(conv);
+            setSidebarOpen(false);
+          }}
+          onNewChat={() => {
+            resetChat();
+            setSidebarOpen(false);
+          }}
+          onToggleSidebar={() => setSidebarOpen((v) => !v)}
+        />
+      )}
 
       {/* Área principal del chat */}
       <div className="flex flex-1 flex-col overflow-hidden">
@@ -174,9 +173,9 @@ export function ChatInterface() {
           onClose={() => setShowFeedbackModal(false)}
         />
         <ChatHeader
-          onNewChat={resetChat}
+          onNewChat={user ? undefined : resetChat}
           onOpenAuth={openAuthModal}
-          onToggleSidebar={() => setSidebarOpen((v) => !v)}
+          onToggleSidebar={user ? () => setSidebarOpen((v) => !v) : undefined}
           sidebarOpen={sidebarOpen}
         />
 
