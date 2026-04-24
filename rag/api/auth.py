@@ -8,10 +8,14 @@ Tres niveles de protección:
 
 from __future__ import annotations
 
+import logging
+
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
 from rag.api.firebase_admin import get_db, verify_id_token
+
+logger = logging.getLogger(__name__)
 
 _bearer = HTTPBearer(auto_error=False)
 
@@ -22,23 +26,32 @@ async def get_optional_user(
     """Retorna el payload decodificado del token si está presente y es válido.
 
     Retorna None si no hay encabezado Authorization.
-    Lanza 503 si Firebase Admin no está configurado.
+    Lanza 503 si Firebase Admin no está configurado o hay error de red.
     Lanza 401 si el token es inválido o expirado.
     """
     if creds is None:
         return None
     try:
-        return verify_id_token(creds.credentials)
+        return await verify_id_token(creds.credentials)
     except RuntimeError as exc:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail=str(exc),
         ) from exc
-    except Exception:
+    except Exception as exc:
+        exc_name = type(exc).__name__
+        # TransportError / CertificateFetchError indican problema de red, no token inválido
+        if "Transport" in exc_name or "Certificate" in exc_name or "Fetch" in exc_name:
+            logger.error("Error de red al verificar token Firebase: %s: %s", exc_name, exc)
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail="Error temporal de autenticación. Intenta de nuevo.",
+            ) from exc
+        logger.warning("Token Firebase inválido: %s: %s", exc_name, exc)
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Token de autenticación inválido o expirado.",
-        )
+        ) from exc
 
 
 async def get_current_user(

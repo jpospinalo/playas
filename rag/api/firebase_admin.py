@@ -12,7 +12,9 @@ from pathlib import Path
 
 import firebase_admin
 from firebase_admin import auth as firebase_auth
-from firebase_admin import credentials, firestore
+from firebase_admin import credentials
+from google.cloud import firestore as gcp_firestore
+from google.oauth2 import service_account as gcp_service_account
 
 # Raíz del proyecto (dos niveles arriba de este archivo: rag/api/ → rag/ → /)
 _PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -43,8 +45,22 @@ def _initialize() -> None:
         )
 
     cred = credentials.Certificate(str(key_path))
-    firebase_admin.initialize_app(cred)
-    _db = firestore.async_client()
+    try:
+        firebase_admin.get_app()
+    except ValueError:
+        # La app no existe aún — primera inicialización real
+        firebase_admin.initialize_app(cred)
+
+    # firebase-admin 7.x eliminó async_client() — crear AsyncClient directamente
+    # desde google-cloud-firestore (dependencia transitiva ya instalada).
+    google_creds = gcp_service_account.Credentials.from_service_account_file(
+        str(key_path),
+        scopes=["https://www.googleapis.com/auth/cloud-platform"],
+    )
+    _db = gcp_firestore.AsyncClient(
+        credentials=google_creds,
+        project=google_creds.project_id,
+    )
     _initialized = True
 
 
@@ -54,7 +70,14 @@ def get_db():
     return _db
 
 
-def verify_id_token(token: str) -> dict:
-    """Valida un ID token de Firebase Auth y retorna el payload decodificado."""
+async def verify_id_token(token: str) -> dict:
+    """Valida un ID token de Firebase Auth y retorna el payload decodificado.
+
+    Corre firebase_auth.verify_id_token (llamada bloqueante de red) en un
+    thread pool para no bloquear el event loop de asyncio.
+    """
+    import asyncio
+
     _initialize()
-    return firebase_auth.verify_id_token(token)
+    loop = asyncio.get_event_loop()
+    return await loop.run_in_executor(None, firebase_auth.verify_id_token, token)
