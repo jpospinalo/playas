@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import type { Metadata } from "next";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080";
 
@@ -90,7 +89,7 @@ export default function AdminPage() {
   return (
     <div className="max-w-3xl space-y-8">
       <div>
-        <h1 className="font-[family-name:var(--font-display)] text-2xl font-semibold text-foreground">
+        <h1 className="font-display text-2xl font-semibold text-foreground">
           Resumen
         </h1>
         <p className="mt-1 text-sm text-muted">

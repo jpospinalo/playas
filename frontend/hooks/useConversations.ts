@@ -30,11 +30,16 @@ export function useConversations(): {
 
   useEffect(() => {
     if (!user) {
-      setConversations([]);
-      return;
+      const frame = window.requestAnimationFrame(() => {
+        setConversations([]);
+        setLoading(false);
+      });
+      return () => window.cancelAnimationFrame(frame);
     }
 
-    setLoading(true);
+    const loadingFrame = window.requestAnimationFrame(() => {
+      setLoading(true);
+    });
 
     const q = query(
       collection(db, "conversations"),
@@ -65,7 +70,10 @@ export function useConversations(): {
       }
     );
 
-    return unsubscribe;
+    return () => {
+      window.cancelAnimationFrame(loadingFrame);
+      unsubscribe();
+    };
   }, [user]);
 
   return { conversations, loading };

@@ -26,7 +26,7 @@ export function ChatHeader({ onNewChat, onOpenAuth, onToggleSidebar, sidebarOpen
               onClick={onToggleSidebar}
               aria-label={sidebarOpen ? "Cerrar historial" : "Ver historial"}
               aria-expanded={sidebarOpen}
-              className="flex w-fit items-center rounded-md px-2 py-1 text-muted transition-colors duration-150 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
+              className="flex w-fit items-center rounded-md px-2 py-1 text-muted transition-colors duration-150 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 md:hidden"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -71,7 +71,7 @@ export function ChatHeader({ onNewChat, onOpenAuth, onToggleSidebar, sidebarOpen
         {/* Centro: título */}
         <div className="flex flex-col items-center gap-0.5">
           <span
-            className="font-[family-name:var(--font-display)] text-center text-sm font-semibold tracking-wide text-foreground"
+            className="font-display text-center text-sm font-semibold tracking-wide text-foreground"
             translate="no"
           >
             Agente de Jurisprudencia <span className="text-accent">Costera</span>
