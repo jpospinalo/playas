@@ -11,14 +11,22 @@ from __future__ import annotations
 from datetime import UTC, datetime
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
+from firebase_admin import auth as firebase_auth
+from google.cloud.firestore import SERVER_TIMESTAMP
 
 from rag.api.auth import require_admin
-from rag.api.firebase_admin import get_db
+from rag.api.firebase_admin import (
+    create_user_async,
+    get_db,
+    update_user_password_async,
+)
 from rag.api.schemas import (
     AdminFeedbackItem,
     AdminFeedbackResponse,
     AdminUserItem,
     AdminUsersResponse,
+    CreateUserRequest,
+    UpdatePasswordRequest,
 )
 
 router = APIRouter(prefix="/api/admin", tags=["admin"])
@@ -157,3 +165,83 @@ async def list_users(
         )
 
     return AdminUsersResponse(items=items, total=len(items))
+
+
+@router.post(
+    "/users",
+    response_model=AdminUserItem,
+    status_code=status.HTTP_201_CREATED,
+)
+async def create_user(
+    payload: CreateUserRequest,
+    _admin: dict = Depends(require_admin),  # noqa: B008
+) -> AdminUserItem:
+    """Crea una cuenta de Firebase Auth y su documento en Firestore.
+
+    El nuevo usuario nace con rol 'user'. No se envía email de verificación.
+    """
+    try:
+        user_record = await create_user_async(
+            email=payload.email,
+            password=payload.password,
+            display_name=payload.displayName,
+        )
+    except firebase_auth.EmailAlreadyExistsError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Ese email ya está registrado.",
+        ) from exc
+    except (
+        ValueError,
+        firebase_auth.InvalidIdTokenError,
+    ) as exc:
+        # firebase_auth lanza ValueError para email/password mal formados
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=f"Datos inválidos: {exc}",
+        ) from exc
+
+    db = get_db()
+    user_doc = {
+        "email": payload.email,
+        "displayName": payload.displayName,
+        "role": "user",
+        "createdAt": SERVER_TIMESTAMP,
+    }
+    await db.collection("users").document(user_record.uid).set(user_doc)
+
+    # Releer para obtener el timestamp resuelto por el servidor
+    snap = await db.collection("users").document(user_record.uid).get()
+    data = snap.to_dict() or {}
+
+    return AdminUserItem(
+        uid=user_record.uid,
+        email=data.get("email", payload.email),
+        displayName=data.get("displayName"),
+        role=data.get("role", "user"),
+        createdAt=_ts_to_iso(data.get("createdAt")),
+    )
+
+
+@router.patch(
+    "/users/{uid}/password",
+    status_code=status.HTTP_204_NO_CONTENT,
+)
+async def update_user_password(
+    uid: str,
+    payload: UpdatePasswordRequest,
+    _admin: dict = Depends(require_admin),  # noqa: B008
+) -> None:
+    """Cambia la contraseña de un usuario existente. Sin verificación."""
+    try:
+        await update_user_password_async(uid, payload.password)
+    except firebase_auth.UserNotFoundError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Usuario no encontrado.",
+        ) from exc
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=f"Contraseña inválida: {exc}",
+        ) from exc

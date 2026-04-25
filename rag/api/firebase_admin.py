@@ -81,3 +81,34 @@ async def verify_id_token(token: str) -> dict:
     _initialize()
     loop = asyncio.get_event_loop()
     return await loop.run_in_executor(None, firebase_auth.verify_id_token, token)
+
+
+async def create_user_async(
+    email: str,
+    password: str,
+    display_name: str | None = None,
+):
+    """Crea un usuario en Firebase Auth. Retorna el UserRecord."""
+    import asyncio
+    from functools import partial
+
+    _initialize()
+    loop = asyncio.get_event_loop()
+    fn = partial(
+        firebase_auth.create_user,
+        email=email,
+        password=password,
+        display_name=display_name,
+    )
+    return await loop.run_in_executor(None, fn)
+
+
+async def update_user_password_async(uid: str, password: str):
+    """Cambia la contraseña de un usuario existente."""
+    import asyncio
+    from functools import partial
+
+    _initialize()
+    loop = asyncio.get_event_loop()
+    fn = partial(firebase_auth.update_user, uid, password=password)
+    return await loop.run_in_executor(None, fn)
