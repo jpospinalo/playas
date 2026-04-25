@@ -62,6 +62,68 @@ export async function generateConversationTitle(
   }
 }
 
+async function readErrorDetail(res: Response): Promise<string> {
+  try {
+    const data = (await res.clone().json()) as { detail?: string };
+    if (data?.detail) return data.detail;
+  } catch {
+    // no es JSON
+  }
+  const text = await res.text().catch(() => "");
+  return text.trim() || `Error del servidor (${res.status})`;
+}
+
+export interface AdminUserRow {
+  uid: string;
+  email: string;
+  displayName: string | null;
+  role: string;
+  createdAt: string;
+}
+
+export async function listAdminUsers(): Promise<AdminUserRow[]> {
+  const authHeaders = await getAuthHeaders();
+  const res = await fetch(`${API_URL}/api/admin/users`, {
+    method: "GET",
+    headers: { ...authHeaders },
+  });
+  if (!res.ok) throw new Error(await readErrorDetail(res));
+  const data = (await res.json()) as { items: AdminUserRow[]; total: number };
+  return data.items;
+}
+
+export async function createAdminUser(input: {
+  email: string;
+  password: string;
+  displayName?: string | null;
+}): Promise<AdminUserRow> {
+  const authHeaders = await getAuthHeaders();
+  const res = await fetch(`${API_URL}/api/admin/users`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...authHeaders },
+    body: JSON.stringify({
+      email: input.email,
+      password: input.password,
+      displayName: input.displayName ?? null,
+    }),
+  });
+  if (!res.ok) throw new Error(await readErrorDetail(res));
+  return res.json() as Promise<AdminUserRow>;
+}
+
+export async function updateAdminUserPassword(
+  uid: string,
+  password: string,
+): Promise<void> {
+  const authHeaders = await getAuthHeaders();
+  const res = await fetch(`${API_URL}/api/admin/users/${uid}/password`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json", ...authHeaders },
+    body: JSON.stringify({ password }),
+  });
+  if (!res.ok) throw new Error(await readErrorDetail(res));
+}
+
 /** Envía el feedback del usuario al backend para guardarlo en Firestore. */
 export async function submitFeedback(request: FeedbackRequest): Promise<{ id: string }> {
   const authHeaders = await getAuthHeaders();

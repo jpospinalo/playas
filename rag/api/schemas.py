@@ -81,6 +81,16 @@ class AdminUsersResponse(BaseModel):
     total: int
 
 
+class CreateUserRequest(BaseModel):
+    email: str = Field(..., min_length=3, description="Email del nuevo usuario")
+    password: str = Field(..., min_length=6, description="Contraseña (mínimo 6 caracteres)")
+    displayName: str | None = Field(default=None, description="Nombre para mostrar (opcional)")
+
+
+class UpdatePasswordRequest(BaseModel):
+    password: str = Field(..., min_length=6, description="Nueva contraseña (mínimo 6 caracteres)")
+
+
 class QueryResponse(BaseModel):
     answer: str = Field(..., description="Respuesta generada por el modelo")
     sources: list[SourceDocument] = Field(
