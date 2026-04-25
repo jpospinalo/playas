@@ -60,9 +60,7 @@ async def list_feedback(
     """
     db = get_db()
 
-    query = db.collection("feedback").order_by(
-        "createdAt", direction="DESCENDING"
-    )
+    query = db.collection("feedback").order_by("createdAt", direction="DESCENDING")
 
     if min_rating is not None:
         query = query.where("rating", ">=", min_rating)
@@ -144,7 +142,12 @@ async def list_users(
     db = get_db()
 
     try:
-        docs = [doc async for doc in db.collection("users").order_by("createdAt", direction="DESCENDING").stream()]
+        docs = [
+            doc
+            async for doc in db.collection("users")
+            .order_by("createdAt", direction="DESCENDING")
+            .stream()
+        ]
     except Exception as exc:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

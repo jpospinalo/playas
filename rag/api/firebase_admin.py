@@ -40,9 +40,7 @@ def _initialize() -> None:
         key_path = _PROJECT_ROOT / key_path
 
     if not key_path.exists():
-        raise RuntimeError(
-            f"No se encontró el archivo de credenciales de Firebase: {key_path}"
-        )
+        raise RuntimeError(f"No se encontró el archivo de credenciales de Firebase: {key_path}")
 
     cred = credentials.Certificate(str(key_path))
     try:

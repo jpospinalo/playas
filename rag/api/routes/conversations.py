@@ -51,8 +51,10 @@ async def generate_title(
 
     db = get_db()
     try:
-        await db.collection("conversations").document(request.conversation_id).update(
-            {"title": title}
+        await (
+            db.collection("conversations")
+            .document(request.conversation_id)
+            .update({"title": title})
         )
     except Exception as exc:
         raise HTTPException(

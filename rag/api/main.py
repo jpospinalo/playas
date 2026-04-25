@@ -175,9 +175,7 @@ async def _get_initial_messages(
     - Si no hay estado ni conversation_id: comienza conversación nueva.
     """
     state = await graph.aget_state(config)
-    has_checkpoint = bool(
-        (state.values if hasattr(state, "values") else {}).get("messages")
-    )
+    has_checkpoint = bool((state.values if hasattr(state, "values") else {}).get("messages"))
 
     if has_checkpoint:
         return [HumanMessage(content=question)]
