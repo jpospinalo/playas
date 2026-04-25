@@ -65,11 +65,6 @@ export function ConversationSidebar({
     setSearchOpen(true);
   }
 
-  function handleCollapsedSearch() {
-    openSearch();
-    if (!isExpanded) onToggleSidebar();
-  }
-
   async function handleSelectConversation(conv: Conversation) {
     closePanels();
     await onSelectConversation(conv);
@@ -102,7 +97,7 @@ export function ConversationSidebar({
         onToggleSidebar={handleToggleSidebar}
         onNewChat={handleNewChat}
         onOpenSearch={openSearch}
-        onCollapsedSearch={handleCollapsedSearch}
+        onCollapsedSearch={openSearch}
         onToggleProfile={() => {
           setSearchOpen(false);
           setProfileOpen((current) => !current);
