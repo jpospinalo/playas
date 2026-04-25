@@ -35,6 +35,8 @@ evaluation/ragas_eval_summary.json
 *.pem
 *.key
 *.crt
+firebase-service-account.json
+*-service-account.json
 
 # 7) Archivos de sistema
 .DS_Store
