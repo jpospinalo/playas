@@ -4,7 +4,6 @@ import { useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { useAuth } from "@/components/providers/AuthProvider";
 
-// Traducción de códigos de error de Firebase Auth al español
 function translateFirebaseError(code: string): string {
   const messages: Record<string, string> = {
     "auth/user-not-found": "No existe una cuenta con ese correo.",
@@ -20,12 +19,50 @@ function translateFirebaseError(code: string): string {
   return messages[code] ?? "Ocurrió un error. Intenta de nuevo.";
 }
 
+function EyeIcon({ open }: { open: boolean }) {
+  return open ? (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
+      <circle cx="12" cy="12" r="3" />
+    </svg>
+  ) : (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24" />
+      <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68" />
+      <path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61" />
+      <line x1="2" x2="22" y1="2" y2="22" />
+    </svg>
+  );
+}
+
+const inputClass =
+  "w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted/60 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent disabled:opacity-60";
+
 interface AuthModalProps {
-  /** Muestra el modal */
   open: boolean;
-  /** Modo: recomendación al entrar a /chat o acción explícita del usuario */
   mode?: "recommendation" | "explicit";
-  /** Subtítulo opcional para el modo explicit */
   subtitle?: string;
   onClose: () => void;
 }
@@ -35,14 +72,22 @@ type Tab = "login" | "register";
 export function AuthModal({ open, mode = "explicit", subtitle, onClose }: AuthModalProps) {
   const { signIn, signUp } = useAuth();
   const [tab, setTab] = useState<Tab>("login");
+  const [displayName, setDisplayName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   function resetForm() {
+    setDisplayName("");
     setEmail("");
     setPassword("");
+    setConfirmPassword("");
+    setShowPassword(false);
+    setShowConfirmPassword(false);
     setError(null);
     setSubmitting(false);
   }
@@ -56,12 +101,18 @@ export function AuthModal({ open, mode = "explicit", subtitle, onClose }: AuthMo
     e.preventDefault();
     if (submitting) return;
     setError(null);
+
+    if (tab === "register" && password !== confirmPassword) {
+      setError("Las contraseñas no coinciden.");
+      return;
+    }
+
     setSubmitting(true);
     try {
       if (tab === "login") {
         await signIn(email, password);
       } else {
-        await signUp(email, password);
+        await signUp(email, password, displayName);
       }
       resetForm();
       onClose();
@@ -78,6 +129,14 @@ export function AuthModal({ open, mode = "explicit", subtitle, onClose }: AuthMo
     onClose();
   }
 
+  const confirmMismatch = tab === "register" && !!confirmPassword && password !== confirmPassword;
+
+  const submitDisabled =
+    submitting ||
+    !email ||
+    !password ||
+    (tab === "register" && (!displayName || !confirmPassword || password !== confirmPassword));
+
   return (
     <AnimatePresence>
       {open && (
@@ -88,14 +147,12 @@ export function AuthModal({ open, mode = "explicit", subtitle, onClose }: AuthMo
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
         >
-          {/* Fondo oscuro */}
           <motion.div
             className="absolute inset-0 bg-black/50 backdrop-blur-sm"
             onClick={handleClose}
             aria-hidden="true"
           />
 
-          {/* Tarjeta */}
           <motion.div
             role="dialog"
             aria-modal="true"
@@ -106,7 +163,6 @@ export function AuthModal({ open, mode = "explicit", subtitle, onClose }: AuthMo
             exit={{ opacity: 0, scale: 0.96, y: 8 }}
             transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
           >
-            {/* Botón cerrar */}
             <button
               onClick={handleClose}
               aria-label="Cerrar"
@@ -128,7 +184,6 @@ export function AuthModal({ open, mode = "explicit", subtitle, onClose }: AuthMo
               </svg>
             </button>
 
-            {/* Encabezado */}
             {mode === "recommendation" ? (
               <div className="mb-5">
                 <h2
@@ -156,7 +211,6 @@ export function AuthModal({ open, mode = "explicit", subtitle, onClose }: AuthMo
               </div>
             )}
 
-            {/* Tabs */}
             <div
               role="tablist"
               aria-label="Modo de acceso"
@@ -179,8 +233,30 @@ export function AuthModal({ open, mode = "explicit", subtitle, onClose }: AuthMo
               ))}
             </div>
 
-            {/* Formulario */}
             <form onSubmit={handleSubmit} noValidate className="space-y-3">
+              {/* Nombre de usuario — solo en registro */}
+              {tab === "register" && (
+                <div>
+                  <label
+                    htmlFor="auth-display-name"
+                    className="mb-1 block text-xs font-medium text-muted"
+                  >
+                    Nombre de usuario
+                  </label>
+                  <input
+                    id="auth-display-name"
+                    type="text"
+                    autoComplete="username"
+                    required
+                    value={displayName}
+                    onChange={(e) => setDisplayName(e.target.value)}
+                    placeholder="Tu nombre o apodo"
+                    className={inputClass}
+                    disabled={submitting}
+                  />
+                </div>
+              )}
+
               <div>
                 <label
                   htmlFor="auth-email"
@@ -196,7 +272,7 @@ export function AuthModal({ open, mode = "explicit", subtitle, onClose }: AuthMo
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="correo@ejemplo.com"
-                  className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted/60 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent disabled:opacity-60"
+                  className={inputClass}
                   disabled={submitting}
                 />
               </div>
@@ -208,24 +284,69 @@ export function AuthModal({ open, mode = "explicit", subtitle, onClose }: AuthMo
                 >
                   Contraseña
                 </label>
-                <input
-                  id="auth-password"
-                  type="password"
-                  autoComplete={
-                    tab === "login" ? "current-password" : "new-password"
-                  }
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder={
-                    tab === "register" ? "Mínimo 6 caracteres" : "••••••••"
-                  }
-                  className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted/60 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent disabled:opacity-60"
-                  disabled={submitting}
-                />
+                <div className="relative">
+                  <input
+                    id="auth-password"
+                    type={showPassword ? "text" : "password"}
+                    autoComplete={tab === "login" ? "current-password" : "new-password"}
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder={tab === "register" ? "Mínimo 6 caracteres" : "••••••••"}
+                    className={`${inputClass} pr-10`}
+                    disabled={submitting}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((v) => !v)}
+                    aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-muted transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-accent"
+                    tabIndex={-1}
+                  >
+                    <EyeIcon open={showPassword} />
+                  </button>
+                </div>
               </div>
 
-              {/* Error */}
+              {/* Confirmar contraseña — solo en registro */}
+              {tab === "register" && (
+                <div>
+                  <label
+                    htmlFor="auth-confirm-password"
+                    className="mb-1 block text-xs font-medium text-muted"
+                  >
+                    Confirmar contraseña
+                  </label>
+                  <div className="relative">
+                    <input
+                      id="auth-confirm-password"
+                      type={showConfirmPassword ? "text" : "password"}
+                      autoComplete="new-password"
+                      required
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      placeholder="Repite tu contraseña"
+                      className={`${inputClass} pr-10 ${
+                        confirmMismatch ? "border-red-400 focus:border-red-400 focus:ring-red-400" : ""
+                      }`}
+                      disabled={submitting}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowConfirmPassword((v) => !v)}
+                      aria-label={showConfirmPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-muted transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-accent"
+                      tabIndex={-1}
+                    >
+                      <EyeIcon open={showConfirmPassword} />
+                    </button>
+                  </div>
+                  {confirmMismatch && (
+                    <p className="mt-1 text-xs text-red-600">Las contraseñas no coinciden.</p>
+                  )}
+                </div>
+              )}
+
               <AnimatePresence>
                 {error && (
                   <motion.p
@@ -243,7 +364,7 @@ export function AuthModal({ open, mode = "explicit", subtitle, onClose }: AuthMo
 
               <button
                 type="submit"
-                disabled={submitting || !email || !password}
+                disabled={submitDisabled}
                 className="mt-1 w-full rounded-lg bg-accent px-4 py-2.5 text-sm font-medium text-white transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 disabled:opacity-50"
               >
                 {submitting
@@ -254,7 +375,6 @@ export function AuthModal({ open, mode = "explicit", subtitle, onClose }: AuthMo
               </button>
             </form>
 
-            {/* Continuar sin cuenta */}
             <button
               onClick={handleClose}
               className="mt-4 w-full text-center text-xs text-muted transition-colors hover:text-foreground focus-visible:outline-none focus-visible:underline"
