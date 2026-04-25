@@ -1,0 +1,40 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isAdmin() {
+      return request.auth != null &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid))
+          .data.role in ['admin', 'super-admin'];
+    }
+
+    // users: cada usuario lee su propio doc; admins pueden listar todos
+    match /users/{uid} {
+      allow read: if request.auth.uid == uid || isAdmin();
+      allow create: if request.auth.uid == uid;
+      // El campo 'role' solo se modifica desde Firebase Console (Admin SDK)
+      allow update: if request.auth.uid == uid &&
+                       !('role' in request.resource.data.diff(resource.data).affectedKeys());
+      allow list: if isAdmin();
+    }
+
+    // conversations: solo el dueño puede leer y escribir
+    match /conversations/{conversationId} {
+      allow read, write: if request.auth != null &&
+                            request.auth.uid == resource.data.userId;
+      allow create: if request.auth != null &&
+                       request.auth.uid == request.resource.data.userId;
+
+      match /messages/{messageId} {
+        allow read, write: if request.auth != null &&
+          request.auth.uid == get(/databases/$(database)/documents/conversations/$(conversationId)).data.userId;
+      }
+    }
+
+    // feedback: crear si autenticado; leer solo admins
+    match /feedback/{feedbackId} {
+      allow create: if request.auth != null;
+      allow read, list: if isAdmin();
+    }
+  }
+}

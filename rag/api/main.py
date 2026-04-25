@@ -18,12 +18,16 @@ from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import Any
 
-from fastapi import FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from langchain_core.documents import Document
 from langchain_core.messages import AIMessage, HumanMessage
 
+from rag.api.auth import get_optional_user
+from rag.api.routes.admin import router as admin_router
+from rag.api.routes.conversations import router as conversations_router
+from rag.api.routes.feedback import router as feedback_router
 from rag.api.schemas import QueryRequest, QueryResponse, SourceDocument
 from rag.config import CONTEXT_LIMIT_TOKENS
 from rag.core.retriever import init_retrievers
@@ -77,6 +81,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.include_router(conversations_router)
+app.include_router(feedback_router)
+app.include_router(admin_router)
 
 
 # ── Helpers ────────────────────────────────────────────────────────────────
@@ -150,6 +158,53 @@ def _estimate_context_tokens(messages: list) -> int:
     return total_chars // 4
 
 
+# ── Hydration ──────────────────────────────────────────────────────────────
+
+
+async def _get_initial_messages(
+    graph,
+    config: dict,
+    conversation_id: str | None,
+    question: str,
+) -> list:
+    """Devuelve los mensajes iniciales para invocar el agente.
+
+    - Si MemorySaver tiene estado: solo añade la nueva pregunta (continuación normal).
+    - Si no hay estado y hay conversation_id: carga el historial desde Firestore e
+      inyecta el contexto completo (útil tras reinicio del servidor).
+    - Si no hay estado ni conversation_id: comienza conversación nueva.
+    """
+    state = await graph.aget_state(config)
+    has_checkpoint = bool((state.values if hasattr(state, "values") else {}).get("messages"))
+
+    if has_checkpoint:
+        return [HumanMessage(content=question)]
+
+    if not conversation_id:
+        return [HumanMessage(content=question)]
+
+    # Cargar historial desde Firestore via Admin SDK
+    from rag.api.firebase_admin import get_db
+
+    db = get_db()
+    messages_ref = (
+        db.collection("conversations")
+        .document(conversation_id)
+        .collection("messages")
+        .order_by("createdAt")
+    )
+
+    history: list = []
+    async for doc in messages_ref.stream():
+        data = doc.to_dict() or {}
+        if data.get("role") == "user":
+            history.append(HumanMessage(content=data.get("text", "")))
+        else:
+            history.append(AIMessage(content=data.get("text", "")))
+
+    return history + [HumanMessage(content=question)]
+
+
 # ── Routes ─────────────────────────────────────────────────────────────────
 
 
@@ -160,7 +215,10 @@ async def health() -> dict:
 
 
 @app.post("/api/query", response_model=QueryResponse)
-async def query(request: QueryRequest) -> QueryResponse:
+async def query(
+    request: QueryRequest,
+    _user: dict | None = Depends(get_optional_user),
+) -> QueryResponse:
     """Consulta jurídica completa (respuesta JSON).
 
     Ejecuta el agente LangGraph hasta completar el ciclo enrich → retrieve → generate.
@@ -170,10 +228,13 @@ async def query(request: QueryRequest) -> QueryResponse:
     config = _make_config(request.thread_id)
 
     try:
+        initial_messages = await _get_initial_messages(
+            graph, config, request.conversation_id, request.question
+        )
         final_state = await graph.ainvoke(
             {
                 "question": request.question,
-                "messages": [HumanMessage(content=request.question)],
+                "messages": initial_messages,
                 "sources": [],
             },
             config=config,
@@ -199,7 +260,10 @@ async def query(request: QueryRequest) -> QueryResponse:
 
 
 @app.post("/api/query/stream")
-async def query_stream(request: QueryRequest):
+async def query_stream(
+    request: QueryRequest,
+    _user: dict | None = Depends(get_optional_user),
+):
     """Streaming SSE: emite tokens del LLM en tiempo real.
 
     Formato de eventos SSE:
@@ -212,6 +276,9 @@ async def query_stream(request: QueryRequest):
     """
     graph = get_graph()
     config = _make_config(request.thread_id)
+    initial_messages = await _get_initial_messages(
+        graph, config, request.conversation_id, request.question
+    )
 
     async def event_generator():
         try:
@@ -221,7 +288,7 @@ async def query_stream(request: QueryRequest):
             async for mode, payload in graph.astream(
                 {
                     "question": request.question,
-                    "messages": [HumanMessage(content=request.question)],
+                    "messages": initial_messages,
                     "sources": [],
                 },
                 config=config,

@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useId, useState } from "react";
 import type { SourceDocument } from "@/lib/types";
 
 interface SourcesAccordionProps {
@@ -9,9 +9,7 @@ interface SourcesAccordionProps {
 
 export function SourcesAccordion({ sources }: SourcesAccordionProps) {
   const [open, setOpen] = useState(false);
-  const contentId = useRef(
-    `sources-${Math.random().toString(36).slice(2)}`
-  ).current;
+  const contentId = useId();
 
   if (sources.length === 0) return null;
 
@@ -97,7 +95,7 @@ export function SourcesAccordion({ sources }: SourcesAccordionProps) {
                 </p>
                 {src.source && (
                   <p
-                    className="mt-1.5 truncate font-[family-name:var(--font-mono,monospace)] text-[10px] text-muted/60"
+                    className="mt-1.5 truncate font-(family-name:--font-mono,monospace) text-[10px] text-muted/60"
                     translate="no"
                   >
                     {src.source}

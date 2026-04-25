@@ -19,6 +19,14 @@ class QueryRequest(BaseModel):
             "Si es None, cada request es independiente."
         ),
     )
+    conversation_id: str | None = Field(
+        default=None,
+        description=(
+            "ID del documento de conversación en Firestore. "
+            "Si el MemorySaver está vacío (reinicio del servidor) y se proporciona este campo, "
+            "el backend hidrata el estado de LangGraph desde el historial de Firestore."
+        ),
+    )
 
 
 class SourceDocument(BaseModel):
@@ -26,6 +34,61 @@ class SourceDocument(BaseModel):
     source: str = Field(default="", description="Nombre del documento fuente")
     title: str = Field(default="", description="Título legible del documento")
     metadata: dict = Field(default_factory=dict, description="Metadatos adicionales del fragmento")
+
+
+class FeedbackRequest(BaseModel):
+    rating: int = Field(..., ge=1, le=5, description="Calificación entre 1 y 5")
+    comment: str | None = Field(default=None, description="Comentario opcional del usuario")
+    conversation_id: str | None = Field(
+        default=None, description="ID del documento de conversación activa en Firestore"
+    )
+
+
+class FeedbackResponse(BaseModel):
+    id: str = Field(..., description="ID del documento de feedback creado en Firestore")
+
+
+class AdminFeedbackItem(BaseModel):
+    id: str
+    userId: str
+    userEmail: str
+    rating: int
+    comment: str | None
+    conversationId: str | None
+    conversationTitle: str | None
+    createdAt: str = Field(..., description="ISO 8601 timestamp")
+
+
+class AdminFeedbackResponse(BaseModel):
+    items: list[AdminFeedbackItem]
+    total: int
+    avg_rating: float
+    distribution: dict[str, int] = Field(
+        ..., description="Distribución de ratings: {'1': n, '2': n, ...}"
+    )
+
+
+class AdminUserItem(BaseModel):
+    uid: str
+    email: str
+    displayName: str | None
+    role: str
+    createdAt: str = Field(..., description="ISO 8601 timestamp")
+
+
+class AdminUsersResponse(BaseModel):
+    items: list[AdminUserItem]
+    total: int
+
+
+class CreateUserRequest(BaseModel):
+    email: str = Field(..., min_length=3, description="Email del nuevo usuario")
+    password: str = Field(..., min_length=6, description="Contraseña (mínimo 6 caracteres)")
+    displayName: str | None = Field(default=None, description="Nombre para mostrar (opcional)")
+
+
+class UpdatePasswordRequest(BaseModel):
+    password: str = Field(..., min_length=6, description="Nueva contraseña (mínimo 6 caracteres)")
 
 
 class QueryResponse(BaseModel):
