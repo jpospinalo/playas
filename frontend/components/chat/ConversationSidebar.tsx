@@ -34,10 +34,11 @@ export function ConversationSidebar({
   onNewChat,
   onToggleSidebar,
 }: ConversationSidebarProps) {
-  const { user, signOut } = useAuth();
+  const { user, role, signOut } = useAuth();
   const [search, setSearch] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
+  const isAdmin = role === "admin" || role === "super-admin";
 
   const searchResults = conversations.filter((conversation) =>
     conversation.title.toLowerCase().includes(search.toLowerCase())
@@ -91,6 +92,7 @@ export function ConversationSidebar({
         hasSearch={hasSearch}
         profileOpen={profileOpen}
         userInfo={userInfo}
+        isAdmin={isAdmin}
         conversations={conversations}
         activeConversationId={activeConversationId}
         loading={loading}
@@ -112,6 +114,7 @@ export function ConversationSidebar({
         hasSearch={hasSearch}
         profileOpen={profileOpen}
         userInfo={userInfo}
+        isAdmin={isAdmin}
         conversations={conversations}
         activeConversationId={activeConversationId}
         loading={loading}
@@ -146,6 +149,7 @@ interface SidebarContentProps {
   hasSearch: boolean;
   profileOpen: boolean;
   userInfo: UserInfo;
+  isAdmin: boolean;
   conversations: Conversation[];
   activeConversationId: string | null;
   loading: boolean;
@@ -164,6 +168,7 @@ function DesktopSidebar({
   hasSearch,
   profileOpen,
   userInfo,
+  isAdmin,
   conversations,
   activeConversationId,
   loading,
@@ -204,6 +209,7 @@ function DesktopSidebar({
               hasSearch={hasSearch}
               profileOpen={profileOpen}
               userInfo={userInfo}
+              isAdmin={isAdmin}
               conversations={conversations}
               activeConversationId={activeConversationId}
               loading={loading}
@@ -221,6 +227,7 @@ function DesktopSidebar({
             hasSearch={hasSearch}
             profileOpen={profileOpen}
             userInfo={userInfo}
+            isAdmin={isAdmin}
             onToggleSidebar={onToggleSidebar}
             onNewChat={onNewChat}
             onOpenSearch={onCollapsedSearch}
@@ -240,6 +247,7 @@ function MobileSidebar({
   hasSearch,
   profileOpen,
   userInfo,
+  isAdmin,
   conversations,
   activeConversationId,
   loading,
@@ -266,6 +274,7 @@ function MobileSidebar({
             hasSearch={hasSearch}
             profileOpen={profileOpen}
             userInfo={userInfo}
+            isAdmin={isAdmin}
             conversations={conversations}
             activeConversationId={activeConversationId}
             loading={loading}
@@ -287,6 +296,7 @@ function ExpandedSidebarContent({
   hasSearch,
   profileOpen,
   userInfo,
+  isAdmin,
   conversations,
   activeConversationId,
   loading,
@@ -329,6 +339,7 @@ function ExpandedSidebarContent({
         userName={userInfo.name}
         userEmail={userInfo.email}
         userInitial={userInfo.initial}
+        isAdmin={isAdmin}
         onToggle={onToggleProfile}
         onClose={onCloseProfile}
         onSignOut={onSignOut}
@@ -341,6 +352,7 @@ function CollapsedSidebarContent({
   hasSearch,
   profileOpen,
   userInfo,
+  isAdmin,
   transitionEnabled,
   onToggleSidebar,
   onNewChat,
@@ -348,7 +360,7 @@ function CollapsedSidebarContent({
   onToggleProfile,
   onCloseProfile,
   onSignOut,
-}: Pick<SidebarContentProps, "hasSearch" | "profileOpen" | "userInfo"> & {
+}: Pick<SidebarContentProps, "hasSearch" | "profileOpen" | "userInfo" | "isAdmin"> & {
   transitionEnabled: boolean;
   onToggleSidebar: () => void;
   onNewChat: () => void;
@@ -389,6 +401,7 @@ function CollapsedSidebarContent({
         userName={userInfo.name}
         userEmail={userInfo.email}
         userInitial={userInfo.initial}
+        isAdmin={isAdmin}
         onToggle={onToggleProfile}
         onClose={onCloseProfile}
         onSignOut={onSignOut}

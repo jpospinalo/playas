@@ -19,6 +19,7 @@ import { auth, db } from "@/lib/firebase";
 
 interface AuthContextValue {
   user: User | null;
+  role: string | null;
   /** true mientras Firebase resuelve el estado inicial de sesión */
   loading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
@@ -30,26 +31,33 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
+  const [role, setRole] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       setUser(firebaseUser);
-      setLoading(false);
 
-      // Crear documento del usuario en Firestore en el primer login
       if (firebaseUser) {
         const userRef = doc(db, "users", firebaseUser.uid);
         const snap = await getDoc(userRef);
-        if (!snap.exists()) {
+        if (snap.exists()) {
+          setRole(snap.data()?.role ?? "user");
+        } else {
+          // Crear documento del usuario en Firestore en el primer login
           await setDoc(userRef, {
             email: firebaseUser.email,
             displayName: firebaseUser.displayName ?? null,
             createdAt: serverTimestamp(),
             role: "user",
           });
+          setRole("user");
         }
+      } else {
+        setRole(null);
       }
+
+      setLoading(false);
     });
 
     return unsubscribe;
@@ -68,7 +76,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, loading, signIn, signUp, signOut }}>
+    <AuthContext.Provider value={{ user, role, loading, signIn, signUp, signOut }}>
       {children}
     </AuthContext.Provider>
   );
