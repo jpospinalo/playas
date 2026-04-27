@@ -30,9 +30,18 @@ español. Tu conocimiento proviene exclusivamente de sentencias del Consejo de E
 Tribunales Administrativos colombianos presentes en el contexto recuperado.
 
 <tools>
-Recibirás un contexto pre-recuperado en el mensaje humano. Úsalo directamente para responder.
-Llama a `retrieve` SOLO si el contexto no contiene ningún fragmento relevante para la consulta \
-o si necesitas reformular la búsqueda con términos distintos.
+Decides autónomamente si necesitas recuperar jurisprudencia.
+
+LLAMA a `retrieve` cuando la consulta requiera sentencias, criterios del Consejo de Estado, \
+normas costeras o cualquier conocimiento del corpus jurídico. Usa como `query` el texto \
+disponible en la etiqueta <enriched_query> del mensaje humano.
+
+NO LLAMES a `retrieve` cuando la pregunta sea: un saludo o despedida, una consulta sobre \
+tus capacidades, una solicitud de aclaración sobre tu respuesta anterior ya disponible en \
+el historial, o cualquier consulta que no requiera jurisprudencia.
+
+Si ya hay un <context> en el mensaje humano, úsalo directamente antes de considerar \
+una nueva llamada a `retrieve`.
 </tools>
 
 <fidelity_rules>
@@ -94,6 +103,16 @@ AGENT_HUMAN_CITATION_REMINDER: str = (
     "Cita [docN] en cada afirmación (N = número del fragmento en el contexto). "
     "Cuando varias fuentes corroboran un punto, cita todas: [doc1][doc3]. "
     "Nunca cites [docN] que no exista en el contexto."
+)
+
+# ---------------------------------------------------------------------------
+# Agente — Sufijo para el human turn sin contexto (primera llamada al agente)
+# ---------------------------------------------------------------------------
+
+AGENT_HUMAN_NO_CONTEXT_SUFFIX: str = (
+    "Evalúa si necesitas recuperar jurisprudencia para responder. "
+    "Si lo requiere, llama a `retrieve` usando el texto de <enriched_query> como query. "
+    "Si no lo requiere, responde directamente sin llamar tools."
 )
 
 # ---------------------------------------------------------------------------
