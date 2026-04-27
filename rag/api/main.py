@@ -154,9 +154,7 @@ def _docs_to_source_groups(docs: list[Document]) -> list[SourceGroup]:
         source = meta.get("source", "") or f"__unknown_{i}__"
 
         fragment_meta = {
-            k: v
-            for k, v in meta.items()
-            if k not in (*_DOC_LEVEL_META_KEYS, "source")
+            k: v for k, v in meta.items() if k not in (*_DOC_LEVEL_META_KEYS, "source")
         }
         fragment = SourceFragment(
             index=i + 1,

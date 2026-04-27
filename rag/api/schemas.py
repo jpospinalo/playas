@@ -34,7 +34,10 @@ class SourceFragment(BaseModel):
         ..., description="Posición global 1-based del fragmento en la recuperación; mapea a [docN]"
     )
     content: str = Field(..., description="Contenido del fragmento (recortado a 500 caracteres)")
-    metadata: dict = Field(default_factory=dict, description="Metadatos del fragmento (sección, summary, keywords, ...)")
+    metadata: dict = Field(
+        default_factory=dict,
+        description="Metadatos del fragmento (sección, summary, keywords, ...)",
+    )
 
 
 class SourceGroup(BaseModel):
