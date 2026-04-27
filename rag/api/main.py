@@ -28,7 +28,7 @@ from rag.api.auth import get_optional_user
 from rag.api.routes.admin import router as admin_router
 from rag.api.routes.conversations import router as conversations_router
 from rag.api.routes.feedback import router as feedback_router
-from rag.api.schemas import QueryRequest, QueryResponse, SourceDocument
+from rag.api.schemas import QueryRequest, QueryResponse, SourceFragment, SourceGroup
 from rag.config import CONTEXT_LIMIT_TOKENS
 from rag.core.retriever import init_retrievers
 
@@ -101,23 +101,79 @@ def _clean_answer(answer: str) -> str:
     return answer.strip()
 
 
-def _doc_to_source(doc: Document) -> SourceDocument:
-    meta = doc.metadata or {}
-    content = (doc.page_content or "").strip().replace("\n", " ")
+# Campos de metadata que pertenecen al documento (no al fragmento). El resto
+# de claves se considera específico del chunk y viaja en SourceFragment.metadata.
+_DOC_LEVEL_META_KEYS = (
+    "title",
+    "book_title",
+    "Archivo",
+    "No",
+    "Corporación",
+    "Radicado",
+    "Magistrado ponente",
+    "Tema principal",
+    "Partes procesales",
+    "RELACIÓN PLAYAS",
+    "TEMATICA",
+)
+
+
+def _resolve_title(meta: dict) -> str:
+    title = meta.get("title") or meta.get("book_title") or ""
+    if title:
+        return title
+    source_path = meta.get("source", "")
+    return Path(source_path).stem.replace("_", " ") if source_path else ""
+
+
+def _truncate_content(text: str) -> str:
+    content = (text or "").strip().replace("\n", " ")
     if len(content) > 500:
         content = content[:500] + "..."
+    return content
 
-    title = meta.get("title") or meta.get("book_title") or ""
-    if not title:
-        source_path = meta.get("source", "")
-        title = Path(source_path).stem.replace("_", " ") if source_path else ""
 
-    return SourceDocument(
-        content=content,
-        source=meta.get("source", ""),
-        title=title,
-        metadata={k: v for k, v in meta.items() if k not in ("source",)},
-    )
+def _docs_to_source_groups(docs: list[Document]) -> list[SourceGroup]:
+    """Agrupa los documentos recuperados por archivo de origen.
+
+    - Conserva el orden de recuperación (el primer fragmento determina la
+      posición del grupo en la lista, lo que preserva "mejor score primero").
+    - Asigna a cada fragmento un `index` global 1-based que coincide con los
+      marcadores `[docN]` que `tools.build_context_block` inyecta en el prompt.
+    - Separa los metadatos en nivel-documento (compartidos entre fragmentos del
+      mismo archivo) y nivel-fragmento (sección, summary, keywords, entities).
+    """
+    groups: dict[str, SourceGroup] = {}
+    order: list[str] = []
+
+    for i, doc in enumerate(docs):
+        meta = dict(doc.metadata or {})
+        source = meta.get("source", "") or f"__unknown_{i}__"
+
+        fragment_meta = {
+            k: v
+            for k, v in meta.items()
+            if k not in (*_DOC_LEVEL_META_KEYS, "source")
+        }
+        fragment = SourceFragment(
+            index=i + 1,
+            content=_truncate_content(doc.page_content),
+            metadata=fragment_meta,
+        )
+
+        if source not in groups:
+            doc_meta = {k: meta[k] for k in _DOC_LEVEL_META_KEYS if k in meta}
+            groups[source] = SourceGroup(
+                source=meta.get("source", ""),
+                title=_resolve_title(meta),
+                metadata=doc_meta,
+                fragments=[fragment],
+            )
+            order.append(source)
+        else:
+            groups[source].fragments.append(fragment)
+
+    return [groups[s] for s in order]
 
 
 def _make_config(thread_id: str | None, recursion_limit: int = 10) -> dict:
@@ -252,7 +308,7 @@ async def query(
 
     return QueryResponse(
         answer=_clean_answer(answer_raw),
-        sources=[_doc_to_source(d) for d in sources],
+        sources=_docs_to_source_groups(sources),
         enriched_query=enriched_query,
         context_tokens=context_tokens,
         context_limit=CONTEXT_LIMIT_TOKENS,
@@ -317,7 +373,7 @@ async def query_stream(
             enriched_query = values.get("enriched_query")
             context_tokens = _estimate_context_tokens(values.get("messages", []))
 
-            sources_payload = [_doc_to_source(d).model_dump() for d in sources_raw]
+            sources_payload = [g.model_dump() for g in _docs_to_source_groups(sources_raw)]
             event = json.dumps(
                 {
                     "type": "sources",

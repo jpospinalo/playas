@@ -15,7 +15,8 @@ import {
 } from "firebase/firestore";
 import { generateConversationTitle, queryRagStream } from "@/lib/api";
 import { db } from "@/lib/firebase";
-import type { AgentStage, Message, SourceDocument } from "@/lib/types";
+import type { AgentStage, Message, SourceGroup } from "@/lib/types";
+import { normalizeSources } from "@/lib/types";
 import { useAuth } from "@/components/providers/AuthProvider";
 import type { Conversation } from "@/hooks/useConversations";
 
@@ -144,7 +145,7 @@ export function useChat(): UseChatReturn {
     ]);
 
     let finalAssistantText = "";
-    let finalAssistantSources: SourceDocument[] = [];
+    let finalAssistantSources: SourceGroup[] = [];
 
     try {
       for await (const event of queryRagStream({
@@ -171,10 +172,11 @@ export function useChat(): UseChatReturn {
           setStage(event.stage);
           setStageMessage(event.message ?? DEFAULT_STAGE_MESSAGES[event.stage]);
         } else if (event.type === "sources") {
-          finalAssistantSources = event.sources;
+          const groups = normalizeSources(event.sources);
+          finalAssistantSources = groups;
           setMessages((prev) =>
             prev.map((m) =>
-              m.id === assistantId ? { ...m, sources: event.sources } : m
+              m.id === assistantId ? { ...m, sources: groups } : m
             )
           );
           if (event.context_tokens != null && event.context_limit) {
@@ -227,11 +229,12 @@ export function useChat(): UseChatReturn {
     const snapshot = await getDocs(messagesRef);
     const loaded: Message[] = snapshot.docs.map((docSnap) => {
       const data = docSnap.data();
+      const rawSources = data.sources;
       return {
         id: docSnap.id,
         role: data.role as "user" | "assistant",
         text: (data.text as string) ?? "",
-        sources: data.sources ?? undefined,
+        sources: rawSources ? normalizeSources(rawSources) : undefined,
       };
     });
 

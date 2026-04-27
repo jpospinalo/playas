@@ -4,18 +4,31 @@ import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { motion } from "motion/react";
 import ReactMarkdown, { type Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
-import type { SourceDocument } from "@/lib/types";
+import type { SourceFragment, SourceGroup } from "@/lib/types";
 import { SourcesAccordion } from "@/components/chat/SourcesAccordion";
 
 interface AssistantBubbleProps {
   text: string;
-  sources: SourceDocument[];
+  sources: SourceGroup[];
 }
 
 interface PopoverState {
-  docIndex: number;
+  fragmentIndex: number;
   top: number;
   left: number;
+}
+
+// Etiquetas a mostrar en el popover (orden de aparición + texto del label).
+const POPOVER_DOC_META: Array<[string, string]> = [
+  ["Corporación", "Corporación"],
+  ["Radicado", "Radicado"],
+  ["Magistrado ponente", "Magistrado"],
+  ["Tema principal", "Tema"],
+];
+
+function metaString(meta: Record<string, unknown>, key: string): string {
+  const v = meta[key];
+  return typeof v === "string" ? v : "";
 }
 
 /**
@@ -43,6 +56,17 @@ function prepareMarkdown(raw: string): string {
 
 export function AssistantBubble({ text, sources }: AssistantBubbleProps) {
   const processedText = useMemo(() => prepareMarkdown(text), [text]);
+
+  // Mapa global: índice de fragmento ([docN] → N) → fragmento + grupo padre.
+  const fragmentLookup = useMemo(() => {
+    const map = new Map<number, { group: SourceGroup; fragment: SourceFragment }>();
+    for (const group of sources) {
+      for (const fragment of group.fragments) {
+        map.set(fragment.index, { group, fragment });
+      }
+    }
+    return map;
+  }, [sources]);
 
   const [popover, setPopoverState] = useState<PopoverState | null>(null);
 
@@ -91,28 +115,25 @@ export function AssistantBubble({ text, sources }: AssistantBubbleProps) {
         if (!match) return <a href={href}>{children}</a>;
 
         const n = parseInt(match[1], 10);
-        const docIndex = n - 1;
-        const hasSource = docIndex >= 0 && docIndex < sources.length;
+        const hasFragment = fragmentLookup.has(n);
 
         return (
           <button
             type="button"
-            className={`doc-badge${hasSource ? "" : " doc-badge--missing"}`}
+            className={`doc-badge${hasFragment ? "" : " doc-badge--missing"}`}
             data-doc-badge={n}
-            aria-label={hasSource ? `Ver fuente ${n}` : `Fuente ${n} no disponible`}
-            aria-disabled={!hasSource}
+            aria-label={hasFragment ? `Ver fuente ${n}` : `Fuente ${n} no disponible`}
+            aria-disabled={!hasFragment}
             onClick={(e) => {
               e.preventDefault();
 
               // Toggle: close if same badge was clicked again.
-              if (popoverRef.current?.docIndex === docIndex) {
+              if (popoverRef.current?.fragmentIndex === n) {
                 setPopover(null);
                 return;
               }
 
-              // Badge references a doc index beyond the available sources.
-              if (docIndex < 0 || docIndex >= sources.length) return;
-
+              if (!hasFragment) return;
               if (!proseRef.current) return;
 
               const btn = e.currentTarget;
@@ -120,13 +141,13 @@ export function AssistantBubble({ text, sources }: AssistantBubbleProps) {
               const btnRect = btn.getBoundingClientRect();
 
               setPopover({
-                docIndex,
+                fragmentIndex: n,
                 top: btnRect.bottom - wrapperRect.top + 6,
                 left: Math.max(
                   0,
                   Math.min(
                     btnRect.left - wrapperRect.left,
-                    wrapperRect.width - 328
+                    wrapperRect.width - 360
                   )
                 ),
               });
@@ -137,15 +158,19 @@ export function AssistantBubble({ text, sources }: AssistantBubbleProps) {
         );
       },
     }),
-    [setPopover, sources.length]
+    [setPopover, fragmentLookup]
   );
 
-  const activeSource =
-    popover !== null &&
-    popover.docIndex >= 0 &&
-    popover.docIndex < sources.length
-      ? sources[popover.docIndex]
-      : null;
+  const active = popover ? fragmentLookup.get(popover.fragmentIndex) ?? null : null;
+
+  // Metadatos del documento que existen y son no vacíos.
+  const docMeta = useMemo(() => {
+    if (!active) return [];
+    return POPOVER_DOC_META.map(([key, label]) => {
+      const value = metaString(active.group.metadata, key);
+      return value ? { label, value } : null;
+    }).filter((x): x is { label: string; value: string } => x !== null);
+  }, [active]);
 
   return (
     <motion.div
@@ -167,22 +192,55 @@ export function AssistantBubble({ text, sources }: AssistantBubbleProps) {
             {processedText}
           </ReactMarkdown>
 
-          {popover && activeSource && (
+          {popover && active && (
             <div
               ref={popoverElRef}
-              className="doc-popover"
+              className="doc-popover doc-popover--rich"
               role="tooltip"
               style={{ top: popover.top, left: popover.left }}
             >
-              {activeSource.title && (
+              {active.group.title && (
                 <p className="doc-popover-title" translate="no">
-                  {activeSource.title}
+                  {active.group.title}
                 </p>
               )}
-              <p className="doc-popover-content">{activeSource.content}</p>
-              {activeSource.source && (
+
+              {docMeta.length > 0 && (
+                <dl className="doc-popover-meta">
+                  {docMeta.map(({ label, value }) => (
+                    <div key={label} className="doc-popover-meta-row">
+                      <dt>{label}</dt>
+                      <dd translate="no">{value}</dd>
+                    </div>
+                  ))}
+                </dl>
+              )}
+
+              {(() => {
+                const section =
+                  metaString(active.fragment.metadata, "section_name") ||
+                  metaString(active.fragment.metadata, "section_heading");
+                return section ? (
+                  <p className="doc-popover-section" translate="no">
+                    {section}
+                  </p>
+                ) : null;
+              })()}
+
+              {(() => {
+                const summary = metaString(active.fragment.metadata, "summary");
+                return summary ? (
+                  <p className="doc-popover-summary">{summary}</p>
+                ) : null;
+              })()}
+
+              <p className="doc-popover-content doc-popover-content--scroll">
+                {active.fragment.content}
+              </p>
+
+              {active.group.source && (
                 <p className="doc-popover-source" translate="no">
-                  {activeSource.source}
+                  {active.group.source}
                 </p>
               )}
             </div>
