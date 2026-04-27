@@ -5,24 +5,22 @@ Arquitectura:
 
   Providers con tool calling (OpenRouter, Gemini estándar):
 
-    START → enrich_query → retrieve_prefetch → agent ⇆ tools → END
+    START → enrich_query → agent ⇆ tools → END
 
-    El retrieve usa la consulta enriquecida (mejor recall). El agent recibe
-    las sources ya inyectadas en el HumanMessage, por lo que en el caso
-    feliz NO emite tool_calls y genera la respuesta en su primera llamada
-    (una llamada LLM menos que el ReAct puro).
+    El agente decide autónomamente si llama a `retrieve` según si la pregunta
+    requiere jurisprudencia. El happy path para preguntas no jurídicas termina
+    sin llamar tools. El happy path jurídico necesita 3 llamadas LLM:
+    enrich + agent-sin-contexto (emite tool_call) + agent-post-retrieve.
 
   Providers sin tool calling (Gemma vía Google GenAI):
 
     START → enrich_query → retrieve_forced → generate → END
 
-Optimizaciones de latencia:
-  1. Contexto pre-cargado: elimina la llamada LLM intermedia que solo
-     emite tool_calls (de 3 llamadas LLM a 2 en el happy path).
-  2. System prompt estable: el BASE_INSTRUCTIONS no contiene partes
-     dinámicas, habilitando prompt caching automático (Grok, OpenAI, etc.).
-     Todo lo dinámico (enriched_query, contexto) va en el HumanMessage final.
-  3. Eventos custom de estado: cada nodo emite un evento "status" para que
+Optimizaciones:
+  1. System prompt estable: BASE_INSTRUCTIONS no contiene partes dinámicas,
+     habilitando prompt caching automático (Grok, OpenAI, etc.).
+     Todo lo dinámico (enriched_query, contexto) va en el HumanMessage.
+  2. Eventos custom de estado: cada nodo emite un evento "status" para que
      el frontend muestre progreso mientras se ejecuta.
 """
 
@@ -43,7 +41,12 @@ from langgraph.prebuilt import ToolNode, tools_condition
 from typing_extensions import TypedDict
 
 from .llm_factory import get_active_provider, get_generation_llm
-from .prompts import AGENT_FALLBACK_HUMAN_TEMPLATE, AGENT_HUMAN_CITATION_REMINDER, AGENT_SYSTEM
+from .prompts import (
+    AGENT_FALLBACK_HUMAN_TEMPLATE,
+    AGENT_HUMAN_CITATION_REMINDER,
+    AGENT_HUMAN_NO_CONTEXT_SUFFIX,
+    AGENT_SYSTEM,
+)
 from .query_enricher import EnrichedQuery, enrich_query_async
 from .retriever import get_ensemble_retriever
 from .tools import ALL_TOOLS, build_context_block
@@ -58,7 +61,7 @@ class AgentState(TypedDict):
     question: str
     enriched_query: str | None
     # Sin reducer: overwrite. enrich_query_node lo resetea al inicio de cada turno;
-    # retrieve_prefetch_node y la tool retrieve lo sobrescriben con los docs del turno.
+    # la tool retrieve lo sobrescribe con los docs recuperados.
     sources: list[Document]
 
 
@@ -73,17 +76,28 @@ class AgentState(TypedDict):
 BASE_INSTRUCTIONS = AGENT_SYSTEM
 
 
-def _build_human_turn(question: str, context: str) -> str:
+def _build_human_turn(
+    question: str,
+    enriched_query: str | None,
+    context: str | None,
+) -> str:
     """Construye el HumanMessage con toda la información dinámica del turno.
 
-    Mantener esto fuera del SystemMessage es lo que permite que Grok/OpenAI
-    hagan cache-hit del prefijo (system) entre requests.
+    - Sin contexto (primera llamada): expone enriched_query y pide al LLM que
+      decida si hace retrieve. Mantiene el SystemMessage estable para caching.
+    - Con contexto (post-retrieve): inyecta los docs y el recordatorio de citas.
     """
-    return (
-        f"<context>\n{context}\n</context>\n\n"
-        f"<question>\n{question}\n</question>\n\n"
-        f"{AGENT_HUMAN_CITATION_REMINDER}"
-    )
+    parts: list[str] = []
+    if enriched_query:
+        parts.append(f"<enriched_query>\n{enriched_query}\n</enriched_query>")
+    if context:
+        parts.append(f"<context>\n{context}\n</context>")
+        parts.append(f"<question>\n{question}\n</question>")
+        parts.append(AGENT_HUMAN_CITATION_REMINDER)
+    else:
+        parts.append(f"<question>\n{question}\n</question>")
+        parts.append(AGENT_HUMAN_NO_CONTEXT_SUFFIX)
+    return "\n\n".join(parts)
 
 
 # Prompt del grafo fallback (providers sin tool calling) — importado desde prompts.py
@@ -105,7 +119,7 @@ def _get_fallback_prompt() -> ChatPromptTemplate:
 
 
 # ---------------------------------------------------------------------------
-# Nodos — grafo ReAct con prefetch paralelo
+# Nodos — grafo ReAct con retrieval condicional
 # ---------------------------------------------------------------------------
 
 
@@ -128,41 +142,27 @@ async def enrich_query_node(state: AgentState) -> dict:
     return {"enriched_query": enriched.expanded_query, "sources": []}
 
 
-async def retrieve_prefetch_node(state: AgentState) -> dict:
-    """Recupera jurisprudencia usando la consulta enriquecida.
-
-    Se ejecuta después de enrich_query_node para aprovechar su reescritura
-    (términos jurídicos, sinónimos, instituciones) y mejorar el recall del
-    retriever híbrido BM25 + vector.
-    """
-    _emit_status("retrieving", "Buscando jurisprudencia relevante…")
-    query = state.get("enriched_query") or state["question"]
-    docs = await asyncio.to_thread(get_ensemble_retriever(k=8).invoke, query)
-    return {"sources": docs}
-
-
 async def agent_node(state: AgentState) -> dict:
     """Nodo ReAct: LLM con tools.
 
-    En el happy path recibe contexto pre-cargado (sources) y responde sin
-    llamar tools. Si el contexto es insuficiente, puede pedir retrieve
-    con una query reformulada.
+    Primera llamada: sin contexto. El LLM decide si llama `retrieve` o responde
+    directamente según si la pregunta requiere jurisprudencia.
+    Llamadas posteriores (post-retrieve): hay docs en state["sources"], se
+    inyectan en el human turn para responder con citas.
     """
-    _emit_status("generating", "Analizando las sentencias y redactando la respuesta…")
+    docs = state.get("sources") or []
+    enriched_query = state.get("enriched_query")
+    context = build_context_block(docs) if docs else None
+
+    if context:
+        _emit_status("generating", "Analizando las sentencias y redactando la respuesta…")
+    else:
+        _emit_status("generating", "Evaluando la consulta…")
 
     llm = get_generation_llm().bind_tools(ALL_TOOLS)  # type: ignore[union-attr]
-
-    docs = state.get("sources") or []
-    context = build_context_block(docs) if docs else "(No hay contexto pre-recuperado.)"
-
-    # SystemMessage estable (cacheable) + HumanMessage con todo lo dinámico.
     system_msg = SystemMessage(content=BASE_INSTRUCTIONS)
-    human_turn = _build_human_turn(state["question"], context)
+    human_turn = _build_human_turn(state["question"], enriched_query, context)
 
-    # Si ya hubo interacción previa (multi-turno), preservar el historial de
-    # messages y añadir solo el nuevo HumanMessage con contexto.
-    # Si es el primer turno, state["messages"] contiene solo el HumanMessage
-    # original; lo reemplazamos por el enriquecido.
     prior_messages = [
         m
         for m in state["messages"]
@@ -211,16 +211,14 @@ def build_graph() -> Any:
 
 
 def _build_react_graph(checkpointer: MemorySaver) -> Any:
-    """Grafo ReAct secuencial: enrich_query → retrieve_prefetch → agent ⇆ tools."""
+    """Grafo ReAct: enrich_query → agent ⇆ tools. El LLM decide cuándo recuperar."""
     return (
         StateGraph(AgentState)
         .add_node("enrich_query", enrich_query_node)
-        .add_node("retrieve_prefetch", retrieve_prefetch_node)
         .add_node("agent", agent_node)
         .add_node("tools", ToolNode(ALL_TOOLS, handle_tool_errors=True))
         .add_edge(START, "enrich_query")
-        .add_edge("enrich_query", "retrieve_prefetch")
-        .add_edge("retrieve_prefetch", "agent")
+        .add_edge("enrich_query", "agent")
         .add_conditional_edges("agent", tools_condition, ["tools", END])
         .add_edge("tools", "agent")
         .compile(checkpointer=checkpointer)
