@@ -29,11 +29,24 @@ class QueryRequest(BaseModel):
     )
 
 
-class SourceDocument(BaseModel):
+class SourceFragment(BaseModel):
+    index: int = Field(
+        ..., description="Posición global 1-based del fragmento en la recuperación; mapea a [docN]"
+    )
     content: str = Field(..., description="Contenido del fragmento (recortado a 500 caracteres)")
-    source: str = Field(default="", description="Nombre del documento fuente")
+    metadata: dict = Field(default_factory=dict, description="Metadatos del fragmento (sección, summary, keywords, ...)")
+
+
+class SourceGroup(BaseModel):
+    source: str = Field(default="", description="Nombre del archivo fuente; clave de agrupación")
     title: str = Field(default="", description="Título legible del documento")
-    metadata: dict = Field(default_factory=dict, description="Metadatos adicionales del fragmento")
+    metadata: dict = Field(
+        default_factory=dict,
+        description="Metadatos a nivel documento (Corporación, Radicado, Magistrado, Tema, Archivo, No)",
+    )
+    fragments: list[SourceFragment] = Field(
+        default_factory=list, description="Fragmentos recuperados pertenecientes a este documento"
+    )
 
 
 class FeedbackRequest(BaseModel):
@@ -93,8 +106,9 @@ class UpdatePasswordRequest(BaseModel):
 
 class QueryResponse(BaseModel):
     answer: str = Field(..., description="Respuesta generada por el modelo")
-    sources: list[SourceDocument] = Field(
-        default_factory=list, description="Fragmentos recuperados utilizados como contexto"
+    sources: list[SourceGroup] = Field(
+        default_factory=list,
+        description="Documentos fuente agrupados; cada grupo contiene los fragmentos recuperados de ese documento",
     )
     enriched_query: str | None = Field(
         default=None,
