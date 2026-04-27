@@ -31,6 +31,7 @@ from rag.api.routes.feedback import router as feedback_router
 from rag.api.schemas import QueryRequest, QueryResponse, SourceFragment, SourceGroup
 from rag.config import CONTEXT_LIMIT_TOKENS
 from rag.core.retriever import init_retrievers
+from rag.core.tools import sanitize_replacement_chars
 
 # ── Singleton del grafo ─────────────────────────────────────────────────────
 
@@ -147,7 +148,9 @@ def _docs_to_source_groups(docs: list[Document]) -> list[SourceGroup]:
     order: list[str] = []
 
     for i, doc in enumerate(docs):
-        meta = dict(doc.metadata or {})
+        # Parche temporal: limpiar U+FFFD antes de exponer al frontend.
+        # Ver docs/INGEST_ENCODING_BUG.md.
+        meta = sanitize_replacement_chars(dict(doc.metadata or {}))
         source = meta.get("source", "") or f"__unknown_{i}__"
 
         fragment_meta = {
@@ -157,7 +160,7 @@ def _docs_to_source_groups(docs: list[Document]) -> list[SourceGroup]:
         }
         fragment = SourceFragment(
             index=i + 1,
-            content=_truncate_content(doc.page_content),
+            content=_truncate_content(sanitize_replacement_chars(doc.page_content or "")),
             metadata=fragment_meta,
         )
 
