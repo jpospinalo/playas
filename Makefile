@@ -1,4 +1,4 @@
-.PHONY: install lint format typecheck test test-cov test-integration pipeline app frontend clean help
+.PHONY: install lint format typecheck test test-cov test-integration pipeline app frontend clean bucket-backup help
 
 install:  ## Instalar dependencias (incluidas las de desarrollo)
 	uv sync --group dev
@@ -29,6 +29,9 @@ app:  ## Lanzar la API FastAPI
 
 frontend:  ## Lanzar el frontend Next.js
 	cd frontend && bun run dev
+
+bucket-backup:  ## Descargar todos los objetos del bucket S3 a bucket-backup-<fecha-hora>/
+	uv run python -m utils.bucket_backup
 
 clean:  ## Eliminar artefactos generados
 	find . -type d -name __pycache__ -exec rm -rf {} +
