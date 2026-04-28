@@ -94,7 +94,7 @@ export function SourcesAccordion({ sources }: SourcesAccordionProps) {
         }}
       >
         <div className="overflow-hidden">
-          <ul className="mt-3 flex flex-col gap-2" role="list">
+          <ul className="mt-3 divide-y divide-border" role="list">
             {sources.map((group, gi) => {
               const docMeta = DOC_META_LABELS.map(([key, label]) => {
                 const value = metaString(group.metadata, key);
@@ -104,11 +104,11 @@ export function SourcesAccordion({ sources }: SourcesAccordionProps) {
               return (
                 <li
                   key={`${group.source}-${gi}`}
-                  className="rounded-xl border border-border bg-background/60 p-3"
+                  className={gi === 0 ? "pb-3" : "py-3"}
                 >
                   {group.title && (
                     <p
-                      className="mb-1 truncate text-xs font-semibold text-foreground"
+                      className="mb-1 truncate text-sm font-semibold text-foreground"
                       translate="no"
                     >
                       {group.title}
@@ -116,10 +116,10 @@ export function SourcesAccordion({ sources }: SourcesAccordionProps) {
                   )}
 
                   {docMeta.length > 0 && (
-                    <dl className="mt-1 grid grid-cols-[auto_1fr] gap-x-2 gap-y-0.5 text-[10.5px] text-muted">
+                    <dl className="mt-1 grid grid-cols-[auto_1fr] gap-x-2 gap-y-0.5 text-[11px] text-muted">
                       {docMeta.map(({ label, value }) => (
                         <div key={label} className="contents">
-                          <dt className="font-medium text-muted/80">{label}:</dt>
+                          <dt className="font-medium text-muted/70">{label}:</dt>
                           <dd className="truncate" translate="no">
                             {value}
                           </dd>
@@ -128,7 +128,7 @@ export function SourcesAccordion({ sources }: SourcesAccordionProps) {
                     </dl>
                   )}
 
-                  <ul className="mt-2 flex flex-col gap-1.5" role="list">
+                  <ul className="mt-2.5 flex flex-col gap-2" role="list">
                     {group.fragments.map((frag) => {
                       const section =
                         metaString(frag.metadata, "section_name") ||
@@ -136,24 +136,24 @@ export function SourcesAccordion({ sources }: SourcesAccordionProps) {
                       return (
                         <li
                           key={frag.index}
-                          className="rounded-lg border border-border/60 bg-surface/40 p-2"
+                          className="flex gap-2.5"
                         >
-                          <div className="mb-1 flex items-center gap-1.5">
-                            <span className="inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-accent-light px-1 text-[10px] font-semibold text-accent">
-                              {frag.index}
-                            </span>
+                          <span className="mt-0.5 inline-flex h-4 min-w-4 shrink-0 items-center justify-center rounded-full bg-accent-light px-1 text-[10px] font-semibold text-accent">
+                            {frag.index}
+                          </span>
+                          <div className="min-w-0 border-l border-border/70 pl-3">
                             {section && (
                               <span
-                                className="truncate text-[10px] text-muted/80"
+                                className="mb-0.5 block truncate text-[10px] text-muted/80"
                                 translate="no"
                               >
                                 {section}
                               </span>
                             )}
+                            <p className="line-clamp-3 text-xs leading-relaxed text-muted">
+                              {frag.content}
+                            </p>
                           </div>
-                          <p className="line-clamp-3 text-xs leading-relaxed text-muted">
-                            {frag.content}
-                          </p>
                         </li>
                       );
                     })}
@@ -161,7 +161,7 @@ export function SourcesAccordion({ sources }: SourcesAccordionProps) {
 
                   {group.source && (
                     <p
-                      className="mt-2 truncate font-(family-name:--font-mono,monospace) text-[10px] text-muted/60"
+                      className="mt-3 truncate font-(family-name:--font-mono,monospace) text-[10px] text-muted/60"
                       translate="no"
                     >
                       {group.source}
