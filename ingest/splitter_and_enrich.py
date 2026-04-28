@@ -1,39 +1,37 @@
 """Pipeline unificado Silver → Gold.
 
 Lee los documentos seccionales de data/silver/, los fragmenta con tamaño
-óptimo para embeddings y los enriquece con metadatos generados por Gemini,
+óptimo para embeddings y los enriquece con metadatos generados por un LLM
+(seleccionado según OPENAI_API_KEY → OPENROUTER_API_KEY → GOOGLE_API_KEY),
 escribiendo el resultado directamente en data/gold/ sin pasar por ninguna
 capa intermedia.
 """
 
 from __future__ import annotations
 
+import json
 import logging
-import os
 import time
 from collections import deque
 from dataclasses import dataclass
 from pathlib import Path
 
-from google import genai
-from google.genai import types as genai_types
 from langchain_core.documents import Document
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from pydantic import BaseModel, Field
 
-from .config import GEMINI_ENRICHER_MODEL, GOLD_PREFIX, SILVER_PREFIX
+from .config import GOLD_PREFIX, SILVER_PREFIX
+from .llm_factory import GeminiProvider, LLMProvider, get_active_provider
 from .s3_client import key_exists, list_keys
 from .utils import _load_docs_jsonl_file, save_docs_jsonl_per_file
 
 logger = logging.getLogger(__name__)
 
-GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
-
 DEFAULT_CHUNK_SIZE = 1000
 DEFAULT_CHUNK_OVERLAP = 200
 
 # ---------------------------------------------------------------------------
-# Pydantic output schema for Gemini
+# Pydantic output schema
 # ---------------------------------------------------------------------------
 
 
@@ -57,7 +55,7 @@ class ChunkMetadata(BaseModel):
 
 
 # ---------------------------------------------------------------------------
-# Rate limiter
+# Rate limiter (sólo relevante para Gemini free-tier, 9 RPM)
 # ---------------------------------------------------------------------------
 
 
@@ -85,37 +83,73 @@ class RateLimiter:
         self._calls.append(time.time())
 
 
+class _NoOpRateLimiter:
+    def wait_for_slot(self) -> None:
+        pass
+
+
 # ---------------------------------------------------------------------------
-# Gemini enricher
+# Chunk enricher (agnóstico al proveedor)
 # ---------------------------------------------------------------------------
 
 
-class GeminiEnricher:
-    """Genera summary, keywords y entities para un chunk usando Gemini."""
+_ENRICH_PROMPT = (
+    "Eres un asistente para preparar datos de un sistema de Recuperación "
+    "Aumentada por Generación (RAG) en español. A partir del siguiente "
+    "fragmento de texto (chunk), debes generar:\n"
+    "1) Un resumen muy breve (máximo ~40 palabras) que capture la idea "
+    "   principal del chunk.\n"
+    "2) Entre 5 y 10 palabras clave relevantes para búsqueda semántica.\n"
+    "3) Una lista de entidades nombradas importantes (personas, lugares, "
+    "   fechas, organizaciones u otras).\n\n"
+)
+
+_JSON_INSTRUCTION = (
+    "Responde SOLO con un JSON válido (sin texto adicional) con esta forma exacta:\n"
+    "{\n"
+    '  "summary": "texto del resumen",\n'
+    '  "keywords": ["palabra1", "palabra2"],\n'
+    '  "entities": [\n'
+    '    {"type": "PERSON", "text": "Ejemplo de nombre"}\n'
+    "  ]\n"
+    "}\n"
+    "No incluyas comentarios, explicaciones ni texto fuera del JSON.\n"
+)
+
+
+class ChunkEnricher:
+    """Genera summary, keywords y entities para un chunk usando el LLM activo."""
 
     def __init__(
         self,
-        model: str = GEMINI_ENRICHER_MODEL,
+        provider: LLMProvider | None = None,
         max_calls_per_minute: int = 9,
     ) -> None:
-        if not GOOGLE_API_KEY:
-            raise RuntimeError(
-                "GOOGLE_API_KEY no está definida. Asegúrate de declararla en el archivo .env."
+        self._provider = provider or get_active_provider()
+        self._llm = self._provider.create_llm(temperature=0.2, use_case="ingest_enrichment")
+
+        # Rate limiting sólo para Gemini (cuota gratuita de Google)
+        if isinstance(self._provider, GeminiProvider):
+            self._rate_limiter: RateLimiter | _NoOpRateLimiter = RateLimiter(
+                max_calls=max_calls_per_minute
             )
-        self.client = genai.Client(api_key=GOOGLE_API_KEY)
-        self.model = model
-        self.rate_limiter = RateLimiter(max_calls=max_calls_per_minute)
+        else:
+            self._rate_limiter = _NoOpRateLimiter()
+
+        logger.info(
+            "ChunkEnricher inicializado: proveedor=%s modelo=%s structured_output=%s",
+            type(self._provider).__name__,
+            self._provider.model_name,
+            self._provider.supports_structured_output,
+        )
 
     def enrich_chunk(
         self,
         text: str,
         doc_metadata: dict | None = None,
     ) -> ChunkMetadata:
-        """Enriquece un chunk de texto. Soporta Gemini 2.x (JSON mode) y Gemma-3 (prompting)."""
-        import json
-
-        self.rate_limiter.wait_for_slot()
-        print(f"  [model] enriqueciendo datos con modelo: {self.model}")
+        self._rate_limiter.wait_for_slot()
+        print(f"  [model] enriqueciendo datos con modelo: {self._provider.model_name}")
 
         meta_str = ""
         if doc_metadata:
@@ -124,61 +158,18 @@ class GeminiEnricher:
                 f"{json.dumps(doc_metadata, ensure_ascii=False)}\n\n"
             )
 
-        base_prompt = (
-            "Eres un asistente para preparar datos de un sistema de Recuperación "
-            "Aumentada por Generación (RAG) en español. A partir del siguiente "
-            "fragmento de texto (chunk), debes generar:\n"
-            "1) Un resumen muy breve (máximo ~40 palabras) que capture la idea "
-            "   principal del chunk.\n"
-            "2) Entre 5 y 10 palabras clave relevantes para búsqueda semántica.\n"
-            "3) Una lista de entidades nombradas importantes (personas, lugares, "
-            "   fechas, organizaciones u otras).\n\n"
-            f"{meta_str}"
-            "Texto del chunk:\n"
-            f"{text}\n\n"
-        )
+        prompt = _ENRICH_PROMPT + meta_str + f"Texto del chunk:\n{text}\n\n"
 
-        if not (self.model or "").startswith("gemma-3"):
-            prompt = base_prompt + (
-                "Responde SOLO con los campos solicitados en formato JSON con esta forma:\n"
-                "{\n"
-                '  "summary": "...",\n'
-                '  "keywords": ["..."],\n'
-                '  "entities": [\n'
-                '    {"type": "...", "text": "..."}\n'
-                "  ]\n"
-                "}\n"
-            )
-            response = self.client.models.generate_content(
-                model=self.model,
-                contents=prompt,
-                config=genai_types.GenerateContentConfig(
-                    response_mime_type="application/json",
-                    response_schema=ChunkMetadata,
-                    temperature=0.2,
-                ),
-            )
-            return response.parsed
+        if self._provider.supports_structured_output:
+            structured_llm = self._llm.with_structured_output(ChunkMetadata)
+            result = structured_llm.invoke(prompt)
+            return result  # type: ignore[return-value]
 
-        # Gemma-3: sin JSON mode, parseo manual
-        prompt = base_prompt + (
-            "Responde SOLO con un JSON válido (sin texto adicional) con esta forma exacta:\n"
-            "{\n"
-            '  "summary": "texto del resumen",\n'
-            '  "keywords": ["palabra1", "palabra2"],\n'
-            '  "entities": [\n'
-            '    {"type": "PERSON", "text": "Ejemplo de nombre"}\n'
-            "  ]\n"
-            "}\n"
-            "No incluyas comentarios, explicaciones ni texto fuera del JSON.\n"
-        )
-        response = self.client.models.generate_content(
-            model=self.model,
-            contents=prompt,
-            config=genai_types.GenerateContentConfig(temperature=0.2),
-        )
+        # Fallback: prompting manual + parseo JSON (Gemma-3 vía Google GenAI)
+        full_prompt = prompt + _JSON_INSTRUCTION
+        response = self._llm.invoke(full_prompt)
+        raw = (getattr(response, "content", "") or "").strip()
 
-        raw = (response.text or "").strip()
         if raw.startswith("```"):
             lines = raw.splitlines()
             if lines and lines[0].startswith("```"):
@@ -242,18 +233,14 @@ def split_and_enrich_directory(
     gold_prefix: str = GOLD_PREFIX,
     chunk_size: int = DEFAULT_CHUNK_SIZE,
     chunk_overlap: int = DEFAULT_CHUNK_OVERLAP,
-    model_name: str = GEMINI_ENRICHER_MODEL,
     max_calls_per_minute: int = 9,
     skip_existing: bool = True,
 ) -> None:
-    """Lee documentos de S3 *silver_prefix*, los fragmenta y enriquece con Gemini,
+    """Lee documentos de S3 *silver_prefix*, los fragmenta y enriquece con el LLM activo,
     escribiendo el resultado en S3 *gold_prefix*.
 
-    Flujo por archivo:
-        1. Cargar secciones desde s3://silver/<file>.jsonl
-        2. Fragmentar cada sección no vacía con RecursiveCharacterTextSplitter
-        3. Enriquecer cada chunk con Gemini (summary, keywords, entities)
-        4. Escribir chunks enriquecidos en s3://gold/<file>.jsonl
+    El proveedor LLM se selecciona automáticamente según las API keys disponibles:
+    OPENAI_API_KEY → OPENROUTER_API_KEY → GOOGLE_API_KEY.
 
     Los archivos ya presentes en gold_prefix se saltan cuando skip_existing=True.
     Los errores de enriquecimiento por chunk se loggean sin interrumpir el proceso.
@@ -263,7 +250,7 @@ def split_and_enrich_directory(
         logger.warning("No se encontraron archivos .jsonl en s3://%s", silver_prefix)
         return
 
-    enricher = GeminiEnricher(model=model_name, max_calls_per_minute=max_calls_per_minute)
+    enricher = ChunkEnricher(max_calls_per_minute=max_calls_per_minute)
     splitter = _build_splitter(chunk_size, chunk_overlap)
 
     for silver_key in silver_keys:

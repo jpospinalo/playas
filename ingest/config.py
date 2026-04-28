@@ -24,3 +24,13 @@ GOLD_PREFIX: str = "data/gold/"
 # ── Gemini ─────────────────────────────────────────────────────────────────
 GEMINI_MODEL: str = os.getenv("GEMINI_MODEL", "gemini-2.0-flash")
 GEMINI_ENRICHER_MODEL: str = os.getenv("GEMINI_ENRICHER_MODEL", GEMINI_MODEL)
+
+# ── OpenAI ──────────────────────────────────────────────────────────────────
+OPENAI_API_KEY: str | None = os.getenv("OPENAI_API_KEY") or None
+OPENAI_MODEL: str = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
+OPENAI_ENRICHER_MODEL: str = os.getenv("OPENAI_ENRICHER_MODEL", OPENAI_MODEL)
+
+# ── OpenRouter ──────────────────────────────────────────────────────────────
+OPENROUTER_API_KEY: str | None = os.getenv("OPENROUTER_API_KEY") or None
+OPENROUTER_MODEL: str = os.getenv("OPENROUTER_MODEL", "openrouter/auto")
+OPENROUTER_ENRICHER_MODEL: str = os.getenv("OPENROUTER_ENRICHER_MODEL", OPENROUTER_MODEL)
