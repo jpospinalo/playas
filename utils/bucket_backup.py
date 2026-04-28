@@ -43,6 +43,8 @@ def main() -> None:
         for page in pages:
             for obj in page.get("Contents", []):
                 key: str = obj["Key"]
+                if key.endswith("/"):
+                    continue
                 dest = backup_dir / key
                 dest.parent.mkdir(parents=True, exist_ok=True)
                 print(f"  ↓ {key}")
