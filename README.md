@@ -1,4 +1,6 @@
-# RAG Playas
+# ATLAS
+
+**Sistema agéntico de apoyo para la orientación normativa y jurisprudencial sobre playas en Colombia.**
 
 Agente conversacional de **jurisprudencia colombiana sobre playas y dominio público marítimo-terrestre**. Procesa sentencias en PDF (Consejo de Estado, Tribunales Administrativos), las indexa semánticamente y las expone como un agente **LangGraph** sobre una API FastAPI consumida por un frontend Next.js con autenticación, historial de conversaciones, calificación de respuestas y panel de administración.
 
@@ -25,7 +27,7 @@ Tres capas independientes que comparten `data/` y servicios externos (ChromaDB, 
 
 ## Pipeline de ingesta
 
-![Pipeline de RAG de jurisprudencia](docs/images/pipeline.png)
+![Pipeline de ingesta ATLAS](docs/images/pipeline.png)
 
 1. **PDF → Markdown** (`data/bronze/`) — Docling con OCR, tablas e imágenes; limpieza exhaustiva de encabezados, pies y numeraciones.
 2. **Bronze → Silver** (`data/silver/`) — normalización, fusión con metadatos legales del CSV (`metadata.csv`) y segmentación por encabezados.

@@ -1,6 +1,6 @@
 ## Project Overview
 
-**RAG Playas** — A RAG system specialized in Colombian beach/coastal jurisprudence (playas, dominio público marítimo-terrestre). It processes PDF court rulings (from Consejo de Estado), transforms them into searchable semantic chunks, and exposes a REST API consumed by a Next.js frontend.
+**ATLAS** (Sistema agéntico de apoyo para la orientación normativa y jurisprudencial sobre playas en Colombia) — An agentic RAG system specialized in Colombian beach/coastal jurisprudence (playas, dominio público marítimo-terrestre). It processes PDF court rulings (from Consejo de Estado), transforms them into searchable semantic chunks, and exposes a REST API consumed by a Next.js frontend.
 
 **Spanish-language codebase** — all comments, prompts, docs, and API responses are in Spanish.
 
