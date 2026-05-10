@@ -14,7 +14,7 @@ export function UserBubble({ text }: UserBubbleProps) {
       animate={{ opacity: 1, y: 0, x: 0 }}
       transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
     >
-      <div className="max-w-[68%] min-w-0 break-words rounded-2xl rounded-tr-sm bg-navy px-4 py-3 text-sm leading-relaxed text-white shadow-sm">
+      <div className="max-w-[68%] min-w-0 break-words rounded-2xl rounded-tr-sm bg-accent px-4 py-3 text-sm leading-relaxed text-surface shadow-sm">
         {text}
       </div>
     </motion.div>

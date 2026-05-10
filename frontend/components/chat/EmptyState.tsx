@@ -64,7 +64,7 @@ export function EmptyState({ onSelectExample }: EmptyStateProps) {
         variants={item}
         className="font-[family-name:var(--font-display)] mb-2 text-xl font-semibold text-foreground"
       >
-        Asistente de Jurisprudencia Costera
+        ATLAS
       </motion.h2>
 
       <motion.p variants={item} className="mb-1 max-w-xs text-sm leading-relaxed text-muted">

@@ -327,7 +327,7 @@ export function AuthModal({ open, mode = "explicit", subtitle, onClose }: AuthMo
                       onChange={(e) => setConfirmPassword(e.target.value)}
                       placeholder="Repite tu contraseña"
                       className={`${inputClass} pr-10 ${
-                        confirmMismatch ? "border-red-400 focus:border-red-400 focus:ring-red-400" : ""
+                        confirmMismatch ? "border-danger focus:border-danger focus:ring-danger" : ""
                       }`}
                       disabled={submitting}
                     />
@@ -342,7 +342,7 @@ export function AuthModal({ open, mode = "explicit", subtitle, onClose }: AuthMo
                     </button>
                   </div>
                   {confirmMismatch && (
-                    <p className="mt-1 text-xs text-red-600">Las contraseñas no coinciden.</p>
+                    <p className="mt-1 text-xs text-danger">Las contraseñas no coinciden.</p>
                   )}
                 </div>
               )}
@@ -351,7 +351,7 @@ export function AuthModal({ open, mode = "explicit", subtitle, onClose }: AuthMo
                 {error && (
                   <motion.p
                     role="alert"
-                    className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700"
+                    className="rounded-lg border border-danger/30 bg-danger-bg px-3 py-2 text-sm text-danger"
                     initial={{ opacity: 0, y: -4 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0 }}

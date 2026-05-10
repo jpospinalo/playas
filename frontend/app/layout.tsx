@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
-import { EB_Garamond, Lato } from "next/font/google";
+import { EB_Garamond, Inter } from "next/font/google";
 import { AuthProvider } from "@/components/providers/AuthProvider";
+import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import "./globals.css";
 
 const ebGaramond = EB_Garamond({
@@ -11,37 +12,40 @@ const ebGaramond = EB_Garamond({
   display: "swap",
 });
 
-const lato = Lato({
+const inter = Inter({
   variable: "--font-sans",
   subsets: ["latin"],
-  weight: ["300", "400", "700"],
+  weight: ["400", "500", "600"],
   display: "swap",
 });
 
 export const metadata: Metadata = {
   title: {
-    default: "Agente de Jurisprudencia Costera — Colombia",
-    template: "%s | Agente de Jurisprudencia Costera",
+    default: "ATLAS — Jurisprudencia Costera de Colombia",
+    template: "%s | ATLAS",
   },
   description:
-    "Consulte jurisprudencia colombiana en materia de playas, bienes de uso público costero y derecho marítimo mediante inteligencia artificial fundamentada en fuentes verificadas.",
+    "ATLAS es un asistente agéntico que permite consultar jurisprudencia colombiana sobre playas, dominio público marítimo-terrestre y normatividad costera mediante un pipeline RAG con citas verificadas.",
   openGraph: {
     type: "website",
     locale: "es_CO",
-    siteName: "Agente de Jurisprudencia Costera",
-    title: "Agente de Jurisprudencia Costera — Colombia",
+    siteName: "ATLAS",
+    title: "ATLAS — Jurisprudencia Costera de Colombia",
     description:
-      "Respuestas jurídicas fundamentadas en jurisprudencia colombiana verificada sobre playas y derecho marítimo.",
+      "Consulte jurisprudencia colombiana sobre playas y derecho costero con respuestas fundamentadas en fuentes verificadas del Consejo de Estado.",
   },
   twitter: {
     card: "summary",
-    title: "Agente de Jurisprudencia Costera",
-    description: "Jurisprudencia costera colombiana con IA.",
+    title: "ATLAS",
+    description: "Jurisprudencia costera colombiana con IA fundamentada en fuentes verificadas.",
   },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#1E3A8A",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#faf7f0" },
+    { media: "(prefers-color-scheme: dark)", color: "#0c1621" },
+  ],
 };
 
 export default function RootLayout({
@@ -52,13 +56,16 @@ export default function RootLayout({
   return (
     <html
       lang="es"
-      className={`${ebGaramond.variable} ${lato.variable} h-full antialiased`}
+      className={`${ebGaramond.variable} ${inter.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col bg-background text-foreground">
         <a href="#main-content" className="skip-link">
           Saltar al contenido principal
         </a>
-        <AuthProvider>{children}</AuthProvider>
+        <ThemeProvider>
+          <AuthProvider>{children}</AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

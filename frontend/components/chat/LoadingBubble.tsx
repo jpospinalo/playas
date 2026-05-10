@@ -22,7 +22,7 @@ export function LoadingBubble({ label }: LoadingBubbleProps) {
         className="flex items-center gap-2.5 rounded-2xl rounded-tl-sm bg-surface px-5 py-4 shadow-sm"
         style={{
           border: "1px solid var(--border)",
-          borderLeftColor: "var(--navy)",
+          borderLeftColor: "var(--accent)",
           borderLeftWidth: "3px",
         }}
       >

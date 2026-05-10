@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion } from "motion/react";
+import { ThemeToggle } from "@/components/common/ThemeToggle";
 
 interface SidebarUserMenuProps {
   expanded: boolean;
@@ -130,7 +131,7 @@ function CollapsedUserMenu({
         aria-haspopup="menu"
         aria-expanded={open}
         title={userEmail}
-        className="flex h-10 w-10 items-center justify-center rounded-full bg-navy text-xs font-semibold text-white transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
+        className="flex h-10 w-10 items-center justify-center rounded-full bg-accent text-xs font-semibold text-white transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
       >
         {userInitial}
       </button>
@@ -189,11 +190,16 @@ function UserMenuPopover({
               Panel de administrador
             </Link>
           )}
+          <div className="mt-1 flex items-center justify-between rounded-xl px-2.5 py-2">
+            <span className="text-sm text-muted">Apariencia</span>
+            <ThemeToggle />
+          </div>
+          <div className="my-1 border-t border-border" />
           <button
             type="button"
             role="menuitem"
             onClick={onSignOut}
-            className="mt-1 flex w-full items-center gap-2 rounded-xl px-2.5 py-2 text-left text-sm text-red-600 transition-colors hover:bg-red-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500"
+            className="flex w-full items-center gap-2 rounded-xl px-2.5 py-2 text-left text-sm text-danger transition-colors hover:bg-danger-bg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-danger"
           >
             <SignOutIcon />
             Cerrar sesión
@@ -208,7 +214,7 @@ function UserAvatar({ initial, size }: { initial: string; size: "md" }) {
   const sizeClass = size === "md" ? "h-8 w-8" : "h-10 w-10";
   return (
     <span
-      className={`flex ${sizeClass} shrink-0 items-center justify-center rounded-full bg-navy text-xs font-semibold text-white`}
+      className={`flex ${sizeClass} shrink-0 items-center justify-center rounded-full bg-accent text-xs font-semibold text-white`}
     >
       {initial}
     </span>
