@@ -245,7 +245,7 @@ export function ChatInterface() {
               {error && (
                 <motion.div
                   role="alert"
-                  className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+                  className="rounded-xl border border-danger/30 bg-danger-bg px-4 py-3 text-sm text-danger"
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -4 }}

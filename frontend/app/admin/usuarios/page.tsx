@@ -9,7 +9,7 @@ import {
 } from "@/lib/api";
 
 const ROLE_STYLES: Record<string, string> = {
-  "super-admin": "bg-navy/10 text-navy border-navy/20",
+  "super-admin": "bg-foreground/8 text-foreground border-foreground/20",
   admin: "bg-accent/10 text-accent border-accent/20",
   user: "bg-border/60 text-muted border-border",
 };
@@ -87,7 +87,7 @@ export default function UsuariosPage() {
         <button
           type="button"
           onClick={() => setCreateOpen(true)}
-          className="rounded-md bg-accent px-3 py-2 text-xs font-medium text-white hover:bg-accent/90 focus:outline-none focus:ring-2 focus:ring-accent"
+          className="rounded-md bg-accent px-3 py-2 text-xs font-medium text-surface hover:bg-accent-bright focus:outline-none focus:ring-2 focus:ring-accent"
         >
           Crear usuario
         </button>
@@ -305,10 +305,10 @@ function CreateUserModal({
             minLength={6}
             value={confirm}
             onChange={(e) => setConfirm(e.target.value)}
-            className={`${inputClass} ${confirm && confirm !== password ? "border-red-400 focus:ring-red-400" : ""}`}
+            className={`${inputClass} ${confirm && confirm !== password ? "border-danger focus:ring-danger" : ""}`}
           />
           {confirm && confirm !== password ? (
-            <span className="mt-0.5 block text-[11px] text-red-500">No coincide.</span>
+            <span className="mt-0.5 block text-[11px] text-danger">No coincide.</span>
           ) : null}
         </label>
         <label className="block text-xs font-medium text-muted">
@@ -322,7 +322,7 @@ function CreateUserModal({
         </label>
 
         {err ? (
-          <div className="rounded-md border border-red-300 bg-red-50 px-3 py-2 text-xs text-red-700">
+          <div className="rounded-md border border-danger/30 bg-danger-bg px-3 py-2 text-xs text-danger">
             {err}
           </div>
         ) : null}
@@ -339,7 +339,7 @@ function CreateUserModal({
           <button
             type="submit"
             disabled={submitting}
-            className="rounded-md bg-accent px-3 py-2 text-xs font-medium text-white hover:bg-accent/90 disabled:opacity-50"
+            className="rounded-md bg-accent px-3 py-2 text-xs font-medium text-surface hover:bg-accent-bright disabled:opacity-50"
           >
             {submitting ? "Creando…" : "Crear"}
           </button>
@@ -434,15 +434,15 @@ function ChangePasswordModal({
             minLength={6}
             value={confirm}
             onChange={(e) => setConfirm(e.target.value)}
-            className={`${inputClass} ${confirm && confirm !== password ? "border-red-400 focus:ring-red-400" : ""}`}
+            className={`${inputClass} ${confirm && confirm !== password ? "border-danger focus:ring-danger" : ""}`}
           />
           {confirm && confirm !== password ? (
-            <span className="mt-0.5 block text-[11px] text-red-500">No coincide.</span>
+            <span className="mt-0.5 block text-[11px] text-danger">No coincide.</span>
           ) : null}
         </label>
 
         {err ? (
-          <div className="rounded-md border border-red-300 bg-red-50 px-3 py-2 text-xs text-red-700">
+          <div className="rounded-md border border-danger/30 bg-danger-bg px-3 py-2 text-xs text-danger">
             {err}
           </div>
         ) : null}
@@ -459,7 +459,7 @@ function ChangePasswordModal({
           <button
             type="submit"
             disabled={submitting}
-            className="rounded-md bg-accent px-3 py-2 text-xs font-medium text-white hover:bg-accent/90 disabled:opacity-50"
+            className="rounded-md bg-accent px-3 py-2 text-xs font-medium text-surface hover:bg-accent-bright disabled:opacity-50"
           >
             {submitting ? "Actualizando…" : "Actualizar"}
           </button>

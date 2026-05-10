@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { doc, getDoc } from "firebase/firestore";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { db } from "@/lib/firebase";
+import { ThemeToggle } from "@/components/common/ThemeToggle";
 
 export default function AdminLayout({
   children,
@@ -22,7 +23,7 @@ export default function AdminLayout({
     if (loading) return;
 
     if (!user) {
-      router.replace("/chat");
+      router.replace("/");
       return;
     }
 
@@ -65,10 +66,10 @@ export default function AdminLayout({
           administrador del sistema.
         </p>
         <Link
-          href="/chat"
-          className="mt-2 rounded-md bg-accent px-4 py-2 text-sm font-medium text-white hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 transition-opacity"
+          href="/"
+          className="mt-2 rounded-md bg-accent px-4 py-2 text-sm font-medium text-surface hover:bg-accent-bright focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 transition-colors"
         >
-          Volver al chat
+          Volver a ATLAS
         </Link>
       </div>
     );
@@ -85,8 +86,8 @@ export default function AdminLayout({
       {/* Sidebar nav */}
       <aside className="w-52 shrink-0 border-r border-border bg-surface flex flex-col">
         <div className="px-5 py-4 border-b border-border">
-          <span className="font-[family-name:var(--font-display)] text-sm font-semibold text-foreground">
-            Panel <span className="text-accent">Admin</span>
+          <span className="font-[family-name:var(--font-display)] text-sm font-semibold tracking-[0.05em] uppercase text-foreground">
+            ATLAS <span className="text-accent normal-case tracking-normal">Admin</span>
           </span>
         </div>
         <nav className="flex flex-col gap-0.5 px-2 py-3">
@@ -110,9 +111,13 @@ export default function AdminLayout({
             );
           })}
         </nav>
-        <div className="mt-auto px-2 py-3 border-t border-border">
+        <div className="mt-auto flex flex-col gap-2 px-2 py-3 border-t border-border">
+          <div className="flex items-center justify-between px-3 py-1">
+            <span className="text-xs text-muted">Tema</span>
+            <ThemeToggle />
+          </div>
           <Link
-            href="/chat"
+            href="/"
             className="flex items-center gap-1.5 rounded-md px-3 py-2 text-xs text-muted hover:text-foreground transition-colors"
           >
             <svg
@@ -129,7 +134,7 @@ export default function AdminLayout({
             >
               <path d="m15 18-6-6 6-6" />
             </svg>
-            Volver al chat
+            Volver a ATLAS
           </Link>
         </div>
       </aside>

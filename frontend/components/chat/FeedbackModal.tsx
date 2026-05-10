@@ -120,7 +120,7 @@ export function FeedbackModal({ open, conversationId, onClose }: FeedbackModalPr
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
                 >
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-green-100 text-green-600">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-success-bg text-success">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       width="22"
@@ -246,7 +246,7 @@ export function FeedbackModal({ open, conversationId, onClose }: FeedbackModalPr
                       {submitState === "error" && (
                         <motion.p
                           role="alert"
-                          className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700"
+                          className="rounded-lg border border-danger/30 bg-danger-bg px-3 py-2 text-sm text-danger"
                           initial={{ opacity: 0, y: -4 }}
                           animate={{ opacity: 1, y: 0 }}
                           exit={{ opacity: 0 }}

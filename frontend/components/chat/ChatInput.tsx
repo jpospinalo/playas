@@ -64,7 +64,7 @@ export function ChatInput({
           type="submit"
           disabled={loading || !value.trim()}
           aria-label={loading ? "Consultando…" : "Enviar consulta"}
-          className="flex h-[46px] w-[46px] shrink-0 items-center justify-center rounded-xl bg-navy text-white transition-[background-color,opacity] duration-150 hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-35"
+          className="flex h-[46px] w-[46px] shrink-0 items-center justify-center rounded-xl bg-accent text-surface transition-[background-color,opacity] duration-150 hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-35"
         >
           {loading ? (
             <svg

@@ -244,7 +244,7 @@ function ConversationActionsMenu({
               type="button"
               role="menuitem"
               onClick={(event) => onDelete(conversation.id, event)}
-              className="flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-left text-xs text-red-600 transition-colors hover:bg-red-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500"
+              className="flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-left text-xs text-danger transition-colors hover:bg-danger-bg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-danger"
             >
               <TrashIcon />
               Eliminar
@@ -265,16 +265,16 @@ function DeleteConfirmation({
 }) {
   return (
     <div
-      className="mt-2 rounded-lg border border-red-200 bg-red-50 px-2.5 py-2"
+      className="mt-2 rounded-lg border border-danger/30 bg-danger-bg px-2.5 py-2"
       onClick={(event) => event.stopPropagation()}
     >
-      <p className="text-[10px] font-medium text-red-700">
+      <p className="text-[10px] font-medium text-danger">
         ¿Eliminar esta conversación?
       </p>
       <div className="mt-1.5 flex items-center gap-1.5">
         <button
           onClick={onConfirm}
-          className="rounded-md bg-red-600 px-2 py-1 text-[10px] font-medium text-white transition-colors hover:bg-red-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2"
+          className="rounded-md bg-danger px-2 py-1 text-[10px] font-medium text-surface transition-colors hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-danger focus-visible:ring-offset-2"
         >
           Eliminar
         </button>

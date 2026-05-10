@@ -1,25 +1,16 @@
-import { Hero } from "@/components/landing/Hero";
-import { HowItWorks } from "@/components/landing/HowItWorks";
-import { LandingFooter } from "@/components/landing/LandingFooter";
-import { LandingNav } from "@/components/landing/LandingNav";
-import { WhyRag } from "@/components/landing/WhyRag";
+import type { Metadata } from "next";
+import { ChatInterface } from "@/components/chat/ChatInterface";
 
-export default function LandingPage() {
+export const metadata: Metadata = {
+  title: "ATLAS — Consulta jurisprudencia costera de Colombia",
+  description:
+    "Consulte jurisprudencia colombiana sobre playas, bienes de uso público costero y dominio público marítimo-terrestre. Respuestas fundamentadas en sentencias verificadas del Consejo de Estado.",
+};
+
+export default function ChatPage() {
   return (
-    <>
-      <LandingNav />
-      <main id="main-content" className="flex flex-1 flex-col">
-        <Hero />
-        <div className="mx-auto w-full max-w-5xl px-6" aria-hidden="true">
-          <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent" />
-        </div>
-        <HowItWorks />
-        <div className="mx-auto w-full max-w-5xl px-6" aria-hidden="true">
-          <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent" />
-        </div>
-        <WhyRag />
-      </main>
-      <LandingFooter />
-    </>
+    <div className="flex h-dvh flex-col overflow-hidden bg-background">
+      <ChatInterface />
+    </div>
   );
 }

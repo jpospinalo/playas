@@ -1,14 +1,61 @@
 @import "tailwindcss";
 
+/* ─── ATLAS Design System — Consejo ──────────────────────────────────────── */
+
 :root {
-  --background: #F8FAFC;
-  --surface: #ffffff;
-  --foreground: #0F172A;
-  --muted: #64748B;
-  --border: #E2E8F0;
-  --accent: #92400E;
-  --accent-light: #FEF3C7;
-  --navy: #1E3A8A;
+  /* Light mode — Platinum & Institutional Ink */
+  --background: oklch(96.5% 0.004 260);
+  --surface: oklch(99% 0.002 260);
+  --foreground: oklch(10% 0.02 260);
+  --muted: oklch(46% 0.012 260);
+  --border: oklch(86% 0.008 260);
+  --subtle: oklch(92% 0.006 260);
+
+  /* Institutional Blue — interactive affordances */
+  --accent: oklch(42% 0.14 258);
+  --accent-bright: oklch(48% 0.14 258);
+  --accent-light: oklch(42% 0.14 258 / 10%);
+
+  /* Charter Amber — citation badges ONLY */
+  --citation: oklch(52% 0.15 68);
+  --citation-fill: oklch(52% 0.15 68 / 10%);
+
+  /* Code block background */
+  --code-bg: oklch(10% 0.02 260);
+
+  /* Semantic state tokens */
+  --danger: #b3261e;
+  --danger-bg: #fbe9e7;
+  --success: #1f6f3f;
+  --success-bg: #e3f1e8;
+
+  color-scheme: light;
+}
+
+.dark {
+  /* Dark mode — Deep Institutional */
+  --background: oklch(10% 0.025 260);
+  --surface: oklch(14% 0.03 260);
+  --foreground: oklch(93% 0.005 80);
+  --muted: oklch(58% 0.015 260);
+  --border: oklch(20% 0.03 260);
+  --subtle: oklch(16.5% 0.028 260);
+
+  --accent: oklch(62% 0.16 258);
+  --accent-bright: oklch(68% 0.16 258);
+  --accent-light: oklch(62% 0.16 258 / 12%);
+
+  --citation: oklch(72% 0.15 68);
+  --citation-fill: oklch(72% 0.15 68 / 12%);
+
+  --code-bg: oklch(7% 0.02 260);
+
+  --danger: #ff7a6e;
+  --danger-bg: oklch(72% 0.24 22 / 10%);
+  --success: #6cd09a;
+  --success-bg: oklch(70% 0.18 150 / 10%);
+
+  color-scheme: dark;
 }
 
 @theme inline {
@@ -17,9 +64,16 @@
   --color-foreground: var(--foreground);
   --color-muted: var(--muted);
   --color-border: var(--border);
+  --color-subtle: var(--subtle);
   --color-accent: var(--accent);
+  --color-accent-bright: var(--accent-bright);
   --color-accent-light: var(--accent-light);
-  --color-navy: var(--navy);
+  --color-citation: var(--citation);
+  --color-citation-fill: var(--citation-fill);
+  --color-danger: var(--danger);
+  --color-danger-bg: var(--danger-bg);
+  --color-success: var(--success);
+  --color-success-bg: var(--success-bg);
   --font-sans: var(--font-sans);
   --font-display: var(--font-display);
   --animate-message-in: message-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
@@ -27,6 +81,18 @@
   --animate-fade-in: fade-in 0.5s ease-out both;
   --animate-scroll-btn-in: scroll-btn-in 0.2s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
+
+/* ─── Semantic state utility classes ─────────────────────────────────────── */
+
+.bg-danger     { background-color: var(--danger); }
+.bg-danger-bg  { background-color: var(--danger-bg); }
+.text-danger   { color: var(--danger); }
+.border-danger { border-color: var(--danger); }
+.bg-success    { background-color: var(--success); }
+.bg-success-bg { background-color: var(--success-bg); }
+.text-success  { color: var(--success); }
+
+/* ─── Keyframes ───────────────────────────────────────────────────────────── */
 
 @keyframes message-in {
   from {
@@ -66,6 +132,8 @@
   }
 }
 
+/* ─── Base ────────────────────────────────────────────────────────────────── */
+
 *,
 *::before,
 *::after {
@@ -73,7 +141,6 @@
 }
 
 html {
-  color-scheme: light;
   scroll-behavior: smooth;
 }
 
@@ -88,15 +155,16 @@ body {
   overflow-x: hidden;
 }
 
-/* Skip link */
+/* ─── Skip link ───────────────────────────────────────────────────────────── */
+
 .skip-link {
   position: absolute;
   top: -100%;
   left: 1rem;
   z-index: 9999;
   padding: 0.5rem 1rem;
-  background: var(--navy);
-  color: #fff;
+  background: var(--accent);
+  color: var(--surface);
   font-size: 0.875rem;
   border-radius: 0 0 0.375rem 0.375rem;
   text-decoration: none;
@@ -107,25 +175,22 @@ body {
   top: 0;
 }
 
-/* Heading anchors */
+/* ─── Heading anchors ─────────────────────────────────────────────────────── */
+
 h1[id],
 h2[id],
 h3[id] {
   scroll-margin-top: 5rem;
 }
 
-/* Markdown rendered inside assistant chat bubbles */
-.rag-prose {
-  line-height: 1.65;
-}
+/* ─── Citation badges: [docN] → interactive button chip ──────────────────── */
 
-/* Citation badges: [docN] → interactive button chip */
 .doc-badge {
   display: inline-flex;
   align-items: center;
-  background: var(--accent-light);
-  color: var(--accent);
-  border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+  background: var(--citation-fill);
+  color: var(--citation);
+  border: 1px solid color-mix(in srgb, var(--citation) 30%, transparent);
   border-radius: 9999px;
   font-size: 0.7em;
   font-weight: 600;
@@ -140,12 +205,12 @@ h3[id] {
 }
 
 .doc-badge:hover {
-  background: color-mix(in srgb, var(--accent) 18%, transparent);
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 20%, transparent);
+  background: color-mix(in srgb, var(--citation) 18%, transparent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--citation) 20%, transparent);
 }
 
 .doc-badge:focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 2px solid var(--citation);
   outline-offset: 2px;
 }
 
@@ -155,7 +220,8 @@ h3[id] {
   pointer-events: none;
 }
 
-/* Source popover — shown inline near the clicked badge */
+/* ─── Source popover ──────────────────────────────────────────────────────── */
+
 .doc-popover {
   position: absolute;
   z-index: 50;
@@ -165,8 +231,8 @@ h3[id] {
   border: 1px solid var(--border);
   border-radius: 0.75rem;
   padding: 0.75rem 1rem;
-  box-shadow: 0 4px 20px color-mix(in srgb, var(--foreground) 12%, transparent),
-              0 1px 4px color-mix(in srgb, var(--foreground) 6%, transparent);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--foreground) 10%, transparent),
+              0 1px 2px color-mix(in srgb, var(--foreground) 6%, transparent);
   animation: popover-in 0.18s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
@@ -202,8 +268,6 @@ h3[id] {
   overflow: hidden;
 }
 
-/* Variante "rica": popover con metadatos del documento + texto de origen
-   con scroll. Ensancha el popover y separa visualmente las secciones. */
 .doc-popover--rich {
   max-width: 360px;
   min-width: 280px;
@@ -239,7 +303,7 @@ h3[id] {
 .doc-popover-section {
   font-size: 0.68rem;
   font-weight: 600;
-  color: var(--accent);
+  color: var(--citation);
   margin: 0.25rem 0 0.375rem;
   white-space: nowrap;
   overflow: hidden;
@@ -271,6 +335,13 @@ h3[id] {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+/* ─── RAG prose — rendered legal answer text ─────────────────────────────── */
+
+.rag-prose {
+  line-height: 1.65;
+  max-width: 68ch;
 }
 
 .rag-prose p {
@@ -305,7 +376,6 @@ h3[id] {
   color: var(--foreground);
 }
 
-
 .rag-prose h1 { font-size: 1.15em; }
 .rag-prose h2 { font-size: 1.05em; }
 .rag-prose h3 { font-size: 0.97em; }
@@ -333,25 +403,25 @@ h3[id] {
 }
 
 .rag-prose blockquote {
-  border-left: 3px solid var(--accent);
+  border-left: 3px solid var(--citation);
   padding: 0.25em 0.75em;
   margin: 0.6em 0;
   color: var(--muted);
-  background: var(--accent-light);
+  background: var(--citation-fill);
   border-radius: 0 0.25rem 0.25rem 0;
 }
 
 .rag-prose code {
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 0.85em;
-  background: var(--accent-light);
-  color: var(--accent);
+  background: var(--citation-fill);
+  color: var(--citation);
   padding: 0.15em 0.35em;
   border-radius: 0.25em;
 }
 
 .rag-prose pre {
-  background: var(--navy);
+  background: var(--code-bg);
   color: #e2e8f0;
   padding: 0.75em 1em;
   border-radius: 0.5rem;
@@ -387,9 +457,11 @@ h3[id] {
 }
 
 .rag-prose th {
-  background: var(--accent-light);
+  background: var(--citation-fill);
   font-weight: 600;
 }
+
+/* ─── Reduced motion ──────────────────────────────────────────────────────── */
 
 @media (prefers-reduced-motion: reduce) {
   *,

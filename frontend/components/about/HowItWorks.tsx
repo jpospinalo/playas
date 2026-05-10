@@ -35,7 +35,7 @@ const STEPS = [
   },
   {
     number: "2",
-    title: "Aumentación",
+    title: "Aumento",
     description:
       "Solo los fragmentos verificados del corpus legal se incorporan como contexto al modelo. El modelo no puede ir más allá de las fuentes recuperadas.",
     icon: (
@@ -122,7 +122,11 @@ export function HowItWorks() {
         />
 
         {STEPS.map((step) => (
-          <motion.li key={step.number} className="flex flex-col gap-4" variants={fadeUp}>
+          <motion.li
+            key={step.number}
+            className="flex flex-col gap-4"
+            variants={fadeUp}
+          >
             <div className="relative flex items-center gap-3">
               <div
                 className="relative z-10 flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-border bg-surface text-accent shadow-sm"
@@ -140,7 +144,9 @@ export function HowItWorks() {
             <h3 className="font-[family-name:var(--font-display)] text-balance text-xl font-semibold text-foreground">
               {step.title}
             </h3>
-            <p className="text-sm leading-relaxed text-muted">{step.description}</p>
+            <p className="text-sm leading-relaxed text-muted">
+              {step.description}
+            </p>
           </motion.li>
         ))}
       </motion.ol>
