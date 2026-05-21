@@ -32,10 +32,18 @@ export interface UseChatReturn {
 	contextPercent: number;
 	/** ID del documento de conversación activo en Firestore (null si no hay sesión o aún no se creó). */
 	conversationId: string | null;
+	/** IDs de mensajes que ya tienen feedback enviado. */
+	ratedMessageIds: Set<string>;
 	setInput: (value: string) => void;
 	submit: (question: string) => Promise<void>;
 	resetChat: () => void;
 	loadConversation: (conv: Conversation) => Promise<void>;
+	/** Marca un mensaje como calificado y envía el feedback al backend. */
+	rateMessage: (
+		messageId: string,
+		ratings: { pertinence: number; accuracy: number },
+		expectedAnswer?: string,
+	) => Promise<void>;
 }
 
 const DEFAULT_STAGE_MESSAGES: Record<AgentStage, string> = {
@@ -56,6 +64,10 @@ export function useChat(): UseChatReturn {
 	const [error, setError] = useState<string | null>(null);
 	const [contextPercent, setContextPercent] = useState(0);
 	const [conversationId, setConversationId] = useState<string | null>(null);
+
+	const [ratedMessageIds, setRatedMessageIds] = useState<Set<string>>(
+		new Set(),
+	);
 
 	// Stable thread_id for the entire chat session. Regenerated on resetChat().
 	const threadIdRef = useRef<string>(crypto.randomUUID());
@@ -139,13 +151,24 @@ export function useChat(): UseChatReturn {
 
 		const activeConvId = conversationIdRef.current;
 
-		// Guardar mensaje del usuario en Firestore (fire-and-forget)
+		// Guardar mensaje del usuario en Firestore y propagar el ID real
 		if (user && activeConvId) {
+			const userPlaceholderId = messages.find((m) => m.role === "user")?.id;
 			addDoc(collection(db, "conversations", activeConvId, "messages"), {
 				role: "user",
 				text: q,
 				createdAt: serverTimestamp(),
-			}).catch(() => {});
+			})
+				.then((docRef) => {
+					if (userPlaceholderId) {
+						setMessages((prev) =>
+							prev.map((m) =>
+								m.id === userPlaceholderId ? { ...m, id: docRef.id } : m,
+							),
+						);
+					}
+				})
+				.catch(() => {});
 		}
 
 		// Insertar placeholder del asistente para que el área de respuesta aparezca
@@ -199,7 +222,7 @@ export function useChat(): UseChatReturn {
 				}
 			}
 
-			// Persistir respuesta del asistente en Firestore (fire-and-forget)
+			// Persistir respuesta del asistente en Firestore y propagar el ID real
 			if (user && activeConvId && finalAssistantText) {
 				addDoc(collection(db, "conversations", activeConvId, "messages"), {
 					role: "assistant",
@@ -207,7 +230,15 @@ export function useChat(): UseChatReturn {
 					sources:
 						finalAssistantSources.length > 0 ? finalAssistantSources : null,
 					createdAt: serverTimestamp(),
-				}).catch(() => {});
+				})
+					.then((docRef) => {
+						setMessages((prev) =>
+							prev.map((m) =>
+								m.id === assistantId ? { ...m, id: docRef.id } : m,
+							),
+						);
+					})
+					.catch(() => {});
 
 				updateDoc(doc(db, "conversations", activeConvId), {
 					updatedAt: serverTimestamp(),
@@ -261,6 +292,25 @@ export function useChat(): UseChatReturn {
 		streamingStartedRef.current = false;
 	}
 
+	/** Envía calificación de un mensaje individual al backend y marca localmente. */
+	async function rateMessage(
+		messageId: string,
+		ratings: { pertinence: number; accuracy: number },
+		expectedAnswer?: string,
+	): Promise<void> {
+		if (!user || !conversationIdRef.current) return;
+
+		const { submitMessageFeedback } = await import("@/lib/api");
+		await submitMessageFeedback({
+			conversation_id: conversationIdRef.current,
+			message_id: messageId,
+			ratings: { pertinence: ratings.pertinence, accuracy: ratings.accuracy },
+			expected_answer: expectedAnswer,
+		});
+
+		setRatedMessageIds((prev) => new Set(prev).add(messageId));
+	}
+
 	function resetChat(): void {
 		setMessages([]);
 		setInput("");
@@ -272,6 +322,7 @@ export function useChat(): UseChatReturn {
 		setContextPercent(0);
 		_setConversationId(null);
 		streamingStartedRef.current = false;
+		setRatedMessageIds(new Set());
 		threadIdRef.current = crypto.randomUUID();
 	}
 
@@ -285,9 +336,11 @@ export function useChat(): UseChatReturn {
 		error,
 		contextPercent,
 		conversationId,
+		ratedMessageIds,
 		setInput,
 		submit,
 		resetChat,
 		loadConversation,
+		rateMessage,
 	};
 }
