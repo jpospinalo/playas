@@ -33,27 +33,27 @@
 }
 
 .dark {
-  /* Dark mode — Deep Institutional */
-  --background: oklch(10% 0.025 260);
-  --surface: oklch(14% 0.03 260);
-  --foreground: oklch(93% 0.005 80);
-  --muted: oklch(58% 0.015 260);
-  --border: oklch(20% 0.03 260);
-  --subtle: oklch(16.5% 0.028 260);
+  /* Dark mode — Neutral grays with electric blue accents */
+  --background: oklch(13% 0.003 270);
+  --surface: oklch(17% 0.004 270);
+  --foreground: oklch(93% 0.003 270);
+  --muted: oklch(58% 0.008 270);
+  --border: oklch(24% 0.006 270);
+  --subtle: oklch(19% 0.005 270);
 
-  --accent: oklch(62% 0.16 258);
-  --accent-bright: oklch(68% 0.16 258);
-  --accent-light: oklch(62% 0.16 258 / 12%);
+  --accent: oklch(65% 0.18 250);
+  --accent-bright: oklch(72% 0.18 250);
+  --accent-light: oklch(65% 0.18 250 / 12%);
 
-  --citation: oklch(72% 0.15 68);
-  --citation-fill: oklch(72% 0.15 68 / 12%);
+  --citation: oklch(70% 0.14 68);
+  --citation-fill: oklch(70% 0.14 68 / 10%);
 
-  --code-bg: oklch(7% 0.02 260);
+  --code-bg: oklch(10% 0.003 270);
 
-  --danger: #ff7a6e;
-  --danger-bg: oklch(72% 0.24 22 / 10%);
-  --success: #6cd09a;
-  --success-bg: oklch(70% 0.18 150 / 10%);
+  --danger: #ff8a80;
+  --danger-bg: oklch(65% 0.18 20 / 10%);
+  --success: #69f0ae;
+  --success-bg: oklch(70% 0.18 155 / 10%);
 
   color-scheme: dark;
 }
@@ -231,8 +231,8 @@ h3[id] {
   border: 1px solid var(--border);
   border-radius: 0.75rem;
   padding: 0.75rem 1rem;
-  box-shadow: 0 2px 8px color-mix(in srgb, var(--foreground) 10%, transparent),
-              0 1px 2px color-mix(in srgb, var(--foreground) 6%, transparent);
+  box-shadow: 0 4px 16px oklch(0% 0 0 / 25%),
+              0 1px 4px oklch(0% 0 0 / 15%);
   animation: popover-in 0.18s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
