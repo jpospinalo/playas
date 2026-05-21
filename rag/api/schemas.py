@@ -52,9 +52,49 @@ class SourceGroup(BaseModel):
     )
 
 
+# ── Conversation-level rating dimensions ───────────────────────────────────────
+
+
+class RatingDimensions(BaseModel):
+    """Calificación multidimensional de una conversación."""
+
+    tone: int = Field(..., ge=1, le=5, description="Tono de las respuestas")
+    length: int = Field(..., ge=1, le=5, description="Longitud de las respuestas")
+    usability: int = Field(..., ge=1, le=5, description="Usabilidad del sistema")
+    overall: int = Field(..., ge=1, le=5, description="Calificación general")
+
+
+class RatingDimensionsFloat(BaseModel):
+    """Promedios de calificación por dimensión (valores punto flotante)."""
+
+    tone: float = 0.0
+    length: float = 0.0
+    usability: float = 0.0
+    overall: float = 0.0
+
+
+# ── Message-level rating dimensions ────────────────────────────────────────────
+
+
+class MessageFeedbackRatings(BaseModel):
+    """Calificación de un mensaje individual del agente."""
+
+    pertinence: int = Field(..., ge=1, le=5, description="Pertinencia de la respuesta")
+    accuracy: int = Field(..., ge=1, le=5, description="Precisión de la respuesta")
+
+
+# ── Feedback request/response ─────────────────────────────────────────────────
+
+
 class FeedbackRequest(BaseModel):
-    rating: int = Field(..., ge=1, le=5, description="Calificación entre 1 y 5")
-    comment: str | None = Field(default=None, description="Comentario opcional del usuario")
+    """Calificación de conversación con dimensiones múltiples."""
+
+    ratings: RatingDimensions = Field(
+        ..., description="Calificación por dimensión (tono, longitud, usabilidad, general)"
+    )
+    comment: str | None = Field(
+        default=None, max_length=500, description="Comentario opcional del usuario"
+    )
     conversation_id: str | None = Field(
         default=None, description="ID del documento de conversación activa en Firestore"
     )
@@ -64,11 +104,38 @@ class FeedbackResponse(BaseModel):
     id: str = Field(..., description="ID del documento de feedback creado en Firestore")
 
 
+# ── Message feedback request/response ─────────────────────────────────────────
+
+
+class MessageFeedbackRequest(BaseModel):
+    """Calificación de un mensaje individual del agente."""
+
+    conversation_id: str = Field(
+        ..., min_length=1, description="ID de la conversación en Firestore"
+    )
+    message_id: str = Field(
+        ..., min_length=1, description="ID del documento del mensaje en Firestore"
+    )
+    ratings: MessageFeedbackRatings = Field(
+        ..., description="Calificación por dimensión (pertinencia, precisión)"
+    )
+    expected_answer: str | None = Field(
+        default=None, max_length=1000, description="Respuesta que el usuario consideraría adecuada"
+    )
+
+
+class MessageFeedbackResponse(BaseModel):
+    id: str = Field(..., description="ID del documento de feedback de mensaje creado en Firestore")
+
+
+# ── Admin feedback schemas ────────────────────────────────────────────────────
+
+
 class AdminFeedbackItem(BaseModel):
     id: str
     userId: str
     userEmail: str
-    rating: int
+    ratings: RatingDimensions
     comment: str | None
     conversationId: str | None
     conversationTitle: str | None
@@ -78,9 +145,39 @@ class AdminFeedbackItem(BaseModel):
 class AdminFeedbackResponse(BaseModel):
     items: list[AdminFeedbackItem]
     total: int
-    avg_rating: float
-    distribution: dict[str, int] = Field(
-        ..., description="Distribución de ratings: {'1': n, '2': n, ...}"
+    avg_ratings: RatingDimensionsFloat = Field(
+        ..., description="Promedio de calificaciones por dimensión"
+    )
+    distributions: dict[str, dict[str, int]] = Field(
+        ...,
+        description=(
+            "Distribución de calificaciones por dimensión: "
+            "{'tone': {'1': n, ...}, 'length': {...}, 'usability': {...}, 'overall': {...}}"
+        ),
+    )
+
+
+class AdminMessageFeedbackItem(BaseModel):
+    id: str
+    userId: str
+    userEmail: str
+    conversationId: str
+    messageId: str
+    ratings: MessageFeedbackRatings
+    expectedAnswer: str | None
+    createdAt: str = Field(..., description="ISO 8601 timestamp")
+
+
+class AdminMessageFeedbackResponse(BaseModel):
+    items: list[AdminMessageFeedbackItem]
+    total: int
+    avg_ratings: dict[str, float] = Field(..., description="Promedio de pertinencia y precisión")
+    distributions: dict[str, dict[str, int]] = Field(
+        ...,
+        description=(
+            "Distribución de calificaciones por dimensión: "
+            "{'pertinence': {'1': n, ...}, 'accuracy': {...}}"
+        ),
     )
 
 
