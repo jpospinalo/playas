@@ -1,0 +1,144 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-05-09T00:00:00Z",
+  "title": "Design System: ATLAS",
+  "extensions": {
+    "colorMeta": {
+      "sea-depth":           { "role": "primary",   "displayName": "Caribbean Depth",    "canonical": "oklch(50% 0.13 196)", "tonalRamp": ["#061c20","#0a2e35","#0f434e","#1a7a8a","#228fa0","#4ab4c8","#80d0dc","#b8eaf0","#d1ecf0"] },
+      "sea-bright":          { "role": "primary",   "displayName": "Caribbean Bright",   "canonical": "oklch(55% 0.13 196)", "tonalRamp": ["#061c20","#0a2e35","#0f434e","#1a7a8a","#228fa0","#4ab4c8","#80d0dc","#b8eaf0","#d1ecf0"] },
+      "sea-muted":           { "role": "primary",   "displayName": "Caribbean Mist",     "canonical": "oklch(90% 0.05 196)", "tonalRamp": ["#d1ecf0","#e0f4f7","#f0fafb"] },
+      "parchment-bg":        { "role": "neutral",   "displayName": "Parchment",          "canonical": "oklch(98.5% 0.008 80)", "tonalRamp": ["#1a140d","#3d3028","#6b5c4e","#9e9080","#c8bfb0","#ddd5c5","#ede8df","#f5f1ea","#faf7f0"] },
+      "parchment-surface":   { "role": "neutral",   "displayName": "Paper",              "canonical": "oklch(99.5% 0.006 78)", "tonalRamp": ["#1a140d","#3d3028","#6b5c4e","#9e9080","#c8bfb0","#ddd5c5","#ede8df","#f5f1ea","#fffef9"] },
+      "ink-deep":            { "role": "neutral",   "displayName": "Map Ink",            "canonical": "oklch(16% 0.018 52)",  "tonalRamp": ["#1a140d","#3d3028","#6b5c4e","#9e9080","#c8bfb0","#ddd5c5","#ede8df","#f5f1ea","#faf7f0"] },
+      "ink-muted":           { "role": "neutral",   "displayName": "Faded Ink",          "canonical": "oklch(50% 0.015 55)",  "tonalRamp": ["#1a140d","#3d3028","#6b5c4e","#9e9080","#c8bfb0","#ddd5c5","#ede8df","#f5f1ea","#faf7f0"] },
+      "stone-border":        { "role": "neutral",   "displayName": "Stone",              "canonical": "oklch(88% 0.01 78)",   "tonalRamp": ["#1a140d","#3d3028","#6b5c4e","#9e9080","#c8bfb0","#ddd5c5","#ede8df","#f5f1ea","#faf7f0"] },
+      "stone-subtle":        { "role": "neutral",   "displayName": "Fog",                "canonical": "oklch(93% 0.008 78)",  "tonalRamp": ["#1a140d","#3d3028","#6b5c4e","#9e9080","#c8bfb0","#ddd5c5","#ede8df","#f5f1ea","#faf7f0"] },
+      "charter-amber":       { "role": "secondary", "displayName": "Charter Amber",      "canonical": "oklch(50% 0.11 68)",   "tonalRamp": ["#3d2000","#6b3a00","#8a5700","#b07020","#d09040","#e8c070","#f5e0a8","#f9efd0","#fdf7e8"] },
+      "charter-amber-fill":  { "role": "secondary", "displayName": "Charter Fill",       "canonical": "oklch(93% 0.06 82)",   "tonalRamp": ["#3d2000","#6b3a00","#8a5700","#b07020","#d09040","#e8c070","#f5e0a8","#f5eacc","#fdf7e8"] },
+      "dark-sea-bg":         { "role": "neutral",   "displayName": "Deep Sea",           "canonical": "oklch(14% 0.03 225)",  "tonalRamp": ["#050e18","#0c1621","#10202f","#162c40","#1e3850","#2a4e6e","#3d6e94","#6090b8","#a0c0d8"] },
+      "dark-sea-surface":    { "role": "neutral",   "displayName": "Sea Surface",        "canonical": "oklch(18% 0.025 225)", "tonalRamp": ["#050e18","#0c1621","#10202f","#162c40","#1e3850","#2a4e6e","#3d6e94","#6090b8","#a0c0d8"] },
+      "dark-sea-accent":     { "role": "primary",   "displayName": "Moonlit Teal",       "canonical": "oklch(68% 0.13 196)",  "tonalRamp": ["#061c20","#0a2e35","#0f434e","#1a7a8a","#228fa0","#4ab4c8","#6ecad8","#95dde8","#c0eff4"] },
+      "dark-ink-fg":         { "role": "neutral",   "displayName": "Sea Cream",          "canonical": "oklch(93% 0.008 78)",  "tonalRamp": [] },
+      "dark-ink-muted":      { "role": "neutral",   "displayName": "Dim Parchment",      "canonical": "oklch(62% 0.012 75)",  "tonalRamp": [] },
+      "dark-stone-border":   { "role": "neutral",   "displayName": "Deep Stone",         "canonical": "oklch(24% 0.02 225)",  "tonalRamp": [] }
+    },
+    "typographyMeta": {
+      "display":  { "displayName": "Display",  "purpose": "ATLAS wordmark, page-level hero titles, empty-state headings. EB Garamond only." },
+      "headline": { "displayName": "Headline", "purpose": "Section headings on /about, major structural headings in rendered answers." },
+      "title":    { "displayName": "Title",    "purpose": "Conversation titles in sidebar, modal headings, source document names. Inter only." },
+      "body":     { "displayName": "Body",     "purpose": "All rendered legal answer text. 68ch max line length." },
+      "label":    { "displayName": "Label",    "purpose": "Timestamps, metadata, badge text. Uppercase only for very short strings." }
+    },
+    "shadows": [
+      { "name": "lift",       "value": "0 2px 8px oklch(16% 0.02 55 / 0.10), 0 1px 2px oklch(16% 0.02 55 / 0.06)", "purpose": "Popovers, source tooltips, dropdowns. Communicates detachment from surface." },
+      { "name": "hover-glow", "value": "0 0 0 3px oklch(50% 0.13 196 / 0.18)",                                       "purpose": "Focus ring for interactive elements. Teal halo, not shadow." }
+    ],
+    "motion": [
+      { "name": "ease-out-quart", "value": "cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "Standard easing. Entrances, state reveals, popover open." },
+      { "name": "ease-standard",  "value": "cubic-bezier(0.4, 0, 0.2, 1)",  "purpose": "Color and border transitions. Hover states." },
+      { "name": "duration-fast",  "value": "150ms",                          "purpose": "Hover color transitions, badge interactions." },
+      { "name": "duration-enter", "value": "400ms",                          "purpose": "Message appearance, popover open." }
+    ],
+    "breakpoints": [
+      { "name": "sm",  "value": "640px" },
+      { "name": "md",  "value": "768px" },
+      { "name": "lg",  "value": "1024px" },
+      { "name": "xl",  "value": "1280px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Primary action — send query, confirm, open chat. Caribbean Depth background.",
+      "html": "<button class=\"ds-btn-primary\">Consultar jurisprudencia <svg xmlns=\"http://www.w3.org/2000/svg\" width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M5 12h14\"/><path d=\"m12 5 7 7-7 7\"/></svg></button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; gap: 6px; background: #1a7a8a; color: #fffef9; font-family: Inter, system-ui, sans-serif; font-size: 0.875rem; font-weight: 500; line-height: 1; padding: 10px 22px; border: none; border-radius: 8px; cursor: pointer; transition: background 150ms cubic-bezier(0.4, 0, 0.2, 1); } .ds-btn-primary:hover { background: #228fa0; } .ds-btn-primary:focus-visible { outline: none; box-shadow: 0 0 0 3px oklch(50% 0.13 196 / 0.18); } .ds-btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }"
+    },
+    {
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Secondary action — cancel, methodology link, new chat.",
+      "html": "<button class=\"ds-btn-ghost\">Conocer la metodología</button>",
+      "css": ".ds-btn-ghost { display: inline-flex; align-items: center; gap: 6px; background: transparent; color: #1a140d; font-family: Inter, system-ui, sans-serif; font-size: 0.875rem; font-weight: 500; line-height: 1; padding: 10px 22px; border: none; border-radius: 8px; cursor: pointer; transition: background 150ms cubic-bezier(0.4, 0, 0.2, 1); } .ds-btn-ghost:hover { background: #ede8df; } .ds-btn-ghost:focus-visible { outline: none; box-shadow: 0 0 0 3px oklch(50% 0.13 196 / 0.18); }"
+    },
+    {
+      "name": "Citation Badge",
+      "kind": "chip",
+      "refersTo": "badge-citation",
+      "description": "Inline legal source reference. Appears within rendered assistant answers. Click opens source popover.",
+      "html": "<button class=\"ds-badge-citation\" aria-label=\"Ver fuente: doc1\">[doc1]</button>",
+      "css": ".ds-badge-citation { display: inline-flex; align-items: center; background: #f5eacc; color: #8a5700; border: 1px solid rgba(138,87,0,0.28); border-radius: 9999px; font-family: Inter, system-ui, sans-serif; font-size: 0.7em; font-weight: 600; line-height: 1; padding: 2px 8px; margin: 0 0.12em; vertical-align: baseline; white-space: nowrap; letter-spacing: 0.01em; cursor: pointer; transition: background 150ms ease, box-shadow 150ms ease; } .ds-badge-citation:hover { background: rgba(138,87,0,0.15); box-shadow: 0 0 0 2px rgba(138,87,0,0.18); } .ds-badge-citation:focus-visible { outline: 2px solid #8a5700; outline-offset: 2px; } .ds-badge-citation--missing { opacity: 0.38; cursor: not-allowed; pointer-events: none; }"
+    },
+    {
+      "name": "Chat Input",
+      "kind": "input",
+      "refersTo": "input-chat",
+      "description": "Primary interaction surface. Full-width, grows to 8 lines. Send icon button attached.",
+      "html": "<div class=\"ds-chat-input-wrap\"><textarea class=\"ds-chat-input\" rows=\"1\" placeholder=\"Consulte sobre playas, bienes costeros, jurisprudencia del Consejo de Estado…\" aria-label=\"Mensaje\"></textarea><button class=\"ds-send-btn\" aria-label=\"Enviar\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"m22 2-7 20-4-9-9-4Z\"/><path d=\"M22 2 11 13\"/></svg></button></div>",
+      "css": ".ds-chat-input-wrap { display: flex; align-items: flex-end; gap: 8px; background: #fffef9; border: 1px solid #ddd5c5; border-radius: 12px; padding: 10px 12px; transition: border-color 150ms ease; } .ds-chat-input-wrap:focus-within { border-color: #1a7a8a; } .ds-chat-input { flex: 1; background: transparent; border: none; outline: none; font-family: Inter, system-ui, sans-serif; font-size: 0.9375rem; line-height: 1.65; color: #1a140d; resize: none; max-height: calc(8 * 1.65 * 0.9375rem); overflow-y: auto; } .ds-chat-input::placeholder { color: #9e9080; } .ds-send-btn { flex-shrink: 0; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background: transparent; color: #1a7a8a; border: none; border-radius: 6px; cursor: pointer; transition: background 150ms ease; } .ds-send-btn:hover { background: #ede8df; } .ds-send-btn:focus-visible { outline: none; box-shadow: 0 0 0 3px oklch(50% 0.13 196 / 0.18); }"
+    },
+    {
+      "name": "Conversation Item",
+      "kind": "nav",
+      "description": "Sidebar list item. Hover: Fog background. Active: Caribbean Mist background, Caribbean Depth text. No border stripe.",
+      "html": "<button class=\"ds-conv-item ds-conv-item--active\"><span class=\"ds-conv-title\">Playas de uso público en Cartagena</span><span class=\"ds-conv-time\">hace 2 h</span></button>",
+      "css": ".ds-conv-item { width: 100%; display: flex; flex-direction: column; align-items: flex-start; gap: 2px; padding: 8px 12px; border: none; border-radius: 6px; background: transparent; cursor: pointer; text-align: left; transition: background 150ms ease; } .ds-conv-item:hover { background: #ede8df; } .ds-conv-item--active { background: #d1ecf0; } .ds-conv-title { font-family: Inter, system-ui, sans-serif; font-size: 0.875rem; font-weight: 500; color: #1a140d; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; } .ds-conv-item--active .ds-conv-title { color: #1a7a8a; } .ds-conv-time { font-family: Inter, system-ui, sans-serif; font-size: 0.7rem; font-weight: 400; color: #6b5c4e; letter-spacing: 0.02em; }"
+    },
+    {
+      "name": "Source Popover",
+      "kind": "custom",
+      "description": "Appears near a clicked citation badge. Shows document title, metadata grid, and source excerpt.",
+      "html": "<div class=\"ds-popover\"><p class=\"ds-popover-title\">Sent. CE 25000-23-24-000-2008 — Sala Plena</p><dl class=\"ds-popover-meta\"><dt>Sección</dt><dd>Argumentación jurídica</dd><dt>Fecha</dt><dd>12 mar 2019</dd></dl><p class=\"ds-popover-section\">Texto fuente</p><p class=\"ds-popover-body\">El dominio público marítimo-terrestre comprende la ribera del mar hasta la línea de bajamar escorada, así como las playas marítimas...</p></div>",
+      "css": ".ds-popover { position: absolute; z-index: 50; max-width: 340px; min-width: 240px; background: #fffef9; border: 1px solid #ddd5c5; border-radius: 12px; padding: 14px 16px; box-shadow: 0 2px 8px rgba(26,20,13,0.10), 0 1px 2px rgba(26,20,13,0.06); animation: ds-popover-in 180ms cubic-bezier(0.16,1,0.3,1) both; } @keyframes ds-popover-in { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } } .ds-popover-title { font-family: Inter, system-ui, sans-serif; font-size: 0.8125rem; font-weight: 600; color: #1a140d; margin: 0 0 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .ds-popover-meta { display: grid; grid-template-columns: auto 1fr; column-gap: 8px; row-gap: 2px; margin: 0 0 10px; } .ds-popover-meta dt { font-family: Inter, system-ui, sans-serif; font-size: 0.6875rem; font-weight: 500; color: #9e9080; } .ds-popover-meta dd { font-family: Inter, system-ui, sans-serif; font-size: 0.6875rem; color: #1a140d; margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .ds-popover-section { font-family: Inter, system-ui, sans-serif; font-size: 0.6875rem; font-weight: 600; color: #8a5700; letter-spacing: 0.04em; text-transform: uppercase; margin: 0 0 6px; } .ds-popover-body { font-family: Inter, system-ui, sans-serif; font-size: 0.75rem; line-height: 1.55; color: #6b5c4e; margin: 0; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; border-top: 1px solid #ede8df; padding-top: 8px; }"
+    },
+    {
+      "name": "ATLAS Wordmark",
+      "kind": "custom",
+      "description": "The product name rendered in EB Garamond. Never use a logomark or icon — the word is the identity.",
+      "html": "<span class=\"ds-wordmark\">ATLAS</span>",
+      "css": ".ds-wordmark { font-family: 'EB Garamond', Georgia, serif; font-size: 1.25rem; font-weight: 500; letter-spacing: 0.06em; color: #1a140d; text-transform: uppercase; line-height: 1; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Cartographer's Study",
+    "overview": "ATLAS is named for the atlas — the bound collection of maps that made the world legible. Its design system follows that metaphor structurally, not decoratively. The color palette is drawn from antique cartographic plates: warm parchment grounds, Caribbean water teal, near-black map ink. The typography pairs a classical serif (the text of historical atlases) with a precise modern sans (the instrument of efficiency). The result is an interface that feels authoritative without feeling archaic — a research tool, not a portal.\n\nThe primary surface is the conversation. Everything else is infrastructure. The sidebar, navigation, and chrome are subordinate — they exist to hold the exchange, not to compete with it. Dense legal text needs room to breathe and a typographic system that renders it legible.\n\nDark mode inverts the metaphor from parchment + ink to deep sea + moonlight: a #0c1621 navy background with warm cream text and a brighter teal accent. Both modes share the same structure — the tokens swap, the architecture stays.",
+    "keyCharacteristics": [
+      "Warm neutrals, never cool grays — parchment, not hospital white",
+      "Caribbean teal as the one active voice — rare, purposeful, unmistakable",
+      "Charter Amber for citations only — legal sources are a first-class visual element",
+      "EB Garamond for ATLAS identity and headings; Inter for all functional text",
+      "Flat surfaces at rest; shadow only as a response to state",
+      "Reduced motion respected globally; no gratuitous animation"
+    ],
+    "rules": [
+      { "name": "The Ink & Water Rule",       "body": "Every interactive element is water (teal). Every resting surface is parchment or paper (warm neutral). These two families never blend — no teal backgrounds for content surfaces, no warm neutrals on interactive elements.", "section": "colors" },
+      { "name": "The One Amber Rule",         "body": "Charter Amber appears only on citation badges and their hover states. If you are about to apply amber to anything else, stop. Choose teal or ink instead.", "section": "colors" },
+      { "name": "The Two-Font Discipline",    "body": "EB Garamond is the name of the system. Inter is the voice of the system. Never mix them on the same semantic level. Don't introduce a third font.", "section": "typography" },
+      { "name": "The 68ch Rule",              "body": "Legal text rendered in assistant answers must never exceed 68ch. Wide justified blocks in dense prose are a usability failure, not a design choice.", "section": "typography" },
+      { "name": "The Flat-By-Default Rule",   "body": "Surfaces are flat at rest. Shadows appear when an element detaches from the surface — on hover for interactive cards, on open for floating layers.", "section": "elevation" }
+    ],
+    "dos": [
+      "Use Caribbean Depth for all interactive affordances — the active state speaks in one voice.",
+      "Render legal text with Inter body at 0.9375rem, 1.65 line-height, maximum 68ch.",
+      "Use EB Garamond exclusively for ATLAS-brand moments: wordmark, page-level titles, empty-state headings.",
+      "Keep all surfaces warm — Parchment, Paper, Fog — even in light/neutral contexts.",
+      "Treat citation badges as first-class: every badge has a popover, a hover state, and a focus state.",
+      "Implement all three theme modes via CSS custom properties with a .dark class and prefers-color-scheme media query.",
+      "Use prefers-reduced-motion to gate all animations.",
+      "Keep sidebar active state visually clear through background color and text color change — never through a border stripe."
+    ],
+    "donts": [
+      "Don't build this to look like Legis or SUIN-Juriscol — dense portal layouts with nested tables and no whitespace.",
+      "Don't build this to look like ChatGPT or Gemini — generic sans-serif everywhere, thin input at the bottom, no identity.",
+      "Don't use navy + gold — the most legible first-order reflex for 'legal tool' and the fastest way to look undifferentiated.",
+      "Don't use editorial dark mode (dark background + large white serif) — it's the second-order reflex for 'AI legal tool'.",
+      "Don't use border-left or border-right greater than 1px as a colored stripe accent. Active states use background fills.",
+      "Don't use gradient text (background-clip: text). Charter Amber and Caribbean Depth are single colors.",
+      "Don't use glassmorphism. ATLAS surfaces are opaque.",
+      "Don't use cool grays — replace #64748B with Faded Ink #6b5c4e family.",
+      "Don't put EB Garamond on body text or UI labels — below 1.2rem it loses legibility."
+    ]
+  }
+}
