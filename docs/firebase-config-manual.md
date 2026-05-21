@@ -85,10 +85,10 @@ Crear los siguientes dos índices (uno a la vez):
 
 ### Índice 1 — Lista de conversaciones del usuario
 
-| Campo        | ID de la colección |
-| ------------ | ------------------ |
-| `userId`     | `conversations`    |
-| `updatedAt`  | Descendente        |
+| Campo       | ID de la colección |
+| ----------- | ------------------ |
+| `userId`    | `conversations`    |
+| `updatedAt` | Descendente        |
 
 ### Índice 2 — Panel admin: feedback filtrado por rating
 
@@ -96,6 +96,8 @@ Crear los siguientes dos índices (uno a la vez):
 | ----------- | ------------------ |
 | `rating`    | `feedback`         |
 | `createdAt` | Descendente        |
+
+> **Nota:** Con la migración al sistema de calificaciones multi-dimensión, el campo `rating` ha sido reemplazado por `ratings.overall`. Este índice puede ser eliminado una vez que todos los documentos legacy hayan sido migrados y el backend use `ratings.overall` para filtrar.
 
 Cada índice tarda ~1 minuto en pasar de **Building** a **Enabled**.
 
@@ -109,14 +111,14 @@ Cada índice tarda ~1 minuto en pasar de **Building** a **Enabled**.
 
 Ahí aparecen todas las variables. Copiarlas al archivo `frontend/.env.local`:
 
-| Variable en `.env.local`                    | Campo en Firebase Console |
-| ------------------------------------------- | ------------------------- |
-| `NEXT_PUBLIC_FIREBASE_API_KEY`              | `apiKey`                  |
-| `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN`          | `authDomain`              |
-| `NEXT_PUBLIC_FIREBASE_PROJECT_ID`           | `projectId`               |
-| `NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET`       | `storageBucket`           |
-| `NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID`  | `messagingSenderId`       |
-| `NEXT_PUBLIC_FIREBASE_APP_ID`               | `appId`                   |
+| Variable en `.env.local`                   | Campo en Firebase Console |
+| ------------------------------------------ | ------------------------- |
+| `NEXT_PUBLIC_FIREBASE_API_KEY`             | `apiKey`                  |
+| `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN`         | `authDomain`              |
+| `NEXT_PUBLIC_FIREBASE_PROJECT_ID`          | `projectId`               |
+| `NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET`      | `storageBucket`           |
+| `NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID` | `messagingSenderId`       |
+| `NEXT_PUBLIC_FIREBASE_APP_ID`              | `appId`                   |
 
 > Si no existe una app web todavía, crearla primero: en la misma página de Configuración del proyecto, clic en **Agregar app** → icono web (`</>`). No hace falta Firebase Hosting.
 
@@ -154,3 +156,62 @@ No existe endpoint para esto — es deliberadamente manual para reducir la super
 3. Editar el campo `role` y cambiar su valor a `admin` o `super-admin`.
 
 Los valores válidos son `user` (default), `admin` y `super-admin`.
+
+---
+
+## 7. Colección `message_feedback` y migración de `feedback`
+
+> Esta sección documenta los cambios introducidos por el sistema de calificación dual (conversación + mensaje).
+
+### 7.1. Desplegar reglas actualizadas
+
+Las reglas de Firestore ahora incluyen la colección `message_feedback`:
+
+```bash
+firebase deploy --only firestore:rules
+```
+
+### 7.2. Crear índices compuestos para `message_feedback`
+
+Ir a **Firestore → Índices → Índices compuestos → Agregar índice**.
+
+#### Índice 3 — Listar feedback de mensajes por fecha
+
+| Campo       | ID de la colección |
+| ----------- | ------------------ |
+| `createdAt` | `message_feedback` |
+
+Orden: Descendente
+
+#### Índice 4 — Verificar duplicados (usuario + mensaje)
+
+| Campo       | ID de la colección |
+| ----------- | ------------------ |
+| `userId`    | `message_feedback` |
+| `messageId` | ASCENDING          |
+
+`messageId` en orden ASCENDING.
+
+> Estos índices están definidos en `firestore.indexes.json` en la raíz del proyecto.
+
+### 7.3. Migrar documentos existentes de `feedback`
+
+La colección `feedback` cambia de un campo `rating` (entero) a un campo `ratings` (objeto con `tone`, `length`, `usability`, `overall`). Ejecutar el script de migración:
+
+```bash
+uv run python scripts/migrate_feedback_ratings.py --dry-run   # Previsualizar cambios
+uv run python scripts/migrate_feedback_ratings.py             # Aplicar migración
+```
+
+> El script usa el Firebase Admin SDK (mismo servicio que el backend). Requiere `FIREBASE_SERVICE_ACCOUNT_PATH` en `.env`.
+
+### 7.4. Verificar la colección `message_feedback`
+
+Después de que un usuario califique un mensaje por primera vez:
+
+1. Ir a **Firestore → Datos**.
+2. Confirmar que la colección `message_feedback` existe con documentos que contengan los campos `userId`, `userEmail`, `conversationId`, `messageId`, `ratings` (con `pertinence` y `accuracy`), `expectedAnswer` y `createdAt`.
+
+### 7.5. Actualizar índice de `feedback` (opcional)
+
+El índice existente en `feedback` que usaba `rating` + `createdAt` ya no es necesario si se filtra por `ratings.overall`. Se puede eliminar una vez que la migración esté completa y el backend use `ratings.overall` para los filtros de admin.

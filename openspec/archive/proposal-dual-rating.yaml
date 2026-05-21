@@ -1,0 +1,157 @@
+change_id: dual-rating-system
+status: completed
+
+summary: >
+  Replace the current single-star conversation rating with two specialized
+  rating systems: (1) an enhanced conversation-level usability form with
+  multiple dimensions (tone, length, usability), and (2) a per-message
+  performance rating with pertinence, accuracy, and expected-answer fields
+  accessible via a popover on each assistant message.
+
+motivation: >
+  The current 1-5 star + comment system provides insufficient data to evaluate
+  system quality. UX research and product needs require granularity (different
+  aspects need independent measurement), per-response feedback (users need to
+  rate individual responses), and actionable data ("what should the model have
+  answered?" is more useful than a numeric rating alone).
+
+scope:
+  in_scope:
+    - Enhanced conversation-level feedback form (usability dimensions: tone, length, usability + overall + comment)
+    - Message-level rating popover (pertinence 1-5, accuracy 1-5, expected answer text)
+    - Backend API endpoints for both rating types
+    - Firestore message_feedback collection + extended feedback collection
+    - Admin dashboard separate page /admin/message-feedback for message ratings
+    - Migration of existing feedback docs to new multi-field format
+    - Firestore security rules and indexes for new collection
+    - Updated docs/firebase-config-manual.md
+  out_of_scope:
+    - Report/hallucination flag on messages (future extension point)
+    - Email notifications on new feedback
+    - Bulk export functionality (CSV/Excel)
+    - Real-time analytics dashboard
+    - Rating edit/update after submission
+
+design_decisions:
+  - id: DD-1
+    title: Two separate Firestore collections
+    description: >
+      feedback (existing, schema migrated) for conversation-level ratings.
+      message_feedback (new) for per-message ratings.
+    rationale: Clean separation, independent Firestore rules, no migration of chat history, simpler admin queries.
+
+  - id: DD-2
+    title: Migrate existing feedback to new format (no backward compatibility)
+    description: >
+      Old rating field becomes ratings.overall. Old comment field stays as comment.
+      New required fields: ratings.tone, ratings.length, ratings.usability, ratings.overall.
+    rationale: Cleaner schema, no dual-path code, simpler admin dashboard.
+
+  - id: DD-3
+    title: Popover inline for message-level rating
+    description: >
+      Small action icon on each AssistantBubble opens an inline popover.
+      No full modal for per-message ratings.
+    rationale: Contextual, fast, no context-switching, avoids modal fatigue.
+
+  - id: DD-4
+    title: Non-editable ratings
+    description: >
+      One submission per user per message/conversation. No edit window.
+    rationale: Simpler schema, cleaner data, no partial-update complexity.
+
+  - id: DD-5
+    title: Separate admin page for message feedback
+    description: >
+      New /admin/message-feedback page alongside existing /admin/feedback.
+      Overview dashboard shows aggregate stats from both.
+    rationale: Separate concerns, cleaner URLs, avoids tab complexity.
+
+  - id: DD-6
+    title: Fix message ID propagation first
+    description: >
+      Refactor useChat.ts to capture Firestore doc IDs and update React state.
+    rationale: >
+      Prerequisite for reliable message-level references. Current temporary IDs
+      (crypto.randomUUID()) won't match Firestore documents.
+
+affected_areas:
+  - area: Backend schemas
+    impact: high
+    files:
+      - rag/api/schemas.py
+  - area: Backend endpoints
+    impact: high
+    files:
+      - rag/api/routes/feedback.py
+      - rag/api/routes/admin.py
+  - area: Frontend types
+    impact: medium
+    files:
+      - frontend/lib/types.ts
+  - area: Frontend API client
+    impact: medium
+    files:
+      - frontend/lib/api.ts
+  - area: Chat state management
+    impact: high
+    files:
+      - frontend/hooks/useChat.ts
+  - area: Conversation feedback UI
+    impact: high
+    files:
+      - frontend/components/chat/FeedbackModal.tsx
+      - frontend/components/chat/FeedbackButton.tsx
+  - area: Message rating UI
+    impact: high
+    files:
+      - frontend/components/chat/AssistantBubble.tsx
+      - frontend/components/chat/MessageList.tsx
+      - frontend/components/chat/ChatInterface.tsx
+      - NEW frontend/components/chat/MessageRatingPopover.tsx
+  - area: Admin dashboard
+    impact: high
+    files:
+      - frontend/app/admin/page.tsx
+      - NEW frontend/app/admin/message-feedback/page.tsx
+  - area: Firestore rules
+    impact: medium
+    files:
+      - firestore.rules
+  - area: Firestore indexes
+    impact: low
+    files:
+      - firestore.indexes.json
+  - area: Firebase docs
+    impact: low
+    files:
+      - docs/firebase-config-manual.md
+
+risks:
+  - risk: Message ID mismatch between frontend and Firestore
+    likelihood: high
+    impact: high
+    mitigation: Refactor useChat.ts to propagate real doc IDs after addDoc()
+  - risk: UI clutter on AssistantBubble
+    likelihood: medium
+    impact: medium
+    mitigation: Show rating button only on hover/focus; use compact popover
+  - risk: Data migration of existing feedback docs
+    likelihood: low
+    impact: medium
+    mitigation: Write migration script; test on staging first
+  - risk: Firestore rule misconfiguration
+    likelihood: low
+    impact: high
+    mitigation: Test rules locally before deploy; add to firebase-config-manual.md
+
+success_criteria:
+  - Users can rate conversations with a multi-field form (tone, length, usability, overall, comment)
+  - Users can rate individual assistant messages via popover (pertinence, accuracy, expected answer)
+  - Message rating popover opens from an action button on each assistant bubble
+  - Admin dashboard shows both rating types with stats and listings
+  - Existing feedback data is migrated to the new schema
+  - Firestore rules enforce auth for creation and admin for reads on both collections
+  - No regression in existing chat functionality
+
+estimated_effort: "4.5 days (1 backend, 2 frontend, 0.5 infra, 1 testing/polish)"
