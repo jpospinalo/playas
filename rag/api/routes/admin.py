@@ -23,9 +23,14 @@ from rag.api.firebase_admin import (
 from rag.api.schemas import (
     AdminFeedbackItem,
     AdminFeedbackResponse,
+    AdminMessageFeedbackItem,
+    AdminMessageFeedbackResponse,
     AdminUserItem,
     AdminUsersResponse,
     CreateUserRequest,
+    MessageFeedbackRatings,
+    RatingDimensions,
+    RatingDimensionsFloat,
     UpdatePasswordRequest,
 )
 
@@ -48,24 +53,28 @@ def _ts_to_iso(ts) -> str:
 async def list_feedback(
     page: int = Query(default=1, ge=1, description="Número de página"),
     page_size: int = Query(default=20, ge=1, le=100, description="Ítems por página"),
-    min_rating: int | None = Query(default=None, ge=1, le=5),
-    max_rating: int | None = Query(default=None, ge=1, le=5),
+    min_overall: int | None = Query(
+        default=None, ge=1, le=5, description="Filtrar por calificación general mínima"
+    ),
+    max_overall: int | None = Query(
+        default=None, ge=1, le=5, description="Filtrar por calificación general máxima"
+    ),
     start_date: str | None = Query(default=None, description="ISO 8601 — fecha mínima"),
     end_date: str | None = Query(default=None, description="ISO 8601 — fecha máxima"),
     _admin: dict = Depends(require_admin),  # noqa: B008
 ) -> AdminFeedbackResponse:
-    """Lista el feedback ordenado por fecha descendente, con filtros opcionales.
+    """Lista el feedback de conversación ordenado por fecha descendente.
 
-    Retorna también el total, promedio de rating y distribución 1-5.
+    Retorna también el total, promedios por dimensión y distribuciones por dimensión.
     """
     db = get_db()
 
     query = db.collection("feedback").order_by("createdAt", direction="DESCENDING")
 
-    if min_rating is not None:
-        query = query.where("rating", ">=", min_rating)
-    if max_rating is not None:
-        query = query.where("rating", "<=", max_rating)
+    if min_overall is not None:
+        query = query.where("ratings.overall", ">=", min_overall)
+    if max_overall is not None:
+        query = query.where("ratings.overall", "<=", max_overall)
     if start_date is not None:
         try:
             dt = datetime.fromisoformat(start_date).replace(tzinfo=UTC)
@@ -94,31 +103,63 @@ async def list_feedback(
         ) from exc
 
     total = len(docs)
-    distribution: dict[str, int] = {"1": 0, "2": 0, "3": 0, "4": 0, "5": 0}
-    rating_sum = 0
+
+    # Aggregate per-dimension averages and distributions
+    dims = ["tone", "length", "usability", "overall"]
+    distributions: dict[str, dict[str, int]] = {
+        d: {"1": 0, "2": 0, "3": 0, "4": 0, "5": 0} for d in dims
+    }
+    sums: dict[str, float] = {d: 0.0 for d in dims}
 
     for doc in docs:
         data = doc.to_dict() or {}
-        r = data.get("rating", 0)
-        if 1 <= r <= 5:
-            distribution[str(r)] += 1
-            rating_sum += r
+        ratings_data = data.get("ratings", {})
+        # Fallback para documentos legacy que aún tienen "rating" en vez de "ratings"
+        if not ratings_data and "rating" in data:
+            legacy_r = data["rating"]
+            ratings_data = {
+                "tone": legacy_r,
+                "length": legacy_r,
+                "usability": legacy_r,
+                "overall": legacy_r,
+            }
+        for d in dims:
+            val = ratings_data.get(d, 0)
+            if 1 <= val <= 5:
+                distributions[d][str(val)] += 1
+                sums[d] += val
 
-    avg_rating = round(rating_sum / total, 2) if total > 0 else 0.0
+    avg_ratings = RatingDimensionsFloat(
+        **{d: round(sums[d] / total, 2) if total > 0 else 0.0 for d in dims}
+    )
 
-    # Paginación en memoria (Firestore no tiene offset nativo simple sin cursor)
+    # Paginación en memoria
     start = (page - 1) * page_size
     page_docs = docs[start : start + page_size]
 
     items: list[AdminFeedbackItem] = []
     for doc in page_docs:
         data = doc.to_dict() or {}
+        ratings_data = data.get("ratings", {})
+        if not ratings_data and "rating" in data:
+            legacy_r = data["rating"]
+            ratings_data = {
+                "tone": legacy_r,
+                "length": legacy_r,
+                "usability": legacy_r,
+                "overall": legacy_r,
+            }
         items.append(
             AdminFeedbackItem(
                 id=doc.id,
                 userId=data.get("userId", ""),
                 userEmail=data.get("userEmail", ""),
-                rating=data.get("rating", 0),
+                ratings=RatingDimensions(
+                    tone=ratings_data.get("tone", 0),
+                    length=ratings_data.get("length", 0),
+                    usability=ratings_data.get("usability", 0),
+                    overall=ratings_data.get("overall", 0),
+                ),
                 comment=data.get("comment"),
                 conversationId=data.get("conversationId"),
                 conversationTitle=data.get("conversationTitle"),
@@ -129,8 +170,123 @@ async def list_feedback(
     return AdminFeedbackResponse(
         items=items,
         total=total,
-        avg_rating=avg_rating,
-        distribution=distribution,
+        avg_ratings=avg_ratings,
+        distributions=distributions,
+    )
+
+
+@router.get("/message-feedback", response_model=AdminMessageFeedbackResponse)
+async def list_message_feedback(
+    page: int = Query(default=1, ge=1, description="Número de página"),
+    page_size: int = Query(default=20, ge=1, le=100, description="Ítems por página"),
+    min_pertinence: int | None = Query(
+        default=None, ge=1, le=5, description="Filtrar por pertinencia mínima"
+    ),
+    max_pertinence: int | None = Query(
+        default=None, ge=1, le=5, description="Filtrar por pertinencia máxima"
+    ),
+    min_accuracy: int | None = Query(
+        default=None, ge=1, le=5, description="Filtrar por precisión mínima"
+    ),
+    max_accuracy: int | None = Query(
+        default=None, ge=1, le=5, description="Filtrar por precisión máxima"
+    ),
+    start_date: str | None = Query(default=None, description="ISO 8601 — fecha mínima"),
+    end_date: str | None = Query(default=None, description="ISO 8601 — fecha máxima"),
+    _admin: dict = Depends(require_admin),  # noqa: B008
+) -> AdminMessageFeedbackResponse:
+    """Lista el feedback de mensajes ordenado por fecha descendente.
+
+    Retorna también el total, promedios por dimensión y distribuciones.
+    """
+    db = get_db()
+
+    query = db.collection("message_feedback").order_by("createdAt", direction="DESCENDING")
+
+    if min_pertinence is not None:
+        query = query.where("ratings.pertinence", ">=", min_pertinence)
+    if max_pertinence is not None:
+        query = query.where("ratings.pertinence", "<=", max_pertinence)
+    if min_accuracy is not None:
+        query = query.where("ratings.accuracy", ">=", min_accuracy)
+    if max_accuracy is not None:
+        query = query.where("ratings.accuracy", "<=", max_accuracy)
+    if start_date is not None:
+        try:
+            dt = datetime.fromisoformat(start_date).replace(tzinfo=UTC)
+            query = query.where("createdAt", ">=", dt)
+        except ValueError as exc:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail=f"start_date inválido: {start_date!r}",
+            ) from exc
+    if end_date is not None:
+        try:
+            dt = datetime.fromisoformat(end_date).replace(tzinfo=UTC)
+            query = query.where("createdAt", "<=", dt)
+        except ValueError as exc:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail=f"end_date inválido: {end_date!r}",
+            ) from exc
+
+    try:
+        docs = [doc async for doc in query.stream()]
+    except Exception as exc:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error leyendo feedback de mensajes de Firestore: {exc}",
+        ) from exc
+
+    total = len(docs)
+
+    # Aggregate per-dimension averages and distributions
+    msg_dims = ["pertinence", "accuracy"]
+    distributions: dict[str, dict[str, int]] = {
+        d: {"1": 0, "2": 0, "3": 0, "4": 0, "5": 0} for d in msg_dims
+    }
+    sums: dict[str, float] = {d: 0.0 for d in msg_dims}
+
+    for doc in docs:
+        data = doc.to_dict() or {}
+        ratings_data = data.get("ratings", {})
+        for d in msg_dims:
+            val = ratings_data.get(d, 0)
+            if 1 <= val <= 5:
+                distributions[d][str(val)] += 1
+                sums[d] += val
+
+    avg_ratings = {d: round(sums[d] / total, 2) if total > 0 else 0.0 for d in msg_dims}
+
+    # Paginación en memoria
+    start = (page - 1) * page_size
+    page_docs = docs[start : start + page_size]
+
+    items: list[AdminMessageFeedbackItem] = []
+    for doc in page_docs:
+        data = doc.to_dict() or {}
+        ratings_data = data.get("ratings", {})
+        items.append(
+            AdminMessageFeedbackItem(
+                id=doc.id,
+                userId=data.get("userId", ""),
+                userEmail=data.get("userEmail", ""),
+                conversationId=data.get("conversationId", ""),
+                messageId=data.get("messageId", ""),
+                ratings=MessageFeedbackRatings(
+                    pertinence=ratings_data.get("pertinence", 0),
+                    accuracy=ratings_data.get("accuracy", 0),
+                ),
+                expectedAnswer=data.get("expectedAnswer"),
+                createdAt=_ts_to_iso(data.get("createdAt")),
+            )
+        )
+
+    return AdminMessageFeedbackResponse(
+        items=items,
+        total=total,
+        avg_ratings=avg_ratings,
+        distributions=distributions,
     )
 
 
