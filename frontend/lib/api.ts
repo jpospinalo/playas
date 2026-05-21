@@ -1,34 +1,36 @@
 import { auth } from "@/lib/firebase";
-import type { FeedbackRequest, QueryRequest, QueryResponse, StreamEvent } from "@/lib/types";
+import type {
+	FeedbackRequest,
+	MessageFeedbackRequest,
+	QueryRequest,
+	QueryResponse,
+	StreamEvent,
+} from "@/lib/types";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080";
 
 /** Obtiene el encabezado Authorization si hay sesión activa. */
 async function getAuthHeaders(): Promise<Record<string, string>> {
-  const user = auth.currentUser;
-  if (!user) return {};
-  const token = await user.getIdToken(/* forceRefresh */ true);
-  return { Authorization: `Bearer ${token}` };
+	const user = auth.currentUser;
+	if (!user) return {};
+	const token = await user.getIdToken(/* forceRefresh */ true);
+	return { Authorization: `Bearer ${token}` };
 }
 
-export async function queryRag(
-  request: QueryRequest
-): Promise<QueryResponse> {
-  const authHeaders = await getAuthHeaders();
-  const res = await fetch(`${API_URL}/api/query`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", ...authHeaders },
-    body: JSON.stringify(request),
-  });
+export async function queryRag(request: QueryRequest): Promise<QueryResponse> {
+	const authHeaders = await getAuthHeaders();
+	const res = await fetch(`${API_URL}/api/query`, {
+		method: "POST",
+		headers: { "Content-Type": "application/json", ...authHeaders },
+		body: JSON.stringify(request),
+	});
 
-  if (!res.ok) {
-    const detail = await res.text().catch(() => "");
-    throw new Error(
-      detail.trim() || `Error del servidor (${res.status})`
-    );
-  }
+	if (!res.ok) {
+		const detail = await res.text().catch(() => "");
+		throw new Error(detail.trim() || `Error del servidor (${res.status})`);
+	}
 
-  return res.json() as Promise<QueryResponse>;
+	return res.json() as Promise<QueryResponse>;
 }
 
 /**
@@ -38,107 +40,139 @@ export async function queryRag(
  * @param authToken Token pre-obtenido para evitar race conditions con auth.currentUser.
  */
 export async function generateConversationTitle(
-  firstMessage: string,
-  conversationId: string,
-  authToken: string,
+	firstMessage: string,
+	conversationId: string,
+	authToken: string,
 ): Promise<string> {
-  try {
-    const res = await fetch(`${API_URL}/api/conversations/generate-title`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${authToken}`,
-      },
-      body: JSON.stringify({
-        first_message: firstMessage,
-        conversation_id: conversationId,
-      }),
-    });
-    if (!res.ok) return firstMessage.slice(0, 50);
-    const data = (await res.json()) as { title?: string };
-    return data.title ?? firstMessage.slice(0, 50);
-  } catch {
-    return firstMessage.slice(0, 50);
-  }
+	try {
+		const res = await fetch(`${API_URL}/api/conversations/generate-title`, {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+				Authorization: `Bearer ${authToken}`,
+			},
+			body: JSON.stringify({
+				first_message: firstMessage,
+				conversation_id: conversationId,
+			}),
+		});
+		if (!res.ok) return firstMessage.slice(0, 50);
+		const data = (await res.json()) as { title?: string };
+		return data.title ?? firstMessage.slice(0, 50);
+	} catch {
+		return firstMessage.slice(0, 50);
+	}
 }
 
 async function readErrorDetail(res: Response): Promise<string> {
-  try {
-    const data = (await res.clone().json()) as { detail?: string };
-    if (data?.detail) return data.detail;
-  } catch {
-    // no es JSON
-  }
-  const text = await res.text().catch(() => "");
-  return text.trim() || `Error del servidor (${res.status})`;
+	try {
+		const data = (await res.clone().json()) as { detail?: string };
+		if (data?.detail) return data.detail;
+	} catch {
+		// no es JSON
+	}
+	const text = await res.text().catch(() => "");
+	return text.trim() || `Error del servidor (${res.status})`;
 }
 
 export interface AdminUserRow {
-  uid: string;
-  email: string;
-  displayName: string | null;
-  role: string;
-  createdAt: string;
+	uid: string;
+	email: string;
+	displayName: string | null;
+	role: string;
+	createdAt: string;
 }
 
 export async function listAdminUsers(): Promise<AdminUserRow[]> {
-  const authHeaders = await getAuthHeaders();
-  const res = await fetch(`${API_URL}/api/admin/users`, {
-    method: "GET",
-    headers: { ...authHeaders },
-  });
-  if (!res.ok) throw new Error(await readErrorDetail(res));
-  const data = (await res.json()) as { items: AdminUserRow[]; total: number };
-  return data.items;
+	const authHeaders = await getAuthHeaders();
+	const res = await fetch(`${API_URL}/api/admin/users`, {
+		method: "GET",
+		headers: { ...authHeaders },
+	});
+	if (!res.ok) throw new Error(await readErrorDetail(res));
+	const data = (await res.json()) as { items: AdminUserRow[]; total: number };
+	return data.items;
 }
 
 export async function createAdminUser(input: {
-  email: string;
-  password: string;
-  displayName?: string | null;
+	email: string;
+	password: string;
+	displayName?: string | null;
 }): Promise<AdminUserRow> {
-  const authHeaders = await getAuthHeaders();
-  const res = await fetch(`${API_URL}/api/admin/users`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", ...authHeaders },
-    body: JSON.stringify({
-      email: input.email,
-      password: input.password,
-      displayName: input.displayName ?? null,
-    }),
-  });
-  if (!res.ok) throw new Error(await readErrorDetail(res));
-  return res.json() as Promise<AdminUserRow>;
+	const authHeaders = await getAuthHeaders();
+	const res = await fetch(`${API_URL}/api/admin/users`, {
+		method: "POST",
+		headers: { "Content-Type": "application/json", ...authHeaders },
+		body: JSON.stringify({
+			email: input.email,
+			password: input.password,
+			displayName: input.displayName ?? null,
+		}),
+	});
+	if (!res.ok) throw new Error(await readErrorDetail(res));
+	return res.json() as Promise<AdminUserRow>;
 }
 
 export async function updateAdminUserPassword(
-  uid: string,
-  password: string,
+	uid: string,
+	password: string,
 ): Promise<void> {
-  const authHeaders = await getAuthHeaders();
-  const res = await fetch(`${API_URL}/api/admin/users/${uid}/password`, {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json", ...authHeaders },
-    body: JSON.stringify({ password }),
-  });
-  if (!res.ok) throw new Error(await readErrorDetail(res));
+	const authHeaders = await getAuthHeaders();
+	const res = await fetch(`${API_URL}/api/admin/users/${uid}/password`, {
+		method: "PATCH",
+		headers: { "Content-Type": "application/json", ...authHeaders },
+		body: JSON.stringify({ password }),
+	});
+	if (!res.ok) throw new Error(await readErrorDetail(res));
 }
 
-/** Envía el feedback del usuario al backend para guardarlo en Firestore. */
-export async function submitFeedback(request: FeedbackRequest): Promise<{ id: string }> {
-  const authHeaders = await getAuthHeaders();
-  const res = await fetch(`${API_URL}/api/feedback`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", ...authHeaders },
-    body: JSON.stringify(request),
-  });
+/** Envía el feedback de conversación al backend (formato multi-dimensión). */
+export async function submitConversationFeedback(
+	request: FeedbackRequest,
+): Promise<{ id: string }> {
+	const authHeaders = await getAuthHeaders();
+	const res = await fetch(`${API_URL}/api/feedback`, {
+		method: "POST",
+		headers: { "Content-Type": "application/json", ...authHeaders },
+		body: JSON.stringify(request),
+	});
 
-  if (!res.ok) {
-    const detail = await res.text().catch(() => "");
-    throw new Error(detail.trim() || `Error del servidor (${res.status})`);
-  }
+	if (!res.ok) {
+		const detail = await res.text().catch(() => "");
+		throw new Error(detail.trim() || `Error del servidor (${res.status})`);
+	}
 
-  return res.json() as Promise<{ id: string }>;
+	return res.json() as Promise<{ id: string }>;
+}
+
+/** Envía el feedback de un mensaje individual al backend. */
+export async function submitMessageFeedback(
+	request: MessageFeedbackRequest,
+): Promise<{ id: string }> {
+	const authHeaders = await getAuthHeaders();
+	const res = await fetch(`${API_URL}/api/feedback/message`, {
+		method: "POST",
+		headers: { "Content-Type": "application/json", ...authHeaders },
+		body: JSON.stringify(request),
+	});
+
+	if (res.status === 409) {
+		throw new Error("Ya existe feedback para este mensaje.");
+	}
+
+	if (!res.ok) {
+		const detail = await res.text().catch(() => "");
+		throw new Error(detail.trim() || `Error del servidor (${res.status})`);
+	}
+
+	return res.json() as Promise<{ id: string }>;
+}
+
+/** @deprecated Use submitConversationFeedback instead. */
+export async function submitFeedback(
+	request: FeedbackRequest,
+): Promise<{ id: string }> {
+	return submitConversationFeedback(request);
 }
 
 /**
@@ -152,48 +186,46 @@ export async function submitFeedback(request: FeedbackRequest): Promise<{ id: st
  *   }
  */
 export async function* queryRagStream(
-  request: QueryRequest
+	request: QueryRequest,
 ): AsyncGenerator<StreamEvent> {
-  const authHeaders = await getAuthHeaders();
-  const res = await fetch(`${API_URL}/api/query/stream`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", ...authHeaders },
-    body: JSON.stringify(request),
-  });
+	const authHeaders = await getAuthHeaders();
+	const res = await fetch(`${API_URL}/api/query/stream`, {
+		method: "POST",
+		headers: { "Content-Type": "application/json", ...authHeaders },
+		body: JSON.stringify(request),
+	});
 
-  if (!res.ok) {
-    const detail = await res.text().catch(() => "");
-    throw new Error(
-      detail.trim() || `Error del servidor (${res.status})`
-    );
-  }
+	if (!res.ok) {
+		const detail = await res.text().catch(() => "");
+		throw new Error(detail.trim() || `Error del servidor (${res.status})`);
+	}
 
-  const reader = res.body!.getReader();
-  const decoder = new TextDecoder();
-  let buffer = "";
+	const reader = res.body!.getReader();
+	const decoder = new TextDecoder();
+	let buffer = "";
 
-  try {
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
+	try {
+		while (true) {
+			const { done, value } = await reader.read();
+			if (done) break;
 
-      buffer += decoder.decode(value, { stream: true });
+			buffer += decoder.decode(value, { stream: true });
 
-      // Los eventos SSE están separados por doble salto de línea
-      const parts = buffer.split("\n\n");
-      buffer = parts.pop() ?? "";
+			// Los eventos SSE están separados por doble salto de línea
+			const parts = buffer.split("\n\n");
+			buffer = parts.pop() ?? "";
 
-      for (const part of parts) {
-        const line = part.trim();
-        if (!line.startsWith("data: ")) continue;
+			for (const part of parts) {
+				const line = part.trim();
+				if (!line.startsWith("data: ")) continue;
 
-        const data = line.slice(6);
-        if (data === "[DONE]") return;
+				const data = line.slice(6);
+				if (data === "[DONE]") return;
 
-        yield JSON.parse(data) as StreamEvent;
-      }
-    }
-  } finally {
-    reader.releaseLock();
-  }
+				yield JSON.parse(data) as StreamEvent;
+			}
+		}
+	} finally {
+		reader.releaseLock();
+	}
 }
