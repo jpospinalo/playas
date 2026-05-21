@@ -1,0 +1,35 @@
+# ── Entornos virtuales y caché ────────────────────────────────────────────────
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+
+# ── Datos del pipeline (no se necesitan en runtime) ───────────────────────────
+data/
+evaluation/
+tests/
+docs/
+infrastructure/
+bucket-backup*/
+
+# ── Frontend (tiene su propio contexto de build) ──────────────────────────────
+frontend/
+node_modules/
+
+# ── Git ───────────────────────────────────────────────────────────────────────
+.git/
+.gitignore
+.gitattributes
+
+# ── Secretos (nunca dentro de la imagen) ─────────────────────────────────────
+.env
+.env.*
+firebase-service-account.json
+
+# ── Herramientas locales ──────────────────────────────────────────────────────
+.pi/
+.impeccable/
+skills-lock.json
