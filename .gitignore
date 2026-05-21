@@ -65,3 +65,7 @@ settings.local.json
 
 # 13) Backups del bucket S3
 bucket-backup-*/
+# Local Pi runtime state
+.atl/
+.pi/
+.pi-lens/
