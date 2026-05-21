@@ -36,5 +36,12 @@ service cloud.firestore {
       allow create: if request.auth != null;
       allow read, list: if isAdmin();
     }
+
+    // message_feedback: crear si autenticado (sin duplicados verificados en backend);
+    // leer solo admins
+    match /message_feedback/{feedbackId} {
+      allow create: if request.auth != null;
+      allow read, list: if isAdmin();
+    }
   }
 }

@@ -5,29 +5,30 @@ import { useEffect, useState, useCallback } from "react";
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080";
 const PAGE_SIZE = 20;
 
-interface RatingDimensions {
-	tone: number;
-	length: number;
-	usability: number;
-	overall: number;
+interface MessageRatings {
+	pertinence: number;
+	accuracy: number;
 }
 
-interface FeedbackItem {
+interface MessageFeedbackItem {
 	id: string;
 	userId: string;
 	userEmail: string;
-	ratings: RatingDimensions;
-	comment: string | null;
-	conversationId: string | null;
-	conversationTitle: string | null;
+	conversationId: string;
+	messageId: string;
+	ratings: MessageRatings;
+	expectedAnswer: string | null;
 	createdAt: string;
 }
 
-interface FeedbackResponse {
-	items: FeedbackItem[];
+interface MessageFeedbackResponse {
+	items: MessageFeedbackItem[];
 	total: number;
-	avg_ratings: RatingDimensions;
-	distributions: { overall: Record<string, number> };
+	avg_ratings: { pertinence: number; accuracy: number };
+	distributions: {
+		pertinence: Record<string, number>;
+		accuracy: Record<string, number>;
+	};
 }
 
 function Stars({ rating }: { rating: number }) {
@@ -68,24 +69,28 @@ function formatDate(iso: string): string {
 	}
 }
 
-export default function FeedbackPage() {
-	const [items, setItems] = useState<FeedbackItem[]>([]);
+function truncate(text: string | null, maxLen: number = 50): string {
+	if (!text) return "—";
+	return text.length > maxLen ? text.slice(0, maxLen) + "…" : text;
+}
+
+export default function MessageFeedbackPage() {
+	const [items, setItems] = useState<MessageFeedbackItem[]>([]);
 	const [total, setTotal] = useState(0);
-	const [avgRatings, setAvgRatings] = useState<RatingDimensions>({
-		tone: 0,
-		length: 0,
-		usability: 0,
-		overall: 0,
-	});
 	const [page, setPage] = useState(1);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 
 	// Filtros
-	const [minOverall, setMinOverall] = useState<string>("");
-	const [maxOverall, setMaxOverall] = useState<string>("");
+	const [minPertinence, setMinPertinence] = useState<string>("");
+	const [maxPertinence, setMaxPertinence] = useState<string>("");
+	const [minAccuracy, setMinAccuracy] = useState<string>("");
+	const [maxAccuracy, setMaxAccuracy] = useState<string>("");
 	const [startDate, setStartDate] = useState("");
 	const [endDate, setEndDate] = useState("");
+
+	// Expanding expected answer
+	const [expandedId, setExpandedId] = useState<string | null>(null);
 
 	const totalPages = Math.ceil(total / PAGE_SIZE);
 
@@ -102,29 +107,38 @@ export default function FeedbackPage() {
 					page: String(p),
 					page_size: String(PAGE_SIZE),
 				});
-				if (minOverall) params.set("min_overall", minOverall);
-				if (maxOverall) params.set("max_overall", maxOverall);
+				if (minPertinence) params.set("min_pertinence", minPertinence);
+				if (maxPertinence) params.set("max_pertinence", maxPertinence);
+				if (minAccuracy) params.set("min_accuracy", minAccuracy);
+				if (maxAccuracy) params.set("max_accuracy", maxAccuracy);
 				if (startDate)
 					params.set("start_date", new Date(startDate).toISOString());
 				if (endDate) params.set("end_date", new Date(endDate).toISOString());
 
-				const res = await fetch(`${API_URL}/api/admin/feedback?${params}`, {
-					headers: { Authorization: `Bearer ${token}` },
-				});
+				const res = await fetch(
+					`${API_URL}/api/admin/message-feedback?${params}`,
+					{
+						headers: { Authorization: `Bearer ${token}` },
+					},
+				);
 				if (!res.ok) throw new Error(`Error ${res.status}`);
-				const data: FeedbackResponse = await res.json();
+				const data: MessageFeedbackResponse = await res.json();
 				setItems(data.items);
 				setTotal(data.total);
-				setAvgRatings(
-					data.avg_ratings ?? { tone: 0, length: 0, usability: 0, overall: 0 },
-				);
 			} catch (e) {
 				setError(e instanceof Error ? e.message : "Error desconocido");
 			} finally {
 				setLoading(false);
 			}
 		},
-		[minOverall, maxOverall, startDate, endDate],
+		[
+			minPertinence,
+			maxPertinence,
+			minAccuracy,
+			maxAccuracy,
+			startDate,
+			endDate,
+		],
 	);
 
 	useEffect(() => {
@@ -137,8 +151,10 @@ export default function FeedbackPage() {
 	}
 
 	function clearFilters() {
-		setMinOverall("");
-		setMaxOverall("");
+		setMinPertinence("");
+		setMaxPertinence("");
+		setMinAccuracy("");
+		setMaxAccuracy("");
 		setStartDate("");
 		setEndDate("");
 		setPage(1);
@@ -148,7 +164,7 @@ export default function FeedbackPage() {
 		<div className="max-w-5xl space-y-6">
 			<div>
 				<h1 className="font-[family-name:var(--font-display)] text-2xl font-semibold text-foreground">
-					Calificaciones de conversación
+					Calificaciones por mensaje
 				</h1>
 				<p className="mt-1 text-sm text-muted">
 					{total}{" "}
@@ -156,14 +172,6 @@ export default function FeedbackPage() {
 						? "calificación registrada"
 						: "calificaciones registradas"}
 				</p>
-				{total > 0 && (
-					<div className="mt-2 flex gap-4 text-sm text-muted">
-						<span>Tono: {avgRatings.tone.toFixed(1)}</span>
-						<span>Longitud: {avgRatings.length.toFixed(1)}</span>
-						<span>Usabilidad: {avgRatings.usability.toFixed(1)}</span>
-						<span>General: {avgRatings.overall.toFixed(1)}</span>
-					</div>
-				)}
 			</div>
 
 			{/* Filtros */}
@@ -171,11 +179,11 @@ export default function FeedbackPage() {
 				<div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
 					<div>
 						<label className="block text-xs text-muted mb-1">
-							General mínimo
+							Pertinencia mín
 						</label>
 						<select
-							value={minOverall}
-							onChange={(e) => setMinOverall(e.target.value)}
+							value={minPertinence}
+							onChange={(e) => setMinPertinence(e.target.value)}
 							className="w-full rounded-md border border-border bg-background px-2 py-1.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-accent"
 						>
 							<option value="">—</option>
@@ -188,11 +196,45 @@ export default function FeedbackPage() {
 					</div>
 					<div>
 						<label className="block text-xs text-muted mb-1">
-							General máximo
+							Pertinencia máx
 						</label>
 						<select
-							value={maxOverall}
-							onChange={(e) => setMaxOverall(e.target.value)}
+							value={maxPertinence}
+							onChange={(e) => setMaxPertinence(e.target.value)}
+							className="w-full rounded-md border border-border bg-background px-2 py-1.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-accent"
+						>
+							<option value="">—</option>
+							{[1, 2, 3, 4, 5].map((n) => (
+								<option key={n} value={n}>
+									{n} ★
+								</option>
+							))}
+						</select>
+					</div>
+					<div>
+						<label className="block text-xs text-muted mb-1">
+							Precisión mín
+						</label>
+						<select
+							value={minAccuracy}
+							onChange={(e) => setMinAccuracy(e.target.value)}
+							className="w-full rounded-md border border-border bg-background px-2 py-1.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-accent"
+						>
+							<option value="">—</option>
+							{[1, 2, 3, 4, 5].map((n) => (
+								<option key={n} value={n}>
+									{n} ★
+								</option>
+							))}
+						</select>
+					</div>
+					<div>
+						<label className="block text-xs text-muted mb-1">
+							Precisión máx
+						</label>
+						<select
+							value={maxAccuracy}
+							onChange={(e) => setMaxAccuracy(e.target.value)}
 							className="w-full rounded-md border border-border bg-background px-2 py-1.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-accent"
 						>
 							<option value="">—</option>
@@ -249,7 +291,7 @@ export default function FeedbackPage() {
 				</div>
 			) : items.length === 0 ? (
 				<div className="rounded-lg border border-border bg-surface p-8 text-center text-sm text-muted">
-					No hay feedback con los filtros seleccionados.
+					No hay calificaciones por mensaje con los filtros seleccionados.
 				</div>
 			) : (
 				<div className="overflow-hidden rounded-xl border border-border bg-surface shadow-sm">
@@ -264,22 +306,13 @@ export default function FeedbackPage() {
 										Usuario
 									</th>
 									<th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-muted">
-										Tono
+										Pertinencia
 									</th>
 									<th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-muted">
-										Longitud
+										Precisión
 									</th>
 									<th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-muted">
-										Usabilidad
-									</th>
-									<th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-muted">
-										General
-									</th>
-									<th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-muted">
-										Comentario
-									</th>
-									<th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-muted">
-										Conversación
+										Respuesta esperada
 									</th>
 								</tr>
 							</thead>
@@ -296,34 +329,36 @@ export default function FeedbackPage() {
 											<span className="font-mono">{item.userEmail}</span>
 										</td>
 										<td className="px-4 py-3">
-											<Stars rating={item.ratings?.tone ?? 0} />
+											<Stars rating={item.ratings?.pertinence ?? 0} />
 										</td>
 										<td className="px-4 py-3">
-											<Stars rating={item.ratings?.length ?? 0} />
-										</td>
-										<td className="px-4 py-3">
-											<Stars rating={item.ratings?.usability ?? 0} />
-										</td>
-										<td className="px-4 py-3">
-											<Stars rating={item.ratings?.overall ?? 0} />
+											<Stars rating={item.ratings?.accuracy ?? 0} />
 										</td>
 										<td className="px-4 py-3 text-xs text-muted max-w-xs">
-											{item.comment ? (
-												<span className="line-clamp-2">{item.comment}</span>
-											) : (
-												<span className="italic text-border">
-													Sin comentario
-												</span>
-											)}
-										</td>
-										<td className="px-4 py-3 text-xs text-muted max-w-[180px]">
-											{item.conversationTitle ? (
-												<span
-													className="truncate block"
-													title={item.conversationTitle}
-												>
-													{item.conversationTitle}
-												</span>
+											{item.expectedAnswer ? (
+												expandedId === item.id ? (
+													<span>
+														{item.expectedAnswer}{" "}
+														<button
+															onClick={() => setExpandedId(null)}
+															className="text-accent hover:underline"
+														>
+															Ver menos
+														</button>
+													</span>
+												) : (
+													<span>
+														{truncate(item.expectedAnswer)}{" "}
+														{item.expectedAnswer.length > 50 && (
+															<button
+																onClick={() => setExpandedId(item.id)}
+																className="text-accent hover:underline"
+															>
+																Ver más
+															</button>
+														)}
+													</span>
+												)
 											) : (
 												<span className="italic text-border">—</span>
 											)}
