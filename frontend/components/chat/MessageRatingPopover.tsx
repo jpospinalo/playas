@@ -26,7 +26,7 @@ const TOOLTIP_TEXT: Record<string, string> = {
 	pertinence:
 		"¿Qué tan relevante fue la respuesta para la pregunta que hicaste? Un 1 indica que no tuvo nada que ver; un 5 indica que fue directamente relevante.",
 	accuracy:
-		"¿Qué tan correcta y exacta fue la respuesta? Un 1 indica que fue incorrecta; un 5 indica que fue plenamente correcta.",
+		"¿La respuesta contiene la información necesaria y está completa para responder la pregunta? Un 1 indica que le faltó información clave; un 5 indica que fue una respuesta completa.",
 };
 
 type SubmitState = "idle" | "loading" | "success" | "error";
