@@ -78,7 +78,10 @@ async def verify_id_token(token: str) -> dict:
 
     _initialize()
     loop = asyncio.get_event_loop()
-    return await loop.run_in_executor(None, firebase_auth.verify_id_token, token)
+    from functools import partial
+
+    fn = partial(firebase_auth.verify_id_token, token, clock_skew_seconds=10)
+    return await loop.run_in_executor(None, fn)
 
 
 async def create_user_async(
