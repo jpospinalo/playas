@@ -1,124 +1,128 @@
 "use client";
 
 import { motion } from "motion/react";
+import { ChatInput } from "@/components/chat/ChatInput";
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 
-const container = {
-  hidden: {},
-  show: { transition: { staggerChildren: 0.09, delayChildren: 0.15 } },
-};
-
-const item = {
-  hidden: { opacity: 0, y: 12 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.45, ease: EASE } },
-};
-
-const EXAMPLE_QUESTIONS = [
-  "¿Cuál es el régimen jurídico de las playas en Colombia?",
-  "¿Qué regula la Ley 99 de 1993 en materia de zonas costeras?",
-  "¿Cómo se tramita una concesión sobre bienes de uso público costero?",
+const SEED_QUESTIONS = [
+	"Me multaron por construir cerca a la playa, ¿qué hago?",
+	"¿Puedo vender comida o alquilar carpas en la playa?",
+	"¿De quién es la playa frente a mi casa o lote?",
+	"Me dijeron que tengo que desalojar un predio costero, ¿es legal?",
 ] as const;
 
 interface EmptyStateProps {
-  onSelectExample: (question: string) => void;
+	input: string;
+	loading: boolean;
+	textareaRef: React.RefObject<HTMLTextAreaElement | null>;
+	onChange: (value: string) => void;
+	onSubmit: (value: string) => void;
 }
 
-export function EmptyState({ onSelectExample }: EmptyStateProps) {
-  return (
-    <motion.div
-      className="flex flex-1 flex-col items-center justify-center px-6 py-16 text-center"
-      variants={container}
-      initial="hidden"
-      animate="show"
-    >
-      {/* Scales icon — spring pop */}
-      <motion.div
-        className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl border border-border bg-surface shadow-sm"
-        aria-hidden="true"
-        initial={{ scale: 0.7, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ type: "spring", stiffness: 280, damping: 18, delay: 0.05 }}
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="26"
-          height="26"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          className="text-accent"
-        >
-          <path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z" />
-          <path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z" />
-          <path d="M7 21h10" />
-          <path d="M12 3v18" />
-          <path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2" />
-        </svg>
-      </motion.div>
+export function EmptyState({
+	input,
+	loading,
+	textareaRef,
+	onChange,
+	onSubmit,
+}: EmptyStateProps) {
+	return (
+		<div className="relative flex flex-1 flex-col items-center justify-center px-4 pb-12 pt-8 sm:pt-12">
+			{/* Glow ambiental — la firma visual, contenida detrás del input */}
+			<div className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden">
+				<div className="relative h-[42vh] w-[64vw] max-h-[440px] max-w-[720px] translate-y-[2vh]">
+					<div className="atlas-glow atlas-glow--intense" aria-hidden="true" />
+				</div>
+			</div>
 
-      <motion.h2
-        variants={item}
-        className="font-[family-name:var(--font-display)] mb-2 text-xl font-semibold text-foreground"
-      >
-        ATLAS
-      </motion.h2>
+			<motion.div
+				className="relative z-10 flex w-full max-w-3xl flex-col items-center"
+				initial={{ opacity: 0, y: 12 }}
+				animate={{ opacity: 1, y: 0 }}
+				transition={{ duration: 0.55, ease: EASE }}
+			>
+				<motion.h1
+					className="text-center text-5xl font-medium tracking-tight text-foreground sm:text-6xl md:text-[4rem]"
+					style={{ lineHeight: 1, letterSpacing: "-0.03em" }}
+					translate="no"
+					initial={{ opacity: 0, y: 8 }}
+					animate={{ opacity: 1, y: 0 }}
+					transition={{ duration: 0.6, delay: 0.08, ease: EASE }}
+				>
+					ATLAS
+				</motion.h1>
 
-      <motion.p variants={item} className="mb-1 max-w-xs text-sm leading-relaxed text-muted">
-        Consultas respondidas con base exclusiva en el corpus de
-        jurisprudencia colombiana indexado.
-      </motion.p>
+				<motion.p
+					className="mt-4 max-w-xl text-balance text-center text-[15px] leading-relaxed text-muted sm:text-base"
+					initial={{ opacity: 0, y: 8 }}
+					animate={{ opacity: 1, y: 0 }}
+					transition={{ duration: 0.55, delay: 0.16, ease: EASE }}
+				>
+					Tu asistente para entender la jurisprudencia sobre playas y derecho
+					costero en Colombia. Pregunta en lenguaje cotidiano y recibe una
+					respuesta clara, con las sentencias que la respaldan.
+				</motion.p>
 
-      <motion.p variants={item} className="mb-8 max-w-xs text-xs leading-relaxed text-muted/60">
-        Cada respuesta incluye referencia explícita a las fuentes utilizadas.
-      </motion.p>
+				<motion.ul
+					className="mt-10 flex w-full max-w-2xl flex-wrap justify-center gap-2"
+					role="list"
+					aria-label="Preguntas para empezar"
+					initial="hidden"
+					animate="show"
+					variants={{
+						hidden: {},
+						show: { transition: { staggerChildren: 0.06, delayChildren: 0.24 } },
+					}}
+				>
+					{SEED_QUESTIONS.map((q) => (
+						<motion.li
+							key={q}
+							variants={{
+								hidden: { opacity: 0, y: 8 },
+								show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: EASE } },
+							}}
+						>
+							<button
+								type="button"
+								onClick={() => {
+									onChange(q);
+									textareaRef.current?.focus();
+								}}
+								className="rounded-full border border-border bg-surface/40 px-3.5 py-2 text-sm leading-snug text-muted backdrop-blur-sm transition-all duration-150 hover:border-border-strong hover:bg-elevated hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+							>
+								{q}
+							</button>
+						</motion.li>
+					))}
+				</motion.ul>
 
-      <motion.p
-        variants={item}
-        className="mb-3 text-[11px] font-semibold uppercase tracking-widest text-muted/50"
-      >
-        Consultas frecuentes
-      </motion.p>
+				<motion.div
+					className="mt-6 w-full"
+					initial={{ opacity: 0, y: 12 }}
+					animate={{ opacity: 1, y: 0 }}
+					transition={{ duration: 0.55, delay: 0.42, ease: EASE }}
+				>
+					<ChatInput
+						variant="hero"
+						value={input}
+						loading={loading}
+						textareaRef={textareaRef}
+						onChange={onChange}
+						onSubmit={() => onSubmit(input)}
+					/>
+				</motion.div>
 
-      <motion.ul
-        className="flex w-full max-w-sm flex-col gap-2"
-        role="list"
-        aria-label="Consultas de ejemplo"
-        variants={container}
-      >
-        {EXAMPLE_QUESTIONS.map((q) => (
-          <motion.li key={q} variants={item}>
-            <button
-              type="button"
-              onClick={() => onSelectExample(q)}
-              className="group w-full rounded-lg border border-border bg-surface px-4 py-3 text-left text-sm leading-snug text-muted transition-all duration-150 hover:border-accent/40 hover:bg-accent-light hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
-            >
-              <span className="flex items-start gap-2.5">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="13"
-                  height="13"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  aria-hidden="true"
-                  className="mt-0.5 shrink-0 text-accent/50 transition-colors duration-150 group-hover:text-accent"
-                >
-                  <circle cx="11" cy="11" r="8" />
-                  <path d="m21 21-4.35-4.35" />
-                </svg>
-                {q}
-              </span>
-            </button>
-          </motion.li>
-        ))}
-      </motion.ul>
-    </motion.div>
-  );
+				<motion.p
+					className="mt-6 max-w-md text-center text-xs leading-relaxed text-subtle"
+					initial={{ opacity: 0 }}
+					animate={{ opacity: 1 }}
+					transition={{ duration: 0.5, delay: 0.6 }}
+				>
+					ATLAS responde con base en sentencias del Consejo de Estado.
+					No reemplaza la asesoría de un abogado.
+				</motion.p>
+			</motion.div>
+		</div>
+	);
 }

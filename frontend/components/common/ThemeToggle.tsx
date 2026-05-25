@@ -1,7 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 import { useTheme } from "@/components/providers/ThemeProvider";
+
+const subscribeNoop = () => () => {};
+const useIsMounted = () =>
+  useSyncExternalStore(subscribeNoop, () => true, () => false);
 
 function SunIcon() {
   return (
@@ -70,17 +74,13 @@ const THEMES = [
 
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const mounted = useIsMounted();
 
   if (!mounted) return null;
 
   return (
     <div
-      className="flex items-center gap-0.5 rounded-md border border-border bg-subtle p-0.5"
+      className="flex items-center gap-0.5 rounded-full border border-border bg-elevated/60 p-0.5 backdrop-blur-md"
       role="group"
       aria-label="Tema de color"
     >
@@ -90,9 +90,9 @@ export function ThemeToggle() {
           onClick={() => setTheme(value)}
           aria-label={label}
           aria-pressed={theme === value}
-          className={`flex h-6 w-6 items-center justify-center rounded transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-1 ${
+          className={`flex h-7 w-7 items-center justify-center rounded-full transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-1 focus-visible:ring-offset-background ${
             theme === value
-              ? "bg-surface text-accent shadow-sm"
+              ? "bg-surface text-accent"
               : "text-muted hover:text-foreground"
           }`}
           title={label}

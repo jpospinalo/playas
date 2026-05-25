@@ -175,11 +175,6 @@ export function ChatInterface() {
 		messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
 	}, []);
 
-	function handleExampleSelect(question: string) {
-		setInput(question);
-		textareaRef.current?.focus();
-	}
-
 	function handleSubmit(question: string) {
 		// Always snap to bottom when the user sends a new message.
 		isAtBottomRef.current = true;
@@ -240,7 +235,13 @@ export function ChatInterface() {
 					aria-atomic="false"
 				>
 					{showEmptyState ? (
-						<EmptyState onSelectExample={handleExampleSelect} />
+						<EmptyState
+							input={input}
+							loading={loading}
+							textareaRef={textareaRef}
+							onChange={setInput}
+							onSubmit={handleSubmit}
+						/>
 					) : (
 						<div className="mx-auto w-full max-w-3xl flex-1 space-y-5 px-4 py-6">
 							<MessageList
@@ -330,13 +331,15 @@ export function ChatInterface() {
 
 				<ContextWarning percent={contextPercent} onNewChat={resetChat} />
 
-				<ChatInput
-					value={input}
-					loading={loading}
-					textareaRef={textareaRef}
-					onChange={setInput}
-					onSubmit={() => handleSubmit(input)}
-				/>
+				{!showEmptyState && (
+					<ChatInput
+						value={input}
+						loading={loading}
+						textareaRef={textareaRef}
+						onChange={setInput}
+						onSubmit={() => handleSubmit(input)}
+					/>
+				)}
 			</div>
 		</div>
 	);

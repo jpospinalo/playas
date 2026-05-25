@@ -201,19 +201,12 @@ export function AssistantBubble({
 
 	return (
 		<motion.div
-			className="group flex justify-start"
-			initial={{ opacity: 0, y: 10, x: -8 }}
-			animate={{ opacity: 1, y: 0, x: 0 }}
-			transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+			className="group flex w-full justify-start"
+			initial={{ opacity: 0, y: 10 }}
+			animate={{ opacity: 1, y: 0 }}
+			transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
 		>
-			<div
-				className="max-w-[88%] min-w-0 break-words rounded-2xl rounded-tl-sm bg-surface px-5 py-4 text-sm leading-relaxed text-foreground shadow-sm"
-				style={{
-					border: "1px solid var(--border)",
-					borderLeftColor: "var(--accent)",
-					borderLeftWidth: "3px",
-				}}
-			>
+			<div className="w-full min-w-0">
 				<div className="rag-prose relative" ref={proseRef}>
 					<ReactMarkdown remarkPlugins={[remarkGfm]} components={components}>
 						{processedText}
@@ -276,7 +269,7 @@ export function AssistantBubble({
 				<SourcesAccordion sources={sources} />
 
 				{/* Action button: rate this message */}
-				<div className="relative mt-2 flex justify-end">
+				<div className="relative mt-3 flex justify-end">
 					{isRated ? (
 						<span
 							className="inline-flex items-center gap-1 text-xs text-muted"
@@ -303,7 +296,7 @@ export function AssistantBubble({
 						<button
 							type="button"
 							onClick={() => setRatingPopoverOpen(true)}
-							className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs text-muted transition-colors hover:bg-background hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent md:opacity-0 md:group-hover:opacity-100"
+							className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs text-muted transition-colors hover:bg-elevated hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent md:opacity-0 md:group-hover:opacity-100"
 							aria-label="Calificar esta respuesta"
 							title="Calificar esta respuesta"
 						>

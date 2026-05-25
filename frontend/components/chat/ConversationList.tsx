@@ -106,88 +106,84 @@ export function ConversationList({
   }
 
   if (loading && conversations.length === 0) {
-    return <p className="px-4 py-6 text-center text-xs text-muted">Cargando...</p>;
+    return <p className="px-5 py-4 text-xs text-subtle">Cargando…</p>;
   }
 
   if (!loading && conversations.length === 0) {
     return (
-      <p className="px-4 py-6 text-center text-xs text-muted">
-        Sin conversaciones
+      <p className="px-5 py-4 text-xs text-subtle">
+        Tus conversaciones aparecerán aquí.
       </p>
     );
   }
 
   return (
-    <>
+    <ul className="px-2 pb-2">
       {conversations.map((conv) => {
         const isActive = conv.id === activeConversationId;
         const isDeleting = deletingId === conv.id;
         const isEditing = editingId === conv.id;
 
         return (
-          <div
+          <li
             key={conv.id}
-            className={`group relative mx-1 my-0.5 rounded-lg px-3 py-2 transition-colors ${
+            className={`group relative my-px flex items-center rounded-full pl-3 pr-1 text-[13px] transition-colors ${
               isActive
-                ? "bg-accent/10 text-foreground"
-                : "text-muted hover:bg-accent/6 hover:text-foreground"
+                ? "bg-elevated text-foreground"
+                : "text-muted hover:bg-elevated hover:text-foreground"
             }`}
             aria-current={isActive ? "true" : undefined}
           >
-            <div className="flex items-start gap-2">
-              <div className="min-w-0 flex-1">
-                {isEditing ? (
-                  <input
-                    ref={editInputRef}
-                    value={editTitle}
-                    onChange={(event) => setEditTitle(event.target.value)}
-                    onBlur={() => saveEdit(conv.id)}
-                    onKeyDown={(event) => handleEditKeyDown(event, conv.id)}
-                    maxLength={60}
-                    className="w-full rounded border border-accent bg-background px-1 py-0.5 text-xs text-foreground focus:outline-none"
-                    onClick={(event) => event.stopPropagation()}
-                  />
-                ) : (
-                  <button
-                    type="button"
-                    onClick={() => onSelectConversation(conv)}
-                    className="block w-full min-w-0 cursor-pointer rounded-md text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
-                  >
-                    <p className="truncate pr-1 text-xs font-medium leading-snug">
-                      {conv.title}
-                    </p>
-                    <p className="mt-0.5 text-[10px] text-muted/70">
-                      {formatConversationDate(conv.updatedAt)}
-                    </p>
-                  </button>
-                )}
-              </div>
-
-              {!isEditing && !isDeleting && (
-                <ConversationActionsMenu
-                  conversation={conv}
-                  isOpen={menuOpenId === conv.id}
-                  onToggle={() =>
-                    setMenuOpenId((current) =>
-                      current === conv.id ? null : conv.id
-                    )
-                  }
-                  onRename={startEdit}
-                  onDelete={requestDelete}
+            <div className="min-w-0 flex-1 py-2">
+              {isEditing ? (
+                <input
+                  ref={editInputRef}
+                  value={editTitle}
+                  onChange={(event) => setEditTitle(event.target.value)}
+                  onBlur={() => saveEdit(conv.id)}
+                  onKeyDown={(event) => handleEditKeyDown(event, conv.id)}
+                  maxLength={60}
+                  className="w-full rounded-md border border-accent bg-background px-1.5 py-0.5 text-[13px] text-foreground focus:outline-none"
+                  onClick={(event) => event.stopPropagation()}
                 />
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => onSelectConversation(conv)}
+                  title={`${conv.title} · ${formatConversationDate(conv.updatedAt)}`}
+                  className="block w-full min-w-0 cursor-pointer truncate text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                >
+                  {conv.title}
+                </button>
               )}
             </div>
 
-            {isDeleting && (
-              <DeleteConfirmation
-                onConfirm={(event) => confirmDelete(conv.id, event)}
-                onCancel={cancelDelete}
+            {!isEditing && !isDeleting && (
+              <ConversationActionsMenu
+                conversation={conv}
+                isOpen={menuOpenId === conv.id}
+                onToggle={() =>
+                  setMenuOpenId((current) =>
+                    current === conv.id ? null : conv.id
+                  )
+                }
+                onRename={startEdit}
+                onDelete={requestDelete}
               />
             )}
-          </div>
+
+            {isDeleting && (
+              <div className="absolute inset-x-2 top-full z-10 mt-1">
+                <DeleteConfirmation
+                  onConfirm={(event) => confirmDelete(conv.id, event)}
+                  onCancel={cancelDelete}
+                />
+              </div>
+            )}
+          </li>
         );
       })}
-    </>
+    </ul>
   );
 }
 
@@ -205,7 +201,7 @@ function ConversationActionsMenu({
   onDelete: (convId: string, event: MouseEvent) => void;
 }) {
   return (
-    <div className="relative -mr-1 mt-0.5 shrink-0" data-conversation-menu-root>
+    <div className="relative shrink-0" data-conversation-menu-root>
       <button
         type="button"
         onClick={(event) => {
@@ -215,7 +211,7 @@ function ConversationActionsMenu({
         aria-label={`Opciones para ${conversation.title}`}
         aria-haspopup="menu"
         aria-expanded={isOpen}
-        className="flex h-7 w-7 items-center justify-center rounded-md text-muted opacity-0 transition-[background-color,color,opacity] duration-150 hover:bg-accent/8 hover:text-foreground focus:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent group-hover:opacity-100 group-focus-within:opacity-100"
+        className="flex h-7 w-7 items-center justify-center rounded-full text-muted opacity-0 transition-[background-color,color,opacity] duration-150 hover:bg-surface hover:text-foreground focus:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent group-hover:opacity-100 group-focus-within:opacity-100"
       >
         <DotsIcon />
       </button>
@@ -224,7 +220,7 @@ function ConversationActionsMenu({
         {isOpen && (
           <motion.div
             role="menu"
-            className="absolute right-0 top-8 z-50 w-40 rounded-xl border border-border bg-surface p-1 shadow-lg shadow-foreground/10"
+            className="absolute right-0 top-8 z-50 w-40 rounded-xl border border-border bg-elevated p-1 shadow-lg shadow-black/30"
             initial={{ opacity: 0, y: -4, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -4, scale: 0.98 }}

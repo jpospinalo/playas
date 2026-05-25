@@ -1,5 +1,5 @@
 export const SIDEBAR_EXPANDED_WIDTH = 272;
-export const SIDEBAR_COLLAPSED_WIDTH = 56;
+export const SIDEBAR_COLLAPSED_WIDTH = 60;
 export const SIDEBAR_TRANSITION = {
   duration: 0.22,
   ease: [0.16, 1, 0.3, 1],

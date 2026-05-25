@@ -13,19 +13,12 @@ export function LoadingBubble({ label }: LoadingBubbleProps) {
   return (
     <motion.div
       className="flex justify-start"
-      initial={{ opacity: 0, y: 10 }}
+      initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -6 }}
+      exit={{ opacity: 0, y: -4 }}
       transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
     >
-      <div
-        className="flex items-center gap-2.5 rounded-2xl rounded-tl-sm bg-surface px-5 py-4 shadow-sm"
-        style={{
-          border: "1px solid var(--border)",
-          borderLeftColor: "var(--accent)",
-          borderLeftWidth: "3px",
-        }}
-      >
+      <div className="flex items-center gap-3 py-2">
         <TypingDots />
         <AnimatePresence mode="wait">
           {label ? (
@@ -33,7 +26,7 @@ export function LoadingBubble({ label }: LoadingBubbleProps) {
               key={label}
               className="text-xs text-muted"
               aria-live="polite"
-              initial={{ opacity: 0, x: 6 }}
+              initial={{ opacity: 0, x: 4 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.25 }}
