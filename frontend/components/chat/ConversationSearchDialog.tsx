@@ -48,7 +48,7 @@ export function ConversationSearchDialog({
 		<AnimatePresence>
 			{open && (
 				<motion.div
-					className="fixed inset-0 z-50 flex items-start justify-center bg-black/50 px-4 pt-[12vh] backdrop-blur-[2px]"
+					className="fixed inset-0 z-50 flex items-start justify-center bg-background/70 px-4 pt-[12vh] backdrop-blur-md"
 					initial={{ opacity: 0 }}
 					animate={{ opacity: 1 }}
 					exit={{ opacity: 0 }}
@@ -66,7 +66,7 @@ export function ConversationSearchDialog({
 						aria-modal="true"
 						aria-label="Buscar conversaciones"
 						data-conversation-search-dialog
-						className="relative z-10 flex max-h-[72vh] w-full max-w-xl flex-col overflow-hidden rounded-2xl border border-border bg-surface shadow-2xl shadow-black/30"
+						className="relative z-10 flex max-h-[72vh] w-full max-w-xl flex-col overflow-hidden rounded-3xl border border-border bg-elevated shadow-2xl shadow-black/40"
 						initial={{ opacity: 0, y: 18, scale: 0.98 }}
 						animate={{ opacity: 1, y: 0, scale: 1 }}
 						exit={{ opacity: 0, y: 10, scale: 0.98 }}
@@ -112,10 +112,10 @@ function SearchHeader({
 		<div className="border-b border-border p-4">
 			<div className="mb-3 flex items-center justify-between gap-3">
 				<div>
-					<h2 className="text-sm font-semibold text-foreground">
-						Buscar chats
+					<h2 className="text-sm font-medium text-foreground">
+						Buscar conversaciones
 					</h2>
-					<p className="mt-0.5 text-xs text-muted">
+					<p className="mt-0.5 text-xs text-subtle">
 						Encuentra una conversación por título y ábrela al instante.
 					</p>
 				</div>
@@ -123,7 +123,7 @@ function SearchHeader({
 					type="button"
 					onClick={onClose}
 					aria-label="Cerrar búsqueda"
-					className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-muted transition-colors hover:bg-accent/8 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+					className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-muted transition-colors hover:bg-surface hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
 				>
 					<CloseIcon />
 				</button>
@@ -132,16 +132,16 @@ function SearchHeader({
 			<label htmlFor="conversation-search-dialog" className="sr-only">
 				Buscar conversaciones
 			</label>
-			<div className="flex items-center gap-3 rounded-xl border border-border bg-background px-3 py-2.5 transition-[border-color,box-shadow] duration-150 focus-within:border-accent focus-within:ring-2 focus-within:ring-accent/15">
-				<SearchIcon className="shrink-0 text-muted" />
+			<div className="flex items-center gap-3 rounded-full border border-border bg-surface px-4 py-2.5 transition-[border-color,box-shadow] duration-150 focus-within:border-accent focus-within:shadow-[0_0_0_3px_var(--accent-soft)]">
+				<SearchIcon className="shrink-0 text-subtle" />
 				<input
 					ref={inputRef}
 					id="conversation-search-dialog"
 					type="text"
 					value={search}
 					onChange={(event) => onSearchChange(event.target.value)}
-					placeholder="Buscar conversaciones..."
-					className="min-w-0 flex-1 bg-transparent text-sm text-foreground placeholder:text-muted/60 focus:outline-none"
+					placeholder="Buscar conversaciones…"
+					className="min-w-0 flex-1 bg-transparent text-sm text-foreground placeholder:text-subtle focus:outline-none"
 				/>
 				{hasSearch && (
 					<button
@@ -151,7 +151,7 @@ function SearchHeader({
 							inputRef.current?.focus();
 						}}
 						aria-label="Limpiar búsqueda"
-						className="shrink-0 rounded-lg px-2 py-1 text-xs font-medium text-muted transition-colors hover:bg-accent/8 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+						className="shrink-0 rounded-full px-2.5 py-1 text-xs font-medium text-muted transition-colors hover:bg-elevated hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
 					>
 						Limpiar
 					</button>
@@ -178,7 +178,7 @@ function SearchResults({
 }) {
 	return (
 		<div className="flex-1 overflow-y-auto p-2">
-			<div className="px-2 py-2 text-[11px] font-semibold uppercase tracking-wider text-muted/70">
+			<div className="px-3 py-2 text-[11px] font-medium text-subtle">
 				{hasSearch
 					? `${results.length} resultado${results.length === 1 ? "" : "s"}`
 					: "Conversaciones recientes"}
@@ -217,20 +217,20 @@ function SearchResultItem({
 		<button
 			type="button"
 			onClick={() => onSelectConversation(conversation)}
-			className={`group flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
+			className={`group flex w-full items-center gap-3 rounded-2xl px-3 py-2.5 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
 				active
-					? "bg-accent/10 text-foreground"
-					: "text-muted hover:bg-accent/6 hover:text-foreground"
+					? "bg-surface text-foreground"
+					: "text-muted hover:bg-surface hover:text-foreground"
 			}`}
 		>
-			<span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-border bg-background text-muted transition-colors group-hover:border-accent/30 group-hover:text-accent">
+			<span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-surface text-subtle transition-colors group-hover:bg-accent-soft group-hover:text-accent">
 				<ChatIcon />
 			</span>
 			<span className="min-w-0 flex-1">
 				<span className="block truncate text-sm font-medium">
 					{conversation.title}
 				</span>
-				<span className="mt-0.5 block text-xs text-muted/70">
+				<span className="mt-0.5 block text-xs text-subtle">
 					{formatConversationDate(conversation.updatedAt)}
 					{conversation.messageCount > 0
 						? ` · ${conversation.messageCount} mensajes`
@@ -244,7 +244,7 @@ function SearchResultItem({
 function EmptySearchState() {
 	return (
 		<div className="px-4 py-10 text-center">
-			<div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-accent-light text-accent">
+			<div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-accent-soft text-accent">
 				<SearchIcon />
 			</div>
 			<p className="text-sm font-medium text-foreground">

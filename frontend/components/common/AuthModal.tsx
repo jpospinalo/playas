@@ -58,7 +58,7 @@ function EyeIcon({ open }: { open: boolean }) {
 }
 
 const inputClass =
-  "w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted/60 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent disabled:opacity-60";
+  "w-full rounded-2xl border border-border bg-surface px-3.5 py-2.5 text-sm text-foreground placeholder:text-subtle transition-[border-color,box-shadow] duration-150 focus:border-accent focus:outline-none focus:shadow-[0_0_0_3px_var(--accent-soft)] disabled:opacity-60";
 
 interface AuthModalProps {
   open: boolean;
@@ -148,7 +148,7 @@ export function AuthModal({ open, mode = "explicit", subtitle, onClose }: AuthMo
           transition={{ duration: 0.2 }}
         >
           <motion.div
-            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            className="absolute inset-0 bg-background/70 backdrop-blur-md"
             onClick={handleClose}
             aria-hidden="true"
           />
@@ -157,7 +157,7 @@ export function AuthModal({ open, mode = "explicit", subtitle, onClose }: AuthMo
             role="dialog"
             aria-modal="true"
             aria-labelledby="auth-modal-title"
-            className="relative z-10 w-full max-w-sm rounded-2xl border border-border bg-surface p-6 shadow-xl"
+            className="relative z-10 w-full max-w-sm rounded-3xl border border-border bg-elevated p-6 shadow-2xl shadow-black/40"
             initial={{ opacity: 0, scale: 0.96, y: 8 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.96, y: 8 }}
@@ -166,12 +166,12 @@ export function AuthModal({ open, mode = "explicit", subtitle, onClose }: AuthMo
             <button
               onClick={handleClose}
               aria-label="Cerrar"
-              className="absolute right-4 top-4 rounded-md p-1 text-muted transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+              className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full text-muted transition-colors hover:bg-surface hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
+                width="15"
+                height="15"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
@@ -185,28 +185,28 @@ export function AuthModal({ open, mode = "explicit", subtitle, onClose }: AuthMo
             </button>
 
             {mode === "recommendation" ? (
-              <div className="mb-5">
+              <div className="mb-6">
                 <h2
                   id="auth-modal-title"
-                  className="font-[family-name:var(--font-display)] text-lg font-semibold text-foreground"
+                  className="text-lg font-medium text-foreground"
                 >
                   Guarda tu historial
                 </h2>
-                <p className="mt-1 text-sm text-muted">
+                <p className="mt-1.5 text-sm text-muted">
                   Inicia sesión para conservar tus conversaciones y acceder a
                   ellas desde cualquier dispositivo.
                 </p>
               </div>
             ) : (
-              <div className="mb-5">
+              <div className="mb-6">
                 <h2
                   id="auth-modal-title"
-                  className="font-[family-name:var(--font-display)] text-lg font-semibold text-foreground"
+                  className="text-lg font-medium text-foreground"
                 >
                   {tab === "login" ? "Iniciar sesión" : "Crear cuenta"}
                 </h2>
                 {subtitle && (
-                  <p className="mt-1 text-sm text-muted">{subtitle}</p>
+                  <p className="mt-1.5 text-sm text-muted">{subtitle}</p>
                 )}
               </div>
             )}
@@ -214,7 +214,7 @@ export function AuthModal({ open, mode = "explicit", subtitle, onClose }: AuthMo
             <div
               role="tablist"
               aria-label="Modo de acceso"
-              className="mb-5 flex gap-1 rounded-lg border border-border bg-background p-1"
+              className="mb-5 flex gap-0.5 rounded-full border border-border bg-surface p-0.5"
             >
               {(["login", "register"] as Tab[]).map((t) => (
                 <button
@@ -222,9 +222,9 @@ export function AuthModal({ open, mode = "explicit", subtitle, onClose }: AuthMo
                   role="tab"
                   aria-selected={tab === t}
                   onClick={() => handleTabChange(t)}
-                  className={`flex-1 rounded-md px-3 py-1.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
+                  className={`flex-1 rounded-full px-3 py-1.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
                     tab === t
-                      ? "bg-surface text-foreground shadow-sm"
+                      ? "bg-elevated text-foreground"
                       : "text-muted hover:text-foreground"
                   }`}
                 >
@@ -233,15 +233,14 @@ export function AuthModal({ open, mode = "explicit", subtitle, onClose }: AuthMo
               ))}
             </div>
 
-            <form onSubmit={handleSubmit} noValidate className="space-y-3">
-              {/* Nombre de usuario — solo en registro */}
+            <form onSubmit={handleSubmit} noValidate className="space-y-3.5">
               {tab === "register" && (
                 <div>
                   <label
                     htmlFor="auth-display-name"
-                    className="mb-1 block text-xs font-medium text-muted"
+                    className="mb-1.5 block text-xs font-medium text-muted"
                   >
-                    Nombre de usuario
+                    Nombre
                   </label>
                   <input
                     id="auth-display-name"
@@ -260,7 +259,7 @@ export function AuthModal({ open, mode = "explicit", subtitle, onClose }: AuthMo
               <div>
                 <label
                   htmlFor="auth-email"
-                  className="mb-1 block text-xs font-medium text-muted"
+                  className="mb-1.5 block text-xs font-medium text-muted"
                 >
                   Correo electrónico
                 </label>
@@ -280,7 +279,7 @@ export function AuthModal({ open, mode = "explicit", subtitle, onClose }: AuthMo
               <div>
                 <label
                   htmlFor="auth-password"
-                  className="mb-1 block text-xs font-medium text-muted"
+                  className="mb-1.5 block text-xs font-medium text-muted"
                 >
                   Contraseña
                 </label>
@@ -293,14 +292,14 @@ export function AuthModal({ open, mode = "explicit", subtitle, onClose }: AuthMo
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder={tab === "register" ? "Mínimo 6 caracteres" : "••••••••"}
-                    className={`${inputClass} pr-10`}
+                    className={`${inputClass} pr-11`}
                     disabled={submitting}
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword((v) => !v)}
                     aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-muted transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-accent"
+                    className="absolute right-2 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full text-subtle transition-colors hover:bg-surface hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
                     tabIndex={-1}
                   >
                     <EyeIcon open={showPassword} />
@@ -308,12 +307,11 @@ export function AuthModal({ open, mode = "explicit", subtitle, onClose }: AuthMo
                 </div>
               </div>
 
-              {/* Confirmar contraseña — solo en registro */}
               {tab === "register" && (
                 <div>
                   <label
                     htmlFor="auth-confirm-password"
-                    className="mb-1 block text-xs font-medium text-muted"
+                    className="mb-1.5 block text-xs font-medium text-muted"
                   >
                     Confirmar contraseña
                   </label>
@@ -326,8 +324,8 @@ export function AuthModal({ open, mode = "explicit", subtitle, onClose }: AuthMo
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
                       placeholder="Repite tu contraseña"
-                      className={`${inputClass} pr-10 ${
-                        confirmMismatch ? "border-danger focus:border-danger focus:ring-danger" : ""
+                      className={`${inputClass} pr-11 ${
+                        confirmMismatch ? "border-danger focus:border-danger focus:shadow-[0_0_0_3px_var(--danger-bg)]" : ""
                       }`}
                       disabled={submitting}
                     />
@@ -335,7 +333,7 @@ export function AuthModal({ open, mode = "explicit", subtitle, onClose }: AuthMo
                       type="button"
                       onClick={() => setShowConfirmPassword((v) => !v)}
                       aria-label={showConfirmPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-muted transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-accent"
+                      className="absolute right-2 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full text-subtle transition-colors hover:bg-surface hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
                       tabIndex={-1}
                     >
                       <EyeIcon open={showConfirmPassword} />
@@ -351,7 +349,7 @@ export function AuthModal({ open, mode = "explicit", subtitle, onClose }: AuthMo
                 {error && (
                   <motion.p
                     role="alert"
-                    className="rounded-lg border border-danger/30 bg-danger-bg px-3 py-2 text-sm text-danger"
+                    className="rounded-2xl border border-danger/30 bg-danger-bg px-3.5 py-2.5 text-sm text-danger"
                     initial={{ opacity: 0, y: -4 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0 }}
@@ -365,7 +363,7 @@ export function AuthModal({ open, mode = "explicit", subtitle, onClose }: AuthMo
               <button
                 type="submit"
                 disabled={submitDisabled}
-                className="mt-1 w-full rounded-lg bg-accent px-4 py-2.5 text-sm font-medium text-white transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 disabled:opacity-50"
+                className="mt-2 w-full rounded-full bg-accent px-4 py-2.5 text-sm font-medium text-accent-fg transition-colors hover:bg-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-elevated disabled:cursor-not-allowed disabled:opacity-45"
               >
                 {submitting
                   ? "Procesando…"
@@ -377,7 +375,7 @@ export function AuthModal({ open, mode = "explicit", subtitle, onClose }: AuthMo
 
             <button
               onClick={handleClose}
-              className="mt-4 w-full text-center text-xs text-muted transition-colors hover:text-foreground focus-visible:outline-none focus-visible:underline"
+              className="mt-4 w-full text-center text-xs text-subtle transition-colors hover:text-foreground focus-visible:outline-none focus-visible:underline"
             >
               Continuar sin cuenta
             </button>
