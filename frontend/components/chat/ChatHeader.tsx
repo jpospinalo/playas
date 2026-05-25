@@ -43,13 +43,15 @@ export function ChatHeader({ onNewChat, onOpenAuth, onToggleSidebar, sidebarOpen
             </button>
           )}
 
-          <Link
-            href="/"
-            className="rounded-md px-2 py-1 transition-opacity duration-150 hover:opacity-70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
-            aria-label="ATLAS — inicio"
-          >
-            <AtlasWordmark className="text-base" />
-          </Link>
+          {!sidebarOpen && (
+            <Link
+              href="/"
+              className="rounded-md px-2 py-1 transition-opacity duration-150 hover:opacity-70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
+              aria-label="ATLAS — inicio"
+            >
+              <AtlasWordmark className="text-base" />
+            </Link>
+          )}
         </div>
 
         <div className="ml-auto flex shrink-0 items-center gap-1">
