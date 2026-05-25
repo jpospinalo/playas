@@ -34,19 +34,34 @@ function StarRating({ value }: { value: number }) {
 				<svg
 					key={i}
 					xmlns="http://www.w3.org/2000/svg"
-					width="16"
-					height="16"
+					width="14"
+					height="14"
 					viewBox="0 0 24 24"
 					fill={i <= Math.round(value) ? "currentColor" : "none"}
 					stroke="currentColor"
 					strokeWidth="1.5"
-					className={i <= Math.round(value) ? "text-accent" : "text-border"}
+					className={i <= Math.round(value) ? "text-accent" : "text-subtle"}
 					aria-hidden="true"
 				>
 					<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
 				</svg>
 			))}
 		</span>
+	);
+}
+
+function StatCard({
+	label,
+	children,
+}: {
+	label: string;
+	children: React.ReactNode;
+}) {
+	return (
+		<div className="rounded-2xl border border-border bg-elevated/40 p-5 backdrop-blur-sm">
+			<p className="text-[11px] font-medium text-subtle">{label}</p>
+			<div className="mt-2">{children}</div>
+		</div>
 	);
 }
 
@@ -61,10 +76,8 @@ function DistributionBar({
 }) {
 	const maxCount = Math.max(...Object.values(distribution), 1);
 	return (
-		<div className="rounded-xl border border-border bg-surface p-4 shadow-sm">
-			<p className="mb-3 text-xs uppercase tracking-wider text-muted font-medium">
-				{label}
-			</p>
+		<div className="rounded-2xl border border-border bg-elevated/40 p-5 backdrop-blur-sm">
+			<p className="mb-4 text-[11px] font-medium text-subtle">{label}</p>
 			<div className="space-y-2">
 				{[5, 4, 3, 2, 1].map((star) => {
 					const count = distribution[String(star)] ?? 0;
@@ -72,17 +85,17 @@ function DistributionBar({
 					const barPct = maxCount > 0 ? (count / maxCount) * 100 : 0;
 					return (
 						<div key={star} className="flex items-center gap-3">
-							<span className="w-14 shrink-0 text-right text-xs text-muted tabular-nums">
+							<span className="w-10 shrink-0 text-right text-xs text-muted tabular-nums">
 								{star} ★
 							</span>
-							<div className="flex-1 overflow-hidden rounded-full bg-border h-2">
+							<div className="h-2 flex-1 overflow-hidden rounded-full bg-surface">
 								<div
 									className="h-2 rounded-full bg-accent transition-all duration-500"
 									style={{ width: `${barPct}%` }}
 								/>
 							</div>
-							<span className="w-16 shrink-0 text-xs text-muted tabular-nums">
-								{count} ({pct.toFixed(0)}%)
+							<span className="w-20 shrink-0 text-right text-xs text-subtle tabular-nums">
+								{count} · {pct.toFixed(0)}%
 							</span>
 						</div>
 					);
@@ -121,7 +134,6 @@ async function fetchMessageStats(token: string): Promise<MessageFeedbackStats> {
 			headers: { Authorization: `Bearer ${token}` },
 		},
 	);
-	// 404 means no message feedback yet — return zeros
 	if (res.status === 404) {
 		return {
 			total: 0,
@@ -183,54 +195,49 @@ export default function AdminPage() {
 
 	if (error) {
 		return (
-			<div className="rounded-lg border border-border bg-surface p-6 text-sm text-muted">
+			<div className="rounded-2xl border border-border bg-elevated/40 p-6 text-sm text-muted">
 				Error cargando estadísticas: {error}
 			</div>
 		);
 	}
 
 	return (
-		<div className="max-w-3xl space-y-8">
+		<div className="max-w-4xl space-y-10">
 			<div>
-				<h1 className="font-display text-2xl font-semibold text-foreground">
+				<h1 className="text-3xl font-medium tracking-tight text-foreground" style={{ letterSpacing: "-0.02em" }}>
 					Resumen
 				</h1>
-				<p className="mt-1 text-sm text-muted">
+				<p className="mt-1.5 text-sm text-muted">
 					Estadísticas generales del sistema de feedback.
 				</p>
 			</div>
 
-			{/* Calificaciones de conversación */}
 			{convStats && (
-				<section>
-					<h2 className="mb-3 text-lg font-semibold text-foreground">
+				<section className="space-y-4">
+					<h2 className="text-lg font-medium text-foreground">
 						Calificaciones de conversación
 					</h2>
+
 					<div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-						<div className="rounded-xl border border-border bg-surface p-5 shadow-sm">
-							<p className="text-xs uppercase tracking-wider text-muted font-medium">
-								Total de calificaciones
-							</p>
-							<p className="mt-2 text-4xl font-bold text-foreground tabular-nums">
+						<StatCard label="Total de calificaciones">
+							<p className="text-4xl font-medium text-foreground tabular-nums">
 								{convStats.total}
 							</p>
-						</div>
-						<div className="rounded-xl border border-border bg-surface p-5 shadow-sm">
-							<p className="text-xs uppercase tracking-wider text-muted font-medium">
-								Promedio general
-							</p>
-							<div className="mt-2 flex items-end gap-2">
-								<span className="text-4xl font-bold text-foreground tabular-nums">
+						</StatCard>
+						<StatCard label="Promedio general">
+							<div className="flex items-end gap-2">
+								<span className="text-4xl font-medium text-foreground tabular-nums">
 									{convStats.avg_ratings.overall.toFixed(1)}
 								</span>
-								<span className="mb-1 text-sm text-muted">/ 5</span>
+								<span className="mb-1.5 text-sm text-subtle">/ 5</span>
 							</div>
 							<div className="mt-1">
 								<StarRating value={convStats.avg_ratings.overall} />
 							</div>
-						</div>
+						</StatCard>
 					</div>
-					<div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-4">
+
+					<div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
 						{(
 							[
 								["Tono", convStats.avg_ratings.tone],
@@ -241,72 +248,63 @@ export default function AdminPage() {
 						).map(([label, val]) => (
 							<div
 								key={label}
-								className="rounded-lg border border-border bg-surface p-3 shadow-sm text-center"
+								className="rounded-2xl border border-border bg-elevated/40 px-3 py-3 text-center backdrop-blur-sm"
 							>
-								<p className="text-xs text-muted">{label}</p>
-								<p className="mt-1 text-lg font-bold text-foreground tabular-nums">
+								<p className="text-xs text-subtle">{label}</p>
+								<p className="mt-1 text-lg font-medium text-foreground tabular-nums">
 									{val.toFixed(1)}
 								</p>
 							</div>
 						))}
 					</div>
+
 					{convStats.distributions.overall && (
-						<div className="mt-4">
-							<DistributionBar
-								label="Distribución general"
-								distribution={convStats.distributions.overall}
-								total={convStats.total}
-							/>
-						</div>
+						<DistributionBar
+							label="Distribución general"
+							distribution={convStats.distributions.overall}
+							total={convStats.total}
+						/>
 					)}
 				</section>
 			)}
 
-			{/* Calificaciones por mensaje */}
 			{msgStats && (
-				<section>
-					<h2 className="mb-3 text-lg font-semibold text-foreground">
+				<section className="space-y-4">
+					<h2 className="text-lg font-medium text-foreground">
 						Calificaciones por mensaje
 					</h2>
+
 					<div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-						<div className="rounded-xl border border-border bg-surface p-5 shadow-sm">
-							<p className="text-xs uppercase tracking-wider text-muted font-medium">
-								Total de calificaciones
-							</p>
-							<p className="mt-2 text-4xl font-bold text-foreground tabular-nums">
+						<StatCard label="Total de calificaciones">
+							<p className="text-4xl font-medium text-foreground tabular-nums">
 								{msgStats.total}
 							</p>
-						</div>
-						<div className="rounded-xl border border-border bg-surface p-5 shadow-sm">
-							<p className="text-xs uppercase tracking-wider text-muted font-medium">
-								Avg Pertinencia
-							</p>
-							<div className="mt-2 flex items-end gap-2">
-								<span className="text-4xl font-bold text-foreground tabular-nums">
+						</StatCard>
+						<StatCard label="Promedio pertinencia">
+							<div className="flex items-end gap-2">
+								<span className="text-4xl font-medium text-foreground tabular-nums">
 									{msgStats.avg_ratings.pertinence.toFixed(1)}
 								</span>
-								<span className="mb-1 text-sm text-muted">/ 5</span>
+								<span className="mb-1.5 text-sm text-subtle">/ 5</span>
 							</div>
 							<div className="mt-1">
 								<StarRating value={msgStats.avg_ratings.pertinence} />
 							</div>
-						</div>
-						<div className="rounded-xl border border-border bg-surface p-5 shadow-sm">
-							<p className="text-xs uppercase tracking-wider text-muted font-medium">
-								Avg Precisión
-							</p>
-							<div className="mt-2 flex items-end gap-2">
-								<span className="text-4xl font-bold text-foreground tabular-nums">
+						</StatCard>
+						<StatCard label="Promedio precisión">
+							<div className="flex items-end gap-2">
+								<span className="text-4xl font-medium text-foreground tabular-nums">
 									{msgStats.avg_ratings.accuracy.toFixed(1)}
 								</span>
-								<span className="mb-1 text-sm text-muted">/ 5</span>
+								<span className="mb-1.5 text-sm text-subtle">/ 5</span>
 							</div>
 							<div className="mt-1">
 								<StarRating value={msgStats.avg_ratings.accuracy} />
 							</div>
-						</div>
+						</StatCard>
 					</div>
-					<div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+
+					<div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
 						<DistributionBar
 							label="Distribución pertinencia"
 							distribution={msgStats.distributions.pertinence}

@@ -46,7 +46,7 @@ function Stars({ rating }: { rating: number }) {
 					fill={i <= rating ? "currentColor" : "none"}
 					stroke="currentColor"
 					strokeWidth="1.5"
-					className={i <= rating ? "text-accent" : "text-border"}
+					className={i <= rating ? "text-accent" : "text-subtle"}
 					aria-hidden="true"
 				>
 					<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
@@ -147,36 +147,35 @@ export default function FeedbackPage() {
 	return (
 		<div className="max-w-5xl space-y-6">
 			<div>
-				<h1 className="font-[family-name:var(--font-display)] text-2xl font-semibold text-foreground">
+				<h1 className="text-3xl font-medium tracking-tight text-foreground" style={{ letterSpacing: "-0.02em" }}>
 					Calificaciones de conversación
 				</h1>
-				<p className="mt-1 text-sm text-muted">
+				<p className="mt-1.5 text-sm text-muted">
 					{total}{" "}
 					{total === 1
 						? "calificación registrada"
 						: "calificaciones registradas"}
 				</p>
 				{total > 0 && (
-					<div className="mt-2 flex gap-4 text-sm text-muted">
-						<span>Tono: {avgRatings.tone.toFixed(1)}</span>
-						<span>Longitud: {avgRatings.length.toFixed(1)}</span>
-						<span>Usabilidad: {avgRatings.usability.toFixed(1)}</span>
-						<span>General: {avgRatings.overall.toFixed(1)}</span>
+					<div className="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-xs text-subtle">
+						<span>Tono · <span className="text-foreground tabular-nums">{avgRatings.tone.toFixed(1)}</span></span>
+						<span>Longitud · <span className="text-foreground tabular-nums">{avgRatings.length.toFixed(1)}</span></span>
+						<span>Usabilidad · <span className="text-foreground tabular-nums">{avgRatings.usability.toFixed(1)}</span></span>
+						<span>General · <span className="text-foreground tabular-nums">{avgRatings.overall.toFixed(1)}</span></span>
 					</div>
 				)}
 			</div>
 
-			{/* Filtros */}
-			<div className="rounded-xl border border-border bg-surface p-4 shadow-sm">
+			<div className="rounded-2xl border border-border bg-elevated/40 p-5 backdrop-blur-sm">
 				<div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
 					<div>
-						<label className="block text-xs text-muted mb-1">
+						<label className="mb-1 block text-xs text-subtle">
 							General mínimo
 						</label>
 						<select
 							value={minOverall}
 							onChange={(e) => setMinOverall(e.target.value)}
-							className="w-full rounded-md border border-border bg-background px-2 py-1.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-accent"
+							className="w-full rounded-full border border-border bg-surface px-3 py-1.5 text-sm text-foreground focus:border-accent focus:outline-none focus:shadow-[0_0_0_3px_var(--accent-soft)]"
 						>
 							<option value="">—</option>
 							{[1, 2, 3, 4, 5].map((n) => (
@@ -187,13 +186,13 @@ export default function FeedbackPage() {
 						</select>
 					</div>
 					<div>
-						<label className="block text-xs text-muted mb-1">
+						<label className="mb-1 block text-xs text-subtle">
 							General máximo
 						</label>
 						<select
 							value={maxOverall}
 							onChange={(e) => setMaxOverall(e.target.value)}
-							className="w-full rounded-md border border-border bg-background px-2 py-1.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-accent"
+							className="w-full rounded-full border border-border bg-surface px-3 py-1.5 text-sm text-foreground focus:border-accent focus:outline-none focus:shadow-[0_0_0_3px_var(--accent-soft)]"
 						>
 							<option value="">—</option>
 							{[1, 2, 3, 4, 5].map((n) => (
@@ -204,43 +203,42 @@ export default function FeedbackPage() {
 						</select>
 					</div>
 					<div>
-						<label className="block text-xs text-muted mb-1">Desde</label>
+						<label className="mb-1 block text-xs text-subtle">Desde</label>
 						<input
 							type="date"
 							value={startDate}
 							onChange={(e) => setStartDate(e.target.value)}
-							className="w-full rounded-md border border-border bg-background px-2 py-1.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-accent"
+							className="w-full rounded-full border border-border bg-surface px-3 py-1.5 text-sm text-foreground focus:border-accent focus:outline-none focus:shadow-[0_0_0_3px_var(--accent-soft)]"
 						/>
 					</div>
 					<div>
-						<label className="block text-xs text-muted mb-1">Hasta</label>
+						<label className="mb-1 block text-xs text-subtle">Hasta</label>
 						<input
 							type="date"
 							value={endDate}
 							onChange={(e) => setEndDate(e.target.value)}
-							className="w-full rounded-md border border-border bg-background px-2 py-1.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-accent"
+							className="w-full rounded-full border border-border bg-surface px-3 py-1.5 text-sm text-foreground focus:border-accent focus:outline-none focus:shadow-[0_0_0_3px_var(--accent-soft)]"
 						/>
 					</div>
 				</div>
-				<div className="mt-3 flex items-center gap-2">
+				<div className="mt-4 flex items-center gap-2">
 					<button
 						onClick={applyFilters}
-						className="rounded-md bg-accent px-3 py-1.5 text-xs font-medium text-white hover:opacity-90 transition-opacity focus:outline-none focus:ring-2 focus-visible:ring-accent focus-visible:ring-offset-1"
+						className="rounded-full bg-accent px-4 py-1.5 text-xs font-medium text-accent-fg transition-colors hover:bg-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background"
 					>
 						Aplicar filtros
 					</button>
 					<button
 						onClick={clearFilters}
-						className="rounded-md border border-border px-3 py-1.5 text-xs text-muted hover:text-foreground transition-colors focus:outline-none focus:ring-2 focus:ring-accent focus-visible:ring-offset-1"
+						className="rounded-full border border-border px-4 py-1.5 text-xs text-muted transition-colors hover:bg-elevated hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
 					>
 						Limpiar
 					</button>
 				</div>
 			</div>
 
-			{/* Tabla */}
 			{error ? (
-				<div className="rounded-lg border border-border bg-surface p-6 text-sm text-muted">
+				<div className="rounded-2xl border border-border bg-elevated/40 p-6 text-sm text-muted">
 					Error: {error}
 				</div>
 			) : loading ? (
@@ -248,46 +246,30 @@ export default function FeedbackPage() {
 					<span className="text-sm text-muted">Cargando…</span>
 				</div>
 			) : items.length === 0 ? (
-				<div className="rounded-lg border border-border bg-surface p-8 text-center text-sm text-muted">
+				<div className="rounded-2xl border border-border bg-elevated/40 p-8 text-center text-sm text-muted">
 					No hay feedback con los filtros seleccionados.
 				</div>
 			) : (
-				<div className="overflow-hidden rounded-xl border border-border bg-surface shadow-sm">
+				<div className="overflow-hidden rounded-2xl border border-border bg-elevated/40 backdrop-blur-sm">
 					<div className="overflow-x-auto">
 						<table className="min-w-full divide-y divide-border text-sm">
 							<thead>
-								<tr className="bg-background">
-									<th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-muted">
-										Fecha
-									</th>
-									<th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-muted">
-										Usuario
-									</th>
-									<th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-muted">
-										Tono
-									</th>
-									<th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-muted">
-										Longitud
-									</th>
-									<th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-muted">
-										Usabilidad
-									</th>
-									<th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-muted">
-										General
-									</th>
-									<th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-muted">
-										Comentario
-									</th>
-									<th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-muted">
-										Conversación
-									</th>
+								<tr className="bg-surface/50">
+									<th className="px-4 py-3 text-left text-[11px] font-medium text-subtle">Fecha</th>
+									<th className="px-4 py-3 text-left text-[11px] font-medium text-subtle">Usuario</th>
+									<th className="px-4 py-3 text-left text-[11px] font-medium text-subtle">Tono</th>
+									<th className="px-4 py-3 text-left text-[11px] font-medium text-subtle">Longitud</th>
+									<th className="px-4 py-3 text-left text-[11px] font-medium text-subtle">Usabilidad</th>
+									<th className="px-4 py-3 text-left text-[11px] font-medium text-subtle">General</th>
+									<th className="px-4 py-3 text-left text-[11px] font-medium text-subtle">Comentario</th>
+									<th className="px-4 py-3 text-left text-[11px] font-medium text-subtle">Conversación</th>
 								</tr>
 							</thead>
 							<tbody className="divide-y divide-border">
 								{items.map((item) => (
 									<tr
 										key={item.id}
-										className="hover:bg-background/50 transition-colors"
+										className="transition-colors hover:bg-surface/40"
 									>
 										<td className="whitespace-nowrap px-4 py-3 text-xs text-muted tabular-nums">
 											{formatDate(item.createdAt)}
@@ -307,25 +289,23 @@ export default function FeedbackPage() {
 										<td className="px-4 py-3">
 											<Stars rating={item.ratings?.overall ?? 0} />
 										</td>
-										<td className="px-4 py-3 text-xs text-muted max-w-xs">
+										<td className="max-w-xs px-4 py-3 text-xs text-muted">
 											{item.comment ? (
 												<span className="line-clamp-2">{item.comment}</span>
 											) : (
-												<span className="italic text-border">
-													Sin comentario
-												</span>
+												<span className="italic text-subtle">Sin comentario</span>
 											)}
 										</td>
-										<td className="px-4 py-3 text-xs text-muted max-w-[180px]">
+										<td className="max-w-[180px] px-4 py-3 text-xs text-muted">
 											{item.conversationTitle ? (
 												<span
-													className="truncate block"
+													className="block truncate"
 													title={item.conversationTitle}
 												>
 													{item.conversationTitle}
 												</span>
 											) : (
-												<span className="italic text-border">—</span>
+												<span className="italic text-subtle">—</span>
 											)}
 										</td>
 									</tr>
@@ -336,24 +316,23 @@ export default function FeedbackPage() {
 				</div>
 			)}
 
-			{/* Paginación */}
 			{totalPages > 1 && (
 				<div className="flex items-center justify-between text-xs text-muted">
 					<span>
 						Página {page} de {totalPages} · {total} total
 					</span>
-					<div className="flex items-center gap-1">
+					<div className="flex items-center gap-2">
 						<button
 							onClick={() => setPage((p) => Math.max(1, p - 1))}
 							disabled={page === 1}
-							className="rounded-md border border-border px-2.5 py-1 disabled:opacity-40 hover:text-foreground transition-colors focus:outline-none focus:ring-2 focus:ring-accent"
+							className="rounded-full border border-border px-3 py-1 transition-colors hover:bg-elevated hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
 						>
 							← Anterior
 						</button>
 						<button
 							onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
 							disabled={page === totalPages}
-							className="rounded-md border border-border px-2.5 py-1 disabled:opacity-40 hover:text-foreground transition-colors focus:outline-none focus:ring-2 focus:ring-accent"
+							className="rounded-full border border-border px-3 py-1 transition-colors hover:bg-elevated hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
 						>
 							Siguiente →
 						</button>
