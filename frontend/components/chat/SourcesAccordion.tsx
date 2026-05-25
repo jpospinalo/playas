@@ -33,13 +33,13 @@ export function SourcesAccordion({ sources }: SourcesAccordionProps) {
       : `${docCount} ${docCount === 1 ? "fuente" : "fuentes"} (${fragmentCount} fragmentos)`;
 
   return (
-    <div className="mt-4 border-t border-border pt-3">
+    <div className="mt-5 border-t border-border pt-3">
       <button
         type="button"
         aria-expanded={open}
         aria-controls={contentId}
         onClick={() => setOpen((v) => !v)}
-        className="flex w-full items-center justify-between gap-2 rounded text-xs text-muted transition-colors duration-150 hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-1"
+        className="flex w-full items-center justify-between gap-2 rounded-full text-xs text-muted transition-colors duration-150 hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background"
       >
         <span className="flex items-center gap-1.5 font-medium">
           <svg
@@ -138,10 +138,10 @@ export function SourcesAccordion({ sources }: SourcesAccordionProps) {
                           key={frag.index}
                           className="flex gap-2.5"
                         >
-                          <span className="mt-0.5 inline-flex h-4 min-w-4 shrink-0 items-center justify-center rounded-full bg-accent-light px-1 text-[10px] font-semibold text-accent">
+                          <span className="mt-0.5 inline-flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-accent-soft px-1.5 text-[10px] font-semibold text-accent">
                             {frag.index}
                           </span>
-                          <div className="min-w-0 border-l border-border/70 pl-3">
+                          <div className="min-w-0 border-l border-border pl-3">
                             {section && (
                               <span
                                 className="mb-0.5 block truncate text-[10px] text-muted/80"
