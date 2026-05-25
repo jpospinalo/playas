@@ -16,15 +16,13 @@ export function FeedbackButton({ onClick }: FeedbackButtonProps) {
         {showTooltip && (
           <motion.div
             role="tooltip"
-            className="absolute bottom-full right-0 mb-2 whitespace-nowrap rounded-lg border border-border bg-surface px-3 py-1.5 text-xs text-foreground shadow-md"
+            className="absolute bottom-full right-0 mb-2 whitespace-nowrap rounded-full border border-border bg-elevated px-3 py-1.5 text-xs text-foreground shadow-lg shadow-black/20"
             initial={{ opacity: 0, y: 4, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 4, scale: 0.95 }}
             transition={{ duration: 0.15, ease: [0.16, 1, 0.3, 1] }}
           >
             Calificar el sistema
-            {/* Flecha del tooltip */}
-            <span className="absolute -bottom-1 right-3 h-2 w-2 rotate-45 border-b border-r border-border bg-surface" />
           </motion.div>
         )}
       </AnimatePresence>
@@ -36,18 +34,18 @@ export function FeedbackButton({ onClick }: FeedbackButtonProps) {
         onMouseLeave={() => setShowTooltip(false)}
         onFocus={() => setShowTooltip(true)}
         onBlur={() => setShowTooltip(false)}
-        className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-surface text-muted shadow-md transition-colors duration-150 hover:border-accent hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
+        className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-elevated/80 text-muted backdrop-blur-md transition-colors duration-150 hover:border-border-strong hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background"
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.8 }}
         transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-        whileHover={{ scale: 1.08 }}
+        whileHover={{ scale: 1.06 }}
         whileTap={{ scale: 0.95 }}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          width="18"
-          height="18"
+          width="17"
+          height="17"
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"

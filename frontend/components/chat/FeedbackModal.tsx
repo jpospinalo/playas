@@ -103,35 +103,32 @@ export function FeedbackModal({
 					exit={{ opacity: 0 }}
 					transition={{ duration: 0.2 }}
 				>
-					{/* Fondo oscuro */}
 					<motion.div
-						className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+						className="absolute inset-0 bg-background/70 backdrop-blur-md"
 						onClick={handleClose}
 						aria-hidden="true"
 					/>
 
-					{/* Tarjeta */}
 					<motion.div
 						role="dialog"
 						aria-modal="true"
 						aria-labelledby="feedback-modal-title"
-						className="relative z-10 w-full max-w-md rounded-2xl border border-border bg-surface p-6 shadow-xl"
+						className="relative z-10 w-full max-w-md rounded-3xl border border-border bg-elevated p-6 shadow-2xl shadow-black/40"
 						initial={{ opacity: 0, scale: 0.96, y: 8 }}
 						animate={{ opacity: 1, scale: 1, y: 0 }}
 						exit={{ opacity: 0, scale: 0.96, y: 8 }}
 						transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
 					>
-						{/* Botón cerrar */}
 						{submitState !== "loading" && (
 							<button
 								onClick={handleClose}
 								aria-label="Cerrar"
-								className="absolute right-4 top-4 rounded-md p-1 text-muted transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+								className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full text-muted transition-colors hover:bg-surface hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
 							>
 								<svg
 									xmlns="http://www.w3.org/2000/svg"
-									width="16"
-									height="16"
+									width="15"
+									height="15"
 									viewBox="0 0 24 24"
 									fill="none"
 									stroke="currentColor"
@@ -147,7 +144,6 @@ export function FeedbackModal({
 
 						<AnimatePresence mode="wait">
 							{submitState === "success" ? (
-								/* Estado de éxito */
 								<motion.div
 									key="success"
 									className="flex flex-col items-center gap-3 py-4 text-center"
@@ -156,7 +152,7 @@ export function FeedbackModal({
 									exit={{ opacity: 0 }}
 									transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
 								>
-									<div className="flex h-12 w-12 items-center justify-center rounded-full bg-success-bg text-success">
+									<div className="flex h-12 w-12 items-center justify-center rounded-full bg-accent-soft text-accent">
 										<svg
 											xmlns="http://www.w3.org/2000/svg"
 											width="22"
@@ -173,22 +169,21 @@ export function FeedbackModal({
 										</svg>
 									</div>
 									<div>
-										<p className="font-[family-name:var(--font-display)] font-semibold text-foreground">
+										<p className="text-base font-medium text-foreground">
 											¡Gracias por tu calificación!
 										</p>
 										<p className="mt-1 text-sm text-muted">
-											Tu opinión nos ayuda a mejorar el sistema.
+											Tu opinión nos ayuda a mejorar.
 										</p>
 									</div>
 									<button
 										onClick={handleClose}
-										className="mt-2 rounded-lg bg-accent px-5 py-2 text-sm font-medium text-white transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
+										className="mt-2 rounded-full bg-accent px-5 py-2 text-sm font-medium text-accent-fg transition-colors hover:bg-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-elevated"
 									>
 										Cerrar
 									</button>
 								</motion.div>
 							) : (
-								/* Formulario multi-dimensión */
 								<motion.div
 									key="form"
 									initial={{ opacity: 1 }}
@@ -196,11 +191,11 @@ export function FeedbackModal({
 								>
 									<h2
 										id="feedback-modal-title"
-										className="mb-1 font-[family-name:var(--font-display)] text-lg font-semibold text-foreground"
+										className="mb-1 text-lg font-medium text-foreground"
 									>
 										Califica la conversación
 									</h2>
-									<p className="mb-5 text-sm text-muted">
+									<p className="mb-6 text-sm text-muted">
 										{conversationId
 											? "Tu calificación se asociará a la conversación actual."
 											: "¿Qué tan útil fue el sistema?"}
@@ -211,12 +206,11 @@ export function FeedbackModal({
 										noValidate
 										className="space-y-4"
 									>
-										{/* Dimensiones de calificación */}
 										{DIMENSIONS.map(({ key, label }) => {
 											const activeVal = hovered[key] || selected[key];
 											return (
 												<div key={key}>
-													<label className="mb-1 block text-sm font-medium text-foreground">
+													<label className="mb-1.5 block text-sm font-medium text-foreground">
 														{label}
 													</label>
 													<div
@@ -272,7 +266,7 @@ export function FeedbackModal({
 																			color:
 																				star <= activeVal
 																					? "var(--color-accent)"
-																					: "var(--color-muted)",
+																					: "var(--color-subtle)",
 																		}}
 																	>
 																		<path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z" />
@@ -300,14 +294,15 @@ export function FeedbackModal({
 											);
 										})}
 
-										{/* Textarea */}
 										<div>
 											<label
 												htmlFor="feedback-comment"
-												className="mb-1 block text-xs font-medium text-muted"
+												className="mb-1.5 block text-xs font-medium text-muted"
 											>
 												Comentario{" "}
-												<span className="font-normal">(opcional)</span>
+												<span className="font-normal text-subtle">
+													(opcional)
+												</span>
 											</label>
 											<textarea
 												id="feedback-comment"
@@ -317,16 +312,15 @@ export function FeedbackModal({
 												onChange={(e) => setComment(e.target.value)}
 												placeholder="¿Qué podría mejorar el sistema?"
 												disabled={submitState === "loading"}
-												className="w-full resize-none rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted/60 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent disabled:opacity-60"
+												className="w-full resize-none rounded-2xl border border-border bg-surface px-3.5 py-2.5 text-sm text-foreground placeholder:text-subtle transition-[border-color,box-shadow] duration-150 focus:border-accent focus:outline-none focus:shadow-[0_0_0_3px_var(--accent-soft)] disabled:opacity-60"
 											/>
 										</div>
 
-										{/* Error */}
 										<AnimatePresence>
 											{submitState === "error" && (
 												<motion.p
 													role="alert"
-													className="rounded-lg border border-danger/30 bg-danger-bg px-3 py-2 text-sm text-danger"
+													className="rounded-2xl border border-danger/30 bg-danger-bg px-3.5 py-2.5 text-sm text-danger"
 													initial={{ opacity: 0, y: -4 }}
 													animate={{ opacity: 1, y: 0 }}
 													exit={{ opacity: 0 }}
@@ -340,7 +334,7 @@ export function FeedbackModal({
 										<button
 											type="submit"
 											disabled={!allRated || submitState === "loading"}
-											className="w-full rounded-lg bg-accent px-4 py-2.5 text-sm font-medium text-white transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 disabled:opacity-50"
+											className="w-full rounded-full bg-accent px-4 py-2.5 text-sm font-medium text-accent-fg transition-colors hover:bg-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-elevated disabled:cursor-not-allowed disabled:opacity-45"
 										>
 											{submitState === "loading"
 												? "Enviando…"
