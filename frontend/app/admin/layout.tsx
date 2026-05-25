@@ -43,7 +43,6 @@ export default function AdminLayout({
 		fetchRole();
 	}, [user, loading, router]);
 
-	// Mientras resuelve auth o rol
 	if (loading || checkingRole) {
 		return (
 			<div className="flex min-h-screen items-center justify-center bg-background">
@@ -52,22 +51,20 @@ export default function AdminLayout({
 		);
 	}
 
-	// Sin sesión (ya redirige, pero por si acaso)
 	if (!user) return null;
 
-	// Autenticado pero sin rol admin
 	if (role !== "admin" && role !== "super-admin") {
 		return (
 			<div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-background px-4 text-center">
-				<div className="text-4xl font-bold text-accent">403</div>
-				<p className="text-foreground font-semibold">Acceso restringido</p>
-				<p className="text-sm text-muted max-w-sm">
+				<div className="text-5xl font-medium tracking-tight text-accent">403</div>
+				<p className="text-base font-medium text-foreground">Acceso restringido</p>
+				<p className="max-w-sm text-sm text-muted">
 					No tienes permisos para acceder al panel de administración. Contacta
 					al administrador del sistema.
 				</p>
 				<Link
 					href="/"
-					className="mt-2 rounded-md bg-accent px-4 py-2 text-sm font-medium text-surface hover:bg-accent-bright focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 transition-colors"
+					className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-accent px-5 py-2.5 text-sm font-medium text-accent-fg transition-colors hover:bg-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background"
 				>
 					Volver a ATLAS
 				</Link>
@@ -84,17 +81,38 @@ export default function AdminLayout({
 
 	return (
 		<div className="flex min-h-screen bg-background">
-			{/* Sidebar nav */}
-			<aside className="w-52 shrink-0 border-r border-border bg-surface flex flex-col">
-				<div className="px-5 py-4 border-b border-border">
-					<span className="font-[family-name:var(--font-display)] text-sm font-semibold tracking-[0.05em] uppercase text-foreground">
-						ATLAS{" "}
-						<span className="text-accent normal-case tracking-normal">
-							Admin
-						</span>
+			<aside className="flex w-60 shrink-0 flex-col border-r border-border bg-elevated/60 backdrop-blur-md">
+				<div className="flex h-12 items-center gap-2 px-4">
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						width="20"
+						height="20"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						strokeWidth="1.6"
+						strokeLinecap="round"
+						strokeLinejoin="round"
+						className="text-accent"
+						aria-hidden="true"
+					>
+						<path d="M12 3 L20 20 L4 20 Z" opacity="0.4" />
+						<path d="M12 3 L20 20" />
+						<path d="M12 3 L4 20" />
+						<path d="M8 14 H16" opacity="0.55" />
+					</svg>
+					<span
+						className="text-[13px] font-medium tracking-[0.12em] text-foreground"
+						translate="no"
+					>
+						ATLAS
+					</span>
+					<span className="text-[11px] font-medium uppercase tracking-[0.1em] text-subtle">
+						Admin
 					</span>
 				</div>
-				<nav className="flex flex-col gap-0.5 px-2 py-3">
+
+				<nav className="flex flex-col gap-px px-2 py-2">
 					{navLinks.map(({ href, label }) => {
 						const isActive =
 							href === "/admin"
@@ -104,10 +122,10 @@ export default function AdminLayout({
 							<Link
 								key={href}
 								href={href}
-								className={`rounded-md px-3 py-2 text-sm transition-colors ${
+								className={`rounded-full px-4 py-2 text-[13.5px] transition-colors ${
 									isActive
-										? "bg-accent/10 text-accent font-medium"
-										: "text-muted hover:text-foreground hover:bg-border/40"
+										? "bg-elevated text-foreground"
+										: "text-muted hover:bg-elevated hover:text-foreground"
 								}`}
 							>
 								{label}
@@ -115,14 +133,15 @@ export default function AdminLayout({
 						);
 					})}
 				</nav>
-				<div className="mt-auto flex flex-col gap-2 px-2 py-3 border-t border-border">
-					<div className="flex items-center justify-between px-3 py-1">
-						<span className="text-xs text-muted">Tema</span>
+
+				<div className="mt-auto flex flex-col gap-2 border-t border-border px-3 py-3">
+					<div className="flex items-center justify-between px-1">
+						<span className="text-xs text-subtle">Tema</span>
 						<ThemeToggle />
 					</div>
 					<Link
 						href="/"
-						className="flex items-center gap-1.5 rounded-md px-3 py-2 text-xs text-muted hover:text-foreground transition-colors"
+						className="flex items-center gap-1.5 rounded-full px-3 py-2 text-xs text-muted transition-colors hover:bg-elevated hover:text-foreground"
 					>
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
@@ -143,7 +162,6 @@ export default function AdminLayout({
 				</div>
 			</aside>
 
-			{/* Contenido */}
 			<main className="flex-1 overflow-auto p-6 lg:p-8">{children}</main>
 		</div>
 	);
