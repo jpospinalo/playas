@@ -187,7 +187,11 @@ function DesktopSidebar({
 }) {
   return (
     <motion.aside
-      className="hidden flex-none overflow-visible border-r border-border bg-surface md:flex md:flex-col"
+      className={`hidden flex-none overflow-visible md:flex md:flex-col ${
+        expanded
+          ? "border-r border-border bg-elevated/60 backdrop-blur-md"
+          : "bg-transparent"
+      }`}
       initial={false}
       animate={{
         width: expanded ? SIDEBAR_EXPANDED_WIDTH : SIDEBAR_COLLAPSED_WIDTH,
@@ -308,22 +312,32 @@ function ExpandedSidebarContent({
   onSignOut,
   onSelectConversation,
 }: SidebarContentProps) {
+  const hasConversations = conversations.length > 0;
   return (
     <>
       <SidebarHeader onToggleSidebar={onToggleSidebar} />
-      <SidebarActionButton
-        label="Nueva consulta"
-        icon={<PlusIcon />}
-        onClick={onNewChat}
-      />
-      <SidebarActionButton
-        label="Buscar conversaciones"
-        icon={<SearchIcon />}
-        active={hasSearch}
-        onClick={onOpenSearch}
-      />
 
-      <div className="flex-1 overflow-y-auto py-1">
+      <div className="px-2 pt-1">
+        <SidebarPillButton
+          label="Nueva consulta"
+          icon={<PencilEditIcon />}
+          emphasis="primary"
+          onClick={onNewChat}
+        />
+        <SidebarPillButton
+          label="Buscar conversaciones"
+          icon={<SearchIcon />}
+          emphasis={hasSearch ? "active" : "default"}
+          onClick={onOpenSearch}
+        />
+      </div>
+
+      <div className="flex-1 overflow-y-auto">
+        {(hasConversations || loading) && (
+          <p className="px-5 pb-1 pt-5 text-[11px] font-medium text-subtle">
+            Recientes
+          </p>
+        )}
         <ConversationList
           conversations={conversations}
           activeConversationId={activeConversationId}
@@ -372,12 +386,15 @@ function CollapsedSidebarContent({
   return (
     <motion.div
       key="collapsed"
-      className="flex h-full flex-col items-center gap-1 pt-2"
+      className="flex h-full flex-col items-center gap-1 px-1 pt-3"
       initial={transitionEnabled ? { opacity: 0 } : false}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: transitionEnabled ? 0.12 : 0 }}
     >
+      <div className="mb-2 flex h-9 w-9 items-center justify-center" aria-hidden="true">
+        <AtlasGlyph />
+      </div>
       <RailButton
         label="Abrir historial"
         icon={<PanelIcon />}
@@ -395,67 +412,98 @@ function CollapsedSidebarContent({
         onClick={onOpenSearch}
       />
 
-      <SidebarUserMenu
-        expanded={false}
-        open={profileOpen}
-        userName={userInfo.name}
-        userEmail={userInfo.email}
-        userInitial={userInfo.initial}
-        isAdmin={isAdmin}
-        onToggle={onToggleProfile}
-        onClose={onCloseProfile}
-        onSignOut={onSignOut}
-      />
+      <div className="mt-auto pb-2">
+        <SidebarUserMenu
+          expanded={false}
+          open={profileOpen}
+          userName={userInfo.name}
+          userEmail={userInfo.email}
+          userInitial={userInfo.initial}
+          isAdmin={isAdmin}
+          onToggle={onToggleProfile}
+          onClose={onCloseProfile}
+          onSignOut={onSignOut}
+        />
+      </div>
     </motion.div>
+  );
+}
+
+function AtlasGlyph() {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="22"
+      height="22"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="text-accent"
+      aria-hidden="true"
+    >
+      <path d="M12 3 L20 20 L4 20 Z" opacity="0.4" />
+      <path d="M12 3 L20 20" />
+      <path d="M12 3 L4 20" />
+      <path d="M8 14 H16" opacity="0.55" />
+    </svg>
   );
 }
 
 function SidebarHeader({ onToggleSidebar }: { onToggleSidebar: () => void }) {
   return (
-    <div className="flex items-center justify-between px-3 py-3">
-      <span className="text-xs font-semibold uppercase tracking-wider text-muted">
-        Conversaciones
-      </span>
+    <div className="flex items-center justify-between px-4 pb-2 pt-3">
+      <div className="flex items-center gap-2">
+        <AtlasGlyph />
+        <span
+          className="text-[15px] font-medium tracking-[0.04em] text-foreground"
+          translate="no"
+        >
+          ATLAS
+        </span>
+      </div>
       <button
         onClick={onToggleSidebar}
         aria-label="Cerrar panel"
-        className="rounded-md p-1 text-muted transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+        title="Cerrar panel"
+        className="flex h-8 w-8 items-center justify-center rounded-full text-muted transition-colors hover:bg-elevated hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
       >
-        <ChevronLeftIcon />
+        <PanelIcon />
       </button>
     </div>
   );
 }
 
-function SidebarActionButton({
+function SidebarPillButton({
   label,
   icon,
-  active = false,
+  emphasis = "default",
   onClick,
 }: {
   label: string;
   icon: ReactNode;
-  active?: boolean;
+  emphasis?: "default" | "primary" | "active";
   onClick: () => void;
 }) {
+  const emphasisClasses =
+    emphasis === "primary"
+      ? "bg-elevated text-foreground hover:bg-surface"
+      : emphasis === "active"
+        ? "bg-accent-soft text-accent"
+        : "text-muted hover:bg-elevated hover:text-foreground";
+
   return (
-    <div className="px-3 py-2">
-      <button
-        type="button"
-        onClick={onClick}
-        aria-label={label}
-        className={`flex w-full items-center justify-between gap-2 rounded-lg px-3 py-2 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
-          active
-            ? "bg-accent-light text-accent"
-            : "text-muted hover:bg-accent/8 hover:text-foreground"
-        }`}
-      >
-        <span className="flex min-w-0 items-center gap-2">
-          {icon}
-          <span className="truncate">{label}</span>
-        </span>
-      </button>
-    </div>
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={label}
+      className={`mt-1 flex w-full items-center gap-3 rounded-full px-4 py-2.5 text-[13.5px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${emphasisClasses}`}
+    >
+      <span className="flex h-4 w-4 shrink-0 items-center justify-center">{icon}</span>
+      <span className="truncate">{label}</span>
+    </button>
   );
 }
 
@@ -475,10 +523,10 @@ function RailButton({
       onClick={onClick}
       aria-label={label}
       title={label}
-      className={`flex h-10 w-10 items-center justify-center rounded-lg transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 ${
+      className={`flex h-10 w-10 items-center justify-center rounded-full transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
         active
-          ? "bg-accent-light text-accent"
-          : "text-muted hover:bg-accent/8 hover:text-foreground"
+          ? "bg-accent-soft text-accent"
+          : "text-muted hover:bg-elevated hover:text-foreground"
       }`}
     >
       {icon}
@@ -563,12 +611,12 @@ function SearchIcon() {
   );
 }
 
-function ChevronLeftIcon() {
+function PencilEditIcon() {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width="14"
-      height="14"
+      width="16"
+      height="16"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
@@ -577,7 +625,8 @@ function ChevronLeftIcon() {
       strokeLinejoin="round"
       aria-hidden="true"
     >
-      <path d="m15 18-6-6 6-6" />
+      <path d="M12 20h9" />
+      <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z" />
     </svg>
   );
 }

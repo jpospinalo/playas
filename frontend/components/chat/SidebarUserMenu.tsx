@@ -89,18 +89,18 @@ function ExpandedUserMenu({
 				aria-label="Abrir menú de perfil"
 				aria-haspopup="menu"
 				aria-expanded={open}
-				className="flex w-full items-center gap-2 rounded-xl px-2 py-2 text-left transition-colors hover:bg-accent/8 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+				className="flex w-full items-center gap-3 rounded-full px-2 py-1.5 text-left transition-colors hover:bg-elevated focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
 			>
 				<UserAvatar initial={userInitial} size="md" />
 				<span className="min-w-0 flex-1">
-					<span className="block truncate text-xs font-semibold text-foreground">
+					<span className="block truncate text-[13px] font-medium text-foreground">
 						{userName}
 					</span>
-					<span className="block truncate text-[10px] text-muted">
+					<span className="block truncate text-[11px] text-subtle">
 						{userEmail}
 					</span>
 				</span>
-				<ChevronIcon />
+				<SettingsIcon />
 			</button>
 
 			<UserMenuPopover
@@ -216,29 +216,30 @@ function UserAvatar({ initial, size }: { initial: string; size: "md" }) {
 	const sizeClass = size === "md" ? "h-8 w-8" : "h-10 w-10";
 	return (
 		<span
-			className={`flex ${sizeClass} shrink-0 items-center justify-center rounded-full bg-accent text-xs font-semibold text-white`}
+			className={`flex ${sizeClass} shrink-0 items-center justify-center rounded-full bg-accent text-xs font-semibold text-accent-fg`}
 		>
 			{initial}
 		</span>
 	);
 }
 
-function ChevronIcon() {
+function SettingsIcon() {
 	return (
 		<svg
 			xmlns="http://www.w3.org/2000/svg"
-			width="13"
-			height="13"
+			width="16"
+			height="16"
 			viewBox="0 0 24 24"
 			fill="none"
 			stroke="currentColor"
-			strokeWidth="2"
+			strokeWidth="1.8"
 			strokeLinecap="round"
 			strokeLinejoin="round"
 			aria-hidden="true"
-			className="shrink-0 text-muted"
+			className="mr-1 shrink-0 text-muted"
 		>
-			<path d="m6 9 6 6 6-6" />
+			<circle cx="12" cy="12" r="3" />
+			<path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h.01a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v.01a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z" />
 		</svg>
 	);
 }

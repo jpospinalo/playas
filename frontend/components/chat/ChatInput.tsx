@@ -2,109 +2,132 @@
 
 import { useEffect } from "react";
 
+type Variant = "hero" | "docked";
+
 interface ChatInputProps {
-  value: string;
-  loading: boolean;
-  textareaRef: React.RefObject<HTMLTextAreaElement | null>;
-  onChange: (value: string) => void;
-  onSubmit: () => void;
+	value: string;
+	loading: boolean;
+	textareaRef: React.RefObject<HTMLTextAreaElement | null>;
+	onChange: (value: string) => void;
+	onSubmit: () => void;
+	variant?: Variant;
 }
 
+const MAX_HEIGHT_PX = 200; // ~8 lines
+
 export function ChatInput({
-  value,
-  loading,
-  textareaRef,
-  onChange,
-  onSubmit,
+	value,
+	loading,
+	textareaRef,
+	onChange,
+	onSubmit,
+	variant = "docked",
 }: ChatInputProps) {
-  /* Auto-resize: runs both on user typing and on programmatic value changes */
-  useEffect(() => {
-    const el = textareaRef.current;
-    if (!el) return;
-    el.style.height = "auto";
-    el.style.height = `${Math.min(el.scrollHeight, 120)}px`;
-  }, [value, textareaRef]);
+	/* Auto-resize: runs on user typing and on programmatic value changes */
+	useEffect(() => {
+		const el = textareaRef.current;
+		if (!el) return;
+		el.style.height = "auto";
+		el.style.height = `${Math.min(el.scrollHeight, MAX_HEIGHT_PX)}px`;
+	}, [value, textareaRef]);
 
-  function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      onSubmit();
-    }
-  }
+	function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
+		if (e.key === "Enter" && !e.shiftKey) {
+			e.preventDefault();
+			onSubmit();
+		}
+	}
 
-  return (
-    <div className="shrink-0 border-t border-border bg-surface/95 backdrop-blur-sm">
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          onSubmit();
-        }}
-        className="mx-auto flex max-w-3xl items-end gap-2.5 px-4 py-3"
-        aria-label="Formulario de consulta"
-      >
-        <label htmlFor="chat-input" className="sr-only">
-          Escriba su consulta jurídica
-        </label>
-        <textarea
-          ref={textareaRef}
-          id="chat-input"
-          name="question"
-          rows={1}
-          placeholder="Escriba su consulta…"
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          onKeyDown={handleKeyDown}
-          autoComplete="off"
-          spellCheck
-          disabled={loading}
-          className="min-w-0 flex-1 resize-none rounded-xl border border-border bg-background px-4 py-3 text-sm leading-6 text-foreground placeholder:text-muted/70 transition-[border-color,box-shadow] duration-150 focus-visible:border-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/20 disabled:opacity-50"
-          style={{ overflowY: "hidden" }}
-        />
-        <button
-          type="submit"
-          disabled={loading || !value.trim()}
-          aria-label={loading ? "Consultando…" : "Enviar consulta"}
-          className="flex h-[46px] w-[46px] shrink-0 items-center justify-center rounded-xl bg-accent text-surface transition-[background-color,opacity] duration-150 hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-35"
-        >
-          {loading ? (
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-              className="animate-spin"
-            >
-              <path d="M21 12a9 9 0 1 1-6.219-8.56" />
-            </svg>
-          ) : (
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="15"
-              height="15"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-            >
-              <path d="m22 2-7 20-4-9-9-4Z" />
-              <path d="M22 2 11 13" />
-            </svg>
-          )}
-        </button>
-      </form>
-      <p className="pb-3 text-center text-[10px] text-muted/50">
-        Respuestas basadas en el corpus indexado · Shift + Enter para nueva
-        línea
-      </p>
-    </div>
-  );
+	const trimmed = value.trim();
+	const canSend = !loading && trimmed.length > 0;
+
+	const form = (
+		<form
+			onSubmit={(e) => {
+				e.preventDefault();
+				if (canSend) onSubmit();
+			}}
+			aria-label="Formulario de consulta"
+			className="group/input relative mx-auto w-full max-w-3xl"
+		>
+			<label htmlFor={`chat-input-${variant}`} className="sr-only">
+				Escribe tu pregunta sobre playas o derecho costero
+			</label>
+
+			<div className="relative flex items-center gap-2 rounded-[28px] border border-border bg-surface/90 py-2 pl-5 pr-2 shadow-sm backdrop-blur-md transition-[border-color,box-shadow] duration-200 focus-within:border-accent focus-within:shadow-[0_0_0_4px_var(--accent-soft)]">
+				<textarea
+					ref={textareaRef}
+					id={`chat-input-${variant}`}
+					name="question"
+					rows={1}
+					placeholder="Pregúntale a ATLAS…"
+					value={value}
+					onChange={(e) => onChange(e.target.value)}
+					onKeyDown={handleKeyDown}
+					autoComplete="off"
+					spellCheck
+					disabled={loading}
+					className="min-w-0 flex-1 resize-none bg-transparent py-1 text-[15px] leading-6 text-foreground placeholder:text-subtle focus:outline-none disabled:opacity-50"
+					style={{ overflowY: "hidden" }}
+				/>
+				<button
+					type="submit"
+					disabled={!canSend}
+					aria-label={loading ? "Consultando…" : "Enviar consulta"}
+					className={`flex h-8 w-8 shrink-0 items-center justify-center self-end rounded-full transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
+						canSend
+							? "bg-accent text-accent-fg hover:bg-accent-hover"
+							: "bg-elevated text-subtle"
+					}`}
+				>
+					{loading ? (
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							width="13"
+							height="13"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							strokeWidth="2.2"
+							strokeLinecap="round"
+							strokeLinejoin="round"
+							aria-hidden="true"
+							className="animate-spin"
+						>
+							<path d="M21 12a9 9 0 1 1-6.219-8.56" />
+						</svg>
+					) : (
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							width="13"
+							height="13"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							strokeWidth="2.4"
+							strokeLinecap="round"
+							strokeLinejoin="round"
+							aria-hidden="true"
+						>
+							<path d="M12 19V5" />
+							<path d="m5 12 7-7 7 7" />
+						</svg>
+					)}
+				</button>
+			</div>
+		</form>
+	);
+
+	if (variant === "hero") {
+		return form;
+	}
+
+	return (
+		<div className="relative shrink-0 px-4 pb-4 pt-2 sm:pb-6">
+			{form}
+			<p className="mt-2 text-center text-[11px] text-subtle">
+				ATLAS puede equivocarse. Verifica las fuentes y no reemplaza un abogado · Shift + Enter para nueva línea
+			</p>
+		</div>
+	);
 }

@@ -1,51 +1,48 @@
 import type { Metadata, Viewport } from "next";
-import { EB_Garamond, Inter } from "next/font/google";
+import { Geist, Geist_Mono } from "next/font/google";
 import { AuthProvider } from "@/components/providers/AuthProvider";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import "./globals.css";
 
-const ebGaramond = EB_Garamond({
-	variable: "--font-display",
+const geist = Geist({
+	variable: "--font-sans",
 	subsets: ["latin"],
-	weight: ["400", "500", "600", "700"],
-	style: ["normal", "italic"],
 	display: "swap",
 });
 
-const inter = Inter({
-	variable: "--font-sans",
+const geistMono = Geist_Mono({
+	variable: "--font-mono",
 	subsets: ["latin"],
-	weight: ["400", "500", "600"],
 	display: "swap",
 });
 
 export const metadata: Metadata = {
 	title: {
-		default: "ATLAS — Jurisprudencia Costera de Colombia",
+		default: "ATLAS — Jurisprudencia costera de Colombia",
 		template: "%s | ATLAS",
 	},
 	description:
-		"ATLAS es un asistente agéntico que permite consultar jurisprudencia colombiana sobre playas, dominio público marítimo-terrestre y normatividad costera mediante un pipeline RAG con citas verificadas.",
+		"ATLAS traduce la jurisprudencia colombiana sobre playas y derecho costero a respuestas claras para cualquier persona, con citas verificables a sentencias del Consejo de Estado.",
 	openGraph: {
 		type: "website",
 		locale: "es_CO",
 		siteName: "ATLAS",
-		title: "ATLAS — Jurisprudencia Costera de Colombia",
+		title: "ATLAS — Jurisprudencia costera de Colombia",
 		description:
-			"Consulte jurisprudencia colombiana sobre playas y derecho costero con respuestas fundamentadas en fuentes verificadas del Consejo de Estado.",
+			"Consulta jurisprudencia colombiana sobre playas y derecho costero. Respuestas claras, con citas a sentencias verificables del Consejo de Estado.",
 	},
 	twitter: {
 		card: "summary",
 		title: "ATLAS",
 		description:
-			"Jurisprudencia costera colombiana con IA fundamentada en fuentes verificadas.",
+			"Jurisprudencia costera colombiana, explicada para cualquier persona.",
 	},
 };
 
 export const viewport: Viewport = {
 	themeColor: [
-		{ media: "(prefers-color-scheme: light)", color: "#faf7f0" },
-		{ media: "(prefers-color-scheme: dark)", color: "#1a1a1f" },
+		{ media: "(prefers-color-scheme: light)", color: "#f5fafa" },
+		{ media: "(prefers-color-scheme: dark)", color: "#070d12" },
 	],
 };
 
@@ -57,7 +54,7 @@ export default function RootLayout({
 	return (
 		<html
 			lang="es"
-			className={`${ebGaramond.variable} ${inter.variable} h-full antialiased`}
+			className={`${geist.variable} ${geistMono.variable} h-full antialiased`}
 			suppressHydrationWarning
 		>
 			<body className="min-h-full flex flex-col bg-background text-foreground">

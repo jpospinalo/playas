@@ -15,7 +15,7 @@ export function ChatHeader({ onNewChat, onOpenAuth, onToggleSidebar, sidebarOpen
   const { user, loading } = useAuth();
 
   return (
-    <header className="shrink-0 border-b border-border bg-surface/95 backdrop-blur-sm">
+    <header className="shrink-0 bg-transparent">
       <div className="flex h-12 items-center justify-between gap-3 px-3">
         <div className="flex min-w-0 items-center gap-1">
           {onToggleSidebar && user && (
@@ -55,7 +55,7 @@ export function ChatHeader({ onNewChat, onOpenAuth, onToggleSidebar, sidebarOpen
         <div className="ml-auto flex shrink-0 items-center gap-1">
           <Link
             href="/about"
-            className="hidden items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium text-muted transition-colors duration-150 hover:bg-subtle hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent sm:flex"
+            className="hidden items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium text-muted transition-colors duration-150 hover:bg-elevated hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent sm:flex"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"

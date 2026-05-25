@@ -1,59 +1,85 @@
 @import "tailwindcss";
 
-/* ─── ATLAS Design System — Consejo ──────────────────────────────────────── */
+/* ─── ATLAS Design System — Bioluminiscencia ─────────────────────────────── */
 
 :root {
-  /* Light mode — Platinum & Institutional Ink */
-  --background: oklch(96.5% 0.004 260);
-  --surface: oklch(99% 0.002 260);
-  --foreground: oklch(10% 0.02 260);
-  --muted: oklch(46% 0.012 260);
-  --border: oklch(86% 0.008 260);
-  --subtle: oklch(92% 0.006 260);
+  /* Light mode — Shore (papel iluminado con tinte agua) */
+  --background: oklch(98.5% 0.005 200);
+  --surface: oklch(100% 0 0);
+  --elevated: oklch(99% 0.003 200);
+  --foreground: oklch(18% 0.025 220);
+  --muted: oklch(44% 0.018 215);
+  --subtle: oklch(60% 0.015 210);
+  --border: oklch(90% 0.008 210);
+  --border-strong: oklch(78% 0.012 210);
 
-  /* Institutional Blue — interactive affordances */
-  --accent: oklch(42% 0.14 258);
-  --accent-bright: oklch(48% 0.14 258);
-  --accent-light: oklch(42% 0.14 258 / 10%);
+  /* Acento — bioluminiscencia, versión profunda para fondos claros */
+  --accent: oklch(48% 0.18 185);
+  --accent-hover: oklch(42% 0.18 185);
+  --accent-fg: oklch(99% 0.003 200);
+  --accent-soft: oklch(48% 0.18 185 / 10%);
+  /* Legacy aliases — mantienen compat con clases ya escritas */
+  --accent-bright: var(--accent-hover);
+  --accent-light: var(--accent-soft);
 
-  /* Charter Amber — citation badges ONLY */
-  --citation: oklch(52% 0.15 68);
-  --citation-fill: oklch(52% 0.15 68 / 10%);
+  /* Glow ambiental (light: halo agua-sol, casi imperceptible) */
+  --glow-core: oklch(72% 0.18 180);
+  --glow-mid: oklch(58% 0.16 185);
+  --glow-edge: oklch(40% 0.12 195);
+  --glow-opacity: 0.05;
+  --glow-blur: 110px;
 
-  /* Code block background */
-  --code-bg: oklch(10% 0.02 260);
+  /* Citas — mismo hue del acento */
+  --citation: oklch(38% 0.18 188);
+  --citation-fill: oklch(48% 0.18 185 / 8%);
 
-  /* Semantic state tokens */
-  --danger: #b3261e;
-  --danger-bg: #fbe9e7;
-  --success: #1f6f3f;
-  --success-bg: #e3f1e8;
+  /* Funcionales */
+  --danger: oklch(55% 0.20 25);
+  --danger-bg: oklch(55% 0.20 25 / 8%);
+  --success: oklch(48% 0.14 155);
+  --success-bg: oklch(48% 0.14 155 / 8%);
+
+  --code-bg: oklch(96% 0.005 210);
 
   color-scheme: light;
 }
 
 .dark {
-  /* Dark mode — Neutral grays with electric blue accents */
-  --background: oklch(13% 0.003 270);
-  --surface: oklch(17% 0.004 270);
-  --foreground: oklch(93% 0.003 270);
-  --muted: oklch(58% 0.008 270);
-  --border: oklch(24% 0.006 270);
-  --subtle: oklch(19% 0.005 270);
+  /* Dark mode — Abyss (mar nocturno profundo, no negro terminal) */
+  --background: oklch(8% 0.02 220);
+  --surface: oklch(12% 0.025 220);
+  --elevated: oklch(16% 0.028 220);
+  --foreground: oklch(96% 0.005 200);
+  --muted: oklch(68% 0.015 210);
+  --subtle: oklch(48% 0.018 215);
+  --border: oklch(22% 0.02 220);
+  --border-strong: oklch(32% 0.025 220);
 
-  --accent: oklch(65% 0.18 250);
-  --accent-bright: oklch(72% 0.18 250);
-  --accent-light: oklch(65% 0.18 250 / 12%);
+  /* Acento — bioluminiscencia turquesa-verde, brillante sobre abyss */
+  --accent: oklch(72% 0.18 180);
+  --accent-hover: oklch(78% 0.18 180);
+  --accent-fg: oklch(10% 0.02 220);
+  --accent-soft: oklch(72% 0.18 180 / 14%);
+  --accent-bright: var(--accent-hover);
+  --accent-light: var(--accent-soft);
 
-  --citation: oklch(70% 0.14 68);
-  --citation-fill: oklch(70% 0.14 68 / 10%);
+  /* Glow ambiental (dark: presente pero discreto) */
+  --glow-core: oklch(72% 0.18 180);
+  --glow-mid: oklch(58% 0.16 185);
+  --glow-edge: oklch(40% 0.12 195);
+  --glow-opacity: 0.11;
+  --glow-blur: 100px;
 
-  --code-bg: oklch(10% 0.003 270);
+  /* Citas — mismo hue, brillante */
+  --citation: oklch(72% 0.18 180);
+  --citation-fill: oklch(72% 0.18 180 / 12%);
 
-  --danger: #ff8a80;
-  --danger-bg: oklch(65% 0.18 20 / 10%);
-  --success: #69f0ae;
-  --success-bg: oklch(70% 0.18 155 / 10%);
+  --danger: oklch(70% 0.16 25);
+  --danger-bg: oklch(70% 0.16 25 / 10%);
+  --success: oklch(72% 0.14 155);
+  --success-bg: oklch(72% 0.14 155 / 8%);
+
+  --code-bg: oklch(10% 0.025 220);
 
   color-scheme: dark;
 }
@@ -61,11 +87,16 @@
 @theme inline {
   --color-background: var(--background);
   --color-surface: var(--surface);
+  --color-elevated: var(--elevated);
   --color-foreground: var(--foreground);
   --color-muted: var(--muted);
-  --color-border: var(--border);
   --color-subtle: var(--subtle);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
   --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-fg: var(--accent-fg);
+  --color-accent-soft: var(--accent-soft);
   --color-accent-bright: var(--accent-bright);
   --color-accent-light: var(--accent-light);
   --color-citation: var(--citation);
@@ -74,15 +105,19 @@
   --color-danger-bg: var(--danger-bg);
   --color-success: var(--success);
   --color-success-bg: var(--success-bg);
+  --color-glow-core: var(--glow-core);
+  --color-glow-mid: var(--glow-mid);
+  --color-glow-edge: var(--glow-edge);
   --font-sans: var(--font-sans);
-  --font-display: var(--font-display);
-  --animate-message-in: message-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+  --font-mono: var(--font-mono);
+  --animate-message-in: message-in 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
   --animate-typing-dot: typing-dot 1.5s ease-in-out infinite;
   --animate-fade-in: fade-in 0.5s ease-out both;
-  --animate-scroll-btn-in: scroll-btn-in 0.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+  --animate-scroll-btn-in: scroll-btn-in 0.22s cubic-bezier(0.16, 1, 0.3, 1) both;
+  --animate-glow-pulse: glow-pulse 3.2s ease-in-out infinite;
 }
 
-/* ─── Semantic state utility classes ─────────────────────────────────────── */
+/* ─── Semantic state utility classes (legacy compat) ─────────────────────── */
 
 .bg-danger     { background-color: var(--danger); }
 .bg-danger-bg  { background-color: var(--danger-bg); }
@@ -132,6 +167,17 @@
   }
 }
 
+@keyframes glow-pulse {
+  0%, 100% {
+    opacity: var(--glow-opacity);
+    transform: scale(1);
+  }
+  50% {
+    opacity: calc(var(--glow-opacity) * 1.6);
+    transform: scale(1.04);
+  }
+}
+
 /* ─── Base ────────────────────────────────────────────────────────────────── */
 
 *,
@@ -155,6 +201,42 @@ body {
   overflow-x: hidden;
 }
 
+/* ─── Glow ambiental — la firma visual de ATLAS ──────────────────────────── */
+
+/*
+ * .atlas-glow renders a single radial bioluminescent halo behind its parent.
+ * Use sparingly: one per view, behind the hero input on the empty state.
+ * The parent must have `position: relative` and `overflow` allowed.
+ */
+.atlas-glow {
+  position: absolute;
+  pointer-events: none;
+  inset: -20% -10%;
+  z-index: 0;
+  background: radial-gradient(
+    ellipse at center,
+    color-mix(in oklch, var(--glow-core) calc(var(--glow-opacity) * 100%), transparent) 0%,
+    color-mix(in oklch, var(--glow-mid) calc(var(--glow-opacity) * 40%), transparent) 28%,
+    color-mix(in oklch, var(--glow-edge) calc(var(--glow-opacity) * 12%), transparent) 55%,
+    transparent 75%
+  );
+  filter: blur(var(--glow-blur));
+  opacity: 1;
+  transition: opacity 350ms ease-out;
+}
+
+.atlas-glow--streaming {
+  animation: var(--animate-glow-pulse);
+}
+
+.atlas-glow--intense {
+  --glow-opacity: 0.10;
+}
+
+.dark .atlas-glow--intense {
+  --glow-opacity: 0.20;
+}
+
 /* ─── Skip link ───────────────────────────────────────────────────────────── */
 
 .skip-link {
@@ -164,15 +246,15 @@ body {
   z-index: 9999;
   padding: 0.5rem 1rem;
   background: var(--accent);
-  color: var(--surface);
+  color: var(--accent-fg);
   font-size: 0.875rem;
-  border-radius: 0 0 0.375rem 0.375rem;
+  border-radius: 9999px;
   text-decoration: none;
   transition: top 0.15s;
 }
 
 .skip-link:focus {
-  top: 0;
+  top: 0.75rem;
 }
 
 /* ─── Heading anchors ─────────────────────────────────────────────────────── */
@@ -190,27 +272,26 @@ h3[id] {
   align-items: center;
   background: var(--citation-fill);
   color: var(--citation);
-  border: 1px solid color-mix(in srgb, var(--citation) 30%, transparent);
+  border: none;
   border-radius: 9999px;
-  font-size: 0.7em;
+  font-size: 0.72em;
   font-weight: 600;
   line-height: 1;
-  padding: 0.2em 0.5em;
+  padding: 0.18em 0.55em;
   margin: 0 0.15em;
   vertical-align: baseline;
   white-space: nowrap;
   letter-spacing: 0.01em;
   cursor: pointer;
-  transition: background 0.15s, box-shadow 0.15s;
+  transition: background 0.18s ease-out, box-shadow 0.18s ease-out;
 }
 
 .doc-badge:hover {
-  background: color-mix(in srgb, var(--citation) 18%, transparent);
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--citation) 20%, transparent);
+  background: color-mix(in srgb, var(--citation) 20%, transparent);
 }
 
 .doc-badge:focus-visible {
-  outline: 2px solid var(--citation);
+  outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
 
@@ -225,15 +306,20 @@ h3[id] {
 .doc-popover {
   position: absolute;
   z-index: 50;
-  max-width: 320px;
-  min-width: 220px;
-  background: var(--surface);
+  max-width: 360px;
+  min-width: 240px;
+  background: var(--elevated);
   border: 1px solid var(--border);
-  border-radius: 0.75rem;
-  padding: 0.75rem 1rem;
-  box-shadow: 0 4px 16px oklch(0% 0 0 / 25%),
-              0 1px 4px oklch(0% 0 0 / 15%);
-  animation: popover-in 0.18s cubic-bezier(0.16, 1, 0.3, 1) both;
+  border-radius: 1rem;
+  padding: 0.875rem 1rem;
+  box-shadow: 0 16px 48px oklch(0% 0 0 / 0.35),
+              0 4px 12px oklch(0% 0 0 / 0.20);
+  animation: popover-in 0.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+:root .doc-popover {
+  box-shadow: 0 16px 48px oklch(30% 0.02 220 / 0.10),
+              0 4px 12px oklch(30% 0.02 220 / 0.06);
 }
 
 @keyframes popover-in {
@@ -248,17 +334,17 @@ h3[id] {
 }
 
 .doc-popover-title {
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   font-weight: 600;
   color: var(--foreground);
-  margin: 0 0 0.375rem;
+  margin: 0 0 0.4rem;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .doc-popover-content {
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   line-height: 1.55;
   color: var(--muted);
   margin: 0;
@@ -269,17 +355,17 @@ h3[id] {
 }
 
 .doc-popover--rich {
-  max-width: 360px;
+  max-width: 380px;
   min-width: 280px;
 }
 
 .doc-popover-meta {
   display: grid;
   grid-template-columns: auto 1fr;
-  column-gap: 0.5rem;
-  row-gap: 0.125rem;
+  column-gap: 0.625rem;
+  row-gap: 0.15rem;
   margin: 0 0 0.5rem;
-  font-size: 0.68rem;
+  font-size: 0.7rem;
   color: var(--muted);
 }
 
@@ -290,6 +376,11 @@ h3[id] {
 .doc-popover-meta dt {
   font-weight: 500;
   color: color-mix(in srgb, var(--muted) 80%, transparent);
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding-top: 0.1rem;
 }
 
 .doc-popover-meta dd {
@@ -303,35 +394,37 @@ h3[id] {
 .doc-popover-section {
   font-size: 0.68rem;
   font-weight: 600;
-  color: var(--citation);
-  margin: 0.25rem 0 0.375rem;
+  color: var(--accent);
+  margin: 0.25rem 0 0.4rem;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .doc-popover-summary {
-  font-size: 0.7rem;
+  font-size: 0.72rem;
   font-style: italic;
-  line-height: 1.5;
+  line-height: 1.55;
   color: color-mix(in srgb, var(--muted) 90%, transparent);
-  margin: 0 0 0.5rem;
+  margin: 0 0 0.55rem;
 }
 
 .doc-popover-content--scroll {
   display: block;
-  max-height: 9rem;
+  max-height: 10rem;
   overflow-y: auto;
   padding-right: 0.25rem;
   border-top: 1px solid color-mix(in srgb, var(--border) 80%, transparent);
-  padding-top: 0.5rem;
+  padding-top: 0.55rem;
 }
 
 .doc-popover-source {
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 0.625rem;
+  font-family: var(--font-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.65rem;
   color: color-mix(in srgb, var(--muted) 70%, transparent);
-  margin: 0.5rem 0 0;
+  margin: 0.55rem 0 0;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -340,12 +433,14 @@ h3[id] {
 /* ─── RAG prose — rendered legal answer text ─────────────────────────────── */
 
 .rag-prose {
-  line-height: 1.65;
+  line-height: 1.7;
   max-width: 68ch;
+  color: var(--foreground);
+  font-size: 0.9375rem;
 }
 
 .rag-prose p {
-  margin: 0 0 0.75em;
+  margin: 0 0 0.85em;
 }
 
 .rag-prose > *:first-child {
@@ -369,20 +464,21 @@ h3[id] {
 .rag-prose h2,
 .rag-prose h3,
 .rag-prose h4 {
-  font-family: var(--font-display);
+  font-family: var(--font-sans), system-ui, sans-serif;
   font-weight: 600;
   line-height: 1.3;
-  margin: 1.1em 0 0.4em;
+  margin: 1.4em 0 0.5em;
   color: var(--foreground);
+  letter-spacing: -0.005em;
 }
 
-.rag-prose h1 { font-size: 1.15em; }
-.rag-prose h2 { font-size: 1.05em; }
-.rag-prose h3 { font-size: 0.97em; }
+.rag-prose h1 { font-size: 1.2em; }
+.rag-prose h2 { font-size: 1.08em; }
+.rag-prose h3 { font-size: 1em; }
 
 .rag-prose ul,
 .rag-prose ol {
-  margin: 0.4em 0 0.6em 1.3em;
+  margin: 0.5em 0 0.8em 1.3em;
   padding: 0;
 }
 
@@ -395,7 +491,7 @@ h3[id] {
 }
 
 .rag-prose li {
-  margin: 0.2em 0;
+  margin: 0.25em 0;
 }
 
 .rag-prose li > p {
@@ -403,62 +499,64 @@ h3[id] {
 }
 
 .rag-prose blockquote {
-  border-left: 3px solid var(--citation);
-  padding: 0.25em 0.75em;
-  margin: 0.6em 0;
+  border: none;
+  padding: 0.4em 0.85em;
+  margin: 0.8em 0;
   color: var(--muted);
   background: var(--citation-fill);
-  border-radius: 0 0.25rem 0.25rem 0;
+  border-radius: 0.5rem;
 }
 
 .rag-prose code {
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 0.85em;
+  font-family: var(--font-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.86em;
   background: var(--citation-fill);
   color: var(--citation);
-  padding: 0.15em 0.35em;
-  border-radius: 0.25em;
+  padding: 0.15em 0.4em;
+  border-radius: 0.3em;
 }
 
 .rag-prose pre {
   background: var(--code-bg);
-  color: #e2e8f0;
-  padding: 0.75em 1em;
-  border-radius: 0.5rem;
+  color: var(--foreground);
+  padding: 0.85em 1.1em;
+  border-radius: 0.75rem;
   overflow-x: auto;
-  margin: 0.6em 0;
+  margin: 0.8em 0;
+  border: 1px solid var(--border);
 }
 
 .rag-prose pre code {
   background: transparent;
   color: inherit;
   padding: 0;
-  font-size: 0.82em;
+  font-size: 0.85em;
 }
 
 .rag-prose hr {
   border: none;
   border-top: 1px solid var(--border);
-  margin: 0.8em 0;
+  margin: 1em 0;
 }
 
 .rag-prose table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.85em;
-  margin: 0.6em 0;
+  font-size: 0.88em;
+  margin: 0.8em 0;
 }
 
 .rag-prose th,
 .rag-prose td {
   border: 1px solid var(--border);
-  padding: 0.35em 0.6em;
+  padding: 0.45em 0.7em;
   text-align: left;
 }
 
 .rag-prose th {
-  background: var(--citation-fill);
+  background: var(--accent-soft);
   font-weight: 600;
+  color: var(--foreground);
 }
 
 /* ─── Reduced motion ──────────────────────────────────────────────────────── */
@@ -471,5 +569,9 @@ h3[id] {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+
+  .atlas-glow--streaming {
+    animation: none;
   }
 }
