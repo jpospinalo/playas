@@ -11,10 +11,10 @@ const fadeUp = {
 
 const STEPS = [
   {
-    number: "1",
-    title: "Recuperación",
+    number: "01",
+    title: "Busca en el corpus",
     description:
-      "Ante su consulta, el sistema realiza una búsqueda híbrida —léxica BM25 y semántica vectorial— sobre el corpus de jurisprudencia, identificando los fragmentos más relevantes.",
+      "Cuando preguntas algo, ATLAS revisa el corpus completo de sentencias del Consejo de Estado y selecciona los fragmentos más relevantes para tu caso, combinando búsqueda por palabras clave y búsqueda semántica.",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -34,10 +34,10 @@ const STEPS = [
     ),
   },
   {
-    number: "2",
-    title: "Aumento",
+    number: "02",
+    title: "Se ancla en lo que encontró",
     description:
-      "Solo los fragmentos verificados del corpus legal se incorporan como contexto al modelo. El modelo no puede ir más allá de las fuentes recuperadas.",
+      "Solo los fragmentos reales del corpus se usan como contexto. ATLAS no puede inventar sentencias ni hacer afirmaciones legales sin un documento detrás que las respalde.",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -58,10 +58,10 @@ const STEPS = [
     ),
   },
   {
-    number: "3",
-    title: "Generación",
+    number: "03",
+    title: "Te responde y cita",
     description:
-      "El modelo redacta una respuesta en lenguaje jurídico natural, siempre con referencia explícita a los documentos fuente utilizados.",
+      "ATLAS redacta una respuesta en lenguaje cotidiano y la acompaña con citas a las sentencias usadas. Cada cita es expandible: puedes ver el extracto exacto y verificarlo.",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -94,54 +94,49 @@ export function HowItWorks() {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-80px" }}
         transition={{ duration: 0.5, ease: EASE }}
+        className="max-w-2xl"
       >
-        <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-accent">
+        <p className="mb-3 text-xs font-medium text-accent">
           Cómo funciona
         </p>
         <h2
           id="how-it-works-heading"
-          className="font-[family-name:var(--font-display)] mb-14 max-w-xl text-pretty text-3xl font-semibold leading-snug text-foreground"
+          className="text-balance text-3xl font-medium leading-tight tracking-tight text-foreground md:text-4xl"
+          style={{ letterSpacing: "-0.02em" }}
         >
-          Arquitectura RAG: respuestas ancladas en documentos reales.
+          Cada respuesta se construye en tres pasos.
         </h2>
       </motion.div>
 
       <motion.ol
-        className="relative grid gap-10 md:grid-cols-3"
+        className="mt-14 grid gap-8 md:grid-cols-3"
         role="list"
         initial="hidden"
         whileInView="show"
         viewport={{ once: true, margin: "-60px" }}
-        transition={{ staggerChildren: 0.14 }}
+        transition={{ staggerChildren: 0.12 }}
       >
-        {/* Connecting line — desktop only */}
-        <li
-          aria-hidden="true"
-          className="pointer-events-none absolute left-0 right-0 top-[22px] hidden border-t border-dashed border-border md:block"
-          style={{ left: "calc(1/6 * 100%)", right: "calc(1/6 * 100%)" }}
-        />
-
         {STEPS.map((step) => (
           <motion.li
             key={step.number}
-            className="flex flex-col gap-4"
+            className="flex flex-col gap-4 rounded-2xl border border-border bg-surface/40 p-6 backdrop-blur-sm"
             variants={fadeUp}
           >
-            <div className="relative flex items-center gap-3">
+            <div className="flex items-center gap-3">
               <div
-                className="relative z-10 flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-border bg-surface text-accent shadow-sm"
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-accent-soft text-accent"
                 aria-hidden="true"
               >
                 {step.icon}
               </div>
               <span
-                className="font-[family-name:var(--font-display)] text-2xl font-semibold text-border select-none"
+                className="font-mono text-xs text-subtle"
                 aria-hidden="true"
               >
                 {step.number}
               </span>
             </div>
-            <h3 className="font-[family-name:var(--font-display)] text-balance text-xl font-semibold text-foreground">
+            <h3 className="text-balance text-lg font-semibold text-foreground">
               {step.title}
             </h3>
             <p className="text-sm leading-relaxed text-muted">
