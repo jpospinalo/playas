@@ -386,20 +386,26 @@ function CollapsedSidebarContent({
   return (
     <motion.div
       key="collapsed"
-      className="flex h-full flex-col items-center gap-1 px-1 pt-3"
+      className="flex h-full flex-col items-center gap-1 px-1 pt-1"
       initial={transitionEnabled ? { opacity: 0 } : false}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: transitionEnabled ? 0.12 : 0 }}
     >
-      <div className="mb-2 flex h-9 w-9 items-center justify-center" aria-hidden="true">
-        <AtlasGlyph />
-      </div>
-      <RailButton
-        label="Abrir historial"
-        icon={<PanelIcon />}
+      <button
+        type="button"
         onClick={onToggleSidebar}
-      />
+        aria-label="Abrir panel"
+        title="Abrir panel"
+        className="group/atlas relative mb-2 flex h-10 w-10 items-center justify-center rounded-full text-foreground transition-colors duration-150 hover:bg-elevated focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+      >
+        <span className="absolute inset-0 flex items-center justify-center transition-opacity duration-150 group-hover/atlas:opacity-0 group-focus-visible/atlas:opacity-0">
+          <AtlasGlyph />
+        </span>
+        <span className="absolute inset-0 flex items-center justify-center text-muted opacity-0 transition-opacity duration-150 group-hover/atlas:opacity-100 group-hover/atlas:text-foreground group-focus-visible/atlas:opacity-100 group-focus-visible/atlas:text-foreground">
+          <PanelIcon />
+        </span>
+      </button>
       <RailButton
         label="Nueva consulta"
         icon={<PlusIcon />}
@@ -454,7 +460,7 @@ function AtlasGlyph() {
 
 function SidebarHeader({ onToggleSidebar }: { onToggleSidebar: () => void }) {
   return (
-    <div className="flex items-center justify-between px-4 pb-2 pt-3">
+    <div className="flex h-12 items-center justify-between px-4">
       <div className="flex items-center gap-2">
         <AtlasGlyph />
         <span
