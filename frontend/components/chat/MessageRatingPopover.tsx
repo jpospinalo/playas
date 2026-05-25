@@ -24,9 +24,9 @@ const RATING_LABELS: Record<number, string> = {
 
 const TOOLTIP_TEXT: Record<string, string> = {
 	pertinence:
-		"¿Qué tan relevante fue la respuesta para la pregunta que hicaste? Un 1 indica que no tuvo nada que ver; un 5 indica que fue directamente relevante.",
+		"¿Qué tan relevante fue la respuesta para tu pregunta? 1 = no tuvo nada que ver; 5 = directamente relevante.",
 	accuracy:
-		"¿La respuesta contiene la información necesaria y está completa para responder la pregunta? Un 1 indica que le faltó información clave; un 5 indica que fue una respuesta completa.",
+		"¿La respuesta contiene la información necesaria y está completa? 1 = le faltó información clave; 5 = respuesta completa.",
 };
 
 type SubmitState = "idle" | "loading" | "success" | "error";
@@ -55,7 +55,7 @@ function StarRow({
 				<label className="text-sm font-medium text-foreground">{label}</label>
 				<button
 					type="button"
-					className="rounded-full text-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+					className="rounded-full text-subtle hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
 					onMouseEnter={() => setShowTooltip(true)}
 					onMouseLeave={() => setShowTooltip(false)}
 					onFocus={() => setShowTooltip(true)}
@@ -84,7 +84,7 @@ function StarRow({
 						<motion.div
 							id={tooltipId}
 							role="tooltip"
-							className="absolute left-0 top-8 z-50 max-w-[260px] rounded-lg border border-border bg-surface px-3 py-2 text-xs text-muted shadow-lg"
+							className="absolute left-0 top-8 z-50 max-w-[280px] rounded-xl border border-border bg-elevated px-3 py-2 text-xs text-muted shadow-lg shadow-black/30"
 							initial={{ opacity: 0, y: -4 }}
 							animate={{ opacity: 1, y: 0 }}
 							exit={{ opacity: 0, y: -4 }}
@@ -111,8 +111,8 @@ function StarRow({
 						>
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
-								width="28"
-								height="28"
+								width="26"
+								height="26"
 								viewBox="0 0 24 24"
 								aria-hidden="true"
 								className="transition-colors duration-100"
@@ -125,7 +125,7 @@ function StarRow({
 									color:
 										star <= activeVal
 											? "var(--color-accent)"
-											: "var(--color-muted)",
+											: "var(--color-subtle)",
 								}}
 							>
 								<path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z" />
@@ -213,35 +213,32 @@ export function MessageRatingPopover({
 					exit={{ opacity: 0 }}
 					transition={{ duration: 0.2 }}
 				>
-					{/* Fondo oscuro con blur */}
 					<motion.div
-						className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+						className="absolute inset-0 bg-background/70 backdrop-blur-md"
 						onClick={handleClose}
 						aria-hidden="true"
 					/>
 
-					{/* Tarjeta del dialog */}
 					<motion.div
 						role="dialog"
 						aria-modal="true"
 						aria-labelledby="msg-rating-title"
-						className="relative z-10 w-full max-w-sm rounded-2xl border border-border bg-surface p-6 shadow-xl"
+						className="relative z-10 w-full max-w-sm rounded-3xl border border-border bg-elevated p-6 shadow-2xl shadow-black/40"
 						initial={{ opacity: 0, scale: 0.96, y: 8 }}
 						animate={{ opacity: 1, scale: 1, y: 0 }}
 						exit={{ opacity: 0, scale: 0.96, y: 8 }}
 						transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
 					>
-						{/* Botón cerrar */}
 						{submitState !== "loading" && (
 							<button
 								onClick={handleClose}
 								aria-label="Cerrar"
-								className="absolute right-4 top-4 rounded-md p-1 text-muted transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+								className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full text-muted transition-colors hover:bg-surface hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
 							>
 								<svg
 									xmlns="http://www.w3.org/2000/svg"
-									width="16"
-									height="16"
+									width="15"
+									height="15"
 									viewBox="0 0 24 24"
 									fill="none"
 									stroke="currentColor"
@@ -257,7 +254,6 @@ export function MessageRatingPopover({
 
 						<AnimatePresence mode="wait">
 							{submitState === "success" ? (
-								/* Estado de éxito */
 								<motion.div
 									key="success"
 									className="flex flex-col items-center gap-3 py-4 text-center"
@@ -266,7 +262,7 @@ export function MessageRatingPopover({
 									exit={{ opacity: 0 }}
 									transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
 								>
-									<div className="flex h-12 w-12 items-center justify-center rounded-full bg-success-bg text-success">
+									<div className="flex h-12 w-12 items-center justify-center rounded-full bg-accent-soft text-accent">
 										<svg
 											xmlns="http://www.w3.org/2000/svg"
 											width="22"
@@ -283,22 +279,21 @@ export function MessageRatingPopover({
 										</svg>
 									</div>
 									<div>
-										<p className="font-[family-name:var(--font-display)] font-semibold text-foreground">
+										<p className="text-base font-medium text-foreground">
 											¡Gracias por tu calificación!
 										</p>
 										<p className="mt-1 text-sm text-muted">
-											Tu opinión nos ayuda a mejorar el sistema.
+											Tu opinión nos ayuda a mejorar.
 										</p>
 									</div>
 									<button
 										onClick={handleClose}
-										className="mt-2 rounded-lg bg-accent px-5 py-2 text-sm font-medium text-white transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
+										className="mt-2 rounded-full bg-accent px-5 py-2 text-sm font-medium text-accent-fg transition-colors hover:bg-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-elevated"
 									>
 										Cerrar
 									</button>
 								</motion.div>
 							) : (
-								/* Formulario */
 								<motion.div
 									key="form"
 									initial={{ opacity: 1 }}
@@ -306,19 +301,18 @@ export function MessageRatingPopover({
 								>
 									<h2
 										id="msg-rating-title"
-										className="mb-1 font-[family-name:var(--font-display)] text-lg font-semibold text-foreground"
+										className="mb-1 text-lg font-medium text-foreground"
 									>
 										Calificar esta respuesta
 									</h2>
-									<p className="mb-5 text-sm text-muted">
-										Tu calificación ayuda a mejorar la calidad de las
-										respuestas.
+									<p className="mb-6 text-sm text-muted">
+										Tu calificación ayuda a mejorar la calidad de las respuestas.
 									</p>
 
 									<form
 										onSubmit={handleSubmit}
 										noValidate
-										className="space-y-4"
+										className="space-y-5"
 									>
 										<StarRow
 											label="Pertinencia de la respuesta"
@@ -339,10 +333,10 @@ export function MessageRatingPopover({
 										<div>
 											<label
 												htmlFor="expected-answer"
-												className="mb-1 block text-sm font-medium text-foreground"
+												className="mb-1.5 block text-sm font-medium text-foreground"
 											>
-												Respuesta adecuada{" "}
-												<span className="font-normal text-muted">
+												Respuesta esperada{" "}
+												<span className="font-normal text-subtle">
 													(opcional)
 												</span>
 											</label>
@@ -352,9 +346,9 @@ export function MessageRatingPopover({
 												maxLength={1000}
 												value={expectedAnswer}
 												onChange={(e) => setExpectedAnswer(e.target.value)}
-												placeholder="Escribe la respuesta correcta que esperabas del sistema."
+												placeholder="Escribe la respuesta que esperabas recibir."
 												disabled={submitState === "loading"}
-												className="w-full resize-none rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted/60 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent disabled:opacity-60"
+												className="w-full resize-none rounded-2xl border border-border bg-surface px-3.5 py-2.5 text-sm text-foreground placeholder:text-subtle transition-[border-color,box-shadow] duration-150 focus:border-accent focus:outline-none focus:shadow-[0_0_0_3px_var(--accent-soft)] disabled:opacity-60"
 											/>
 										</div>
 
@@ -362,7 +356,7 @@ export function MessageRatingPopover({
 											{submitState === "error" && (
 												<motion.p
 													role="alert"
-													className="rounded-lg border border-danger/30 bg-danger-bg px-3 py-2 text-sm text-danger"
+													className="rounded-2xl border border-danger/30 bg-danger-bg px-3.5 py-2.5 text-sm text-danger"
 													initial={{ opacity: 0, y: -4 }}
 													animate={{ opacity: 1, y: 0 }}
 													exit={{ opacity: 0 }}
@@ -373,19 +367,19 @@ export function MessageRatingPopover({
 											)}
 										</AnimatePresence>
 
-										<div className="flex items-center gap-3">
+										<div className="flex items-center gap-2 pt-1">
 											<button
 												type="button"
 												onClick={handleClose}
 												disabled={submitState === "loading"}
-												className="flex-1 rounded-lg border border-border px-4 py-2.5 text-sm font-medium text-muted transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-1"
+												className="flex-1 rounded-full px-4 py-2.5 text-sm font-medium text-muted transition-colors hover:bg-surface hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
 											>
 												Cancelar
 											</button>
 											<button
 												type="submit"
 												disabled={!allRated || submitState === "loading"}
-												className="flex-1 rounded-lg bg-accent px-4 py-2.5 text-sm font-medium text-white transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-1 disabled:opacity-50"
+												className="flex-1 rounded-full bg-accent px-4 py-2.5 text-sm font-medium text-accent-fg transition-colors hover:bg-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-elevated disabled:cursor-not-allowed disabled:opacity-45"
 											>
 												{submitState === "loading" ? "Enviando…" : "Enviar"}
 											</button>
