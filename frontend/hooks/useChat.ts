@@ -58,9 +58,9 @@ export interface UseChatReturn {
 }
 
 const DEFAULT_STAGE_MESSAGES: Record<AgentStage, string> = {
-	enriching: "Reformulando la consulta…",
-	retrieving: "Buscando jurisprudencia relevante…",
-	generating: "Analizando las sentencias…",
+	enriching: "Entendiendo tu pregunta con más precisión…",
+	retrieving: "Navegando miles de páginas de sentencias…",
+	generating: "Construyendo una respuesta clara para ti…",
 };
 
 export function useChat(): UseChatReturn {
