@@ -1,6 +1,17 @@
 "use client";
 
 import { useRef, useState } from "react";
+
+function generateId(): string {
+	if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+		return crypto.randomUUID();
+	}
+	// Fallback for non-secure contexts (HTTP)
+	return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
+		const r = (Math.random() * 16) | 0;
+		return (c === "x" ? r : (r & 0x3) | 0x8).toString(16);
+	});
+}
 import {
 	addDoc,
 	collection,
@@ -70,7 +81,7 @@ export function useChat(): UseChatReturn {
 	);
 
 	// Stable thread_id for the entire chat session. Regenerated on resetChat().
-	const threadIdRef = useRef<string>(crypto.randomUUID());
+	const threadIdRef = useRef<string>(generateId());
 	// Mirrors conversationId state for use inside async callbacks without stale closures.
 	const conversationIdRef = useRef<string | null>(null);
 	// Track whether the first token has been received to flip isStreaming exactly once.
@@ -138,7 +149,7 @@ export function useChat(): UseChatReturn {
 
 		setMessages((prev) => [
 			...prev,
-			{ id: crypto.randomUUID(), role: "user", text: q },
+			{ id: generateId(), role: "user", text: q },
 		]);
 		setInput("");
 
@@ -173,7 +184,7 @@ export function useChat(): UseChatReturn {
 
 		// Insertar placeholder del asistente para que el área de respuesta aparezca
 		// de inmediato mientras llegan los tokens.
-		const assistantId = crypto.randomUUID();
+		const assistantId = generateId();
 		setMessages((prev) => [
 			...prev,
 			{ id: assistantId, role: "assistant", text: "", sources: [] },
@@ -323,7 +334,7 @@ export function useChat(): UseChatReturn {
 		_setConversationId(null);
 		streamingStartedRef.current = false;
 		setRatedMessageIds(new Set());
-		threadIdRef.current = crypto.randomUUID();
+		threadIdRef.current = generateId();
 	}
 
 	return {
