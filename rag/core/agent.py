@@ -136,7 +136,7 @@ def _emit_status(stage: str, message: str) -> None:
 
 async def enrich_query_node(state: AgentState) -> dict:
     """Reescribe la pregunta del usuario para mejorar el recall del retriever."""
-    _emit_status("enriching", "Reformulando la consulta…")
+    _emit_status("enriching", "Entendiendo tu pregunta con más precisión…")
     enriched: EnrichedQuery = await enrich_query_async(state["question"])
     # Resetear sources al inicio de cada turno para no arrastrar docs de turnos anteriores.
     return {"enriched_query": enriched.expanded_query, "sources": []}
@@ -155,9 +155,9 @@ async def agent_node(state: AgentState) -> dict:
     context = build_context_block(docs) if docs else None
 
     if context:
-        _emit_status("generating", "Analizando las sentencias y redactando la respuesta…")
+        _emit_status("generating", "Construyendo una respuesta clara para ti…")
     else:
-        _emit_status("generating", "Evaluando la consulta…")
+        _emit_status("generating", "Entendiendo tu pregunta con más precisión…")
 
     llm = get_generation_llm().bind_tools(ALL_TOOLS)  # type: ignore[union-attr]
     system_msg = SystemMessage(content=BASE_INSTRUCTIONS)
@@ -180,14 +180,14 @@ async def agent_node(state: AgentState) -> dict:
 
 
 async def retrieve_forced_node(state: AgentState) -> dict:
-    _emit_status("retrieving", "Buscando jurisprudencia relevante…")
+    _emit_status("retrieving", "Navegando miles de páginas de sentencias…")
     query = state.get("enriched_query") or state["question"]
     docs = await asyncio.to_thread(get_ensemble_retriever(k=8).invoke, query)
     return {"sources": docs}
 
 
 async def generate_node(state: AgentState) -> dict:
-    _emit_status("generating", "Analizando las sentencias y redactando la respuesta…")
+    _emit_status("generating", "Construyendo una respuesta clara para ti…")
     docs = state.get("sources") or []
     context = build_context_block(docs)
     prompt = _get_fallback_prompt()

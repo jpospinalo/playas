@@ -32,6 +32,7 @@ evaluation/ragas_eval_summary.json
 
 # 6) Configuración sensible / secretos
 .env
+.env.production
 *.pem
 *.key
 *.crt
