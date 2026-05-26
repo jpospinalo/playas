@@ -1,5 +1,4 @@
 services:
-
   # ── API backend (FastAPI + uvicorn) ─────────────────────────────────────────
   backend:
     build:
@@ -20,7 +19,7 @@ services:
       interval: 30s
       timeout: 10s
       retries: 5
-      start_period: 90s   # El pre-calentamiento de Chroma + BM25 puede tardar
+      start_period: 90s # El pre-calentamiento de Chroma + BM25 puede tardar
 
   # ── Frontend (Next.js) ───────────────────────────────────────────────────────
   frontend:
