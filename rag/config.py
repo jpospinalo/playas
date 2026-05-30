@@ -33,6 +33,7 @@ def layer_prefix(layer: str, doc_type: str) -> str:
         raise ValueError(f"Tipo de documento inválido: {doc_type!r}. Debe ser uno de {DOC_TYPES}.")
     return f"data/{layer}/{doc_type}/"
 
+
 # ── Chroma ─────────────────────────────────────────────────────────────────
 CHROMA_HOST: str = os.getenv("CHROMA_HOST", "localhost")
 CHROMA_PORT: int = int(os.getenv("CHROMA_PORT", "8000"))
