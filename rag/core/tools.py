@@ -14,6 +14,7 @@ from typing import Annotated
 from langchain_core.documents import Document
 from langchain_core.messages import ToolMessage
 from langchain_core.tools import InjectedToolCallId, tool
+from langgraph.prebuilt import InjectedState
 from langgraph.types import Command
 
 from .retriever import get_ensemble_retriever
@@ -59,28 +60,51 @@ def build_context_block(docs: list[Document]) -> str:
         meta = d.metadata or {}
         source = sanitize_replacement_chars(meta.get("source", "desconocido"))
         chunk_id = sanitize_replacement_chars(meta.get("chunk_id", meta.get("id", f"doc_{i}")))
-
-        # Chroma puede almacenar la clave con distintas variantes de encoding
-        corporacion = sanitize_replacement_chars(
-            meta.get("Corporación") or meta.get("CorporaciÃ³n") or meta.get("Corporacion", "")
-        )
-        magistrado = sanitize_replacement_chars(meta.get("Magistrado ponente", ""))
-        tema = sanitize_replacement_chars(meta.get("Tema principal", ""))
-        section = sanitize_replacement_chars(meta.get("section_name", ""))
         summary = sanitize_replacement_chars(meta.get("summary", ""))
 
         header = f"[doc{i} | source={source} | chunk_id={chunk_id}]"
-        meta_lines: list[str] = []
-        if corporacion:
-            meta_lines.append(f"Corporación: {corporacion}")
-        if magistrado:
-            meta_lines.append(f"Magistrado ponente: {magistrado}")
-        if tema:
-            meta_lines.append(f"Tema principal: {tema}")
-        if section:
-            meta_lines.append(f"Sección: {section}")
-        if summary:
-            meta_lines.append(f"Resumen: {summary}")
+        doc_type = meta.get("doc_type", "")
+
+        if doc_type == "normativa":
+            # Cabecera para normas: nombre de la norma + jerarquía (título, capítulo,
+            # artículo). No aplican corporación ni magistrado.
+            norma = sanitize_replacement_chars(
+                meta.get("title") or meta.get("norma") or meta.get("source", "desconocido")
+            )
+            titulo = sanitize_replacement_chars(meta.get("titulo", ""))
+            capitulo = sanitize_replacement_chars(meta.get("capitulo", ""))
+            articulo = sanitize_replacement_chars(meta.get("articulo", ""))
+
+            meta_lines = [f"Norma: {norma}"]
+            if titulo:
+                meta_lines.append(f"Título: {titulo}")
+            if capitulo:
+                meta_lines.append(f"Capítulo: {capitulo}")
+            if articulo:
+                meta_lines.append(f"Artículo: {articulo}")
+            if summary:
+                meta_lines.append(f"Resumen: {summary}")
+        else:
+            # Jurisprudencia (o tipo ausente/desconocido por compatibilidad).
+            # Chroma puede almacenar la clave con distintas variantes de encoding
+            corporacion = sanitize_replacement_chars(
+                meta.get("Corporación") or meta.get("CorporaciÃ³n") or meta.get("Corporacion", "")
+            )
+            magistrado = sanitize_replacement_chars(meta.get("Magistrado ponente", ""))
+            tema = sanitize_replacement_chars(meta.get("Tema principal", ""))
+            section = sanitize_replacement_chars(meta.get("section_name", ""))
+
+            meta_lines = []
+            if corporacion:
+                meta_lines.append(f"Corporación: {corporacion}")
+            if magistrado:
+                meta_lines.append(f"Magistrado ponente: {magistrado}")
+            if tema:
+                meta_lines.append(f"Tema principal: {tema}")
+            if section:
+                meta_lines.append(f"Sección: {section}")
+            if summary:
+                meta_lines.append(f"Resumen: {summary}")
 
         parts = [header]
         if meta_lines:
@@ -101,18 +125,21 @@ def retrieve(
     query: str,
     k: int = 8,
     tool_call_id: Annotated[str, InjectedToolCallId] = "",
+    doc_types: Annotated[list[str] | None, InjectedState("doc_types")] = None,
 ) -> Command:
-    """Busca jurisprudencia colombiana relevante usando recuperación híbrida BM25 + vector.
+    """Busca jurisprudencia y normativa colombiana relevante (recuperación híbrida BM25 + vector).
 
     Parámetros:
         query: Consulta de búsqueda. Usa la consulta enriquecida disponible en el contexto.
         k: Número de fragmentos a recuperar (por defecto 8).
 
     Devuelve fragmentos de sentencias del Consejo de Estado y Tribunales
-    Administrativos colombianos sobre playas, zonas costeras y dominio público.
+    Administrativos colombianos y de normativa (decretos, reglamentos) sobre
+    playas, zonas costeras y dominio público. El filtro `doc_types` se inyecta
+    desde el estado del agente (None = ambos tipos).
     Cita cada fragmento con el marcador [docN] que aparece en el contenido.
     """
-    docs = get_ensemble_retriever(k=k).invoke(query)
+    docs = get_ensemble_retriever(k=k, doc_types=doc_types).invoke(query)
     context = build_context_block(docs)
     return Command(
         update={

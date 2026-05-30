@@ -4,7 +4,12 @@ import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { motion } from "motion/react";
 import ReactMarkdown, { type Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
-import type { SourceFragment, SourceGroup } from "@/lib/types";
+import type {
+	DocType,
+	SourceFragment,
+	SourceGroup,
+	SourceMetadata,
+} from "@/lib/types";
 import { SourcesAccordion } from "@/components/chat/SourcesAccordion";
 import { MessageRatingPopover } from "@/components/chat/MessageRatingPopover";
 
@@ -27,18 +32,39 @@ interface PopoverState {
 	left: number;
 }
 
-// Etiquetas a mostrar en el popover (orden de aparición + texto del label).
-const POPOVER_DOC_META: Array<[string, string]> = [
+// Etiquetas del popover para jurisprudencia (orden + clave/label).
+const POPOVER_JURIS_META: Array<[string, string]> = [
 	["Corporación", "Corporación"],
 	["Radicado", "Radicado"],
 	["Magistrado ponente", "Magistrado"],
 	["Tema principal", "Tema"],
 ];
 
+// Etiquetas del popover para normativa.
+const POPOVER_NORMA_META: Array<[string, string]> = [
+	["titulo", "Título"],
+	["capitulo", "Capítulo"],
+	["articulo", "Artículo"],
+];
+
 function metaString(meta: Record<string, unknown>, key: string): string {
 	const v = meta[key];
 	return typeof v === "string" ? v : "";
 }
+
+/** Deriva el tipo de fuente; ausencia de `doc_type` ⇒ jurisprudencia. */
+function docTypeOf(meta: SourceMetadata): DocType {
+	return meta.doc_type === "normativa" ? "normativa" : "jurisprudencia";
+}
+
+const POPOVER_TYPE_BADGE: Record<DocType, { label: string; className: string }> =
+	{
+		jurisprudencia: { label: "Jurisprudencia", className: "bg-accent-soft text-accent" },
+		normativa: {
+			label: "Normativa",
+			className: "border border-border-strong/60 bg-elevated text-muted",
+		},
+	};
 
 /**
  * Prepares the raw LLM text for ReactMarkdown:
@@ -190,14 +216,28 @@ export function AssistantBubble({
 		? (fragmentLookup.get(popover.fragmentIndex) ?? null)
 		: null;
 
+	// Tipo de fuente activa + atribución correspondiente.
+	const activeDocType = active ? docTypeOf(active.group.metadata) : null;
+
+	const activeTitle = useMemo(() => {
+		if (!active) return "";
+		return activeDocType === "normativa"
+			? metaString(active.group.metadata, "norma") || active.group.title
+			: active.group.title;
+	}, [active, activeDocType]);
+
 	// Metadatos del documento que existen y son no vacíos.
 	const docMeta = useMemo(() => {
 		if (!active) return [];
-		return POPOVER_DOC_META.map(([key, label]) => {
-			const value = metaString(active.group.metadata, key);
-			return value ? { label, value } : null;
-		}).filter((x): x is { label: string; value: string } => x !== null);
-	}, [active]);
+		const labels =
+			activeDocType === "normativa" ? POPOVER_NORMA_META : POPOVER_JURIS_META;
+		return labels
+			.map(([key, label]) => {
+				const value = metaString(active.group.metadata, key);
+				return value ? { label, value } : null;
+			})
+			.filter((x): x is { label: string; value: string } => x !== null);
+	}, [active, activeDocType]);
 
 	return (
 		<motion.div
@@ -219,9 +259,17 @@ export function AssistantBubble({
 							role="tooltip"
 							style={{ top: popover.top, left: popover.left }}
 						>
-							{active.group.title && (
+							{activeDocType && (
+								<span
+									className={`mb-1.5 inline-flex shrink-0 items-center rounded-full px-2 py-0.5 text-[10px] font-medium tracking-wide ${POPOVER_TYPE_BADGE[activeDocType].className}`}
+								>
+									{POPOVER_TYPE_BADGE[activeDocType].label}
+								</span>
+							)}
+
+							{activeTitle && (
 								<p className="doc-popover-title" translate="no">
-									{active.group.title}
+									{activeTitle}
 								</p>
 							)}
 

@@ -19,6 +19,13 @@ class QueryRequest(BaseModel):
             "Si es None, cada request es independiente."
         ),
     )
+    doc_types: list[str] | None = Field(
+        default=None,
+        description=(
+            "Filtro opcional por tipo de documento ('jurisprudencia', 'normativa'). "
+            "Si es None (por defecto) se recuperan ambos tipos."
+        ),
+    )
     conversation_id: str | None = Field(
         default=None,
         description=(
@@ -43,6 +50,11 @@ class SourceFragment(BaseModel):
 class SourceGroup(BaseModel):
     source: str = Field(default="", description="Nombre del archivo fuente; clave de agrupación")
     title: str = Field(default="", description="Título legible del documento")
+    doc_type: str | None = Field(
+        default=None,
+        description="Tipo de documento: 'jurisprudencia' o 'normativa'. Permite al frontend "
+        "distinguir y etiquetar la fuente.",
+    )
     metadata: dict = Field(
         default_factory=dict,
         description="Metadatos a nivel documento (Corporación, Radicado, Magistrado, Tema, Archivo, No)",

@@ -24,6 +24,15 @@ def test_sanitize_metadata_converts_dicts():
     assert isinstance(result["nested"], str)
 
 
+def test_sanitize_metadata_drops_none_values():
+    # Chroma rechaza null en metadatos: la clave None debe omitirse por completo
+    # (ej. 'articulo' es None en el preámbulo de una norma).
+    meta = {"articulo": None, "titulo": "TITULO I", "section_index": 1}
+    result = sanitize_metadata(meta)
+    assert "articulo" not in result
+    assert result == {"titulo": "TITULO I", "section_index": 1}
+
+
 def test_load_gold_records_reads_jsonl_records_from_s3():
     records = [
         {
