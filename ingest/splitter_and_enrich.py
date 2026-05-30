@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import json
 import logging
+import re
 import time
 from collections import deque
 from dataclasses import dataclass
@@ -20,7 +21,7 @@ from langchain_core.documents import Document
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from pydantic import BaseModel, Field
 
-from .config import GOLD_PREFIX, SILVER_PREFIX
+from .config import DOC_TYPES, GOLD_PREFIX, SILVER_PREFIX, layer_prefix
 from .llm_factory import GeminiProvider, LLMProvider, get_active_provider
 from .s3_client import key_exists, list_keys
 from .utils import _load_docs_jsonl_file, save_docs_jsonl_per_file
@@ -104,6 +105,20 @@ _ENRICH_PROMPT = (
     "   fechas, organizaciones u otras).\n\n"
 )
 
+_ENRICH_PROMPT_NORMATIVA = (
+    "Eres un asistente para preparar datos de un sistema de Recuperación "
+    "Aumentada por Generación (RAG) en español, especializado en normativa "
+    "jurídica colombiana (leyes, decretos, resoluciones). A partir del "
+    "siguiente fragmento normativo (chunk), debes generar:\n"
+    "1) Un resumen muy breve (máximo ~40 palabras) centrado en el objeto del "
+    "   artículo: qué regula, qué obligaciones, prohibiciones o definiciones "
+    "   establece.\n"
+    "2) Entre 5 y 10 palabras clave relevantes para búsqueda semántica "
+    "   (conceptos jurídicos, definiciones y obligaciones del artículo).\n"
+    "3) Una lista de entidades nombradas importantes (autoridades, lugares, "
+    "   normas citadas, fechas u otras).\n\n"
+)
+
 _JSON_INSTRUCTION = (
     "Responde SOLO con un JSON válido (sin texto adicional) con esta forma exacta:\n"
     "{\n"
@@ -158,7 +173,12 @@ class ChunkEnricher:
                 f"{json.dumps(doc_metadata, ensure_ascii=False)}\n\n"
             )
 
-        prompt = _ENRICH_PROMPT + meta_str + f"Texto del chunk:\n{text}\n\n"
+        if doc_metadata and doc_metadata.get("doc_type") == "normativa":
+            base_prompt = _ENRICH_PROMPT_NORMATIVA
+        else:
+            base_prompt = _ENRICH_PROMPT
+
+        prompt = base_prompt + meta_str + f"Texto del chunk:\n{text}\n\n"
 
         if self._provider.supports_structured_output:
             structured_llm = self._llm.with_structured_output(ChunkMetadata)
@@ -200,12 +220,27 @@ def _build_splitter(chunk_size: int, chunk_overlap: int) -> RecursiveCharacterTe
     )
 
 
+def _sanitize_articulo(articulo: str) -> str:
+    """Normaliza el identificador de artículo para que sea estable y legible en un chunk_id."""
+    # Reemplaza cualquier secuencia de caracteres no alfanuméricos por un guion
+    # y recorta guiones sobrantes en los extremos.
+    return re.sub(r"[^0-9A-Za-z]+", "-", str(articulo)).strip("-")
+
+
 def _chunk_section(doc: Document, splitter: RecursiveCharacterTextSplitter) -> list[Document]:
     """Divide un Document seccional en chunks preservando y extendiendo sus metadatos."""
     base_meta = dict(doc.metadata)
     source = base_meta.get("source", "unknown")
     stem = Path(source).stem
     section_idx = base_meta.get("section_index", 0)
+
+    # chunk_id type-aware: para normativa con artículo identificado, usamos el
+    # número de artículo como ancla estable; en otro caso, el índice de sección.
+    articulo = base_meta.get("articulo")
+    if base_meta.get("doc_type") == "normativa" and articulo not in (None, ""):
+        chunk_id_prefix = f"{stem}_art{_sanitize_articulo(articulo)}_c"
+    else:
+        chunk_id_prefix = f"{stem}_s{section_idx}_c"
 
     raw_chunks = splitter.split_documents([doc])
     total = len(raw_chunks)
@@ -215,7 +250,7 @@ def _chunk_section(doc: Document, splitter: RecursiveCharacterTextSplitter) -> l
         meta = {
             **base_meta,
             "chunk_index": idx,
-            "chunk_id": f"{stem}_s{section_idx}_c{idx}",
+            "chunk_id": f"{chunk_id_prefix}{idx}",
             "total_chunks_in_section": total,
         }
         result.append(Document(page_content=chunk.page_content, metadata=meta))
@@ -228,30 +263,31 @@ def _chunk_section(doc: Document, splitter: RecursiveCharacterTextSplitter) -> l
 # ---------------------------------------------------------------------------
 
 
-def split_and_enrich_directory(
-    silver_prefix: str = SILVER_PREFIX,
-    gold_prefix: str = GOLD_PREFIX,
-    chunk_size: int = DEFAULT_CHUNK_SIZE,
-    chunk_overlap: int = DEFAULT_CHUNK_OVERLAP,
-    max_calls_per_minute: int = 9,
-    skip_existing: bool = True,
+# Campos de metadata que se envían al enricher para contextualizar el fragmento.
+_ENRICH_META_KEYS = (
+    "source",
+    "title",
+    "section_name",
+    "section_heading",
+    "doc_type",
+    "titulo",
+    "capitulo",
+    "articulo",
+)
+
+
+def _process_silver_dir(
+    silver_prefix: str,
+    gold_prefix: str,
+    enricher: ChunkEnricher,
+    splitter: RecursiveCharacterTextSplitter,
+    skip_existing: bool,
 ) -> None:
-    """Lee documentos de S3 *silver_prefix*, los fragmenta y enriquece con el LLM activo,
-    escribiendo el resultado en S3 *gold_prefix*.
-
-    El proveedor LLM se selecciona automáticamente según las API keys disponibles:
-    OPENAI_API_KEY → OPENROUTER_API_KEY → GOOGLE_API_KEY.
-
-    Los archivos ya presentes en gold_prefix se saltan cuando skip_existing=True.
-    Los errores de enriquecimiento por chunk se loggean sin interrumpir el proceso.
-    """
+    """Procesa todos los .jsonl de un único directorio silver hacia su gold homólogo."""
     silver_keys = list_keys(silver_prefix, suffix=".jsonl")
     if not silver_keys:
         logger.warning("No se encontraron archivos .jsonl en s3://%s", silver_prefix)
         return
-
-    enricher = ChunkEnricher(max_calls_per_minute=max_calls_per_minute)
-    splitter = _build_splitter(chunk_size, chunk_overlap)
 
     for silver_key in silver_keys:
         filename = silver_key.split("/")[-1]
@@ -287,7 +323,7 @@ def split_and_enrich_directory(
                     doc_metadata={
                         k: v
                         for k, v in chunk.metadata.items()
-                        if k in ("source", "title", "section_name", "section_heading")
+                        if k in _ENRICH_META_KEYS
                     },
                 )
                 chunk.metadata["summary"] = ai.summary
@@ -303,6 +339,52 @@ def split_and_enrich_directory(
 
         save_docs_jsonl_per_file(enriched, gold_prefix)
         print(f"  Guardados {len(enriched)} chunks enriquecidos -> s3://{gold_key}")
+
+
+def split_and_enrich_directory(
+    silver_prefix: str = SILVER_PREFIX,
+    gold_prefix: str = GOLD_PREFIX,
+    chunk_size: int = DEFAULT_CHUNK_SIZE,
+    chunk_overlap: int = DEFAULT_CHUNK_OVERLAP,
+    max_calls_per_minute: int = 9,
+    skip_existing: bool = True,
+) -> None:
+    """Fragmenta y enriquece los documentos silver hacia gold con el LLM activo.
+
+    Por defecto recorre todos los tipos de documento (DOC_TYPES) usando los
+    prefijos por tipo, p.ej. ``data/silver/normativa/`` → ``data/gold/normativa/``.
+    Si se pasa un par *silver_prefix*/*gold_prefix* explícito distinto del
+    default, se respeta ese único par sin iterar por tipos.
+
+    El proveedor LLM se selecciona automáticamente según las API keys disponibles:
+    OPENAI_API_KEY → OPENROUTER_API_KEY → GOOGLE_API_KEY.
+
+    Los archivos ya presentes en gold se saltan cuando skip_existing=True.
+    Los errores de enriquecimiento por chunk se loggean sin interrumpir el proceso.
+    """
+    enricher = ChunkEnricher(max_calls_per_minute=max_calls_per_minute)
+    splitter = _build_splitter(chunk_size, chunk_overlap)
+
+    if silver_prefix == SILVER_PREFIX and gold_prefix == GOLD_PREFIX:
+        # Modo por defecto: recorre cada tipo de documento con su prefijo propio.
+        for doc_type in DOC_TYPES:
+            print(f"\n=== Tipo de documento: {doc_type} ===")
+            _process_silver_dir(
+                silver_prefix=layer_prefix("silver", doc_type),
+                gold_prefix=layer_prefix("gold", doc_type),
+                enricher=enricher,
+                splitter=splitter,
+                skip_existing=skip_existing,
+            )
+    else:
+        # Override explícito: un único par de prefijos.
+        _process_silver_dir(
+            silver_prefix=silver_prefix,
+            gold_prefix=gold_prefix,
+            enricher=enricher,
+            splitter=splitter,
+            skip_existing=skip_existing,
+        )
 
     print("\n[done] Proceso split_and_enrich completado.")
 

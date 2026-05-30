@@ -138,11 +138,32 @@ def load_all_docs_from_chroma() -> list[Document]:
 # ---------------------------------------------------------------------
 
 
-def get_vector_retriever(k: int = 3):
+def _build_doc_type_filter(doc_types: list[str]) -> dict[str, Any]:
+    """
+    Construye el filtro de metadata de Chroma (clave ``filter`` en langchain_chroma)
+    a partir de una lista de doc_types.
+
+    - Un solo valor → ``{"doc_type": valor}``
+    - Varios valores → ``{"doc_type": {"$in": [...]}}``
+    """
+    if len(doc_types) == 1:
+        return {"doc_type": doc_types[0]}
+    return {"doc_type": {"$in": list(doc_types)}}
+
+
+def get_vector_retriever(k: int = 3, doc_types: list[str] | None = None):
     """
     Retriever semántico (denso) usando el vectorstore Chroma singleton.
+
+    Si ``doc_types`` viene dado (p.ej. ["jurisprudencia"] o
+    ["jurisprudencia", "normativa"]), se aplica un filtro de metadata nativo de
+    Chroma sobre el campo ``doc_type``. Si es None, no se añade filtro y el
+    comportamiento es idéntico al original.
     """
-    return _get_chroma_vectorstore().as_retriever(search_kwargs={"k": k})
+    search_kwargs: dict[str, Any] = {"k": k}
+    if doc_types:
+        search_kwargs["filter"] = _build_doc_type_filter(doc_types)
+    return _get_chroma_vectorstore().as_retriever(search_kwargs=search_kwargs)
 
 
 def get_bm25_retriever(k: int = 3) -> BM25Retriever:
@@ -151,6 +172,25 @@ def get_bm25_retriever(k: int = 3) -> BM25Retriever:
     Devuelve una copia ligera (sin recrear el índice) con el k solicitado.
     """
     return _get_bm25_base().model_copy(update={"k": k})
+
+
+class _FilteredRetriever(BaseRetriever):
+    """
+    Envuelve otro retriever y filtra sus resultados por ``doc_type``.
+
+    BM25 no soporta filtros de metadata nativos, así que este wrapper invoca al
+    retriever interno (que normalmente pide más candidatos de los necesarios) y
+    descarta los Documents cuyo ``metadata.get("doc_type")`` no esté en
+    ``doc_types``.
+    """
+
+    inner: BaseRetriever
+    doc_types: list[str]
+
+    def _get_relevant_documents(self, query: str) -> list[Document]:
+        docs = self.inner.invoke(query)
+        allowed = set(self.doc_types)
+        return [d for d in docs if (d.metadata or {}).get("doc_type") in allowed]
 
 
 # ---------------------------------------------------------------------
@@ -201,14 +241,90 @@ def get_ensemble_retriever(
     k: int = 3,
     bm25_weight: float = 0.3,
     vector_weight: float = 0.7,
+    doc_types: list[str] | None = None,
 ) -> HybridEnsembleRetriever:
     """
     Construye el retriever híbrido BM25 + vectorial usando componentes cacheados.
+
+    Si ``doc_types`` viene dado, se propaga a ambos sub-retrievers:
+    - vector → filtro de metadata nativo de Chroma
+    - BM25 → ``_FilteredRetriever`` (filtrado en memoria); se piden k*4 candidatos
+      al BM25 antes de filtrar para no quedarse corto tras descartar tipos.
+
+    La firma es retrocompatible: con ``doc_types=None`` el comportamiento es
+    idéntico al original (ambos tipos, sin filtro).
     """
+    vector_retriever = get_vector_retriever(k=k, doc_types=doc_types)
+
+    if doc_types:
+        bm25_inner = get_bm25_retriever(k=k * 4)
+        bm25_retriever: BaseRetriever = _FilteredRetriever(
+            inner=bm25_inner, doc_types=doc_types
+        )
+    else:
+        bm25_retriever = get_bm25_retriever(k=k)
+
     return HybridEnsembleRetriever(
-        retrievers=[get_bm25_retriever(k=k), get_vector_retriever(k=k)],
+        retrievers=[bm25_retriever, vector_retriever],
         weights=[bm25_weight, vector_weight],
     )
+
+
+def balance_by_doc_type(
+    docs: list[Document],
+    k: int,
+    min_per_type: dict[str, int] | None = None,
+) -> list[Document]:
+    """
+    Devuelve los top-k documentos de una lista ya ordenada por relevancia,
+    garantizando una cuota mínima por ``doc_type``.
+
+    Para cada tipo ``t`` en ``min_per_type``, asegura que el resultado incluya al
+    menos ``min_per_type[t]`` documentos de ese tipo (si existen en ``docs``),
+    tomando los mejor rankeados de cada tipo para cubrir la cuota y completando
+    el resto con los documentos restantes en su orden original de relevancia.
+
+    Si ``min_per_type`` es None, devuelve ``docs[:k]`` sin cambios.
+
+    Función pura y testeable, pensada para que el caller la use tras la fusión
+    (p.ej. en el agente/generador) y evite que la normativa quede tapada por la
+    jurisprudencia cuando ambos tipos compiten por los primeros puestos. No está
+    conectada de forma obligatoria al flujo de retrieval.
+    """
+    if min_per_type is None:
+        return docs[:k]
+
+    selected: list[Document] = []
+    selected_ids: set[int] = set()
+
+    def _doc_type(doc: Document) -> Any:
+        return (doc.metadata or {}).get("doc_type")
+
+    # 1) Cubrir la cuota mínima por tipo con los mejor rankeados de cada uno.
+    for dtype, quota in min_per_type.items():
+        if quota <= 0:
+            continue
+        taken = 0
+        for idx, doc in enumerate(docs):
+            if taken >= quota or len(selected) >= k:
+                break
+            if idx in selected_ids:
+                continue
+            if _doc_type(doc) == dtype:
+                selected.append(doc)
+                selected_ids.add(idx)
+                taken += 1
+
+    # 2) Completar hasta k con el resto, respetando el orden de relevancia.
+    for idx, doc in enumerate(docs):
+        if len(selected) >= k:
+            break
+        if idx in selected_ids:
+            continue
+        selected.append(doc)
+        selected_ids.add(idx)
+
+    return selected[:k]
 
 
 # ---------------------------------------------------------------------

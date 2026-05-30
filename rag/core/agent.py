@@ -27,7 +27,7 @@ Optimizaciones:
 from __future__ import annotations
 
 import asyncio
-from typing import Annotated, Any
+from typing import Annotated, Any, NotRequired
 
 from langchain_core.documents import Document
 from langchain_core.messages import AIMessage, BaseMessage, HumanMessage, SystemMessage
@@ -63,6 +63,9 @@ class AgentState(TypedDict):
     # Sin reducer: overwrite. enrich_query_node lo resetea al inicio de cada turno;
     # la tool retrieve lo sobrescribe con los docs recuperados.
     sources: list[Document]
+    # Filtro opcional por tipo de documento ("jurisprudencia"/"normativa").
+    # None = ambos tipos (comportamiento por defecto).
+    doc_types: NotRequired[list[str] | None]
 
 
 # ---------------------------------------------------------------------------
@@ -182,7 +185,8 @@ async def agent_node(state: AgentState) -> dict:
 async def retrieve_forced_node(state: AgentState) -> dict:
     _emit_status("retrieving", "Navegando miles de páginas de sentencias…")
     query = state.get("enriched_query") or state["question"]
-    docs = await asyncio.to_thread(get_ensemble_retriever(k=8).invoke, query)
+    doc_types = state.get("doc_types")
+    docs = await asyncio.to_thread(get_ensemble_retriever(k=8, doc_types=doc_types).invoke, query)
     return {"sources": docs}
 
 

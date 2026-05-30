@@ -1,23 +1,50 @@
 "use client";
 
 import { useId, useState } from "react";
-import type { SourceGroup } from "@/lib/types";
+import type { DocType, SourceGroup, SourceMetadata } from "@/lib/types";
 
 interface SourcesAccordionProps {
   sources: SourceGroup[];
 }
 
-const DOC_META_LABELS: Array<[string, string]> = [
+// Atribución para jurisprudencia (orden de aparición + clave de metadata).
+const JURIS_META_LABELS: Array<[string, string]> = [
   ["Corporación", "Corporación"],
   ["Radicado", "Radicado"],
   ["Magistrado ponente", "Magistrado ponente"],
   ["Tema principal", "Tema"],
 ];
 
+// Atribución para normativa. La norma se muestra como título del grupo, así que
+// aquí solo van Título / Capítulo / Artículo.
+const NORMA_META_LABELS: Array<[string, string]> = [
+  ["titulo", "Título"],
+  ["capitulo", "Capítulo"],
+  ["articulo", "Artículo"],
+];
+
 function metaString(meta: Record<string, unknown>, key: string): string {
   const v = meta[key];
   return typeof v === "string" ? v : "";
 }
+
+/** Deriva el tipo de fuente; ausencia de `doc_type` ⇒ jurisprudencia. */
+function docTypeOf(meta: SourceMetadata): DocType {
+  return meta.doc_type === "normativa" ? "normativa" : "jurisprudencia";
+}
+
+/** Atributos visuales del badge por tipo de fuente. */
+const TYPE_BADGE: Record<DocType, { label: string; className: string }> = {
+  jurisprudencia: {
+    label: "Jurisprudencia",
+    className: "bg-accent-soft text-accent",
+  },
+  normativa: {
+    label: "Normativa",
+    className:
+      "border border-border-strong/60 bg-elevated text-muted",
+  },
+};
 
 export function SourcesAccordion({ sources }: SourcesAccordionProps) {
   const [open, setOpen] = useState(false);
@@ -96,24 +123,43 @@ export function SourcesAccordion({ sources }: SourcesAccordionProps) {
         <div className="overflow-hidden">
           <ul className="mt-3 divide-y divide-border" role="list">
             {sources.map((group, gi) => {
-              const docMeta = DOC_META_LABELS.map(([key, label]) => {
-                const value = metaString(group.metadata, key);
-                return value ? { label, value } : null;
-              }).filter((x): x is { label: string; value: string } => x !== null);
+              const docType = docTypeOf(group.metadata);
+              const isNorma = docType === "normativa";
+              const badge = TYPE_BADGE[docType];
+
+              // Título del grupo: para normativa preferimos `norma` si existe.
+              const groupTitle = isNorma
+                ? metaString(group.metadata, "norma") || group.title
+                : group.title;
+
+              const metaLabels = isNorma ? NORMA_META_LABELS : JURIS_META_LABELS;
+              const docMeta = metaLabels
+                .map(([key, label]) => {
+                  const value = metaString(group.metadata, key);
+                  return value ? { label, value } : null;
+                })
+                .filter((x): x is { label: string; value: string } => x !== null);
 
               return (
                 <li
                   key={`${group.source}-${gi}`}
                   className={gi === 0 ? "pb-3" : "py-3"}
                 >
-                  {group.title && (
-                    <p
-                      className="mb-1 truncate text-sm font-semibold text-foreground"
-                      translate="no"
+                  <div className="mb-1 flex items-center gap-2">
+                    <span
+                      className={`inline-flex shrink-0 items-center rounded-full px-2 py-0.5 text-[10px] font-medium tracking-wide ${badge.className}`}
                     >
-                      {group.title}
-                    </p>
-                  )}
+                      {badge.label}
+                    </span>
+                    {groupTitle && (
+                      <p
+                        className="truncate text-sm font-semibold text-foreground"
+                        translate="no"
+                      >
+                        {groupTitle}
+                      </p>
+                    )}
+                  </div>
 
                   {docMeta.length > 0 && (
                     <dl className="mt-1 grid grid-cols-[auto_1fr] gap-x-2 gap-y-0.5 text-[11px] text-muted">
