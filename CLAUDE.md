@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**ATLAS** (Sistema agéntico de apoyo para la orientación normativa y jurisprudencial sobre playas en Colombia) — An agentic RAG system specialized in Colombian beach/coastal jurisprudence (playas, dominio público marítimo-terrestre). It processes PDF court rulings (from Consejo de Estado), transforms them into searchable semantic chunks, and exposes a REST API consumed by a Next.js frontend.
+**ATLAS** (Sistema agéntico de apoyo para la orientación normativa y jurisprudencial sobre playas en Colombia) — An agentic RAG system specialized in Colombian beach/coastal legal documents (playas, dominio público marítimo-terrestre). It processes two document types: court rulings (`jurisprudencia`) from the Consejo de Estado, and regulations (`normativa`) such as decrees. Each type follows a separate sectioning strategy; all share the same chunking, enrichment, and retrieval pipeline.
 
 **Spanish-language codebase** — all comments, prompts, docs, and API responses are in Spanish.
 
@@ -65,23 +65,31 @@ rag/                          # RAG serving (API + core)
     └── schemas.py           # Pydantic request/response models
 
 ingest/                       # Ingestion pipeline
-├── config.py                # Env vars: Gemini, Docling
+├── config.py                # Env vars + DOC_TYPES + layer_prefix(layer, doc_type)
 ├── pdf_to_md/              # PDF → Markdown via Docling (OCR, tables, images)
-├── loaders.py              # bronze → silver (JSONL per file)
+├── loaders.py              # bronze/<type>/ → silver/<type>/ (dispatches by doc_type)
 ├── normalize.py            # Metadata cleanup
-├── sections.py             # Split by markdown heading hierarchy
-└── splitter_and_enrich.py  # Chunk (1000 tokens, 200 overlap) + Gemini enrichment
+├── sections.py             # split_by_sections() — 4-section jurisprudencia strategy
+├── sections_normativa.py   # split_by_articles() — per-article normativa strategy
+├── metadata_csv.py         # Loads raw/<type>/metadata.csv (optional per doc_type)
+└── splitter_and_enrich.py  # Chunk (1000 tokens, 200 overlap) + LLM enrichment
 ```
 
 ### Data Flow
 
+Each pipeline layer is split by `doc_type` subfolder (`jurisprudencia` / `normativa`):
+
 ```
-raw PDFs
-  └─→ pdf_to_md (Docling)         → data/bronze/ (clean Markdown + images)
-       └─→ loaders (normalize)   → data/silver/ (JSONL, sectioned)
-            └─→ splitter_and_enrich (Gemini) → data/gold/ (enriched chunks)
-                 └─→ vectorstore (Ollama embeddings) → ChromaDB
+raw PDFs / MDs
+  └─→ pdf_to_md (Docling)              → data/bronze/<type>/ (clean Markdown)
+       └─→ loaders (normalize + CSV)  → data/silver/<type>/ (JSONL, sectioned)
+            │  jurisprudencia → split_by_sections()  (4 canonical sections)
+            │  normativa      → split_by_articles()  (1 unit per Artículo N)
+            └─→ splitter_and_enrich   → data/gold/<type>/ (enriched chunks)
+                 └─→ vectorstore      → ChromaDB  (doc_type in each chunk's metadata)
 ```
+
+The `doc_type` is fixed once at load time from the source folder and propagates through all layers. The ChromaDB collection is shared; filtering by `doc_type` enables serving both types from the same retriever.
 
 ### RAG Query Flow
 
@@ -101,11 +109,13 @@ raw PDFs
 
 ### Document Structure
 
-Colombian court rulings follow a 4-section structure documented in `docs/DOCUMENT_SECTIONS.md`:
+**Jurisprudencia** (Colombian court rulings) follow a 4-section structure documented in `docs/DOCUMENT_SECTIONS.md`:
 1. **Contexto del caso** — case background
 2. **Desarrollo procesal** — procedural history
 3. **Argumentación jurídica** — legal reasoning
 4. **Decisión** — ruling/decision
+
+**Normativa** (decrees, regulations) is segmented by `Artículo N` (regex over plain text), with `TÍTULO`/`CAPÍTULO` hierarchy preserved as metadata. A `"Preámbulo"` unit captures text before the first article.
 
 ---
 

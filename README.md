@@ -2,10 +2,10 @@
 
 **Sistema agéntico de apoyo para la orientación normativa y jurisprudencial sobre playas en Colombia.**
 
-Agente conversacional de **jurisprudencia colombiana sobre playas y dominio público marítimo-terrestre**. Procesa sentencias en PDF (Consejo de Estado, Tribunales Administrativos), las indexa semánticamente y las expone como un agente **LangGraph** sobre una API FastAPI consumida por un frontend Next.js con autenticación, historial de conversaciones, calificación de respuestas y panel de administración.
+Agente conversacional de **jurisprudencia y normativa colombiana sobre playas y dominio público marítimo-terrestre**. Procesa sentencias en PDF (Consejo de Estado, Tribunales Administrativos) y normativa (decretos, reglamentos), los indexa semánticamente diferenciados por `doc_type` y los expone como un agente **LangGraph** sobre una API FastAPI consumida por un frontend Next.js con autenticación, historial de conversaciones, calificación de respuestas y panel de administración.
 
 - [Registro de archivos indexados](docs/archivos-indexados.md)
-- [Estructura típica de los documentos](docs/DOCUMENT_SECTIONS.md)
+- [Estructura típica de sentencias](docs/DOCUMENT_SECTIONS.md)
 - [Configuración manual de Firebase](docs/firebase-config-manual.md)
 
 ---
@@ -29,10 +29,19 @@ Tres capas independientes que comparten `data/` y servicios externos (ChromaDB, 
 
 ![Pipeline de ingesta ATLAS](docs/images/pipeline.png)
 
-1. **PDF → Markdown** (`data/bronze/`) — Docling con OCR, tablas e imágenes; limpieza exhaustiva de encabezados, pies y numeraciones.
-2. **Bronze → Silver** (`data/silver/`) — normalización, fusión con metadatos legales del CSV (`metadata.csv`) y segmentación por encabezados.
-3. **Silver → Gold** (`data/gold/`) — chunking de ~1000 tokens (200 de overlap) y enriquecimiento con LLM (resumen, keywords, entidades), inyectado en la metadata.
-4. **Gold → ChromaDB** — embeddings con Ollama (`embeddinggemma`) e indexación. En runtime el retriever combina **BM25 (30%) + vector (70%)** con fusión RRF.
+El pipeline soporta dos tipos de documento (`doc_type`), cada uno con su propia subcarpeta en todas las capas:
+
+| Tipo | Carpeta | Estrategia de seccionado |
+|---|---|---|
+| `jurisprudencia` | `data/{capa}/jurisprudencia/` | 4 secciones canónicas de sentencia |
+| `normativa` | `data/{capa}/normativa/` | 1 unidad por `Artículo N` |
+
+1. **PDF/MD → Markdown** (`data/bronze/<tipo>/`) — Docling con OCR, tablas e imágenes; limpieza exhaustiva de encabezados, pies y numeraciones. La normativa puede entrar directamente como Markdown.
+2. **Bronze → Silver** (`data/silver/<tipo>/`) — normalización, fusión con metadatos legales del CSV (`raw/<tipo>/metadata.csv`, opcional) y seccionado por tipo:
+   - **Jurisprudencia**: `split_by_sections()` — 4 secciones canónicas (`Contexto del caso`, `Desarrollo procesal`, `Análisis del tribunal`, `Decisión`).
+   - **Normativa**: `split_by_articles()` — 1 unidad por artículo, arrastrando jerarquía `TÍTULO`/`CAPÍTULO` como metadatos.
+3. **Silver → Gold** (`data/gold/<tipo>/`) — chunking de ~1000 tokens (200 de overlap) y enriquecimiento con LLM (resumen, keywords, entidades), inyectado en la metadata. El `chunk_id` incluye el tipo (`{stem}_art{N}_c{idx}` para normativa).
+4. **Gold → ChromaDB** — embeddings con Ollama (`embeddinggemma`) e indexación. Cada chunk lleva `doc_type` en sus metadatos, permitiendo filtrar jurisprudencia y normativa en el retriever. En runtime el retriever combina **BM25 (30%) + vector (70%)** con fusión RRF.
 
 ---
 
@@ -97,7 +106,19 @@ rag_playas/
 │   └── api/                      ← FastAPI: main, auth, firebase_admin, routes/
 ├── ingest/                       ← Pipeline de ingesta (independiente)
 ├── frontend/                     ← Next.js 16 (React 19, Bun)
-├── data/                         ← raw / bronze / silver / gold
+├── data/
+│   ├── raw/
+│   │   ├── jurisprudencia/       ← PDFs + metadata.csv de sentencias
+│   │   └── normativa/            ← MDs/PDFs de decretos y reglamentos
+│   ├── bronze/
+│   │   ├── jurisprudencia/       ← Markdown por sentencia
+│   │   └── normativa/            ← Markdown por decreto/reglamento
+│   ├── silver/
+│   │   ├── jurisprudencia/       ← JSONL seccional (4 secciones por sentencia)
+│   │   └── normativa/            ← JSONL articular (1 artículo por unidad)
+│   └── gold/
+│       ├── jurisprudencia/       ← Chunks enriquecidos de sentencias
+│       └── normativa/            ← Chunks enriquecidos de normativa
 ├── docs/                         ← guías (incluye firebase-config-manual.md)
 ├── firestore.rules               ← reglas de seguridad versionadas
 ├── firestore.indexes.json        ← índices compuestos
