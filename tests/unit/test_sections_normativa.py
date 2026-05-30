@@ -13,6 +13,11 @@ from ingest.sections_normativa import split_by_articles
 _REPO_ROOT = Path(__file__).resolve().parents[2]
 _NORMATIVA_DIR = _REPO_ROOT / "archivos-normativa"
 
+pytestmark = pytest.mark.skipif(
+    not _NORMATIVA_DIR.is_dir(),
+    reason="archivos-normativa/ no disponible (carpeta local, no en repo)",
+)
+
 DECRETO = "decreto-2324-de-1984.md"
 REMAC = "Reglamento Maritimo Colombiano REMAC 5-DIMAR (202103).md"
 
