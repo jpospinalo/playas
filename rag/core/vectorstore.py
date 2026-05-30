@@ -43,12 +43,17 @@ def sanitize_metadata(meta: dict[str, Any]) -> dict[str, Any]:
     """
     Adapta metadatos a los tipos permitidos por Chroma 1.x.
 
-    Chroma solo acepta valores: str, int, float, bool o None.
+    Chroma solo acepta valores: str, int, float o bool. Los valores ``None``
+    NO son válidos (su deserializador rechaza ``null``), así que se omite la
+    clave por completo (ej. ``articulo`` es None en el preámbulo de una norma).
     Cualquier lista o dict se convierte en un JSON string.
     """
     safe: dict[str, Any] = {}
     for k, v in meta.items():
-        if isinstance(v, (str, int, float, bool)) or v is None:
+        if v is None:
+            # Chroma rechaza null; omitir la clave (queries usan .get() → None igual).
+            continue
+        if isinstance(v, (str, int, float, bool)):
             safe[k] = v
         else:
             safe[k] = json.dumps(v, ensure_ascii=False)
