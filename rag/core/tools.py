@@ -59,28 +59,51 @@ def build_context_block(docs: list[Document]) -> str:
         meta = d.metadata or {}
         source = sanitize_replacement_chars(meta.get("source", "desconocido"))
         chunk_id = sanitize_replacement_chars(meta.get("chunk_id", meta.get("id", f"doc_{i}")))
-
-        # Chroma puede almacenar la clave con distintas variantes de encoding
-        corporacion = sanitize_replacement_chars(
-            meta.get("Corporación") or meta.get("CorporaciÃ³n") or meta.get("Corporacion", "")
-        )
-        magistrado = sanitize_replacement_chars(meta.get("Magistrado ponente", ""))
-        tema = sanitize_replacement_chars(meta.get("Tema principal", ""))
-        section = sanitize_replacement_chars(meta.get("section_name", ""))
         summary = sanitize_replacement_chars(meta.get("summary", ""))
 
         header = f"[doc{i} | source={source} | chunk_id={chunk_id}]"
-        meta_lines: list[str] = []
-        if corporacion:
-            meta_lines.append(f"Corporación: {corporacion}")
-        if magistrado:
-            meta_lines.append(f"Magistrado ponente: {magistrado}")
-        if tema:
-            meta_lines.append(f"Tema principal: {tema}")
-        if section:
-            meta_lines.append(f"Sección: {section}")
-        if summary:
-            meta_lines.append(f"Resumen: {summary}")
+        doc_type = meta.get("doc_type", "")
+
+        if doc_type == "normativa":
+            # Cabecera para normas: nombre de la norma + jerarquía (título, capítulo,
+            # artículo). No aplican corporación ni magistrado.
+            norma = sanitize_replacement_chars(
+                meta.get("title") or meta.get("norma") or meta.get("source", "desconocido")
+            )
+            titulo = sanitize_replacement_chars(meta.get("titulo", ""))
+            capitulo = sanitize_replacement_chars(meta.get("capitulo", ""))
+            articulo = sanitize_replacement_chars(meta.get("articulo", ""))
+
+            meta_lines = [f"Norma: {norma}"]
+            if titulo:
+                meta_lines.append(f"Título: {titulo}")
+            if capitulo:
+                meta_lines.append(f"Capítulo: {capitulo}")
+            if articulo:
+                meta_lines.append(f"Artículo: {articulo}")
+            if summary:
+                meta_lines.append(f"Resumen: {summary}")
+        else:
+            # Jurisprudencia (o tipo ausente/desconocido por compatibilidad).
+            # Chroma puede almacenar la clave con distintas variantes de encoding
+            corporacion = sanitize_replacement_chars(
+                meta.get("Corporación") or meta.get("CorporaciÃ³n") or meta.get("Corporacion", "")
+            )
+            magistrado = sanitize_replacement_chars(meta.get("Magistrado ponente", ""))
+            tema = sanitize_replacement_chars(meta.get("Tema principal", ""))
+            section = sanitize_replacement_chars(meta.get("section_name", ""))
+
+            meta_lines = []
+            if corporacion:
+                meta_lines.append(f"Corporación: {corporacion}")
+            if magistrado:
+                meta_lines.append(f"Magistrado ponente: {magistrado}")
+            if tema:
+                meta_lines.append(f"Tema principal: {tema}")
+            if section:
+                meta_lines.append(f"Sección: {section}")
+            if summary:
+                meta_lines.append(f"Resumen: {summary}")
 
         parts = [header]
         if meta_lines:
