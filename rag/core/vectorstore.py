@@ -27,7 +27,7 @@ CHROMA_COLLECTION_NAME = os.getenv("CHROMA_COLLECTION_NAME")
 EMBED_FN = OllamaEmbeddingFunction()
 
 # Tamaño máximo de cada batch para embeddings e ingesta en Chroma
-BATCH_SIZE = 500
+BATCH_SIZE = 200
 
 # Retry para errores de red
 MAX_RETRIES = 3
