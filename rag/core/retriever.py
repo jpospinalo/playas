@@ -258,9 +258,7 @@ def get_ensemble_retriever(
 
     if doc_types:
         bm25_inner = get_bm25_retriever(k=k * 4)
-        bm25_retriever: BaseRetriever = _FilteredRetriever(
-            inner=bm25_inner, doc_types=doc_types
-        )
+        bm25_retriever: BaseRetriever = _FilteredRetriever(inner=bm25_inner, doc_types=doc_types)
     else:
         bm25_retriever = get_bm25_retriever(k=k)
 

@@ -321,9 +321,7 @@ def _process_silver_dir(
                 ai = enricher.enrich_chunk(
                     text=chunk.page_content,
                     doc_metadata={
-                        k: v
-                        for k, v in chunk.metadata.items()
-                        if k in _ENRICH_META_KEYS
+                        k: v for k, v in chunk.metadata.items() if k in _ENRICH_META_KEYS
                     },
                 )
                 chunk.metadata["summary"] = ai.summary

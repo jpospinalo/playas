@@ -18,10 +18,7 @@ def test_remap_key_root_object_goes_to_jurisprudencia() -> None:
 
 
 def test_remap_key_metadata_csv_special_case() -> None:
-    assert (
-        _remap_key("data/raw/metadata.csv", "raw")
-        == "data/raw/jurisprudencia/metadata.csv"
-    )
+    assert _remap_key("data/raw/metadata.csv", "raw") == "data/raw/jurisprudencia/metadata.csv"
 
 
 def test_remap_key_already_under_jurisprudencia_is_skipped() -> None:
