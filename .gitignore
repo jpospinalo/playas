@@ -70,3 +70,6 @@ bucket-backup-*/
 .atl/
 .pi/
 .pi-lens/
+
+# Archivos normativos locales (no deben subirse al repo)
+archivos-normativa/
