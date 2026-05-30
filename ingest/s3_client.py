@@ -91,6 +91,46 @@ def upload_file(local_path: str, key: str) -> None:
     _get_client().upload_file(Filename=local_path, Bucket=get_bucket(), Key=key)
 
 
+def copy_key(src_key: str, dst_key: str) -> None:
+    """Copia un objeto S3 de *src_key* a *dst_key* dentro del mismo bucket."""
+    bucket = get_bucket()
+    _get_client().copy_object(
+        Bucket=bucket,
+        CopySource={"Bucket": bucket, "Key": src_key},
+        Key=dst_key,
+    )
+
+
+def delete_key(key: str) -> None:
+    """Elimina un objeto S3."""
+    _get_client().delete_object(Bucket=get_bucket(), Key=key)
+
+
+def move_key(src_key: str, dst_key: str) -> None:
+    """Mueve un objeto S3 (copia a *dst_key* y borra *src_key*)."""
+    copy_key(src_key, dst_key)
+    delete_key(src_key)
+
+
+def move_prefix(src_prefix: str, dst_prefix: str) -> list[tuple[str, str]]:
+    """Mueve todos los objetos bajo *src_prefix* hacia *dst_prefix*.
+
+    Para cada key bajo *src_prefix* computa el destino reemplazando el prefijo
+    *src_prefix* (al inicio) por *dst_prefix* y lo mueve. Es idempotente: si una
+    key ya empieza por *dst_prefix*, se omite (no se vuelve a mover).
+
+    Devuelve la lista de pares (src, dst) efectivamente movidos.
+    """
+    moved: list[tuple[str, str]] = []
+    for src_key in list_keys(src_prefix):
+        if src_key.startswith(dst_prefix):
+            continue
+        dst_key = dst_prefix + src_key[len(src_prefix) :]
+        move_key(src_key, dst_key)
+        moved.append((src_key, dst_key))
+    return moved
+
+
 def upload_directory(local_dir: str, prefix: str) -> None:
     """Sube recursivamente todos los archivos de *local_dir* a S3 bajo *prefix*.
 

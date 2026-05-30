@@ -10,7 +10,7 @@ from typing import Any
 import chromadb
 from dotenv import load_dotenv
 
-from ..config import GOLD_PREFIX
+from ..config import DOC_TYPES, GOLD_PREFIX, layer_prefix
 from ..s3_client import list_keys, read_text
 from .embeddings import OllamaEmbeddingFunction
 
@@ -27,7 +27,7 @@ CHROMA_COLLECTION_NAME = os.getenv("CHROMA_COLLECTION_NAME")
 EMBED_FN = OllamaEmbeddingFunction()
 
 # Tamaño máximo de cada batch para embeddings e ingesta en Chroma
-BATCH_SIZE = 500
+BATCH_SIZE = 200
 
 # Retry para errores de red
 MAX_RETRIES = 3
@@ -43,12 +43,17 @@ def sanitize_metadata(meta: dict[str, Any]) -> dict[str, Any]:
     """
     Adapta metadatos a los tipos permitidos por Chroma 1.x.
 
-    Chroma solo acepta valores: str, int, float, bool o None.
+    Chroma solo acepta valores: str, int, float o bool. Los valores ``None``
+    NO son válidos (su deserializador rechaza ``null``), así que se omite la
+    clave por completo (ej. ``articulo`` es None en el preámbulo de una norma).
     Cualquier lista o dict se convierte en un JSON string.
     """
     safe: dict[str, Any] = {}
     for k, v in meta.items():
-        if isinstance(v, (str, int, float, bool)) or v is None:
+        if v is None:
+            # Chroma rechaza null; omitir la clave (queries usan .get() → None igual).
+            continue
+        if isinstance(v, (str, int, float, bool)):
             safe[k] = v
         else:
             safe[k] = json.dumps(v, ensure_ascii=False)
@@ -70,6 +75,15 @@ def _build_embedding_text(text: str, meta: dict[str, Any]) -> str:
     original se almacena por separado en ChromaDB para que el LLM lo reciba limpio.
     """
     parts: list[str] = []
+    if meta.get("doc_type") == "normativa":
+        norma = meta.get("title") or meta.get("norma")
+        articulo = meta.get("articulo")
+        if norma and articulo:
+            parts.append(f"Norma: {norma} — Artículo {articulo}")
+        elif norma:
+            parts.append(f"Norma: {norma}")
+        elif articulo:
+            parts.append(f"Artículo {articulo}")
     if kw := meta.get("keywords_str", ""):
         parts.append(f"Palabras clave: {kw}")
     if summary := meta.get("summary", ""):
@@ -109,6 +123,11 @@ def load_gold_records(
         chunk_id = meta.get("chunk_id") or f"{file_name}_line_{line_idx}"
         meta["chunk_id"] = chunk_id
         meta.setdefault("source", meta.get("source", file_name))
+        if not meta.get("doc_type"):
+            if "/normativa/" in key:
+                meta["doc_type"] = "normativa"
+            elif "/jurisprudencia/" in key:
+                meta["doc_type"] = "jurisprudencia"
         if isinstance(meta.get("keywords"), list):
             meta["keywords_str"] = ", ".join(meta["keywords"])
         meta = sanitize_metadata(meta)
@@ -145,7 +164,16 @@ def build_or_load_vectorstore(
     collection = client.get_or_create_collection(name=collection_name)
 
     count_before = collection.count()
-    gold_keys = list_keys(gold_prefix, suffix=".jsonl")
+
+    if gold_prefix == GOLD_PREFIX:
+        # Por defecto recorre ambos subniveles de gold (jurisprudencia y normativa),
+        # cada grupo ordenado lexicográficamente y en orden determinístico.
+        gold_keys: list[str] = []
+        for dt in DOC_TYPES:
+            gold_keys.extend(sorted(list_keys(layer_prefix("gold", dt), suffix=".jsonl")))
+    else:
+        # Override explícito: respeta el prefijo recibido.
+        gold_keys = list_keys(gold_prefix, suffix=".jsonl")
     total_files = len(gold_keys)
 
     if not gold_keys:

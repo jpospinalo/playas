@@ -1,16 +1,36 @@
+/** Tipo de fuente documental que respalda la respuesta. */
+export type DocType = "jurisprudencia" | "normativa";
+
+/**
+ * Metadatos a nivel documento. Es un saco abierto (`Record`) porque el backend
+ * adjunta claves heterogéneas según el tipo de fuente. Estos campos opcionales
+ * documentan los que la UI consume explícitamente:
+ *  - jurisprudencia: Corporación, Radicado, Magistrado ponente, Tema principal.
+ *  - normativa: norma/title, titulo (Título), capitulo (Capítulo), articulo (Artículo).
+ */
+export interface SourceMetadata extends Record<string, unknown> {
+	/** Discrimina la atribución a mostrar. Si falta, se trata como jurisprudencia. */
+	doc_type?: DocType;
+	// ── Campos de normativa ──
+	norma?: string;
+	titulo?: string;
+	capitulo?: string;
+	articulo?: string;
+}
+
 export interface SourceFragment {
 	/** Posición global 1-based; coincide con el `[docN]` que cita el LLM. */
 	index: number;
 	content: string;
-	metadata: Record<string, unknown>;
+	metadata: SourceMetadata;
 }
 
 export interface SourceGroup {
 	/** Nombre del archivo fuente (clave de agrupación). */
 	source: string;
 	title: string;
-	/** Metadatos a nivel documento (Corporación, Radicado, Magistrado, Tema, ...). */
-	metadata: Record<string, unknown>;
+	/** Metadatos a nivel documento (doc_type + atribución según tipo). */
+	metadata: SourceMetadata;
 	fragments: SourceFragment[];
 }
 

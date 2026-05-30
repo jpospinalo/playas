@@ -5,15 +5,16 @@ from __future__ import annotations
 import csv
 import io
 
-from .config import RAW_PREFIX
-from .s3_client import read_text
+from .config import layer_prefix
+from .s3_client import key_exists, read_text
 
-_csv_cache: dict[str, dict] | None = None
+# Caché de CSV por doc_type (cada tipo tiene su propio metadata.csv opcional).
+_csv_cache: dict[str, dict[str, dict]] = {}
 
 
 def parse_metadata_csv_content(content: str) -> dict[str, dict]:
     """Parsea metadata.csv (delimiter `;`). Quita BOM UTF-8 para que exista la columna `Archivo`."""
-    content = content.lstrip("\ufeff")
+    content = content.lstrip("﻿")
     result: dict[str, dict] = {}
     reader = csv.DictReader(io.StringIO(content), delimiter=";")
     for row in reader:
@@ -23,18 +24,36 @@ def parse_metadata_csv_content(content: str) -> dict[str, dict]:
     return result
 
 
-def load_metadata_csv() -> dict[str, dict]:
-    global _csv_cache
-    if _csv_cache is not None:
-        return _csv_cache
+def load_metadata_csv(doc_type: str = "jurisprudencia") -> dict[str, dict]:
+    """Carga el metadata.csv de un tipo de documento desde raw/<doc_type>/metadata.csv.
 
-    _csv_cache = parse_metadata_csv_content(read_text(f"{RAW_PREFIX}metadata.csv"))
-    return _csv_cache
+    El CSV es OPCIONAL: si no existe (caso típico de normativa al arrancar), se
+    devuelve un diccionario vacío sin error. El resultado se cachea por doc_type.
+    """
+    if doc_type in _csv_cache:
+        return _csv_cache[doc_type]
+
+    key = f"{layer_prefix('raw', doc_type)}metadata.csv"
+    if not key_exists(key):
+        _csv_cache[doc_type] = {}
+        return _csv_cache[doc_type]
+
+    _csv_cache[doc_type] = parse_metadata_csv_content(read_text(key))
+    return _csv_cache[doc_type]
 
 
-def get_metadata_for_file(filename: str) -> dict | None:
-    # Normalizar extensión .md → .pdf para hacer match con la columna Archivo del CSV
-    lookup = filename
-    if lookup.endswith(".md"):
-        lookup = lookup[:-3] + ".pdf"
-    return load_metadata_csv().get(lookup)
+def get_metadata_for_file(filename: str, doc_type: str = "jurisprudencia") -> dict | None:
+    """Devuelve la fila de metadatos del CSV que matchea *filename*, o None.
+
+    Prueba varias variantes de extensión porque la columna `Archivo` del CSV de
+    jurisprudencia usa `.pdf`, mientras que la normativa puede entrar como `.md`.
+    """
+    table = load_metadata_csv(doc_type)
+    if not table:
+        return None
+
+    stem = filename.rsplit(".", 1)[0] if "." in filename else filename
+    for candidate in (filename, f"{stem}.pdf", f"{stem}.md", stem):
+        if candidate in table:
+            return table[candidate]
+    return None
