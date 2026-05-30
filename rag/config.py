@@ -16,6 +16,23 @@ load_dotenv(BASE_DIR / ".env")
 S3_BUCKET_NAME: str = os.getenv("S3_BUCKET_NAME", "")
 GOLD_PREFIX: str = "data/gold/"
 
+# Tipos de documento soportados, diferenciados por subcarpeta.
+# Definidos localmente: rag/ e ingest/ son paquetes independientes y no se importan
+# entre sí. Mantener sincronizado con ingest/config.py.
+DOC_TYPES: tuple[str, str] = ("jurisprudencia", "normativa")
+
+# Capas del pipeline de ingesta.
+LAYERS: tuple[str, ...] = ("raw", "bronze", "silver", "gold")
+
+
+def layer_prefix(layer: str, doc_type: str) -> str:
+    """Devuelve el prefijo S3 para una capa y tipo de documento, p.ej. 'data/bronze/normativa/'."""
+    if layer not in LAYERS:
+        raise ValueError(f"Capa inválida: {layer!r}. Debe ser una de {LAYERS}.")
+    if doc_type not in DOC_TYPES:
+        raise ValueError(f"Tipo de documento inválido: {doc_type!r}. Debe ser uno de {DOC_TYPES}.")
+    return f"data/{layer}/{doc_type}/"
+
 # ── Chroma ─────────────────────────────────────────────────────────────────
 CHROMA_HOST: str = os.getenv("CHROMA_HOST", "localhost")
 CHROMA_PORT: int = int(os.getenv("CHROMA_PORT", "8000"))
