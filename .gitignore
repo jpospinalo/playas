@@ -73,3 +73,6 @@ bucket-backup-*/
 
 # Archivos normativos locales (no deben subirse al repo)
 archivos-normativa/
+
+# 14) Documentos Word del ground-truth (binarios generados; solo se versiona el Markdown)
+docs/ground-truth/*.docx
