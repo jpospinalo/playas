@@ -105,6 +105,10 @@ def _clean_answer(answer: str) -> str:
 # Campos de metadata que pertenecen al documento (no al fragmento). El resto
 # de claves se considera específico del chunk y viaja en SourceFragment.metadata.
 _DOC_LEVEL_META_KEYS = (
+    "doc_type",
+    "norma",
+    "tipo_norma",
+    "anio",
     "title",
     "book_title",
     "Archivo",
@@ -167,6 +171,7 @@ def _docs_to_source_groups(docs: list[Document]) -> list[SourceGroup]:
             groups[source] = SourceGroup(
                 source=meta.get("source", ""),
                 title=_resolve_title(meta),
+                doc_type=meta.get("doc_type"),
                 metadata=doc_meta,
                 fragments=[fragment],
             )
@@ -293,6 +298,7 @@ async def query(
                 "question": request.question,
                 "messages": initial_messages,
                 "sources": [],
+                "doc_types": request.doc_types,
             },
             config=config,
         )
@@ -347,6 +353,7 @@ async def query_stream(
                     "question": request.question,
                     "messages": initial_messages,
                     "sources": [],
+                    "doc_types": request.doc_types,
                 },
                 config=config,
                 stream_mode=["messages", "custom"],
