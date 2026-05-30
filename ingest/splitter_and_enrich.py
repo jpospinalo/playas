@@ -234,11 +234,13 @@ def _chunk_section(doc: Document, splitter: RecursiveCharacterTextSplitter) -> l
     stem = Path(source).stem
     section_idx = base_meta.get("section_index", 0)
 
-    # chunk_id type-aware: para normativa con artículo identificado, usamos el
-    # número de artículo como ancla estable; en otro caso, el índice de sección.
+    # chunk_id type-aware: para normativa incluimos el número de artículo como
+    # ancla legible PERO siempre prefijado por section_index, que es único por
+    # sección. Sin section_index, dos secciones que comparten el mismo número de
+    # artículo (p.ej. sub-ítems "A"/"B" del art. 5.2 en el REMAC) colisionarían.
     articulo = base_meta.get("articulo")
     if base_meta.get("doc_type") == "normativa" and articulo not in (None, ""):
-        chunk_id_prefix = f"{stem}_art{_sanitize_articulo(articulo)}_c"
+        chunk_id_prefix = f"{stem}_s{section_idx}_art{_sanitize_articulo(articulo)}_c"
     else:
         chunk_id_prefix = f"{stem}_s{section_idx}_c"
 

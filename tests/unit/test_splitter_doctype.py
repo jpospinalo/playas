@@ -21,7 +21,7 @@ def test_chunk_id_normativa_usa_articulo():
 
     assert chunks
     for chunk in chunks:
-        assert chunk.metadata["chunk_id"].startswith("decreto-2324-de-1984_art2_c")
+        assert chunk.metadata["chunk_id"].startswith("decreto-2324-de-1984_s3_art2_c")
         # doc_type debe seguir presente en la metadata del chunk
         assert chunk.metadata["doc_type"] == "normativa"
 
@@ -58,3 +58,25 @@ def test_chunk_id_normativa_sin_articulo_cae_en_section_index():
     assert chunks
     for chunk in chunks:
         assert chunk.metadata["chunk_id"].startswith("decreto-2324-de-1984_s0_c")
+
+
+def test_chunk_id_normativa_mismo_articulo_distinta_seccion_es_unico():
+    # Regresión: dos secciones que comparten el mismo número de artículo
+    # (p.ej. sub-ítems "A"/"B" del art. 5.2 del REMAC) deben producir
+    # chunk_ids distintos gracias al section_index en el prefijo.
+    splitter = _build_splitter(chunk_size=1000, chunk_overlap=200)
+    ids: set[str] = set()
+    for sec in (21, 22):
+        doc = Document(
+            page_content=f"Contenido del subitem de la seccion {sec}.",
+            metadata={
+                "source": "REMAC.md",
+                "doc_type": "normativa",
+                "articulo": "5.2",
+                "section_index": sec,
+            },
+        )
+        for chunk in _chunk_section(doc, splitter):
+            ids.add(chunk.metadata["chunk_id"])
+    # 2 secciones × 1 chunk cada una = 2 ids únicos (sin colisión)
+    assert len(ids) == 2
