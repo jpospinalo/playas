@@ -37,23 +37,23 @@ def layer_prefix(layer: str, doc_type: str) -> str:
 # ── Chroma ─────────────────────────────────────────────────────────────────
 CHROMA_HOST: str = os.getenv("CHROMA_HOST", "localhost")
 CHROMA_PORT: int = int(os.getenv("CHROMA_PORT", "8000"))
-CHROMA_COLLECTION: str = os.getenv("CHROMA_COLLECTION", "poe_rag")
+CHROMA_COLLECTION: str = os.getenv("CHROMA_COLLECTION", "rag_playas")
 
 # ── Ollama ─────────────────────────────────────────────────────────────────
 OLLAMA_BASE_URL: str = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
-OLLAMA_EMBEDDING_MODEL: str = os.getenv("OLLAMA_EMBEDDING_MODEL", "nomic-embed-text")
+OLLAMA_EMBEDDING_MODEL: str = os.getenv("OLLAMA_EMBEDDING_MODEL", "embeddinggemma:latest")
 OLLAMA_RERANKER_MODEL: str = os.getenv("OLLAMA_RERANKER_MODEL", "mistral")
 
 # ── Gemini ─────────────────────────────────────────────────────────────────
-GEMINI_MODEL: str = os.getenv("GEMINI_MODEL", "gemini-2.0-flash")
+GEMINI_MODEL: str = os.getenv("GEMINI_MODEL", "gemini-3.1-flash-lite")
 
 # ── OpenAI ──────────────────────────────────────────────────────────────────
 OPENAI_API_KEY: str | None = os.getenv("OPENAI_API_KEY") or None
-OPENAI_MODEL: str = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
+OPENAI_MODEL: str = os.getenv("OPENAI_MODEL", "gpt-5.4-mini")
 
 # ── OpenRouter ──────────────────────────────────────────────────────────────
 OPENROUTER_API_KEY: str | None = os.getenv("OPENROUTER_API_KEY") or None
-OPENROUTER_MODEL: str = os.getenv("OPENROUTER_MODEL", "openrouter/auto")
+OPENROUTER_MODEL: str = os.getenv("OPENROUTER_MODEL", "gpt-5.4-mini")
 
 # ── Query enrichment ────────────────────────────────────────────────────────
 QUERY_ENRICHMENT_ENABLED: bool = os.getenv("QUERY_ENRICHMENT_ENABLED", "true").lower() == "true"

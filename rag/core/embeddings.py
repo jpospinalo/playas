@@ -16,7 +16,7 @@ class OllamaEmbeddingClient:
             "OLLAMA_EMBED_BASE_URL", "http://localhost:11434"
         )
         self.model = os.getenv("OLLAMA_EMBEDDING_MODEL") or os.getenv(
-            "OLLAMA_EMBED_MODEL", "nomic-embed-text"
+            "OLLAMA_EMBED_MODEL", "embeddinggemma:latest"
         )
 
     def embed(self, texts: list[str]) -> list[list[float]]:

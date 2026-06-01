@@ -155,7 +155,7 @@ class LLMProvider(ABC):
 class OpenAIProvider(LLMProvider):
     """LLM provider backed by ``langchain_openai.ChatOpenAI`` using the OpenAI API.
 
-    Model is read from ``OPENAI_MODEL`` (default ``gpt-4o-mini``).
+    Model is read from ``OPENAI_MODEL`` (default ``gpt-5.4-mini``).
     OpenAI models support system roles and function/tool calling natively.
     """
 
@@ -194,7 +194,7 @@ class OpenAIProvider(LLMProvider):
 class GeminiProvider(LLMProvider):
     """LLM provider backed by ``langchain_google_genai.ChatGoogleGenerativeAI``.
 
-    Model is read from ``GEMINI_MODEL`` (default ``gemini-2.0-flash``).
+    Model is read from ``GEMINI_MODEL`` (default ``gemini-3.1-flash-lite``).
     Capability flags are automatically set based on whether the selected
     model is a Gemma variant, which lacks system-role and tool-calling
     support when accessed via Google's own API.
@@ -238,7 +238,7 @@ class OpenRouterProvider(LLMProvider):
     Uses OpenRouter's OpenAI-compatible endpoint so all models — including
     Gemma variants — support system roles and function calling.
 
-    Model is read from ``OPENROUTER_MODEL`` (default ``openrouter/auto``).
+    Model is read from ``OPENROUTER_MODEL`` (default ``gpt-5.4-mini``).
     """
 
     _BASE_URL = "https://openrouter.ai/api/v1"
