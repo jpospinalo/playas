@@ -200,3 +200,4 @@ docker compose down            # Stop
 - **Integration tests** — marked `@pytest.mark.integration`, skipped in `make test`
 - **Tests location** — `tests/unit/` and `tests/integration/` at project root
 - **Next.js** — uses Next.js 16.2.3 (React 19). Breaking changes may differ from prior versions. See `frontend/AGENTS.md`.
+- **Operational scripts** — see `docs/SCRIPTS.md` for pipeline, infrastructure, migration, and utility scripts.
