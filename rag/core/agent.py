@@ -57,14 +57,23 @@ from .tools import ALL_TOOLS, build_context_block
 
 
 class AgentState(TypedDict):
+    """State del grafo LangGraph compartido entre todos los nodos.
+
+    Atributos:
+        messages: Historial de mensajes (con reducer ``add_messages`` para append).
+        question: Pregunta original del usuario (sin modificar).
+        enriched_query: Consulta enriquecida por el nodo ``enrich_query``.
+            Se resetea al inicio de cada turno.
+        sources: Documentos recuperados. Se resetea en ``enrich_query`` y se
+            sobrescribe en ``retrieve`` (sin reducer — overwrite).
+        doc_types: Filtro opcional por tipo de documento
+            (``"jurisprudencia"`` / ``"normativa"``). ``None`` = ambos tipos.
+    """
+
     messages: Annotated[list[BaseMessage], add_messages]
     question: str
     enriched_query: str | None
-    # Sin reducer: overwrite. enrich_query_node lo resetea al inicio de cada turno;
-    # la tool retrieve lo sobrescribe con los docs recuperados.
     sources: list[Document]
-    # Filtro opcional por tipo de documento ("jurisprudencia"/"normativa").
-    # None = ambos tipos (comportamiento por defecto).
     doc_types: NotRequired[list[str] | None]
 
 
