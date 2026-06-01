@@ -1,4 +1,20 @@
 # ingest/metadata_csv.py
+"""Carga opcional de metadatos legales desde CSV.
+
+Cada tipo de documento (``jurisprudencia``, ``normativa``) puede tener un archivo
+``raw/<doc_type>/metadata.csv`` con metadatos enriquecidos (separador ``;``).
+El CSV es opcional: si no existe, el pipeline funciona sin enriquecimiento.
+
+El CSV de jurisprudencia típicamente incluye: Corporación, Radicado, Magistrado
+ponente, Partes procesales, Tema principal, etc. Se indexa por la columna
+``Archivo`` (nombre del PDF/MD original).
+
+Uso::
+
+    from ingest.metadata_csv import get_metadata_for_file
+    meta = get_metadata_for_file("SM-01_sentencia.pdf", "jurisprudencia")
+    # → {"Corporación": "Tribunal Administrativo del Magdalena", ...}
+"""
 
 from __future__ import annotations
 
