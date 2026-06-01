@@ -14,29 +14,43 @@ import re
 # ── Procesamiento de imágenes ────────────────────────────────────────────────
 # Controlan qué imágenes se conservan durante la limpieza de markdown.
 
-IMAGE_RESOLUTION_SCALE = 2.0        # Factor de escala para extracción de imágenes del PDF
-MIN_IMAGE_PIXELS = 350              # Dimensión mínima (px) para conservar una imagen
-IMAGE_LOW_VARIANCE = 100.0          # Varianza de píxeles por debajo de la cual la imagen se descarta (blanca/uniforme)
-IMAGE_CONTEXT_WINDOW = 300          # Caracteres alrededor de la imagen para buscar contexto semántico
-IMAGE_REQUIRE_SEMANTIC_CONTEXT = True  # Exigir palabras de contexto (figura, tabla, etc.) cerca de la imagen
-IMAGE_MIN_AREA_KEEP_WITHOUT_CONTEXT = 250_000  # Área mínima (px²) para conservar imagen sin contexto semántico
-IMAGE_FALLBACK_KEEP_ENABLED = True  # Si todas las imágenes se descartarían, conservar las más grandes
-IMAGE_FALLBACK_MAX_KEEP = 2         # Máximo de imágenes a conservar en modo fallback
-IMAGE_FALLBACK_MIN_AREA = 160_000   # Área mínima (px²) para candidatas a fallback
+IMAGE_RESOLUTION_SCALE = 2.0  # Factor de escala para extracción de imágenes del PDF
+MIN_IMAGE_PIXELS = 350  # Dimensión mínima (px) para conservar una imagen
+IMAGE_LOW_VARIANCE = (
+    100.0  # Varianza de píxeles por debajo de la cual la imagen se descarta (blanca/uniforme)
+)
+IMAGE_CONTEXT_WINDOW = 300  # Caracteres alrededor de la imagen para buscar contexto semántico
+IMAGE_REQUIRE_SEMANTIC_CONTEXT = (
+    True  # Exigir palabras de contexto (figura, tabla, etc.) cerca de la imagen
+)
+IMAGE_MIN_AREA_KEEP_WITHOUT_CONTEXT = (
+    250_000  # Área mínima (px²) para conservar imagen sin contexto semántico
+)
+IMAGE_FALLBACK_KEEP_ENABLED = (
+    True  # Si todas las imágenes se descartarían, conservar las más grandes
+)
+IMAGE_FALLBACK_MAX_KEEP = 2  # Máximo de imágenes a conservar en modo fallback
+IMAGE_FALLBACK_MIN_AREA = 160_000  # Área mínima (px²) para candidatas a fallback
 
 # ── Limppieza de texto ───────────────────────────────────────────────────────
 
-MIN_BLOCK_REPEATS = 2        # Mínimo de repeticiones para considerar un bloque como header/footer repetido
-NOISE_CHAR_RATIO = 0.45      # Ratio máximo de caracteres no lingüísticos antes de descartar línea como ruido
+MIN_BLOCK_REPEATS = (
+    2  # Mínimo de repeticiones para considerar un bloque como header/footer repetido
+)
+NOISE_CHAR_RATIO = (
+    0.45  # Ratio máximo de caracteres no lingüísticos antes de descartar línea como ruido
+)
 
 # ── Umbrales de perfilado de documentos ──────────────────────────────────────
 # Usados por ``profiler.py`` para clasificar el documento y adaptar la limpieza.
 
-LEGAL_DENSITY_THRESHOLD = 0.15       # Densidad de citaciones legales para considerar documento jurídico
-FOOTNOTE_DENSITY_THRESHOLD = 0.10    # Densidad de notas al pie para activar remoción de footnotes
-OCR_NOISE_THRESHOLD = 0.05           # Ratio de ruido OCR para activar correcciones agresivas
-REPEATED_FURNITURE_THRESHOLD = 0.60  # Frecuencia de líneas repetidas para detectar headers/footers de página
-COASTAL_DENSITY_THRESHOLD = 0.02     # Densidad de términos costeros para clasificar relevancia costera
+LEGAL_DENSITY_THRESHOLD = 0.15  # Densidad de citaciones legales para considerar documento jurídico
+FOOTNOTE_DENSITY_THRESHOLD = 0.10  # Densidad de notas al pie para activar remoción de footnotes
+OCR_NOISE_THRESHOLD = 0.05  # Ratio de ruido OCR para activar correcciones agresivas
+REPEATED_FURNITURE_THRESHOLD = (
+    0.60  # Frecuencia de líneas repetidas para detectar headers/footers de página
+)
+COASTAL_DENSITY_THRESHOLD = 0.02  # Densidad de términos costeros para clasificar relevancia costera
 
 # ── Scoring de referencias internas ──────────────────────────────────────────
 # Usado por ``references.py`` para decidir si una línea es una referencia
