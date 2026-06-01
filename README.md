@@ -7,6 +7,7 @@ Agente conversacional de **jurisprudencia y normativa colombiana sobre playas y 
 - [Registro de archivos indexados](docs/archivos-indexados.md)
 - [Estructura típica de sentencias](docs/DOCUMENT_SECTIONS.md)
 - [Configuración manual de Firebase](docs/firebase-config-manual.md)
+- [Scripts operacionales y utilidades](docs/SCRIPTS.md)
 
 ---
 
