@@ -1,46 +1,61 @@
-"""
-Tuneable constants, shared regex patterns, OCR correction table, and
-directory paths for the PDF-to-Markdown pipeline.
+"""Constantes configurables del pipeline PDF → Markdown.
+
+Organizadas por categoría: procesamiento de imágenes, limpieza de texto,
+perfilado de documentos, corrección OCR, y patrones regex compartidos.
+
+Para ajustar el comportamiento del pipeline, modificar los valores aquí
+(en código) o sobreescribirlos antes de llamar a ``convert_pdfs_to_markdown()``.
 """
 
 from __future__ import annotations
 
 import re
 
-# ------------------------------------------------------------------
-# Image processing
-# ------------------------------------------------------------------
+# ── Procesamiento de imágenes ────────────────────────────────────────────────
+# Controlan qué imágenes se conservan durante la limpieza de markdown.
 
-IMAGE_RESOLUTION_SCALE = 2.0
-MIN_IMAGE_PIXELS = 350
-IMAGE_LOW_VARIANCE = 100.0
-IMAGE_CONTEXT_WINDOW = 300
-IMAGE_REQUIRE_SEMANTIC_CONTEXT = True
-IMAGE_MIN_AREA_KEEP_WITHOUT_CONTEXT = 250_000
-IMAGE_FALLBACK_KEEP_ENABLED = True
-IMAGE_FALLBACK_MAX_KEEP = 2
-IMAGE_FALLBACK_MIN_AREA = 160_000
+IMAGE_RESOLUTION_SCALE = 2.0  # Factor de escala para extracción de imágenes del PDF
+MIN_IMAGE_PIXELS = 350  # Dimensión mínima (px) para conservar una imagen
+IMAGE_LOW_VARIANCE = (
+    100.0  # Varianza de píxeles por debajo de la cual la imagen se descarta (blanca/uniforme)
+)
+IMAGE_CONTEXT_WINDOW = 300  # Caracteres alrededor de la imagen para buscar contexto semántico
+IMAGE_REQUIRE_SEMANTIC_CONTEXT = (
+    True  # Exigir palabras de contexto (figura, tabla, etc.) cerca de la imagen
+)
+IMAGE_MIN_AREA_KEEP_WITHOUT_CONTEXT = (
+    250_000  # Área mínima (px²) para conservar imagen sin contexto semántico
+)
+IMAGE_FALLBACK_KEEP_ENABLED = (
+    True  # Si todas las imágenes se descartarían, conservar las más grandes
+)
+IMAGE_FALLBACK_MAX_KEEP = 2  # Máximo de imágenes a conservar en modo fallback
+IMAGE_FALLBACK_MIN_AREA = 160_000  # Área mínima (px²) para candidatas a fallback
 
-# ------------------------------------------------------------------
-# Text cleanup
-# ------------------------------------------------------------------
+# ── Limppieza de texto ───────────────────────────────────────────────────────
 
-MIN_BLOCK_REPEATS = 2
-NOISE_CHAR_RATIO = 0.45
+MIN_BLOCK_REPEATS = (
+    2  # Mínimo de repeticiones para considerar un bloque como header/footer repetido
+)
+NOISE_CHAR_RATIO = (
+    0.45  # Ratio máximo de caracteres no lingüísticos antes de descartar línea como ruido
+)
 
-# ------------------------------------------------------------------
-# Document profiling thresholds
-# ------------------------------------------------------------------
+# ── Umbrales de perfilado de documentos ──────────────────────────────────────
+# Usados por ``profiler.py`` para clasificar el documento y adaptar la limpieza.
 
-LEGAL_DENSITY_THRESHOLD = 0.15
-FOOTNOTE_DENSITY_THRESHOLD = 0.10
-OCR_NOISE_THRESHOLD = 0.05
-REPEATED_FURNITURE_THRESHOLD = 0.60
-COASTAL_DENSITY_THRESHOLD = 0.02
+LEGAL_DENSITY_THRESHOLD = 0.15  # Densidad de citaciones legales para considerar documento jurídico
+FOOTNOTE_DENSITY_THRESHOLD = 0.10  # Densidad de notas al pie para activar remoción de footnotes
+OCR_NOISE_THRESHOLD = 0.05  # Ratio de ruido OCR para activar correcciones agresivas
+REPEATED_FURNITURE_THRESHOLD = (
+    0.60  # Frecuencia de líneas repetidas para detectar headers/footers de página
+)
+COASTAL_DENSITY_THRESHOLD = 0.02  # Densidad de términos costeros para clasificar relevancia costera
 
-# ------------------------------------------------------------------
-# Internal reference scoring
-# ------------------------------------------------------------------
+# ── Scoring de referencias internas ──────────────────────────────────────────
+# Usado por ``references.py`` para decidir si una línea es una referencia
+# interna del documento (pie de página, citación) que debe removerse.
+# Un score >= INTERNAL_REF_SCORE_THRESHOLD se considera referencia interna.
 
 INTERNAL_REF_SCORE_THRESHOLD = 3
 

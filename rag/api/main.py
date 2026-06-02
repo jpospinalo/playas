@@ -124,6 +124,11 @@ _DOC_LEVEL_META_KEYS = (
 
 
 def _resolve_title(meta: dict) -> str:
+    """Resuelve el título legible de un documento a partir de su metadata.
+
+    Prioridad: ``title`` → ``book_title`` → stem del ``source`` (reemplazando
+    ``_`` por espacios). Devuelve ``""`` si nada está disponible.
+    """
     title = meta.get("title") or meta.get("book_title") or ""
     if title:
         return title
@@ -132,6 +137,7 @@ def _resolve_title(meta: dict) -> str:
 
 
 def _truncate_content(text: str) -> str:
+    """Trunca contenido de fragmento a 500 caracteres (para respuesta al frontend)."""
     content = (text or "").strip().replace("\n", " ")
     if len(content) > 500:
         content = content[:500] + "..."
