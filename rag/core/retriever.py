@@ -1,4 +1,23 @@
 # rag/core/retriever.py
+"""Retriever híbrido BM25 + vectorial con fusión RRF.
+
+Combina búsqueda léxica (BM25 sobre texto aumentado con keywords y resumen)
+con búsqueda semántica (embeddings de Ollama vía ChromaDB) usando Weighted
+Reciprocal Rank Fusion (RRF, c=160). Los sub-retrievers se ejecutan en
+paralelo mediante ThreadPoolExecutor.
+
+Singletons de módulo (ChromaDB client, vectorstore, BM25 index) se pre-calientan
+en el arranque de la app vía ``init_retrievers()`` y se reutilizan entre requests.
+
+Componentes principales:
+  - ``HybridEnsembleRetriever`` — retriever híbrido configurable (BM25 + vector).
+  - ``_FilteredRetriever`` — wrapper que filtra por ``doc_type`` en memoria
+    (usado para BM25, que no soporta filtros de metadata nativos).
+  - ``OllamaReranker`` — reranker opcional basado en LLM (no usado en el flujo
+    principal; disponible para experimentación).
+  - ``balance_by_doc_type()`` — función pura para garantizar cuota mínima por
+    tipo de documento en los top-k resultados.
+"""
 
 from __future__ import annotations
 

@@ -40,15 +40,15 @@ def layer_prefix(layer: str, doc_type: str) -> str:
 
 
 # ── Gemini ─────────────────────────────────────────────────────────────────
-GEMINI_MODEL: str = os.getenv("GEMINI_MODEL", "gemini-2.0-flash")
+GEMINI_MODEL: str = os.getenv("GEMINI_MODEL", "gemini-3.1-flash-lite")
 GEMINI_ENRICHER_MODEL: str = os.getenv("GEMINI_ENRICHER_MODEL", GEMINI_MODEL)
 
 # ── OpenAI ──────────────────────────────────────────────────────────────────
 OPENAI_API_KEY: str | None = os.getenv("OPENAI_API_KEY") or None
-OPENAI_MODEL: str = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
+OPENAI_MODEL: str = os.getenv("OPENAI_MODEL", "gpt-5.4-mini")
 OPENAI_ENRICHER_MODEL: str = os.getenv("OPENAI_ENRICHER_MODEL", OPENAI_MODEL)
 
 # ── OpenRouter ──────────────────────────────────────────────────────────────
 OPENROUTER_API_KEY: str | None = os.getenv("OPENROUTER_API_KEY") or None
-OPENROUTER_MODEL: str = os.getenv("OPENROUTER_MODEL", "openrouter/auto")
+OPENROUTER_MODEL: str = os.getenv("OPENROUTER_MODEL", "gpt-5.4-mini")
 OPENROUTER_ENRICHER_MODEL: str = os.getenv("OPENROUTER_ENRICHER_MODEL", OPENROUTER_MODEL)

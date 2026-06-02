@@ -7,6 +7,7 @@ Agente conversacional de **jurisprudencia y normativa colombiana sobre playas y 
 - [Registro de archivos indexados](docs/archivos-indexados.md)
 - [Estructura típica de sentencias](docs/DOCUMENT_SECTIONS.md)
 - [Configuración manual de Firebase](docs/firebase-config-manual.md)
+- [Scripts operacionales y utilidades](docs/SCRIPTS.md)
 
 ---
 
@@ -49,7 +50,7 @@ El pipeline soporta dos tipos de documento (`doc_type`), cada uno con su propia 
 
 El sistema **no es un pipeline RAG fijo**: es un agente compilado en LangGraph con memoria multi-turno (`MemorySaver`) y una tool de recuperación que el LLM invoca solo cuando hace falta.
 
-**Grafo principal** (proveedores con tool calling):
+**Grafo principal** (proveedores con tool calling — OpenAI, OpenRouter, Gemini estándar):
 
 ```
 START → enrich_query → agent ⇆ tools(retrieve) → END
@@ -89,9 +90,10 @@ Autenticación, historial, calificaciones y roles viven en Firebase. El backend 
 | `users/{uid}`                         | `email`, `displayName`, `role` (`user`/`admin`/`super-admin`), `createdAt`. |
 | `conversations/{id}`                  | `userId`, `threadId`, `title`, `createdAt`, `updatedAt`, `messageCount`.    |
 | `conversations/{id}/messages/{msgId}` | `role`, `text`, `sources?`, `createdAt`.                                    |
-| `feedback/{id}`                       | `userId`, `rating` (1-5), `comment`, `conversationId`, `createdAt`.         |
+| `feedback/{id}`                       | Calificaciones de conversación (tone, length, usability, overall).          |
+| `message_feedback/{id}`               | Calificaciones por mensaje (pertinence, accuracy, expectedAnswer).          |
 
-Las reglas (`firestore.rules`) garantizan que cada usuario solo acceda a sus conversaciones, que el campo `role` no sea mutable desde el cliente y que el feedback solo lo lean los admins. `firestore.indexes.json` versiona los dos índices compuestos requeridos.
+Las reglas (`firestore.rules`) garantizan que cada usuario solo acceda a sus conversaciones, que el campo `role` no sea mutable desde el cliente y que el feedback solo lo lean los admins. `firestore.indexes.json` versiona los índices compuestos requeridos.
 
 `rag/api/auth.py` ofrece tres dependencias FastAPI: `get_optional_user` (token opcional), `get_current_user` (obligatorio) y `require_admin` (verifica `role` en Firestore).
 
@@ -122,6 +124,8 @@ rag_playas/
 ├── docs/                         ← guías (incluye firebase-config-manual.md)
 ├── firestore.rules               ← reglas de seguridad versionadas
 ├── firestore.indexes.json        ← índices compuestos
+├── docker/                       ← Dockerfiles + nginx.conf
+├── docker-compose.yml            ← stack de despliegue (backend + frontend + nginx)
 ├── infrastructure/               ← Terraform (EC2 Chroma + Ollama)
 ├── scripts/                      ← run_pipeline.sh, ec2_*.sh
 ├── tests/, evaluation/
@@ -136,7 +140,7 @@ rag_playas/
 
 - Python 3.12+, [`uv`](https://docs.astral.sh/uv/)
 - [Bun](https://bun.sh/)
-- Docker (para ChromaDB)
+- Docker (para ChromaDB o despliegue completo)
 - Ollama (local o en EC2)
 - Cuenta de Firebase con Auth + Firestore habilitados
 - API key de al menos un proveedor LLM: OpenAI, OpenRouter o Gemini
@@ -164,36 +168,37 @@ Luego configurar Firebase siguiendo [`docs/firebase-config-manual.md`](docs/fire
 
 **Backend (`.env` en la raíz):**
 
-```dotenv
-# ChromaDB
-CHROMA_HOST=<ip>
-CHROMA_PORT=8000
-CHROMA_COLLECTION=rag_playas_5_docs
+| Variable | Default | Descripción |
+|----------|---------|-------------|
+| `CHROMA_HOST` | `localhost` | Host de ChromaDB |
+| `CHROMA_PORT` | `8000` | Puerto de ChromaDB |
+| `CHROMA_COLLECTION` | `rag_playas` | Nombre de la colección |
+| `OLLAMA_BASE_URL` | `http://localhost:11434` | URL de Ollama |
+| `OLLAMA_EMBEDDING_MODEL` | `embeddinggemma:latest` | Modelo de embeddings |
+| `OLLAMA_RERANKER_MODEL` | `mistral` | Modelo reranker (opcional) |
+| `OPENAI_API_KEY` | — | API key de OpenAI (máxima prioridad) |
+| `OPENAI_MODEL` | `gpt-5.4-mini` | Modelo de OpenAI |
+| `OPENROUTER_API_KEY` | — | API key de OpenRouter (segunda prioridad) |
+| `OPENROUTER_MODEL` | `gpt-5.4-mini` | Modelo de OpenRouter |
+| `GOOGLE_API_KEY` | — | API key de Gemini (tercera prioridad) |
+| `GEMINI_MODEL` | `gemini-3.1-flash-lite` | Modelo de Gemini |
+| `FIREBASE_SERVICE_ACCOUNT_PATH` | `firebase-service-account.json` | Ruta al service account |
+| `QUERY_ENRICHMENT_ENABLED` | `true` | Activar reescritura de consultas |
+| `QUERY_ENRICHMENT_HYDE` | `false` | Activar HyDE (fragmento hipotético) |
 
-# Ollama
-OLLAMA_BASE_URL=http://<ip>:11434
-OLLAMA_EMBEDDING_MODEL=embeddinggemma:latest
-
-# Proveedor LLM (al menos uno)
-OPENAI_API_KEY=...
-OPENROUTER_API_KEY=...
-GOOGLE_API_KEY=...
-
-# Firebase Admin SDK
-FIREBASE_SERVICE_ACCOUNT_PATH=firebase-service-account.json
-```
+Orden de prioridad de proveedores LLM: **OpenAI** → **OpenRouter** → **Gemini** → error.
 
 **Frontend (`frontend/.env.local`):**
 
-```dotenv
-NEXT_PUBLIC_API_URL=http://localhost:8080
-NEXT_PUBLIC_FIREBASE_API_KEY=...
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=...
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=...
-NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=...
-NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=...
-NEXT_PUBLIC_FIREBASE_APP_ID=...
-```
+| Variable | Descripción |
+|----------|-------------|
+| `NEXT_PUBLIC_API_URL` | URL del backend (`http://localhost:8080` en local, `/api` con Docker) |
+| `NEXT_PUBLIC_FIREBASE_API_KEY` | Firebase SDK Web |
+| `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN` | Firebase SDK Web |
+| `NEXT_PUBLIC_FIREBASE_PROJECT_ID` | Firebase SDK Web |
+| `NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET` | Firebase SDK Web |
+| `NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID` | Firebase SDK Web |
+| `NEXT_PUBLIC_FIREBASE_APP_ID` | Firebase SDK Web |
 
 Cómo obtener cada una: secciones 4 y 5 de [`docs/firebase-config-manual.md`](docs/firebase-config-manual.md).
 
@@ -203,10 +208,10 @@ Cómo obtener cada una: secciones 4 y 5 de [`docs/firebase-config-manual.md`](do
 
 Dos instancias EC2 (recomendado con IP elástica). La carpeta `infrastructure/` provisiona ambas con Terraform:
 
-| Máquina  | Tipo        | Almacenamiento | Puerto |
-| -------- | ----------- | -------------- | ------ |
-| ChromaDB | `t3.medium` | 12 GB gp3      | 8000   |
-| Ollama   | `t3.large`  | 20 GB gp3      | 11434  |
+| Máquina  | Tipo        | Almacenamiento | Puerto | Servicio    |
+| -------- | ----------- | -------------- | ------ | ----------- |
+| ChromaDB | `t3.medium` | 12 GB gp3      | 8000   | ChromaDB    |
+| Ollama   | `t3.large`  | 20 GB gp3      | 11434  | Ollama      |
 
 ```bash
 cd infrastructure/ && terraform init && terraform apply
@@ -233,14 +238,57 @@ La documentación de los endpoints está disponible automáticamente en `/docs` 
 
 ---
 
+## Docker (despliegue en una sola máquina)
+
+`docker-compose.yml` despliega los tres servicios (backend, frontend, nginx) en una sola máquina. Nginx actúa como reverse proxy en el puerto 80, enruta `/api/` al backend y `/` al frontend, y desactiva el buffering para streaming SSE.
+
+```bash
+# Construir y levantar
+docker compose up -d --build
+
+# Ver logs
+docker compose logs -f
+
+# Detener
+docker compose down
+```
+
+Requiere `.env` en la raíz (backend) y las variables de Firebase pasadas como build args. Los Dockerfiles están en `docker/`.
+
+**Arquitectura de la stack Docker:**
+
+```
+Puerto 80 (host)
+    └── nginx (reverse proxy)
+        ├── /api/*  → backend:8080  (FastAPI + uvicorn)
+        └── /*      → frontend:3000 (Next.js)
+```
+
+---
+
+## CI/CD
+
+Dos workflows de GitHub Actions en `.github/workflows/`:
+
+| Workflow | Trigger | Jobs |
+|----------|---------|------|
+| `ci.yml` | Push a `main`/`develop`, PRs a `main` | `quality` (Ruff lint + format check) → `test` (unit tests + Codecov) |
+| `tests.yml` | Mismos triggers | Unit tests con cobertura en Python 3.12 |
+
+Type checking (`mypy`) está deshabilitado en CI debido a errores pendientes en módulos de producción.
+
+---
+
 ## Comandos útiles
 
 ```bash
 make install          # dependencias Python
 make lint / format    # ruff
 make test             # pytest unitarios
+make test-cov         # pytest + cobertura HTML
 make test-integration # tests con servicios reales (Chroma + Ollama)
 make pipeline         # pipeline completo de ingesta
 make app / frontend   # API / frontend
+make clean            # eliminar artefactos generados
 make help             # listar todos los targets
 ```
