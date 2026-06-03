@@ -1,4 +1,4 @@
-# Tutorial de construcción del ground truth — Proyecto ATLAS
+# Tutorial de construcción del ground truth · Proyecto ATLAS
 
 > **Dirigido a los profesionales en derecho** que participan en la evaluación del sistema ATLAS.
 > No se requiere ningún conocimiento técnico fuera del área jurídica.
@@ -7,7 +7,7 @@
 
 ## 1. Para qué sirve este tutorial
 
-Este tutorial le explica, paso a paso, cómo construir el conjunto de preguntas y respuestas de referencia — el *ground truth* — que el equipo del proyecto usará para medir qué tan bien responde el sistema ATLAS.
+Este tutorial le explica, paso a paso, cómo construir el conjunto de preguntas y respuestas de referencia (el *ground truth*) que el equipo del proyecto usará para medir qué tan bien responde el sistema ATLAS.
 
 Su aporte consiste en dos cosas: **formular preguntas** sobre los documentos del corpus y **redactar la respuesta correcta** a cada una de ellas desde su perspectiva como experto en derecho costero y de playas. Ese par pregunta-respuesta es el patrón de medición: cuando ATLAS reciba la misma pregunta, su respuesta se comparará con la suya para determinar si el sistema acierta.
 
@@ -21,7 +21,7 @@ ATLAS es un asistente de consulta jurídica especializado en playas y dominio p�
 
 **El sistema únicamente tiene acceso a los siguientes documentos:**
 
-### Jurisprudencia — Tribunal Administrativo del Magdalena (10 sentencias)
+### Jurisprudencia: Tribunal Administrativo del Magdalena (10 sentencias)
 
 | # | Documento |
 |:---:|---|
@@ -41,7 +41,7 @@ ATLAS es un asistente de consulta jurídica especializado en playas y dominio p�
 | # | Documento |
 |:---:|---|
 | 1 | Decreto 2324 de 1984 |
-| 2 | Reglamento Marítimo Colombiano REMAC 5 — DIMAR (edición 2021) |
+| 2 | Reglamento Marítimo Colombiano REMAC 5 - DIMAR (edición 2021) |
 
 > **Tenga esto siempre presente:** todas las preguntas que usted formule deben poder responderse a partir de uno o más de estos documentos. Si la respuesta correcta depende de doctrina, normativa o jurisprudencia que no está en esta lista, la pregunta no es válida para este ejercicio.
 
@@ -59,7 +59,7 @@ Su participación es insustituible porque determinar si una respuesta sobre domi
 
 ## 4. Volumen de trabajo
 
-Usted debe trabajar un documento a la vez. Para cada uno de los 12 documentos del corpus formulará **10 preguntas** — una por cada tipo descrito en la Sección 5 — acompañadas de su respuesta de referencia.
+Usted debe trabajar un documento a la vez. Para cada uno de los 12 documentos del corpus formulará **10 preguntas** (una por cada tipo descrito en la Sección 5) acompañadas de su respuesta de referencia.
 
 | Tipo de documento | N.º de documentos | Preguntas por documento | Total |
 |---|:---:|:---:|:---:|
@@ -71,7 +71,7 @@ La regla fundamental es: **cierre un documento antes de abrir el siguiente**. No
 
 ---
 
-## 5. Los 10 tipos de pregunta — explicación y ejemplos
+## 5. Los 10 tipos de pregunta: explicación y ejemplos
 
 Cada tipo de pregunta está diseñado para verificar que el sistema sea capaz de hacer algo distinto: encontrar un dato, aplicar una regla, conectar información de varias secciones, comparar documentos, etc. A continuación se explica cada uno con ejemplos aplicados al tipo de documentos que usted va a trabajar.
 
@@ -81,7 +81,7 @@ Cada tipo de pregunta está diseñado para verificar que el sistema sea capaz de
 
 **Qué verifica:** que el sistema localice y reproduzca fielmente un dato que figura textualmente en el documento.
 
-**Cómo redactarla:** identifique un dato concreto y explícito del documento — un plazo, una fecha, un número de artículo, el nombre de una entidad demandada, una cifra — y pregunte por él de manera directa. La respuesta debe poder darse con una cita del texto.
+**Cómo redactarla:** identifique un dato concreto y explícito del documento (un plazo, una fecha, un número de artículo, el nombre de una entidad demandada, una cifra) y pregunte por él de manera directa. La respuesta debe poder darse con una cita del texto.
 
 **Qué debe contener su respuesta:** el dato exacto tal como aparece en el documento y la referencia al lugar donde se encuentra (artículo, numeral del resuelve, considerando, etc.).
 
@@ -231,19 +231,19 @@ Cada tipo de pregunta está diseñado para verificar que el sistema sea capaz de
 
 Siga esta secuencia para cada documento:
 
-**Paso 1 — Lea el documento completo antes de redactar nada.**
+**Paso 1. Lea el documento completo antes de redactar nada.**
 Descárguelo del OneDrive y léalo en su totalidad. No intente formular preguntas mientras lee; primero conózcalo. Anote mentalmente (o en un borrador) los datos, definiciones, procedimientos y decisiones que puedan servir para las distintas categorías.
 
-**Paso 2 — Identifique los elementos clave.**
+**Paso 2. Identifique los elementos clave.**
 Antes de escribir la primera pregunta, haga un inventario rápido: ¿qué partes tiene el documento?, ¿qué entidades intervienen?, ¿qué fechas y plazos aparecen?, ¿qué normas se citan?, ¿qué decisiones o mandatos contiene?, ¿hay definiciones formales?
 
-**Paso 3 — Recorra los 10 tipos en orden.**
+**Paso 3. Recorra los 10 tipos en orden.**
 Tome los tipos del 1 al 10 y para cada uno redacte la pregunta y su respuesta de referencia antes de pasar al siguiente. No escriba primero todas las preguntas para luego responderlas: pregunta y respuesta se redactan juntas.
 
-**Paso 4 — No deje ningún tipo sin cubrir.**
+**Paso 4. No deje ningún tipo sin cubrir.**
 Si un tipo de pregunta no encaja bien con el documento en cuestión (por ejemplo, una norma que no describe pasos procedimentales), formule la pregunta más cercana posible y añada una nota breve explicando por qué el tipo no se acomoda del todo. No omita el tipo.
 
-**Paso 5 — Cierre el documento y márquelo en su lista.**
+**Paso 5. Cierre el documento y márquelo en su lista.**
 Solo cuando tenga las 10 preguntas respondidas, marque el documento como terminado y pase al siguiente.
 
 ---
@@ -268,34 +268,15 @@ Entregue todo el trabajo en **un único documento** (Word, PDF o texto plano) co
 DOCUMENTO: [Nombre tal como aparece en el OneDrive]
 TIPO: jurisprudencia / normativa
 
-Tipo 1 — Literal
+Tipo 1: Literal
   Pregunta: ...
   Respuesta: ...
   Nota (opcional): ...
 
-Tipo 2 — Parafraseada
+Tipo 2: Parafraseada
   Pregunta: ...
   Respuesta: ...
   ...
 ```
 
 No necesita usar ningún formato especial ni llenar hojas de cálculo. El equipo del proyecto se encargará de convertir su entrega al formato que requiere el sistema.
-
----
-
-## 9. Preguntas frecuentes
-
-**¿Puedo hacer más de una pregunta de un mismo tipo para un documento?**
-No. La regla es exactamente una pregunta por tipo y por documento. Si un tipo le parece especialmente fértil en ese documento, elija la pregunta que mejor ilustre esa capacidad y déjela.
-
-**¿Qué hago si la información que necesito para responder no está en el documento?**
-Si la respuesta correcta no puede construirse únicamente con el documento que está trabajando (salvo para el Tipo 8, que por definición cruza dos documentos), esa pregunta no es adecuada para ese documento. Reformúlela apuntando a información que sí esté presente.
-
-**¿Debo citar textualmente el documento en la respuesta?**
-Solo cuando el tipo de pregunta lo exija (Tipo 1, Tipo 4). Para los demás tipos, puede parafrasear siempre que sea fiel al contenido y cite la fuente (artículo, sección, numeral).
-
-**¿Qué diferencia hay entre el Tipo 7 y el Tipo 8?**
-El Tipo 7 conecta dos fragmentos del **mismo documento**. El Tipo 8 conecta información de **dos documentos distintos** del corpus. En la práctica, para el Tipo 8 necesitará tener abiertos dos documentos al mismo tiempo.
-
-**¿En qué orden debo trabajar los documentos?**
-En cualquier orden que usted prefiera. Lo importante es terminar uno completo antes de pasar al siguiente.
