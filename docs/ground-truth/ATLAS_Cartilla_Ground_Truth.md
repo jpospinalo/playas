@@ -17,19 +17,39 @@ Esa respuesta suya es la regla de medida. ATLAS contestará la misma pregunta y 
 
 ## 2. Corpus y volumen de trabajo
 
-El corpus está alojado en el bucket **Backup → carpeta `gold/`**, organizado en dos subcarpetas:
+Los documentos están disponibles en el **OneDrive compartido del proyecto**, organizados en dos carpetas:
 
 | Carpeta | Tipo documental | Documentos |
 |---|---|:---:|
-| `gold/jurisprudencia/` | Sentencias del Tribunal Administrativo del Magdalena | _____ |
-| `gold/normativa/` | Decretos, leyes y reglamentos del orden nacional | _____ |
-| **Total** | | **_____** |
+| `jurisprudencia/` | Sentencias del Tribunal Administrativo del Magdalena | 10 |
+| `normativa/` | Decretos y reglamentos del orden nacional | 2 |
+| **Total** | | **12** |
+
+**Relación de documentos disponibles:**
+
+*Jurisprudencia — Tribunal Administrativo del Magdalena (10 sentencias):*
+
+1. AP Carlos Alberto Zúñiga Mejía y otros VS DIMAR y otros
+2. AP Felipe José Campo Fernández VS Corpamag y otros
+3. AP Gabriel Antonio Carrero VS DIMAR y otros
+4. AP Gerardo Antenor Lemus Orozco VS Distrito de Santa Marta y otros
+5. AP Gieseken Cuello & Cía. S. en C. VS DIMAR y otros
+6. AP Inversiones E y D S.A.S VS DIMAR y otros
+7. AP Miguel Ángel Enciso VS Distrito y otros
+8. AP Procuraduría General de la Nación VS Corpamag y otros
+9. AP Rodrigo Martínez Silva VS Minambiente y otros
+10. Sentencia de Segunda Instancia 47001-2332-000-2011-08425-02 (Gabriel Carrero)
+
+*Normativa (2 documentos):*
+
+1. Decreto 2324 de 1984
+2. Reglamento Marítimo Colombiano REMAC 5 — DIMAR (edición 2021)
 
 Por cada documento se deben formular **10 preguntas**, una por cada categoría descrita en la Sección 3.
 
-$$\text{Total de preguntas esperadas} = \text{N.º de documentos} \times 10$$
+$$\text{Total de preguntas esperadas} = 12 \times 10 = 120$$
 
-> Antes de empezar, identifique todos los documentos disponibles en el bucket y lleve una lista para ir marcando los avances.
+> Antes de empezar, lleve una lista de los documentos para marcar su avance.
 
 ---
 
@@ -111,7 +131,7 @@ Cada documento del corpus debe producir exactamente una pregunta de cada una de 
 
 ## 4. Procedimiento sugerido
 
-1. **Tome un documento del bucket** (jurisprudencia o normativa) y léalo íntegramente antes de redactar nada.
+1. **Tome un documento del OneDrive** (jurisprudencia o normativa) y léalo íntegramente antes de redactar nada.
 2. **Recorra las 10 categorías en orden** (de 3.1 a 3.10) y para cada una redacte una pregunta y la respuesta de referencia. Una categoría = una pregunta y una respuesta.
 3. **No deje respuestas en blanco.** Si la categoría no aplica al documento, escriba la pregunta más cercana posible y registre por qué la categoría no se acomoda bien.
 4. **Pase al siguiente documento** solo cuando termine las 10 categorías del anterior.
@@ -123,7 +143,7 @@ Cada documento del corpus debe producir exactamente una pregunta de cada una de 
 
 El ground truth se considera **válido** si cubre **al menos el 70 %** del total esperado de preguntas. Es decir, si el tiempo disponible no alcanza para cubrir todos los documentos, **es preferible omitir documentos completos** (con sus 10 preguntas) y conservar los restantes íntegros, antes que dejar documentos a medio responder.
 
-$$\text{Cobertura mínima válida} = 0{,}70 \times (\text{N.º documentos} \times 10)$$
+$$\text{Cobertura mínima válida} = 0{,}70 \times (12 \times 10) = 84 \text{ preguntas}$$
 
 Reglas operativas del umbral:
 
@@ -137,7 +157,7 @@ Reglas operativas del umbral:
 
 Entregue el material en un único archivo (texto plano, Markdown o documento estructurado) con la siguiente organización mínima por cada documento trabajado:
 
-- Identificador del documento (radicado, número de decreto o nombre del archivo en `gold/`).
+- Identificador del documento (radicado, número de decreto o nombre del archivo en el OneDrive).
 - Tipo (`jurisprudencia` o `normativa`).
 - Para cada una de las 10 categorías: la pregunta, la respuesta de referencia y, opcionalmente, una nota.
 
