@@ -529,6 +529,55 @@
       letter-spacing: 0.02em;
     }
 
+    /* ── PRIORITY TIERS (sec. 4) ────────────────── */
+    .tier-list { display: flex; flex-direction: column; gap: 0.75rem; margin: 1.25rem 0; }
+    .tier {
+      border: 1px solid var(--border);
+      border-left-width: 4px;
+      border-radius: 8px;
+      padding: 0.9rem 1.1rem;
+      background: #f8fafc;
+    }
+    .tier-high { border-left-color: #16a34a; }
+    .tier-mid  { border-left-color: #d97706; }
+    .tier-low  { border-left-color: #64748b; }
+    .tier-head {
+      font-size: 0.88rem;
+      color: var(--text);
+      margin-bottom: 0.55rem;
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+      flex-wrap: wrap;
+    }
+    .tier-tag {
+      color: white;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      padding: 0.18rem 0.6rem;
+      border-radius: 999px;
+    }
+    .tier ul { margin: 0; padding-left: 1.2rem; }
+    .tier li { font-size: 0.86rem; padding: 0.12rem 0; }
+    .tier-ref { color: var(--muted); font-size: 0.78rem; }
+
+    /* ── PRIORITY PILL (sec. 5 type cards) ──────── */
+    .prio-pill {
+      font-size: 0.66rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      padding: 0.18rem 0.55rem;
+      border-radius: 999px;
+      color: white;
+      flex-shrink: 0;
+    }
+    .prio-alta  { background: #16a34a; }
+    .prio-media { background: #d97706; }
+    .prio-baja  { background: #64748b; }
+
     /* ── PRINT ──────────────────────────────────── */
     @media print {
       .sidebar { display: none; }
@@ -560,7 +609,6 @@
   <div class="header-pills">
     <div class="header-pill"><strong>12</strong> documentos</div>
     <div class="header-pill"><strong>10</strong> tipos de pregunta</div>
-    <div class="header-pill"><strong>120</strong> preguntas en total</div>
     <div class="header-pill">OneDrive compartido</div>
   </div>
 </div>
@@ -578,9 +626,9 @@
         <a href="#intro"       class="active"><span class="nav-num">1</span>Para qué sirve</a>
         <a href="#documentos"         ><span class="nav-num">2</span>Documentos del sistema</a>
         <a href="#gt"                 ><span class="nav-num">3</span>Qué es el ground truth</a>
-        <a href="#volumen"            ><span class="nav-num">4</span>Volumen de trabajo</a>
+        <a href="#volumen"            ><span class="nav-num">4</span>Qué preguntas nos interesan más</a>
         <a href="#tipos"              ><span class="nav-num">5</span>Los 10 tipos de pregunta</a>
-        <a href="#procedimiento"      ><span class="nav-num">6</span>Procedimiento paso a paso</a>
+        <a href="#procedimiento"      ><span class="nav-num">6</span>Cómo formular las preguntas</a>
         <a href="#calidad"            ><span class="nav-num">7</span>Criterios de calidad</a>
         <a href="#entrega"            ><span class="nav-num">8</span>Cómo entregar</a>
       </nav>
@@ -648,37 +696,51 @@
         <div class="sec-num">3</div>
         <h2>Qué es el ground truth y por qué importa su criterio</h2>
       </div>
-      <p>El <em>ground truth</em> es, en términos sencillos, el <strong>solucionario del examen</strong>. Usted formula las preguntas y escribe la respuesta correcta como lo haría un experto que acaba de leer el documento. Cuando el equipo evalúe a ATLAS, le hará las mismas preguntas y cotejará las respuestas del sistema con las suyas.</p>
+      <p>El <em>ground truth</em> es, en términos sencillos, una <strong>cartilla de estudios</strong>. Usted formula las preguntas y escribe la respuesta correcta como lo haría un experto que acaba de leer el documento. Cuando el equipo evalúe a ATLAS, le hará las mismas preguntas y cotejará las respuestas del sistema con las suyas.</p>
       <p>Si ATLAS responde igual que usted en lo sustancial, el sistema está funcionando bien. Si hay diferencias relevantes, ahí está el error que hay que corregir.</p>
       <p>Su participación es insustituible porque determinar si una respuesta sobre dominio público marítimo-terrestre, concesiones de playa o jurisprudencia del Tribunal Administrativo del Magdalena es correcta, incompleta o errada requiere <strong>criterio jurídico especializado</strong>. Ese criterio es el que usted aporta.</p>
     </section>
 
-    <!-- ── 4. VOLUMEN ──────────────────────────── -->
+    <!-- ── 4. QUÉ PREGUNTAS NOS INTERESAN MÁS ──── -->
     <section class="section" id="volumen">
       <div class="sec-head">
         <div class="sec-num">4</div>
-        <h2>Volumen de trabajo</h2>
+        <h2>Qué preguntas nos interesan más</h2>
       </div>
-      <p>Usted debe trabajar un documento a la vez. Para cada uno de los 12 documentos formulará <strong>10 preguntas</strong> (una por cada tipo descrito en la Sección 5) acompañadas de su respuesta de referencia.</p>
+      <p>No todos los tipos de pregunta aportan la misma información sobre el desempeño de ATLAS. Las preguntas que obligan al sistema a buscar, conectar y razonar sobre la información son mucho más reveladoras que las que solo piden localizar un dato textual. Por eso le pedimos que <strong>formule una mayor cantidad de preguntas de los tipos de prioridad alta y una menor cantidad de los de prioridad baja.</strong></p>
+      <p>Reparta sus preguntas siguiendo esta prioridad (los tipos se explican en detalle en la Sección 5):</p>
 
-      <div class="vol-stats">
-        <div class="vol-card">
-          <div class="vol-num">10</div>
-          <div class="vol-label">sentencias<br>Tribunal Adm. Magdalena</div>
+      <div class="tier-list">
+        <div class="tier tier-high">
+          <div class="tier-head"><span class="tier-tag" style="background:#16a34a;">Prioridad alta</span> formule la mayor cantidad de estas</div>
+          <ul>
+            <li>Integración dentro del mismo documento <span class="tier-ref">(Tipo 1)</span></li>
+            <li>Cruce de dos documentos del corpus <span class="tier-ref">(Tipo 2)</span></li>
+            <li>Comparativa <span class="tier-ref">(Tipo 3)</span></li>
+            <li>Condicional <span class="tier-ref">(Tipo 4)</span></li>
+          </ul>
         </div>
-        <div class="vol-card">
-          <div class="vol-num">2</div>
-          <div class="vol-label">documentos<br>normativos</div>
+        <div class="tier tier-mid">
+          <div class="tier-head"><span class="tier-tag" style="background:#d97706;">Prioridad media</span> formule una cantidad moderada</div>
+          <ul>
+            <li>Parafraseada <span class="tier-ref">(Tipo 5)</span></li>
+            <li>Definición <span class="tier-ref">(Tipo 6)</span></li>
+            <li>Procedimental <span class="tier-ref">(Tipo 7)</span></li>
+            <li>Ordenamiento <span class="tier-ref">(Tipo 8)</span></li>
+          </ul>
         </div>
-        <div class="vol-card" style="background:#1e3a5f;border-color:#1e3a5f;">
-          <div class="vol-num" style="color:white;">120</div>
-          <div class="vol-label" style="color:rgba(255,255,255,0.7);">preguntas<br>en total</div>
+        <div class="tier tier-low">
+          <div class="tier-head"><span class="tier-tag" style="background:#64748b;">Prioridad baja</span> formule pocas</div>
+          <ul>
+            <li>Literal <span class="tier-ref">(Tipo 9)</span></li>
+            <li>Dato puntual <span class="tier-ref">(Tipo 10)</span></li>
+          </ul>
         </div>
       </div>
 
       <div class="alert alert-warn">
         <span class="alert-icon">&#128204;</span>
-        <p><strong>Regla fundamental:</strong> cierre un documento antes de abrir el siguiente. No deje documentos con preguntas a medias.</p>
+        <p><strong>Por qué esta prioridad:</strong> las preguntas literales y de dato puntual son las que menos información nos aportan: el sistema casi siempre las responde bien y no revelan sus límites. Las preguntas que integran, cruzan, comparan o aplican reglas son las que de verdad ponen a prueba a ATLAS y nos dicen dónde puede mejorar.</p>
       </div>
     </section>
 
@@ -688,204 +750,19 @@
         <div class="sec-num">5</div>
         <h2>Los 10 tipos de pregunta: explicación y ejemplos</h2>
       </div>
-      <p>Cada tipo está diseñado para verificar que el sistema sea capaz de hacer algo distinto: encontrar un dato, aplicar una regla, conectar información de varias secciones, comparar documentos, etc. Haga clic en cada tipo para ver las instrucciones y el ejemplo.</p>
+      <p>Cada tipo está diseñado para verificar que el sistema sea capaz de hacer algo distinto: encontrar un dato, aplicar una regla, conectar información de varias secciones, comparar documentos, etc. Cada uno lleva una etiqueta de <strong>prioridad</strong> (alta, media o baja) según lo descrito en la Sección 4. Haga clic en cada tipo para ver las instrucciones y el ejemplo.</p>
 
       <div class="types-list" style="margin-top:1.25rem;">
 
-        <!-- TIPO 1 -->
+        <!-- TIPO 1 · Integración (Alta) -->
         <div class="type-card" id="t1">
           <button class="type-trigger" onclick="toggleType('t1')">
-            <div class="type-badge" style="background:#2563eb;">1</div>
-            <div class="type-info">
-              <div class="type-name">Pregunta literal</div>
-              <div class="type-tagline">¿Puede el sistema citar un dato exacto tal como aparece en el texto?</div>
-            </div>
-            <span class="type-arrow">&#9660;</span>
-          </button>
-          <div class="type-body">
-            <div class="field">
-              <div class="field-label">Qué verifica</div>
-              <p>Que el sistema localice y reproduzca fielmente un dato que figura textualmente en el documento.</p>
-            </div>
-            <div class="field">
-              <div class="field-label">Cómo redactarla</div>
-              <p>Identifique un dato concreto y explícito del documento (un plazo, una fecha, un número de artículo, el nombre de una entidad demandada, una cifra) y pregunte por él de manera directa. La respuesta debe poder darse con una cita del texto.</p>
-            </div>
-            <div class="field">
-              <div class="field-label">Qué debe contener su respuesta</div>
-              <p>El dato exacto tal como aparece en el documento y la referencia al lugar donde se encuentra (artículo, numeral del resuelve, considerando, etc.).</p>
-            </div>
-            <div class="example-wrap">
-              <div class="example-label">Ejemplo aplicado</div>
-              <div class="ex-q"><strong>Pregunta:</strong> ¿Qué plazo fijó el Tribunal Administrativo del Magdalena para que DIMAR cumpliera la orden de remoción en la sentencia de la acción popular de Gerardo Antenor Lemus Orozco?</div>
-              <div class="ex-a"><strong>Respuesta de referencia:</strong> [Plazo exacto tal como aparece en el numeral correspondiente del resuelve, con referencia a ese numeral.]</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- TIPO 2 -->
-        <div class="type-card" id="t2">
-          <button class="type-trigger" onclick="toggleType('t2')">
-            <div class="type-badge" style="background:#7c3aed;">2</div>
-            <div class="type-info">
-              <div class="type-name">Pregunta parafraseada</div>
-              <div class="type-tagline">¿Entiende el sistema la pregunta aunque esté formulada con otras palabras?</div>
-            </div>
-            <span class="type-arrow">&#9660;</span>
-          </button>
-          <div class="type-body">
-            <div class="field">
-              <div class="field-label">Qué verifica</div>
-              <p>Que el sistema comprenda la pregunta aunque esté formulada con palabras distintas a las del documento.</p>
-            </div>
-            <div class="field">
-              <div class="field-label">Cómo redactarla</div>
-              <p>Tome un contenido del documento y redacte la pregunta con su propio vocabulario, evitando copiar expresiones literales del texto. Piense en cómo formularía esa pregunta alguien que no conoce el documento pero sí el tema.</p>
-            </div>
-            <div class="field">
-              <div class="field-label">Qué debe contener su respuesta</div>
-              <p>La misma información que daría si la pregunta hubiera empleado las palabras exactas del documento.</p>
-            </div>
-            <div class="example-wrap">
-              <div class="example-label">Ejemplo aplicado</div>
-              <div class="ex-q"><strong>En lugar de preguntar:</strong> <em>"¿qué establece el artículo X sobre la franja de bajamar?"</em>,<br><strong>redacte:</strong> <em>"¿qué parte de la orilla del mar queda fuera del alcance de los particulares cuando la marea baja, según el Decreto 2324 de 1984?"</em></div>
-              <div class="ex-a">La respuesta es idéntica en ambos casos; solo difiere el punto de partida de la pregunta.</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- TIPO 3 -->
-        <div class="type-card" id="t3">
-          <button class="type-trigger" onclick="toggleType('t3')">
-            <div class="type-badge" style="background:#d97706;">3</div>
-            <div class="type-info">
-              <div class="type-name">Pregunta de dato puntual</div>
-              <div class="type-tagline">¿Extrae el sistema un único dato sin añadir información que no se pidió?</div>
-            </div>
-            <span class="type-arrow">&#9660;</span>
-          </button>
-          <div class="type-body">
-            <div class="field">
-              <div class="field-label">Qué verifica</div>
-              <p>Que el sistema extraiga un único dato sin añadir información que no se solicitó.</p>
-            </div>
-            <div class="field">
-              <div class="field-label">Cómo redactarla</div>
-              <p>Pida un solo elemento: número de radicado, nombre del magistrado ponente, fecha del fallo, número de artículo, nombre de la norma citada en la sentencia. La respuesta ideal cabe en una sola línea.</p>
-            </div>
-            <div class="field">
-              <div class="field-label">Qué debe contener su respuesta</div>
-              <p>Únicamente el dato solicitado. Si quiere precisar de qué parte del documento proviene, hágalo en una nota breve separada de la respuesta.</p>
-            </div>
-            <div class="example-wrap">
-              <div class="example-label">Ejemplo aplicado</div>
-              <div class="ex-q"><strong>Pregunta:</strong> ¿Cuál es el número de radicado de la acción popular instaurada por Felipe José Campo Fernández?</div>
-              <div class="ex-a"><strong>Respuesta de referencia:</strong> [Número de radicado exacto.]</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- TIPO 4 -->
-        <div class="type-card" id="t4">
-          <button class="type-trigger" onclick="toggleType('t4')">
-            <div class="type-badge" style="background:#059669;">4</div>
-            <div class="type-info">
-              <div class="type-name">Pregunta de definición</div>
-              <div class="type-tagline">¿Identifica el sistema las definiciones jurídicas formales del documento?</div>
-            </div>
-            <span class="type-arrow">&#9660;</span>
-          </button>
-          <div class="type-body">
-            <div class="field">
-              <div class="field-label">Qué verifica</div>
-              <p>Que el sistema identifique y reproduzca definiciones jurídicas o técnicas que el documento establece de manera formal.</p>
-            </div>
-            <div class="field">
-              <div class="field-label">Cómo redactarla</div>
-              <p>Pida la definición de un concepto que el documento defina explícitamente. El Decreto 2324 de 1984 y el REMAC 5 contienen múltiples definiciones formales; las sentencias suelen citarlas o aplicarlas.</p>
-            </div>
-            <div class="field">
-              <div class="field-label">Qué debe contener su respuesta</div>
-              <p>La definición tal como la formula el documento, con la cita del artículo o sección. Si el documento usa el concepto sin definirlo formalmente, indíquelo: <strong>no complemente la respuesta con fuentes externas</strong>.</p>
-            </div>
-            <div class="example-wrap">
-              <div class="example-label">Ejemplo aplicado</div>
-              <div class="ex-q"><strong>Pregunta:</strong> ¿Cómo define el Decreto 2324 de 1984 el concepto de "playa marítima"?</div>
-              <div class="ex-a"><strong>Respuesta de referencia:</strong> [Definición textual del artículo correspondiente + número del artículo.]</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- TIPO 5 -->
-        <div class="type-card" id="t5">
-          <button class="type-trigger" onclick="toggleType('t5')">
-            <div class="type-badge" style="background:#0891b2;">5</div>
-            <div class="type-info">
-              <div class="type-name">Pregunta procedimental</div>
-              <div class="type-tagline">¿Explica el sistema una secuencia de actuaciones en el orden correcto?</div>
-            </div>
-            <span class="type-arrow">&#9660;</span>
-          </button>
-          <div class="type-body">
-            <div class="field">
-              <div class="field-label">Qué verifica</div>
-              <p>Que el sistema explique una secuencia de actuaciones o trámite en el orden correcto, sin saltarse ni agregar pasos.</p>
-            </div>
-            <div class="field">
-              <div class="field-label">Cómo redactarla</div>
-              <p>Pregunte por un procedimiento o secuencia que el documento describa. En las sentencias: la secuencia de actuaciones procesales (admisión, notificaciones, traslados, pruebas, fallo); en la normativa: el trámite para obtener una concesión, permiso o autorización.</p>
-            </div>
-            <div class="field">
-              <div class="field-label">Qué debe contener su respuesta</div>
-              <p>Los pasos en el orden en que aparecen en el documento, sin agregar etapas que el texto no mencione explícitamente.</p>
-            </div>
-            <div class="example-wrap">
-              <div class="example-label">Ejemplo aplicado</div>
-              <div class="ex-q"><strong>Pregunta:</strong> ¿Qué actuaciones procesales describe la sentencia de la acción popular de Inversiones E y D S.A.S desde la admisión de la demanda hasta el fallo de primera instancia?</div>
-              <div class="ex-a"><strong>Respuesta de referencia:</strong> [Secuencia de actuaciones en el orden en que aparecen en el documento.]</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- TIPO 6 -->
-        <div class="type-card" id="t6">
-          <button class="type-trigger" onclick="toggleType('t6')">
-            <div class="type-badge" style="background:#dc2626;">6</div>
-            <div class="type-info">
-              <div class="type-name">Pregunta condicional</div>
-              <div class="type-tagline">¿Aplica el sistema correctamente una regla cuando se activa su supuesto de hecho?</div>
-            </div>
-            <span class="type-arrow">&#9660;</span>
-          </button>
-          <div class="type-body">
-            <div class="field">
-              <div class="field-label">Qué verifica</div>
-              <p>Que el sistema aplique correctamente una regla jurídica cuando se presenta el supuesto de hecho que la activa.</p>
-            </div>
-            <div class="field">
-              <div class="field-label">Cómo redactarla</div>
-              <p>Plantee un supuesto concreto y pregunte qué establece el documento que debe ocurrir en ese caso. Este tipo es especialmente útil con la normativa (Decreto 2324, REMAC 5) y con los considerandos de las sentencias donde el Tribunal aplica una regla a una situación específica.</p>
-            </div>
-            <div class="field">
-              <div class="field-label">Qué debe contener su respuesta</div>
-              <p>La regla que aplica al supuesto, su fundamento en el documento y, si el documento contempla varias condiciones o excepciones, la distinción entre ellas.</p>
-            </div>
-            <div class="example-wrap">
-              <div class="example-label">Ejemplo aplicado</div>
-              <div class="ex-q"><strong>Pregunta:</strong> Según el Decreto 2324 de 1984, ¿qué consecuencias jurídicas acarrea construir en zona de bajamar sin autorización de la Dirección General Marítima?</div>
-              <div class="ex-a"><strong>Respuesta de referencia:</strong> [Consecuencias previstas en el artículo correspondiente + número del artículo.]</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- TIPO 7 -->
-        <div class="type-card" id="t7">
-          <button class="type-trigger" onclick="toggleType('t7')">
-            <div class="type-badge" style="background:#4f46e5;">7</div>
+            <div class="type-badge" style="background:#4f46e5;">1</div>
             <div class="type-info">
               <div class="type-name">Pregunta de integración (mismo documento)</div>
               <div class="type-tagline">¿Conecta el sistema información dispersa en distintas partes del mismo documento?</div>
             </div>
+            <span class="prio-pill prio-alta">Alta</span>
             <span class="type-arrow">&#9660;</span>
           </button>
           <div class="type-body">
@@ -909,14 +786,15 @@
           </div>
         </div>
 
-        <!-- TIPO 8 -->
-        <div class="type-card" id="t8">
-          <button class="type-trigger" onclick="toggleType('t8')">
-            <div class="type-badge" style="background:#ea580c;">8</div>
+        <!-- TIPO 2 · Cruce de dos documentos (Alta) -->
+        <div class="type-card" id="t2">
+          <button class="type-trigger" onclick="toggleType('t2')">
+            <div class="type-badge" style="background:#ea580c;">2</div>
             <div class="type-info">
               <div class="type-name">Pregunta que cruza dos documentos</div>
               <div class="type-tagline">¿Combina el sistema información de más de un documento del corpus?</div>
             </div>
+            <span class="prio-pill prio-alta">Alta</span>
             <span class="type-arrow">&#9660;</span>
           </button>
           <div class="type-body">
@@ -941,14 +819,15 @@
           </div>
         </div>
 
-        <!-- TIPO 9 -->
-        <div class="type-card" id="t9">
-          <button class="type-trigger" onclick="toggleType('t9')">
-            <div class="type-badge" style="background:#db2777;">9</div>
+        <!-- TIPO 3 · Comparativa (Alta) -->
+        <div class="type-card" id="t3">
+          <button class="type-trigger" onclick="toggleType('t3')">
+            <div class="type-badge" style="background:#db2777;">3</div>
             <div class="type-info">
               <div class="type-name">Pregunta comparativa</div>
               <div class="type-tagline">¿Contrasta el sistema posturas, decisiones o reglas con un criterio claro?</div>
             </div>
+            <span class="prio-pill prio-alta">Alta</span>
             <span class="type-arrow">&#9660;</span>
           </button>
           <div class="type-body">
@@ -972,14 +851,143 @@
           </div>
         </div>
 
-        <!-- TIPO 10 -->
-        <div class="type-card" id="t10">
-          <button class="type-trigger" onclick="toggleType('t10')">
-            <div class="type-badge" style="background:#0d9488;">10</div>
+        <!-- TIPO 4 · Condicional (Alta) -->
+        <div class="type-card" id="t4">
+          <button class="type-trigger" onclick="toggleType('t4')">
+            <div class="type-badge" style="background:#dc2626;">4</div>
+            <div class="type-info">
+              <div class="type-name">Pregunta condicional</div>
+              <div class="type-tagline">¿Aplica el sistema correctamente una regla cuando se activa su supuesto de hecho?</div>
+            </div>
+            <span class="prio-pill prio-alta">Alta</span>
+            <span class="type-arrow">&#9660;</span>
+          </button>
+          <div class="type-body">
+            <div class="field">
+              <div class="field-label">Qué verifica</div>
+              <p>Que el sistema aplique correctamente una regla jurídica cuando se presenta el supuesto de hecho que la activa.</p>
+            </div>
+            <div class="field">
+              <div class="field-label">Cómo redactarla</div>
+              <p>Plantee un supuesto concreto y pregunte qué establece el documento que debe ocurrir en ese caso. Este tipo es especialmente útil con la normativa (Decreto 2324, REMAC 5) y con los considerandos de las sentencias donde el Tribunal aplica una regla a una situación específica.</p>
+            </div>
+            <div class="field">
+              <div class="field-label">Qué debe contener su respuesta</div>
+              <p>La regla que aplica al supuesto, su fundamento en el documento y, si el documento contempla varias condiciones o excepciones, la distinción entre ellas.</p>
+            </div>
+            <div class="example-wrap">
+              <div class="example-label">Ejemplo aplicado</div>
+              <div class="ex-q"><strong>Pregunta:</strong> Según el Decreto 2324 de 1984, ¿qué consecuencias jurídicas acarrea construir en zona de bajamar sin autorización de la Dirección General Marítima?</div>
+              <div class="ex-a"><strong>Respuesta de referencia:</strong> [Consecuencias previstas en el artículo correspondiente + número del artículo.]</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TIPO 5 · Parafraseada (Media) -->
+        <div class="type-card" id="t5">
+          <button class="type-trigger" onclick="toggleType('t5')">
+            <div class="type-badge" style="background:#7c3aed;">5</div>
+            <div class="type-info">
+              <div class="type-name">Pregunta parafraseada</div>
+              <div class="type-tagline">¿Entiende el sistema la pregunta aunque esté formulada con otras palabras?</div>
+            </div>
+            <span class="prio-pill prio-media">Media</span>
+            <span class="type-arrow">&#9660;</span>
+          </button>
+          <div class="type-body">
+            <div class="field">
+              <div class="field-label">Qué verifica</div>
+              <p>Que el sistema comprenda la pregunta aunque esté formulada con palabras distintas a las del documento.</p>
+            </div>
+            <div class="field">
+              <div class="field-label">Cómo redactarla</div>
+              <p>Tome un contenido del documento y redacte la pregunta con su propio vocabulario, evitando copiar expresiones literales del texto. Piense en cómo formularía esa pregunta alguien que no conoce el documento pero sí el tema.</p>
+            </div>
+            <div class="field">
+              <div class="field-label">Qué debe contener su respuesta</div>
+              <p>La misma información que daría si la pregunta hubiera empleado las palabras exactas del documento.</p>
+            </div>
+            <div class="example-wrap">
+              <div class="example-label">Ejemplo aplicado</div>
+              <div class="ex-q"><strong>En lugar de preguntar:</strong> <em>"¿qué establece el artículo X sobre la franja de bajamar?"</em>,<br><strong>redacte:</strong> <em>"¿qué parte de la orilla del mar queda fuera del alcance de los particulares cuando la marea baja, según el Decreto 2324 de 1984?"</em></div>
+              <div class="ex-a">La respuesta es idéntica en ambos casos; solo difiere el punto de partida de la pregunta.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TIPO 6 · Definición (Media) -->
+        <div class="type-card" id="t6">
+          <button class="type-trigger" onclick="toggleType('t6')">
+            <div class="type-badge" style="background:#059669;">6</div>
+            <div class="type-info">
+              <div class="type-name">Pregunta de definición</div>
+              <div class="type-tagline">¿Identifica el sistema las definiciones jurídicas formales del documento?</div>
+            </div>
+            <span class="prio-pill prio-media">Media</span>
+            <span class="type-arrow">&#9660;</span>
+          </button>
+          <div class="type-body">
+            <div class="field">
+              <div class="field-label">Qué verifica</div>
+              <p>Que el sistema identifique y reproduzca definiciones jurídicas o técnicas que el documento establece de manera formal.</p>
+            </div>
+            <div class="field">
+              <div class="field-label">Cómo redactarla</div>
+              <p>Pida la definición de un concepto que el documento defina explícitamente. El Decreto 2324 de 1984 y el REMAC 5 contienen múltiples definiciones formales; las sentencias suelen citarlas o aplicarlas.</p>
+            </div>
+            <div class="field">
+              <div class="field-label">Qué debe contener su respuesta</div>
+              <p>La definición tal como la formula el documento, con la cita del artículo o sección. Si el documento usa el concepto sin definirlo formalmente, indíquelo: <strong>no complemente la respuesta con fuentes externas</strong>.</p>
+            </div>
+            <div class="example-wrap">
+              <div class="example-label">Ejemplo aplicado</div>
+              <div class="ex-q"><strong>Pregunta:</strong> ¿Cómo define el Decreto 2324 de 1984 el concepto de "playa marítima"?</div>
+              <div class="ex-a"><strong>Respuesta de referencia:</strong> [Definición textual del artículo correspondiente + número del artículo.]</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TIPO 7 · Procedimental (Media) -->
+        <div class="type-card" id="t7">
+          <button class="type-trigger" onclick="toggleType('t7')">
+            <div class="type-badge" style="background:#0891b2;">7</div>
+            <div class="type-info">
+              <div class="type-name">Pregunta procedimental</div>
+              <div class="type-tagline">¿Explica el sistema una secuencia de actuaciones en el orden correcto?</div>
+            </div>
+            <span class="prio-pill prio-media">Media</span>
+            <span class="type-arrow">&#9660;</span>
+          </button>
+          <div class="type-body">
+            <div class="field">
+              <div class="field-label">Qué verifica</div>
+              <p>Que el sistema explique una secuencia de actuaciones o trámite en el orden correcto, sin saltarse ni agregar pasos.</p>
+            </div>
+            <div class="field">
+              <div class="field-label">Cómo redactarla</div>
+              <p>Pregunte por un procedimiento o secuencia que el documento describa. En las sentencias: la secuencia de actuaciones procesales (admisión, notificaciones, traslados, pruebas, fallo); en la normativa: el trámite para obtener una concesión, permiso o autorización.</p>
+            </div>
+            <div class="field">
+              <div class="field-label">Qué debe contener su respuesta</div>
+              <p>Los pasos en el orden en que aparecen en el documento, sin agregar etapas que el texto no mencione explícitamente.</p>
+            </div>
+            <div class="example-wrap">
+              <div class="example-label">Ejemplo aplicado</div>
+              <div class="ex-q"><strong>Pregunta:</strong> ¿Qué actuaciones procesales describe la sentencia de la acción popular de Inversiones E y D S.A.S desde la admisión de la demanda hasta el fallo de primera instancia?</div>
+              <div class="ex-a"><strong>Respuesta de referencia:</strong> [Secuencia de actuaciones en el orden en que aparecen en el documento.]</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TIPO 8 · Ordenamiento (Media) -->
+        <div class="type-card" id="t8">
+          <button class="type-trigger" onclick="toggleType('t8')">
+            <div class="type-badge" style="background:#0d9488;">8</div>
             <div class="type-info">
               <div class="type-name">Pregunta de ordenamiento</div>
               <div class="type-tagline">¿Ordena el sistema elementos del corpus según un criterio explícito y verificable?</div>
             </div>
+            <span class="prio-pill prio-media">Media</span>
             <span class="type-arrow">&#9660;</span>
           </button>
           <div class="type-body">
@@ -1003,44 +1011,85 @@
           </div>
         </div>
 
+        <!-- TIPO 9 · Literal (Baja) -->
+        <div class="type-card" id="t9">
+          <button class="type-trigger" onclick="toggleType('t9')">
+            <div class="type-badge" style="background:#2563eb;">9</div>
+            <div class="type-info">
+              <div class="type-name">Pregunta literal</div>
+              <div class="type-tagline">¿Puede el sistema citar un dato exacto tal como aparece en el texto?</div>
+            </div>
+            <span class="prio-pill prio-baja">Baja</span>
+            <span class="type-arrow">&#9660;</span>
+          </button>
+          <div class="type-body">
+            <div class="field">
+              <div class="field-label">Qué verifica</div>
+              <p>Que el sistema localice y reproduzca fielmente un dato que figura textualmente en el documento.</p>
+            </div>
+            <div class="field">
+              <div class="field-label">Cómo redactarla</div>
+              <p>Identifique un dato concreto y explícito del documento (un plazo, una fecha, un número de artículo, el nombre de una entidad demandada, una cifra) y pregunte por él de manera directa. La respuesta debe poder darse con una cita del texto.</p>
+            </div>
+            <div class="field">
+              <div class="field-label">Qué debe contener su respuesta</div>
+              <p>El dato exacto tal como aparece en el documento y la referencia al lugar donde se encuentra (artículo, numeral del resuelve, considerando, etc.).</p>
+            </div>
+            <div class="example-wrap">
+              <div class="example-label">Ejemplo aplicado</div>
+              <div class="ex-q"><strong>Pregunta:</strong> ¿Qué plazo fijó el Tribunal Administrativo del Magdalena para que DIMAR cumpliera la orden de remoción en la sentencia de la acción popular de Gerardo Antenor Lemus Orozco?</div>
+              <div class="ex-a"><strong>Respuesta de referencia:</strong> [Plazo exacto tal como aparece en el numeral correspondiente del resuelve, con referencia a ese numeral.]</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TIPO 10 · Dato puntual (Baja) -->
+        <div class="type-card" id="t10">
+          <button class="type-trigger" onclick="toggleType('t10')">
+            <div class="type-badge" style="background:#d97706;">10</div>
+            <div class="type-info">
+              <div class="type-name">Pregunta de dato puntual</div>
+              <div class="type-tagline">¿Extrae el sistema un único dato sin añadir información que no se pidió?</div>
+            </div>
+            <span class="prio-pill prio-baja">Baja</span>
+            <span class="type-arrow">&#9660;</span>
+          </button>
+          <div class="type-body">
+            <div class="field">
+              <div class="field-label">Qué verifica</div>
+              <p>Que el sistema extraiga un único dato sin añadir información que no se solicitó.</p>
+            </div>
+            <div class="field">
+              <div class="field-label">Cómo redactarla</div>
+              <p>Pida un solo elemento: número de radicado, nombre del magistrado ponente, fecha del fallo, número de artículo, nombre de la norma citada en la sentencia. La respuesta ideal cabe en una sola línea.</p>
+            </div>
+            <div class="field">
+              <div class="field-label">Qué debe contener su respuesta</div>
+              <p>Únicamente el dato solicitado. Si quiere precisar de qué parte del documento proviene, hágalo en una nota breve separada de la respuesta.</p>
+            </div>
+            <div class="example-wrap">
+              <div class="example-label">Ejemplo aplicado</div>
+              <div class="ex-q"><strong>Pregunta:</strong> ¿Cuál es el número de radicado de la acción popular instaurada por Felipe José Campo Fernández?</div>
+              <div class="ex-a"><strong>Respuesta de referencia:</strong> [Número de radicado exacto.]</div>
+            </div>
+          </div>
+        </div>
+
       </div><!-- /types-list -->
     </section>
 
-    <!-- ── 6. PROCEDIMIENTO ────────────────────── -->
+    <!-- ── 6. CÓMO FORMULAR LAS PREGUNTAS ──────── -->
     <section class="section" id="procedimiento">
       <div class="sec-head">
         <div class="sec-num">6</div>
-        <h2>Procedimiento paso a paso</h2>
+        <h2>Cómo formular y registrar las preguntas</h2>
       </div>
-      <p style="margin-bottom:1.5rem;">Siga esta secuencia para cada uno de los 12 documentos:</p>
-
-      <div class="timeline">
-        <div class="t-step">
-          <div class="t-dot">1</div>
-          <h4>Lea el documento completo antes de redactar nada</h4>
-          <p>Descárguelo del OneDrive y léalo en su totalidad. No intente formular preguntas mientras lee; primero conózcalo. Anote mentalmente (o en un borrador) los datos, definiciones, procedimientos y decisiones que puedan servir para las distintas categorías.</p>
-        </div>
-        <div class="t-step">
-          <div class="t-dot">2</div>
-          <h4>Identifique los elementos clave</h4>
-          <p>Antes de escribir la primera pregunta, haga un inventario rápido: ¿qué partes tiene el documento?, ¿qué entidades intervienen?, ¿qué fechas y plazos aparecen?, ¿qué normas se citan?, ¿qué decisiones o mandatos contiene?, ¿hay definiciones formales?</p>
-        </div>
-        <div class="t-step">
-          <div class="t-dot">3</div>
-          <h4>Recorra los 10 tipos en orden</h4>
-          <p>Tome los tipos del 1 al 10 y para cada uno redacte la pregunta y su respuesta de referencia antes de pasar al siguiente. No escriba primero todas las preguntas para luego responderlas: pregunta y respuesta se redactan juntas.</p>
-        </div>
-        <div class="t-step">
-          <div class="t-dot">4</div>
-          <h4>No deje ningún tipo sin cubrir</h4>
-          <p>Si un tipo de pregunta no encaja bien con el documento en cuestión (por ejemplo, una norma que no describe pasos procedimentales), formule la pregunta más cercana posible y añada una nota breve explicando por qué el tipo no se acomoda del todo. No omita el tipo.</p>
-        </div>
-        <div class="t-step">
-          <div class="t-dot">5</div>
-          <h4>Cierre el documento y márquelo en su lista</h4>
-          <p>Solo cuando tenga las 10 preguntas respondidas, marque el documento como terminado y pase al siguiente.</p>
-        </div>
+      <p>No es necesario cubrir todos los documentos ni todas las sentencias, ni formular un número fijo de preguntas por documento. Lo importante es que las preguntas que formule sean valiosas según la prioridad descrita en la Sección 4 (más preguntas de prioridad alta, menos de prioridad baja) y que cada una venga acompañada de su respuesta de referencia.</p>
+      <div class="alert alert-warn">
+        <span class="alert-icon">&#128204;</span>
+        <p>Para cada pregunta, <strong>indique siempre a qué sentencia o documento corresponde</strong> (y, en las preguntas que cruzan fuentes, a cuáles dos documentos). Sin esa referencia no podemos verificar la respuesta ni ubicarla dentro del corpus.</p>
       </div>
+      <p>Antes de redactar una pregunta conviene leer el documento y tener claros sus elementos clave —entidades que intervienen, fechas y plazos, normas citadas, decisiones o mandatos y definiciones formales—, de modo que tanto la pregunta como su respuesta reflejen fielmente el contenido del documento. Redacte siempre la pregunta y su respuesta de referencia juntas, no todas las preguntas primero y las respuestas después.</p>
     </section>
 
     <!-- ── 7. CRITERIOS DE CALIDAD ─────────────── -->
@@ -1080,25 +1129,25 @@
         <div class="sec-num">8</div>
         <h2>Cómo entregar el material</h2>
       </div>
-      <p>Entregue todo el trabajo en <strong>un único documento</strong> (Word, PDF o texto plano). Repita la siguiente estructura para cada uno de los 12 documentos trabajados:</p>
+      <p>Entregue todo el trabajo en <strong>un único documento</strong> (Word, PDF o texto plano). Registre una entrada por cada pregunta, indicando su tipo, el documento o sentencia al que corresponde, la pregunta y su respuesta de referencia:</p>
 
       <div class="dt-wrap">
 
-        <!-- Cabecera del documento -->
-        <div class="dt-doc-header">
-          <span class="dt-doc-label">Documento</span>
-          <span class="dt-doc-value">Nombre tal como aparece en el OneDrive</span>
-          <span class="dt-doc-label">Tipo</span>
-          <span class="dt-doc-value">jurisprudencia &nbsp;/&nbsp; normativa</span>
-        </div>
-
-        <!-- Tipo 1 -->
+        <!-- Pregunta 1 -->
         <div class="dt-entry">
           <div class="dt-entry-title">
             <span class="dt-num" style="background:#2563eb;">1</span>
-            <span class="dt-type-name">Literal</span>
+            <span class="dt-type-name">Pregunta</span>
           </div>
           <div class="dt-fields">
+            <div class="dt-field-row">
+              <span class="dt-field-key">Tipo</span>
+              <div class="dt-field-line"></div>
+            </div>
+            <div class="dt-field-row">
+              <span class="dt-field-key">Documento</span>
+              <div class="dt-field-line"></div>
+            </div>
             <div class="dt-field-row">
               <span class="dt-field-key">Pregunta</span>
               <div class="dt-field-line"></div>
@@ -1117,13 +1166,21 @@
           </div>
         </div>
 
-        <!-- Tipo 2 -->
+        <!-- Pregunta 2 -->
         <div class="dt-entry">
           <div class="dt-entry-title">
             <span class="dt-num" style="background:#7c3aed;">2</span>
-            <span class="dt-type-name">Parafraseada</span>
+            <span class="dt-type-name">Pregunta</span>
           </div>
           <div class="dt-fields">
+            <div class="dt-field-row">
+              <span class="dt-field-key">Tipo</span>
+              <div class="dt-field-line"></div>
+            </div>
+            <div class="dt-field-row">
+              <span class="dt-field-key">Documento</span>
+              <div class="dt-field-line"></div>
+            </div>
             <div class="dt-field-row">
               <span class="dt-field-key">Pregunta</span>
               <div class="dt-field-line"></div>
@@ -1142,9 +1199,9 @@
           </div>
         </div>
 
-        <!-- Tipos 3–10 -->
+        <!-- Siguientes preguntas -->
         <div class="dt-more">
-          Continúe con los tipos 3 al 10 usando la misma estructura: Pregunta · Respuesta · Nota (opcional)
+          Continúe con las demás preguntas usando la misma estructura: Tipo · Documento · Pregunta · Respuesta · Nota (opcional). Recuerde la proporción de la Sección 4: más preguntas de prioridad alta, menos de prioridad baja.
         </div>
 
       </div><!-- /dt-wrap -->
