@@ -1,0 +1,5 @@
+{
+  "framework": null,
+  "buildCommand": "mkdir -p public && cp ATLAS_Tutorial_Ground_Truth.html public/index.html",
+  "outputDirectory": "public"
+}
