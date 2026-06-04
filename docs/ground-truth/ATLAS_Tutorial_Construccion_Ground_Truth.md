@@ -57,117 +57,41 @@ Su participación es insustituible porque determinar si una respuesta sobre domi
 
 ---
 
-## 4. Volumen de trabajo
+## 4. Qué preguntas nos interesan más
 
-Usted debe trabajar un documento a la vez. Para cada uno de los 12 documentos del corpus formulará **10 preguntas** (una por cada tipo descrito en la Sección 5) acompañadas de su respuesta de referencia.
+No todos los tipos de pregunta aportan la misma información sobre el desempeño de ATLAS. Las preguntas que obligan al sistema a buscar, conectar y razonar sobre la información son mucho más reveladoras que las que solo piden localizar un dato textual. Por eso le pedimos que **formule una mayor cantidad de preguntas de los tipos de prioridad alta y una menor cantidad de los de prioridad baja.**
 
-| Tipo de documento | N.º de documentos | Preguntas por documento | Total |
-|---|:---:|:---:|:---:|
-| Jurisprudencia (sentencias TAM) | 10 | 10 | 100 |
-| Normativa | 2 | 10 | 20 |
-| **Total** | **12** | **10** | **120** |
+Reparta sus preguntas siguiendo esta prioridad (los tipos se explican en detalle en la Sección 5):
 
-La regla fundamental es: **cierre un documento antes de abrir el siguiente**. No deje documentos con preguntas a medias.
+**Prioridad alta — formule la mayor cantidad de estas:**
+- Integración dentro del mismo documento (Tipo 1)
+- Cruce de dos documentos del corpus (Tipo 2)
+- Comparativa (Tipo 3)
+- Condicional (Tipo 4)
+
+**Prioridad media — formule una cantidad moderada:**
+- Parafraseada (Tipo 5)
+- Definición (Tipo 6)
+- Procedimental (Tipo 7)
+- Ordenamiento (Tipo 8)
+
+**Prioridad baja — formule pocas:**
+- Literal (Tipo 9)
+- Dato puntual (Tipo 10)
+
+> **Por qué esta prioridad:** las preguntas literales y de dato puntual son las que menos información nos aportan: el sistema casi siempre las responde bien y no revelan sus límites. Las preguntas que integran, cruzan, comparan o aplican reglas son las que de verdad ponen a prueba a ATLAS y nos dicen dónde puede mejorar.
 
 ---
 
 ## 5. Los 10 tipos de pregunta: explicación y ejemplos
 
-Cada tipo de pregunta está diseñado para verificar que el sistema sea capaz de hacer algo distinto: encontrar un dato, aplicar una regla, conectar información de varias secciones, comparar documentos, etc. A continuación se explica cada uno con ejemplos aplicados al tipo de documentos que usted va a trabajar.
+Cada tipo de pregunta está diseñado para verificar que el sistema sea capaz de hacer algo distinto: encontrar un dato, aplicar una regla, conectar información de varias secciones, comparar documentos, etc. A continuación se explica cada uno con ejemplos aplicados al tipo de documentos que usted va a trabajar. Junto al nombre de cada tipo encontrará su **prioridad** (alta, media o baja), según lo descrito en la Sección 4.
 
 ---
 
-### Tipo 1 · Pregunta literal
+### Tipo 1 · Pregunta de integración dentro del mismo documento
 
-**Qué verifica:** que el sistema localice y reproduzca fielmente un dato que figura textualmente en el documento.
-
-**Cómo redactarla:** identifique un dato concreto y explícito del documento (un plazo, una fecha, un número de artículo, el nombre de una entidad demandada, una cifra) y pregunte por él de manera directa. La respuesta debe poder darse con una cita del texto.
-
-**Qué debe contener su respuesta:** el dato exacto tal como aparece en el documento y la referencia al lugar donde se encuentra (artículo, numeral del resuelve, considerando, etc.).
-
-> **Ejemplo:**
-> *Pregunta:* ¿Qué plazo fijó el Tribunal Administrativo del Magdalena para que DIMAR cumpliera la orden de remoción en la sentencia de la acción popular de Gerardo Antenor Lemus Orozco?
->
-> *Respuesta de referencia:* [Plazo exacto tal como aparece en el numeral correspondiente del resuelve, con referencia a ese numeral.]
-
----
-
-### Tipo 2 · Pregunta parafraseada
-
-**Qué verifica:** que el sistema comprenda la pregunta aunque esté formulada con palabras distintas a las del documento.
-
-**Cómo redactarla:** tome un contenido del documento y redacte la pregunta con su propio vocabulario, evitando copiar expresiones literales del texto. Piense en cómo formularía esa pregunta alguien que no conoce el documento pero sí el tema.
-
-**Qué debe contener su respuesta:** la misma información que daría si la pregunta hubiera empleado las palabras exactas del documento.
-
-> **Ejemplo:**
-> En lugar de preguntar *"¿qué establece el artículo X sobre la franja de bajamar?"*, redacte: *"¿qué parte de la orilla del mar queda fuera del alcance de los particulares cuando la marea baja, según el Decreto 2324 de 1984?"*
->
-> La respuesta es idéntica en ambos casos; solo difiere el punto de partida de la pregunta.
-
----
-
-### Tipo 3 · Pregunta de dato puntual
-
-**Qué verifica:** que el sistema extraiga un único dato sin añadir información que no se solicitó.
-
-**Cómo redactarla:** pida un solo elemento: número de radicado, nombre del magistrado ponente, fecha del fallo, número de artículo, nombre de la norma citada en la sentencia. La respuesta ideal cabe en una sola línea.
-
-**Qué debe contener su respuesta:** únicamente el dato solicitado. Si quiere precisar de qué parte del documento proviene, hágalo en una nota breve separada de la respuesta.
-
-> **Ejemplo:**
-> *Pregunta:* ¿Cuál es el número de radicado de la acción popular instaurada por Felipe José Campo Fernández?
->
-> *Respuesta de referencia:* [Número de radicado exacto.]
-
----
-
-### Tipo 4 · Pregunta de definición
-
-**Qué verifica:** que el sistema identifique y reproduzca definiciones jurídicas o técnicas que el documento establece de manera formal.
-
-**Cómo redactarla:** pida la definición de un concepto que el documento defina explícitamente. El Decreto 2324 de 1984 y el REMAC 5 contienen múltiples definiciones formales; las sentencias suelen citarlas o aplicarlas.
-
-**Qué debe contener su respuesta:** la definición tal como la formula el documento, con la cita del artículo o sección. Si el documento usa el concepto sin definirlo formalmente, indíquelo: **no complemente la respuesta con fuentes externas**.
-
-> **Ejemplo:**
-> *Pregunta:* ¿Cómo define el Decreto 2324 de 1984 el concepto de "playa marítima"?
->
-> *Respuesta de referencia:* [Definición textual del artículo correspondiente + número del artículo.]
-
----
-
-### Tipo 5 · Pregunta procedimental
-
-**Qué verifica:** que el sistema explique una secuencia de actuaciones o trámite en el orden correcto, sin saltarse ni agregar pasos.
-
-**Cómo redactarla:** pregunte por un procedimiento o secuencia que el documento describa. En las sentencias: la secuencia de actuaciones procesales (admisión, notificaciones, traslados, pruebas, fallo); en la normativa: el trámite para obtener una concesión, permiso o autorización.
-
-**Qué debe contener su respuesta:** los pasos en el orden en que aparecen en el documento, sin agregar etapas que el texto no mencione explícitamente.
-
-> **Ejemplo:**
-> *Pregunta:* ¿Qué actuaciones procesales describe la sentencia de la acción popular de Inversiones E y D S.A.S desde la admisión de la demanda hasta el fallo de primera instancia?
->
-> *Respuesta de referencia:* [Secuencia de actuaciones en el orden en que aparecen en el documento.]
-
----
-
-### Tipo 6 · Pregunta condicional
-
-**Qué verifica:** que el sistema aplique correctamente una regla jurídica cuando se presenta el supuesto de hecho que la activa.
-
-**Cómo redactarla:** plantee un supuesto concreto y pregunte qué establece el documento que debe ocurrir en ese caso. Este tipo es especialmente útil con la normativa (Decreto 2324, REMAC 5) y con los considerandos de las sentencias donde el Tribunal aplica una regla a una situación específica.
-
-**Qué debe contener su respuesta:** la regla que aplica al supuesto, su fundamento en el documento y, si el documento contempla varias condiciones o excepciones, la distinción entre ellas.
-
-> **Ejemplo:**
-> *Pregunta:* Según el Decreto 2324 de 1984, ¿qué consecuencias jurídicas acarrea construir en zona de bajamar sin autorización de la Dirección General Marítima?
->
-> *Respuesta de referencia:* [Consecuencias previstas en el artículo correspondiente + número del artículo.]
-
----
-
-### Tipo 7 · Pregunta de integración dentro del mismo documento
+**Prioridad: alta** — formule una buena cantidad de este tipo.
 
 **Qué verifica:** que el sistema conecte información que está dispersa en dos o más partes del mismo documento para construir una respuesta completa.
 
@@ -182,7 +106,9 @@ Cada tipo de pregunta está diseñado para verificar que el sistema sea capaz de
 
 ---
 
-### Tipo 8 · Pregunta que cruza dos documentos del corpus
+### Tipo 2 · Pregunta que cruza dos documentos del corpus
+
+**Prioridad: alta** — formule una buena cantidad de este tipo.
 
 **Qué verifica:** que el sistema combine información de más de un documento del corpus para construir una respuesta completa.
 
@@ -197,9 +123,11 @@ Cada tipo de pregunta está diseñado para verificar que el sistema sea capaz de
 
 ---
 
-### Tipo 9 · Pregunta comparativa
+### Tipo 3 · Pregunta comparativa
 
-**Qué verifica:** que el sistema contraste posturas, decisiones o reglas con un criterio claro y explicit.
+**Prioridad: alta** — formule una buena cantidad de este tipo.
+
+**Qué verifica:** que el sistema contraste posturas, decisiones o reglas con un criterio claro y explícito.
 
 **Cómo redactarla:** pida una comparación con un criterio definido. Puede comparar la postura de dos entidades demandadas dentro de una misma sentencia, el tratamiento que dan a un mismo problema jurídico dos sentencias distintas, o las obligaciones que impone el Decreto 2324 frente a las que establece el REMAC 5 sobre un mismo asunto.
 
@@ -212,7 +140,77 @@ Cada tipo de pregunta está diseñado para verificar que el sistema sea capaz de
 
 ---
 
-### Tipo 10 · Pregunta de ordenamiento
+### Tipo 4 · Pregunta condicional
+
+**Prioridad: alta** — formule una buena cantidad de este tipo.
+
+**Qué verifica:** que el sistema aplique correctamente una regla jurídica cuando se presenta el supuesto de hecho que la activa.
+
+**Cómo redactarla:** plantee un supuesto concreto y pregunte qué establece el documento que debe ocurrir en ese caso. Este tipo es especialmente útil con la normativa (Decreto 2324, REMAC 5) y con los considerandos de las sentencias donde el Tribunal aplica una regla a una situación específica.
+
+**Qué debe contener su respuesta:** la regla que aplica al supuesto, su fundamento en el documento y, si el documento contempla varias condiciones o excepciones, la distinción entre ellas.
+
+> **Ejemplo:**
+> *Pregunta:* Según el Decreto 2324 de 1984, ¿qué consecuencias jurídicas acarrea construir en zona de bajamar sin autorización de la Dirección General Marítima?
+>
+> *Respuesta de referencia:* [Consecuencias previstas en el artículo correspondiente + número del artículo.]
+
+---
+
+### Tipo 5 · Pregunta parafraseada
+
+**Prioridad: media.**
+
+**Qué verifica:** que el sistema comprenda la pregunta aunque esté formulada con palabras distintas a las del documento.
+
+**Cómo redactarla:** tome un contenido del documento y redacte la pregunta con su propio vocabulario, evitando copiar expresiones literales del texto. Piense en cómo formularía esa pregunta alguien que no conoce el documento pero sí el tema.
+
+**Qué debe contener su respuesta:** la misma información que daría si la pregunta hubiera empleado las palabras exactas del documento.
+
+> **Ejemplo:**
+> En lugar de preguntar *"¿qué establece el artículo X sobre la franja de bajamar?"*, redacte: *"¿qué parte de la orilla del mar queda fuera del alcance de los particulares cuando la marea baja, según el Decreto 2324 de 1984?"*
+>
+> La respuesta es idéntica en ambos casos; solo difiere el punto de partida de la pregunta.
+
+---
+
+### Tipo 6 · Pregunta de definición
+
+**Prioridad: media.**
+
+**Qué verifica:** que el sistema identifique y reproduzca definiciones jurídicas o técnicas que el documento establece de manera formal.
+
+**Cómo redactarla:** pida la definición de un concepto que el documento defina explícitamente. El Decreto 2324 de 1984 y el REMAC 5 contienen múltiples definiciones formales; las sentencias suelen citarlas o aplicarlas.
+
+**Qué debe contener su respuesta:** la definición tal como la formula el documento, con la cita del artículo o sección. Si el documento usa el concepto sin definirlo formalmente, indíquelo: **no complemente la respuesta con fuentes externas**.
+
+> **Ejemplo:**
+> *Pregunta:* ¿Cómo define el Decreto 2324 de 1984 el concepto de "playa marítima"?
+>
+> *Respuesta de referencia:* [Definición textual del artículo correspondiente + número del artículo.]
+
+---
+
+### Tipo 7 · Pregunta procedimental
+
+**Prioridad: media.**
+
+**Qué verifica:** que el sistema explique una secuencia de actuaciones o trámite en el orden correcto, sin saltarse ni agregar pasos.
+
+**Cómo redactarla:** pregunte por un procedimiento o secuencia que el documento describa. En las sentencias: la secuencia de actuaciones procesales (admisión, notificaciones, traslados, pruebas, fallo); en la normativa: el trámite para obtener una concesión, permiso o autorización.
+
+**Qué debe contener su respuesta:** los pasos en el orden en que aparecen en el documento, sin agregar etapas que el texto no mencione explícitamente.
+
+> **Ejemplo:**
+> *Pregunta:* ¿Qué actuaciones procesales describe la sentencia de la acción popular de Inversiones E y D S.A.S desde la admisión de la demanda hasta el fallo de primera instancia?
+>
+> *Respuesta de referencia:* [Secuencia de actuaciones en el orden en que aparecen en el documento.]
+
+---
+
+### Tipo 8 · Pregunta de ordenamiento
+
+**Prioridad: media.**
 
 **Qué verifica:** que el sistema ordene elementos del corpus según un criterio explícito y verificable.
 
@@ -227,24 +225,47 @@ Cada tipo de pregunta está diseñado para verificar que el sistema sea capaz de
 
 ---
 
-## 6. Procedimiento paso a paso
+### Tipo 9 · Pregunta literal
 
-Siga esta secuencia para cada documento:
+**Prioridad: baja** — formule pocas de este tipo.
 
-**Paso 1. Lea el documento completo antes de redactar nada.**
-Descárguelo del OneDrive y léalo en su totalidad. No intente formular preguntas mientras lee; primero conózcalo. Anote mentalmente (o en un borrador) los datos, definiciones, procedimientos y decisiones que puedan servir para las distintas categorías.
+**Qué verifica:** que el sistema localice y reproduzca fielmente un dato que figura textualmente en el documento.
 
-**Paso 2. Identifique los elementos clave.**
-Antes de escribir la primera pregunta, haga un inventario rápido: ¿qué partes tiene el documento?, ¿qué entidades intervienen?, ¿qué fechas y plazos aparecen?, ¿qué normas se citan?, ¿qué decisiones o mandatos contiene?, ¿hay definiciones formales?
+**Cómo redactarla:** identifique un dato concreto y explícito del documento (un plazo, una fecha, un número de artículo, el nombre de una entidad demandada, una cifra) y pregunte por él de manera directa. La respuesta debe poder darse con una cita del texto.
 
-**Paso 3. Recorra los 10 tipos en orden.**
-Tome los tipos del 1 al 10 y para cada uno redacte la pregunta y su respuesta de referencia antes de pasar al siguiente. No escriba primero todas las preguntas para luego responderlas: pregunta y respuesta se redactan juntas.
+**Qué debe contener su respuesta:** el dato exacto tal como aparece en el documento y la referencia al lugar donde se encuentra (artículo, numeral del resuelve, considerando, etc.).
 
-**Paso 4. No deje ningún tipo sin cubrir.**
-Si un tipo de pregunta no encaja bien con el documento en cuestión (por ejemplo, una norma que no describe pasos procedimentales), formule la pregunta más cercana posible y añada una nota breve explicando por qué el tipo no se acomoda del todo. No omita el tipo.
+> **Ejemplo:**
+> *Pregunta:* ¿Qué plazo fijó el Tribunal Administrativo del Magdalena para que DIMAR cumpliera la orden de remoción en la sentencia de la acción popular de Gerardo Antenor Lemus Orozco?
+>
+> *Respuesta de referencia:* [Plazo exacto tal como aparece en el numeral correspondiente del resuelve, con referencia a ese numeral.]
 
-**Paso 5. Cierre el documento y márquelo en su lista.**
-Solo cuando tenga las 10 preguntas respondidas, marque el documento como terminado y pase al siguiente.
+---
+
+### Tipo 10 · Pregunta de dato puntual
+
+**Prioridad: baja** — formule pocas de este tipo.
+
+**Qué verifica:** que el sistema extraiga un único dato sin añadir información que no se solicitó.
+
+**Cómo redactarla:** pida un solo elemento: número de radicado, nombre del magistrado ponente, fecha del fallo, número de artículo, nombre de la norma citada en la sentencia. La respuesta ideal cabe en una sola línea.
+
+**Qué debe contener su respuesta:** únicamente el dato solicitado. Si quiere precisar de qué parte del documento proviene, hágalo en una nota breve separada de la respuesta.
+
+> **Ejemplo:**
+> *Pregunta:* ¿Cuál es el número de radicado de la acción popular instaurada por Felipe José Campo Fernández?
+>
+> *Respuesta de referencia:* [Número de radicado exacto.]
+
+---
+
+## 6. Cómo formular y registrar las preguntas
+
+No es necesario cubrir todos los documentos ni todas las sentencias, ni formular un número fijo de preguntas por documento. Lo importante es que las preguntas que formule sean valiosas según la prioridad descrita en la Sección 4 (más preguntas de prioridad alta, menos de prioridad baja) y que cada una venga acompañada de su respuesta de referencia.
+
+Para cada pregunta, **indique siempre a qué sentencia o documento corresponde** (y, en las preguntas que cruzan fuentes, a cuáles dos documentos). Sin esa referencia no podemos verificar la respuesta ni ubicarla dentro del corpus.
+
+Antes de redactar una pregunta conviene leer el documento y tener claros sus elementos clave —entidades que intervienen, fechas y plazos, normas citadas, decisiones o mandatos y definiciones formales—, de modo que tanto la pregunta como su respuesta reflejen fielmente el contenido del documento. Redacte siempre la pregunta y su respuesta de referencia juntas, no todas las preguntas primero y las respuestas después.
 
 ---
 
@@ -262,21 +283,24 @@ Una respuesta de referencia es útil para el proyecto cuando cumple estas condic
 
 ## 8. Cómo entregar el material
 
-Entregue todo el trabajo en **un único documento** (Word, PDF o texto plano) con la siguiente organización mínima para cada documento trabajado:
+Entregue todo el trabajo en **un único documento** (Word, PDF o texto plano). Para cada pregunta registre su tipo, la pregunta, la respuesta de referencia y el documento o sentencia al que corresponde:
 
 ```
-DOCUMENTO: [Nombre tal como aparece en el OneDrive]
-TIPO: jurisprudencia / normativa
-
-Tipo 1: Literal
+Pregunta 1
+  Tipo: [p. ej. Integración / Comparativa / Condicional / Literal ...]
+  Documento(s): [Nombre tal como aparece en el OneDrive]
   Pregunta: ...
   Respuesta: ...
   Nota (opcional): ...
 
-Tipo 2: Parafraseada
+Pregunta 2
+  Tipo: ...
+  Documento(s): ...
   Pregunta: ...
   Respuesta: ...
   ...
 ```
+
+Recuerde mantener la proporción de la Sección 4: más preguntas de prioridad alta, menos de prioridad baja.
 
 No necesita usar ningún formato especial ni llenar hojas de cálculo. El equipo del proyecto se encargará de convertir su entrega al formato que requiere el sistema.
