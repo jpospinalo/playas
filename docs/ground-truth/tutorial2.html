@@ -1,0 +1,1422 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tutorial · Ground Truth · Proyecto ATLAS · v33</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* ═══════════════════════════════════════════
+       ATLAS Tutorial · Ground Truth · v32
+       Design System — clean rewrite
+    ═══════════════════════════════════════════ */
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      /* Brand */
+      --navy:        #1a3557;
+      --navy-mid:    #2a5080;
+      --navy-light:  #4a7db5;
+      --navy-pale:   #eaf0f8;
+
+      /* Legacy aliases (keep for inline styles) */
+      --white:       #ffffff;
+      --blue:        #2563eb;
+      --blue-bg:     #eff6ff;
+      --muted:       #6b7c93;
+
+      /* Neutrals */
+      --bg:          #f3f5f9;
+      --surface:     #ffffff;
+      --text:        #1a2436;
+      --text-2:      #3d5066;
+      --border:      #dde3ec;
+      --border-mid:  #c4cdd9;
+
+      /* Semantic */
+      --green:       #0f7a4f;
+      --green-bg:    #edfaf4;
+      --amber:       #b45309;
+      --amber-bg:    #fffbeb;
+      --red:         #c0392b;
+
+      /* Layout */
+      --sidebar-w:   268px;
+      --radius:      14px;
+      --radius-sm:   9px;
+      --radius-xs:   5px;
+
+      /* Shadow */
+      --shadow-xs:   0 1px 2px rgba(0,0,0,0.05);
+      --shadow-sm:   0 1px 3px rgba(20,40,80,0.07), 0 1px 2px rgba(20,40,80,0.04);
+      --shadow:      0 4px 14px rgba(20,40,80,0.09), 0 1px 4px rgba(20,40,80,0.05);
+      --shadow-lg:   0 12px 32px rgba(20,40,80,0.11), 0 4px 8px rgba(20,40,80,0.06);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      font-size: 15px;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* ── TYPOGRAPHY ──────────────────────────────── */
+    h1, h2, h3 { font-family: 'Playfair Display', 'Georgia', serif; }
+    p { margin-bottom: 0.9rem; }
+    p:last-child { margin-bottom: 0; }
+    strong { font-weight: 600; }
+
+    /* ── HEADER ─────────────────────────────────── */
+    .header {
+      background: linear-gradient(150deg, #0c2340 0%, #163358 45%, #1e4878 100%);
+      color: white;
+      padding: 4rem 2.5rem 3.5rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .header::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(circle at 20% 80%, rgba(255,255,255,0.03) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 20%, rgba(147,197,253,0.05) 0%, transparent 50%);
+      pointer-events: none;
+    }
+    .header::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent);
+    }
+    .header > * { position: relative; z-index: 1; }
+
+    .header-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.55rem;
+      background: rgba(255,255,255,0.09);
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 999px;
+      padding: 0.32rem 1.1rem;
+      font-size: 0.68rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+      color: rgba(255,255,255,0.7);
+      font-family: 'Inter', sans-serif;
+    }
+    .header-badge::before {
+      content: '';
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: #4ade80;
+      box-shadow: 0 0 7px rgba(74,222,128,0.7);
+      flex-shrink: 0;
+    }
+    .header h1 {
+      font-size: 2.6rem;
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 1rem;
+      letter-spacing: -0.01em;
+    }
+    .header h1 em { color: #93c5fd; font-style: italic; }
+    .header-sub {
+      color: rgba(255,255,255,0.58);
+      font-size: 0.975rem;
+      max-width: 520px;
+      margin: 0 auto 2.25rem;
+      line-height: 1.65;
+      font-family: 'Inter', sans-serif;
+    }
+    .header-pills {
+      display: flex;
+      justify-content: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+    .header-pill {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.16);
+      border-radius: var(--radius-sm);
+      padding: 0.4rem 1.1rem;
+      font-size: 0.8rem;
+      color: rgba(255,255,255,0.82);
+      font-family: 'Inter', sans-serif;
+    }
+    .header-pill strong { color: #bfdbfe; font-weight: 700; }
+
+    /* ── LAYOUT ─────────────────────────────────── */
+    .layout {
+      display: flex;
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 2.25rem 1.5rem;
+      gap: 2rem;
+      align-items: flex-start;
+    }
+
+    /* ── SIDEBAR ─────────────────────────────────── */
+    .sidebar {
+      width: var(--sidebar-w);
+      flex-shrink: 0;
+      position: sticky;
+      top: 1.5rem;
+    }
+    .sidebar-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem 1rem;
+      box-shadow: var(--shadow-sm);
+    }
+    .sidebar-title {
+      font-size: 0.64rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--muted);
+      font-weight: 700;
+      margin-bottom: 0.9rem;
+      padding: 0 0.45rem;
+      font-family: 'Inter', sans-serif;
+    }
+    .sidebar nav a {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.44rem 0.65rem;
+      border-radius: var(--radius-xs);
+      text-decoration: none;
+      color: var(--text-2);
+      font-size: 0.83rem;
+      transition: background 0.15s, color 0.15s;
+      margin-bottom: 0.08rem;
+      line-height: 1.3;
+      font-family: 'Inter', sans-serif;
+    }
+    .sidebar nav a:hover  { background: var(--navy-pale); color: var(--navy); }
+    .sidebar nav a.active { background: var(--navy-pale); color: var(--navy); font-weight: 600; }
+    .sidebar nav a .nav-num {
+      width: 1.4rem;
+      height: 1.4rem;
+      border-radius: 4px;
+      background: var(--bg);
+      color: var(--muted);
+      font-size: 0.65rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-family: 'Inter', sans-serif;
+    }
+    .sidebar nav a.active .nav-num { background: var(--navy); color: white; }
+    .sidebar-sep { height: 1px; background: var(--border); margin: 0.75rem 0; }
+
+    /* ── MAIN CONTENT ───────────────────────────── */
+    .content { flex: 1; min-width: 0; }
+
+    /* ── SECTION CARD ───────────────────────────── */
+    .section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 2.25rem 2.5rem;
+      margin-bottom: 1.25rem;
+      box-shadow: var(--shadow-sm);
+    }
+    .sec-head {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1.25rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .sec-num {
+      width: 2.15rem;
+      height: 2.15rem;
+      border-radius: 50%;
+      background: var(--navy);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.82rem;
+      font-weight: 700;
+      flex-shrink: 0;
+      font-family: 'Inter', sans-serif;
+      box-shadow: 0 2px 7px rgba(26,53,87,0.28);
+    }
+    .sec-head h2 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--navy);
+      line-height: 1.3;
+    }
+
+    /* ── ALERT ──────────────────────────────────── */
+    .alert {
+      display: flex;
+      gap: 0.85rem;
+      border-radius: var(--radius-sm);
+      padding: 1rem 1.2rem;
+      margin: 1rem 0;
+      font-size: 0.875rem;
+      line-height: 1.6;
+    }
+    .alert p { margin: 0; }
+    .alert p + p { margin-top: 0.45rem; }
+    .alert-warn  { background: var(--amber-bg); border: 1px solid #fcd34d; border-left: 3px solid var(--amber); }
+    .alert-info  { background: var(--blue-bg);  border: 1px solid #bfdbfe; border-left: 3px solid var(--blue); }
+    .alert-guide { background: #f9fafb; border: 1px solid var(--border); border-left: 3px solid var(--navy-mid); }
+    .alert-success { background: var(--green-bg); border: 1px solid #6ee7b7; border-left: 3px solid var(--green); }
+    .alert-icon { font-size: 1.05rem; flex-shrink: 0; margin-top: 0.05rem; }
+
+    /* ── CORPUS TABLE ───────────────────────────── */
+    .corpus-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1rem;
+      margin: 1.25rem 0;
+    }
+    .corpus-block {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      box-shadow: var(--shadow-xs);
+    }
+    .corpus-block-head {
+      padding: 0.65rem 1.1rem;
+      font-size: 0.73rem;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      font-family: 'Inter', sans-serif;
+    }
+    .corpus-block-head.jurisprudencia { background: var(--navy); color: white; }
+    .corpus-block-head.normativa      { background: #0d8a7a; color: white; }
+    .corpus-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      padding: 0.55rem 1.1rem;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.84rem;
+      transition: background 0.12s;
+    }
+    .corpus-item:last-child { border-bottom: none; }
+    .corpus-item:nth-child(even) { background: #f9fafc; }
+    .corpus-item:hover { background: var(--navy-pale); }
+    .corpus-num {
+      min-width: 1.5rem;
+      color: var(--muted);
+      font-size: 0.71rem;
+      padding-top: 0.15rem;
+      text-align: right;
+      font-family: 'Inter', sans-serif;
+    }
+
+    /* ── VOLUME STATS ───────────────────────────── */
+    .vol-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin: 1.25rem 0;
+    }
+    .vol-card {
+      background: var(--bg);
+      border-radius: var(--radius-sm);
+      padding: 1.1rem;
+      text-align: center;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-xs);
+    }
+    .vol-card .vol-num {
+      font-size: 2.1rem;
+      font-weight: 700;
+      color: var(--navy);
+      line-height: 1;
+      font-family: 'Playfair Display', serif;
+    }
+    .vol-card .vol-label {
+      font-size: 0.74rem;
+      color: var(--muted);
+      margin-top: 0.35rem;
+      line-height: 1.35;
+    }
+
+    /* ── TYPES ACCORDION ────────────────────────── */
+    .types-list { display: flex; flex-direction: column; gap: 0.65rem; }
+
+    .type-card {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      transition: box-shadow 0.2s, border-color 0.2s;
+      background: var(--surface);
+    }
+    .type-card:hover { box-shadow: var(--shadow-sm); }
+    .type-card.open  { box-shadow: var(--shadow); border-color: var(--border-mid); }
+
+    .type-trigger {
+      width: 100%;
+      background: none;
+      border: none;
+      text-align: left;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem 1.25rem;
+      transition: background 0.15s;
+    }
+    .type-trigger:hover { background: #fbfcfd; }
+    .type-card.open .type-trigger { background: #f7f9fc; }
+
+    .type-badge {
+      width: 2.1rem;
+      height: 2.1rem;
+      border-radius: var(--radius-xs);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 0.88rem;
+      color: white;
+      flex-shrink: 0;
+      font-family: 'Inter', sans-serif;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.18);
+    }
+    .type-info { flex: 1; text-align: left; }
+    .type-name  { font-size: 0.95rem; font-weight: 700; color: var(--navy); font-family: 'Inter', sans-serif; }
+    .type-tagline { font-size: 0.78rem; color: var(--muted); margin-top: 0.12rem; }
+    .type-arrow {
+      color: var(--muted);
+      font-size: 0.7rem;
+      transition: transform 0.25s cubic-bezier(0.4,0,0.2,1);
+      flex-shrink: 0;
+    }
+    .type-card.open .type-arrow { transform: rotate(180deg); }
+
+    .type-body {
+      display: none;
+      padding: 1.25rem 1.5rem 1.5rem;
+      border-top: 1px solid var(--border);
+      background: #fdfeff;
+    }
+    .type-card.open .type-body { display: block; }
+
+    .field { margin-bottom: 1rem; }
+    .field-label {
+      font-size: 0.63rem;
+      text-transform: uppercase;
+      letter-spacing: 0.13em;
+      color: var(--muted);
+      font-weight: 700;
+      margin-bottom: 0.3rem;
+      font-family: 'Inter', sans-serif;
+    }
+    .field p { font-size: 0.88rem; margin: 0; color: var(--text-2); }
+
+    .example-wrap {
+      background: var(--bg);
+      border-radius: var(--radius-sm);
+      padding: 1.1rem;
+      margin-top: 0.75rem;
+      border: 1px solid var(--border);
+    }
+    .example-label {
+      font-size: 0.63rem;
+      text-transform: uppercase;
+      letter-spacing: 0.13em;
+      color: var(--muted);
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+      font-family: 'Inter', sans-serif;
+    }
+    .ex-q {
+      background: white;
+      border-left: 3px solid var(--blue);
+      padding: 0.6rem 0.9rem;
+      border-radius: 0 var(--radius-xs) var(--radius-xs) 0;
+      font-size: 0.85rem;
+      font-style: italic;
+      margin-bottom: 0.5rem;
+    }
+    .ex-a {
+      background: white;
+      border-left: 3px solid var(--green);
+      padding: 0.6rem 0.9rem;
+      border-radius: 0 var(--radius-xs) var(--radius-xs) 0;
+      font-size: 0.85rem;
+      color: var(--text-2);
+    }
+    .ex-note {
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-top: 0.5rem;
+      font-style: italic;
+    }
+    .ex-bad {
+      background: #fff8f5;
+      border: 1px solid #fdd0c0;
+      border-left: 3px solid #ea580c;
+      padding: 0.65rem 0.9rem;
+      border-radius: var(--radius-xs);
+      font-size: 0.84rem;
+      margin-top: 0.6rem;
+      line-height: 1.55;
+    }
+
+    .ex-template {
+      background: white;
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      border: 1px solid var(--border);
+      margin-bottom: 0.75rem;
+      box-shadow: var(--shadow-xs);
+    }
+    .ex-template-row {
+      display: grid;
+      grid-template-columns: 130px 1fr;
+      gap: 0.75rem;
+      padding: 0.6rem 0.9rem;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.84rem;
+      line-height: 1.55;
+    }
+    .ex-template-row:last-child { border-bottom: none; }
+    .ex-template-row:nth-child(odd) { background: #fdfdfe; }
+    .ex-template-key {
+      font-size: 0.63rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      color: var(--muted);
+      padding-top: 0.15rem;
+      font-family: 'Inter', sans-serif;
+    }
+    .ex-template-value { color: var(--text); }
+    .ex-template-value em { color: var(--muted); }
+
+    .mini-table, .types-summary {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+      font-size: 0.875rem;
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      box-shadow: var(--shadow-xs);
+    }
+    .mini-table th, .mini-table td,
+    .types-summary th, .types-summary td {
+      border: 1px solid var(--border);
+      padding: 0.65rem 0.85rem;
+      vertical-align: top;
+      line-height: 1.55;
+    }
+    .mini-table th, .types-summary th {
+      background: var(--navy-pale);
+      color: var(--navy);
+      text-align: left;
+      font-weight: 700;
+      font-size: 0.82rem;
+      font-family: 'Inter', sans-serif;
+    }
+    .mini-table tr:nth-child(even) td { background: #f9fafc; }
+
+    /* ── TIMELINE ───────────────────────────────── */
+    .timeline { position: relative; padding-left: 3rem; }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 0.9rem;
+      top: 1rem;
+      bottom: 0.5rem;
+      width: 2px;
+      background: linear-gradient(to bottom, var(--navy), var(--border));
+      border-radius: 2px;
+    }
+    .t-step { position: relative; margin-bottom: 1.75rem; }
+    .t-step:last-child { margin-bottom: 0; }
+    .t-dot {
+      position: absolute;
+      left: -2.15rem;
+      top: 0;
+      width: 1.9rem;
+      height: 1.9rem;
+      border-radius: 50%;
+      background: var(--navy);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.78rem;
+      z-index: 1;
+      box-shadow: 0 2px 6px rgba(26,53,87,0.25);
+      font-family: 'Inter', sans-serif;
+    }
+    .t-step h4 {
+      font-size: 0.97rem;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 0.3rem;
+      font-family: 'Inter', sans-serif;
+    }
+    .t-step p { font-size: 0.88rem; margin: 0; color: var(--text-2); }
+
+    /* ── CHECKLIST ──────────────────────────────── */
+    .checklist { list-style: none; padding: 0; }
+    .checklist li {
+      display: flex;
+      gap: 0.75rem;
+      padding: 0.7rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.9rem;
+      align-items: flex-start;
+      line-height: 1.55;
+    }
+    .checklist li:last-child { border-bottom: none; }
+    .check-ico {
+      width: 1.35rem; height: 1.35rem;
+      border-radius: 50%;
+      background: #dcfce7;
+      color: var(--green);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.65rem;
+      flex-shrink: 0;
+      margin-top: 0.12rem;
+    }
+    .checklist li div strong { color: var(--navy); display: block; margin-bottom: 0.15rem; }
+
+    /* ── DELIVERY TEMPLATE ──────────────────────── */
+    .dt-wrap {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      margin: 1.5rem 0;
+      font-size: 0.875rem;
+      box-shadow: var(--shadow-sm);
+    }
+    .dt-doc-header {
+      background: var(--navy);
+      padding: 0.9rem 1.35rem;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 0.5rem 1.5rem;
+      align-items: center;
+    }
+    .dt-doc-label {
+      font-size: 0.63rem;
+      font-weight: 700;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.42);
+      font-family: 'Inter', sans-serif;
+    }
+    .dt-doc-value {
+      color: rgba(255,255,255,0.78);
+      font-style: italic;
+    }
+    .dt-entry {
+      border-top: 1px solid var(--border);
+      padding: 1rem 1.35rem;
+    }
+    .dt-entry:first-child { border-top: none; }
+    .dt-entry:nth-child(even) { background: #f9fafc; }
+    .dt-entry-title {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      margin-bottom: 0.8rem;
+    }
+    .dt-num {
+      width: 1.65rem;
+      height: 1.65rem;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: white;
+      flex-shrink: 0;
+      font-family: 'Inter', sans-serif;
+    }
+    .dt-type-name {
+      font-weight: 600;
+      color: var(--navy);
+    }
+    .dt-fields {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      padding-left: 2.3rem;
+    }
+    .dt-field-row {
+      display: grid;
+      grid-template-columns: 110px 1fr;
+      gap: 0.5rem;
+      align-items: baseline;
+    }
+    .dt-field-key {
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      padding-top: 0.4rem;
+      font-family: 'Inter', sans-serif;
+    }
+    .dt-field-line {
+      border-bottom: 1.5px dashed var(--border-mid);
+      height: 1.6rem;
+    }
+    .dt-field-line.optional { border-style: dotted; opacity: 0.55; }
+    .dt-optional-tag {
+      font-size: 0.65rem;
+      color: var(--muted);
+      font-style: italic;
+      padding-top: 0.45rem;
+    }
+    .dt-more {
+      border-top: 1px solid var(--border);
+      padding: 0.75rem 1.35rem;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.8rem;
+      background: #f9fafc;
+      letter-spacing: 0.02em;
+    }
+
+    /* ── PRIORITY TIERS (sec. 4) ────────────────── */
+    .tier-list { display: flex; flex-direction: column; gap: 0.75rem; margin: 1.25rem 0; }
+    .tier {
+      border: 1px solid var(--border);
+      border-left: 4px solid;
+      border-radius: var(--radius-sm);
+      padding: 1rem 1.2rem;
+      background: #f9fafb;
+    }
+    .tier-high { border-left-color: var(--green); }
+    .tier-mid  { border-left-color: var(--amber); }
+    .tier-low  { border-left-color: #94a3b8; }
+    .tier-head {
+      font-size: 0.9rem;
+      color: var(--text);
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+      flex-wrap: wrap;
+    }
+    .tier-tag {
+      color: white;
+      font-size: 0.64rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 0.2rem 0.6rem;
+      border-radius: 999px;
+      font-family: 'Inter', sans-serif;
+    }
+    .tier ul { margin: 0; padding-left: 1.2rem; }
+    .tier li { font-size: 0.86rem; padding: 0.12rem 0; }
+    .tier-ref { color: var(--muted); font-size: 0.78rem; }
+
+    /* ── PRIORITY PILL ───────────────────────────── */
+    .prio-pill {
+      font-size: 0.63rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      padding: 0.2rem 0.6rem;
+      border-radius: 999px;
+      color: white;
+      flex-shrink: 0;
+      font-family: 'Inter', sans-serif;
+    }
+    .prio-alta  { background: var(--green); }
+    .prio-media { background: var(--amber); }
+    .prio-baja  { background: #64748b; }
+
+    /* ── PHASE + VALIDATION CARDS ────────────────── */
+    .phase-card {
+      margin: 2rem 0 1.25rem;
+      padding: 1.5rem 1.75rem;
+      border-radius: var(--radius);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-xs);
+      border-top: 3px solid var(--navy);
+    }
+    .phase-card.validation-phase { border-top-color: var(--amber); }
+    .phase-card-label, .validation-phase-label {
+      font-size: 0.63rem;
+      font-weight: 800;
+      letter-spacing: 0.17em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.3rem;
+      font-family: 'Inter', sans-serif;
+    }
+    .phase-card h2 {
+      color: var(--navy);
+      font-size: 1.35rem;
+      margin-bottom: 0.35rem;
+      font-weight: 700;
+    }
+    .phase-card p { margin: 0; color: var(--text-2); font-size: 0.9rem; }
+
+    .validation-card {
+      box-shadow: var(--shadow-sm);
+    }
+    .validation-card.warning-panel { border-top: 3px solid var(--amber); }
+    .validation-card.warning-panel .sec-num { background: var(--amber); box-shadow: 0 2px 7px rgba(180,83,9,0.28); }
+    .validation-card.check-panel { border-top: 3px solid var(--green); }
+    .validation-card.check-panel .sec-num { background: var(--green); box-shadow: 0 2px 7px rgba(15,122,79,0.28); }
+
+    /* ── NAV HELPERS ─────────────────────────────── */
+    .nav-section-title {
+      font-size: 0.63rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+      margin: 1rem 0 0.3rem 0.65rem;
+      font-family: 'Inter', sans-serif;
+    }
+    .nav-text { display: block; line-height: 1.25; }
+    .nav-label { font-size: 0.83rem; }
+    .nav-desc  { font-size: 0.68rem; color: var(--muted); font-weight: 400; }
+    .sidebar nav a.active .nav-desc { color: var(--navy-mid); opacity: 0.8; }
+
+    /* ── MISC HELPERS ────────────────────────────── */
+    .mini-sections { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+    .mini-sections > div { padding: 0.1rem 0; }
+    .mini-sections strong { display: block; color: var(--navy); margin-bottom: 0.2rem; font-size: 0.9rem; }
+    .mini-sections p { margin: 0; font-size: 0.88rem; color: var(--text-2); }
+
+    .final-panel, .final-verification {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 1.5rem;
+      margin-top: 1.5rem;
+    }
+
+    ul li, ol li { line-height: 1.6; }
+
+    /* ── PRINT ───────────────────────────────────── */
+    @media print {
+      .sidebar { display: none; }
+      .layout { display: block; padding: 0; }
+      .type-body { display: block !important; }
+      body { background: white; font-size: 13px; }
+      .section { break-inside: avoid; margin-bottom: 1rem; box-shadow: none; }
+      .header { padding: 1.5rem; }
+    }
+
+    /* ── RESPONSIVE ──────────────────────────────── */
+    @media (max-width: 860px) {
+      .sidebar { display: none; }
+      .layout { padding: 1rem; }
+      .vol-stats { grid-template-columns: repeat(3,1fr); }
+      .section { padding: 1.5rem 1.25rem; }
+    }
+
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════
+     HEADER
+══════════════════════════════════════════ -->
+<div class="header">
+  <div class="header-badge">&#9679; Proyecto ATLAS</div>
+  <h1>Tutorial de construcción del<br><em>ground truth</em></h1>
+  <p class="header-sub">Guía práctica para la elaboración del marco de evaluación</p>
+  <div class="header-pills">
+    <div class="header-pill"><strong>12</strong> documentos</div>
+    <div class="header-pill"><strong>6</strong> tipos de pregunta</div>
+    <div class="header-pill">OneDrive compartido</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     LAYOUT
+══════════════════════════════════════════ -->
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-box">
+      <div class="sidebar-title">Contenido</div>
+      <nav id="sidebar-nav">
+        <div class="nav-section-title">Contexto</div>
+        <a href="#intro" class="active"><span class="nav-num">1</span><span class="nav-text"><span class="nav-label">Para qué sirve este tutorial</span></span></a>
+        <a href="#documentos"><span class="nav-num">2</span><span class="nav-text"><span class="nav-label">El sistema ATLAS y los documentos</span></span></a>
+        <a href="#gt"><span class="nav-num">3</span><span class="nav-text"><span class="nav-label">Qué es el ground truth</span></span></a>
+
+        <div class="nav-section-title">Construcción</div>
+        <a href="#volumen"><span class="nav-num">4</span><span class="nav-text"><span class="nav-label">Prioridad, cobertura y calidad</span></span></a>
+        <a href="#entrega"><span class="nav-num">5</span><span class="nav-text"><span class="nav-label">Cómo entregar el material</span></span></a>
+        <a href="#tipos"><span class="nav-num">6</span><span class="nav-text"><span class="nav-label">Los 6 tipos de pregunta</span></span></a>
+
+        <div class="nav-section-title">Validación</div>
+        <a href="#procedimiento"><span class="nav-num">7</span><span class="nav-text"><span class="nav-label">Errores frecuentes</span></span></a>
+        <a href="#validez"><span class="nav-num">8</span><span class="nav-text"><span class="nav-label">Validar una pregunta</span></span></a>
+        <a href="#calidad"><span class="nav-num">9</span><span class="nav-text"><span class="nav-label">Validar una respuesta</span></span></a>
+      </nav>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="content">
+
+    <div class="phase-card">
+      <div class="phase-card-label">Fase 1</div>
+      <h2>Contexto</h2>
+      <p>Esta fase explica el propósito del tutorial, delimita el corpus y define qué se entiende por ground truth en el proyecto ATLAS.</p>
+    </div>
+
+    <!-- ── 1. PARA QUÉ SIRVE ──────────────────── -->
+    <section class="section" id="intro">
+      <div class="sec-head">
+        <div class="sec-num">1</div>
+        <h2>Para qué sirve este tutorial</h2>
+      </div>
+      <p>Este tutorial explica cómo construir el conjunto de preguntas y respuestas de referencia (<em>ground truth</em>), que servirá como patrón para evaluar las respuestas generadas por ATLAS.</p>
+      <p>Su aporte consiste en <strong>formular preguntas</strong> sobre los documentos del corpus y <strong>redactar la respuesta correcta</strong> a cada una de ellas, con base en la información disponible y su criterio profesional. Los documentos del corpus se describen en la Sección 2.</p>
+      <p>Las preguntas y respuestas que usted construya determinarán la calidad de las evaluaciones futuras del sistema. El objetivo no es evaluar la calidad jurídica de los documentos ni proponer cambios normativos, sino construir preguntas y respuestas que puedan responderse con la información del corpus.</p>
+      <div class="alert alert-info">
+        <span class="alert-icon">&#128196;</span>
+        <p>No necesita manejar ninguna herramienta informática especial. Solo necesita acceso al <strong>OneDrive compartido del proyecto</strong>, donde están los documentos, y este tutorial como guía.</p>
+      </div>
+    </section>
+
+    <!-- ── 2. DOCUMENTOS ──────────────────────── -->
+    <section class="section" id="documentos">
+      <div class="sec-head">
+        <div class="sec-num">2</div>
+        <h2>El sistema ATLAS y los documentos a los que tiene acceso</h2>
+      </div>
+      <p>ATLAS es un asistente de consulta jurídica especializado en playas y dominio público marítimo-terrestre colombiano. Cuando alguien le formula una pregunta, el sistema busca la respuesta dentro de un corpus documental fijo y cerrado.</p>
+      <p><strong>El sistema únicamente tiene acceso a los siguientes 12 documentos:</strong></p>
+
+      <div class="corpus-grid">
+        <!-- Jurisprudencia -->
+        <div class="corpus-block">
+          <div class="corpus-block-head jurisprudencia">&#9878; Jurisprudencia &nbsp;·&nbsp; 10 sentencias TAM</div>
+          <div class="corpus-item"><span class="corpus-num">1</span><span>AP Carlos Alberto Zúñiga Mejía y otros VS DIMAR y otros</span></div>
+          <div class="corpus-item"><span class="corpus-num">2</span><span>AP Felipe José Campo Fernández VS Corpamag y otros</span></div>
+          <div class="corpus-item"><span class="corpus-num">3</span><span>AP Gabriel Antonio Carrero VS DIMAR y otros</span></div>
+          <div class="corpus-item"><span class="corpus-num">4</span><span>AP Gerardo Antenor Lemus Orozco VS Distrito de Santa Marta y otros</span></div>
+          <div class="corpus-item"><span class="corpus-num">5</span><span>AP Gieseken Cuello &amp; Cía. S. en C. VS DIMAR y otros</span></div>
+          <div class="corpus-item"><span class="corpus-num">6</span><span>AP Inversiones E y D S.A.S VS DIMAR y otros</span></div>
+          <div class="corpus-item"><span class="corpus-num">7</span><span>AP Miguel Ángel Enciso VS Distrito y otros</span></div>
+          <div class="corpus-item"><span class="corpus-num">8</span><span>AP Procuraduría General de la Nación VS Corpamag y otros</span></div>
+          <div class="corpus-item"><span class="corpus-num">9</span><span>AP Rodrigo Martínez Silva VS Minambiente y otros</span></div>
+          <div class="corpus-item"><span class="corpus-num">10</span><span>Sentencia de Segunda Instancia 47001-2332-000-2011-08425-02 (Gabriel Carrero) <span style="color:var(--muted);font-size:0.78rem;">— segunda instancia del caso del ítem 3</span></span></div>
+        </div>
+        <!-- Normativa -->
+        <div class="corpus-block">
+          <div class="corpus-block-head normativa">&#128214; Normativa &nbsp;·&nbsp; 2 documentos</div>
+          <div class="corpus-item"><span class="corpus-num">1</span><span>Decreto 2324 de 1984</span></div>
+          <div class="corpus-item"><span class="corpus-num">2</span><span>Reglamento Marítimo Colombiano REMAC 5 - DIMAR (edición 2021)</span></div>
+        </div>
+      </div>
+
+      <div class="alert alert-warn">
+        <span class="alert-icon">&#9888;</span>
+        <p><strong>Tenga esto siempre presente:</strong> todas las preguntas que usted formule deben poder responderse a partir de uno o más de estos documentos. Si la respuesta correcta depende de doctrina, normativa o jurisprudencia que no está en esta lista, la pregunta no es válida para este ejercicio.</p>
+      </div>
+    </section>
+
+    <!-- ── 3. QUÉ ES EL GROUND TRUTH ─────────── -->
+    <section class="section" id="gt">
+      <div class="sec-head">
+        <div class="sec-num">3</div>
+        <h2>Qué es el ground truth y por qué importa su criterio</h2>
+      </div>
+      <p>Cada registro de <em>ground truth</em> está compuesto por una pregunta, una respuesta de referencia y la evidencia documental que respalda esa respuesta.</p>
+      <p>La respuesta de referencia es la mejor respuesta sustentada por los documentos del corpus. Debe construirse de manera que otro experto que consulte los mismos documentos pueda llegar sustancialmente a la misma conclusión.</p>
+      <p>Utilice únicamente la información de los documentos del corpus. No incorpore normas, sentencias ni fuentes externas que no estén incluidas en los documentos suministrados.</p>
+      <p>El <em>ground truth</em> es el conjunto de respuestas de referencia contra el cual se evaluará el sistema. Usted formula las preguntas y escribe la respuesta correcta como lo haría un experto que acaba de leer el documento. Cuando el equipo evalúe a ATLAS, le hará las mismas preguntas y cotejará las respuestas del sistema con las suyas.</p>
+      <p>Si ATLAS responde igual que usted en lo sustancial, el sistema está funcionando bien. Si hay diferencias relevantes, ahí está el error que hay que corregir.</p>
+      <p>Su participación es insustituible porque determinar si una respuesta sobre dominio público marítimo-terrestre, concesiones de playa o jurisprudencia del Tribunal Administrativo del Magdalena es correcta, incompleta o errada requiere <strong>criterio jurídico especializado</strong>. Ese criterio es el que usted aporta.</p>
+      <div class="alert alert-info">
+      <span class="alert-icon">&#128221;</span>
+      <p><strong>Nota metodológica:</strong> la información sobre documentos y fragmentos de respaldo se utilizará posteriormente para construir los registros de relevancia documental (qrels). Estos registros indican qué documentos sustentan cada respuesta y permiten evaluar si ATLAS recupera la información adecuada antes de generar una respuesta.</p>
+    </div>
+    <div class="alert alert-warn" style="margin-top:1rem;">
+      <span class="alert-icon">&#9878;</span>
+      <div>
+        <p style="margin-bottom:0.5rem;"><strong>Cuando dos documentos del corpus se contradicen o uno actualiza al otro:</strong></p>
+        <p style="margin:0;">Construya la respuesta de referencia reflejando la tensión tal como aparece en los documentos. Indique en el campo <em>Respuesta</em> qué dice cada documento y cuál prevalece según los criterios jurídicos aplicables (jerarquía normativa, norma posterior, norma especial). Use el campo <em>Nota</em> para explicar la contradicción. No incorpore criterios de resolución provenientes de fuentes externas al corpus.</p>
+      </div>
+    </div>
+    </section>
+    <div class="phase-card">
+      <div class="phase-card-label">Fase 2</div>
+      <h2>Construcción</h2>
+      <p>Esta fase orienta la selección de preguntas, el formato de registro y la clasificación por tipo.</p>
+    </div>
+
+    <!-- ── 4. QUÉ PREGUNTAS NOS INTERESAN MÁS ──── -->
+    
+<section class="section" id="volumen">
+  <div class="sec-head">
+    <div class="sec-num">4</div>
+    <h2>Prioridad, cobertura y calidad</h2>
+  </div>
+
+  <p>El objetivo no es producir la mayor cantidad posible de preguntas, sino construir un conjunto que represente adecuadamente el contenido del corpus. La cifra indicada en esta sección es la cantidad mínima esperada.</p>
+
+  <p>Además de cumplir esa cantidad mínima, procure distribuir las preguntas entre diferentes temas, documentos e instituciones jurídicas. Evite concentrar la mayoría de las preguntas en un único asunto o generar varias preguntas que conduzcan esencialmente a la misma respuesta.</p>
+
+  <table class="mini-table">
+    <thead>
+      <tr><th>Prioridad</th><th>Tipo de pregunta</th><th>Por cada 10 preguntas</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Alta</td><td>Síntesis dentro de un documento, cruce entre documentos, comparación jurídica y aplicación normativa</td><td>~6 preguntas</td></tr>
+      <tr><td>Media</td><td>Secuencia o trámite</td><td>~3 preguntas</td></tr>
+      <tr><td>Baja</td><td>Extracción puntual</td><td>~1 pregunta</td></tr>
+    </tbody>
+  </table>
+
+  <p><em>Esta distribución es orientativa y puede ajustarse cuando la naturaleza de los documentos lo justifique. En bloques de menos de 10 preguntas, mantenga las proporciones relativas.</em></p>
+
+  <ul>
+    <li>Las preguntas de prioridad alta representan mejor el razonamiento que los usuarios aplican al consultar documentos jurídicos.</li>
+    <li>Las preguntas de prioridad media complementan la cobertura temática.</li>
+    <li>Las preguntas de extracción puntual son útiles, pero por sí solas no generan un conjunto suficientemente representativo.</li>
+    <li>Procure incluir preguntas que requieran operaciones distintas: extracción puntual, síntesis, cruce entre documentos, comparación jurídica, aplicación normativa o secuencias.</li>
+    <li>Evite que un único tipo predomine en el conjunto, salvo que la naturaleza del documento lo justifique.</li>
+  </ul>
+
+  <div class="alert alert-info">
+    <span class="alert-icon">&#9989;</span>
+    <p><strong>Calidad antes que cantidad:</strong> es preferible una pregunta bien formulada y correctamente sustentada que varias preguntas redundantes, ambiguas o con evidencia insuficiente. Una vez definidas las preguntas, regístrelas siguiendo el formato de la Sección 5.</p>
+  </div>
+</section>
+
+
+
+
+    <!-- ── 5. CÓMO ENTREGAR EL MATERIAL ─────────── -->
+    
+<section class="section" id="entrega">
+  <div class="sec-head">
+    <div class="sec-num">5</div>
+    <h2>Cómo entregar el material</h2>
+  </div>
+
+  <p>Una vez seleccionadas las preguntas, cada una debe registrarse como una entrada independiente. Entregue todo el trabajo en un único documento (Word, PDF o texto plano), utilizando siempre la misma estructura.</p>
+<table class="mini-table">
+    <thead><tr><th>Campo</th><th>Descripción breve</th></tr></thead>
+    <tbody>
+      <tr><td><strong>📌 Tipo</strong></td><td>Categoría de la pregunta según la clasificación de la Sección 6.</td></tr>
+      <tr><td><strong>📄 Doc. principal</strong></td><td>Documento que contiene la mayor parte de la información necesaria para responder la pregunta.</td></tr>
+      <tr><td><strong>📚 Doc. secundario</strong></td><td>Documento adicional que aporta información necesaria para completar la respuesta. Déjelo vacío si no aplica.</td></tr>
+      <tr><td><strong>❓ Pregunta</strong></td><td>Consulta formulada en lenguaje natural siguiendo las reglas del tutorial.</td></tr>
+      <tr><td><strong>✅ Respuesta</strong></td><td>Respuesta de referencia construida a partir de los documentos del corpus.</td></tr>
+      <tr><td><strong>🔎 Ubicación de la evidencia</strong></td><td>Artículo, numeral, sección, página, considerando o fragmento donde se encuentra la información utilizada.</td></tr>
+      <tr><td><strong>📖 Evidencia</strong></td><td>Fragmento específico que respalda la respuesta o descripción precisa de la evidencia documental utilizada.</td></tr>
+      <tr><td><strong>📝 Nota</strong></td><td>Observación adicional, incluyendo tensiones entre documentos o advertencias sobre el alcance de la respuesta. Campo opcional.</td></tr>
+      <tr><td><strong>✍️ Elaborado por</strong></td><td>Nombre del profesional que construyó el registro.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="dt-wrap">
+    <div class="dt-entry">
+      <div class="dt-entry-title">
+        <span class="dt-num" style="background:#2563eb;">1</span>
+        <span class="dt-type-name">Pregunta</span>
+      </div>
+      <div class="dt-fields">
+        <div class="dt-field-row"><span class="dt-field-key">Tipo</span><div class="dt-field-line"></div></div>
+        <div class="dt-field-row"><span class="dt-field-key">Doc. principal</span><div class="dt-field-line"></div></div>
+        <div class="dt-field-row"><span class="dt-field-key">Doc. secundario</span><div style="display:flex;align-items:baseline;gap:0.5rem;"><div class="dt-field-line optional" style="flex:1;"></div><span class="dt-optional-tag">solo si aplica</span></div></div>
+        <div class="dt-field-row"><span class="dt-field-key">Pregunta</span><div class="dt-field-line"></div></div>
+        <div class="dt-field-row"><span class="dt-field-key">Respuesta</span><div class="dt-field-line"></div></div>
+        <div class="dt-field-row"><span class="dt-field-key">Ubicación de la evidencia</span><div class="dt-field-line"></div></div>
+        <div class="dt-field-row"><span class="dt-field-key">Evidencia</span><div class="dt-field-line"></div></div>
+        <div class="dt-field-row"><span class="dt-field-key">Nota</span><div style="display:flex;align-items:baseline;gap:0.5rem;"><div class="dt-field-line optional" style="flex:1;"></div><span class="dt-optional-tag">opcional</span></div></div>
+        <div class="dt-field-row"><span class="dt-field-key">Elaborado por</span><div class="dt-field-line"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <h3 style=”font-size:1rem;color:var(--navy);margin:1.25rem 0 0.5rem;”>Consideraciones antes de guardar</h3>
+  <ul>
+    <li>Si la respuesta puede sustentarse completamente en un único documento, deje vacío el campo “Documento secundario”.</li>
+    <li>Si la respuesta requiere tres o más documentos, registre el más relevante como documento principal y el segundo como documento secundario. Los demás van en el campo “Nota” con una indicación de qué aporta cada uno.</li>
+    <li>La evidencia debe identificar el fragmento específico que respalda la respuesta.</li>
+    <li>La respuesta debe redactarse con palabras propias y ser comprensible por sí sola.</li>
+    <li>La pregunta debe poder responderse utilizando el corpus.</li>
+    <li>La respuesta debe estar claramente sustentada por los documentos.</li>
+    <li>La entrada debe contener una única pregunta y una única respuesta de referencia.</li>
+  </ul>
+</section>
+
+<!-- ── 6. LOS 6 TIPOS ────────────────────── -->
+    <section class="section" id="tipos">
+      <div class="sec-head">
+        <div class="sec-num">6</div>
+        <h2>Los 6 tipos de pregunta: definición y ejemplos</h2>
+      </div>
+      <p>Clasifique cada pregunta en uno de los seis tipos según la tarea principal que debe realizar ATLAS para responder. Si una pregunta parece pertenecer a varios tipos, prevalece la operación principal. Por ejemplo, si la pregunta exige comparar figuras jurídicas, corresponde al Tipo 4 aunque también requiera consultar varios documentos. Si exige aplicar una regla a una situación concreta, corresponde al Tipo 5 aunque requiera identificar previamente una disposición del corpus.</p>
+      <p>La pregunta parafraseada no se maneja como un tipo independiente. Es una regla de redacción: formule las preguntas con lenguaje natural y evite copiar frases del documento, salvo cuando pida una cita textual.</p>
+<div class="alert alert-guide" style="margin:1rem 0 1.25rem 0;">
+  <span class="alert-icon">&#128161;</span>
+  <div>
+    <p style="margin-bottom:0.75rem;">
+      <strong>Cómo diseñar preguntas de calidad:</strong> Los ejemplos que aparecen en esta sección y las preguntas que usted formule deben cumplir simultáneamente los siguientes criterios.
+    </p>
+    <table class="mini-table" style="margin:0;">
+      <thead>
+        <tr>
+          <th style="width:22%;">Criterio</th>
+          <th>Descripción</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>Naturalidad</strong></td><td>La pregunta debe poder formularla una persona interesada en el tema sin conocimiento previo de la norma o la sentencia.</td></tr>
+        <tr><td><strong>Concreción</strong></td><td>Debe referirse a una situación reconocible, específica y claramente delimitada.</td></tr>
+        <tr><td><strong>Precisión</strong></td><td>La respuesta esperada debe estar claramente determinada por los documentos del corpus y no admitir múltiples interpretaciones razonables.</td></tr>
+        <tr><td><strong>Plausibilidad</strong></td><td>Debe representar una situación realista dentro del contexto de playas marítimas, bienes de uso público, concesiones, permisos, actuaciones administrativas o conflictos jurídicos relacionados.</td></tr>
+        <tr><td><strong>Verificabilidad</strong></td><td>La respuesta debe poder encontrarse y verificarse en los documentos del corpus.</td></tr>
+        <tr><td><strong>Correspondencia</strong></td><td>La pregunta debe representar claramente el tipo al que fue asignada y exigir la operación jurídica descrita para ese tipo.</td></tr>
+      </tbody>
+    </table>
+    <p style="margin-top:0.85rem;margin-bottom:0;">
+      <strong>Importante:</strong> los ejemplos de esta sección cumplen todos estos criterios y sirven de referencia para formular nuevas preguntas.
+    </p>
+  </div>
+</div>
+
+<div class="alert alert-info" style="margin:1rem 0 1.25rem 0;">
+  <span class="alert-icon">&#128100;</span>
+  <div class="mini-sections">
+    <div>
+      <strong>Perspectiva recomendada</strong>
+      <p>Imagine que la pregunta proviene de un usuario real. El perfil varía según el documento: para el Decreto 2324 y el REMAC 5, ese usuario puede ser un ciudadano, un empresario o un funcionario público. Para las sentencias del corpus, el perfil más realista es un abogado litigante, un apoderado judicial, un funcionario de la entidad demandada o un investigador de materia costera. Evite formular preguntas como si estuviera redactando un examen o un cuestionario académico.</p>
+    </div>
+    <div>
+      <strong>Regla práctica</strong>
+      <p>Antes de registrar una pregunta, pregúntese si esa misma consulta podría llegar por correo electrónico a una Capitanía de Puerto, a la DIMAR, a un abogado especializado en asuntos costeros o a la Secretaría del Tribunal. Si la respuesta es no, la pregunta probablemente es demasiado artificial, académica o alejada de una necesidad real de información.</p>
+    </div>
+    <div>
+      <strong>Alcance de los ejemplos</strong>
+      <p>Los ejemplos de esta sección usan el Decreto 2324 de 1984 y el REMAC 5 únicamente con fines ilustrativos. Las mismas categorías deben aplicarse a todos los documentos del corpus descritos en la Sección 2, incluidas sentencias, normas, reglamentos y demás documentos indexados en ATLAS.</p>
+    </div>
+  </div>
+</div>
+
+<div class="types-list" style="margin-top:1.25rem;">
+
+        <div class="type-card" id="t1">
+          <button class="type-trigger" onclick="toggleType('t1')">
+            <div class="type-badge" style="background:#2563eb;">1</div>
+            <div class="type-info">
+              <div class="type-name">Extracción puntual</div>
+              <div class="type-tagline">Dato, definición o cita ubicada en un solo fragmento.</div>
+            </div>
+            <span class="prio-pill prio-baja">Baja</span>
+            <span class="type-arrow">&#9660;</span>
+          </button>
+          <div class="type-body">
+            <div class="field"><div class="field-label">Definición</div><p>La respuesta requiere localizar un dato, definición, requisito o fragmento específico en una única parte del corpus.</p></div>
+            <div class="field"><div class="field-label">Cuándo usarla</div><p>Úsela para pedir una fecha, un radicado, un nombre, un artículo, una entidad, una definición formal, una cifra o una expresión textual.</p></div>
+            <div class="field"><div class="field-label">Cuándo no usarla</div><p>No la use cuando la respuesta requiera relacionar varios fragmentos, comparar elementos o consultar más de un documento.</p></div>
+            <div class="field"><div class="field-label">Qué debe contener la respuesta</div><p>El dato solicitado y la ubicación exacta donde aparece. Si se pide una cita, transcriba solo el fragmento necesario.</p></div>
+            <div class="example-wrap">
+              <div class="example-label">Ejemplo aplicado</div>
+              <div class="ex-template">
+                <div class="ex-template-row"><div class="ex-template-key">Tipo</div><div class="ex-template-value">1. Extracción puntual</div></div>
+                <div class="ex-template-row"><div class="ex-template-key">Doc. principal</div><div class="ex-template-value">Decreto 2324 de 1984</div></div>
+                <div class="ex-template-row"><div class="ex-template-key">Doc. secundario</div><div class="ex-template-value">No aplica</div></div>
+                <div class="ex-template-row"><div class="ex-template-key">Pregunta</div><div class="ex-template-value">¿Cómo define el Decreto 2324 de 1984 la playa marítima?</div></div>
+                <div class="ex-template-row"><div class="ex-template-key">Respuesta</div><div class="ex-template-value">El Decreto 2324 de 1984 define la playa marítima como la zona de material no consolidado que se extiende hacia tierra desde la línea de más baja marea hasta el lugar donde se presenta un marcado cambio en el material, forma fisiográfica o hasta donde se inicia la línea de vegetación permanente, límite que usualmente corresponde al alcance efectivo de las olas de temporal.</div></div>
+                <div class="ex-template-row"><div class="ex-template-key">Ubicación de la evidencia</div><div class="ex-template-value">Artículo 167.</div></div>
+                <div class="ex-template-row"><div class="ex-template-key">Evidencia</div><div class="ex-template-value">Definición de “playa marítima” contenida en el artículo 167.</div></div>
+                <div class="ex-template-row"><div class="ex-template-key">Nota</div><div class="ex-template-value">No aplica.</div></div>
+              </div>
+              <div class="ex-bad"><strong>Ejemplo no válido:</strong> ¿Qué régimen jurídico se deriva de las definiciones de playa marítima, bajamar y terrenos de bajamar? <br><strong>Por qué no sirve:</strong> Exige relacionar varias definiciones y sus efectos; no es una extracción puntual.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="type-card" id="t2">
+          <button class="type-trigger" onclick="toggleType('t2')">
+            <div class="type-badge" style="background:#4f46e5;">2</div>
+            <div class="type-info">
+              <div class="type-name">Síntesis dentro de un documento</div>
+              <div class="type-tagline">Integra varias partes de una misma sentencia o norma.</div>
+            </div>
+            <span class="prio-pill prio-alta">Alta</span>
+            <span class="type-arrow">&#9660;</span>
+          </button>
+          <div class="type-body">
+            <div class="field"><div class="field-label">Definición</div><p>La respuesta requiere reunir información que aparece en dos o más partes del mismo documento.</p></div>
+            <div class="field"><div class="field-label">Cuándo usarla</div><p>Úsela cuando ninguna parte del documento responda por sí sola la pregunta. En documentos jurisprudenciales, puede relacionar hechos, pretensiones, consideraciones y parte resolutiva. En documentos normativos, puede relacionar definiciones, reglas y consecuencias. En otros documentos del corpus, puede relacionar antecedentes, criterios, decisiones, hallazgos o conclusiones.</p></div>
+            <div class="field"><div class="field-label">Cuándo no usarla</div><p>No la use cuando una única disposición, artículo, considerando, numeral o párrafo permita responder completamente la pregunta.</p></div>
+            <div class="field"><div class="field-label">Qué debe contener la respuesta</div><p>Una síntesis de los fragmentos relevantes y la ubicación de cada fragmento usado.</p></div>
+            <div class="example-wrap">
+              <div class="example-label">Ejemplo aplicado</div>
+              <div class="ex-template">
+                <div class="ex-template-row"><div class="ex-template-key">Tipo</div><div class="ex-template-value">2. Síntesis dentro de un documento</div></div>
+                <div class="ex-template-row"><div class="ex-template-key">Doc. principal</div><div class="ex-template-value">REMAC 5</div></div>
+                <div class="ex-template-row"><div class="ex-template-key">Doc. secundario</div><div class="ex-template-value">No aplica</div></div>
+                <div class="ex-template-row"><div class="ex-template-key">Pregunta</div><div class="ex-template-value">Estamos organizando actividades para turistas durante la temporada vacacional y queremos instalar algunas carpas de apoyo en la playa. ¿Qué autorización necesitaríamos y cuánto tiempo podría mantenerse vigente esa autorización?</div></div>
+                <div class="ex-template-row"><div class="ex-template-key">Respuesta</div><div class="ex-template-value">El REMAC 5 permite solicitar un permiso temporal para usar zonas de aguas marítimas, playas marítimas o terrenos de bajamar ubicadas en perímetro rural mediante infraestructura no permanente. El permiso tiene un término máximo de un año y puede prorrogarse por una única vez. La excepción corresponde a los permisos para instalación de carpas para bañistas, respecto de los cuales pueden autorizarse prórrogas adicionales siempre que se mantengan los requisitos y condiciones que dieron lugar a su otorgamiento.</div></div>
+                <div class="ex-template-row"><div class="ex-template-key">Ubicación de la evidencia</div><div class="ex-template-value">Artículos 5.3.6.2 y 5.3.6.3.</div></div>
+                <div class="ex-template-row"><div class="ex-template-key">Evidencia</div><div class="ex-template-value">Alcance del permiso temporal y término máximo previsto para su otorgamiento y prórroga.</div></div>
+                <div class="ex-template-row"><div class="ex-template-key">Nota</div><div class="ex-template-value">No aplica.</div></div>
+              </div>
+              <div class="ex-bad"><strong>Ejemplo no válido:</strong> ¿Cuál es el término máximo del permiso temporal según el REMAC 5? <br><strong>Por qué no sirve:</strong> Puede responderse con un solo artículo; debe clasificarse como extracción puntual.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="type-card" id="t3">
+          <button class="type-trigger" onclick="toggleType('t3')">
+            <div class="type-badge" style="background:#ea580c;">3</div>
+            <div class="type-info">
+              <div class="type-name">Cruce entre documentos</div>
+              <div class="type-tagline">Integra información de dos o más documentos del corpus.</div>
+            </div>
+            <span class="prio-pill prio-alta">Alta</span>
+            <span class="type-arrow">&#9660;</span>
+          </button>
+          <div class="type-body">
+            <div class="field"><div class="field-label">Definición</div><p>La respuesta requiere integrar información proveniente de dos o más documentos del corpus. Cada documento aporta una parte necesaria para construir la respuesta completa.</p></div>
+            <div class="field"><div class="field-label">Cuándo usarla</div><p>Úsela cuando la respuesta requiera integrar una sentencia con una norma, dos sentencias entre sí, una norma con otra norma o cualquier combinación de documentos del corpus. Lo importante es que la respuesta completa dependa de información ubicada en más de un documento.</p></div>
+            <div class="field"><div class="field-label">Cuándo no usarla</div><p>No la use cuando toda la respuesta pueda encontrarse en un único documento.</p></div>
+            <div class="field"><div class="field-label">Qué debe contener la respuesta</div><p>La información aportada por cada documento, la conclusión integrada que resulta de combinarlas y la ubicación de la evidencia. Indique documento principal y documento secundario.</p></div>
+            <div class="example-wrap">
+              <div class="example-label">Ejemplo aplicado</div>
+              <div class="ex-template">
+                <div class="ex-template-row"><div class="ex-template-key">Tipo</div><div class="ex-template-value">3. Cruce entre documentos</div></div>
+                <div class="ex-template-row"><div class="ex-template-key">Doc. principal</div><div class="ex-template-value">REMAC 5</div></div>
+                <div class="ex-template-row"><div class="ex-template-key">Doc. secundario</div><div class="ex-template-value">Decreto 2324 de 1984</div></div>
+                <div class="ex-template-row"><div class="ex-template-key">Pregunta</div><div class="ex-template-value">Un hotel quiere destinar una parte de la playa para uso exclusivo de sus huéspedes durante cinco años. ¿Qué tipo de autorización tendría que solicitar?</div></div>
+                <div class="ex-template-row"><div class="ex-template-key">Respuesta</div><div class="ex-template-value">No bastaría un permiso temporal para una ocupación proyectada durante cinco años, porque el REMAC 5 establece que estos permisos tienen un término máximo de un año y solo pueden prorrogarse una vez, salvo excepciones específicas. Para un aprovechamiento de esa duración debe acudirse al régimen de autorizaciones para uso y goce de bienes de uso público bajo jurisdicción de la DIMAR, desarrollado en los artículos 169 y siguientes del Decreto 2324 de 1984, dentro de los cuales se encuentra la figura de la concesión.</div></div>
+                <div class="ex-template-row"><div class="ex-template-key">Ubicación de la evidencia</div><div class="ex-template-value">REMAC 5, artículo 5.3.6.3; Decreto 2324 de 1984, artículo 169.</div></div>
+                <div class="ex-template-row"><div class="ex-template-key">Evidencia</div><div class="ex-template-value">Remisión del REMAC 5 al trámite de autorizaciones previsto en el Decreto 2324 y regulación de concesiones en el artículo 169.</div></div>
+                <div class="ex-template-row"><div class="ex-template-key">Nota</div><div class="ex-template-value">Ejemplo de pregunta que exige consultar dos documentos.</div></div>
+              </div>
+              <div class="ex-bad"><strong>Ejemplo no válido:</strong> ¿Cuál es el objeto del trámite de permisos temporales en el REMAC 5? <br><strong>Por qué no sirve:</strong> Solo exige consultar el REMAC 5; no cruza documentos.</div>
+              <div class="ex-bad" style="margin-top:0.5rem;background:#f0f9ff;border-left-color:#2563eb;"><strong>¿Cuándo el cruce entre documentos NO es una comparación (Tipo 4)?</strong><br>Si la pregunta del ejemplo del hotel pidiera "<em>¿en qué se diferencia la concesión del permiso temporal para ese caso concreto?</em>", sería Tipo 4 porque exige un contraste explícito entre las dos figuras. En el Tipo 3 los documentos se integran para construir una respuesta completa; en el Tipo 4, el objetivo principal es contrastar elementos mediante un criterio.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="type-card" id="t4">
+          <button class="type-trigger" onclick="toggleType('t4')">
+            <div class="type-badge" style="background:#db2777;">4</div>
+            <div class="type-info">
+              <div class="type-name">Comparación jurídica</div>
+              <div class="type-tagline">Contrasta elementos mediante un criterio explícito.</div>
+            </div>
+            <span class="prio-pill prio-alta">Alta</span>
+            <span class="type-arrow">&#9660;</span>
+          </button>
+          <div class="type-body">
+            <div class="field"><div class="field-label">Definición</div><p>La respuesta requiere comparar dos o más elementos mediante un criterio claro. No basta con mencionarlos; debe existir un contraste verificable.</p></div>
+            <div class="field"><div class="field-label">Cuándo usarla</div><p>Úsela para comparar sentencias, normas, decisiones, obligaciones, argumentos de entidades, criterios del Tribunal o medidas ordenadas.</p></div>
+            <div class="field"><div class="field-label">Cuándo no usarla</div><p>No la use cuando la pregunta solo describa un elemento o únicamente pida listar información sin exigir diferencias o similitudes.</p></div>
+            <div class="field"><div class="field-label">Qué debe contener la respuesta</div><p>Los elementos comparados, el criterio de comparación y las diferencias o similitudes identificadas con soporte documental.</p></div>
+            <div class="example-wrap">
+              <div class="example-label">Ejemplo aplicado</div>
+              <div class="ex-template">
+                <div class="ex-template-row"><div class="ex-template-key">Tipo</div><div class="ex-template-value">4. Comparación jurídica</div></div>
+                <div class="ex-template-row"><div class="ex-template-key">Doc. principal</div><div class="ex-template-value">Decreto 2324 de 1984</div></div>
+                <div class="ex-template-row"><div class="ex-template-key">Doc. secundario</div><div class="ex-template-value">REMAC 5</div></div>
+                <div class="ex-template-row"><div class="ex-template-key">Pregunta</div><div class="ex-template-value">Para desarrollar un proyecto turístico en una playa con mobiliario e infraestructura de apoyo, ¿en qué cambia pedir una concesión frente a pedir un permiso temporal?</div></div>
+                <div class="ex-template-row"><div class="ex-template-key">Respuesta</div><div class="ex-template-value">En el Decreto 2324 de 1984, la concesión regula el uso y goce de playas marítimas y terrenos de bajamar mediante autorización otorgada por la autoridad marítima competente. En el REMAC 5, el permiso temporal regula el uso de aguas marítimas, playas marítimas o terrenos de bajamar ubicados en perímetro rural para instalar infraestructura no permanente. La diferencia principal radica en el objeto autorizado y en la duración, pues el permiso temporal tiene un término máximo de un año prorrogable una sola vez, salvo las excepciones previstas expresamente.</div></div>
+                <div class="ex-template-row"><div class="ex-template-key">Ubicación de la evidencia</div><div class="ex-template-value">Decreto 2324 de 1984, artículo 169; REMAC 5, artículos 5.3.6.2 y 5.3.6.3.</div></div>
+                <div class="ex-template-row"><div class="ex-template-key">Evidencia</div><div class="ex-template-value">Regulación de concesiones en el Decreto 2324 y regulación del alcance y duración del permiso temporal en el REMAC 5.</div></div>
+                <div class="ex-template-row"><div class="ex-template-key">Nota</div><div class="ex-template-value">La respuesta debe centrarse en el objeto autorizado y la duración de cada figura.</div></div>
+              </div>
+              <div class="ex-bad"><strong>Ejemplo no válido:</strong> ¿Qué documentos exige el Decreto 2324 de 1984 para una concesión? <br><strong>Por qué no sirve:</strong> Solo pide enumerar requisitos; no compara dos elementos mediante un criterio explícito.</div>
+              <div class="ex-bad" style="margin-top:0.5rem;background:#f0f9ff;border-left-color:#2563eb;"><strong>¿Cuándo la comparación NO es un cruce entre documentos (Tipo 3)?</strong><br>Si la misma pregunta del ejemplo comparara la concesión y el permiso temporal sin evaluar un proyecto concreto (solo "<em>¿en qué se diferencian?</em>"), seguiría siendo Tipo 4 aunque use dos documentos. La distinción clave es que en el Tipo 4 el objetivo es el contraste; en el Tipo 3, los documentos se combinan para dar una respuesta integrada que ninguno de los dos provee por sí solo.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="type-card" id="t5">
+          <button class="type-trigger" onclick="toggleType('t5')">
+            <div class="type-badge" style="background:#dc2626;">5</div>
+            <div class="type-info">
+              <div class="type-name">Aplicación normativa o jurisprudencial</div>
+              <div class="type-tagline">Aplica una regla del corpus a un supuesto determinado.</div>
+            </div>
+            <span class="prio-pill prio-alta">Alta</span>
+            <span class="type-arrow">&#9660;</span>
+          </button>
+          <div class="type-body">
+            <div class="field"><div class="field-label">Definición</div><p>La respuesta requiere identificar y aplicar una regla, criterio o decisión contenida en el corpus a una situación concreta.</p></div>
+            <div class="field"><div class="field-label">Cuándo usarla</div><p>Úsela cuando la pregunta presenta una situación concreta y exige identificar la consecuencia jurídica prevista en un documento del corpus.</p></div>
+            <div class="field"><div class="field-label">Cuándo no usarla</div><p>No la use cuando la pregunta solo pida reproducir un fragmento, regla, criterio o decisión sin aplicarlo a una situación concreta.</p></div>
+            <div class="field"><div class="field-label">Qué debe contener la respuesta</div><p>La situación planteada, la regla, criterio o decisión aplicable, el fundamento documental y la consecuencia jurídica correspondiente.</p></div>
+            <div class="example-wrap">
+              <div class="example-label">Ejemplo aplicado</div>
+              <div class="ex-template">
+                <div class="ex-template-row"><div class="ex-template-key">Tipo</div><div class="ex-template-value">5. Aplicación normativa o jurisprudencial</div></div>
+                <div class="ex-template-row"><div class="ex-template-key">Doc. principal</div><div class="ex-template-value">REMAC 5</div></div>
+                <div class="ex-template-row"><div class="ex-template-key">Doc. secundario</div><div class="ex-template-value">No aplica</div></div>
+                <div class="ex-template-row"><div class="ex-template-key">Pregunta</div><div class="ex-template-value">Quiero montar un kiosco desmontable en una playa rural durante la temporada turística. ¿Qué autorización necesito y ante quién debo tramitarla?</div></div>
+                <div class="ex-template-row"><div class="ex-template-key">Respuesta</div><div class="ex-template-value">Debe solicitar un permiso temporal ante la Dirección General Marítima, por medio de la Capitanía de Puerto correspondiente. La solicitud debe presentarse por escrito, dirigida al Capitán de Puerto, o por sede electrónica cuando esté implementada, al menos quince días hábiles antes del inicio de la actividad o evento.</div></div>
+                <div class="ex-template-row"><div class="ex-template-key">Ubicación de la evidencia</div><div class="ex-template-value">Artículos 5.3.6.2 y 5.3.6.5.</div></div>
+                <div class="ex-template-row"><div class="ex-template-key">Evidencia</div><div class="ex-template-value">Alcance del permiso temporal y regla sobre presentación de la solicitud ante la Capitanía de Puerto.</div></div>
+                <div class="ex-template-row"><div class="ex-template-key">Nota</div><div class="ex-template-value">El supuesto se resuelve únicamente con REMAC 5.</div></div>
+              </div>
+              <div class="ex-bad"><strong>Ejemplo no válido:</strong> ¿Qué dice el artículo 5.3.6.5 del REMAC 5? <br><strong>Por qué no sirve:</strong> No plantea un supuesto que exija aplicar la regla.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="type-card" id="t6">
+          <button class="type-trigger" onclick="toggleType('t6')">
+            <div class="type-badge" style="background:#0d9488;">6</div>
+            <div class="type-info">
+              <div class="type-name">Secuencia, trámite u orden jurídico</div>
+              <div class="type-tagline">Organiza actuaciones, etapas, mandatos o eventos.</div>
+            </div>
+            <span class="prio-pill prio-media">Media</span>
+            <span class="type-arrow">&#9660;</span>
+          </button>
+          <div class="type-body">
+            <div class="field"><div class="field-label">Definición</div><p>La respuesta requiere organizar actuaciones, etapas, mandatos, obligaciones o eventos conforme a un criterio verificable.</p></div>
+            <div class="field"><div class="field-label">Cuándo usarla</div><p>Úsela cuando el documento describe una secuencia procesal, un trámite administrativo, una serie de órdenes judiciales, una cronología o un conjunto de obligaciones con un orden verificable.</p></div>
+            <div class="field"><div class="field-label">Cuándo no usarla</div><p>No la use cuando la respuesta consista en un dato aislado, una comparación entre elementos o la aplicación de una regla a un supuesto.</p></div>
+            <div class="field"><div class="field-label">Qué debe contener la respuesta</div><p>Los elementos ordenados, el criterio de orden utilizado y la ubicación de la evidencia que permite verificar el orden.</p></div>
+            <div class="example-wrap">
+              <div class="example-label">Ejemplo aplicado</div>
+              <div class="ex-template">
+                <div class="ex-template-row"><div class="ex-template-key">Tipo</div><div class="ex-template-value">6. Secuencia, trámite u orden jurídico</div></div>
+                <div class="ex-template-row"><div class="ex-template-key">Doc. principal</div><div class="ex-template-value">REMAC 5</div></div>
+                <div class="ex-template-row"><div class="ex-template-key">Doc. secundario</div><div class="ex-template-value">No aplica</div></div>
+                <div class="ex-template-row"><div class="ex-template-key">Pregunta</div><div class="ex-template-value">Voy a solicitar un permiso temporal ante la DIMAR. ¿Qué pasos sigue el trámite desde la solicitud hasta la decisión final?</div></div>
+                <div class="ex-template-row"><div class="ex-template-key">Respuesta</div><div class="ex-template-value">Primero se presenta la solicitud con la antelación mínima establecida. Luego se aportan los requisitos exigidos. Si la documentación está incompleta, la Capitanía de Puerto requiere al solicitante para completarla. Una vez recibidos todos los requisitos, se elabora el concepto técnico de jurisdicción. Finalmente, el Capitán de Puerto emite el acto administrativo que otorga o niega el permiso.</div></div>
+                <div class="ex-template-row"><div class="ex-template-key">Ubicación de la evidencia</div><div class="ex-template-value">Artículos 5.3.6.5, 5.3.6.6, 5.3.6.8, 5.3.6.10 y 5.3.6.11.</div></div>
+                <div class="ex-template-row"><div class="ex-template-key">Evidencia</div><div class="ex-template-value">Reglas sobre solicitud, requisitos, requerimiento por documentación incompleta, concepto técnico y decisión administrativa.</div></div>
+                <div class="ex-template-row"><div class="ex-template-key">Nota</div><div class="ex-template-value">El criterio de orden es la secuencia del trámite.</div></div>
+              </div>
+              <div class="ex-bad"><strong>Ejemplo no válido:</strong> ¿Qué documentos adicionales exige el REMAC 5 para eventos masivos? <br><strong>Por qué no sirve:</strong> Pide una lista de requisitos; no exige ordenar etapas del trámite.</div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /types-list -->
+    </section>
+
+    <div class="phase-card validation-phase">
+      <div class="phase-card-label">Fase 3</div>
+      <h2>Validación</h2>
+      <p>Antes de entregar el trabajo, revise los errores frecuentes y confirme que cada pregunta y cada respuesta cumplen los criterios del tutorial.</p>
+    </div>
+
+    <!-- ── 7. CÓMO FORMULAR LAS PREGUNTAS ──────── -->
+    <section class="section validation-card warning-panel" id="procedimiento">
+      <div class="sec-head">
+        <div class="sec-num">7</div>
+        <h2>Errores frecuentes</h2>
+      </div>
+      <p>Esta sección resume los errores más comunes al construir el ground truth.</p>
+
+      <ul class="checklist">
+        <li>Formular dos o más preguntas independientes dentro de una misma consulta.</li>
+        <li>Redactar preguntas que requieran información que no se encuentra en el corpus.</li>
+        <li>Crear preguntas que produzcan esencialmente la misma respuesta que otra ya registrada.</li>
+        <li>Formular preguntas demasiado amplias que admitan múltiples respuestas razonables.</li>
+        <li>Asignar un tipo de pregunta que no corresponde con la operación principal requerida para responderla.</li>
+      </ul>
+      <p><strong>Si identifica alguno de estos errores, corrija la pregunta antes de registrarla.</strong></p>
+    </section>
+
+    <!-- ── 8. LISTA DE VERIFICACIÓN ────────────── -->
+    <section class="section validation-card check-panel" id="validez">
+      <div class="sec-head">
+        <div class="sec-num">8</div>
+        <h2>Validar una pregunta</h2>
+      </div>
+      <p>Antes de registrar una pregunta, verifique los siguientes puntos:</p>
+      <ul class="checklist">
+        <li>Representa un único problema o necesidad de información.</li>
+        <li>Puede responderse utilizando exclusivamente el corpus, conforme a las reglas de la Sección 3.</li>
+        <li>Tiene un tipo claramente identificable dentro de la clasificación de la Sección 6.</li>
+        <li>No es redundante respecto de otra pregunta ya registrada.</li>
+        <li>La respuesta esperada está suficientemente delimitada por los documentos disponibles.</li>
+      </ul>
+    </section>
+
+    <!-- ── 9. CRITERIOS DE CALIDAD ─────────────── -->
+    <section class="section validation-card check-panel" id="calidad">
+      <div class="sec-head">
+        <div class="sec-num">9</div>
+        <h2>Validar una respuesta</h2>
+      </div>
+      <p>Antes de registrar una respuesta de referencia, verifique los siguientes puntos:</p>
+      <ul class="checklist">
+        <li>Responde completamente la pregunta formulada.</li>
+        <li>Está sustentada por la evidencia documental registrada.</li>
+        <li>Es comprensible por sí sola y permite entender la conclusión principal.</li>
+        <li>Utiliza redacción propia, salvo citas breves estrictamente necesarias.</li>
+        <li>La evidencia seleccionada respalda efectivamente la conclusión presentada.</li>
+      </ul>
+      <p><strong>Si la pregunta y la respuesta cumplen los criterios descritos en este tutorial, el registro está listo para incorporarse al ground truth del proyecto ATLAS.</strong></p>
+      <div class="alert alert-info" style="margin-top:1.25rem;">
+        <span class="alert-icon">&#128338;</span>
+        <div>
+          <p style="margin-bottom:0.5rem;"><strong>¿Qué sucede después de la entrega?</strong></p>
+          <p style="margin:0;">El equipo de desarrollo revisará cada registro para verificar que cumpla los criterios de formato y respondibilidad. Si algún registro requiere ajuste, se le enviará una observación puntual con la solicitud de corrección. Una vez validado el conjunto, los registros se incorporan al proceso de evaluación de ATLAS y los resultados se compartirán con el equipo jurídico como parte del ciclo de mejora continua del sistema.</p>
+        </div>
+      </div>
+    </section>
+
+</main>
+
+</div><!-- /layout -->
+
+<script>
+  // Accordion
+  function toggleType(id) {
+    const card = document.getElementById(id);
+    card.classList.toggle('open');
+  }
+
+  // Active nav on scroll
+  const sections = document.querySelectorAll('.section');
+  const navLinks = document.querySelectorAll('#sidebar-nav a');
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.id;
+        navLinks.forEach(a => {
+          a.classList.toggle('active', a.getAttribute('href') === '#' + id);
+        });
+      }
+    });
+  }, { rootMargin: '-30% 0px -60% 0px' });
+
+  sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>
