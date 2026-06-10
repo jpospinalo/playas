@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tutorial · Ground Truth · Proyecto ATLAS · v33</title>
+  <title>Tutorial · Ground Truth · Proyecto ATLAS · v41</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
     /* ═══════════════════════════════════════════
-       ATLAS Tutorial · Ground Truth · v32
+       ATLAS Tutorial · Ground Truth · v41
        Design System — clean rewrite
     ═══════════════════════════════════════════ */
 
@@ -318,6 +318,20 @@
     .corpus-item:last-child { border-bottom: none; }
     .corpus-item:nth-child(even) { background: #f9fafc; }
     .corpus-item:hover { background: var(--navy-pale); }
+    .doc-id {
+      display: inline-block;
+      font-family: ui-monospace, 'SF Mono', Consolas, monospace;
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--navy-mid);
+      background: var(--navy-pale);
+      border: 1px solid #c9d8ec;
+      border-radius: 4px;
+      padding: 0 0.4rem;
+      margin-right: 0.45rem;
+      white-space: nowrap;
+      vertical-align: 1px;
+    }
     .corpus-num {
       min-width: 1.5rem;
       color: var(--muted);
@@ -325,6 +339,24 @@
       padding-top: 0.15rem;
       text-align: right;
       font-family: 'Inter', sans-serif;
+    }
+
+
+    /* ── CORPUS ITEM 2-LINE ─────────────────────── */
+    .corpus-fname {
+      display: block;
+      font-family: ui-monospace, 'SF Mono', Consolas, monospace;
+      font-size: 0.78rem;
+      color: var(--text);
+      line-height: 1.4;
+      word-break: break-all;
+    }
+    .corpus-rad {
+      display: block;
+      font-size: 0.72rem;
+      color: var(--muted);
+      margin-top: 0.1rem;
+      font-family: ui-monospace, 'SF Mono', Consolas, monospace;
     }
 
     /* ── VOLUME STATS ───────────────────────────── */
@@ -763,6 +795,8 @@
       border-top: 3px solid var(--navy);
     }
     .phase-card.validation-phase { border-top-color: var(--amber); }
+    .phase-card.resources-phase { border-top-color: var(--navy-mid); }
+
     .phase-card-label, .validation-phase-label {
       font-size: 0.63rem;
       font-weight: 800;
@@ -819,6 +853,38 @@
 
     ul li, ol li { line-height: 1.6; }
 
+
+    /* ── NUMBERED LIST (sec. 7/8/9) ────────────── */
+    .num-list { display: flex; flex-direction: column; gap: 0.4rem; margin: 1rem 0; }
+    .num-item {
+      display: flex;
+      gap: 0.85rem;
+      align-items: flex-start;
+      padding: 0.65rem 0.9rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: var(--surface);
+      font-size: 0.875rem;
+      line-height: 1.6;
+    }
+    .num-badge {
+      width: 1.45rem;
+      height: 1.45rem;
+      min-width: 1.45rem;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.7rem;
+      font-family: 'Inter', sans-serif;
+      margin-top: 0.12rem;
+      flex-shrink: 0;
+      color: var(--navy);
+      background: var(--navy-pale);
+      border: 1px solid #c9d8ec;
+    }
+
     /* ── PRINT ───────────────────────────────────── */
     @media print {
       .sidebar { display: none; }
@@ -837,6 +903,14 @@
       .section { padding: 1.5rem 1.25rem; }
     }
 
+
+    /* §10 IA task cards */
+    .ia-cards { display:flex; flex-direction:column; gap:0.65rem; margin:1.25rem 0 0; }
+    .ia-card { display:flex; gap:0.85rem; border:1px solid var(--navy-pale); border-radius:8px; padding:0.85rem 1rem; background:#fff; }
+    .ia-badge { flex-shrink:0; width:1.65rem; height:1.65rem; border-radius:50%; background:var(--navy); color:#fff; font-size:0.75rem; font-weight:700; display:flex; align-items:center; justify-content:center; margin-top:0.1rem; }
+    .ia-title { font-weight:600; color:var(--navy); font-size:0.93rem; margin-bottom:0.2rem; }
+    .ia-when  { font-size:0.81rem; color:var(--text-2); margin-bottom:0.5rem; }
+    .ia-prompt{ font-style:italic; border-left:3px solid var(--navy-mid); padding-left:0.75rem; color:var(--text-2); font-size:0.84rem; line-height:1.55; }
   </style>
 </head>
 <body>
@@ -879,6 +953,10 @@
         <a href="#procedimiento"><span class="nav-num">7</span><span class="nav-text"><span class="nav-label">Errores frecuentes</span></span></a>
         <a href="#validez"><span class="nav-num">8</span><span class="nav-text"><span class="nav-label">Validar una pregunta</span></span></a>
         <a href="#calidad"><span class="nav-num">9</span><span class="nav-text"><span class="nav-label">Validar una respuesta</span></span></a>
+        <a href="#conjunto"><span class="nav-num">10</span><span class="nav-text"><span class="nav-label">Verificación final del conjunto</span></span></a>
+
+        <div class="nav-section-title">Recursos</div>
+        <a href="#ia"><span class="nav-num">11</span><span class="nav-text"><span class="nav-label">Apoyo de inteligencia artificial</span></span></a>
       </nav>
     </div>
   </aside>
@@ -899,7 +977,7 @@
         <h2>Para qué sirve este tutorial</h2>
       </div>
       <p>Este tutorial explica cómo construir el conjunto de preguntas y respuestas de referencia (<em>ground truth</em>), que servirá como patrón para evaluar las respuestas generadas por ATLAS.</p>
-      <p>Su aporte consiste en <strong>formular preguntas</strong> sobre los documentos del corpus y <strong>redactar la respuesta correcta</strong> a cada una de ellas, con base en la información disponible y su criterio profesional. Los documentos del corpus se describen en la Sección 2.</p>
+      <p>Su aporte consiste en <strong>formular preguntas</strong> sobre los documentos del corpus y <strong>redactar la respuesta de referencia</strong> a cada una de ellas, con base en la información disponible y su criterio profesional. Los documentos del corpus se describen en la Sección 2.</p>
       <p>Las preguntas y respuestas que usted construya determinarán la calidad de las evaluaciones futuras del sistema. El objetivo no es evaluar la calidad jurídica de los documentos ni proponer cambios normativos, sino construir preguntas y respuestas que puedan responderse con la información del corpus.</p>
       <div class="alert alert-info">
         <span class="alert-icon">&#128196;</span>
@@ -920,28 +998,28 @@
         <!-- Jurisprudencia -->
         <div class="corpus-block">
           <div class="corpus-block-head jurisprudencia">&#9878; Jurisprudencia &nbsp;·&nbsp; 10 sentencias TAM</div>
-          <div class="corpus-item"><span class="corpus-num">1</span><span>AP Carlos Alberto Zúñiga Mejía y otros VS DIMAR y otros</span></div>
-          <div class="corpus-item"><span class="corpus-num">2</span><span>AP Felipe José Campo Fernández VS Corpamag y otros</span></div>
-          <div class="corpus-item"><span class="corpus-num">3</span><span>AP Gabriel Antonio Carrero VS DIMAR y otros</span></div>
-          <div class="corpus-item"><span class="corpus-num">4</span><span>AP Gerardo Antenor Lemus Orozco VS Distrito de Santa Marta y otros</span></div>
-          <div class="corpus-item"><span class="corpus-num">5</span><span>AP Gieseken Cuello &amp; Cía. S. en C. VS DIMAR y otros</span></div>
-          <div class="corpus-item"><span class="corpus-num">6</span><span>AP Inversiones E y D S.A.S VS DIMAR y otros</span></div>
-          <div class="corpus-item"><span class="corpus-num">7</span><span>AP Miguel Ángel Enciso VS Distrito y otros</span></div>
-          <div class="corpus-item"><span class="corpus-num">8</span><span>AP Procuraduría General de la Nación VS Corpamag y otros</span></div>
-          <div class="corpus-item"><span class="corpus-num">9</span><span>AP Rodrigo Martínez Silva VS Minambiente y otros</span></div>
-          <div class="corpus-item"><span class="corpus-num">10</span><span>Sentencia de Segunda Instancia 47001-2332-000-2011-08425-02 (Gabriel Carrero) <span style="color:var(--muted);font-size:0.78rem;">— segunda instancia del caso del ítem 3</span></span></div>
+          <div class="corpus-item"><span class="corpus-num">1</span><span><span class="doc-id">SM-01</span><span class="corpus-fname">AP Gerardo Antenor Lemus Orozco VS Distrito de Santa Marta y otros</span><span class="corpus-rad">47-001-3333-005-2010-00684-01</span></span></div>
+          <div class="corpus-item"><span class="corpus-num">2</span><span><span class="doc-id">SM-02</span><span class="corpus-fname">AP Gieseken Cuello &amp; Cía. S. en C. VS DIMAR y otros</span><span class="corpus-rad">47-001-3333-001-2016-00473-01</span></span></div>
+          <div class="corpus-item"><span class="corpus-num">3</span><span><span class="doc-id">SM-03</span><span class="corpus-fname">AP Carlos Alberto Zúñiga Mejía y otros VS DIMAR y otros</span><span class="corpus-rad">470012333000202100198-00</span></span></div>
+          <div class="corpus-item"><span class="corpus-num">4</span><span><span class="doc-id">SM-04</span><span class="corpus-fname">AP Rodrigo Martínez Silva VS Minambiente y otros</span><span class="corpus-rad">47-001-2333-000-2016-00482-00</span></span></div>
+          <div class="corpus-item"><span class="corpus-num">5</span><span><span class="doc-id">SM-05</span><span class="corpus-fname">AP Gabriel Antonio Carrero VS DIMAR y otros</span><span class="corpus-rad">47-001-2331-003-2011-08425-00</span></span></div>
+          <div class="corpus-item"><span class="corpus-num">6</span><span><span class="doc-id">SM-06</span><span class="corpus-fname">AP Miguel Ángel Enciso VS Distrito y otros</span><span class="corpus-rad">47-001-3333-001-2016-03261</span></span></div>
+          <div class="corpus-item"><span class="corpus-num">7</span><span><span class="doc-id">SM-07</span><span class="corpus-fname">AP Felipe José Campo Fernández VS Corpamag y otros</span><span class="corpus-rad">470012333000202000687-00</span></span></div>
+          <div class="corpus-item"><span class="corpus-num">8</span><span><span class="doc-id">SM-08</span><span class="corpus-fname">AP Inversiones E y D S.A.S VS DIMAR y otros</span><span class="corpus-rad">47-001-2333-000-2016-00270-00</span></span></div>
+          <div class="corpus-item"><span class="corpus-num">9</span><span><span class="doc-id">SM-09</span><span class="corpus-fname">AP Procuraduría General de la Nación VS Corpamag y otros</span><span class="corpus-rad">47-001-2333-000-2018-00368-00</span></span></div>
+          <div class="corpus-item"><span class="corpus-num">10</span><span><span class="doc-id">SM-10</span><span class="corpus-fname">Sentencia de Segunda Instancia · AP Gabriel Antonio Carrero VS DIMAR y otros</span><span class="corpus-rad">47001-2332-000-2011-08425-02 <span style="font-size:0.78rem;color:#64748b;">— segunda instancia del caso SM-05</span></span></span></div>
         </div>
         <!-- Normativa -->
         <div class="corpus-block">
           <div class="corpus-block-head normativa">&#128214; Normativa &nbsp;·&nbsp; 2 documentos</div>
-          <div class="corpus-item"><span class="corpus-num">1</span><span>Decreto 2324 de 1984</span></div>
-          <div class="corpus-item"><span class="corpus-num">2</span><span>Reglamento Marítimo Colombiano REMAC 5 - DIMAR (edición 2021)</span></div>
+          <div class="corpus-item"><span class="corpus-num">1</span><span><span class="doc-id">N-01</span>Decreto 2324 de 1984</span></div>
+          <div class="corpus-item"><span class="corpus-num">2</span><span><span class="doc-id">N-02</span>Reglamento Marítimo Colombiano REMAC 5 - DIMAR (edición 2021)</span></div>
         </div>
       </div>
 
       <div class="alert alert-warn">
         <span class="alert-icon">&#9888;</span>
-        <p><strong>Tenga esto siempre presente:</strong> todas las preguntas que usted formule deben poder responderse a partir de uno o más de estos documentos. Si la respuesta correcta depende de doctrina, normativa o jurisprudencia que no está en esta lista, la pregunta no es válida para este ejercicio.</p>
+        <p><strong>Tenga esto siempre presente:</strong> todas las preguntas que usted formule deben poder responderse a partir de uno o más de estos documentos. Si la respuesta correcta depende de normativa o jurisprudencia que no está en esta lista, la pregunta no es válida para este ejercicio.</p>
       </div>
     </section>
 
@@ -951,21 +1029,29 @@
         <div class="sec-num">3</div>
         <h2>Qué es el ground truth y por qué importa su criterio</h2>
       </div>
-      <p>Cada registro de <em>ground truth</em> está compuesto por una pregunta, una respuesta de referencia y la evidencia documental que respalda esa respuesta.</p>
+      <p>Cada registro de <em>ground truth</em> está compuesto por una pregunta, una respuesta de referencia y la ubicación de la evidencia que la respalda.</p>
       <p>La respuesta de referencia es la mejor respuesta sustentada por los documentos del corpus. Debe construirse de manera que otro experto que consulte los mismos documentos pueda llegar sustancialmente a la misma conclusión.</p>
       <p>Utilice únicamente la información de los documentos del corpus. No incorpore normas, sentencias ni fuentes externas que no estén incluidas en los documentos suministrados.</p>
-      <p>El <em>ground truth</em> es el conjunto de respuestas de referencia contra el cual se evaluará el sistema. Usted formula las preguntas y escribe la respuesta correcta como lo haría un experto que acaba de leer el documento. Cuando el equipo evalúe a ATLAS, le hará las mismas preguntas y cotejará las respuestas del sistema con las suyas.</p>
+      <p>Escriba cada respuesta como lo haría un experto que acaba de leer el documento. Cuando el equipo evalúe a ATLAS, le hará las mismas preguntas y cotejará las respuestas del sistema con las suyas.</p>
       <p>Si ATLAS responde igual que usted en lo sustancial, el sistema está funcionando bien. Si hay diferencias relevantes, ahí está el error que hay que corregir.</p>
       <p>Su participación es insustituible porque determinar si una respuesta sobre dominio público marítimo-terrestre, concesiones de playa o jurisprudencia del Tribunal Administrativo del Magdalena es correcta, incompleta o errada requiere <strong>criterio jurídico especializado</strong>. Ese criterio es el que usted aporta.</p>
-      <div class="alert alert-info">
-      <span class="alert-icon">&#128221;</span>
-      <p><strong>Nota metodológica:</strong> la información sobre documentos y fragmentos de respaldo se utilizará posteriormente para construir los registros de relevancia documental (qrels). Estos registros indican qué documentos sustentan cada respuesta y permiten evaluar si ATLAS recupera la información adecuada antes de generar una respuesta.</p>
-    </div>
-    <div class="alert alert-warn" style="margin-top:1rem;">
+      <div class="alert alert-warn" style="margin-top:1rem;">
       <span class="alert-icon">&#9878;</span>
       <div>
-        <p style="margin-bottom:0.5rem;"><strong>Cuando dos documentos del corpus se contradicen o uno actualiza al otro:</strong></p>
-        <p style="margin:0;">Construya la respuesta de referencia reflejando la tensión tal como aparece en los documentos. Indique en el campo <em>Respuesta</em> qué dice cada documento y cuál prevalece según los criterios jurídicos aplicables (jerarquía normativa, norma posterior, norma especial). Use el campo <em>Nota</em> para explicar la contradicción. No incorpore criterios de resolución provenientes de fuentes externas al corpus.</p>
+        <p style="margin-bottom:0.6rem;"><strong>Cuando dos documentos del corpus se contradicen o uno actualiza al otro:</strong></p>
+        <ul style="margin:0;padding-left:1.25rem;line-height:1.75;">
+          <li>Registre en el campo <em>Respuesta</em> qué dice cada documento.</li>
+          <li>Indique cuál prevalece según los criterios de interpretación: jerarquía normativa, norma posterior o norma especial.</li>
+          <li>No incorpore normas, sentencias ni fuentes externas al corpus.</li>
+          <li>Explique la contradicción en el campo <em>Nota</em>.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="alert alert-warn" style="margin-top:1rem;">
+      <span class="alert-icon">&#128218;</span>
+      <div>
+        <p style="margin-bottom:0.5rem;"><strong>Responda conforme al corpus, no conforme al derecho vigente:</strong></p>
+        <p style="margin:0;">Si usted sabe que una disposición del corpus fue modificada, derogada o interpretada por normas o sentencias que no están en la Sección 2, construya la respuesta con el texto del corpus tal como aparece. ATLAS solo conoce esos documentos. Deje constancia en el campo <em>Nota</em>: esa observación es valiosa para el equipo de desarrollo, pero no debe alterar la respuesta.</p>
       </div>
     </div>
     </section>
@@ -983,9 +1069,9 @@
     <h2>Prioridad, cobertura y calidad</h2>
   </div>
 
-  <p>El objetivo no es producir la mayor cantidad posible de preguntas, sino construir un conjunto que represente adecuadamente el contenido del corpus. La cifra indicada en esta sección es la cantidad mínima esperada.</p>
+  <p>El objetivo no es producir la mayor cantidad posible de preguntas, sino construir un conjunto que represente adecuadamente el contenido del corpus.</p>
 
-  <p>Además de cumplir esa cantidad mínima, procure distribuir las preguntas entre diferentes temas, documentos e instituciones jurídicas. Evite concentrar la mayoría de las preguntas en un único asunto o generar varias preguntas que conduzcan esencialmente a la misma respuesta.</p>
+  <p>Procure distribuir las preguntas entre diferentes temas, documentos e instituciones jurídicas. Evite concentrar la mayoría de las preguntas en un único asunto o generar varias preguntas que conduzcan esencialmente a la misma respuesta.</p>
 
   <table class="mini-table">
     <thead>
@@ -1000,13 +1086,7 @@
 
   <p><em>Esta distribución es orientativa y puede ajustarse cuando la naturaleza de los documentos lo justifique. En bloques de menos de 10 preguntas, mantenga las proporciones relativas.</em></p>
 
-  <ul>
-    <li>Las preguntas de prioridad alta representan mejor el razonamiento que los usuarios aplican al consultar documentos jurídicos.</li>
-    <li>Las preguntas de prioridad media complementan la cobertura temática.</li>
-    <li>Las preguntas de extracción puntual son útiles, pero por sí solas no generan un conjunto suficientemente representativo.</li>
-    <li>Procure incluir preguntas que requieran operaciones distintas: extracción puntual, síntesis, cruce entre documentos, comparación jurídica, aplicación normativa o secuencias.</li>
-    <li>Evite que un único tipo predomine en el conjunto, salvo que la naturaleza del documento lo justifique.</li>
-  </ul>
+  <p>Dentro de la prioridad alta, procure que el cruce entre documentos (Tipo 3) esté siempre representado: al menos una o dos preguntas por cada bloque de diez.</p>
 
   <div class="alert alert-info">
     <span class="alert-icon">&#9989;</span>
@@ -1025,19 +1105,19 @@
     <h2>Cómo entregar el material</h2>
   </div>
 
-  <p>Una vez seleccionadas las preguntas, cada una debe registrarse como una entrada independiente. Entregue todo el trabajo en un único documento (Word, PDF o texto plano), utilizando siempre la misma estructura.</p>
+  <p>Una vez seleccionadas las preguntas, cada una debe registrarse como una entrada independiente. Entregue todo el trabajo en un único documento (Word, PDF o texto plano), utilizando siempre la misma estructura. Si la coordinación del proyecto pone a su disposición una plantilla en el OneDrive (documento o hoja de cálculo con estos campos), utilícela: reduce errores de formato y facilita el procesamiento posterior.</p>
 <table class="mini-table">
     <thead><tr><th>Campo</th><th>Descripción breve</th></tr></thead>
     <tbody>
-      <tr><td><strong>📌 Tipo</strong></td><td>Categoría de la pregunta según la clasificación de la Sección 6.</td></tr>
-      <tr><td><strong>📄 Doc. principal</strong></td><td>Documento que contiene la mayor parte de la información necesaria para responder la pregunta.</td></tr>
-      <tr><td><strong>📚 Doc. secundario</strong></td><td>Documento adicional que aporta información necesaria para completar la respuesta. Déjelo vacío si no aplica.</td></tr>
-      <tr><td><strong>❓ Pregunta</strong></td><td>Consulta formulada en lenguaje natural siguiendo las reglas del tutorial.</td></tr>
-      <tr><td><strong>✅ Respuesta</strong></td><td>Respuesta de referencia construida a partir de los documentos del corpus.</td></tr>
-      <tr><td><strong>🔎 Ubicación de la evidencia</strong></td><td>Artículo, numeral, sección, página, considerando o fragmento donde se encuentra la información utilizada.</td></tr>
-      <tr><td><strong>📖 Evidencia</strong></td><td>Fragmento específico que respalda la respuesta o descripción precisa de la evidencia documental utilizada.</td></tr>
-      <tr><td><strong>📝 Nota</strong></td><td>Observación adicional, incluyendo tensiones entre documentos o advertencias sobre el alcance de la respuesta. Campo opcional.</td></tr>
-      <tr><td><strong>✍️ Elaborado por</strong></td><td>Nombre del profesional que construyó el registro.</td></tr>
+      <tr><td><strong>Tipo</strong></td><td>Categoría de la pregunta según la clasificación de la Sección 6.</td></tr>
+      <tr><td><strong>Doc. principal</strong></td><td>Documento que contiene la mayor parte de la información necesaria para responder la pregunta. Indíquelo con su identificador y nombre (ej.: «N-01 · Decreto 2324 de 1984»), según la Sección 2.</td></tr>
+      <tr><td><strong>Doc. secundario</strong></td><td>Documento adicional que aporta información necesaria para completar la respuesta, indicado con su identificador y nombre. Déjelo vacío si no aplica.</td></tr>
+      <tr><td><strong>Pregunta</strong></td><td>Consulta formulada en lenguaje natural siguiendo las reglas del tutorial.</td></tr>
+      <tr><td><strong>Respuesta</strong></td><td>Respuesta de referencia construida a partir de los documentos del corpus.</td></tr>
+      <tr><td><strong>Ubicación de la evidencia</strong></td><td>Lugar exacto donde se encuentra la información. En normas: artículo y, si aplica, numeral o parágrafo. En sentencias: sección de la providencia (hechos, consideraciones, parte resolutiva), considerando o numeral y, de ser posible, la página del archivo PDF. Si la evidencia proviene de varios fragmentos, registre cada ubicación junto a su fragmento.</td></tr>
+      <tr><td><strong>Nota</strong></td><td>Observación adicional, incluyendo tensiones entre documentos o advertencias sobre el alcance de la respuesta. Campo opcional.</td></tr>
+      <tr><td><strong>Elaborado por</strong></td><td>Nombre del profesional que construyó el registro.</td></tr>
+      <tr><td><strong>Revisado por</strong></td><td>Nombre del profesional que revisó el registro. Campo opcional.</td></tr>
     </tbody>
   </table>
 
@@ -1054,23 +1134,22 @@
         <div class="dt-field-row"><span class="dt-field-key">Pregunta</span><div class="dt-field-line"></div></div>
         <div class="dt-field-row"><span class="dt-field-key">Respuesta</span><div class="dt-field-line"></div></div>
         <div class="dt-field-row"><span class="dt-field-key">Ubicación de la evidencia</span><div class="dt-field-line"></div></div>
-        <div class="dt-field-row"><span class="dt-field-key">Evidencia</span><div class="dt-field-line"></div></div>
         <div class="dt-field-row"><span class="dt-field-key">Nota</span><div style="display:flex;align-items:baseline;gap:0.5rem;"><div class="dt-field-line optional" style="flex:1;"></div><span class="dt-optional-tag">opcional</span></div></div>
         <div class="dt-field-row"><span class="dt-field-key">Elaborado por</span><div class="dt-field-line"></div></div>
+        <div class="dt-field-row"><span class="dt-field-key">Revisado por</span><div style="display:flex;align-items:baseline;gap:0.5rem;"><div class="dt-field-line optional" style="flex:1;"></div><span class="dt-optional-tag">opcional</span></div></div>
       </div>
     </div>
   </div>
 
-  <h3 style=”font-size:1rem;color:var(--navy);margin:1.25rem 0 0.5rem;”>Consideraciones antes de guardar</h3>
+  <h3 style="font-size:1rem;color:var(--navy);margin:1.25rem 0 0.5rem;">Consideraciones antes de guardar</h3>
   <ul>
     <li>Si la respuesta puede sustentarse completamente en un único documento, deje vacío el campo “Documento secundario”.</li>
-    <li>Si la respuesta requiere tres o más documentos, registre el más relevante como documento principal y el segundo como documento secundario. Los demás van en el campo “Nota” con una indicación de qué aporta cada uno.</li>
-    <li>La evidencia debe identificar el fragmento específico que respalda la respuesta.</li>
+    <li>Si la respuesta requiere tres o más documentos, registre el más relevante como documento principal y el segundo como documento secundario. Los demás van en el campo “Nota”, identificados por su identificador de documento (SM-XX o N-XX) y con una indicación de qué aporta cada uno.</li>
     <li>La respuesta debe redactarse con palabras propias y ser comprensible por sí sola.</li>
-    <li>La pregunta debe poder responderse utilizando el corpus.</li>
-    <li>La respuesta debe estar claramente sustentada por los documentos.</li>
     <li>La entrada debe contener una única pregunta y una única respuesta de referencia.</li>
   </ul>
+  <p style="margin-top:1rem;">Cuando todos los campos estén completos, el registro está listo para incorporarse al conjunto. Continúe con la Sección 6 para familiarizarse con los tipos de pregunta antes de comenzar a producir registros.</p>
+
 </section>
 
 <!-- ── 6. LOS 6 TIPOS ────────────────────── -->
@@ -1080,7 +1159,6 @@
         <h2>Los 6 tipos de pregunta: definición y ejemplos</h2>
       </div>
       <p>Clasifique cada pregunta en uno de los seis tipos según la tarea principal que debe realizar ATLAS para responder. Si una pregunta parece pertenecer a varios tipos, prevalece la operación principal. Por ejemplo, si la pregunta exige comparar figuras jurídicas, corresponde al Tipo 4 aunque también requiera consultar varios documentos. Si exige aplicar una regla a una situación concreta, corresponde al Tipo 5 aunque requiera identificar previamente una disposición del corpus.</p>
-      <p>La pregunta parafraseada no se maneja como un tipo independiente. Es una regla de redacción: formule las preguntas con lenguaje natural y evite copiar frases del documento, salvo cuando pida una cita textual.</p>
 <div class="alert alert-guide" style="margin:1rem 0 1.25rem 0;">
   <span class="alert-icon">&#128161;</span>
   <div>
@@ -1095,16 +1173,16 @@
         </tr>
       </thead>
       <tbody>
-        <tr><td><strong>Naturalidad</strong></td><td>La pregunta debe poder formularla una persona interesada en el tema sin conocimiento previo de la norma o la sentencia.</td></tr>
+        <tr><td><strong>Naturalidad</strong></td><td>La pregunta debe poder formularla una persona interesada en el tema sin conocer la estructura interna del documento. En las sentencias puede asumirse que el usuario conoce la existencia del caso (p. ej., un apoderado), pero no el texto de la providencia.</td></tr>
         <tr><td><strong>Concreción</strong></td><td>Debe referirse a una situación reconocible, específica y claramente delimitada.</td></tr>
-        <tr><td><strong>Precisión</strong></td><td>La respuesta esperada debe estar claramente determinada por los documentos del corpus y no admitir múltiples interpretaciones razonables.</td></tr>
+        <tr><td><strong>Precisión</strong></td><td>La respuesta esperada debe estar claramente determinada por los documentos del corpus y no admitir múltiples interpretaciones razonables. Las tensiones entre documentos del corpus no invalidan una pregunta: en esos casos, la respuesta de referencia documenta la tensión conforme a la Sección 3.</td></tr>
         <tr><td><strong>Plausibilidad</strong></td><td>Debe representar una situación realista dentro del contexto de playas marítimas, bienes de uso público, concesiones, permisos, actuaciones administrativas o conflictos jurídicos relacionados.</td></tr>
         <tr><td><strong>Verificabilidad</strong></td><td>La respuesta debe poder encontrarse y verificarse en los documentos del corpus.</td></tr>
         <tr><td><strong>Correspondencia</strong></td><td>La pregunta debe representar claramente el tipo al que fue asignada y exigir la operación jurídica descrita para ese tipo.</td></tr>
       </tbody>
     </table>
     <p style="margin-top:0.85rem;margin-bottom:0;">
-      <strong>Importante:</strong> los ejemplos de esta sección cumplen todos estos criterios y sirven de referencia para formular nuevas preguntas.
+      Los ejemplos de esta sección cumplen estos criterios; úselos como referencia al formular las suyas.
     </p>
   </div>
 </div>
@@ -1121,8 +1199,8 @@
       <p>Antes de registrar una pregunta, pregúntese si esa misma consulta podría llegar por correo electrónico a una Capitanía de Puerto, a la DIMAR, a un abogado especializado en asuntos costeros o a la Secretaría del Tribunal. Si la respuesta es no, la pregunta probablemente es demasiado artificial, académica o alejada de una necesidad real de información.</p>
     </div>
     <div>
-      <strong>Alcance de los ejemplos</strong>
-      <p>Los ejemplos de esta sección usan el Decreto 2324 de 1984 y el REMAC 5 únicamente con fines ilustrativos. Las mismas categorías deben aplicarse a todos los documentos del corpus descritos en la Sección 2, incluidas sentencias, normas, reglamentos y demás documentos indexados en ATLAS.</p>
+      <strong>¿La pregunta debe nombrar el documento?</strong>
+      <p>Solo cuando un usuario real lo haría: un abogado que cita un caso o una norma conocida puede nombrarlos; un ciudadano que consulta por su situación normalmente no. Procure que la mayoría de las preguntas se formulen sin nombrar el documento que contiene la respuesta, y reserve la mención expresa para cuando resulte natural.</p>
     </div>
   </div>
 </div>
@@ -1148,13 +1226,14 @@
               <div class="example-label">Ejemplo aplicado</div>
               <div class="ex-template">
                 <div class="ex-template-row"><div class="ex-template-key">Tipo</div><div class="ex-template-value">1. Extracción puntual</div></div>
-                <div class="ex-template-row"><div class="ex-template-key">Doc. principal</div><div class="ex-template-value">Decreto 2324 de 1984</div></div>
+                <div class="ex-template-row"><div class="ex-template-key">Doc. principal</div><div class="ex-template-value">N-01 · Decreto 2324 de 1984</div></div>
                 <div class="ex-template-row"><div class="ex-template-key">Doc. secundario</div><div class="ex-template-value">No aplica</div></div>
                 <div class="ex-template-row"><div class="ex-template-key">Pregunta</div><div class="ex-template-value">¿Cómo define el Decreto 2324 de 1984 la playa marítima?</div></div>
                 <div class="ex-template-row"><div class="ex-template-key">Respuesta</div><div class="ex-template-value">El Decreto 2324 de 1984 define la playa marítima como la zona de material no consolidado que se extiende hacia tierra desde la línea de más baja marea hasta el lugar donde se presenta un marcado cambio en el material, forma fisiográfica o hasta donde se inicia la línea de vegetación permanente, límite que usualmente corresponde al alcance efectivo de las olas de temporal.</div></div>
                 <div class="ex-template-row"><div class="ex-template-key">Ubicación de la evidencia</div><div class="ex-template-value">Artículo 167.</div></div>
-                <div class="ex-template-row"><div class="ex-template-key">Evidencia</div><div class="ex-template-value">Definición de “playa marítima” contenida en el artículo 167.</div></div>
                 <div class="ex-template-row"><div class="ex-template-key">Nota</div><div class="ex-template-value">No aplica.</div></div>
+                <div class="ex-template-row"><div class="ex-template-key">Elaborado por</div><div class="ex-template-value">&nbsp;</div></div>
+                <div class="ex-template-row"><div class="ex-template-key">Revisado por</div><div class="ex-template-value"><span style="font-size:0.78rem;color:#64748b;">opcional</span></div></div>
               </div>
               <div class="ex-bad"><strong>Ejemplo no válido:</strong> ¿Qué régimen jurídico se deriva de las definiciones de playa marítima, bajamar y terrenos de bajamar? <br><strong>Por qué no sirve:</strong> Exige relacionar varias definiciones y sus efectos; no es una extracción puntual.</div>
             </div>
@@ -1180,13 +1259,14 @@
               <div class="example-label">Ejemplo aplicado</div>
               <div class="ex-template">
                 <div class="ex-template-row"><div class="ex-template-key">Tipo</div><div class="ex-template-value">2. Síntesis dentro de un documento</div></div>
-                <div class="ex-template-row"><div class="ex-template-key">Doc. principal</div><div class="ex-template-value">REMAC 5</div></div>
+                <div class="ex-template-row"><div class="ex-template-key">Doc. principal</div><div class="ex-template-value">N-02 · REMAC 5</div></div>
                 <div class="ex-template-row"><div class="ex-template-key">Doc. secundario</div><div class="ex-template-value">No aplica</div></div>
                 <div class="ex-template-row"><div class="ex-template-key">Pregunta</div><div class="ex-template-value">Estamos organizando actividades para turistas durante la temporada vacacional y queremos instalar algunas carpas de apoyo en la playa. ¿Qué autorización necesitaríamos y cuánto tiempo podría mantenerse vigente esa autorización?</div></div>
                 <div class="ex-template-row"><div class="ex-template-key">Respuesta</div><div class="ex-template-value">El REMAC 5 permite solicitar un permiso temporal para usar zonas de aguas marítimas, playas marítimas o terrenos de bajamar ubicadas en perímetro rural mediante infraestructura no permanente. El permiso tiene un término máximo de un año y puede prorrogarse por una única vez. La excepción corresponde a los permisos para instalación de carpas para bañistas, respecto de los cuales pueden autorizarse prórrogas adicionales siempre que se mantengan los requisitos y condiciones que dieron lugar a su otorgamiento.</div></div>
                 <div class="ex-template-row"><div class="ex-template-key">Ubicación de la evidencia</div><div class="ex-template-value">Artículos 5.3.6.2 y 5.3.6.3.</div></div>
-                <div class="ex-template-row"><div class="ex-template-key">Evidencia</div><div class="ex-template-value">Alcance del permiso temporal y término máximo previsto para su otorgamiento y prórroga.</div></div>
                 <div class="ex-template-row"><div class="ex-template-key">Nota</div><div class="ex-template-value">No aplica.</div></div>
+                <div class="ex-template-row"><div class="ex-template-key">Elaborado por</div><div class="ex-template-value">&nbsp;</div></div>
+                <div class="ex-template-row"><div class="ex-template-key">Revisado por</div><div class="ex-template-value"><span style="font-size:0.78rem;color:#64748b;">opcional</span></div></div>
               </div>
               <div class="ex-bad"><strong>Ejemplo no válido:</strong> ¿Cuál es el término máximo del permiso temporal según el REMAC 5? <br><strong>Por qué no sirve:</strong> Puede responderse con un solo artículo; debe clasificarse como extracción puntual.</div>
             </div>
@@ -1212,13 +1292,14 @@
               <div class="example-label">Ejemplo aplicado</div>
               <div class="ex-template">
                 <div class="ex-template-row"><div class="ex-template-key">Tipo</div><div class="ex-template-value">3. Cruce entre documentos</div></div>
-                <div class="ex-template-row"><div class="ex-template-key">Doc. principal</div><div class="ex-template-value">REMAC 5</div></div>
-                <div class="ex-template-row"><div class="ex-template-key">Doc. secundario</div><div class="ex-template-value">Decreto 2324 de 1984</div></div>
+                <div class="ex-template-row"><div class="ex-template-key">Doc. principal</div><div class="ex-template-value">N-02 · REMAC 5</div></div>
+                <div class="ex-template-row"><div class="ex-template-key">Doc. secundario</div><div class="ex-template-value">N-01 · Decreto 2324 de 1984</div></div>
                 <div class="ex-template-row"><div class="ex-template-key">Pregunta</div><div class="ex-template-value">Un hotel quiere destinar una parte de la playa para uso exclusivo de sus huéspedes durante cinco años. ¿Qué tipo de autorización tendría que solicitar?</div></div>
                 <div class="ex-template-row"><div class="ex-template-key">Respuesta</div><div class="ex-template-value">No bastaría un permiso temporal para una ocupación proyectada durante cinco años, porque el REMAC 5 establece que estos permisos tienen un término máximo de un año y solo pueden prorrogarse una vez, salvo excepciones específicas. Para un aprovechamiento de esa duración debe acudirse al régimen de autorizaciones para uso y goce de bienes de uso público bajo jurisdicción de la DIMAR, desarrollado en los artículos 169 y siguientes del Decreto 2324 de 1984, dentro de los cuales se encuentra la figura de la concesión.</div></div>
                 <div class="ex-template-row"><div class="ex-template-key">Ubicación de la evidencia</div><div class="ex-template-value">REMAC 5, artículo 5.3.6.3; Decreto 2324 de 1984, artículo 169.</div></div>
-                <div class="ex-template-row"><div class="ex-template-key">Evidencia</div><div class="ex-template-value">Remisión del REMAC 5 al trámite de autorizaciones previsto en el Decreto 2324 y regulación de concesiones en el artículo 169.</div></div>
                 <div class="ex-template-row"><div class="ex-template-key">Nota</div><div class="ex-template-value">Ejemplo de pregunta que exige consultar dos documentos.</div></div>
+                <div class="ex-template-row"><div class="ex-template-key">Elaborado por</div><div class="ex-template-value">&nbsp;</div></div>
+                <div class="ex-template-row"><div class="ex-template-key">Revisado por</div><div class="ex-template-value"><span style="font-size:0.78rem;color:#64748b;">opcional</span></div></div>
               </div>
               <div class="ex-bad"><strong>Ejemplo no válido:</strong> ¿Cuál es el objeto del trámite de permisos temporales en el REMAC 5? <br><strong>Por qué no sirve:</strong> Solo exige consultar el REMAC 5; no cruza documentos.</div>
               <div class="ex-bad" style="margin-top:0.5rem;background:#f0f9ff;border-left-color:#2563eb;"><strong>¿Cuándo el cruce entre documentos NO es una comparación (Tipo 4)?</strong><br>Si la pregunta del ejemplo del hotel pidiera "<em>¿en qué se diferencia la concesión del permiso temporal para ese caso concreto?</em>", sería Tipo 4 porque exige un contraste explícito entre las dos figuras. En el Tipo 3 los documentos se integran para construir una respuesta completa; en el Tipo 4, el objetivo principal es contrastar elementos mediante un criterio.</div>
@@ -1245,13 +1326,14 @@
               <div class="example-label">Ejemplo aplicado</div>
               <div class="ex-template">
                 <div class="ex-template-row"><div class="ex-template-key">Tipo</div><div class="ex-template-value">4. Comparación jurídica</div></div>
-                <div class="ex-template-row"><div class="ex-template-key">Doc. principal</div><div class="ex-template-value">Decreto 2324 de 1984</div></div>
-                <div class="ex-template-row"><div class="ex-template-key">Doc. secundario</div><div class="ex-template-value">REMAC 5</div></div>
+                <div class="ex-template-row"><div class="ex-template-key">Doc. principal</div><div class="ex-template-value">N-01 · Decreto 2324 de 1984</div></div>
+                <div class="ex-template-row"><div class="ex-template-key">Doc. secundario</div><div class="ex-template-value">N-02 · REMAC 5</div></div>
                 <div class="ex-template-row"><div class="ex-template-key">Pregunta</div><div class="ex-template-value">Para desarrollar un proyecto turístico en una playa con mobiliario e infraestructura de apoyo, ¿en qué cambia pedir una concesión frente a pedir un permiso temporal?</div></div>
                 <div class="ex-template-row"><div class="ex-template-key">Respuesta</div><div class="ex-template-value">En el Decreto 2324 de 1984, la concesión regula el uso y goce de playas marítimas y terrenos de bajamar mediante autorización otorgada por la autoridad marítima competente. En el REMAC 5, el permiso temporal regula el uso de aguas marítimas, playas marítimas o terrenos de bajamar ubicados en perímetro rural para instalar infraestructura no permanente. La diferencia principal radica en el objeto autorizado y en la duración, pues el permiso temporal tiene un término máximo de un año prorrogable una sola vez, salvo las excepciones previstas expresamente.</div></div>
                 <div class="ex-template-row"><div class="ex-template-key">Ubicación de la evidencia</div><div class="ex-template-value">Decreto 2324 de 1984, artículo 169; REMAC 5, artículos 5.3.6.2 y 5.3.6.3.</div></div>
-                <div class="ex-template-row"><div class="ex-template-key">Evidencia</div><div class="ex-template-value">Regulación de concesiones en el Decreto 2324 y regulación del alcance y duración del permiso temporal en el REMAC 5.</div></div>
                 <div class="ex-template-row"><div class="ex-template-key">Nota</div><div class="ex-template-value">La respuesta debe centrarse en el objeto autorizado y la duración de cada figura.</div></div>
+                <div class="ex-template-row"><div class="ex-template-key">Elaborado por</div><div class="ex-template-value">&nbsp;</div></div>
+                <div class="ex-template-row"><div class="ex-template-key">Revisado por</div><div class="ex-template-value"><span style="font-size:0.78rem;color:#64748b;">opcional</span></div></div>
               </div>
               <div class="ex-bad"><strong>Ejemplo no válido:</strong> ¿Qué documentos exige el Decreto 2324 de 1984 para una concesión? <br><strong>Por qué no sirve:</strong> Solo pide enumerar requisitos; no compara dos elementos mediante un criterio explícito.</div>
               <div class="ex-bad" style="margin-top:0.5rem;background:#f0f9ff;border-left-color:#2563eb;"><strong>¿Cuándo la comparación NO es un cruce entre documentos (Tipo 3)?</strong><br>Si la misma pregunta del ejemplo comparara la concesión y el permiso temporal sin evaluar un proyecto concreto (solo "<em>¿en qué se diferencian?</em>"), seguiría siendo Tipo 4 aunque use dos documentos. La distinción clave es que en el Tipo 4 el objetivo es el contraste; en el Tipo 3, los documentos se combinan para dar una respuesta integrada que ninguno de los dos provee por sí solo.</div>
@@ -1278,15 +1360,17 @@
               <div class="example-label">Ejemplo aplicado</div>
               <div class="ex-template">
                 <div class="ex-template-row"><div class="ex-template-key">Tipo</div><div class="ex-template-value">5. Aplicación normativa o jurisprudencial</div></div>
-                <div class="ex-template-row"><div class="ex-template-key">Doc. principal</div><div class="ex-template-value">REMAC 5</div></div>
+                <div class="ex-template-row"><div class="ex-template-key">Doc. principal</div><div class="ex-template-value">N-02 · REMAC 5</div></div>
                 <div class="ex-template-row"><div class="ex-template-key">Doc. secundario</div><div class="ex-template-value">No aplica</div></div>
                 <div class="ex-template-row"><div class="ex-template-key">Pregunta</div><div class="ex-template-value">Quiero montar un kiosco desmontable en una playa rural durante la temporada turística. ¿Qué autorización necesito y ante quién debo tramitarla?</div></div>
                 <div class="ex-template-row"><div class="ex-template-key">Respuesta</div><div class="ex-template-value">Debe solicitar un permiso temporal ante la Dirección General Marítima, por medio de la Capitanía de Puerto correspondiente. La solicitud debe presentarse por escrito, dirigida al Capitán de Puerto, o por sede electrónica cuando esté implementada, al menos quince días hábiles antes del inicio de la actividad o evento.</div></div>
                 <div class="ex-template-row"><div class="ex-template-key">Ubicación de la evidencia</div><div class="ex-template-value">Artículos 5.3.6.2 y 5.3.6.5.</div></div>
-                <div class="ex-template-row"><div class="ex-template-key">Evidencia</div><div class="ex-template-value">Alcance del permiso temporal y regla sobre presentación de la solicitud ante la Capitanía de Puerto.</div></div>
                 <div class="ex-template-row"><div class="ex-template-key">Nota</div><div class="ex-template-value">El supuesto se resuelve únicamente con REMAC 5.</div></div>
+                <div class="ex-template-row"><div class="ex-template-key">Elaborado por</div><div class="ex-template-value">&nbsp;</div></div>
+                <div class="ex-template-row"><div class="ex-template-key">Revisado por</div><div class="ex-template-value"><span style="font-size:0.78rem;color:#64748b;">opcional</span></div></div>
               </div>
               <div class="ex-bad"><strong>Ejemplo no válido:</strong> ¿Qué dice el artículo 5.3.6.5 del REMAC 5? <br><strong>Por qué no sirve:</strong> No plantea un supuesto que exija aplicar la regla.</div>
+              <div class="ex-bad" style="margin-top:0.5rem;background:#f0f9ff;border-left-color:#2563eb;"><strong>¿Cuándo la aplicación NO es una síntesis (Tipo 2)?</strong><br>El ejemplo del kiosco también reúne información de dos artículos, como una síntesis. La diferencia está en la operación principal: en el Tipo 5 la pregunta plantea un supuesto concreto y la respuesta es la consecuencia jurídica para ese supuesto; en el Tipo 2 la pregunta pide información integrada del documento sin un caso que resolver. Si hay un supuesto que resolver, prevalece el Tipo 5.</div>
             </div>
           </div>
         </div>
@@ -1310,13 +1394,14 @@
               <div class="example-label">Ejemplo aplicado</div>
               <div class="ex-template">
                 <div class="ex-template-row"><div class="ex-template-key">Tipo</div><div class="ex-template-value">6. Secuencia, trámite u orden jurídico</div></div>
-                <div class="ex-template-row"><div class="ex-template-key">Doc. principal</div><div class="ex-template-value">REMAC 5</div></div>
+                <div class="ex-template-row"><div class="ex-template-key">Doc. principal</div><div class="ex-template-value">N-02 · REMAC 5</div></div>
                 <div class="ex-template-row"><div class="ex-template-key">Doc. secundario</div><div class="ex-template-value">No aplica</div></div>
                 <div class="ex-template-row"><div class="ex-template-key">Pregunta</div><div class="ex-template-value">Voy a solicitar un permiso temporal ante la DIMAR. ¿Qué pasos sigue el trámite desde la solicitud hasta la decisión final?</div></div>
                 <div class="ex-template-row"><div class="ex-template-key">Respuesta</div><div class="ex-template-value">Primero se presenta la solicitud con la antelación mínima establecida. Luego se aportan los requisitos exigidos. Si la documentación está incompleta, la Capitanía de Puerto requiere al solicitante para completarla. Una vez recibidos todos los requisitos, se elabora el concepto técnico de jurisdicción. Finalmente, el Capitán de Puerto emite el acto administrativo que otorga o niega el permiso.</div></div>
                 <div class="ex-template-row"><div class="ex-template-key">Ubicación de la evidencia</div><div class="ex-template-value">Artículos 5.3.6.5, 5.3.6.6, 5.3.6.8, 5.3.6.10 y 5.3.6.11.</div></div>
-                <div class="ex-template-row"><div class="ex-template-key">Evidencia</div><div class="ex-template-value">Reglas sobre solicitud, requisitos, requerimiento por documentación incompleta, concepto técnico y decisión administrativa.</div></div>
                 <div class="ex-template-row"><div class="ex-template-key">Nota</div><div class="ex-template-value">El criterio de orden es la secuencia del trámite.</div></div>
+                <div class="ex-template-row"><div class="ex-template-key">Elaborado por</div><div class="ex-template-value">&nbsp;</div></div>
+                <div class="ex-template-row"><div class="ex-template-key">Revisado por</div><div class="ex-template-value"><span style="font-size:0.78rem;color:#64748b;">opcional</span></div></div>
               </div>
               <div class="ex-bad"><strong>Ejemplo no válido:</strong> ¿Qué documentos adicionales exige el REMAC 5 para eventos masivos? <br><strong>Por qué no sirve:</strong> Pide una lista de requisitos; no exige ordenar etapas del trámite.</div>
             </div>
@@ -1329,7 +1414,7 @@
     <div class="phase-card validation-phase">
       <div class="phase-card-label">Fase 3</div>
       <h2>Validación</h2>
-      <p>Antes de entregar el trabajo, revise los errores frecuentes y confirme que cada pregunta y cada respuesta cumplen los criterios del tutorial.</p>
+      <p>Antes de entregar el trabajo, revise los errores frecuentes y confirme que cada pregunta y cada respuesta cumplen los criterios del tutorial. La entrega es única, de modo que esta fase es el control de calidad definitivo del conjunto.</p>
     </div>
 
     <!-- ── 7. CÓMO FORMULAR LAS PREGUNTAS ──────── -->
@@ -1340,14 +1425,20 @@
       </div>
       <p>Esta sección resume los errores más comunes al construir el ground truth.</p>
 
-      <ul class="checklist">
-        <li>Formular dos o más preguntas independientes dentro de una misma consulta.</li>
-        <li>Redactar preguntas que requieran información que no se encuentra en el corpus.</li>
-        <li>Crear preguntas que produzcan esencialmente la misma respuesta que otra ya registrada.</li>
-        <li>Formular preguntas demasiado amplias que admitan múltiples respuestas razonables.</li>
-        <li>Asignar un tipo de pregunta que no corresponde con la operación principal requerida para responderla.</li>
-      </ul>
+      <div class="num-list">
+        <div class="num-item"><div class="num-badge">1</div><div>Formular dos o más preguntas independientes dentro de una misma consulta.</div></div>
+        <div class="num-item"><div class="num-badge">2</div><div>Redactar preguntas que requieran información que no se encuentra en el corpus.</div></div>
+        <div class="num-item"><div class="num-badge">3</div><div>Crear preguntas que produzcan esencialmente la misma respuesta que otra ya registrada.</div></div>
+        <div class="num-item"><div class="num-badge">4</div><div>Formular preguntas demasiado amplias que admitan múltiples respuestas razonables.</div></div>
+        <div class="num-item"><div class="num-badge">5</div><div>Asignar un tipo de pregunta que no corresponde con la operación principal requerida para responderla.</div></div>
+        <div class="num-item"><div class="num-badge">6</div><div>Construir la respuesta con el derecho vigente en lugar del texto del corpus (ver Sección 3).</div></div>
+        <div class="num-item"><div class="num-badge">7</div><div>Omitir el identificador del documento, lo que impide rastrearlo durante el procesamiento y la evaluación.</div></div>
+      </div>
       <p><strong>Si identifica alguno de estos errores, corrija la pregunta antes de registrarla.</strong></p>
+      <div class="alert alert-info">
+        <span class="alert-icon">&#128161;</span>
+        <p><strong>¿Y si una buena pregunta no puede responderse con el corpus?</strong> No la incluya en el ground truth, pero tampoco la pierda: regístrela en una lista aparte al final de su documento, titulada «Preguntas fuera del corpus», indicando qué información faltó. Esa lista no se usará en la evaluación, pero orienta futuras ampliaciones del corpus de ATLAS.</p>
+      </div>
     </section>
 
     <!-- ── 8. LISTA DE VERIFICACIÓN ────────────── -->
@@ -1357,13 +1448,14 @@
         <h2>Validar una pregunta</h2>
       </div>
       <p>Antes de registrar una pregunta, verifique los siguientes puntos:</p>
-      <ul class="checklist">
-        <li>Representa un único problema o necesidad de información.</li>
-        <li>Puede responderse utilizando exclusivamente el corpus, conforme a las reglas de la Sección 3.</li>
-        <li>Tiene un tipo claramente identificable dentro de la clasificación de la Sección 6.</li>
-        <li>No es redundante respecto de otra pregunta ya registrada.</li>
-        <li>La respuesta esperada está suficientemente delimitada por los documentos disponibles.</li>
-      </ul>
+      <div class="num-list">
+        <div class="num-item"><div class="num-badge">1</div><div>Representa un único problema o necesidad de información.</div></div>
+        <div class="num-item"><div class="num-badge">2</div><div>Puede responderse utilizando exclusivamente el corpus, conforme a las reglas de la Sección 3.</div></div>
+        <div class="num-item"><div class="num-badge">3</div><div>Tiene un tipo claramente identificable dentro de la clasificación de la Sección 6.</div></div>
+        <div class="num-item"><div class="num-badge">4</div><div>No es redundante respecto de otra pregunta ya registrada.</div></div>
+        <div class="num-item"><div class="num-badge">5</div><div>La respuesta esperada está suficientemente delimitada por los documentos disponibles.</div></div>
+        <div class="num-item"><div class="num-badge">6</div><div>Menciona el documento o el caso solo cuando un usuario real lo haría, conforme a la guía de la Sección 6.</div></div>
+      </div>
     </section>
 
     <!-- ── 9. CRITERIOS DE CALIDAD ─────────────── -->
@@ -1373,22 +1465,97 @@
         <h2>Validar una respuesta</h2>
       </div>
       <p>Antes de registrar una respuesta de referencia, verifique los siguientes puntos:</p>
-      <ul class="checklist">
-        <li>Responde completamente la pregunta formulada.</li>
-        <li>Está sustentada por la evidencia documental registrada.</li>
-        <li>Es comprensible por sí sola y permite entender la conclusión principal.</li>
-        <li>Utiliza redacción propia, salvo citas breves estrictamente necesarias.</li>
-        <li>La evidencia seleccionada respalda efectivamente la conclusión presentada.</li>
-      </ul>
-      <p><strong>Si la pregunta y la respuesta cumplen los criterios descritos en este tutorial, el registro está listo para incorporarse al ground truth del proyecto ATLAS.</strong></p>
+      <div class="num-list">
+        <div class="num-item"><div class="num-badge">1</div><div>Responde completamente la pregunta formulada.</div></div>
+        <div class="num-item"><div class="num-badge">2</div><div>Está sustentada por la evidencia documental registrada.</div></div>
+        <div class="num-item"><div class="num-badge">3</div><div>Es comprensible por sí sola y permite entender la conclusión principal.</div></div>
+        <div class="num-item"><div class="num-badge">4</div><div>Utiliza redacción propia, salvo citas breves estrictamente necesarias.</div></div>
+        <div class="num-item"><div class="num-badge">5</div><div>La ubicación de la evidencia sigue la convención de la Sección 5.</div></div>
+      </div>
+
+    </section>
+
+
+    <!-- ── 10. VERIFICACIÓN FINAL DEL CONJUNTO ─── -->
+    <section class="section validation-card check-panel" id="conjunto">
+      <div class="sec-head">
+        <div class="sec-num">10</div>
+        <h2>Verificación final del conjunto</h2>
+      </div>
+      <p>Cuando termine todos los registros, revise el conjunto completo como una unidad antes de entregar:</p>
+      <div class="num-list">
+        <div class="num-item"><div class="num-badge">1</div><div>Todos los registros tienen los campos obligatorios diligenciados.</div></div>
+        <div class="num-item"><div class="num-badge">2</div><div>La distribución por tipos se aproxima a la tabla de la Sección 4 y el cruce entre documentos (Tipo 3) está representado.</div></div>
+        <div class="num-item"><div class="num-badge">3</div><div>Cada documento del corpus está representado con al menos dos preguntas.</div></div>
+        <div class="num-item"><div class="num-badge">4</div><div>No hay dos preguntas que conduzcan esencialmente a la misma respuesta.</div></div>
+        <div class="num-item"><div class="num-badge">5</div><div>Los documentos se citan siempre por su identificador y nombre (SM-01 a SM-10, N-01, N-02).</div></div>
+        <div class="num-item"><div class="num-badge">6</div><div>La lista «Preguntas fuera del corpus», si existe, está claramente separada del conjunto principal.</div></div>
+      </div>
+      <p style="margin-top:1rem;"><strong>Si el conjunto supera estas verificaciones, está listo para entregarse e incorporarse al ground truth del proyecto ATLAS.</strong></p>
       <div class="alert alert-info" style="margin-top:1.25rem;">
         <span class="alert-icon">&#128338;</span>
         <div>
           <p style="margin-bottom:0.5rem;"><strong>¿Qué sucede después de la entrega?</strong></p>
-          <p style="margin:0;">El equipo de desarrollo revisará cada registro para verificar que cumpla los criterios de formato y respondibilidad. Si algún registro requiere ajuste, se le enviará una observación puntual con la solicitud de corrección. Una vez validado el conjunto, los registros se incorporan al proceso de evaluación de ATLAS y los resultados se compartirán con el equipo jurídico como parte del ciclo de mejora continua del sistema.</p>
+          <p style="margin:0;">No habrá rondas de revisión ni solicitudes de corrección posteriores. El equipo de desarrollo verificará el formato y la respondibilidad de cada registro; los que no cumplan los criterios de este tutorial no podrán incorporarse a la evaluación. Los registros incorporados se usarán para evaluar a ATLAS y los resultados se compartirán con el equipo jurídico.</p>
         </div>
       </div>
     </section>
+
+    <div class="phase-card resources-phase">
+      <h2>Recursos</h2>
+      <p>Orientaciones prácticas para apoyar la construcción del ground truth con herramientas digitales.</p>
+    </div>
+
+        <!-- ── 10. APOYO DE INTELIGENCIA ARTIFICIAL ─── -->
+    <section class="section" id="ia">
+      <div class="sec-head">
+        <div class="sec-num">11</div>
+        <h2>Apoyo de inteligencia artificial</h2>
+      </div>
+      <p>Recurra a estas herramientas cuando ya tenga el fragmento del documento frente a usted y necesite apoyo en un paso puntual de la construcción del registro.</p>
+
+      <div class="alert alert-info">
+        <span class="alert-icon">&#128161;</span>
+        <p><strong>Principio general:</strong> la IA es un asistente, no un autor. Todo lo que genere debe verificarse contra los documentos del corpus antes de registrarse.</p>
+      </div>
+
+      <div class="ia-cards">
+
+        <div class="ia-card">
+          <div class="ia-badge">A</div>
+          <div>
+            <div class="ia-title">Borrador de respuesta de referencia</div>
+            <div class="ia-when">Cuando tiene el fragmento pero no sabe cómo redactar la respuesta.</div>
+            <p class="ia-prompt">«El siguiente texto proviene de [fuente, ej.: artículo 5.3.6.3 del REMAC 5]. Basándote únicamente en este fragmento, redacta una respuesta de referencia para la pregunta: [pregunta]. No agregues información que no esté en el texto.»</p>
+          </div>
+        </div>
+
+        <div class="ia-card">
+          <div class="ia-badge">B</div>
+          <div>
+            <div class="ia-title">Verificación de completitud</div>
+            <div class="ia-when">Cuando ya tiene un borrador y quiere saber si omitió algo relevante.</div>
+            <p class="ia-prompt">«Tengo el siguiente fragmento: [texto]. Y esta respuesta de referencia: [respuesta]. ¿La respuesta omite algún aspecto relevante del fragmento? Considera únicamente el texto proporcionado.»</p>
+          </div>
+        </div>
+
+        <div class="ia-card">
+          <div class="ia-badge">C</div>
+          <div>
+            <div class="ia-title">Reformulación de preguntas</div>
+            <div class="ia-when">Cuando la pregunta suena académica o artificial.</div>
+            <p class="ia-prompt">«La siguiente pregunta está bien definida en contenido, pero suena académica. Propón tres formulaciones más naturales sin cambiar lo que se pregunta: [pregunta].»</p>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="alert alert-warn" style="margin-top:1rem;">
+        <span class="alert-icon">&#9888;</span>
+        <p style="margin:0;">Proporcione siempre el fragmento relevante: sin él, la IA puede inventar artículos o contenido inexistente. La clasificación del tipo y el criterio jurídico son siempre responsabilidad del profesional. No use la IA para generar preguntas de manera autónoma.</p>
+      </div>
+    </section>
+
 
 </main>
 
