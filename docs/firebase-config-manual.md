@@ -199,8 +199,8 @@ Orden: Descendente
 La colección `feedback` cambia de un campo `rating` (entero) a un campo `ratings` (objeto con `tone`, `length`, `usability`, `overall`). Ejecutar el script de migración:
 
 ```bash
-uv run python scripts/migrate_feedback_ratings.py --dry-run   # Previsualizar cambios
-uv run python scripts/migrate_feedback_ratings.py             # Aplicar migración
+PYTHONPATH=rag/backend uv run python -m rag.tools.migrate_feedback_ratings --dry-run   # Previsualizar cambios
+PYTHONPATH=rag/backend uv run python -m rag.tools.migrate_feedback_ratings             # Aplicar migración
 ```
 
 > El script usa el Firebase Admin SDK (mismo servicio que el backend). Requiere `FIREBASE_SERVICE_ACCOUNT_PATH` en `.env`.

@@ -18,11 +18,11 @@ Tres capas independientes que comparten `data/` y servicios externos (ChromaDB, 
 ```
 ┌──────────────────────┐     ┌──────────────────────────────────┐     ┌──────────────────┐
 │  Pipeline de ingesta │  →  │  Agente LangGraph + API FastAPI  │ ←→  │ Frontend Next.js │
-│  (paquete `ingest/`) │     │       (paquete `rag/`)           │     │  (`frontend/`)   │
+│  (paquete `ingest/`) │     │     (paquete `rag/backend/`)     │     │ (`rag/frontend/`)│
 └──────────────────────┘     └──────────────────────────────────┘     └──────────────────┘
 ```
 
-`rag/` y `ingest/` son **paquetes Python independientes** dentro del workspace `uv`: no comparten código, solo el directorio `data/` y los servicios externos. El frontend (Bun) habla con la API por SSE para streaming y directamente con Firestore para historial/feedback.
+`rag/backend` e `ingest/` son **paquetes Python independientes** dentro del workspace `uv`: no comparten código, solo el directorio `data/` y los servicios externos. El frontend (`rag/frontend`, Bun) habla con la API por SSE para streaming y directamente con Firestore para historial/feedback.
 
 ---
 
@@ -79,7 +79,7 @@ START → enrich_query → retrieve_forced → generate → END
 
 ## Integración Firebase
 
-Autenticación, historial, calificaciones y roles viven en Firebase. El backend usa **Firebase Admin SDK** (`rag/api/firebase_admin.py`); el frontend usa el SDK cliente (`frontend/lib/firebase.ts`).
+Autenticación, historial, calificaciones y roles viven en Firebase. El backend usa **Firebase Admin SDK** (`rag/backend/rag/api/firebase_admin.py`); el frontend usa el SDK cliente (`rag/frontend/lib/firebase.ts`).
 
 > **Antes de ejecutar el proyecto** hay que configurar manualmente Firebase Console (Auth, reglas, índices, service account, roles): seguir paso a paso [`docs/firebase-config-manual.md`](docs/firebase-config-manual.md).
 
@@ -103,36 +103,33 @@ Las reglas (`firestore.rules`) garantizan que cada usuario solo acceda a sus con
 
 ```
 rag_playas/
-├── rag/                          ← Paquete API + agente
-│   ├── core/                     ← agent, tools, retriever, llm_factory, ...
-│   └── api/                      ← FastAPI: main, auth, firebase_admin, routes/
-├── ingest/                       ← Pipeline de ingesta (independiente)
-├── frontend/                     ← Next.js 16 (React 19, Bun)
-├── data/
-│   ├── raw/
-│   │   ├── jurisprudencia/       ← PDFs + metadata.csv de sentencias
-│   │   └── normativa/            ← MDs/PDFs de decretos y reglamentos
-│   ├── bronze/
-│   │   ├── jurisprudencia/       ← Markdown por sentencia
-│   │   └── normativa/            ← Markdown por decreto/reglamento
-│   ├── silver/
-│   │   ├── jurisprudencia/       ← JSONL seccional (4 secciones por sentencia)
-│   │   └── normativa/            ← JSONL articular (1 artículo por unidad)
-│   └── gold/
-│       ├── jurisprudencia/       ← Chunks enriquecidos de sentencias
-│       └── normativa/            ← Chunks enriquecidos de normativa
+├── rag/                          ← Dominio de serving (producto)
+│   ├── backend/                  ← Subproyecto Python (paquete `rag`)
+│   │   └── rag/
+│   │       ├── core/             ← agent, tools, retriever, llm_factory, ...
+│   │       ├── api/              ← FastAPI: main, auth, firebase_admin, routes/
+│   │       ├── tools/            ← utilidades de ChromaDB/Firestore
+│   │       └── evaluation/       ← scripts RAGAS
+│   └── frontend/                 ← Next.js 16 (React 19, Bun) — autocontenido
+├── ingest/                       ← Dominio de ingesta (independiente)
+│   ├── pdf_to_md/, loaders.py, sections*.py, splitter_and_enrich.py, ...
+│   ├── scripts/                  ← run_pipeline.sh (pipeline de datos)
+│   └── tools/                    ← utilidades de S3 + diagnóstico LLM
+├── infra/                        ← Dominio de infraestructura
+│   ├── terraform/                ← Terraform (EC2 Chroma + Ollama)
+│   ├── docker/                   ← Dockerfiles + nginx.conf
+│   └── scripts/                  ← ec2_*.sh, sagemaker-*.sh, deploy
+├── data/                         ← Staging (frontera ingest↔rag, gitignored)
+│   ├── raw/  bronze/  silver/  gold/   ← cada capa: jurisprudencia/ + normativa/
 ├── docs/                         ← guías (incluye firebase-config-manual.md)
 ├── firestore.rules               ← reglas de seguridad versionadas
 ├── firestore.indexes.json        ← índices compuestos
-├── docker/                       ← Dockerfiles + nginx.conf
 ├── docker-compose.yml            ← stack de despliegue (backend + frontend + nginx)
-├── infrastructure/               ← Terraform (EC2 Chroma + Ollama)
-├── scripts/                      ← run_pipeline.sh, ec2_*.sh
-├── tests/, evaluation/
+├── tests/                        ← unit + integration
 └── Makefile
 ```
 
-`uv` gestiona el workspace Python (raíz + `rag/` + `ingest/`); `bun` gestiona el workspace Node (raíz + `frontend/`). El `.env` es único y vive en la raíz.
+`uv` gestiona el workspace Python (raíz, con los miembros `rag/backend` e `ingest`); `bun` gestiona el frontend Node, autocontenido en `rag/frontend/`. El paquete `rag` se importa igual que antes (`rag.api.main`), expuesto con `PYTHONPATH=rag/backend`. El `.env` es único y vive en la raíz.
 
 ---
 
@@ -188,7 +185,7 @@ Luego configurar Firebase siguiendo [`docs/firebase-config-manual.md`](docs/fire
 
 Orden de prioridad de proveedores LLM: **OpenAI** → **OpenRouter** → **Gemini** → error.
 
-**Frontend (`frontend/.env.local`):**
+**Frontend (`rag/frontend/.env.local`):**
 
 | Variable | Descripción |
 |----------|-------------|
@@ -206,7 +203,7 @@ Cómo obtener cada una: secciones 4 y 5 de [`docs/firebase-config-manual.md`](do
 
 ## Infraestructura en AWS
 
-Dos instancias EC2 (recomendado con IP elástica). La carpeta `infrastructure/` provisiona ambas con Terraform:
+Dos instancias EC2 (recomendado con IP elástica). La carpeta `infra/terraform/` provisiona ambas con Terraform:
 
 | Máquina  | Tipo        | Almacenamiento | Puerto | Servicio    |
 | -------- | ----------- | -------------- | ------ | ----------- |
@@ -214,17 +211,17 @@ Dos instancias EC2 (recomendado con IP elástica). La carpeta `infrastructure/` 
 | Ollama   | `t3.large`  | 20 GB gp3      | 11434  | Ollama      |
 
 ```bash
-cd infrastructure/ && terraform init && terraform apply
+cd infra/terraform/ && terraform init && terraform apply
 ```
 
-Setup manual alternativo: `bash scripts/ec2_chroma_db.sh` y `bash scripts/ec2_ollama_embeddings.sh`.
+Setup manual alternativo: `bash infra/scripts/ec2_chroma_db.sh` y `bash infra/scripts/ec2_ollama_embeddings.sh`.
 
 ---
 
 ## Ejecución
 
 ```bash
-# Pipeline de ingesta (todas las etapas)
+# Pipeline de datos (ingesta) + indexación en ChromaDB
 make pipeline
 
 # API FastAPI (docs interactivas en http://localhost:8080/docs)

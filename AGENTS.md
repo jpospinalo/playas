@@ -9,11 +9,11 @@
 ## Build/Test Commands
 
 ```bash
-# Python (uv workspace)
+# Python (uv workspace) — el paquete `rag` vive en rag/backend/rag (se expone con PYTHONPATH=rag/backend)
 make install        # uv sync --group dev
-make lint           # ruff check rag/ ingest/ tests/ evaluation/
-make format         # ruff format rag/ ingest/ tests/ evaluation/
-make typecheck      # mypy rag/ ingest/  (note: CI-disabled due to lingering errors)
+make lint           # ruff check rag/backend/rag ingest tests
+make format         # ruff format rag/backend/rag ingest tests
+make typecheck      # mypy rag/backend/rag ingest  (note: CI-disabled due to lingering errors)
 make test           # pytest tests/unit/ -v
 make test-cov       # pytest + HTML coverage report
 make test-integration  # pytest -m integration -v  (requires live ChromaDB + Ollama)
@@ -22,15 +22,15 @@ make test-integration  # pytest -m integration -v  (requires live ChromaDB + Oll
 uv run python -m ingest.pdf_to_md           # PDF → clean Markdown (data/bronze/)
 uv run python -m ingest.loaders            # bronze → silver (data/silver/)
 uv run python -m ingest.splitter_and_enrich # silver → gold enriched chunks (data/gold/)
-uv run python -m rag.core.vectorstore       # gold → ChromaDB index
-make pipeline   # run_pipeline.sh (all 4 stages + starts API)
+PYTHONPATH=rag/backend uv run python -m rag.core.vectorstore   # gold → ChromaDB index
+make pipeline   # ingest/scripts/run_pipeline.sh (4 data stages)
 
 # API
-make app         # uvicorn rag.api.main:app --reload --port 8080
+make app         # PYTHONPATH=rag/backend uvicorn rag.api.main:app --reload --port 8080
 
 # Frontend
 make frontend    # bun run dev (Next.js on port 3000)
-make -C frontend build  # production build
+make -C rag/frontend build  # production build
 ```
 
 **Run a single test:**
@@ -43,12 +43,14 @@ uv run pytest tests/unit/path/to/test_file.py::test_name -v
 
 ## Architecture
 
-### Two Independent Python Packages
+### Self-contained domains: serving (`rag/`) and ingestion (`ingest/`)
 
-`rag/` and `ingest/` are **fully independent packages**. Each has its own `pyproject.toml` and `config.py`. They share no code — they only share the `data/` staging directory and external services (ChromaDB, Ollama, LLM providers).
+The repo is organized by domain. `rag/` (serving) is split into **`rag/backend/`** (Python: API + agent) and **`rag/frontend/`** (Next.js). `ingest/` (ingestion) is an independent Python package. Backend and ingest share **no code** — only the `data/` staging directory and external services (ChromaDB, Ollama, LLM providers). Each Python package keeps its own `pyproject.toml` and `config.py`.
+
+The Python package is still imported as `rag.*` (e.g. `rag.api.main:app`); it lives at `rag/backend/rag/` and is exposed via `PYTHONPATH=rag/backend` (no `cd` needed — `cwd` stays at the repo root so `.env` and `data/` resolve unchanged).
 
 ```
-rag/                          # RAG serving (API + agent)
+rag/backend/rag/              # RAG serving backend — importable package `rag`
 ├── config.py                # Env vars: Chroma, Ollama, LLM, query enrichment
 ├── s3_client.py             # S3 read-only helpers (list, read)
 ├── core/
@@ -60,15 +62,18 @@ rag/                          # RAG serving (API + agent)
 │   ├── retriever.py         # BM25 + vector + HybridEnsembleRetriever (RRF c=160)
 │   ├── query_enricher.py   # LLM query rewriting (legal terminology, sub-questions)
 │   └── llm_factory.py      # Provider factory: OpenAI → OpenRouter → Gemini → error
-└── api/
-    ├── main.py              # FastAPI app (health, query, query/stream)
-    ├── schemas.py           # Pydantic request/response models
-    ├── auth.py              # Firebase auth dependencies (optional, required, admin)
-    ├── firebase_admin.py    # Firebase Admin SDK singleton
-    └── routes/
-        ├── conversations.py # POST /api/conversations/generate-title
-        ├── feedback.py      # POST /api/feedback, POST /api/feedback/message
-        └── admin.py         # GET/POST /api/admin/*
+├── api/
+│   ├── main.py              # FastAPI app (health, query, query/stream)
+│   ├── schemas.py           # Pydantic request/response models
+│   ├── auth.py              # Firebase auth dependencies (optional, required, admin)
+│   ├── firebase_admin.py    # Firebase Admin SDK singleton
+│   └── routes/
+│       ├── conversations.py # POST /api/conversations/generate-title
+│       ├── feedback.py      # POST /api/feedback, POST /api/feedback/message
+│       └── admin.py         # GET/POST /api/admin/*
+├── tools/                   # Maintenance utils (chroma_*, backfill_doc_type, migrate_feedback_ratings)
+└── evaluation/              # RAGAS evaluation scripts (ragas_eval_*)
+# rag/frontend/ → Next.js 16 app (served UI), built independently
 
 ingest/                       # Ingestion pipeline
 ├── config.py                # Env vars + DOC_TYPES + layer_prefix(layer, doc_type)
@@ -81,6 +86,8 @@ ingest/                       # Ingestion pipeline
 ├── sections_normativa.py   # split_by_articles() — per-article normativa strategy
 ├── metadata_csv.py         # Loads raw/<type>/metadata.csv (optional per doc_type)
 ├── splitter_and_enrich.py  # Chunk (1000 tokens, 200 overlap) + LLM enrichment
+├── scripts/                # run_pipeline.sh (4-stage data pipeline)
+├── tools/                  # S3 maintenance (backfill/migrate doc_type, bucket_backup, list_gemini_models)
 └── pdf_to_md/              # PDF → Markdown via Docling (OCR, tables, images)
     ├── pipeline.py         # Main entry: convert_pdfs_to_markdown()
     ├── config.py           # Tunable constants (image, OCR, profiling thresholds)
@@ -193,15 +200,15 @@ docker compose logs -f
 docker compose down
 ```
 
-Requires `.env` at root (backend) and Firebase variables passed as build args. See `docker/Dockerfile.backend` and `docker/Dockerfile.frontend` for details.
+Requires `.env` at root (backend) and Firebase variables passed as build args. See `infra/docker/Dockerfile.backend` and `infra/docker/Dockerfile.frontend` for details.
 
 ---
 
 ## Key Conventions
 
 - **Env vars** — all in `.env` at root. Two independent `config.py` files read only what they need.
-- **Workspace managers** — `uv` (Python, root), `bun` (Node, root + frontend)
+- **Workspace managers** — `uv` (Python workspace at root: members `rag/backend`, `ingest`), `bun` (Node, self-contained in `rag/frontend`)
 - **Integration tests** — marked `@pytest.mark.integration`, skipped in `make test`
 - **Tests location** — `tests/unit/` and `tests/integration/` at project root
-- **Next.js** — uses Next.js 16.2.3 (React 19). Breaking changes may differ from prior versions. See `frontend/AGENTS.md`.
+- **Next.js** — uses Next.js 16.2.3 (React 19). Breaking changes may differ from prior versions. See `rag/frontend/AGENTS.md`.
 - **Operational scripts** — see `docs/SCRIPTS.md` for pipeline, infrastructure, migration, and utility scripts.
