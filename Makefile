@@ -7,19 +7,19 @@ install:  ## Instalar dependencias (incluidas las de desarrollo)
 	uv sync --group dev
 
 lint:  ## Verificar errores de estilo y lógica con ruff
-	uv run ruff check rag/backend/rag ingest tests
+	uv run ruff check rag/backend ingest
 
 format:  ## Formatear código con ruff
-	uv run ruff format rag/backend/rag ingest tests
+	uv run ruff format rag/backend ingest
 
 typecheck:  ## Verificar tipos con mypy
 	uv run mypy rag/backend/rag ingest
 
-test:  ## Ejecutar tests unitarios
-	uv run pytest tests/unit/ -v
+test:  ## Ejecutar tests unitarios (excluye los marcados integration)
+	uv run pytest -m "not integration" -v
 
 test-cov:  ## Ejecutar tests con informe de cobertura
-	uv run pytest tests/unit/ --cov=rag --cov=ingest --cov-report=term-missing --cov-report=html
+	uv run pytest -m "not integration" --cov=rag --cov=ingest --cov-report=term-missing --cov-report=html
 
 test-integration:  ## Ejecutar tests de integración (requiere servicios activos)
 	uv run pytest -m integration -v

@@ -73,7 +73,7 @@ service cloud.firestore {
 
 Clic en **Publicar**.
 
-> El archivo `firestore.rules` en la raíz del proyecto contiene esta misma versión y sirve como fuente de verdad versionada.
+> El archivo `docs/firebase/firestore.rules` contiene esta misma versión y sirve como fuente de verdad versionada.
 
 ---
 
@@ -101,7 +101,7 @@ Crear los siguientes dos índices (uno a la vez):
 
 Cada índice tarda ~1 minuto en pasar de **Building** a **Enabled**.
 
-> Los índices de un solo campo (`messages.createdAt`, `feedback.createdAt`, `users.createdAt`) los crea Firestore automáticamente — no hay que hacer nada. El archivo `firestore.indexes.json` en la raíz refleja la configuración versionada.
+> Los índices de un solo campo (`messages.createdAt`, `feedback.createdAt`, `users.createdAt`) los crea Firestore automáticamente — no hay que hacer nada. El archivo `docs/firebase/firestore.indexes.json` refleja la configuración versionada.
 
 ---
 
@@ -192,7 +192,7 @@ Orden: Descendente
 
 `messageId` en orden ASCENDING.
 
-> Estos índices están definidos en `firestore.indexes.json` en la raíz del proyecto.
+> Estos índices están definidos en `docs/firebase/firestore.indexes.json`.
 
 ### 7.3. Migrar documentos existentes de `feedback`
 

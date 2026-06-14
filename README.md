@@ -93,7 +93,7 @@ Autenticación, historial, calificaciones y roles viven en Firebase. El backend 
 | `feedback/{id}`                       | Calificaciones de conversación (tone, length, usability, overall).          |
 | `message_feedback/{id}`               | Calificaciones por mensaje (pertinence, accuracy, expectedAnswer).          |
 
-Las reglas (`firestore.rules`) garantizan que cada usuario solo acceda a sus conversaciones, que el campo `role` no sea mutable desde el cliente y que el feedback solo lo lean los admins. `firestore.indexes.json` versiona los índices compuestos requeridos.
+Las reglas (`docs/firebase/firestore.rules`) garantizan que cada usuario solo acceda a sus conversaciones, que el campo `role` no sea mutable desde el cliente y que el feedback solo lo lean los admins. `docs/firebase/firestore.indexes.json` versiona los índices compuestos requeridos.
 
 `rag/api/auth.py` ofrece tres dependencias FastAPI: `get_optional_user` (token opcional), `get_current_user` (obligatorio) y `require_admin` (verifica `role` en Firestore).
 
@@ -105,27 +105,26 @@ Las reglas (`firestore.rules`) garantizan que cada usuario solo acceda a sus con
 rag_playas/
 ├── rag/                          ← Dominio de serving (producto)
 │   ├── backend/                  ← Subproyecto Python (paquete `rag`)
-│   │   └── rag/
-│   │       ├── core/             ← agent, tools, retriever, llm_factory, ...
-│   │       ├── api/              ← FastAPI: main, auth, firebase_admin, routes/
-│   │       ├── tools/            ← utilidades de ChromaDB/Firestore
-│   │       └── evaluation/       ← scripts RAGAS
+│   │   ├── rag/
+│   │   │   ├── core/             ← agent, tools, retriever, llm_factory, ...
+│   │   │   ├── api/              ← FastAPI: main, auth, firebase_admin, routes/
+│   │   │   ├── tools/            ← utilidades de ChromaDB/Firestore
+│   │   │   └── evaluation/       ← scripts RAGAS
+│   │   └── tests/                ← tests del backend (+ integration/)
 │   └── frontend/                 ← Next.js 16 (React 19, Bun) — autocontenido
 ├── ingest/                       ← Dominio de ingesta (independiente)
 │   ├── pdf_to_md/, loaders.py, sections*.py, splitter_and_enrich.py, ...
 │   ├── scripts/                  ← run_pipeline.sh (pipeline de datos)
-│   └── tools/                    ← utilidades de S3 + diagnóstico LLM
+│   ├── tools/                    ← utilidades de S3 + diagnóstico LLM
+│   └── tests/                    ← tests de ingest
 ├── infra/                        ← Dominio de infraestructura
 │   ├── terraform/                ← Terraform (EC2 Chroma + Ollama)
 │   ├── docker/                   ← Dockerfiles + nginx.conf
 │   └── scripts/                  ← ec2_*.sh, sagemaker-*.sh, deploy
 ├── data/                         ← Staging (frontera ingest↔rag, gitignored)
 │   ├── raw/  bronze/  silver/  gold/   ← cada capa: jurisprudencia/ + normativa/
-├── docs/                         ← guías (incluye firebase-config-manual.md)
-├── firestore.rules               ← reglas de seguridad versionadas
-├── firestore.indexes.json        ← índices compuestos
+├── docs/                         ← guías + docs/firebase/ (rules, indexes, manual)
 ├── docker-compose.yml            ← stack de despliegue (backend + frontend + nginx)
-├── tests/                        ← unit + integration
 └── Makefile
 ```
 

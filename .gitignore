@@ -77,3 +77,10 @@ archivos-normativa/
 # 14) Documentos Word del ground-truth (binarios generados; solo se versiona el Markdown)
 docs/ground-truth/*.docx
 ARCHITECTURE_ANALYSIS.md
+
+# 15) Instrucciones locales para agentes (no se versionan)
+/CLAUDE.md
+/AGENTS.md
+
+# 16) Estado local de herramientas
+.impeccable/

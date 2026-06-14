@@ -10,9 +10,9 @@ __pycache__/
 # ── Datos y artefactos que no se necesitan en runtime ─────────────────────────
 data/
 docs/
-tests/
 infra/
 bucket-backup*/
+ingest/tests/
 rag/backend/rag/evaluation/
 rag/backend/rag/tools/
 rag/backend/tests/
