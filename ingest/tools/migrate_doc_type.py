@@ -10,8 +10,8 @@ Es idempotente: nunca vuelve a mover algo que ya esté bajo ``jurisprudencia/``
 o ``normativa/`` justo después de la capa.
 
 Uso:
-    uv run python -m utils.migrate_doc_type            # dry-run (por defecto)
-    uv run python -m utils.migrate_doc_type --apply    # ejecuta de verdad
+    uv run python -m ingest.tools.migrate_doc_type            # dry-run (por defecto)
+    uv run python -m ingest.tools.migrate_doc_type --apply    # ejecuta de verdad
 """
 
 from __future__ import annotations

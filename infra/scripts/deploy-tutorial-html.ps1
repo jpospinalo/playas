@@ -12,8 +12,8 @@
 #   - Sesion iniciada:        vercel login
 #
 # Uso:
-#   pwsh scripts/deploy-tutorial-html.ps1                 # despliega a produccion
-#   pwsh scripts/deploy-tutorial-html.ps1 -Preview        # despliega una preview
+#   pwsh infra/scripts/deploy-tutorial-html.ps1                 # despliega a produccion
+#   pwsh infra/scripts/deploy-tutorial-html.ps1 -Preview        # despliega una preview
 #
 # Tras editar el HTML, simplemente vuelve a correr este script.
 

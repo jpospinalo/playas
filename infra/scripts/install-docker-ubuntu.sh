@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Instala Docker Engine + Compose plugin en Ubuntu 22.04 (Jammy) o 24.04 (Noble).
-# Uso: sudo bash scripts/install-docker-ubuntu.sh
+# Uso: sudo bash infra/scripts/install-docker-ubuntu.sh
 set -euo pipefail
 
 # ── Verificaciones previas ────────────────────────────────────────────────────

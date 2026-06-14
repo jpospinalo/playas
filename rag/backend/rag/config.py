@@ -9,7 +9,7 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-BASE_DIR = Path(__file__).resolve().parent.parent  # project root
+BASE_DIR = Path(__file__).resolve().parents[3]  # raíz del repo (rag/backend/rag/config.py → /)
 load_dotenv(BASE_DIR / ".env")
 
 # ── S3 ─────────────────────────────────────────────────────────────────────

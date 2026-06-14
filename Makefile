@@ -1,16 +1,19 @@
 .PHONY: install lint format typecheck test test-cov test-integration pipeline app frontend clean bucket-backup help
 
+# El paquete `rag` vive en rag/backend/rag; se expone vía PYTHONPATH sin instalarlo.
+RAG_PY := PYTHONPATH=rag/backend
+
 install:  ## Instalar dependencias (incluidas las de desarrollo)
 	uv sync --group dev
 
 lint:  ## Verificar errores de estilo y lógica con ruff
-	uv run ruff check rag/ ingest/ tests/ evaluation/
+	uv run ruff check rag/backend/rag ingest tests
 
 format:  ## Formatear código con ruff
-	uv run ruff format rag/ ingest/ tests/ evaluation/
+	uv run ruff format rag/backend/rag ingest tests
 
 typecheck:  ## Verificar tipos con mypy
-	uv run mypy rag/ ingest/
+	uv run mypy rag/backend/rag ingest
 
 test:  ## Ejecutar tests unitarios
 	uv run pytest tests/unit/ -v
@@ -21,17 +24,18 @@ test-cov:  ## Ejecutar tests con informe de cobertura
 test-integration:  ## Ejecutar tests de integración (requiere servicios activos)
 	uv run pytest -m integration -v
 
-pipeline:  ## Ejecutar el pipeline completo de ingesta
-	bash scripts/run_pipeline.sh
+pipeline:  ## Pipeline de datos (ingest: bronze→silver→gold) + indexar en ChromaDB
+	bash ingest/scripts/run_pipeline.sh
+	$(RAG_PY) uv run python -m rag.core.vectorstore
 
 app:  ## Lanzar la API FastAPI
-	uv run uvicorn rag.api.main:app --reload --port 8080
+	$(RAG_PY) uv run uvicorn rag.api.main:app --reload --port 8080
 
 frontend:  ## Lanzar el frontend Next.js
-	cd frontend && bun run dev
+	cd rag/frontend && bun run dev
 
 bucket-backup:  ## Descargar todos los objetos del bucket S3 a bucket-backup-<fecha-hora>/
-	uv run python -m utils.bucket_backup
+	uv run python -m ingest.tools.bucket_backup
 
 clean:  ## Eliminar artefactos generados
 	find . -type d -name __pycache__ -exec rm -rf {} +

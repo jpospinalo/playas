@@ -10,9 +10,9 @@ Este script recorre la colección, y para cada chunk que NO tenga ``doc_type``
 metadata: NO re-genera embeddings. Es idempotente.
 
 Uso (desde la raíz del proyecto, para que cargue el .env):
-    uv run python -m utils.backfill_doc_type             # dry-run (no escribe)
-    uv run python -m utils.backfill_doc_type --apply     # aplica los cambios
-    uv run python -m utils.backfill_doc_type --apply --doc-type jurisprudencia
+    uv run python -m rag.tools.backfill_doc_type             # dry-run (no escribe)
+    uv run python -m rag.tools.backfill_doc_type --apply     # aplica los cambios
+    uv run python -m rag.tools.backfill_doc_type --apply --doc-type jurisprudencia
 """
 
 from __future__ import annotations

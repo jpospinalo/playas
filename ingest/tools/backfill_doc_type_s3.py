@@ -2,7 +2,7 @@
 
 Los documentos ingeridos antes de la feature de normativa no llevan el
 discriminador ``doc_type`` en su metadata. El backfill de ChromaDB
-(``utils.backfill_doc_type``) ya los etiquetó en la colección, pero las capas
+(``rag.tools.backfill_doc_type``) ya los etiquetó en la colección, pero las capas
 ``silver`` y ``gold`` del bucket S3 siguen sin el campo. Sin él, regenerar gold
 (re-corriendo el pipeline) reintroduciría el problema.
 
@@ -12,10 +12,10 @@ preservando el resto de su metadata. Reescribe el objeto S3 completo por archivo
 (un ``.jsonl`` es un único objeto). Es idempotente.
 
 Uso (desde la raíz del proyecto, para que cargue el .env):
-    uv run python -m utils.backfill_doc_type_s3                       # dry-run
-    uv run python -m utils.backfill_doc_type_s3 --apply               # aplica
-    uv run python -m utils.backfill_doc_type_s3 --apply --doc-type jurisprudencia
-    uv run python -m utils.backfill_doc_type_s3 --apply --layers gold # solo gold
+    uv run python -m ingest.tools.backfill_doc_type_s3                       # dry-run
+    uv run python -m ingest.tools.backfill_doc_type_s3 --apply               # aplica
+    uv run python -m ingest.tools.backfill_doc_type_s3 --apply --doc-type jurisprudencia
+    uv run python -m ingest.tools.backfill_doc_type_s3 --apply --layers gold # solo gold
 """
 
 from __future__ import annotations

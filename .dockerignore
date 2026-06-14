@@ -7,16 +7,18 @@ __pycache__/
 .ruff_cache/
 .pytest_cache/
 
-# ── Datos del pipeline (no se necesitan en runtime) ───────────────────────────
+# ── Datos y artefactos que no se necesitan en runtime ─────────────────────────
 data/
-evaluation/
-tests/
 docs/
-infrastructure/
+tests/
+infra/
 bucket-backup*/
+rag/backend/rag/evaluation/
+rag/backend/rag/tools/
+rag/backend/tests/
 
 # ── Frontend (tiene su propio contexto de build) ──────────────────────────────
-frontend/
+rag/frontend/
 node_modules/
 
 # ── Git ───────────────────────────────────────────────────────────────────────

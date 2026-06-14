@@ -16,8 +16,8 @@ from firebase_admin import credentials
 from google.cloud import firestore as gcp_firestore
 from google.oauth2 import service_account as gcp_service_account
 
-# Raíz del proyecto (dos niveles arriba de este archivo: rag/api/ → rag/ → /)
-_PROJECT_ROOT = Path(__file__).resolve().parents[2]
+# Raíz del proyecto (rag/backend/rag/api/ → rag/backend/rag/ → rag/backend/ → rag/ → /)
+_PROJECT_ROOT = Path(__file__).resolve().parents[4]
 
 _initialized = False
 _db = None

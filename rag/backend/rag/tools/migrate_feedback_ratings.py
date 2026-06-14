@@ -14,8 +14,8 @@ This script:
 4. Logs progress and errors.
 
 Usage:
-    uv run python scripts/migrate_feedback_ratings.py --dry-run   # Preview changes
-    uv run python scripts/migrate_feedback_ratings.py             # Apply changes
+    uv run python -m rag.tools.migrate_feedback_ratings --dry-run   # Preview changes
+    uv run python -m rag.tools.migrate_feedback_ratings             # Apply changes
 """
 
 from __future__ import annotations

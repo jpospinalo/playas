@@ -3,7 +3,7 @@ Descarga todos los objetos del bucket S3 (S3_BUCKET_NAME desde .env)
 a una carpeta local bucket-backup-<YYYYMMDD-HHMMSS>/ en la raíz del proyecto.
 
 Uso:
-    uv run python -m utils.bucket_backup
+    uv run python -m ingest.tools.bucket_backup
     make bucket-backup
 """
 

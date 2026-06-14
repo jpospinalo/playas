@@ -1,7 +1,0 @@
-{
-  "name": "rag-playas",
-  "private": true,
-  "workspaces": [
-    "frontend"
-  ]
-}

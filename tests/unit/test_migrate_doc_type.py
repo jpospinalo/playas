@@ -1,4 +1,4 @@
-"""Tests de la lógica pura de cálculo de destinos en utils.migrate_doc_type.
+"""Tests de la lógica pura de cálculo de destinos en ingest.tools.migrate_doc_type.
 
 No tocan S3: se mockea ingest.s3_client.list_keys.
 """
@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from unittest.mock import patch
 
-from utils.migrate_doc_type import _remap_key, plan_moves
+from ingest.tools.migrate_doc_type import _remap_key, plan_moves
 
 
 def test_remap_key_root_object_goes_to_jurisprudencia() -> None:

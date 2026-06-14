@@ -25,10 +25,10 @@ jobs:
         run: uv sync --group dev
 
       - name: Ruff lint
-        run: uv run ruff check rag/ ingest/ tests/ evaluation/
+        run: uv run ruff check rag/backend/rag ingest tests
 
       - name: Ruff format check
-        run: uv run ruff format --check rag/ ingest/ tests/ evaluation/
+        run: uv run ruff format --check rag/backend/rag ingest tests
 
       # Type checking temporarily disabled: mypy currently reports multiple
       # non-trivial errors in production modules and was blocking CI stability.
