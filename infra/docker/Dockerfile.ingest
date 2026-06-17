@@ -1,0 +1,50 @@
+# ── Stage 1: builder ──────────────────────────────────────────────────────────
+FROM python:3.12-slim AS builder
+
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
+
+WORKDIR /app
+
+# Copiar manifiestos para aprovechar caché de dependencias del workspace.
+# La imagen de ingest instala también las dependencias de rag porque el último
+# paso opcional indexa la capa gold en Chroma con rag.core.vectorstore.
+COPY pyproject.toml uv.lock ./
+COPY rag/backend/pyproject.toml rag/backend/
+COPY ingest/pyproject.toml ingest/
+
+RUN uv sync --frozen --no-dev --all-packages
+
+# ── Stage 2: runtime ──────────────────────────────────────────────────────────
+FROM python:3.12-slim AS runtime
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    bash \
+    curl \
+    libgl1 \
+    libglib2.0-0 \
+    libgomp1 \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN useradd --create-home --no-log-init appuser \
+    && mkdir -p /home/appuser/.cache \
+    && chown -R appuser:appuser /home/appuser/.cache
+
+WORKDIR /app
+
+COPY --from=builder /app/.venv /app/.venv
+COPY ingest/ ingest/
+COPY rag/backend/rag/ rag/backend/rag/
+
+ENV PATH="/app/.venv/bin:$PATH"
+ENV PYTHONPATH="/app:/app/rag/backend"
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV HOME="/home/appuser"
+ENV XDG_CACHE_HOME="/home/appuser/.cache"
+# Ejecutar la indexación Chroma después de generar gold. Cambiar a false si se
+# quiere correr sólo la ingesta S3 bronze/silver/gold.
+ENV INGEST_RUN_INDEXER="true"
+
+USER appuser
+
+CMD ["bash", "-lc", "python -m ingest.pdf_to_md && python -m ingest.loaders && python -m ingest.splitter_and_enrich && if [ \"${INGEST_RUN_INDEXER}\" = \"true\" ]; then python -m rag.core.vectorstore; fi"]

@@ -1,0 +1,124 @@
+name: rag-playas-ingest
+
+services:
+  ingest:
+    build:
+      context: .
+      dockerfile: infra/docker/Dockerfile.ingest
+    env_file: .env
+    environment:
+      CHROMA_HOST: chroma
+      CHROMA_PORT: "8000"
+      CHROMA_COLLECTION: "${CHROMA_COLLECTION:-rag_playas}"
+      CHROMA_COLLECTION_NAME: "${CHROMA_COLLECTION_NAME:-${CHROMA_COLLECTION:-rag_playas}}"
+      S3_BUCKET_NAME: "${S3_BUCKET_NAME:-rag-playas-data}"
+      S3_ENDPOINT_URL: http://minio:9000
+      S3_REGION: "${S3_REGION:-us-east-1}"
+      S3_ACCESS_KEY_ID: "${S3_ACCESS_KEY_ID:-minioadmin}"
+      S3_SECRET_ACCESS_KEY: "${S3_SECRET_ACCESS_KEY:-minioadmin}"
+      S3_SESSION_TOKEN: "${S3_SESSION_TOKEN:-}"
+      S3_ADDRESSING_STYLE: path
+      S3_VERIFY_SSL: "${S3_VERIFY_SSL:-false}"
+      OLLAMA_BASE_URL: http://ollama:11434
+      OLLAMA_EMBED_BASE_URL: http://ollama:11434
+      OLLAMA_EMBEDDING_MODEL: "${OLLAMA_EMBEDDING_MODEL:-embeddinggemma:latest}"
+      OLLAMA_EMBED_MODEL: "${OLLAMA_EMBEDDING_MODEL:-embeddinggemma:latest}"
+      INGEST_RUN_INDEXER: "${INGEST_RUN_INDEXER:-true}"
+    volumes:
+      - ingest-cache:/home/appuser/.cache
+    depends_on:
+      minio-bootstrap:
+        condition: service_completed_successfully
+      chroma:
+        condition: service_healthy
+      ollama:
+        condition: service_healthy
+    restart: "no"
+
+  minio:
+    image: minio/minio:RELEASE.2026-05-24T17-08-30Z
+    environment:
+      MINIO_ROOT_USER: "${MINIO_ROOT_USER:-minioadmin}"
+      MINIO_ROOT_PASSWORD: "${MINIO_ROOT_PASSWORD:-minioadmin}"
+    command: server /data --console-address ":9001"
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio-data:/data
+    restart: unless-stopped
+
+  minio-bootstrap:
+    image: minio/mc:RELEASE.2026-05-21T01-59-54Z
+    environment:
+      MINIO_ROOT_USER: "${MINIO_ROOT_USER:-minioadmin}"
+      MINIO_ROOT_PASSWORD: "${MINIO_ROOT_PASSWORD:-minioadmin}"
+      S3_BUCKET_NAME: "${S3_BUCKET_NAME:-rag-playas-data}"
+    depends_on:
+      minio:
+        condition: service_started
+    entrypoint: /bin/sh
+    command:
+      - -c
+      - |
+        until mc alias set local http://minio:9000 "$$MINIO_ROOT_USER" "$$MINIO_ROOT_PASSWORD"; do
+          sleep 2
+        done
+        mc mb --ignore-existing "local/$$S3_BUCKET_NAME"
+    restart: "no"
+
+  chroma:
+    build:
+      context: .
+      dockerfile: infra/docker/Dockerfile.chroma
+      args:
+        CHROMA_VERSION: "${CHROMA_VERSION:-1.3.5}"
+    environment:
+      IS_PERSISTENT: "TRUE"
+      PERSIST_DIRECTORY: /chroma/chroma
+    ports:
+      - "8000:8000"
+    volumes:
+      - chroma-data:/chroma/chroma
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          'python -c "import urllib.request; urllib.request.urlopen(''http://localhost:8000/api/v2/heartbeat'', timeout=2)" || python -c "import urllib.request; urllib.request.urlopen(''http://localhost:8000/api/v1/heartbeat'', timeout=2)"',
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+    restart: unless-stopped
+
+  ollama:
+    build:
+      context: .
+      dockerfile: infra/docker/Dockerfile.ollama
+      args:
+        OLLAMA_VERSION: "${OLLAMA_VERSION:-latest}"
+    environment:
+      OLLAMA_HOST: 0.0.0.0:11434
+      OLLAMA_EMBEDDING_MODEL: "${OLLAMA_EMBEDDING_MODEL:-embeddinggemma:latest}"
+      OLLAMA_AUTO_PULL: "${OLLAMA_AUTO_PULL:-true}"
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-data:/root/.ollama
+    healthcheck:
+      test: ["CMD-SHELL", "ollama list >/dev/null 2>&1"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 20s
+    restart: unless-stopped
+
+volumes:
+  ingest-cache:
+  minio-data:
+    name: rag-playas-minio-data
+  chroma-data:
+    name: rag-playas-chroma-data
+  ollama-data:
+    name: rag-playas-ollama-data

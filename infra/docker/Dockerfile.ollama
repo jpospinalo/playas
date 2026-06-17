@@ -1,0 +1,42 @@
+ARG OLLAMA_VERSION=latest
+FROM ollama/ollama:${OLLAMA_VERSION}
+
+ENV OLLAMA_HOST=0.0.0.0:11434
+ENV OLLAMA_EMBEDDING_MODEL=embeddinggemma:latest
+ENV OLLAMA_AUTO_PULL=true
+
+RUN <<'EOF'
+cat > /usr/local/bin/ollama-with-model <<'SH'
+#!/bin/sh
+set -eu
+
+ollama serve &
+server_pid="$!"
+
+if [ "${OLLAMA_AUTO_PULL:-true}" = "true" ]; then
+  model="${OLLAMA_EMBEDDING_MODEL:-${OLLAMA_MODEL:-embeddinggemma:latest}}"
+  echo "Esperando a que Ollama esté disponible para cargar ${model}..."
+  ready="false"
+  for _ in $(seq 1 60); do
+    if ollama list >/dev/null 2>&1; then
+      ready="true"
+      break
+    fi
+    sleep 1
+  done
+
+  if [ "$ready" = "true" ]; then
+    ollama pull "$model" || echo "Aviso: no se pudo descargar ${model}; el servicio seguirá levantado."
+  else
+    echo "Aviso: Ollama no respondió antes del timeout; se omite la descarga automática."
+  fi
+fi
+
+wait "$server_pid"
+SH
+chmod +x /usr/local/bin/ollama-with-model
+EOF
+
+EXPOSE 11434
+
+ENTRYPOINT ["/usr/local/bin/ollama-with-model"]
