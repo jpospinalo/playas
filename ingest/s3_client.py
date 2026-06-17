@@ -6,14 +6,13 @@ Convención de keys: prefijos sin slash inicial, con slash al final ("raw/", "si
 
 from __future__ import annotations
 
-import os
 from pathlib import Path
 
-import boto3
+from boto3.session import Session
+from botocore.config import Config
 from botocore.exceptions import ClientError
-from dotenv import load_dotenv
 
-load_dotenv(Path(__file__).resolve().parent.parent / ".env")
+from . import config
 
 _client = None
 
@@ -21,15 +20,27 @@ _client = None
 def _get_client():
     global _client
     if _client is None:
-        _client = boto3.client("s3")
+        _client = Session().client(
+            "s3",
+            endpoint_url=config.S3_ENDPOINT_URL,
+            region_name=config.S3_REGION,
+            aws_access_key_id=config.S3_ACCESS_KEY_ID,
+            aws_secret_access_key=config.S3_SECRET_ACCESS_KEY,
+            aws_session_token=config.S3_SESSION_TOKEN,
+            verify=config.S3_VERIFY_SSL,
+            config=Config(s3={"addressing_style": config.S3_ADDRESSING_STYLE}),
+        )
     return _client
 
 
 def get_bucket() -> str:
-    bucket = os.environ.get("S3_BUCKET_NAME", "")
-    if not bucket:
+    if not config.S3_BUCKET_NAME:
         raise RuntimeError("S3_BUCKET_NAME no está definida. Agrégala al archivo .env.")
-    return bucket
+    return config.S3_BUCKET_NAME
+
+
+def get_client():
+    return _get_client()
 
 
 def key_exists(key: str) -> bool:

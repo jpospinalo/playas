@@ -6,14 +6,62 @@ calling os.getenv() directly.
 
 import os
 from pathlib import Path
+from typing import Literal
 
 from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent  # project root
 load_dotenv(BASE_DIR / ".env")
 
+S3AddressingStyle = Literal["auto", "virtual", "path"]
+
+
+def _optional_env(name: str) -> str | None:
+    value = os.getenv(name)
+    if value is None:
+        return None
+    value = value.strip()
+    return value or None
+
+
+def _env_with_default(name: str, default: str) -> str:
+    value = _optional_env(name)
+    return value if value is not None else default
+
+
+def _parse_s3_addressing_style(value: str | None) -> S3AddressingStyle:
+    normalized = (value or "auto").strip().lower() or "auto"
+    if normalized not in {"auto", "virtual", "path"}:
+        raise ValueError(
+            "S3_ADDRESSING_STYLE inválido: "
+            f"{normalized!r}. Debe ser 'auto', 'virtual' o 'path'."
+        )
+    return normalized  # type: ignore[return-value]
+
+
+def _parse_s3_verify_ssl(value: str | None) -> bool | str:
+    normalized = (value or "").strip()
+    if not normalized:
+        return True
+
+    lowered = normalized.lower()
+    if lowered in {"1", "true", "yes", "on"}:
+        return True
+    if lowered in {"0", "false", "no", "off"}:
+        return False
+    return normalized
+
 # ── S3 ─────────────────────────────────────────────────────────────────────
-S3_BUCKET_NAME: str = os.getenv("S3_BUCKET_NAME", "")
+S3_BUCKET_NAME: str = (os.getenv("S3_BUCKET_NAME") or "").strip()
+S3_ENDPOINT_URL: str | None = _optional_env("S3_ENDPOINT_URL")
+S3_REGION: str = _env_with_default("S3_REGION", "us-east-1")
+S3_ACCESS_KEY_ID: str | None = _optional_env("S3_ACCESS_KEY_ID")
+S3_SECRET_ACCESS_KEY: str | None = _optional_env("S3_SECRET_ACCESS_KEY")
+S3_SESSION_TOKEN: str | None = _optional_env("S3_SESSION_TOKEN")
+S3_ADDRESSING_STYLE: S3AddressingStyle = _parse_s3_addressing_style(
+    os.getenv("S3_ADDRESSING_STYLE")
+)
+S3_VERIFY_SSL: bool | str = _parse_s3_verify_ssl(os.getenv("S3_VERIFY_SSL"))
 
 # Prefijos de keys S3 (espejan la estructura local anterior data/*)
 # Raíces base por capa (compatibilidad). Para prefijos por tipo de documento
