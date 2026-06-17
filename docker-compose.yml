@@ -4,13 +4,9 @@ services:
     build:
       context: .
       dockerfile: infra/docker/Dockerfile.backend
+    # Credenciales Firebase (FIREBASE_PROJECT_ID, FIREBASE_PRIVATE_KEY, …) y el
+    # resto de la configuración se cargan desde .env.
     env_file: .env
-    volumes:
-      # Credenciales Firebase montadas como sólo lectura; la ruta dentro del
-      # contenedor se pasa mediante FIREBASE_SERVICE_ACCOUNT_PATH más abajo.
-      - ./firebase-service-account.json:/app/firebase-service-account.json:ro
-    environment:
-      FIREBASE_SERVICE_ACCOUNT_PATH: /app/firebase-service-account.json
     expose:
       - "8080"
     restart: unless-stopped

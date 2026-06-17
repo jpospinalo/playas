@@ -197,7 +197,10 @@ Para desarrollo local con MinIO, `.env.example` ya viene preparado con `S3_ENDPO
 | `OPENROUTER_MODEL` | `gpt-5.4-mini` | Modelo de OpenRouter |
 | `GOOGLE_API_KEY` | — | API key de Gemini (tercera prioridad) |
 | `GEMINI_MODEL` | `gemini-3.1-flash-lite` | Modelo de Gemini |
-| `FIREBASE_SERVICE_ACCOUNT_PATH` | `firebase-service-account.json` | Ruta al service account |
+| `FIREBASE_PROJECT_ID` | — | Service account: `project_id` |
+| `FIREBASE_PRIVATE_KEY` | — | Service account: `private_key` (una línea, con `\n`) |
+| `FIREBASE_CLIENT_EMAIL` | — | Service account: `client_email` |
+| `FIREBASE_SERVICE_ACCOUNT_PATH` | — | Alternativa local: ruta al JSON (fallback si no defines las de arriba) |
 | `QUERY_ENRICHMENT_ENABLED` | `true` | Activar reescritura de consultas |
 | `QUERY_ENRICHMENT_HYDE` | `false` | Activar HyDE (fragmento hipotético) |
 

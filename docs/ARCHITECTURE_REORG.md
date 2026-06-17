@@ -445,7 +445,7 @@ Luego: §6.2 (fix evaluación) y §6.3 (import del test).
 | `Makefile`, `docker-compose.yml` | Orquestación a nivel de repositorio completo. |
 | `pyproject.toml`, `uv.lock` | Raíz del workspace uv (declara los members `rag/backend`, `ingest`, `shared`). |
 | `.env`, `.env.example`, `.env.production` | Configuración compartida por ambos `config.py` (cargada vía ruta absoluta). |
-| `firestore.rules`, `firestore.indexes.json`, `firebase-service-account.json` | Config/secreto de Firebase; el `service-account` está montado por ruta en `docker-compose.yml`. *(Opcional: agrupar `firestore.*` bajo `rag/firebase/`.)* |
+| `firestore.rules`, `firestore.indexes.json`, `firebase-service-account.json` | Config/secreto de Firebase; el `service-account` es un fallback local opcional (las credenciales se inyectan vía variables `FIREBASE_*` en `.env`). *(Opcional: agrupar `firestore.*` bajo `rag/firebase/`.)* |
 
 ---
 

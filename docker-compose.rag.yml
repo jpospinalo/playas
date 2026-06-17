@@ -23,11 +23,9 @@ services:
       OLLAMA_EMBED_BASE_URL: http://ollama:11434
       OLLAMA_EMBEDDING_MODEL: "${OLLAMA_EMBEDDING_MODEL:-embeddinggemma:latest}"
       OLLAMA_EMBED_MODEL: "${OLLAMA_EMBEDDING_MODEL:-embeddinggemma:latest}"
-      FIREBASE_SERVICE_ACCOUNT_PATH: /app/firebase-service-account.json
+      # Credenciales Firebase (FIREBASE_PROJECT_ID, FIREBASE_PRIVATE_KEY, …) vía env_file: .env
     ports:
       - "8080:8080"
-    volumes:
-      - ./firebase-service-account.json:/app/firebase-service-account.json:ro
     depends_on:
       minio-bootstrap:
         condition: service_completed_successfully

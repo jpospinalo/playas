@@ -126,24 +126,47 @@ Ahí aparecen todas las variables. Copiarlas al archivo `frontend/.env.local`:
 
 ## 5. Service Account — credenciales del backend
 
-El backend (FastAPI) usa Firebase Admin SDK para verificar tokens y leer/escribir Firestore. Necesita un archivo JSON con las credenciales de un Service Account.
+El backend (FastAPI) usa Firebase Admin SDK para verificar tokens y leer/escribir Firestore. Necesita las credenciales de un Service Account.
 
-### Generar el archivo JSON
+### Generar el JSON
 
 1. Ir a ⚙️ **Configuración del proyecto → Cuentas de servicio**.
 2. Clic en **Generar nueva clave privada**.
 3. Confirmar → se descarga un archivo `.json`.
-4. Guardarlo en la raíz del proyecto (ej. `firebase-service-account.json`). **No incluirlo en git** (ya está en `.gitignore`).
 
-### Configurar la variable de entorno
+### Opción A (recomendada para despliegue) — variables de entorno
 
-En el archivo `.env` del proyecto (raíz), agregar:
+El backend reconstruye el service account a partir de variables individuales del `.env`. **No hace falta subir ningún archivo**, lo que simplifica plataformas como Railway (cada campo se pega como variable en el panel). Abrir el JSON descargado y mapear cada campo:
+
+| Variable en `.env`              | Campo en el JSON               | Notas                                            |
+| ------------------------------- | ------------------------------ | ------------------------------------------------ |
+| `FIREBASE_PROJECT_ID`           | `project_id`                   | Obligatoria                                      |
+| `FIREBASE_PRIVATE_KEY`          | `private_key`                  | Obligatoria — ver nota sobre saltos de línea     |
+| `FIREBASE_CLIENT_EMAIL`         | `client_email`                 | Obligatoria                                      |
+| `FIREBASE_PRIVATE_KEY_ID`       | `private_key_id`               | Recomendada                                      |
+| `FIREBASE_CLIENT_ID`            | `client_id`                    | Recomendada                                      |
+| `FIREBASE_CLIENT_X509_CERT_URL` | `client_x509_cert_url`         | Recomendada                                      |
+| `FIREBASE_TYPE`                 | `type`                         | Opcional (default `service_account`)             |
+
+> Los campos `auth_uri`, `token_uri`, `auth_provider_x509_cert_url` y `universe_domain` usan los valores estándar por defecto; solo defínelos (`FIREBASE_AUTH_URI`, `FIREBASE_TOKEN_URI`, …) si tu JSON trae valores distintos.
+
+**Clave privada (`FIREBASE_PRIVATE_KEY`).** En el JSON ocupa varias líneas. En el `.env` va en **una sola línea**, con los saltos como `\n` literales y **sin comillas**:
+
+```bash
+FIREBASE_PRIVATE_KEY=-----BEGIN PRIVATE KEY-----\nMIIEvAIBAD...\n-----END PRIVATE KEY-----\n
+```
+
+El backend convierte esos `\n` en saltos reales al inicializarse. En el panel de Railway puedes pegar el valor multilínea tal cual o en formato de una línea con `\n`: ambos funcionan.
+
+### Opción B (desarrollo local) — archivo JSON
+
+Como alternativa, guardar el `.json` en la raíz del proyecto (ej. `firebase-service-account.json`, ya está en `.gitignore`) y apuntarlo desde el `.env`:
 
 ```bash
 FIREBASE_SERVICE_ACCOUNT_PATH=firebase-service-account.json
 ```
 
-La ruta puede ser relativa a la raíz del proyecto o absoluta.
+La ruta puede ser relativa a la raíz del proyecto o absoluta. **Solo se usa como fallback**: si defines las variables de la Opción A, tienen prioridad sobre el archivo.
 
 ---
 
