@@ -252,7 +252,7 @@ Operan sobre S3 y diagnóstico de modelos. Se ejecutan desde la raíz (sin `PYTH
 
 ### `ingest/tools/bucket_backup.py`
 
-Descarga **todos los objetos del bucket S3** a una carpeta local con timestamp.
+Descarga **todos los objetos del bucket S3-compatible** a una carpeta local con timestamp.
 
 ```bash
 make bucket-backup                           # equivalente con make
@@ -260,6 +260,12 @@ uv run python -m ingest.tools.bucket_backup
 ```
 
 **Resultado:** Carpeta `bucket-backup-YYYYMMDD-HHMMSS/` en la raíz del proyecto con la estructura completa del bucket.
+
+**Notas operativas:**
+
+1. Reutiliza la configuración central de `ingest.config` y `ingest.s3_client`.
+2. Funciona igual con AWS S3, MinIO local o cualquier provider S3-compatible.
+3. Respeta `S3_ENDPOINT_URL`, `S3_REGION`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`, `S3_SESSION_TOKEN`, `S3_ADDRESSING_STYLE` y `S3_VERIFY_SSL`.
 
 **Cuándo usarlo:** Antes de hacer cambios destructivos en el pipeline, o para tener un backup offline del corpus.
 

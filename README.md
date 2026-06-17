@@ -162,7 +162,26 @@ Luego configurar Firebase siguiendo [`docs/firebase-config-manual.md`](docs/fire
 
 ## Variables de entorno
 
-**Backend (`.env` en la raíz):**
+**Object storage compartido (`.env` en la raíz, usado por `ingest` y `rag/backend`):**
+
+Estas variables implementan un contrato **S3-compatible**. Si `S3_ENDPOINT_URL` queda vacío, boto3 usa AWS S3; si se define un endpoint explícito, el mismo código funciona con MinIO local o cualquier proveedor compatible.
+
+| Variable | Default | Descripción |
+|----------|---------|-------------|
+| `S3_BUCKET_NAME` | — | Bucket lógico compartido por ingest y backend |
+| `S3_ENDPOINT_URL` | — | Endpoint explícito S3-compatible, por ejemplo `http://localhost:9000` |
+| `S3_REGION` | `us-east-1` | Región del provider |
+| `S3_ACCESS_KEY_ID` | — | Access key explícita |
+| `S3_SECRET_ACCESS_KEY` | — | Secret key explícita |
+| `S3_SESSION_TOKEN` | — | Token temporal opcional |
+| `S3_ADDRESSING_STYLE` | `auto` | `auto`, `virtual` o `path` |
+| `S3_VERIFY_SSL` | `true` | `true`, `false` o ruta a un CA bundle |
+| `MINIO_ROOT_USER` | — | Usuario raíz para MinIO local en Docker Compose |
+| `MINIO_ROOT_PASSWORD` | — | Password raíz para MinIO local en Docker Compose |
+
+Para desarrollo local con MinIO, `.env.example` ya viene preparado con `S3_ENDPOINT_URL`, `S3_ADDRESSING_STYLE=path` y `S3_VERIFY_SSL=false`.
+
+**Backend y proveedores LLM (`.env` en la raíz):**
 
 | Variable | Default | Descripción |
 |----------|---------|-------------|
@@ -234,31 +253,41 @@ La documentación de los endpoints está disponible automáticamente en `/docs` 
 
 ---
 
-## Docker (despliegue en una sola máquina)
+## Docker
 
-`docker-compose.yml` despliega los tres servicios (backend, frontend, nginx) en una sola máquina. Nginx actúa como reverse proxy en el puerto 80, enruta `/api/` al backend y `/` al frontend, y desactiva el buffering para streaming SSE.
+El proyecto tiene dos stacks Compose separadas para poder desplegar la ingesta y el RAG de forma independiente. Ambas usan `.env` en la raíz, construyen cada servicio desde su propio Dockerfile en `infra/docker/` y levantan un object storage **S3-compatible** local con **MinIO** más un bootstrap idempotente del bucket.
+
+### Stack de ingesta
+
+Levanta `ingest`, `minio`, `minio-bootstrap`, `chroma` y `ollama`. El contenedor `ingest` ejecuta el pipeline bronze/silver/gold y, por defecto, indexa la capa gold en Chroma (`INGEST_RUN_INDEXER=true`).
 
 ```bash
-# Construir y levantar
-docker compose up -d --build
+docker compose -f docker-compose.ingest.yml up --build
 
-# Ver logs
-docker compose logs -f
-
-# Detener
-docker compose down
+# Sólo servicios base, si se quiere ejecutar ingest manualmente después
+docker compose -f docker-compose.ingest.yml up -d --build minio minio-bootstrap chroma ollama
+docker compose -f docker-compose.ingest.yml run --rm ingest
 ```
 
-Requiere `.env` en la raíz (backend) y las variables de Firebase pasadas como build args. Los Dockerfiles están en `docker/`.
+`minio-bootstrap` espera a MinIO y crea `S3_BUCKET_NAME` con `mc mb --ignore-existing`, de modo que reiniciar la stack no rompe el flujo local.
 
-**Arquitectura de la stack Docker:**
+### Stack RAG
 
+Levanta `backend`, `frontend`, `minio`, `minio-bootstrap`, `chroma` y `ollama`. Sin nginx, el frontend queda en `http://localhost:3000` y la API en `http://localhost:8080`; por eso `NEXT_PUBLIC_API_URL` usa `http://localhost:8080` como default en este Compose.
+
+```bash
+docker compose -f docker-compose.rag.yml up -d --build
+
+docker compose -f docker-compose.rag.yml logs -f
+
+docker compose -f docker-compose.rag.yml down
 ```
-Puerto 80 (host)
-    └── nginx (reverse proxy)
-        ├── /api/*  → backend:8080  (FastAPI + uvicorn)
-        └── /*      → frontend:3000 (Next.js)
-```
+
+`ollama` descarga automáticamente `OLLAMA_EMBEDDING_MODEL` (`embeddinggemma:latest` por defecto) si `OLLAMA_AUTO_PULL=true`. MinIO, Chroma y Ollama usan volúmenes persistentes con nombre fijo (`rag-playas-minio-data`, `rag-playas-chroma-data` y `rag-playas-ollama-data`) para que, en el mismo host Docker, la stack RAG pueda reutilizar lo indexado por la stack de ingesta.
+
+Si quieres apuntar a AWS S3 o a otro proveedor cloud, cambia `S3_ENDPOINT_URL`, `S3_REGION`, credenciales y `S3_ADDRESSING_STYLE` en `.env`; no hace falta tocar código.
+
+> `docker-compose.yml` se conserva como stack legado con `backend`, `frontend` y `nginx` para despliegues con reverse proxy.
 
 ---
 
