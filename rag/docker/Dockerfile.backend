@@ -5,12 +5,12 @@ COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
 
 WORKDIR /app
 
-# Copiar sólo los manifiestos para aprovechar la caché de capas en rebuilds
+# Copiar manifiestos + fuente para construir el paquete rag
 COPY pyproject.toml uv.lock ./
-COPY rag/backend/pyproject.toml rag/backend/
-COPY ingesta/pyproject.toml ingesta/
+COPY backend/pyproject.toml backend/
+COPY backend/rag/ backend/rag/
 
-# Instalar dependencias del paquete rag sin extras de desarrollo
+# Instalar el paquete rag y sus dependencias (sin dev)
 RUN uv sync --frozen --no-dev --package rag
 
 # ── Stage 2: runtime ──────────────────────────────────────────────────────────
@@ -24,7 +24,7 @@ RUN useradd --create-home --no-log-init appuser
 WORKDIR /app
 
 COPY --from=builder /app/.venv /app/.venv
-COPY rag/backend/rag/ rag/
+COPY backend/rag/ rag/
 
 ENV PATH="/app/.venv/bin:$PATH"
 ENV PYTHONUNBUFFERED=1

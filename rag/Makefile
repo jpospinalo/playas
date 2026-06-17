@@ -1,33 +1,31 @@
 .PHONY: install lint format typecheck test test-cov test-integration app frontend clean help
 
-ROOT := $(shell git rev-parse --show-toplevel)
-
 install:  ## Instalar dependencias (incluidas las de desarrollo)
-	cd $(ROOT) && uv sync --group dev
+	uv sync --group dev
 
 lint:  ## Verificar errores de estilo y lógica con ruff
-	cd $(ROOT) && uv run ruff check rag/backend/rag/ rag/tests/ rag/evaluation/
+	uv run ruff check backend/rag/ tests/ evaluation/
 
 format:  ## Formatear código con ruff
-	cd $(ROOT) && uv run ruff format rag/backend/rag/ rag/tests/ rag/evaluation/
+	uv run ruff format backend/rag/ tests/ evaluation/
 
 typecheck:  ## Verificar tipos con mypy
-	cd $(ROOT) && uv run mypy rag/backend/rag/
+	uv run mypy backend/rag/
 
 test:  ## Ejecutar tests unitarios
-	cd $(ROOT) && uv run pytest rag/tests/unit/ -v
+	uv run pytest tests/unit/
 
 test-cov:  ## Ejecutar tests con informe de cobertura
-	cd $(ROOT) && uv run pytest rag/tests/unit/ --cov=rag --cov-report=term-missing --cov-report=html
+	uv run pytest tests/unit/ --cov=rag --cov-report=term-missing --cov-report=html
 
 test-integration:  ## Ejecutar tests de integración (requiere servicios activos)
-	cd $(ROOT) && uv run pytest rag/tests/integration/ -m integration -v
+	uv run pytest tests/integration/ -m integration
 
 app:  ## Lanzar la API FastAPI
-	cd $(ROOT) && uv run uvicorn rag.api.main:app --reload --port 8080
+	uv run uvicorn rag.api.main:app --reload --port 8080
 
 frontend:  ## Lanzar el frontend Next.js
-	cd $(ROOT)/rag/frontend && bun run dev
+	cd frontend && bun run dev
 
 clean:  ## Eliminar artefactos generados
 	find . -type d -name __pycache__ -exec rm -rf {} +

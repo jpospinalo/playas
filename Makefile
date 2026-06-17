@@ -1,44 +1,37 @@
-.PHONY: install lint format typecheck test test-cov test-integration pipeline app frontend clean bucket-backup help
+.PHONY: install lint format test test-cov pipeline app frontend clean help
 
-install:  ## Instalar dependencias (incluidas las de desarrollo)
-	uv sync --group dev
+install:  ## Instalar dependencias en ambos subsistemas
+	$(MAKE) -C ingesta install
+	$(MAKE) -C rag install
 
-lint:  ## Verificar errores de estilo y lógica con ruff (ambos subsistemas)
-	uv run ruff check rag/backend/rag/ ingesta/ingest/ rag/tests/ ingesta/tests/ rag/evaluation/
+lint:  ## Lint en ambos subsistemas
+	$(MAKE) -C ingesta lint
+	$(MAKE) -C rag lint
 
-format:  ## Formatear código con ruff (ambos subsistemas)
-	uv run ruff format rag/backend/rag/ ingesta/ingest/ rag/tests/ ingesta/tests/ rag/evaluation/
+format:  ## Formatear código en ambos subsistemas
+	$(MAKE) -C ingesta format
+	$(MAKE) -C rag format
 
-typecheck:  ## Verificar tipos con mypy (ambos subsistemas)
-	uv run mypy rag/backend/rag/ ingesta/ingest/
+test:  ## Tests unitarios en ambos subsistemas
+	$(MAKE) -C ingesta test
+	$(MAKE) -C rag test
 
-test:  ## Ejecutar tests unitarios (ambos subsistemas)
-	uv run pytest ingesta/tests/unit/ rag/tests/unit/ -v
+test-cov:  ## Tests con cobertura en ambos subsistemas
+	$(MAKE) -C ingesta test-cov
+	$(MAKE) -C rag test-cov
 
-test-cov:  ## Ejecutar tests con informe de cobertura
-	uv run pytest ingesta/tests/unit/ rag/tests/unit/ --cov=rag --cov=ingest --cov-report=term-missing --cov-report=html
+pipeline:  ## Ejecutar el pipeline de ingesta
+	$(MAKE) -C ingesta pipeline
 
-test-integration:  ## Ejecutar tests de integración (requiere servicios activos)
-	uv run pytest -m integration -v
-
-pipeline:  ## Ejecutar el pipeline completo de ingesta
-	bash ingesta/scripts/run_pipeline.sh
-
-app:  ## Lanzar la API FastAPI
-	uv run uvicorn rag.api.main:app --reload --port 8080
+app:  ## Lanzar la API RAG
+	$(MAKE) -C rag app
 
 frontend:  ## Lanzar el frontend Next.js
-	cd rag/frontend && bun run dev
+	$(MAKE) -C rag frontend
 
-bucket-backup:  ## Descargar todos los objetos del bucket S3 a bucket-backup-<fecha-hora>/
-	uv run python -m utils.bucket_backup
-
-clean:  ## Eliminar artefactos generados
-	find . -type d -name __pycache__ -exec rm -rf {} +
-	find . -type d -name .pytest_cache -exec rm -rf {} +
-	find . -type d -name htmlcov -exec rm -rf {} +
-	find . -name "*.pyc" -delete
-	find . -name ".coverage" -delete
+clean:  ## Limpiar artefactos en ambos subsistemas
+	$(MAKE) -C ingesta clean
+	$(MAKE) -C rag clean
 
 help:  ## Mostrar esta ayuda
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) \

@@ -1,5 +1,5 @@
 [tool.uv.workspace]
-members = ["rag/backend", "ingesta"]
+members = ["backend"]
 
 [dependency-groups]
 dev = [
@@ -12,8 +12,8 @@ dev = [
 ]
 
 [tool.pytest.ini_options]
-testpaths = ["ingesta/tests", "rag/tests"]
-pythonpath = ["."]
+testpaths = ["tests"]
+pythonpath = ["backend"]
 addopts = "-v --tb=short"
 markers = [
     "integration: tests that require live external services (Chroma, Ollama, Gemini)",
@@ -28,4 +28,4 @@ select = ["E", "W", "F", "I", "UP", "B"]
 ignore = ["E501", "B008"]
 
 [tool.ruff.lint.isort]
-known-first-party = ["rag", "ingest"]
+known-first-party = ["rag"]

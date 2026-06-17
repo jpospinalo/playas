@@ -8,12 +8,12 @@ __pycache__/
 .pytest_cache/
 
 # ── Datos del pipeline (no se necesitan en runtime) ───────────────────────────
-data/
 evaluation/
 tests/
 docs/
 infrastructure/
-bucket-backup*/
+scripts/
+utils/
 
 # ── Frontend (tiene su propio contexto de build) ──────────────────────────────
 frontend/
@@ -27,9 +27,9 @@ node_modules/
 # ── Secretos (nunca dentro de la imagen) ─────────────────────────────────────
 .env
 .env.*
+.env.example
 firebase-service-account.json
 
 # ── Herramientas locales ──────────────────────────────────────────────────────
 .pi/
 .impeccable/
-skills-lock.json

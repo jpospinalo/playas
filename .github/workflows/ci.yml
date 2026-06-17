@@ -7,9 +7,12 @@ on:
     branches: [main]
 
 jobs:
-  quality:
-    name: Lint
+  ingesta-quality:
+    name: Ingesta — Lint
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ingesta
     steps:
       - uses: actions/checkout@v4
 
@@ -25,19 +28,18 @@ jobs:
         run: uv sync --group dev
 
       - name: Ruff lint
-        run: uv run ruff check rag/backend/rag/ ingesta/ingest/ rag/tests/ ingesta/tests/ rag/evaluation/
+        run: uv run ruff check ingest/ tests/
 
       - name: Ruff format check
-        run: uv run ruff format --check rag/backend/rag/ ingesta/ingest/ rag/tests/ ingesta/tests/ rag/evaluation/
+        run: uv run ruff format --check ingest/ tests/
 
-      # Type checking temporarily disabled: mypy currently reports multiple
-      # non-trivial errors in production modules and was blocking CI stability.
-      # Keep lint/tests as quality gates until type hints are fixed.
-
-  test:
-    name: Unit Tests
+  ingesta-test:
+    name: Ingesta — Unit Tests
     runs-on: ubuntu-latest
-    needs: quality
+    needs: ingesta-quality
+    defaults:
+      run:
+        working-directory: ingesta
     steps:
       - uses: actions/checkout@v4
 
@@ -53,9 +55,66 @@ jobs:
         run: uv sync --group dev
 
       - name: Run unit tests
-        run: uv run pytest ingesta/tests/unit/ rag/tests/unit/ --cov=rag --cov=ingest --cov-report=xml
+        run: uv run pytest tests/unit/ --cov=ingest --cov-report=xml
 
       - name: Upload coverage
         uses: codecov/codecov-action@v4
         with:
-          file: coverage.xml
+          file: ingesta/coverage.xml
+          flags: ingesta
+
+  rag-quality:
+    name: RAG — Lint
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: rag
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+
+      - name: Install dependencies
+        run: uv sync --group dev
+
+      - name: Ruff lint
+        run: uv run ruff check backend/rag/ tests/ evaluation/
+
+      - name: Ruff format check
+        run: uv run ruff format --check backend/rag/ tests/ evaluation/
+
+  rag-test:
+    name: RAG — Unit Tests
+    runs-on: ubuntu-latest
+    needs: rag-quality
+    defaults:
+      run:
+        working-directory: rag
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+
+      - name: Install dependencies
+        run: uv sync --group dev
+
+      - name: Run unit tests
+        run: uv run pytest tests/unit/ --cov=rag --cov-report=xml
+
+      - name: Upload coverage
+        uses: codecov/codecov-action@v4
+        with:
+          file: rag/coverage.xml
+          flags: rag
