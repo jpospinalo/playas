@@ -226,7 +226,7 @@ PYTHONPATH=rag/backend uv run python -m rag.tools.migrate_feedback_ratings --dry
 PYTHONPATH=rag/backend uv run python -m rag.tools.migrate_feedback_ratings             # Aplicar migración
 ```
 
-> El script usa el Firebase Admin SDK (mismo servicio que el backend). Requiere `FIREBASE_SERVICE_ACCOUNT_PATH` en `.env`.
+> El script usa el Firebase Admin SDK (mismo servicio que el backend). Requiere las credenciales de Firebase en el `.env`: las variables `FIREBASE_*` o, como fallback, `FIREBASE_SERVICE_ACCOUNT_PATH` (ver sección 5).
 
 ### 7.4. Verificar la colección `message_feedback`
 

@@ -124,7 +124,8 @@ rag_playas/
 ├── data/                         ← Staging (frontera ingest↔rag, gitignored)
 │   ├── raw/  bronze/  silver/  gold/   ← cada capa: jurisprudencia/ + normativa/
 ├── docs/                         ← guías + docs/firebase/ (rules, indexes, manual)
-├── docker-compose.yml            ← stack de despliegue (backend + frontend + nginx)
+├── docker-compose.{ingest,rag}.yml  ← stacks principales (servicio + MinIO + Chroma + Ollama)
+├── docker-compose.yml            ← stack legado con nginx (reverse proxy)
 └── Makefile
 ```
 
