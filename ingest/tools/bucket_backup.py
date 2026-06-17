@@ -7,24 +7,22 @@ Uso:
     make bucket-backup
 """
 
-import os
 import sys
 from datetime import datetime
 from pathlib import Path
 
-import boto3
 from botocore.exceptions import BotoCoreError, ClientError
-from dotenv import load_dotenv
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
+from ingest.s3_client import get_bucket, get_client
+
+PROJECT_ROOT = Path(__file__).resolve().parents[2]  # raíz del repo (ingest/tools/ → /)
 
 
 def main() -> None:
-    load_dotenv(PROJECT_ROOT / ".env")
-
-    bucket_name = os.getenv("S3_BUCKET_NAME", "").strip()
-    if not bucket_name:
-        print("Error: S3_BUCKET_NAME no está definido en el .env", file=sys.stderr)
+    try:
+        bucket_name = get_bucket()
+    except RuntimeError as exc:
+        print(f"Error: {exc}", file=sys.stderr)
         sys.exit(1)
 
     timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
@@ -35,7 +33,7 @@ def main() -> None:
     print(f"Destino: {backup_dir}")
 
     try:
-        s3 = boto3.client("s3")
+        s3 = get_client()
         paginator = s3.get_paginator("list_objects_v2")
         pages = paginator.paginate(Bucket=bucket_name)
 
