@@ -4,20 +4,6 @@ import { useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { useAuth } from "@/components/providers/AuthProvider";
 
-function translateFirebaseError(code: string): string {
-  const messages: Record<string, string> = {
-    "auth/user-not-found": "No existe una cuenta con ese correo.",
-    "auth/wrong-password": "Contraseña incorrecta.",
-    "auth/invalid-credential": "Correo o contraseña incorrectos.",
-    "auth/email-already-in-use": "Este correo ya está registrado.",
-    "auth/weak-password": "La contraseña debe tener al menos 6 caracteres.",
-    "auth/invalid-email": "El formato del correo no es válido.",
-    "auth/too-many-requests": "Demasiados intentos fallidos. Intenta más tarde.",
-    "auth/network-request-failed": "Error de red. Verifica tu conexión.",
-    "auth/user-disabled": "Esta cuenta ha sido deshabilitada.",
-  };
-  return messages[code] ?? "Ocurrió un error. Intenta de nuevo.";
-}
 
 function EyeIcon({ open }: { open: boolean }) {
   return open ? (
@@ -117,8 +103,7 @@ export function AuthModal({ open, mode = "explicit", subtitle, onClose }: AuthMo
       resetForm();
       onClose();
     } catch (err: unknown) {
-      const code = (err as { code?: string }).code ?? "";
-      setError(translateFirebaseError(code));
+      setError(err instanceof Error ? err.message : "Ocurrió un error. Intenta de nuevo.");
     } finally {
       setSubmitting(false);
     }

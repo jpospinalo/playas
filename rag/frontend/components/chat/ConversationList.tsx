@@ -2,10 +2,11 @@
 
 import { useEffect, useRef, useState, type KeyboardEvent, type MouseEvent } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { collection, deleteDoc, doc, getDocs, updateDoc, writeBatch } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import { getToken } from "@/lib/auth";
 import type { Conversation } from "@/hooks/useConversations";
 import { formatConversationDate } from "@/components/chat/conversationSidebarUtils";
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080";
 
 interface ConversationListProps {
   conversations: Conversation[];
@@ -13,6 +14,7 @@ interface ConversationListProps {
   loading: boolean;
   onSelectConversation: (conv: Conversation) => Promise<void>;
   onNewChat: () => void;
+  onConversationsRefresh?: () => Promise<void>;
 }
 
 export function ConversationList({
@@ -21,6 +23,7 @@ export function ConversationList({
   loading,
   onSelectConversation,
   onNewChat,
+  onConversationsRefresh,
 }: ConversationListProps) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editTitle, setEditTitle] = useState("");
@@ -58,15 +61,24 @@ export function ConversationList({
     setMenuOpenId(null);
     setDeletingId(null);
     setEditingId(conv.id);
-    setEditTitle(conv.title);
+    setEditTitle(conv.title ?? "");
   }
 
   async function saveEdit(convId: string) {
     const title = editTitle.trim().slice(0, 60);
     if (title) {
-      await updateDoc(doc(db, "conversations", convId), { title }).catch(
-        () => {}
-      );
+      const token = getToken();
+      if (token) {
+        await fetch(`${API_URL}/api/conversations/${convId}`, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ title }),
+        }).catch(() => {});
+        await onConversationsRefresh?.();
+      }
     }
     setEditingId(null);
   }
@@ -85,18 +97,15 @@ export function ConversationList({
 
   async function confirmDelete(convId: string, event: MouseEvent) {
     event.stopPropagation();
-
-    const messagesRef = collection(db, "conversations", convId, "messages");
-    const msgSnap = await getDocs(messagesRef).catch(() => null);
-    if (msgSnap && !msgSnap.empty) {
-      const batch = writeBatch(db);
-      msgSnap.docs.forEach((msgDoc) => batch.delete(msgDoc.ref));
-      await batch.commit().catch(() => {});
+    const token = getToken();
+    if (token) {
+      await fetch(`${API_URL}/api/conversations/${convId}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      }).catch(() => {});
+      await onConversationsRefresh?.();
     }
-
-    await deleteDoc(doc(db, "conversations", convId)).catch(() => {});
     setDeletingId(null);
-
     if (convId === activeConversationId) onNewChat();
   }
 
@@ -150,10 +159,10 @@ export function ConversationList({
                 <button
                   type="button"
                   onClick={() => onSelectConversation(conv)}
-                  title={`${conv.title} · ${formatConversationDate(conv.updatedAt)}`}
+                  title={`${conv.title ?? "Sin título"} · ${formatConversationDate(conv.updatedAt)}`}
                   className="block w-full min-w-0 cursor-pointer truncate text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
                 >
-                  {conv.title}
+                  {conv.title ?? "Sin título"}
                 </button>
               )}
             </div>
@@ -208,7 +217,7 @@ function ConversationActionsMenu({
           event.stopPropagation();
           onToggle();
         }}
-        aria-label={`Opciones para ${conversation.title}`}
+        aria-label={`Opciones para ${conversation.title ?? "conversación"}`}
         aria-haspopup="menu"
         aria-expanded={isOpen}
         className="flex h-7 w-7 items-center justify-center rounded-full text-muted opacity-0 transition-[background-color,color,opacity] duration-150 hover:bg-surface hover:text-foreground focus:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent group-hover:opacity-100 group-focus-within:opacity-100"

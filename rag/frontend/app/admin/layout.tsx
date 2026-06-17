@@ -3,9 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { doc, getDoc } from "firebase/firestore";
 import { useAuth } from "@/components/providers/AuthProvider";
-import { db } from "@/lib/firebase";
 import { ThemeToggle } from "@/components/common/ThemeToggle";
 
 export default function AdminLayout({
@@ -13,37 +11,17 @@ export default function AdminLayout({
 }: {
 	children: React.ReactNode;
 }) {
-	const { user, loading } = useAuth();
+	const { user, role, loading } = useAuth();
 	const router = useRouter();
 	const pathname = usePathname();
-	const [role, setRole] = useState<string | null>(null);
-	const [checkingRole, setCheckingRole] = useState(true);
 
 	useEffect(() => {
-		if (loading) return;
-
-		if (!user) {
+		if (!loading && !user) {
 			router.replace("/");
-			return;
 		}
-
-		async function fetchRole() {
-			if (!user) return;
-			try {
-				const snap = await getDoc(doc(db, "users", user.uid));
-				const r = snap.exists() ? (snap.data()?.role ?? "user") : "user";
-				setRole(r);
-			} catch {
-				setRole("user");
-			} finally {
-				setCheckingRole(false);
-			}
-		}
-
-		fetchRole();
 	}, [user, loading, router]);
 
-	if (loading || checkingRole) {
+	if (loading) {
 		return (
 			<div className="flex min-h-screen items-center justify-center bg-background">
 				<span className="text-sm text-muted">Verificando acceso…</span>
@@ -51,7 +29,7 @@ export default function AdminLayout({
 		);
 	}
 
-	if (!user) return null;
+	if (!user || loading) return null;
 
 	if (role !== "admin" && role !== "super-admin") {
 		return (

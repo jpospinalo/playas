@@ -1,80 +1,72 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import {
-  collection,
-  onSnapshot,
-  orderBy,
-  query,
-  where,
-} from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import { useCallback, useEffect, useState } from "react";
+import { getToken } from "@/lib/auth";
 import { useAuth } from "@/components/providers/AuthProvider";
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080";
+
 export interface Conversation {
-  id: string;
-  title: string;
-  threadId: string;
-  createdAt: Date;
-  updatedAt: Date;
-  messageCount: number;
+	id: string;
+	title: string | null;
+	threadId: string;
+	createdAt: Date;
+	updatedAt: Date;
+	messageCount: number;
 }
 
 export function useConversations(): {
-  conversations: Conversation[];
-  loading: boolean;
+	conversations: Conversation[];
+	loading: boolean;
+	refresh: () => Promise<void>;
 } {
-  const { user } = useAuth();
-  const [conversations, setConversations] = useState<Conversation[]>([]);
-  const [loading, setLoading] = useState(false);
+	const { user } = useAuth();
+	const [conversations, setConversations] = useState<Conversation[]>([]);
+	const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    if (!user) {
-      const frame = window.requestAnimationFrame(() => {
-        setConversations([]);
-        setLoading(false);
-      });
-      return () => window.cancelAnimationFrame(frame);
-    }
+	const refresh = useCallback(async () => {
+		const token = getToken();
+		if (!user || !token) {
+			setConversations([]);
+			return;
+		}
+		setLoading(true);
+		try {
+			const res = await fetch(`${API_URL}/api/conversations`, {
+				headers: { Authorization: `Bearer ${token}` },
+			});
+			if (!res.ok) {
+				setConversations([]);
+				return;
+			}
+			const data = (await res.json()) as Array<{
+				id: string;
+				title: string | null;
+				thread_id: string;
+				created_at: string;
+				updated_at: string;
+				message_count: number;
+			}>;
+			setConversations(
+				data.map((c) => ({
+					id: c.id,
+					title: c.title,
+					threadId: c.thread_id,
+					createdAt: new Date(c.created_at),
+					updatedAt: new Date(c.updated_at),
+					messageCount: c.message_count,
+				})),
+			);
+		} catch {
+			setConversations([]);
+		} finally {
+			setLoading(false);
+		}
+	}, [user]);
 
-    const loadingFrame = window.requestAnimationFrame(() => {
-      setLoading(true);
-    });
+	useEffect(() => {
+		void refresh();
+	}, [refresh]);
 
-    const q = query(
-      collection(db, "conversations"),
-      where("userId", "==", user.uid),
-      orderBy("updatedAt", "desc")
-    );
-
-    const unsubscribe = onSnapshot(
-      q,
-      (snapshot) => {
-        const convs: Conversation[] = snapshot.docs.map((docSnap) => {
-          const data = docSnap.data();
-          return {
-            id: docSnap.id,
-            title: (data.title as string) ?? "Sin título",
-            threadId: (data.threadId as string) ?? "",
-            createdAt: data.createdAt?.toDate?.() ?? new Date(),
-            updatedAt: data.updatedAt?.toDate?.() ?? new Date(),
-            messageCount: (data.messageCount as number) ?? 0,
-          };
-        });
-        setConversations(convs);
-        setLoading(false);
-      },
-      (err) => {
-        console.error("[useConversations] Error en onSnapshot:", err);
-        setLoading(false);
-      }
-    );
-
-    return () => {
-      window.cancelAnimationFrame(loadingFrame);
-      unsubscribe();
-    };
-  }, [user]);
-
-  return { conversations, loading };
+	return { conversations, loading, refresh };
 }

@@ -1,35 +1,24 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { generateConversationTitle, queryRagStream } from "@/lib/api";
+import { getToken } from "@/lib/auth";
+import type { AgentStage, Message, SourceGroup } from "@/lib/types";
+import { normalizeSources } from "@/lib/types";
+import { useAuth } from "@/components/providers/AuthProvider";
+import type { Conversation } from "@/hooks/useConversations";
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080";
 
 function generateId(): string {
 	if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
 		return crypto.randomUUID();
 	}
-	// Fallback for non-secure contexts (HTTP)
 	return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
 		const r = (Math.random() * 16) | 0;
 		return (c === "x" ? r : (r & 0x3) | 0x8).toString(16);
 	});
 }
-import {
-	addDoc,
-	collection,
-	doc,
-	getDocs,
-	increment,
-	orderBy,
-	query,
-	serverTimestamp,
-	setDoc,
-	updateDoc,
-} from "firebase/firestore";
-import { generateConversationTitle, queryRagStream } from "@/lib/api";
-import { db } from "@/lib/firebase";
-import type { AgentStage, Message, SourceGroup } from "@/lib/types";
-import { normalizeSources } from "@/lib/types";
-import { useAuth } from "@/components/providers/AuthProvider";
-import type { Conversation } from "@/hooks/useConversations";
 
 export interface UseChatReturn {
 	messages: Message[];
@@ -39,17 +28,14 @@ export interface UseChatReturn {
 	stage: AgentStage | null;
 	stageMessage: string | null;
 	error: string | null;
-	/** Porcentaje de la ventana de contexto consumida (0–100). */
 	contextPercent: number;
-	/** ID del documento de conversación activo en Firestore (null si no hay sesión o aún no se creó). */
+	/** ID de la conversación activa en la base de datos (null si no hay sesión o aún no se creó). */
 	conversationId: string | null;
-	/** IDs de mensajes que ya tienen feedback enviado. */
 	ratedMessageIds: Set<string>;
 	setInput: (value: string) => void;
 	submit: (question: string) => Promise<void>;
 	resetChat: () => void;
 	loadConversation: (conv: Conversation) => Promise<void>;
-	/** Marca un mensaje como calificado y envía el feedback al backend. */
 	rateMessage: (
 		messageId: string,
 		ratings: { pertinence: number; accuracy: number },
@@ -75,16 +61,10 @@ export function useChat(): UseChatReturn {
 	const [error, setError] = useState<string | null>(null);
 	const [contextPercent, setContextPercent] = useState(0);
 	const [conversationId, setConversationId] = useState<string | null>(null);
+	const [ratedMessageIds, setRatedMessageIds] = useState<Set<string>>(new Set());
 
-	const [ratedMessageIds, setRatedMessageIds] = useState<Set<string>>(
-		new Set(),
-	);
-
-	// Stable thread_id for the entire chat session. Regenerated on resetChat().
 	const threadIdRef = useRef<string>(generateId());
-	// Mirrors conversationId state for use inside async callbacks without stale closures.
 	const conversationIdRef = useRef<string | null>(null);
-	// Track whether the first token has been received to flip isStreaming exactly once.
 	const streamingStartedRef = useRef(false);
 
 	function _setConversationId(id: string | null) {
@@ -92,10 +72,11 @@ export function useChat(): UseChatReturn {
 		setConversationId(id);
 	}
 
-	/** Crea el documento de conversación en Firestore al enviar el primer mensaje. */
+	/** Crea la conversación en la base de datos vía API al enviar el primer mensaje. */
 	async function _createConversation(firstQuestion: string): Promise<string> {
-		if (!user) return "";
-		const newRef = doc(collection(db, "conversations"));
+		const token = getToken();
+		if (!user || !token) return "";
+
 		const now = new Date();
 		const dateStr = now.toLocaleDateString("es-CO", {
 			day: "2-digit",
@@ -106,38 +87,35 @@ export function useChat(): UseChatReturn {
 			hour: "2-digit",
 			minute: "2-digit",
 		});
-		await setDoc(newRef, {
-			userId: user.uid,
-			threadId: threadIdRef.current,
-			title: `Chat ${dateStr} ${timeStr}`,
-			createdAt: serverTimestamp(),
-			updatedAt: serverTimestamp(),
-			messageCount: 0,
-		});
 
-		// Obtener token ahora (user no es null en este punto) y generar título en background.
-		// Pasar el token directamente evita una race condition con auth.currentUser.
-		user
-			.getIdToken()
-			.then((token) => {
-				generateConversationTitle(firstQuestion, newRef.id, token).catch(
-					() => {},
-				);
-			})
-			.catch(() => {});
+		try {
+			const res = await fetch(`${API_URL}/api/conversations`, {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+					Authorization: `Bearer ${token}`,
+				},
+				body: JSON.stringify({
+					thread_id: threadIdRef.current,
+					title: `Chat ${dateStr} ${timeStr}`,
+				}),
+			});
+			if (!res.ok) return "";
+			const data = (await res.json()) as { id: string };
 
-		return newRef.id;
+			// Generar título con IA en background
+			generateConversationTitle(firstQuestion, data.id).catch(() => {});
+
+			return data.id;
+		} catch {
+			return "";
+		}
 	}
 
 	async function submit(question: string): Promise<void> {
 		const q = question.trim();
 		if (!q || loading) return;
 
-		// ── Feedback inmediato a la UI ──────────────────────────────
-		// Activar loading, mostrar el mensaje del usuario y limpiar
-		// el input ANTES de cualquier operación async. Esto evita que
-		// el usuario perciba "congelamiento" y que vuelva a tocar el
-		// botón de enviar mientras se crea la conversación en Firestore.
 		const isFirstMessage = messages.length === 0 && !conversationIdRef.current;
 
 		setLoading(true);
@@ -153,37 +131,34 @@ export function useChat(): UseChatReturn {
 		]);
 		setInput("");
 
-		// Si el usuario está autenticado y es el primer mensaje de esta sesión,
-		// crear el documento de conversación en Firestore.
 		if (user && isFirstMessage) {
 			const newConvId = await _createConversation(q);
 			_setConversationId(newConvId);
 		}
 
 		const activeConvId = conversationIdRef.current;
+		const token = getToken();
 
-		// Guardar mensaje del usuario en Firestore y propagar el ID real
-		if (user && activeConvId) {
-			const userPlaceholderId = messages.find((m) => m.role === "user")?.id;
-			addDoc(collection(db, "conversations", activeConvId, "messages"), {
-				role: "user",
-				text: q,
-				createdAt: serverTimestamp(),
+		// Persistir mensaje del usuario
+		let userMsgId: string | null = null;
+		if (user && activeConvId && token) {
+			fetch(`${API_URL}/api/conversations/${activeConvId}/messages`, {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+					Authorization: `Bearer ${token}`,
+				},
+				body: JSON.stringify({ role: "user", text: q }),
 			})
-				.then((docRef) => {
-					if (userPlaceholderId) {
-						setMessages((prev) =>
-							prev.map((m) =>
-								m.id === userPlaceholderId ? { ...m, id: docRef.id } : m,
-							),
-						);
+				.then(async (res) => {
+					if (res.ok) {
+						const data = (await res.json()) as { id: string };
+						userMsgId = data.id;
 					}
 				})
 				.catch(() => {});
 		}
 
-		// Insertar placeholder del asistente para que el área de respuesta aparezca
-		// de inmediato mientras llegan los tokens.
 		const assistantId = generateId();
 		setMessages((prev) => [
 			...prev,
@@ -209,12 +184,16 @@ export function useChat(): UseChatReturn {
 					finalAssistantText += event.content;
 					setMessages((prev) =>
 						prev.map((m) =>
-							m.id === assistantId ? { ...m, text: m.text + event.content } : m,
+							m.id === assistantId
+								? { ...m, text: m.text + event.content }
+								: m,
 						),
 					);
 				} else if (event.type === "status") {
 					setStage(event.stage);
-					setStageMessage(event.message ?? DEFAULT_STAGE_MESSAGES[event.stage]);
+					setStageMessage(
+						event.message ?? DEFAULT_STAGE_MESSAGES[event.stage],
+					);
 				} else if (event.type === "sources") {
 					const groups = normalizeSources(event.sources);
 					finalAssistantSources = groups;
@@ -225,7 +204,9 @@ export function useChat(): UseChatReturn {
 					);
 					if (event.context_tokens != null && event.context_limit) {
 						setContextPercent(
-							Math.round((event.context_tokens / event.context_limit) * 100),
+							Math.round(
+								(event.context_tokens / event.context_limit) * 100,
+							),
 						);
 					}
 				} else if (event.type === "error") {
@@ -233,28 +214,34 @@ export function useChat(): UseChatReturn {
 				}
 			}
 
-			// Persistir respuesta del asistente en Firestore y propagar el ID real
-			if (user && activeConvId && finalAssistantText) {
-				addDoc(collection(db, "conversations", activeConvId, "messages"), {
-					role: "assistant",
-					text: finalAssistantText,
-					sources:
-						finalAssistantSources.length > 0 ? finalAssistantSources : null,
-					createdAt: serverTimestamp(),
+			// Persistir respuesta del asistente
+			if (user && activeConvId && token && finalAssistantText) {
+				fetch(`${API_URL}/api/conversations/${activeConvId}/messages`, {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+						Authorization: `Bearer ${token}`,
+					},
+					body: JSON.stringify({
+						role: "assistant",
+						text: finalAssistantText,
+						sources:
+							finalAssistantSources.length > 0
+								? finalAssistantSources
+								: null,
+					}),
 				})
-					.then((docRef) => {
-						setMessages((prev) =>
-							prev.map((m) =>
-								m.id === assistantId ? { ...m, id: docRef.id } : m,
-							),
-						);
+					.then(async (res) => {
+						if (res.ok) {
+							const data = (await res.json()) as { id: string };
+							setMessages((prev) =>
+								prev.map((m) =>
+									m.id === assistantId ? { ...m, id: data.id } : m,
+								),
+							);
+						}
 					})
 					.catch(() => {});
-
-				updateDoc(doc(db, "conversations", activeConvId), {
-					updatedAt: serverTimestamp(),
-					messageCount: increment(1),
-				}).catch(() => {});
 			}
 		} catch (err) {
 			setMessages((prev) => prev.filter((m) => m.id !== assistantId));
@@ -269,41 +256,52 @@ export function useChat(): UseChatReturn {
 			setStage(null);
 			setStageMessage(null);
 		}
+
+		void userMsgId; // evitar warning de variable no usada
 	}
 
-	/** Carga una conversación existente desde Firestore y la restaura en la UI. */
+	/** Carga una conversación existente desde la API y la restaura en la UI. */
 	async function loadConversation(conv: Conversation): Promise<void> {
-		const messagesRef = query(
-			collection(db, "conversations", conv.id, "messages"),
-			orderBy("createdAt", "asc"),
-		);
+		const token = getToken();
+		if (!token) return;
 
-		const snapshot = await getDocs(messagesRef);
-		const loaded: Message[] = snapshot.docs.map((docSnap) => {
-			const data = docSnap.data();
-			const rawSources = data.sources;
-			return {
-				id: docSnap.id,
-				role: data.role as "user" | "assistant",
-				text: (data.text as string) ?? "",
-				sources: rawSources ? normalizeSources(rawSources) : undefined,
-			};
-		});
+		try {
+			const res = await fetch(
+				`${API_URL}/api/conversations/${conv.id}/messages`,
+				{ headers: { Authorization: `Bearer ${token}` } },
+			);
+			if (!res.ok) return;
 
-		setMessages(loaded);
-		threadIdRef.current = conv.threadId;
-		_setConversationId(conv.id);
-		setInput("");
-		setLoading(false);
-		setIsStreaming(false);
-		setStage(null);
-		setStageMessage(null);
-		setError(null);
-		setContextPercent(0);
-		streamingStartedRef.current = false;
+			const data = (await res.json()) as Array<{
+				id: string;
+				role: string;
+				text: string;
+				sources: unknown[] | null;
+			}>;
+
+			const loaded: Message[] = data.map((m) => ({
+				id: m.id,
+				role: m.role as "user" | "assistant",
+				text: m.text,
+				sources: m.sources ? normalizeSources(m.sources as Parameters<typeof normalizeSources>[0]) : undefined,
+			}));
+
+			setMessages(loaded);
+			threadIdRef.current = conv.threadId;
+			_setConversationId(conv.id);
+			setInput("");
+			setLoading(false);
+			setIsStreaming(false);
+			setStage(null);
+			setStageMessage(null);
+			setError(null);
+			setContextPercent(0);
+			streamingStartedRef.current = false;
+		} catch {
+			// Si falla la carga, no hace nada
+		}
 	}
 
-	/** Envía calificación de un mensaje individual al backend y marca localmente. */
 	async function rateMessage(
 		messageId: string,
 		ratings: { pertinence: number; accuracy: number },
