@@ -7,7 +7,7 @@ import chromadb
 from dotenv import load_dotenv
 
 # ── Configuración ────────────────────────────────────────────────────────────
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parents[4]  # raíz del repo (rag/backend/rag/tools/ → /)
 load_dotenv(BASE_DIR / ".env")
 
 CHROMA_HOST = os.getenv("CHROMA_HOST", "localhost")
