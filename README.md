@@ -2,33 +2,33 @@
 
 **Sistema agéntico de apoyo para la orientación normativa y jurisprudencial sobre playas en Colombia.**
 
-Agente conversacional de **jurisprudencia y normativa colombiana sobre playas y dominio público marítimo-terrestre**. Procesa sentencias en PDF (Consejo de Estado, Tribunales Administrativos) y normativa (decretos, reglamentos), los indexa semánticamente diferenciados por `doc_type` y los expone como un agente **LangGraph** sobre una API FastAPI consumida por un frontend Next.js con autenticación, historial de conversaciones, calificación de respuestas y panel de administración.
+Agente conversacional de **jurisprudencia y normativa colombiana sobre playas y dominio público marítimo-terrestre**. Procesa sentencias en PDF (Consejo de Estado, Tribunales Administrativos) y normativa (decretos, reglamentos), los indexa semánticamente diferenciados por `doc_type` y los expone como un agente **LangGraph** sobre una API FastAPI consumida por un frontend Next.js con autenticación JWT, historial de conversaciones, calificación de respuestas y panel de administración.
 
-- [Registro de archivos indexados](docs/archivos-indexados.md)
-- [Estructura típica de sentencias](docs/DOCUMENT_SECTIONS.md)
-- [Configuración manual de Firebase](docs/firebase-config-manual.md)
-- [Scripts operacionales y utilidades](docs/SCRIPTS.md)
+- [Registro de archivos indexados](ingesta/docs/archivos-indexados.md)
+- [Estructura típica de sentencias](ingesta/docs/DOCUMENT_SECTIONS.md)
+- [Scripts operacionales y utilidades — RAG](rag/docs/SCRIPTS.md)
+- [Scripts operacionales y utilidades — Ingesta](ingesta/docs/SCRIPTS.md)
 
 ---
 
 ## Arquitectura
 
-Tres capas independientes que comparten `data/` y servicios externos (ChromaDB, Ollama, Firebase, proveedor LLM):
+Dos paquetes Python independientes más un frontend, que comparten `data/` y servicios externos (ChromaDB, Ollama, proveedor LLM):
 
 ```
 ┌──────────────────────┐     ┌──────────────────────────────────┐     ┌──────────────────┐
 │  Pipeline de ingesta │  →  │  Agente LangGraph + API FastAPI  │ ←→  │ Frontend Next.js │
-│  (paquete `ingest/`) │     │       (paquete `rag/`)           │     │  (`frontend/`)   │
+│   (paquete ingesta/) │     │        (paquete rag/)            │     │  (rag/frontend/) │
 └──────────────────────┘     └──────────────────────────────────┘     └──────────────────┘
 ```
 
-`rag/` y `ingest/` son **paquetes Python independientes** dentro del workspace `uv`: no comparten código, solo el directorio `data/` y los servicios externos. El frontend (Bun) habla con la API por SSE para streaming y directamente con Firestore para historial/feedback.
+`ingesta/ingest/` y `rag/backend/rag/` son **paquetes Python independientes** dentro de workspaces `uv` separados: no comparten código, solo el directorio `data/` y los servicios externos. El frontend (Bun) habla con la API por SSE para streaming y REST para historial/feedback.
 
 ---
 
 ## Pipeline de ingesta
 
-![Pipeline de ingesta ATLAS](docs/images/pipeline.png)
+![Pipeline de ingesta ATLAS](rag/docs/images/pipeline.png)
 
 El pipeline soporta dos tipos de documento (`doc_type`), cada uno con su propia subcarpeta en todas las capas:
 
@@ -69,7 +69,7 @@ START → enrich_query → retrieve_forced → generate → END
 
 `build_graph()` elige uno u otro según `get_active_provider().supports_structured_output`.
 
-**Memoria** — el `thread_id` (UUID del frontend) persiste el historial en `MemorySaver` mientras viva el proceso. Si el servidor reinicia, el endpoint hidrata el estado desde `conversations/{id}/messages` en Firestore usando el `conversation_id`.
+**Memoria** — el `thread_id` (UUID del frontend) persiste el historial en `MemorySaver` mientras viva el proceso. Si el servidor reinicia, el endpoint hidrata el estado desde la tabla `messages` en PostgreSQL/SQLite usando el `conversation_id`.
 
 **Streaming SSE** — `/api/query/stream` emite eventos `status` (etapa del nodo), `token` (tokens del LLM en vivo) y un `sources` final con fuentes agrupadas y métricas de contexto.
 
@@ -77,62 +77,79 @@ START → enrich_query → retrieve_forced → generate → END
 
 ---
 
-## Integración Firebase
+## Autenticación y persistencia
 
-Autenticación, historial, calificaciones y roles viven en Firebase. El backend usa **Firebase Admin SDK** (`rag/api/firebase_admin.py`); el frontend usa el SDK cliente (`frontend/lib/firebase.ts`).
+Autenticación, historial, calificaciones y roles se gestionan en el propio backend mediante **JWT + SQLAlchemy async** (SQLite en desarrollo, PostgreSQL en producción).
 
-> **Antes de ejecutar el proyecto** hay que configurar manualmente Firebase Console (Auth, reglas, índices, service account, roles): seguir paso a paso [`docs/firebase-config-manual.md`](docs/firebase-config-manual.md).
+`rag/backend/rag/api/auth.py` ofrece tres dependencias FastAPI: `get_optional_user` (token opcional), `get_current_user` (obligatorio) y `require_admin` (verifica el campo `role` en el payload JWT).
 
-**Modelo en Firestore:**
+**Modelo relacional:**
 
-| Colección                             | Propósito                                                                   |
-| ------------------------------------- | --------------------------------------------------------------------------- |
-| `users/{uid}`                         | `email`, `displayName`, `role` (`user`/`admin`/`super-admin`), `createdAt`. |
-| `conversations/{id}`                  | `userId`, `threadId`, `title`, `createdAt`, `updatedAt`, `messageCount`.    |
-| `conversations/{id}/messages/{msgId}` | `role`, `text`, `sources?`, `createdAt`.                                    |
-| `feedback/{id}`                       | Calificaciones de conversación (tone, length, usability, overall).          |
-| `message_feedback/{id}`               | Calificaciones por mensaje (pertinence, accuracy, expectedAnswer).          |
+| Tabla | Propósito |
+|---|---|
+| `users` | `email`, `display_name`, `role` (`user`/`admin`/`super-admin`), `hashed_password`, `created_at` |
+| `conversations` | `user_id`, `thread_id`, `title`, `created_at`, `updated_at` |
+| `messages` | `conversation_id`, `role`, `text`, `sources`, `created_at` |
+| `feedback` | Calificaciones de conversación (tone, length, usability, overall) |
+| `message_feedback` | Calificaciones por mensaje (pertinence, accuracy, expected_answer) |
 
-Las reglas (`firestore.rules`) garantizan que cada usuario solo acceda a sus conversaciones, que el campo `role` no sea mutable desde el cliente y que el feedback solo lo lean los admins. `firestore.indexes.json` versiona los índices compuestos requeridos.
+**Endpoints de autenticación:**
 
-`rag/api/auth.py` ofrece tres dependencias FastAPI: `get_optional_user` (token opcional), `get_current_user` (obligatorio) y `require_admin` (verifica `role` en Firestore).
+| Método | Ruta | Descripción |
+|---|---|---|
+| `POST` | `/api/auth/register` | Registro con email + contraseña (bcrypt) → JWT |
+| `POST` | `/api/auth/login` | Login → JWT |
+| `GET` | `/api/auth/me` | Datos del usuario autenticado |
+
+El token se almacena en `localStorage` en el frontend y se envía como `Authorization: Bearer <token>` en cada petición.
 
 ---
 
 ## Estructura del repositorio
 
 ```
-rag_playas/
-├── rag/                          ← Paquete API + agente
-│   ├── core/                     ← agent, tools, retriever, llm_factory, ...
-│   └── api/                      ← FastAPI: main, auth, firebase_admin, routes/
-├── ingest/                       ← Pipeline de ingesta (independiente)
-├── frontend/                     ← Next.js 16 (React 19, Bun)
-├── data/
-│   ├── raw/
-│   │   ├── jurisprudencia/       ← PDFs + metadata.csv de sentencias
-│   │   └── normativa/            ← MDs/PDFs de decretos y reglamentos
-│   ├── bronze/
-│   │   ├── jurisprudencia/       ← Markdown por sentencia
-│   │   └── normativa/            ← Markdown por decreto/reglamento
-│   ├── silver/
-│   │   ├── jurisprudencia/       ← JSONL seccional (4 secciones por sentencia)
-│   │   └── normativa/            ← JSONL articular (1 artículo por unidad)
-│   └── gold/
-│       ├── jurisprudencia/       ← Chunks enriquecidos de sentencias
-│       └── normativa/            ← Chunks enriquecidos de normativa
-├── docs/                         ← guías (incluye firebase-config-manual.md)
-├── firestore.rules               ← reglas de seguridad versionadas
-├── firestore.indexes.json        ← índices compuestos
-├── docker/                       ← Dockerfiles + nginx.conf
-├── docker-compose.yml            ← stack de despliegue (backend + frontend + nginx)
-├── infrastructure/               ← Terraform (EC2 Chroma + Ollama)
-├── scripts/                      ← run_pipeline.sh, ec2_*.sh
-├── tests/, evaluation/
-└── Makefile
+playas/
+├── rag/                              ← Sistema RAG (API + agente + frontend)
+│   ├── backend/                      ← Paquete Python (uv workspace)
+│   │   └── rag/
+│   │       ├── core/                 ← agent, tools, retriever, llm_factory, ...
+│   │       └── api/                  ← FastAPI: main, auth, models, database, routes/
+│   ├── frontend/                     ← Next.js 16 (React 19, Bun)
+│   │   └── lib/
+│   │       ├── auth.ts               ← JWT helpers (localStorage)
+│   │       └── api.ts                ← Cliente REST con token JWT
+│   ├── docker/                       ← Dockerfiles (backend, frontend)
+│   ├── docker-compose.yml            ← Stack: postgres + backend + frontend + nginx
+│   ├── docs/                         ← Guías, diseño, scripts
+│   ├── evaluation/                   ← RAGAS + ground truth
+│   ├── tests/                        ← Tests unitarios e integración
+│   ├── scripts/                      ← Scripts de despliegue y utilidades
+│   └── Makefile
+├── ingesta/                          ← Pipeline de ingesta (paquete independiente)
+│   ├── ingest/                       ← Paquete Python
+│   │   ├── pdf_to_md/                ← PDF → Markdown (Docling, OCR)
+│   │   ├── loaders.py                ← Bronze → Silver
+│   │   ├── splitter_and_enrich.py    ← Silver → Gold (chunks + LLM)
+│   │   └── sections*.py              ← Estrategias de seccionado por doc_type
+│   ├── infrastructure/               ← Terraform S3
+│   ├── docs/
+│   ├── scripts/                      ← run_pipeline.sh
+│   └── Makefile
+├── vector-infraestructura/           ← Terraform: ChromaDB + Ollama en EC2
+│   ├── chromadb.tf
+│   ├── ollama.tf
+│   ├── providers.tf / terraform.tf / variables.tf / locals.tf / outputs.tf
+│   └── scripts/
+│       ├── ec2_chroma_db.sh
+│       └── ec2_ollama_embeddings.sh
+└── data/                             ← Staging del pipeline (gitignored)
+    ├── raw/{jurisprudencia,normativa}/
+    ├── bronze/{jurisprudencia,normativa}/
+    ├── silver/{jurisprudencia,normativa}/
+    └── gold/{jurisprudencia,normativa}/
 ```
 
-`uv` gestiona el workspace Python (raíz + `rag/` + `ingest/`); `bun` gestiona el workspace Node (raíz + `frontend/`). El `.env` es único y vive en la raíz.
+`uv` gestiona cada workspace Python por separado (`rag/` e `ingesta/`); `bun` gestiona el workspace Node (`rag/frontend/`). El `.env` vive en `rag/`.
 
 ---
 
@@ -140,12 +157,11 @@ rag_playas/
 
 - Python 3.12+, [`uv`](https://docs.astral.sh/uv/)
 - [Bun](https://bun.sh/)
-- Docker (para ChromaDB o despliegue completo)
-- Ollama (local o en EC2)
-- Cuenta de Firebase con Auth + Firestore habilitados
+- Docker (para despliegue completo con PostgreSQL)
+- ChromaDB y Ollama en EC2 (ver `vector-infraestructura/`)
 - API key de al menos un proveedor LLM: OpenAI, OpenRouter o Gemini
 
-Diseñado para Linux. Compatible con WSL aplicando `dos2unix scripts/*.sh`.
+Diseñado para Linux. Compatible con WSL aplicando `dos2unix ingesta/scripts/*.sh`.
 
 ---
 
@@ -153,60 +169,63 @@ Diseñado para Linux. Compatible con WSL aplicando `dos2unix scripts/*.sh`.
 
 ```bash
 curl -LsSf https://astral.sh/uv/install.sh | sh
-git clone https://github.com/jpospinalo/rag_playas.git
-cd rag_playas
-uv sync --group dev
-bun install
-cp .env.example .env
-```
+git clone https://github.com/camilousa/playas.git
+cd playas
 
-Luego configurar Firebase siguiendo [`docs/firebase-config-manual.md`](docs/firebase-config-manual.md) y completar las variables de entorno descritas abajo.
+# Dependencias Python (RAG)
+cd rag && uv sync --group dev
+
+# Dependencias Python (Ingesta)
+cd ../ingesta && uv sync --group dev
+
+# Dependencias Node
+cd ../rag && bun install
+
+cp .env.example .env
+# Editar .env con las variables requeridas
+```
 
 ---
 
 ## Variables de entorno
 
-**Backend (`.env` en la raíz):**
+**Backend (`rag/.env`):**
 
 | Variable | Default | Descripción |
 |----------|---------|-------------|
+| `DATABASE_URL` | `sqlite+aiosqlite:///./data/atlas.db` | SQLite (dev) o `postgresql+asyncpg://...` (prod) |
+| `POSTGRES_PASSWORD` | — | Contraseña PostgreSQL (solo Docker Compose) |
+| `JWT_SECRET_KEY` | — | Clave secreta para firmar tokens JWT |
+| `JWT_ALGORITHM` | `HS256` | Algoritmo JWT |
+| `JWT_EXPIRE_MINUTES` | `10080` | Expiración del token (7 días) |
 | `CHROMA_HOST` | `localhost` | Host de ChromaDB |
 | `CHROMA_PORT` | `8000` | Puerto de ChromaDB |
 | `CHROMA_COLLECTION` | `rag_playas` | Nombre de la colección |
 | `OLLAMA_BASE_URL` | `http://localhost:11434` | URL de Ollama |
 | `OLLAMA_EMBEDDING_MODEL` | `embeddinggemma:latest` | Modelo de embeddings |
-| `OLLAMA_RERANKER_MODEL` | `mistral` | Modelo reranker (opcional) |
+| `OLLAMA_RERANKER_MODEL` | `llama3.2:3b` | Modelo reranker (opcional) |
 | `OPENAI_API_KEY` | — | API key de OpenAI (máxima prioridad) |
 | `OPENAI_MODEL` | `gpt-5.4-mini` | Modelo de OpenAI |
 | `OPENROUTER_API_KEY` | — | API key de OpenRouter (segunda prioridad) |
 | `OPENROUTER_MODEL` | `gpt-5.4-mini` | Modelo de OpenRouter |
 | `GOOGLE_API_KEY` | — | API key de Gemini (tercera prioridad) |
 | `GEMINI_MODEL` | `gemini-3.1-flash-lite` | Modelo de Gemini |
-| `FIREBASE_SERVICE_ACCOUNT_PATH` | `firebase-service-account.json` | Ruta al service account |
 | `QUERY_ENRICHMENT_ENABLED` | `true` | Activar reescritura de consultas |
 | `QUERY_ENRICHMENT_HYDE` | `false` | Activar HyDE (fragmento hipotético) |
 
 Orden de prioridad de proveedores LLM: **OpenAI** → **OpenRouter** → **Gemini** → error.
 
-**Frontend (`frontend/.env.local`):**
+**Frontend (`rag/frontend/.env.local`):**
 
 | Variable | Descripción |
 |----------|-------------|
 | `NEXT_PUBLIC_API_URL` | URL del backend (`http://localhost:8080` en local, `/api` con Docker) |
-| `NEXT_PUBLIC_FIREBASE_API_KEY` | Firebase SDK Web |
-| `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN` | Firebase SDK Web |
-| `NEXT_PUBLIC_FIREBASE_PROJECT_ID` | Firebase SDK Web |
-| `NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET` | Firebase SDK Web |
-| `NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID` | Firebase SDK Web |
-| `NEXT_PUBLIC_FIREBASE_APP_ID` | Firebase SDK Web |
-
-Cómo obtener cada una: secciones 4 y 5 de [`docs/firebase-config-manual.md`](docs/firebase-config-manual.md).
 
 ---
 
 ## Infraestructura en AWS
 
-Dos instancias EC2 (recomendado con IP elástica). La carpeta `infrastructure/` provisiona ambas con Terraform:
+Dos instancias EC2 con IP elástica. La carpeta `vector-infraestructura/` provisiona ambas con Terraform:
 
 | Máquina  | Tipo        | Almacenamiento | Puerto | Servicio    |
 | -------- | ----------- | -------------- | ------ | ----------- |
@@ -214,10 +233,19 @@ Dos instancias EC2 (recomendado con IP elástica). La carpeta `infrastructure/` 
 | Ollama   | `t3.large`  | 20 GB gp3      | 11434  | Ollama      |
 
 ```bash
-cd infrastructure/ && terraform init && terraform apply
+cd vector-infraestructura/
+terraform init
+terraform apply
 ```
 
-Setup manual alternativo: `bash scripts/ec2_chroma_db.sh` y `bash scripts/ec2_ollama_embeddings.sh`.
+Setup manual alternativo:
+
+```bash
+bash vector-infraestructura/scripts/ec2_chroma_db.sh
+bash vector-infraestructura/scripts/ec2_ollama_embeddings.sh
+```
+
+El bucket S3 del pipeline de ingesta se gestiona por separado desde `ingesta/infrastructure/`.
 
 ---
 
@@ -225,13 +253,13 @@ Setup manual alternativo: `bash scripts/ec2_chroma_db.sh` y `bash scripts/ec2_ol
 
 ```bash
 # Pipeline de ingesta (todas las etapas)
-make pipeline
+cd ingesta && make pipeline
 
 # API FastAPI (docs interactivas en http://localhost:8080/docs)
-make app
+cd rag && make app
 
 # Frontend (http://localhost:3000)
-make frontend
+cd rag && make frontend
 ```
 
 La documentación de los endpoints está disponible automáticamente en `/docs` y `/redoc` (Swagger UI / ReDoc generadas por FastAPI).
@@ -240,9 +268,11 @@ La documentación de los endpoints está disponible automáticamente en `/docs` 
 
 ## Docker (despliegue en una sola máquina)
 
-`docker-compose.yml` despliega los tres servicios (backend, frontend, nginx) en una sola máquina. Nginx actúa como reverse proxy en el puerto 80, enruta `/api/` al backend y `/` al frontend, y desactiva el buffering para streaming SSE.
+`rag/docker-compose.yml` despliega cuatro servicios (postgres, backend, frontend, nginx) en una sola máquina. Nginx actúa como reverse proxy en el puerto 80, enruta `/api/` al backend y `/` al frontend, y desactiva el buffering para streaming SSE.
 
 ```bash
+cd rag
+
 # Construir y levantar
 docker compose up -d --build
 
@@ -253,7 +283,7 @@ docker compose logs -f
 docker compose down
 ```
 
-Requiere `.env` en la raíz (backend) y las variables de Firebase pasadas como build args. Los Dockerfiles están en `docker/`.
+Requiere `rag/.env` con `DATABASE_URL` apuntando al servicio `postgres` y `JWT_SECRET_KEY` configurado. Los Dockerfiles están en `rag/docker/`.
 
 **Arquitectura de la stack Docker:**
 
@@ -262,6 +292,8 @@ Puerto 80 (host)
     └── nginx (reverse proxy)
         ├── /api/*  → backend:8080  (FastAPI + uvicorn)
         └── /*      → frontend:3000 (Next.js)
+
+postgres:5432       (interno, no expuesto)
 ```
 
 ---
@@ -282,13 +314,18 @@ Type checking (`mypy`) está deshabilitado en CI debido a errores pendientes en 
 ## Comandos útiles
 
 ```bash
+# Desde rag/
 make install          # dependencias Python
 make lint / format    # ruff
 make test             # pytest unitarios
 make test-cov         # pytest + cobertura HTML
 make test-integration # tests con servicios reales (Chroma + Ollama)
+make app              # API FastAPI
+make frontend         # Next.js dev server
+
+# Desde ingesta/
+make install          # dependencias Python
 make pipeline         # pipeline completo de ingesta
-make app / frontend   # API / frontend
-make clean            # eliminar artefactos generados
-make help             # listar todos los targets
+make lint / format    # ruff
+make test             # pytest unitarios
 ```
