@@ -167,8 +167,8 @@ export default function AdminPage() {
 	useEffect(() => {
 		async function load() {
 			try {
-				const { auth } = await import("@/lib/firebase");
-				const token = await auth.currentUser?.getIdToken(true);
+				const { getToken } = await import("@/lib/auth");
+				const token = getToken();
 				if (!token) throw new Error("Sin sesión");
 				const [cs, ms] = await Promise.all([
 					fetchConversationStats(token),

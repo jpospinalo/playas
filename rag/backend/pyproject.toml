@@ -20,7 +20,11 @@ dependencies = [
     "python-dotenv>=1.0",
     "rich>=13.0",
     "langgraph>=0.3",
-    "firebase-admin>=7.4.0",
+    "sqlalchemy[asyncio]>=2.0",
+    "aiosqlite>=0.20",
+    "asyncpg>=0.29",
+    "PyJWT>=2.8",
+    "passlib[bcrypt]>=1.7",
 ]
 
 [build-system]

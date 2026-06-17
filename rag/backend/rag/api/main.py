@@ -26,6 +26,7 @@ from langchain_core.messages import AIMessage, HumanMessage
 
 from rag.api.auth import get_optional_user
 from rag.api.routes.admin import router as admin_router
+from rag.api.routes.auth import router as auth_router
 from rag.api.routes.conversations import router as conversations_router
 from rag.api.routes.feedback import router as feedback_router
 from rag.api.schemas import QueryRequest, QueryResponse, SourceFragment, SourceGroup
@@ -50,6 +51,7 @@ def get_graph() -> Any:
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Pre-calienta los componentes costosos al arrancar:
+    - Tablas de la base de datos (create_all idempotente)
     - Conexión HTTP a Chroma (singleton)
     - Índice BM25 completo (construido una sola vez desde el corpus de Chroma)
     - Vectorstore LangChain-Chroma (singleton)
@@ -57,9 +59,11 @@ async def lifespan(app: FastAPI):
     """
     import asyncio
 
+    from rag.api.database import init_db
     from rag.core.agent import build_graph
 
     global _graph
+    await init_db()
     await asyncio.to_thread(init_retrievers)
     _graph = build_graph()
     yield
@@ -83,6 +87,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.include_router(auth_router)
 app.include_router(conversations_router)
 app.include_router(feedback_router)
 app.include_router(admin_router)
@@ -238,8 +243,8 @@ async def _get_initial_messages(
     """Devuelve los mensajes iniciales para invocar el agente.
 
     - Si MemorySaver tiene estado: solo añade la nueva pregunta (continuación normal).
-    - Si no hay estado y hay conversation_id: carga el historial desde Firestore e
-      inyecta el contexto completo (útil tras reinicio del servidor).
+    - Si no hay estado y hay conversation_id: carga el historial desde la base de datos
+      e inyecta el contexto completo (útil tras reinicio del servidor).
     - Si no hay estado ni conversation_id: comienza conversación nueva.
     """
     state = await graph.aget_state(config)
@@ -251,24 +256,25 @@ async def _get_initial_messages(
     if not conversation_id:
         return [HumanMessage(content=question)]
 
-    # Cargar historial desde Firestore via Admin SDK
-    from rag.api.firebase_admin import get_db
+    from sqlalchemy import select
 
-    db = get_db()
-    messages_ref = (
-        db.collection("conversations")
-        .document(conversation_id)
-        .collection("messages")
-        .order_by("createdAt")
-    )
+    from rag.api.database import async_session_factory
+    from rag.api.models import Message
+
+    async with async_session_factory() as session:
+        result = await session.execute(
+            select(Message)
+            .where(Message.conversation_id == conversation_id)
+            .order_by(Message.created_at)
+        )
+        msgs = result.scalars().all()
 
     history: list = []
-    async for doc in messages_ref.stream():
-        data = doc.to_dict() or {}
-        if data.get("role") == "user":
-            history.append(HumanMessage(content=data.get("text", "")))
+    for msg in msgs:
+        if msg.role == "user":
+            history.append(HumanMessage(content=msg.text))
         else:
-            history.append(AIMessage(content=data.get("text", "")))
+            history.append(AIMessage(content=msg.text))
 
     return history + [HumanMessage(content=question)]
 

@@ -1,4 +1,4 @@
-import { auth } from "@/lib/firebase";
+import { getToken } from "@/lib/auth";
 import type {
 	FeedbackRequest,
 	MessageFeedbackRequest,
@@ -9,19 +9,16 @@ import type {
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080";
 
-/** Obtiene el encabezado Authorization si hay sesión activa. */
-async function getAuthHeaders(): Promise<Record<string, string>> {
-	const user = auth.currentUser;
-	if (!user) return {};
-	const token = await user.getIdToken(/* forceRefresh */ true);
+function getAuthHeaders(): Record<string, string> {
+	const token = getToken();
+	if (!token) return {};
 	return { Authorization: `Bearer ${token}` };
 }
 
 export async function queryRag(request: QueryRequest): Promise<QueryResponse> {
-	const authHeaders = await getAuthHeaders();
 	const res = await fetch(`${API_URL}/api/query`, {
 		method: "POST",
-		headers: { "Content-Type": "application/json", ...authHeaders },
+		headers: { "Content-Type": "application/json", ...getAuthHeaders() },
 		body: JSON.stringify(request),
 	});
 
@@ -34,22 +31,19 @@ export async function queryRag(request: QueryRequest): Promise<QueryResponse> {
 }
 
 /**
- * Llama al backend para generar un título con IA y actualizar Firestore.
+ * Llama al backend para generar un título con IA y actualizarlo en la BD.
  * Retorna el título generado, o un fragmento del mensaje si falla.
- *
- * @param authToken Token pre-obtenido para evitar race conditions con auth.currentUser.
  */
 export async function generateConversationTitle(
 	firstMessage: string,
 	conversationId: string,
-	authToken: string,
 ): Promise<string> {
 	try {
 		const res = await fetch(`${API_URL}/api/conversations/generate-title`, {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
-				Authorization: `Bearer ${authToken}`,
+				...getAuthHeaders(),
 			},
 			body: JSON.stringify({
 				first_message: firstMessage,
@@ -84,10 +78,8 @@ export interface AdminUserRow {
 }
 
 export async function listAdminUsers(): Promise<AdminUserRow[]> {
-	const authHeaders = await getAuthHeaders();
 	const res = await fetch(`${API_URL}/api/admin/users`, {
-		method: "GET",
-		headers: { ...authHeaders },
+		headers: { ...getAuthHeaders() },
 	});
 	if (!res.ok) throw new Error(await readErrorDetail(res));
 	const data = (await res.json()) as { items: AdminUserRow[]; total: number };
@@ -99,10 +91,9 @@ export async function createAdminUser(input: {
 	password: string;
 	displayName?: string | null;
 }): Promise<AdminUserRow> {
-	const authHeaders = await getAuthHeaders();
 	const res = await fetch(`${API_URL}/api/admin/users`, {
 		method: "POST",
-		headers: { "Content-Type": "application/json", ...authHeaders },
+		headers: { "Content-Type": "application/json", ...getAuthHeaders() },
 		body: JSON.stringify({
 			email: input.email,
 			password: input.password,
@@ -117,23 +108,20 @@ export async function updateAdminUserPassword(
 	uid: string,
 	password: string,
 ): Promise<void> {
-	const authHeaders = await getAuthHeaders();
 	const res = await fetch(`${API_URL}/api/admin/users/${uid}/password`, {
 		method: "PATCH",
-		headers: { "Content-Type": "application/json", ...authHeaders },
+		headers: { "Content-Type": "application/json", ...getAuthHeaders() },
 		body: JSON.stringify({ password }),
 	});
 	if (!res.ok) throw new Error(await readErrorDetail(res));
 }
 
-/** Envía el feedback de conversación al backend (formato multi-dimensión). */
 export async function submitConversationFeedback(
 	request: FeedbackRequest,
 ): Promise<{ id: string }> {
-	const authHeaders = await getAuthHeaders();
 	const res = await fetch(`${API_URL}/api/feedback`, {
 		method: "POST",
-		headers: { "Content-Type": "application/json", ...authHeaders },
+		headers: { "Content-Type": "application/json", ...getAuthHeaders() },
 		body: JSON.stringify(request),
 	});
 
@@ -145,14 +133,12 @@ export async function submitConversationFeedback(
 	return res.json() as Promise<{ id: string }>;
 }
 
-/** Envía el feedback de un mensaje individual al backend. */
 export async function submitMessageFeedback(
 	request: MessageFeedbackRequest,
 ): Promise<{ id: string }> {
-	const authHeaders = await getAuthHeaders();
 	const res = await fetch(`${API_URL}/api/feedback/message`, {
 		method: "POST",
-		headers: { "Content-Type": "application/json", ...authHeaders },
+		headers: { "Content-Type": "application/json", ...getAuthHeaders() },
 		body: JSON.stringify(request),
 	});
 
@@ -178,20 +164,13 @@ export async function submitFeedback(
 /**
  * Async generator que conecta al endpoint SSE de streaming y emite eventos
  * tipados a medida que llegan.
- *
- * Uso:
- *   for await (const event of queryRagStream({ question: "..." })) {
- *     if (event.type === "token") { ... }
- *     else if (event.type === "sources") { ... }
- *   }
  */
 export async function* queryRagStream(
 	request: QueryRequest,
 ): AsyncGenerator<StreamEvent> {
-	const authHeaders = await getAuthHeaders();
 	const res = await fetch(`${API_URL}/api/query/stream`, {
 		method: "POST",
-		headers: { "Content-Type": "application/json", ...authHeaders },
+		headers: { "Content-Type": "application/json", ...getAuthHeaders() },
 		body: JSON.stringify(request),
 	});
 
@@ -211,7 +190,6 @@ export async function* queryRagStream(
 
 			buffer += decoder.decode(value, { stream: true });
 
-			// Los eventos SSE están separados por doble salto de línea
 			const parts = buffer.split("\n\n");
 			buffer = parts.pop() ?? "";
 

@@ -6,10 +6,16 @@ POST /api/feedback/message   — Feedback de mensaje individual (pertinencia + p
 
 from __future__ import annotations
 
+import uuid
+from datetime import UTC, datetime
+
 from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from rag.api.auth import get_current_user
-from rag.api.firebase_admin import get_db
+from rag.api.database import get_session
+from rag.api.models import Conversation, Feedback, MessageFeedback
 from rag.api.schemas import (
     FeedbackRequest,
     FeedbackResponse,
@@ -24,43 +30,28 @@ router = APIRouter(prefix="/api/feedback", tags=["feedback"])
 async def submit_feedback(
     request: FeedbackRequest,
     user: dict = Depends(get_current_user),
+    session: AsyncSession = Depends(get_session),
 ) -> FeedbackResponse:
-    """Registra el feedback de conversación de un usuario en Firestore.
-
-    Requiere autenticación. El payload incluye calificaciones por dimensión
-    (tone, length, usability, overall) y un comentario opcional.
-    Si se proporciona conversation_id, incluye el título de la conversación.
-    """
-    db = get_db()
-
-    # Obtener título de la conversación si se proporcionó conversation_id
+    """Registra el feedback de conversación de un usuario."""
     conversation_title: str | None = None
     if request.conversation_id:
-        try:
-            conv_doc = await db.collection("conversations").document(request.conversation_id).get()
-            if conv_doc.exists:
-                conversation_title = (conv_doc.to_dict() or {}).get("title")
-        except Exception:
-            pass  # El título es un dato de enriquecimiento; si falla no se bloquea el feedback
+        conv = await session.get(Conversation, request.conversation_id)
+        if conv:
+            conversation_title = conv.title
 
-    feedback_data = {
-        "userId": user["uid"],
-        "userEmail": user.get("email", ""),
-        "ratings": request.ratings.model_dump(),
-        "comment": request.comment,
-        "conversationId": request.conversation_id,
-        "conversationTitle": conversation_title,
-        "createdAt": _server_timestamp(),
-    }
-
-    try:
-        _timestamp, doc_ref = await db.collection("feedback").add(feedback_data)
-        return FeedbackResponse(id=doc_ref.id)
-    except Exception as exc:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Error guardando el feedback: {exc}",
-        ) from exc
+    feedback = Feedback(
+        id=str(uuid.uuid4()),
+        user_id=user["sub"],
+        user_email=user.get("email", ""),
+        ratings=request.ratings.model_dump(),
+        comment=request.comment,
+        conversation_id=request.conversation_id,
+        conversation_title=conversation_title,
+        created_at=datetime.now(UTC),
+    )
+    session.add(feedback)
+    await session.commit()
+    return FeedbackResponse(id=feedback.id)
 
 
 @router.post(
@@ -69,55 +60,34 @@ async def submit_feedback(
 async def submit_message_feedback(
     request: MessageFeedbackRequest,
     user: dict = Depends(get_current_user),
+    session: AsyncSession = Depends(get_session),
 ) -> MessageFeedbackResponse:
-    """Registra el feedback de un mensaje individual del agente en Firestore.
+    """Registra el feedback de un mensaje individual del agente.
 
-    Requiere autenticación. Valida que no exista feedback previo del mismo
-    usuario para el mismo mensaje (prevención de duplicados).
+    Previene duplicados: un usuario solo puede calificar cada mensaje una vez.
     """
-    db = get_db()
-
-    # Verificar duplicado: mismo usuario + mismo mensaje
-    try:
-        dup_query = (
-            db.collection("message_feedback")
-            .where("userId", "==", user["uid"])
-            .where("messageId", "==", request.message_id)
-            .limit(1)
+    dup = await session.execute(
+        select(MessageFeedback).where(
+            MessageFeedback.user_id == user["sub"],
+            MessageFeedback.message_id == request.message_id,
         )
-        dup_docs = [doc async for doc in dup_query.stream()]
-        if dup_docs:
-            raise HTTPException(
-                status_code=status.HTTP_409_CONFLICT,
-                detail="Ya existe feedback para este mensaje.",
-            )
-    except HTTPException:
-        raise
-    except Exception:
-        pass  # Si la verificación falla, permitir el insert (mejor esfuerzo)
-
-    msg_feedback_data = {
-        "userId": user["uid"],
-        "userEmail": user.get("email", ""),
-        "conversationId": request.conversation_id,
-        "messageId": request.message_id,
-        "ratings": request.ratings.model_dump(),
-        "expectedAnswer": request.expected_answer,
-        "createdAt": _server_timestamp(),
-    }
-
-    try:
-        _timestamp, doc_ref = await db.collection("message_feedback").add(msg_feedback_data)
-        return MessageFeedbackResponse(id=doc_ref.id)
-    except Exception as exc:
+    )
+    if dup.scalar_one_or_none() is not None:
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Error guardando el feedback de mensaje: {exc}",
-        ) from exc
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Ya existe feedback para este mensaje.",
+        )
 
-
-def _server_timestamp():
-    """Retorna el centinela SERVER_TIMESTAMP de Firestore."""
-    from google.cloud.firestore_v1 import SERVER_TIMESTAMP
-
-    return SERVER_TIMESTAMP
+    msg_feedback = MessageFeedback(
+        id=str(uuid.uuid4()),
+        user_id=user["sub"],
+        user_email=user.get("email", ""),
+        conversation_id=request.conversation_id,
+        message_id=request.message_id,
+        ratings=request.ratings.model_dump(),
+        expected_answer=request.expected_answer,
+        created_at=datetime.now(UTC),
+    )
+    session.add(msg_feedback)
+    await session.commit()
+    return MessageFeedbackResponse(id=msg_feedback.id)

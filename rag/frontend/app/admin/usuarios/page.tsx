@@ -87,7 +87,7 @@ export default function UsuariosPage() {
               : `${users.length} usuario${users.length !== 1 ? "s" : ""} registrado${users.length !== 1 ? "s" : ""}`}
           </p>
           <p className="mt-1 text-xs text-subtle">
-            Los roles se asignan manualmente desde la consola de Firebase.
+            Los roles se asignan manualmente desde la consola de administración.
           </p>
         </div>
         <button

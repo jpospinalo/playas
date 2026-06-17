@@ -29,9 +29,9 @@ class QueryRequest(BaseModel):
     conversation_id: str | None = Field(
         default=None,
         description=(
-            "ID del documento de conversación en Firestore. "
+            "ID de la conversación en la base de datos. "
             "Si el MemorySaver está vacío (reinicio del servidor) y se proporciona este campo, "
-            "el backend hidrata el estado de LangGraph desde el historial de Firestore."
+            "el backend hidrata el estado de LangGraph desde el historial persistido."
         ),
     )
 
@@ -108,12 +108,12 @@ class FeedbackRequest(BaseModel):
         default=None, max_length=500, description="Comentario opcional del usuario"
     )
     conversation_id: str | None = Field(
-        default=None, description="ID del documento de conversación activa en Firestore"
+        default=None, description="ID de la conversación activa"
     )
 
 
 class FeedbackResponse(BaseModel):
-    id: str = Field(..., description="ID del documento de feedback creado en Firestore")
+    id: str = Field(..., description="ID del registro de feedback creado")
 
 
 # ── Message feedback request/response ─────────────────────────────────────────
@@ -122,12 +122,8 @@ class FeedbackResponse(BaseModel):
 class MessageFeedbackRequest(BaseModel):
     """Calificación de un mensaje individual del agente."""
 
-    conversation_id: str = Field(
-        ..., min_length=1, description="ID de la conversación en Firestore"
-    )
-    message_id: str = Field(
-        ..., min_length=1, description="ID del documento del mensaje en Firestore"
-    )
+    conversation_id: str = Field(..., min_length=1, description="ID de la conversación")
+    message_id: str = Field(..., min_length=1, description="ID del mensaje")
     ratings: MessageFeedbackRatings = Field(
         ..., description="Calificación por dimensión (pertinencia, precisión)"
     )
@@ -137,7 +133,7 @@ class MessageFeedbackRequest(BaseModel):
 
 
 class MessageFeedbackResponse(BaseModel):
-    id: str = Field(..., description="ID del documento de feedback de mensaje creado en Firestore")
+    id: str = Field(..., description="ID del registro de feedback de mensaje creado")
 
 
 # ── Admin feedback schemas ────────────────────────────────────────────────────
