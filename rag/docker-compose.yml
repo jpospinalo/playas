@@ -2,8 +2,8 @@ services:
   # ── API backend (FastAPI + uvicorn) ─────────────────────────────────────────
   backend:
     build:
-      context: .
-      dockerfile: docker/Dockerfile.backend
+      context: ..
+      dockerfile: rag/docker/Dockerfile.backend
     env_file: .env
     volumes:
       # Credenciales Firebase montadas como sólo lectura; la ruta dentro del
