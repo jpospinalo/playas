@@ -1,33 +1,31 @@
 .PHONY: install lint format typecheck test test-cov test-integration pipeline bucket-backup clean help
 
-ROOT := $(shell git rev-parse --show-toplevel)
-
 install:  ## Instalar dependencias (incluidas las de desarrollo)
-	cd $(ROOT) && uv sync --group dev
+	uv sync --group dev
 
 lint:  ## Verificar errores de estilo y lógica con ruff
-	cd $(ROOT) && uv run ruff check ingesta/ingest/ ingesta/tests/
+	uv run ruff check ingest/ tests/
 
 format:  ## Formatear código con ruff
-	cd $(ROOT) && uv run ruff format ingesta/ingest/ ingesta/tests/
+	uv run ruff format ingest/ tests/
 
 typecheck:  ## Verificar tipos con mypy
-	cd $(ROOT) && uv run mypy ingesta/ingest/
+	uv run mypy ingest/
 
 test:  ## Ejecutar tests unitarios
-	cd $(ROOT) && uv run pytest ingesta/tests/unit/ -v
+	uv run pytest tests/unit/
 
 test-cov:  ## Ejecutar tests con informe de cobertura
-	cd $(ROOT) && uv run pytest ingesta/tests/unit/ --cov=ingest --cov-report=term-missing --cov-report=html
+	uv run pytest tests/unit/ --cov=ingest --cov-report=term-missing --cov-report=html
 
 test-integration:  ## Ejecutar tests de integración (requiere servicios activos)
-	cd $(ROOT) && uv run pytest ingesta/tests/integration/ -m integration -v
+	uv run pytest tests/integration/ -m integration
 
 pipeline:  ## Ejecutar el pipeline completo de ingesta
-	bash $(ROOT)/ingesta/scripts/run_pipeline.sh
+	bash scripts/run_pipeline.sh
 
 bucket-backup:  ## Descargar todos los objetos del bucket S3
-	cd $(ROOT) && uv run python -m utils.bucket_backup
+	PYTHONPATH=. uv run python -m utils.bucket_backup
 
 clean:  ## Eliminar artefactos generados
 	find . -type d -name __pycache__ -exec rm -rf {} +
