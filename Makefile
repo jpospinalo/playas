@@ -3,32 +3,32 @@
 install:  ## Instalar dependencias (incluidas las de desarrollo)
 	uv sync --group dev
 
-lint:  ## Verificar errores de estilo y lógica con ruff
-	uv run ruff check rag/ ingest/ tests/ evaluation/
+lint:  ## Verificar errores de estilo y lógica con ruff (ambos subsistemas)
+	uv run ruff check rag/backend/rag/ ingesta/ingest/ rag/tests/ ingesta/tests/ rag/evaluation/
 
-format:  ## Formatear código con ruff
-	uv run ruff format rag/ ingest/ tests/ evaluation/
+format:  ## Formatear código con ruff (ambos subsistemas)
+	uv run ruff format rag/backend/rag/ ingesta/ingest/ rag/tests/ ingesta/tests/ rag/evaluation/
 
-typecheck:  ## Verificar tipos con mypy
-	uv run mypy rag/ ingest/
+typecheck:  ## Verificar tipos con mypy (ambos subsistemas)
+	uv run mypy rag/backend/rag/ ingesta/ingest/
 
-test:  ## Ejecutar tests unitarios
-	uv run pytest tests/unit/ -v
+test:  ## Ejecutar tests unitarios (ambos subsistemas)
+	uv run pytest ingesta/tests/unit/ rag/tests/unit/ -v
 
 test-cov:  ## Ejecutar tests con informe de cobertura
-	uv run pytest tests/unit/ --cov=rag --cov=ingest --cov-report=term-missing --cov-report=html
+	uv run pytest ingesta/tests/unit/ rag/tests/unit/ --cov=rag --cov=ingest --cov-report=term-missing --cov-report=html
 
 test-integration:  ## Ejecutar tests de integración (requiere servicios activos)
 	uv run pytest -m integration -v
 
 pipeline:  ## Ejecutar el pipeline completo de ingesta
-	bash scripts/run_pipeline.sh
+	bash ingesta/scripts/run_pipeline.sh
 
 app:  ## Lanzar la API FastAPI
 	uv run uvicorn rag.api.main:app --reload --port 8080
 
 frontend:  ## Lanzar el frontend Next.js
-	cd frontend && bun run dev
+	cd rag/frontend && bun run dev
 
 bucket-backup:  ## Descargar todos los objetos del bucket S3 a bucket-backup-<fecha-hora>/
 	uv run python -m utils.bucket_backup

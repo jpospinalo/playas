@@ -1586,7 +1586,7 @@ wheels = [
 [[package]]
 name = "ingest"
 version = "0.1.0"
-source = { virtual = "ingest" }
+source = { editable = "ingesta" }
 dependencies = [
     { name = "boto3" },
     { name = "docling" },
@@ -4087,7 +4087,7 @@ wheels = [
 [[package]]
 name = "rag"
 version = "0.1.0"
-source = { virtual = "rag" }
+source = { editable = "rag/backend" }
 dependencies = [
     { name = "boto3" },
     { name = "chromadb" },

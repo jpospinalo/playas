@@ -23,5 +23,9 @@ dependencies = [
     "firebase-admin>=7.4.0",
 ]
 
-[tool.uv]
-package = false
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["rag"]

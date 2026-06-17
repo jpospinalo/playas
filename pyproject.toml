@@ -1,5 +1,5 @@
 [tool.uv.workspace]
-members = ["rag", "ingest"]
+members = ["rag/backend", "ingesta"]
 
 [dependency-groups]
 dev = [
@@ -12,7 +12,7 @@ dev = [
 ]
 
 [tool.pytest.ini_options]
-testpaths = ["tests"]
+testpaths = ["ingesta/tests", "rag/tests"]
 pythonpath = ["."]
 addopts = "-v --tb=short"
 markers = [
