@@ -44,7 +44,7 @@ load_dotenv()
 
 CHROMA_HOST = os.getenv("CHROMA_HOST")
 CHROMA_PORT = int(os.getenv("CHROMA_PORT", "8000"))
-CHROMA_COLLECTION_NAME = os.getenv("CHROMA_COLLECTION_NAME")
+CHROMA_COLLECTION_NAME = os.getenv("CHROMA_COLLECTION", os.getenv("CHROMA_COLLECTION_NAME", "rag_playas"))
 
 # Máquina de RERANKING (Ollama con llama3.2:3b)
 OLLAMA_RERANK_BASE_URL = os.getenv("OLLAMA_RERANK_BASE_URL")
@@ -93,6 +93,10 @@ def _get_bm25_base() -> BM25Retriever:
         from rank_bm25 import BM25Okapi
 
         docs = load_all_docs_from_chroma()
+
+        if not docs:
+            placeholder = Document(page_content="sin documentos", metadata={})
+            docs = [placeholder]
 
         augmented_texts: list[str] = []
         for d in docs:

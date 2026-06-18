@@ -41,7 +41,7 @@ export function ConversationSidebar({
   const isAdmin = role === "admin" || role === "super-admin";
 
   const searchResults = conversations.filter((conversation) =>
-    conversation.title.toLowerCase().includes(search.toLowerCase())
+    (conversation.title ?? "").toLowerCase().includes(search.toLowerCase())
   );
   const hasSearch = search.trim().length > 0;
   const userInfo = getUserInfo(user);
@@ -548,7 +548,7 @@ interface UserInfo {
 
 function getUserInfo(user: ReturnType<typeof useAuth>["user"]): UserInfo {
   const email = user?.email ?? "usuario@correo.com";
-  const name = user?.displayName ?? email.split("@")[0] ?? "Usuario";
+  const name = user?.display_name ?? email.split("@")[0] ?? "Usuario";
   return {
     email,
     name,
