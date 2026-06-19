@@ -29,7 +29,7 @@ from rag.api.routes.admin import router as admin_router
 from rag.api.routes.conversations import router as conversations_router
 from rag.api.routes.feedback import router as feedback_router
 from rag.api.schemas import QueryRequest, QueryResponse, SourceFragment, SourceGroup
-from rag.config import CONTEXT_LIMIT_TOKENS
+from rag.config import CONTEXT_LIMIT_TOKENS, CORS_ORIGINS
 from rag.core.retriever import init_retrievers
 from rag.core.tools import sanitize_replacement_chars
 
@@ -77,7 +77,7 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=CORS_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

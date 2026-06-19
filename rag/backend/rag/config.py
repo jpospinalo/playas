@@ -115,3 +115,19 @@ DEFAULT_K_CANDIDATES: int = int(os.getenv("DEFAULT_K_CANDIDATES", "10"))
 # Ventana de contexto del modelo de generación (tokens). Ajustar según el
 # modelo activo; los avisos del frontend se derivan de este valor.
 CONTEXT_LIMIT_TOKENS: int = int(os.getenv("CONTEXT_LIMIT_TOKENS", "200000"))
+
+
+# ── CORS ─────────────────────────────────────────────────────────────────────
+def _parse_cors_origins(value: str | None) -> list[str]:
+    """Parsea una lista de orígenes permitidos separados por comas.
+
+    Por defecto solo se permite el frontend local (puerto 3000). En despliegue
+    (p. ej. Railway) se sobreescribe con `CORS_ORIGINS` indicando los dominios
+    públicos del frontend, separados por comas.
+    """
+    if value is None or not value.strip():
+        return ["http://localhost:3000"]
+    return [origin.strip() for origin in value.split(",") if origin.strip()]
+
+
+CORS_ORIGINS: list[str] = _parse_cors_origins(os.getenv("CORS_ORIGINS"))
