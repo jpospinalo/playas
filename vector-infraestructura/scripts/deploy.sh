@@ -123,10 +123,11 @@ else
 
   # ── 7. Localizar el archivo de exportación ──────────────────────────────────
   EXPORT_FILE=""
-  if [[ -d "${DATA_DIR}" ]]; then
-    # Toma el .jsonl.gz más reciente si hay varios
-    EXPORT_FILE=$(find "${DATA_DIR}" -maxdepth 1 -name "*.jsonl.gz" -printf "%T@ %p\n" 2>/dev/null \
-                  | sort -rn | head -1 | awk '{print $2}')
+  if [[ ! -d "${DATA_DIR}" ]]; then
+    warn "El directorio ${DATA_DIR} no existe. Asegúrate de clonar el repositorio completo."
+  else
+    # ls -t ordena por fecha de modificación (compatible con Linux y macOS)
+    EXPORT_FILE=$(ls -t "${DATA_DIR}"/*.jsonl.gz 2>/dev/null | head -1)
   fi
 
   if [[ -z "${EXPORT_FILE}" ]]; then
