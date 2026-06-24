@@ -55,18 +55,7 @@ google_api_key     = "..."   # Gemini (prioridad 3)
 Despliega la infraestructura ECS, construye las imágenes y las sube a ECR:
 
 ```bash
-cd rag/infrastructure
-terraform init
-terraform apply -auto-approve
-
-./scripts/push_images.sh
-
-# Forzar nuevo despliegue con las imágenes recién subidas
-aws ecs update-service --cluster rag-playas-prod --service rag-playas-prod-app \
-  --force-new-deployment --region us-east-1
-
-aws ecs update-service --cluster rag-playas-prod --service rag-playas-prod-frontend \
-  --force-new-deployment --region us-east-1
+./rag/infrastructure/scripts/deploy.sh --auto-approve
 ```
 
 ### 3. Verificar
@@ -132,27 +121,15 @@ cp rag/infrastructure/terraform.tfvars.example rag/infrastructure/terraform.tfva
 # Editar terraform.tfvars con todos los valores requeridos
 ```
 
-Despliega la infraestructura:
+Inicializa Terraform, aplica la infraestructura, construye las imágenes y fuerza el redespliegue:
 
 ```bash
 cd rag/infrastructure
 terraform init
 terraform apply
-```
-
-Construye y sube las imágenes a ECR:
-
-```bash
-aws ecr get-login-password --region us-east-1 \
-  | docker login --username AWS --password-stdin \
-    $(aws sts get-caller-identity --query Account --output text).dkr.ecr.us-east-1.amazonaws.com
 
 ./scripts/push_images.sh
-```
 
-Fuerza el redespliegue de los servicios ECS con las nuevas imágenes:
-
-```bash
 aws ecs update-service --cluster rag-playas-prod --service rag-playas-prod-app \
   --force-new-deployment --region us-east-1
 
