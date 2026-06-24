@@ -25,6 +25,8 @@ data/raw/
 data/bronze/
 data/silver/
 data/gold/
+!data/*.jsonl.gz
+!data/import_to_chromadb.py
 
 # 5) Resultados de evaluación (pueden contener datos sensibles)
 evaluation/ragas_eval_dataset.json
