@@ -1,49 +1,44 @@
-# ── Stage 1: dependencias ─────────────────────────────────────────────────────
-FROM node:20-alpine AS deps
-
-WORKDIR /app
-
-# Instalar bun para respetar bun.lock y mantener coherencia con el entorno de dev
-RUN npm install -g bun --quiet
-
-COPY package.json bun.lock* ./
-RUN bun install --frozen-lockfile
-
-# ── Stage 2: build ────────────────────────────────────────────────────────────
+# Stage 1: build
 FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# NEXT_PUBLIC_* se hornean en el bundle durante next build;
-# deben llegar como ARG (docker-compose los pasa desde .env vía args:)
-ARG NEXT_PUBLIC_API_URL=/api
-
-ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
-
 RUN npm install -g bun --quiet
 
-COPY --from=deps /app/node_modules ./node_modules
-COPY . .
+ARG NEXT_PUBLIC_API_URL=
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 
-RUN bun run build
+COPY package.json bun.lock* ./
+COPY frontend/ ./frontend/
 
-# ── Stage 3: runner ───────────────────────────────────────────────────────────
+RUN bun install --frozen-lockfile
+
+WORKDIR /app/frontend
+RUN node_modules/.bin/next build
+
+# Stage 2: runner (standalone — sin node_modules externos)
+# Next.js con output:"standalone" genera .next/standalone/ con todo lo necesario.
+# La ruta de server.js refleja la estructura del workspace: frontend/server.js.
 FROM node:20-alpine AS runner
 
 RUN addgroup --system --gid 1001 nodejs && adduser --system --uid 1001 nextjs
 
-WORKDIR /app
-
 ENV NODE_ENV=production
 ENV PORT=3000
+ENV HOSTNAME=0.0.0.0
 
-COPY --from=builder --chown=nextjs:nodejs /app/public ./public
-COPY --from=builder --chown=nextjs:nodejs /app/.next ./.next
-COPY --from=builder --chown=nextjs:nodejs /app/node_modules ./node_modules
-COPY --from=builder --chown=nextjs:nodejs /app/package.json ./package.json
+WORKDIR /app
+
+# standalone incluye server.js, node_modules y package.json bajo frontend/
+COPY --from=builder --chown=nextjs:nodejs /app/frontend/.next/standalone ./
+# assets estáticos deben estar junto a server.js en frontend/.next/static/
+COPY --from=builder --chown=nextjs:nodejs /app/frontend/.next/static ./frontend/.next/static
+# archivos públicos
+COPY --from=builder --chown=nextjs:nodejs /app/frontend/public ./frontend/public
 
 USER nextjs
 
 EXPOSE 3000
 
-CMD ["node_modules/.bin/next", "start", "-p", "3000"]
+WORKDIR /app/frontend
+CMD ["node", "server.js"]

@@ -1,0 +1,18 @@
+# Copiar a terraform.tfvars y completar con los valores reales
+# terraform.tfvars está en .gitignore (contiene secretos)
+
+# ── Obligatorios ──────────────────────────────────────────────────────────────
+postgres_password = "cambia-esta-contrasena"
+jwt_secret_key    = "cambia-esta-clave-secreta-de-32-bytes"
+
+chroma_host     = "ec2-xxx-xxx-xxx-xxx.compute-1.amazonaws.com"
+ollama_base_url = "http://ec2-xxx-xxx-xxx-xxx.compute-1.amazonaws.com:11434"
+
+# ── LLM (al menos uno debe estar configurado) ─────────────────────────────────
+openai_api_key = ""
+google_api_key = ""
+
+# ── Opcionales ────────────────────────────────────────────────────────────────
+# s3_bucket_name = "rag-playas-data-xxxxxxxxx"
+# backend_image_tag  = "v1.0.0"
+# frontend_image_tag = "v1.0.0"

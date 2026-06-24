@@ -15,9 +15,10 @@ infrastructure/
 scripts/
 utils/
 
-# ── Frontend (tiene su propio contexto de build) ──────────────────────────────
-frontend/
+# ── Node ──────────────────────────────────────────────────────────────────────
 node_modules/
+frontend/node_modules/
+frontend/.next/
 
 # ── Git ───────────────────────────────────────────────────────────────────────
 .git/

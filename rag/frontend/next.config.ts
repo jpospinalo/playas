@@ -7,6 +7,8 @@ import type { NextConfig } from "next";
 // y el frontend (Next.js) en lugar de archivos separados.
 loadEnv({ path: path.resolve(__dirname, "../.env") });
 
-const nextConfig: NextConfig = {};
+const nextConfig: NextConfig = {
+	output: "standalone",
+};
 
 export default nextConfig;
