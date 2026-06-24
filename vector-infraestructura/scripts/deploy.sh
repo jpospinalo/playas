@@ -31,7 +31,10 @@ log()  { echo -e "${bold}▶ $*${reset}"; }
 ok()   { echo -e "${green}✓ $*${reset}"; }
 warn() { echo -e "${yellow}⚠ $*${reset}"; }
 
-# ── 1. Terraform apply ────────────────────────────────────────────────────────
+# ── 1. Terraform init + apply ─────────────────────────────────────────────────
+log "Inicializando Terraform en vector-infraestructura..."
+terraform -chdir="${VECTOR_INFRA_DIR}" init -upgrade
+
 log "Ejecutando terraform apply en vector-infraestructura..."
 
 APPLY_ARGS=()
