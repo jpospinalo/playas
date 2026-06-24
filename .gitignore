@@ -58,7 +58,6 @@ dist/
 
 # 11) Terraform state
 *tfstate*
-.terraform.lock*
 .terraform/
 
 # 12) Claude
