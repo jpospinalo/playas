@@ -40,13 +40,10 @@ Al finalizar, `rag/.env` y `rag/infrastructure/terraform.tfvars` quedan actualiz
 
 ### 2. Aplicación RAG en ECS Fargate
 
-Completa las variables restantes en `rag/infrastructure/terraform.tfvars` (se crean en el paso anterior):
+El paso anterior generó `rag/infrastructure/terraform.tfvars` con `postgres_password` y `jwt_secret_key` ya completados. Solo falta agregar al menos una API key de LLM:
 
 ```hcl
-postgres_password  = "..."
-jwt_secret_key     = "..."
-
-# Al menos una API key de LLM
+# Al menos una de las siguientes
 openai_api_key     = "..."   # OpenAI (prioridad 1)
 openrouter_api_key = "..."   # OpenRouter (prioridad 2)
 google_api_key     = "..."   # Gemini (prioridad 3)
