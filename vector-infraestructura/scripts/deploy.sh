@@ -77,6 +77,30 @@ update_tfvars() {
   fi
 }
 
+# get_tfvars_value <archivo> <clave>  → valor sin comillas, vacío si no existe
+get_tfvars_value() {
+  local file="$1" key="$2"
+  grep -E "^[[:space:]]*${key}[[:space:]]*=" "${file}" 2>/dev/null \
+    | sed -E 's/^[^=]+=[[:space:]]*"?([^"#]*)"?.*/\1/' \
+    | tr -d ' ' \
+    | head -1
+}
+
+# auto_generate_secret <archivo> <clave> <valor_generado>
+# Escribe el secreto solo si el valor actual está vacío o es un placeholder
+# (empieza con "cambia-"). Devuelve el valor efectivo.
+auto_generate_secret() {
+  local file="$1" key="$2" generated="$3"
+  local current
+  current=$(get_tfvars_value "${file}" "${key}")
+  if [[ -z "${current}" || "${current}" == cambia-* ]]; then
+    update_tfvars "${file}" "${key}" "${generated}"
+    echo "${generated}"
+  else
+    echo "${current}"
+  fi
+}
+
 # ── 4. Actualizar rag/.env ────────────────────────────────────────────────────
 if [[ -f "${RAG_ENV}" ]]; then
   log "Actualizando ${RAG_ENV}..."
@@ -88,14 +112,28 @@ else
 fi
 
 # ── 5. Actualizar rag/infrastructure/terraform.tfvars ────────────────────────
-if [[ -f "${ECS_TFVARS}" ]]; then
-  log "Actualizando ${ECS_TFVARS}..."
-  update_tfvars "${ECS_TFVARS}" "chroma_host"     "${CHROMA_HOST_VAL}"
-  update_tfvars "${ECS_TFVARS}" "ollama_base_url" "${OLLAMA_URL_VAL}"
-  ok "terraform.tfvars actualizado"
-else
-  warn "${ECS_TFVARS} no existe — omitiendo"
+ECS_TFVARS_EXAMPLE="${RAG_DIR}/infrastructure/terraform.tfvars.example"
+
+if [[ ! -f "${ECS_TFVARS}" ]]; then
+  if [[ -f "${ECS_TFVARS_EXAMPLE}" ]]; then
+    log "Creando ${ECS_TFVARS} desde el ejemplo..."
+    cp "${ECS_TFVARS_EXAMPLE}" "${ECS_TFVARS}"
+    ok "terraform.tfvars creado"
+  else
+    warn "No se encontró terraform.tfvars.example — creando archivo vacío"
+    touch "${ECS_TFVARS}"
+  fi
 fi
+
+log "Generando secretos automáticamente (solo si son placeholders)..."
+PG_PASSWORD=$(auto_generate_secret "${ECS_TFVARS}" "postgres_password" "$(openssl rand -hex 16)")
+JWT_SECRET=$(auto_generate_secret  "${ECS_TFVARS}" "jwt_secret_key"    "$(openssl rand -hex 32)")
+ok "Secretos configurados"
+
+log "Actualizando ${ECS_TFVARS}..."
+update_tfvars "${ECS_TFVARS}" "chroma_host"     "${CHROMA_HOST_VAL}"
+update_tfvars "${ECS_TFVARS}" "ollama_base_url" "${OLLAMA_URL_VAL}"
+ok "terraform.tfvars actualizado"
 
 # ── 6. Esperar a que ChromaDB esté disponible ─────────────────────────────────
 log "Esperando a que ChromaDB esté disponible en ${CHROMA_HOST_VAL}:8000..."
@@ -152,13 +190,21 @@ echo ""
 echo -e "${bold}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${reset}"
 echo -e "${bold}Despliegue completado${reset}"
 echo ""
-echo -e "  CHROMA_HOST     = ${CHROMA_HOST_VAL}"
-echo -e "  OLLAMA_BASE_URL = ${OLLAMA_URL_VAL}"
+echo -e "  CHROMA_HOST       = ${CHROMA_HOST_VAL}"
+echo -e "  OLLAMA_BASE_URL   = ${OLLAMA_URL_VAL}"
+echo -e "  postgres_password = ${PG_PASSWORD}"
+echo -e "  jwt_secret_key    = ${JWT_SECRET}"
 echo ""
 echo -e "  Archivos actualizados:"
 [[ -f "${RAG_ENV}"     ]] && echo -e "    • rag/.env"
 [[ -f "${ECS_TFVARS}" ]] && echo -e "    • rag/infrastructure/terraform.tfvars"
 echo ""
-echo -e "  Para desplegar la aplicación RAG en ECS Fargate:"
+echo -e "  Antes de desplegar ECS, agrega al menos una API key de LLM en:"
+echo -e "    rag/infrastructure/terraform.tfvars"
+echo -e "      openai_api_key     = \"...\"   # prioridad 1"
+echo -e "      openrouter_api_key = \"...\"   # prioridad 2"
+echo -e "      google_api_key     = \"...\"   # prioridad 3"
+echo ""
+echo -e "  Luego ejecuta:"
 echo -e "    ./rag/infrastructure/scripts/deploy.sh --auto-approve"
 echo -e "${bold}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${reset}"
