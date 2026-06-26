@@ -53,10 +53,11 @@ resource "aws_ecs_task_definition" "app" {
   container_definitions = jsonencode([
     # ── Postgres ──────────────────────────────────────────────────────────────
     {
-      name  = "postgres"
-      image = "postgres:16-alpine"
+      name    = "postgres"
+      image   = "postgres:16-alpine"
       # EFS no permite chown desde root; correr como postgres (uid 999) evita el intento
-      user  = "999:999"
+      user    = "999:999"
+      command = ["sh", "-c", "rm -f /var/lib/postgresql/data/postmaster.pid && docker-entrypoint.sh postgres"]
 
       portMappings = [{
         containerPort = 5432
@@ -190,9 +191,11 @@ resource "aws_ecs_service" "app" {
   name                    = "${local.name_prefix}-app"
   cluster                 = aws_ecs_cluster.main.id
   task_definition         = aws_ecs_task_definition.app.arn
-  desired_count           = 1
-  launch_type             = "FARGATE"
-  enable_execute_command  = true
+  desired_count                      = 1
+  launch_type                        = "FARGATE"
+  enable_execute_command             = true
+  deployment_minimum_healthy_percent = 0
+  deployment_maximum_percent         = 100
 
   network_configuration {
     subnets          = data.aws_subnets.default.ids
