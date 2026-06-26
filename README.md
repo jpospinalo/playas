@@ -14,9 +14,10 @@ Esta guía cubre el despliegue completo en AWS: servicios de vectores en EC2 y l
 | AWS CLI | 2.x |
 | Docker | 24.x |
 | Python + uv | cualquiera |
-| Bun | 1.x |
 
 **Credenciales AWS** con permisos para EC2, ECS, ECR, ALB, EFS y IAM (rol `LabRole` en AWS Academy):
+
+> No es necesario configurar credenciales si se usa una máquina Cloud9, pero esta debe tener al menos 100 GB en disco.
 
 ```bash
 export AWS_ACCESS_KEY_ID=...
@@ -24,7 +25,19 @@ export AWS_SECRET_ACCESS_KEY=...
 export AWS_SESSION_TOKEN=...      # solo AWS Academy
 ```
 
----
+- **Instalar Terraform (Ubuntu):**
+
+```bash
+wget -O - https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(grep -oP '(?<=UBUNTU_CODENAME=).*' /etc/os-release || lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
+sudo apt update && sudo apt install terraform
+```
+
+- **Instalar uv:**
+
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
 
 ## Despliegue automático
 
@@ -72,7 +85,7 @@ La aplicación queda disponible en `http://<alb_url>`:
 - `/api/` → Backend FastAPI
 - `/api/health` → Healthcheck
 
------------------------------------------------------------------------------------------------------------------------------------------------------------------
+---
 
 ## Despliegue manual
 
