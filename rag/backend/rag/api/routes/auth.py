@@ -2,10 +2,11 @@
 
 from __future__ import annotations
 
+import hashlib
 import uuid
 
+import bcrypt
 from fastapi import APIRouter, Depends, HTTPException, status
-from passlib.context import CryptContext
 from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -16,7 +17,15 @@ from rag.api.models import User
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
 
-_pwd_ctx = CryptContext(schemes=["bcrypt_sha256"], deprecated="auto")
+
+def _hash_password(password: str) -> str:
+    digest = hashlib.sha256(password.encode()).digest()
+    return bcrypt.hashpw(digest, bcrypt.gensalt()).decode()
+
+
+def _verify_password(password: str, hashed: str) -> bool:
+    digest = hashlib.sha256(password.encode()).digest()
+    return bcrypt.checkpw(digest, hashed.encode())
 
 
 class LoginRequest(BaseModel):
@@ -47,7 +56,7 @@ async def login(
     """Autentica con email y contraseña. Retorna JWT."""
     result = await session.execute(select(User).where(User.email == payload.email))
     user = result.scalar_one_or_none()
-    if user is None or not _pwd_ctx.verify(payload.password, user.password_hash):
+    if user is None or not _verify_password(payload.password, user.password_hash):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Correo o contraseña incorrectos.",
@@ -77,7 +86,7 @@ async def register(
     user = User(
         id=str(uuid.uuid4()),
         email=payload.email,
-        password_hash=_pwd_ctx.hash(payload.password),
+        password_hash=_hash_password(payload.password),
         display_name=payload.display_name,
         role="user",
     )
