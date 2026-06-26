@@ -16,7 +16,7 @@ from rag.api.models import User
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
 
-_pwd_ctx = CryptContext(schemes=["bcrypt"], deprecated="auto")
+_pwd_ctx = CryptContext(schemes=["bcrypt_sha256"], deprecated="auto")
 
 
 class LoginRequest(BaseModel):
