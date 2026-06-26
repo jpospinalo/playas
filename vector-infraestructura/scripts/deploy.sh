@@ -179,7 +179,8 @@ else
       uv run python3 "${DATA_DIR}/import_to_chromadb.py" \
         "${EXPORT_FILE}" \
         --host "${CHROMA_HOST_VAL}" \
-        --port 8000
+        --port 8000 \
+        --collection rag_playas
     )
     ok "Importación completada"
   fi
