@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import hashlib
+import logging
 import uuid
 
 import bcrypt
@@ -14,6 +15,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from rag.api.auth import create_access_token, get_current_user
 from rag.api.database import get_session
 from rag.api.models import User
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
 
