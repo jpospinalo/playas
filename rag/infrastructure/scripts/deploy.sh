@@ -100,7 +100,57 @@ aws ecs update-service \
 
 ok "Servicios ECS actualizados"
 
-# ── 5. Resumen ────────────────────────────────────────────────────────────────
+# ── 5. Importar usuarios semilla a postgres ───────────────────────────────────
+# El backend crea la tabla `users` al arrancar (init_db), así que hay que esperar
+# a que el servicio esté estable antes de importar. El SQL usa ON CONFLICT DO
+# NOTHING, por lo que re-ejecutarlo en cada deploy es inocuo.
+SEED_SQL="${SCRIPT_DIR}/../../../data/seed_users.sql"
+
+if [[ -f "${SEED_SQL}" ]]; then
+  log "Esperando a que el servicio app esté estable para importar usuarios..."
+  aws ecs wait services-stable \
+    --cluster "${CLUSTER}" \
+    --services "${CLUSTER}-app" \
+    --region "${REGION}"
+
+  TASK_ARN=$(aws ecs list-tasks \
+    --cluster "${CLUSTER}" \
+    --service-name "${CLUSTER}-app" \
+    --desired-status RUNNING \
+    --query 'taskArns[0]' --output text --region "${REGION}")
+
+  if [[ -z "${TASK_ARN}" || "${TASK_ARN}" == "None" ]]; then
+    warn "No se encontró una tarea RUNNING del servicio app; se omite la importación de usuarios."
+  else
+    log "Importando usuarios semilla vía ECS Exec..."
+    # base64 evita problemas de escapado al pasar SQL multilínea por --command
+    SEED_B64=$(base64 -w0 "${SEED_SQL}")
+
+    # El agente de ECS Exec puede tardar unos segundos en estar listo tras el deploy
+    for intento in 1 2 3 4 5; do
+      if aws ecs execute-command \
+        --cluster "${CLUSTER}" \
+        --task "${TASK_ARN}" \
+        --container postgres \
+        --interactive \
+        --region "${REGION}" \
+        --command "sh -c 'echo ${SEED_B64} | base64 -d | psql -U atlas -d atlas -v ON_ERROR_STOP=1'"; then
+        ok "Usuarios semilla importados"
+        break
+      fi
+      if [[ "${intento}" == "5" ]]; then
+        warn "No se pudo importar usuarios tras ${intento} intentos; importar manualmente con ECS Exec."
+      else
+        warn "ECS Exec aún no disponible (intento ${intento}); reintentando en 15s..."
+        sleep 15
+      fi
+    done
+  fi
+else
+  warn "No existe ${SEED_SQL}; se omite la importación de usuarios."
+fi
+
+# ── 6. Resumen ────────────────────────────────────────────────────────────────
 ALB_URL=$(terraform -chdir="${INFRA_DIR}" output -raw alb_url)
 
 echo ""
