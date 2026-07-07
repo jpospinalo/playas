@@ -31,7 +31,7 @@ export interface UseChatReturn {
 	contextPercent: number;
 	/** ID de la conversación activa en la base de datos (null si no hay sesión o aún no se creó). */
 	conversationId: string | null;
-	ratedMessageIds: Set<string>;
+	ratedMessageIds: Map<string, { pertinence: number; accuracy: number }>;
 	setInput: (value: string) => void;
 	submit: (question: string) => Promise<void>;
 	resetChat: () => void;
@@ -61,7 +61,7 @@ export function useChat(): UseChatReturn {
 	const [error, setError] = useState<string | null>(null);
 	const [contextPercent, setContextPercent] = useState(0);
 	const [conversationId, setConversationId] = useState<string | null>(null);
-	const [ratedMessageIds, setRatedMessageIds] = useState<Set<string>>(new Set());
+	const [ratedMessageIds, setRatedMessageIds] = useState<Map<string, { pertinence: number; accuracy: number }>>(new Map());
 
 	const threadIdRef = useRef<string>(generateId());
 	const conversationIdRef = useRef<string | null>(null);
@@ -317,7 +317,7 @@ export function useChat(): UseChatReturn {
 			expected_answer: expectedAnswer,
 		});
 
-		setRatedMessageIds((prev) => new Set(prev).add(messageId));
+		setRatedMessageIds((prev) => new Map(prev).set(messageId, ratings));
 	}
 
 	function resetChat(): void {
@@ -331,7 +331,7 @@ export function useChat(): UseChatReturn {
 		setContextPercent(0);
 		_setConversationId(null);
 		streamingStartedRef.current = false;
-		setRatedMessageIds(new Set());
+		setRatedMessageIds(new Map());
 		threadIdRef.current = generateId();
 	}
 

@@ -79,8 +79,9 @@ export function AuthModal({ open, mode = "explicit", subtitle, onClose }: AuthMo
   }
 
   function handleTabChange(next: Tab) {
-    setTab(next);
-    setError(null);
+  if (next === "register") return;
+  setTab(next);
+  setError(null);
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -133,10 +134,9 @@ export function AuthModal({ open, mode = "explicit", subtitle, onClose }: AuthMo
           transition={{ duration: 0.2 }}
         >
           <motion.div
-            className="absolute inset-0 bg-background/70 backdrop-blur-md"
-            onClick={handleClose}
-            aria-hidden="true"
-          />
+          className="absolute inset-0 bg-background/70 backdrop-blur-md"
+          aria-hidden="true"
+        />
 
           <motion.div
             role="dialog"
@@ -199,23 +199,23 @@ export function AuthModal({ open, mode = "explicit", subtitle, onClose }: AuthMo
             <div
               role="tablist"
               aria-label="Modo de acceso"
-              className="mb-5 flex gap-0.5 rounded-full border border-border bg-surface p-0.5"
-            >
-              {(["login", "register"] as Tab[]).map((t) => (
-                <button
-                  key={t}
-                  role="tab"
-                  aria-selected={tab === t}
-                  onClick={() => handleTabChange(t)}
-                  className={`flex-1 rounded-full px-3 py-1.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
-                    tab === t
-                      ? "bg-elevated text-foreground"
-                      : "text-muted hover:text-foreground"
-                  }`}
-                >
-                  {t === "login" ? "Iniciar sesión" : "Registrarse"}
-                </button>
-              ))}
+              className="mb-5 flex gap-0.5 rounded-full border border-border bg-surface p-0.5">
+            {(["login", "register"] as Tab[]).map((t) => (
+              <button
+                key={t}
+                role="tab"
+                aria-selected={tab === t}
+                disabled={t === "register"}
+                onClick={() => handleTabChange(t)}
+                className={`flex-1 rounded-full px-3 py-1.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
+                  tab === t
+                    ? "bg-elevated text-foreground"
+                    : "text-muted hover:text-foreground"
+                } ${t === "register" ? "cursor-not-allowed opacity-40" : ""}`}
+              >
+                {t === "login" ? "Iniciar sesión" : "Registrarse"}
+              </button>
+            ))}
             </div>
 
             <form onSubmit={handleSubmit} noValidate className="space-y-3.5">

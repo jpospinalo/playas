@@ -9,6 +9,8 @@ loadEnv({ path: path.resolve(__dirname, "../.env") });
 
 const nextConfig: NextConfig = {
 	output: "standalone",
+	allowedDevOrigins: ["ec2-54-88-98-195.compute-1.amazonaws.com"],
 };
+
 
 export default nextConfig;
