@@ -151,6 +151,8 @@ export function AuthModal({ open, mode = "explicit", subtitle, onClose }: AuthMo
             <button
               onClick={handleClose}
               aria-label="Cerrar"
+              hidden
+              disabled
               className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full text-muted transition-colors hover:bg-surface hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
             >
               <svg
@@ -360,6 +362,8 @@ export function AuthModal({ open, mode = "explicit", subtitle, onClose }: AuthMo
 
             <button
               onClick={handleClose}
+              hidden
+              disabled
               className="mt-4 w-full text-center text-xs text-subtle transition-colors hover:text-foreground focus-visible:outline-none focus-visible:underline"
             >
               Continuar sin cuenta
