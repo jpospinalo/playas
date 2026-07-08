@@ -18,7 +18,7 @@ interface AssistantBubbleProps {
 	sources: SourceGroup[];
 	messageId: string;
 	conversationId: string;
-	isRated: boolean;
+	rating?: { pertinence: number; accuracy: number };
 	onRate: (
 		messageId: string,
 		ratings: { pertinence: number; accuracy: number },
@@ -97,7 +97,7 @@ export function AssistantBubble({
 	sources,
 	messageId,
 	conversationId: _conversationId,
-	isRated,
+	rating,
 	onRate,
 }: AssistantBubbleProps) {
 	const processedText = useMemo(() => prepareMarkdown(text), [text]);
@@ -318,27 +318,32 @@ export function AssistantBubble({
 
 				{/* Action button: rate this message */}
 				<div className="relative mt-3 flex justify-end">
-					{isRated ? (
+					{rating ? (
 						<span
 							className="inline-flex items-center gap-1 text-xs text-muted"
-							title="Calificación enviada"
+							title={`Pertinencia ${rating.pertinence} · Precisión ${rating.accuracy}`}
 						>
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								width="14"
-								height="14"
-								viewBox="0 0 24 24"
-								fill="none"
-								stroke="currentColor"
-								strokeWidth="2"
-								strokeLinecap="round"
-								strokeLinejoin="round"
-								className="text-success"
-								aria-hidden="true"
-							>
-								<path d="M20 6 9 17l-5-5" />
-							</svg>
-							Calificado
+							{[1, 2, 3, 4, 5].map((star) => (
+								<svg
+									key={star}
+									xmlns="http://www.w3.org/2000/svg"
+									width="12"
+									height="12"
+									viewBox="0 0 24 24"
+									aria-hidden="true"
+									fill={star <= rating.pertinence ? "currentColor" : "none"}
+									stroke="currentColor"
+									strokeWidth="1.5"
+									style={{
+										color:
+											star <= rating.pertinence
+												? "var(--color-accent)"
+												: "var(--color-subtle)",
+									}}
+								>
+									<path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z" />
+								</svg>
+							))}
 						</span>
 					) : (
 						<button
@@ -367,7 +372,7 @@ export function AssistantBubble({
 						</button>
 					)}
 
-					{ratingPopoverOpen && !isRated && (
+					{ratingPopoverOpen && !rating && (
 						<MessageRatingPopover
 							open={ratingPopoverOpen}
 							onSubmit={(ratings, expectedAnswer) =>

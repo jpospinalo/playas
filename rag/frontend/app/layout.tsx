@@ -58,9 +58,6 @@ export default function RootLayout({
 			suppressHydrationWarning
 		>
 			<body className="min-h-full flex flex-col bg-background text-foreground">
-				<a href="#main-content" className="skip-link">
-					Saltar al contenido principal
-				</a>
 				<ThemeProvider>
 					<AuthProvider>{children}</AuthProvider>
 				</ThemeProvider>
