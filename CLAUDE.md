@@ -84,15 +84,12 @@ uv run python -m ingest.loaders             # bronze → silver (data/silver/)
 uv run python -m ingest.splitter_and_enrich # silver → gold enriched chunks (data/gold/)
 ```
 
-> **`make pipeline` is currently broken.** It runs `scripts/run_pipeline.sh`, which after the
-> 3 ingest stages tries to `uv run python -m rag.core.vectorstore` and launch uvicorn — but
-> `ingesta/`'s venv has no dependency on the `rag` package (they're separate uv workspaces).
-> Use `scripts/run_data_pipeline.sh` for the 3 ingest-only stages instead, then switch to
-> `rag/` to build the ChromaDB index and start the API:
-> ```bash
-> cd ingesta && bash scripts/run_data_pipeline.sh
-> cd ../rag && uv run python -m rag.core.vectorstore && make app
-> ```
+> `make pipeline` runs `scripts/run_pipeline.sh`, which chains all 5 stages: the 3 ingest
+> stages run with `ingesta/`'s venv, then indexing (`rag.core.vectorstore`) and the API
+> (`uvicorn`) run with `rag/`'s venv (`ingesta/` and `rag/` are separate uv workspaces, so
+> the script `cd`s into each directory for its respective steps). Use
+> `scripts/run_data_pipeline.sh` instead if you only want the 3 ingest-only stages without
+> touching ChromaDB or starting the API.
 
 ---
 
