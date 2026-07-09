@@ -95,6 +95,20 @@ La aplicación queda disponible en `http://<alb_url>`:
 - `/api/` → Backend FastAPI
 - `/api/health` → Healthcheck
 
+### 4. Exportar la base de datos PostgreSQL
+
+Fargate no permite `docker cp` ni montar el volumen EFS directamente, así que
+el script sube el dump a un bucket S3 puente (vía URL prefirmada) y luego lo
+descarga localmente en `data/backups/`:
+
+```bash
+./rag/infrastructure/scripts/export_postgres.sh --bucket <nombre-bucket-s3>
+```
+
+Por defecto conserva la copia en el bucket S3; usar `--delete-remote` para
+borrarla tras la descarga. Requiere el Session Manager Plugin (mismo requisito
+que `deploy.sh`, usa `aws ecs execute-command`).
+
 ---
 
 ## Despliegue manual
