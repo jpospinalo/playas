@@ -10,94 +10,157 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ---
 
+## Repo Layout
+
+The repo root holds **two independent top-level projects**, each its own `uv` workspace with its own `pyproject.toml`, `Makefile`, `.venv`, and CI job. They share no Python code — only the `data/` staging directory (mostly gitignored) and external services (S3, ChromaDB, Ollama, LLM providers).
+
+```
+playas/
+├── rag/                # RAG serving: API + agent + frontend + AWS ECS infra
+│   ├── backend/        # uv workspace member — the actual "rag" Python package (see below)
+│   ├── frontend/       # Next.js 16 / React 19 app (bun)
+│   ├── infrastructure/ # Terraform: ECS Fargate, ALB, ECR, EFS (Postgres volume)
+│   ├── docker/         # Dockerfiles (backend, frontend) + nginx.conf
+│   ├── evaluation/     # RAGAS eval scripts (Gemma, Ollama)
+│   ├── scripts/        # Ops one-offs (Docker install, SageMaker lifecycle)
+│   ├── utils/          # ChromaDB CLI utilities (count, clear), Gemini model listing
+│   ├── tests/          # unit/ + integration/, run against backend/rag via pythonpath
+│   ├── docker-compose.yml  # single-machine deployment alternative to ECS
+│   └── pyproject.toml  # uv workspace root (members = ["backend"]); dev deps, pytest/ruff config
+└── ingesta/             # Ingestion pipeline + AWS S3 bucket infra
+    ├── ingest/          # the actual "ingest" Python package (see below)
+    ├── infrastructure/  # Terraform: S3 bucket for data/ layers
+    ├── scripts/         # run_data_pipeline.sh (3-stage), run_pipeline.sh (see note below)
+    ├── utils/           # one-off migration scripts, bucket_backup.py
+    ├── tests/           # unit/ + integration/
+    └── pyproject.toml
+```
+
+> **Note:** `rag/pyproject.toml` is a `uv` workspace root whose only member is `backend/`; the
+> actual package (`import rag...`) lives at `rag/backend/rag/`. `make`/`uv run` commands are
+> issued from `rag/`, with `pythonpath = ["backend"]` set in `[tool.pytest.ini_options]`.
+
+---
+
 ## Build/Test Commands
 
+### `rag/` (serving)
+
 ```bash
-# Python (uv workspace)
+cd rag
 make install        # uv sync --group dev
-make lint           # ruff check rag/ ingest/ tests/ evaluation/
-make format         # ruff format rag/ ingest/ tests/ evaluation/
-make typecheck      # mypy rag/ ingest/  (note: CI-disabled due to lingering errors)
+make lint           # ruff check backend/rag/ tests/ evaluation/
+make format         # ruff format backend/rag/ tests/ evaluation/
+make typecheck      # mypy backend/rag/  (note: CI-disabled due to lingering errors)
 make test           # pytest tests/unit/ -v
-make test-cov       # pytest + HTML coverage report
+make test-cov       # pytest + HTML coverage report (--cov=rag)
 make test-integration  # pytest -m integration -v  (requires live ChromaDB + Ollama)
-
-# Pipeline stages (can run independently)
-uv run python -m ingest.pdf_to_md           # PDF → clean Markdown (data/bronze/)
-uv run python -m ingest.loaders            # bronze → silver (data/silver/)
-uv run python -m ingest.splitter_and_enrich # silver → gold enriched chunks (data/gold/)
-uv run python -m rag.core.vectorstore       # gold → ChromaDB index
-make pipeline   # run_pipeline.sh (all 4 stages + starts API)
-
-# API
-make app         # uvicorn rag.api.main:app --reload --port 8080
-
-# Frontend
-make frontend    # bun run dev (Next.js on port 3000)
+make app            # uvicorn rag.api.main:app --reload --port 8080
+make frontend       # cd frontend && bun run dev (Next.js on port 3000)
 make -C frontend build  # production build
 ```
 
 **Run a single test:**
 ```bash
-uv run pytest tests/unit/path/to/test_file.py::test_name -v
+cd rag && uv run pytest tests/unit/path/to/test_file.py::test_name -v
 ```
+
+### `ingesta/` (pipeline)
+
+```bash
+cd ingesta
+make install        # uv sync --group dev
+make lint           # ruff check ingest/ tests/
+make format         # ruff format ingest/ tests/
+make typecheck      # mypy ingest/
+make test           # pytest tests/unit/ -v
+make test-cov       # pytest + HTML coverage report (--cov=ingest)
+make test-integration  # pytest -m integration -v
+make bucket-backup   # PYTHONPATH=. uv run python -m utils.bucket_backup
+
+# Pipeline stages (can also run independently)
+uv run python -m ingest.pdf_to_md           # PDF → clean Markdown (data/bronze/)
+uv run python -m ingest.loaders             # bronze → silver (data/silver/)
+uv run python -m ingest.splitter_and_enrich # silver → gold enriched chunks (data/gold/)
+```
+
+> **`make pipeline` is currently broken.** It runs `scripts/run_pipeline.sh`, which after the
+> 3 ingest stages tries to `uv run python -m rag.core.vectorstore` and launch uvicorn — but
+> `ingesta/`'s venv has no dependency on the `rag` package (they're separate uv workspaces).
+> Use `scripts/run_data_pipeline.sh` for the 3 ingest-only stages instead, then switch to
+> `rag/` to build the ChromaDB index and start the API:
+> ```bash
+> cd ingesta && bash scripts/run_data_pipeline.sh
+> cd ../rag && uv run python -m rag.core.vectorstore && make app
+> ```
 
 ---
 
 ## Architecture
 
-### Two Independent Python Packages
-
-`rag/` and `ingest/` are **fully independent packages**. Each has its own `pyproject.toml` and `config.py`. They share no code — they only share the `data/` staging directory and external services (ChromaDB, Ollama, LLM providers).
+### `rag/backend/rag/` — RAG serving package
 
 ```
-rag/                          # RAG serving (API + agent)
-├── config.py                # Env vars: Chroma, Ollama, LLM, query enrichment
-├── s3_client.py             # S3 read-only helpers (list, read)
+rag/backend/rag/
+├── config.py                 # Env vars: S3, Chroma, Ollama, LLM, query enrichment, context limit
+├── s3_client.py              # S3 read-only helpers (list, read)
 ├── core/
-│   ├── agent.py             # LangGraph agent: ReAct + fallback graphs
-│   ├── tools.py             # @tool retrieve (hybrid retriever wrapper)
-│   ├── prompts.py           # System/human prompts for agent + enricher
-│   ├── embeddings.py        # Ollama embedding client (ChromaDB + LangChain)
-│   ├── vectorstore.py       # ChromaDB collection build/update from gold
-│   ├── retriever.py         # BM25 + vector + HybridEnsembleRetriever (RRF c=160)
-│   ├── query_enricher.py   # LLM query rewriting (legal terminology, sub-questions)
-│   └── llm_factory.py      # Provider factory: OpenAI → OpenRouter → Gemini → error
+│   ├── agent.py              # LangGraph agent: ReAct + fallback graphs
+│   ├── tools.py               # @tool retrieve (hybrid retriever wrapper)
+│   ├── prompts.py             # System/human prompts for agent + enricher
+│   ├── embeddings.py          # Ollama embedding client (ChromaDB + LangChain)
+│   ├── vectorstore.py         # ChromaDB collection build/update from gold (run via -m)
+│   ├── retriever.py           # BM25 + vector + HybridEnsembleRetriever (RRF c=160)
+│   ├── query_enricher.py      # LLM query rewriting (legal terminology, sub-questions)
+│   └── llm_factory.py         # Provider factory: OpenAI → OpenRouter → Gemini → error
 └── api/
-    ├── main.py              # FastAPI app (health, query, query/stream)
-    ├── schemas.py           # Pydantic request/response models
-    ├── auth.py              # Firebase auth dependencies (optional, required, admin)
-    ├── firebase_admin.py    # Firebase Admin SDK singleton
+    ├── main.py                # FastAPI app (lifespan builds graph + init_db, health, query, query/stream)
+    ├── auth.py                 # JWT dependencies: get_optional_user / get_current_user / require_admin
+    ├── database.py             # Async SQLAlchemy engine/session (Postgres in prod, SQLite fallback)
+    ├── models.py                # SQLAlchemy models: User, Conversation, Message, Feedback, MessageFeedback
+    ├── schemas.py               # Pydantic request/response models
     └── routes/
-        ├── conversations.py # POST /api/conversations/generate-title
-        ├── feedback.py      # POST /api/feedback, POST /api/feedback/message
-        └── admin.py         # GET/POST /api/admin/*
-
-ingest/                       # Ingestion pipeline
-├── config.py                # Env vars + DOC_TYPES + layer_prefix(layer, doc_type)
-├── s3_client.py             # Full S3 client (read/write/copy/delete)
-├── llm_factory.py           # Provider factory (mirror of rag/, uses enricher models)
-├── utils.py                 # JSONL I/O helpers
-├── loaders.py              # bronze/<type>/ → silver/<type>/ (dispatches by doc_type)
-├── normalize.py            # Metadata cleanup
-├── sections.py             # split_by_sections() — 4-section jurisprudencia strategy
-├── sections_normativa.py   # split_by_articles() — per-article normativa strategy
-├── metadata_csv.py         # Loads raw/<type>/metadata.csv (optional per doc_type)
-├── splitter_and_enrich.py  # Chunk (1000 tokens, 200 overlap) + LLM enrichment
-└── pdf_to_md/              # PDF → Markdown via Docling (OCR, tables, images)
-    ├── pipeline.py         # Main entry: convert_pdfs_to_markdown()
-    ├── config.py           # Tunable constants (image, OCR, profiling thresholds)
-    ├── models.py           # LegalDocumentProfile, LegalBlock, DocumentQualityReport
-    ├── profiler.py         # Document profiling (density, noise, layout)
-    ├── cleaner.py          # 12-step adaptive cleanup orchestrator
-    ├── text_cleanup.py     # OCR correction, noise removal, footnote stripping
-    ├── layout.py           # Paragraph reconstruction from multi-column PDFs
-    ├── references.py       # Internal reference/citation removal
-    ├── furniture.py        # Repeated page header/footer detection
-    ├── images.py           # Image filtering (size, variance, context)
-    ├── segmenter.py        # Semantic section classification + entity extraction
-    └── quality.py          # 6-dimension quality scoring
+        ├── auth.py              # POST /api/auth/login, /register, GET /me — JWT issuance
+        ├── conversations.py     # CRUD conversaciones/mensajes, POST .../generate-title
+        ├── feedback.py          # POST /api/feedback, POST /api/feedback/message
+        └── admin.py             # GET/POST /api/admin/* (feedback, message-feedback, users)
 ```
+
+Auth is **self-hosted JWT + PostgreSQL**, not Firebase (Firebase was fully removed in June 2026).
+`rag/api/auth.py` issues/validates HS256 tokens (`JWT_SECRET_KEY` / `JWT_ALGORITHM` /
+`JWT_EXPIRE_MINUTES` env vars); passwords are SHA-256-then-bcrypt hashed (`routes/auth.py`).
+
+### `ingesta/ingest/` — Ingestion pipeline package
+
+```
+ingesta/ingest/
+├── config.py                # Env vars + DOC_TYPES + layer_prefix(layer, doc_type)
+├── s3_client.py              # Full S3 client (read/write/copy/delete)
+├── llm_factory.py            # Provider factory (mirror of rag/, uses enricher models)
+├── utils.py                  # JSONL I/O helpers
+├── loaders.py                # bronze/<type>/ → silver/<type>/ (dispatches by doc_type)
+├── normalize.py               # Metadata cleanup
+├── sections.py                # split_by_sections() — 4-section jurisprudencia strategy
+├── sections_normativa.py      # split_by_articles() — per-article normativa strategy
+├── metadata_csv.py            # Loads raw/<type>/metadata.csv (optional per doc_type)
+├── splitter_and_enrich.py     # Chunk (1000 tokens, 200 overlap) + LLM enrichment
+└── pdf_to_md/                 # PDF → Markdown via Docling (OCR, tables, images)
+    ├── pipeline.py            # Main entry: convert_pdfs_to_markdown()
+    ├── config.py              # Tunable constants (image, OCR, profiling thresholds)
+    ├── models.py               # LegalDocumentProfile, LegalBlock, DocumentQualityReport
+    ├── profiler.py             # Document profiling (density, noise, layout)
+    ├── cleaner.py               # 12-step adaptive cleanup orchestrator
+    ├── text_cleanup.py          # OCR correction, noise removal, footnote stripping
+    ├── layout.py                # Paragraph reconstruction from multi-column PDFs
+    ├── references.py            # Internal reference/citation removal
+    ├── furniture.py             # Repeated page header/footer detection
+    ├── images.py                # Image filtering (size, variance, context)
+    ├── segmenter.py             # Semantic section classification + entity extraction
+    └── quality.py                # 6-dimension quality scoring
+```
+
+`rag/backend/rag/config.py` and `ingesta/ingest/config.py` each define their own `DOC_TYPES` /
+`layer_prefix()` — keep them manually in sync, since the packages don't import each other.
 
 ### Data Flow
 
@@ -105,12 +168,12 @@ Each pipeline layer is split by `doc_type` subfolder (`jurisprudencia` / `normat
 
 ```
 raw PDFs / MDs
-  └─→ pdf_to_md (Docling)              → data/bronze/<type>/ (clean Markdown)
-       └─→ loaders (normalize + CSV)  → data/silver/<type>/ (JSONL, sectioned)
+  └─→ pdf_to_md (Docling)              → data/bronze/<type>/ (clean Markdown)     [ingesta]
+       └─→ loaders (normalize + CSV)  → data/silver/<type>/ (JSONL, sectioned)   [ingesta]
             │  jurisprudencia → split_by_sections()  (4 canonical sections)
             │  normativa      → split_by_articles()  (1 unit per Artículo N)
-            └─→ splitter_and_enrich   → data/gold/<type>/ (enriched chunks)
-                 └─→ vectorstore      → ChromaDB  (doc_type in each chunk's metadata)
+            └─→ splitter_and_enrich   → data/gold/<type>/ (enriched chunks)      [ingesta]
+                 └─→ vectorstore      → ChromaDB  (doc_type in each chunk's metadata) [rag]
 ```
 
 The `doc_type` is fixed once at load time from the source folder and propagates through all layers. The ChromaDB collection is shared; filtering by `doc_type` enables serving both types from the same retriever.
@@ -138,7 +201,7 @@ START → enrich_query → retrieve_forced → generate → END
 
 `build_graph()` selects one or the other based on `get_active_provider().supports_structured_output`.
 
-**Memory** — `thread_id` (frontend UUID) persists history in `MemorySaver` while the process lives. If the server restarts, the endpoint hydrates state from `conversations/{id}/messages` in Firestore using `conversation_id`.
+**Memory** — `thread_id` (frontend UUID) persists history in `MemorySaver` while the process lives. If the server restarts, `main.py` hydrates state from the `messages` table (via SQLAlchemy, `rag/api/models.py::Message`) filtered by `conversation_id`.
 
 **SSE Streaming** — `/api/query/stream` emits `status` (node stage), `token` (live LLM tokens), and a final `sources` event with grouped sources and context metrics.
 
@@ -146,15 +209,15 @@ START → enrich_query → retrieve_forced → generate → END
 
 `llm_factory.py` tries providers in order: **OpenAI** → **OpenRouter** → **Gemini** → error. The first provider with a configured API key wins. Structured output and system roles are auto-detected based on model name (Gemma variants lack both via Google GenAI).
 
-### External Infrastructure (EC2)
+### External Infrastructure (AWS)
 
-- **ChromaDB** — remote EC2, port 8000 (collection: `rag_playas`)
-- **Ollama** — remote EC2, port 11434 (embedding model: `embeddinggemma:latest`)
-- Optional reranker: Ollama `llama3.2:3b`
+- **ChromaDB + Ollama** — EC2, provisioned by Terraform in `vector-infraestructura/` (collection: `rag_playas`, port 8000; embedding model `embeddinggemma:latest` on port 11434). Optional reranker: Ollama `mistral`.
+- **RAG app (backend + frontend)** — ECS Fargate, provisioned by Terraform in `rag/infrastructure/`. The `app` service runs the FastAPI backend and a `postgres:16-alpine` sidecar container (data on an EFS-backed volume) in the same task; `DATABASE_URL` points at `localhost:5432`. See `rag/infrastructure/scripts/deploy.sh` and `export_postgres.sh`.
+- **Data bucket** — S3, provisioned by Terraform in `ingesta/infrastructure/`, holds the `raw/bronze/silver/gold` layers.
 
 ### Document Structure
 
-**Jurisprudencia** (Colombian court rulings) follow a 4-section structure documented in `docs/DOCUMENT_SECTIONS.md`:
+**Jurisprudencia** (Colombian court rulings) follow a 4-section structure documented in `ingesta/docs/DOCUMENT_SECTIONS.md`:
 1. **Contexto del caso** — case background
 2. **Desarrollo procesal** — procedural history
 3. **Argumentación jurídica** — legal reasoning
@@ -166,38 +229,40 @@ START → enrich_query → retrieve_forced → generate → END
 
 ## CI/CD
 
-Two GitHub Actions workflows in `.github/workflows/`:
+Two GitHub Actions workflows in `.github/workflows/`, each running **separate jobs per package** (`working-directory: ingesta` and `working-directory: rag`):
 
-- **`ci.yml`** — Runs on push to `main`/`develop` and PRs to `main`. Two jobs:
+- **`ci.yml`** — Runs on push to `main`/`develop` and PRs to `main`. Per package:
   - `quality`: Ruff lint + format check
   - `test`: Unit tests with coverage upload to Codecov (depends on `quality`)
-- **`tests.yml`** — Same triggers. Runs unit tests with coverage report on Python 3.12.
+- **`tests.yml`** — Same triggers. Runs unit tests with coverage report on a Python version matrix.
 
-Type checking (`mypy`) is disabled in CI due to lingering errors in production modules.
+Type checking (`mypy`) is disabled in CI for both packages due to lingering errors.
 
 ---
 
 ## Docker
 
-`docker-compose.yml` provides a 3-service stack designed for **single-machine deployment** (frontend + backend + reverse proxy on the same host):
+`rag/docker-compose.yml` provides a 4-service stack designed for **single-machine deployment** (as an alternative to the ECS Fargate setup) — Postgres + backend + frontend + reverse proxy on the same host:
 
-- **backend** — FastAPI via uvicorn, port 8080 (internal), healthcheck at `/api/health`
-- **frontend** — Next.js production build, port 3000 (internal)
+- **postgres** — `postgres:16-alpine`, healthcheck via `pg_isready`
+- **backend** — FastAPI via uvicorn, port 8080 (internal), healthcheck at `/api/health`, waits on `postgres` being healthy
+- **frontend** — Next.js production build, port 3000 (internal), waits on `backend` being healthy
 - **nginx** — Reverse proxy, port 80 (public entry point), routes `/api/` to backend and `/` to frontend, SSE-aware (buffering disabled for streaming)
 
 ```bash
+cd rag
 docker compose up -d --build   # Build and start
 docker compose logs -f         # View logs
-docker compose down            # Stop
+docker compose down            # Stop (add -v to also drop the postgres volume)
 ```
 
 ---
 
 ## Key Conventions
 
-- **Env vars** — all in `.env` at root. Two independent `config.py` files read only what they need.
-- **Workspace managers** — `uv` (Python, root), `bun` (Node, root + frontend)
+- **Env vars** — `rag/.env` and `ingesta/.env` (see the `.env.example` in each). Two independent `config.py` files read only what they need.
+- **Workspace managers** — `uv` (Python, one workspace per package root), `bun` (Node, `rag/` + `rag/frontend/`)
 - **Integration tests** — marked `@pytest.mark.integration`, skipped in `make test`
-- **Tests location** — `tests/unit/` and `tests/integration/` at project root
-- **Next.js** — uses Next.js 16.2.3 (React 19). Breaking changes may differ from prior versions. See `frontend/AGENTS.md`.
-- **Operational scripts** — see `docs/SCRIPTS.md` for pipeline, infrastructure, migration, and utility scripts.
+- **Tests location** — `<package>/tests/unit/` and `<package>/tests/integration/`, e.g. `rag/tests/unit/`
+- **Next.js** — uses Next.js 16.2.3 (React 19). Breaking changes may differ from prior versions. See `rag/frontend/AGENTS.md`.
+- **Operational scripts** — see `rag/docs/SCRIPTS.md` and `ingesta/docs/SCRIPTS.md` for pipeline, infrastructure, migration, and utility scripts.
