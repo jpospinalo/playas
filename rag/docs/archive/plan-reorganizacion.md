@@ -1,5 +1,9 @@
 # Plan de reorganización: dos subsistemas
 
+> **Estado: completado** (commit `29970c5`, 2026-06-17). Se conserva como registro
+> histórico de la decisión; la estructura vigente está documentada en el `CLAUDE.md`
+> de la raíz del repo.
+
 ## Objetivo
 
 Reorganizar el proyecto en dos carpetas independientes —`ingesta/` y `rag/`— donde cada una contiene todo lo necesario para operar y desplegarse de forma autónoma con `docker compose`.
