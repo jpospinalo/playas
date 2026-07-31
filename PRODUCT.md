@@ -16,7 +16,7 @@ Todos leen jurisprudencia profesionalmente. Conocen la terminología técnica �
 
 ## Product Purpose
 
-ATLAS recupera y sintetiza jurisprudencia colombiana sobre playas y derecho costero para profesionales del derecho. El corpus son sentencias del Consejo de Estado procesadas mediante un pipeline RAG híbrido. Cada respuesta combina los elementos pertinentes al caso: identificación de la línea jurisprudencial aplicable, extractos textuales de las providencias relevantes, análisis de los criterios de decisión del tribunal y las fuentes verificables con acceso al texto original.
+ATLAS recupera y sintetiza jurisprudencia y normativa colombiana sobre playas y derecho costero para profesionales del derecho. El corpus está completo e indexado: **53 documentos** — 26 sentencias (17 de orden nacional: Consejo de Estado, Corte Constitucional y tribunales administrativos; 9 del Tribunal Administrativo del Magdalena) y 27 normas (22 nacionales y 5 distritales) — procesados mediante un pipeline RAG híbrido. Cada respuesta combina los elementos pertinentes al caso: identificación de la línea jurisprudencial aplicable, extractos textuales de las providencias relevantes, análisis de los criterios de decisión del tribunal y las fuentes verificables con acceso al texto original.
 
 Éxito: el abogado formula una consulta en lenguaje técnico-jurídico, obtiene una respuesta igualmente técnica respaldada en jurisprudencia trazable, y puede citarla directamente en su escrito o concepto sin pasos intermedios de interpretación.
 

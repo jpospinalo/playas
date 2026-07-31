@@ -4,7 +4,7 @@
 
 Agente conversacional de **jurisprudencia y normativa colombiana sobre playas y dominio público marítimo-terrestre**. Procesa sentencias en PDF (Consejo de Estado, Tribunales Administrativos) y normativa (decretos, reglamentos), los indexa semánticamente diferenciados por `doc_type` y los expone como un agente **LangGraph** sobre una API FastAPI consumida por un frontend Next.js con autenticación, historial de conversaciones, calificación de respuestas y panel de administración.
 
-- [Registro de archivos indexados](docs/archivos-indexados.md)
+- [Inventario documental del corpus](docs/archivos-indexados.md)
 - [Estructura típica de sentencias](docs/DOCUMENT_SECTIONS.md)
 - [Configuración manual de Firebase](docs/firebase-config-manual.md)
 - [Scripts operacionales y utilidades](docs/SCRIPTS.md)
@@ -13,7 +13,7 @@ Agente conversacional de **jurisprudencia y normativa colombiana sobre playas y 
 
 ## Arquitectura
 
-Tres capas independientes que comparten `data/` y servicios externos (ChromaDB, Ollama, Firebase, proveedor LLM):
+Tres capas independientes que comparten el bucket S3 `data/` y los servicios externos (ChromaDB, Ollama, Firebase, proveedor LLM):
 
 ```
 ┌──────────────────────┐     ┌──────────────────────────────────┐     ┌──────────────────┐
@@ -22,7 +22,37 @@ Tres capas independientes que comparten `data/` y servicios externos (ChromaDB, 
 └──────────────────────┘     └──────────────────────────────────┘     └──────────────────┘
 ```
 
-`rag/` y `ingest/` son **paquetes Python independientes** dentro del workspace `uv`: no comparten código, solo el directorio `data/` y los servicios externos. El frontend (Bun) habla con la API por SSE para streaming y directamente con Firestore para historial/feedback.
+`rag/` y `ingest/` son **paquetes Python independientes** dentro del workspace `uv`: no comparten código, solo las claves `data/` del bucket S3 y los servicios externos. El frontend (Bun) habla con la API por SSE para streaming y directamente con Firestore para historial/feedback.
+
+---
+
+## Corpus documental
+
+ATLAS maneja dos tipos de documento (`doc_type`), cada uno con documentos de ámbito **nacional** y **local/territorial**. Los **53 documentos están procesados e indexados** — el corpus solicitado está completo:
+
+| Tipo (`doc_type`) | Ámbito | Identificador | Documentos |
+|---|---|---|:---:|
+| `jurisprudencia` | Nacional — Consejo de Estado, Corte Constitucional, tribunales de otros departamentos | `SN-01` … `SN-17` | **17** |
+| `jurisprudencia` | Local — Tribunal Administrativo del Magdalena | `SM-01` … `SM-09` | **9** |
+| `normativa` | Nacional — decretos y decretos-ley | filas 1 – 22 del inventario | **22** |
+| `normativa` | Local — decretos distritales (Santa Marta, Cartagena, Turbo) | filas 22, 25, 27, 28, 29 | **5** ¹ |
+| | | **Total indexado** | **53** |
+
+¹ 5 filas pero 4 decretos distintos: el Decreto 376 de 2015 de Santa Marta está duplicado en el inventario fuente.
+
+**Dónde están ubicados** — todo el corpus vive en **S3** (bucket `S3_BUCKET_NAME`); no hay carpeta `data/` local. Las claves siguen `data/<capa>/<doc_type>/`, que es lo que devuelve `layer_prefix()` en `ingest/config.py` y `rag/config.py`:
+
+```
+s3://<S3_BUCKET_NAME>/data/
+├── raw/{jurisprudencia,normativa}/      ← PDFs / MDs originales + metadata.csv
+├── bronze/{jurisprudencia,normativa}/   ← Markdown limpio
+├── silver/{jurisprudencia,normativa}/   ← JSONL seccionado
+└── gold/{jurisprudencia,normativa}/     ← chunks enriquecidos (fuente del índice)
+```
+
+El ámbito **nacional/local no es una carpeta**: el pipeline solo separa por `doc_type` y el ámbito viaja como metadato (`Corporación` / `Jurisdicción`, prefijo `SN-`/`SM-`). Desde `gold` se indexa en la colección `rag_playas` de ChromaDB, donde cada chunk conserva su `doc_type` para poder filtrar por tipo en el retriever.
+
+El detalle documento por documento (radicados, partes, temática, enlaces a los PDF originales) y el estado de ingesta de cada categoría están en [`docs/archivos-indexados.md`](docs/archivos-indexados.md).
 
 ---
 
@@ -108,20 +138,7 @@ rag_playas/
 │   └── api/                      ← FastAPI: main, auth, firebase_admin, routes/
 ├── ingest/                       ← Pipeline de ingesta (independiente)
 ├── frontend/                     ← Next.js 16 (React 19, Bun)
-├── data/
-│   ├── raw/
-│   │   ├── jurisprudencia/       ← PDFs + metadata.csv de sentencias
-│   │   └── normativa/            ← MDs/PDFs de decretos y reglamentos
-│   ├── bronze/
-│   │   ├── jurisprudencia/       ← Markdown por sentencia
-│   │   └── normativa/            ← Markdown por decreto/reglamento
-│   ├── silver/
-│   │   ├── jurisprudencia/       ← JSONL seccional (4 secciones por sentencia)
-│   │   └── normativa/            ← JSONL articular (1 artículo por unidad)
-│   └── gold/
-│       ├── jurisprudencia/       ← Chunks enriquecidos de sentencias
-│       └── normativa/            ← Chunks enriquecidos de normativa
-├── docs/                         ← guías (incluye firebase-config-manual.md)
+├── docs/                         ← guías (inventario documental, firebase-config-manual.md)
 ├── firestore.rules               ← reglas de seguridad versionadas
 ├── firestore.indexes.json        ← índices compuestos
 ├── docker/                       ← Dockerfiles + nginx.conf
@@ -133,6 +150,8 @@ rag_playas/
 ```
 
 `uv` gestiona el workspace Python (raíz + `rag/` + `ingest/`); `bun` gestiona el workspace Node (raíz + `frontend/`). El `.env` es único y vive en la raíz.
+
+Los datos del pipeline **no viven en el repositorio**: las cuatro capas (`raw`, `bronze`, `silver`, `gold`) están en S3 bajo `data/<capa>/<doc_type>/` (ver [Corpus documental](#corpus-documental)). `make bucket-backup` descarga una copia local con timestamp.
 
 ---
 
@@ -170,6 +189,8 @@ Luego configurar Firebase siguiendo [`docs/firebase-config-manual.md`](docs/fire
 
 | Variable | Default | Descripción |
 |----------|---------|-------------|
+| `S3_BUCKET_NAME` | — | Bucket S3 con las capas `data/<capa>/<doc_type>/` del corpus |
+| `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` / `AWS_DEFAULT_REGION` | — | Credenciales de AWS (o perfil/rol de la máquina) para leer y escribir el bucket |
 | `CHROMA_HOST` | `localhost` | Host de ChromaDB |
 | `CHROMA_PORT` | `8000` | Puerto de ChromaDB |
 | `CHROMA_COLLECTION` | `rag_playas` | Nombre de la colección |
