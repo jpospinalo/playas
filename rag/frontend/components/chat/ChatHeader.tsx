@@ -16,7 +16,7 @@ export function ChatHeader({ onNewChat, onOpenAuth, onToggleSidebar, sidebarOpen
 
   return (
     <header className="shrink-0 bg-transparent">
-      <div className="flex h-12 items-center justify-between gap-3 px-3">
+      <div className="flex h-12 items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
         <div className="flex min-w-0 items-center gap-1">
           {onToggleSidebar && user && (
             <button

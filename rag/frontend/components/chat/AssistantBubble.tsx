@@ -344,14 +344,14 @@ export function AssistantBubble({
 						<button
 							type="button"
 							onClick={() => setRatingPopoverOpen(true)}
-							className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs text-muted transition-colors hover:bg-elevated hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent md:opacity-0 md:group-hover:opacity-100"
+							className="inline-flex items-center justify-center rounded-full p-1.5 text-muted transition-colors hover:bg-elevated hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
 							aria-label="Calificar esta respuesta"
 							title="Calificar esta respuesta"
 						>
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
-								width="14"
-								height="14"
+								width="20"
+								height="20"
 								viewBox="0 0 24 24"
 								fill="none"
 								stroke="currentColor"
@@ -360,10 +360,8 @@ export function AssistantBubble({
 								strokeLinejoin="round"
 								aria-hidden="true"
 							>
-								<path d="M12 20v-6m0 0V4m0 10H4m8 0h16" />
 								<path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z" />
 							</svg>
-							Calificar
 						</button>
 					)}
 

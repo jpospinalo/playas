@@ -13,8 +13,8 @@ import {
 	setAuth,
 	type AuthUser,
 } from "@/lib/auth";
+import { API_URL } from "@/lib/config";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080";
 
 interface AuthContextValue {
 	user: AuthUser | null;

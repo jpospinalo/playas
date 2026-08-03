@@ -5,8 +5,8 @@ import { AnimatePresence, motion } from "motion/react";
 import { getToken } from "@/lib/auth";
 import type { Conversation } from "@/hooks/useConversations";
 import { formatConversationDate } from "@/components/chat/conversationSidebarUtils";
+import { API_URL } from "@/lib/config";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080";
 
 interface ConversationListProps {
   conversations: Conversation[];

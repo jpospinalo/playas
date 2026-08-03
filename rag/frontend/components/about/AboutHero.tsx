@@ -26,7 +26,7 @@ export function AboutHero() {
       </div>
 
       <motion.div
-        className="relative mx-auto w-full max-w-3xl px-6 pb-20 pt-24 text-center md:pt-32"
+        className="relative mx-auto w-full max-w-3xl px-4 pb-20 pt-24 text-center sm:px-6 md:pt-32 lg:px-10"
         variants={container}
         initial="hidden"
         animate="show"
@@ -36,7 +36,7 @@ export function AboutHero() {
           className="mb-5 inline-flex items-center gap-1.5 rounded-full border border-border bg-surface/40 px-3 py-1 text-[11px] font-medium text-muted backdrop-blur-sm"
         >
           <span className="h-1.5 w-1.5 rounded-full bg-accent" aria-hidden="true" />
-          Cómo funciona ATLAS
+          Cómo funciono
         </motion.span>
 
         <motion.h1
@@ -51,9 +51,9 @@ export function AboutHero() {
           variants={item}
           className="mx-auto mt-6 max-w-xl text-balance text-base leading-relaxed text-muted md:text-lg"
         >
-          ATLAS lee la jurisprudencia colombiana sobre playas y derecho costero,
-          y te la traduce a un lenguaje que puedes entender, citando siempre las
-          sentencias que respaldan cada cosa que dice.
+          Leo la jurisprudencia colombiana sobre playas y derecho costero, y
+          te la traduzco a un lenguaje que puedes entender, citando siempre
+          las sentencias que respaldan cada cosa que digo.
         </motion.p>
 
         <motion.div variants={item} className="mt-10 flex flex-wrap items-center justify-center gap-3">

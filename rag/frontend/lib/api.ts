@@ -7,7 +7,8 @@ import type {
 	StreamEvent,
 } from "@/lib/types";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080";
+'Modificacion, trata un string vacio como un falsy'
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
 
 function getAuthHeaders(): Record<string, string> {
 	const token = getToken();

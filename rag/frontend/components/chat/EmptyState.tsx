@@ -21,7 +21,7 @@ export function EmptyState({
 	onSubmit,
 }: EmptyStateProps) {
 	return (
-		<div className="relative flex flex-1 flex-col items-center justify-center px-4 pb-12 pt-8 sm:pt-12">
+		<div className="relative flex flex-1 flex-col items-center justify-center px-4 pb-12 pt-8 sm:px-8 sm:pt-12 lg:px-12">
 			{/* Glow ambiental — la firma visual, contenida detrás del input */}
 			<div className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden">
 				<div className="relative h-[42vh] w-[64vw] max-h-[440px] max-w-[720px] translate-y-[2vh]">
@@ -52,9 +52,8 @@ export function EmptyState({
 					animate={{ opacity: 1, y: 0 }}
 					transition={{ duration: 0.55, delay: 0.16, ease: EASE }}
 				>
-					Tu asistente para entender la jurisprudencia sobre playas y derecho
-					costero en Colombia. Pregunta en lenguaje cotidiano y recibe una
-					respuesta clara, con las sentencias que la respaldan.
+					Soy tu asistente para consultar jurisprudencia y derecho de playas
+					costeras en Colombia.
 				</motion.p>
 
 				<motion.div
@@ -79,8 +78,8 @@ export function EmptyState({
 					animate={{ opacity: 1 }}
 					transition={{ duration: 0.5, delay: 0.44 }}
 				>
-					ATLAS responde con base en sentencias del Consejo de Estado.
-					No reemplaza la asesoría de un abogado.
+					Respondo con base en sentencias del Consejo de Estado. No reemplazo
+					la asesoría de un abogado.
 				</motion.p>
 			</motion.div>
 		</div>

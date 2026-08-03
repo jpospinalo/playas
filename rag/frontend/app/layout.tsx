@@ -1,10 +1,10 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter, Geist_Mono } from "next/font/google";
 import { AuthProvider } from "@/components/providers/AuthProvider";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import "./globals.css";
 
-const geist = Geist({
+const inter = Inter({
 	variable: "--font-sans",
 	subsets: ["latin"],
 	display: "swap",
@@ -54,7 +54,7 @@ export default function RootLayout({
 	return (
 		<html
 			lang="es"
-			className={`${geist.variable} ${geistMono.variable} h-full antialiased`}
+			className={`${inter.variable} ${geistMono.variable} h-full antialiased`}
 			suppressHydrationWarning
 		>
 			<body className="min-h-full flex flex-col bg-background text-foreground">
@@ -62,7 +62,11 @@ export default function RootLayout({
 					Saltar al contenido principal
 				</a>
 				<ThemeProvider>
-					<AuthProvider>{children}</AuthProvider>
+					<AuthProvider>
+						<div id="main-content" className="contents">
+							{children}
+						</div>
+					</AuthProvider>
 				</ThemeProvider>
 			</body>
 		</html>

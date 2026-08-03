@@ -12,9 +12,9 @@ const fadeUp = {
 const STEPS = [
   {
     number: "01",
-    title: "Busca en el corpus",
+    title: "Busco en el corpus",
     description:
-      "Cuando preguntas algo, ATLAS revisa el corpus completo de sentencias del Consejo de Estado y selecciona los fragmentos más relevantes para tu caso, combinando búsqueda por palabras clave y búsqueda semántica.",
+      "Cuando preguntas algo, reviso el corpus completo de sentencias del Consejo de Estado y selecciono los fragmentos más relevantes para tu caso, combinando búsqueda por palabras clave y búsqueda semántica.",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -35,9 +35,9 @@ const STEPS = [
   },
   {
     number: "02",
-    title: "Se ancla en lo que encontró",
+    title: "Me ancla en lo que encuentro",
     description:
-      "Solo los fragmentos reales del corpus se usan como contexto. ATLAS no puede inventar sentencias ni hacer afirmaciones legales sin un documento detrás que las respalde.",
+      "Solo uso fragmentos reales del corpus como contexto. No invento sentencias ni hago afirmaciones legales sin un documento que las respalde.",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -59,9 +59,9 @@ const STEPS = [
   },
   {
     number: "03",
-    title: "Te responde y cita",
+    title: "Respondo y cito",
     description:
-      "ATLAS redacta una respuesta en lenguaje cotidiano y la acompaña con citas a las sentencias usadas. Cada cita es expandible: puedes ver el extracto exacto y verificarlo.",
+      "Redacto la respuesta en lenguaje cotidiano, con citas a las sentencias usadas. Cada cita es expandible: puedes ver el extracto exacto y verificarlo.",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -86,7 +86,7 @@ const STEPS = [
 export function HowItWorks() {
   return (
     <section
-      className="mx-auto w-full max-w-5xl px-6 py-24"
+      className="mx-auto w-full max-w-5xl px-4 py-24 sm:px-6 lg:px-10 xl:px-16"
       aria-labelledby="how-it-works-heading"
     >
       <motion.div
@@ -94,14 +94,14 @@ export function HowItWorks() {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-80px" }}
         transition={{ duration: 0.5, ease: EASE }}
-        className="max-w-2xl"
+        className="mx-auto max-w-2xl text-center"
       >
         <p className="mb-3 text-xs font-medium text-accent">
           Cómo funciona
         </p>
         <h2
           id="how-it-works-heading"
-          className="text-balance text-3xl font-medium leading-tight tracking-tight text-foreground md:text-4xl"
+          className="text-balance text-4xl font-medium leading-tight tracking-tight text-foreground md:text-5xl"
           style={{ letterSpacing: "-0.02em" }}
         >
           Cada respuesta se construye en tres pasos.

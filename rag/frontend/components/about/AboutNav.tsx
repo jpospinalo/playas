@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { motion } from "motion/react";
+import { AtlasWordmark } from "@/components/common/AtlasWordmark";
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 
@@ -14,7 +15,7 @@ export function AboutNav() {
       transition={{ duration: 0.4, ease: EASE }}
     >
       <nav
-        className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4"
+        className="mx-auto flex max-w-5xl items-center justify-between px-4 py-4 sm:px-6 lg:px-10 xl:px-16"
         aria-label="Navegación principal"
       >
         <Link
@@ -22,30 +23,7 @@ export function AboutNav() {
           className="flex items-center gap-2 rounded-full px-1 py-0.5 transition-opacity duration-150 hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background"
           aria-label="ATLAS — inicio"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="22"
-            height="22"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.6"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="text-accent"
-            aria-hidden="true"
-          >
-            <path d="M12 3 L20 20 L4 20 Z" opacity="0.4" />
-            <path d="M12 3 L20 20" />
-            <path d="M12 3 L4 20" />
-            <path d="M8 14 H16" opacity="0.55" />
-          </svg>
-          <span
-            className="text-base font-medium tracking-[0.18em] text-foreground"
-            translate="no"
-          >
-            ATLAS
-          </span>
+          <AtlasWordmark iconSize={26} />
         </Link>
         <Link
           href="/"

@@ -3,8 +3,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { getToken } from "@/lib/auth";
 import { useAuth } from "@/components/providers/AuthProvider";
+import { API_URL } from "@/lib/config";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080";
 
 export interface Conversation {
 	id: string;

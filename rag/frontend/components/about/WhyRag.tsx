@@ -7,7 +7,7 @@ const EASE = [0.16, 1, 0.3, 1] as const;
 export function WhyRag() {
   return (
     <section
-      className="mx-auto w-full max-w-5xl px-6 py-24"
+      className="mx-auto w-full max-w-5xl px-4 py-24 sm:px-6 lg:px-10 xl:px-16"
       aria-labelledby="why-rag-heading"
     >
       <div className="grid gap-10 md:grid-cols-[1fr_auto] md:items-start">
@@ -23,23 +23,23 @@ export function WhyRag() {
           </p>
           <h2
             id="why-rag-heading"
-            className="text-balance text-3xl font-medium leading-tight tracking-tight text-foreground md:text-4xl"
+            className="text-balance text-4xl font-medium leading-tight tracking-tight text-foreground md:text-5xl"
             style={{ letterSpacing: "-0.02em" }}
           >
-            ATLAS no inventa, ATLAS cita.
+            No invento. Cito.
           </h2>
           <p className="mt-6 text-base leading-relaxed text-muted">
             Los asistentes de IA tradicionales a veces se inventan información,
             sobre todo en temas legales donde un detalle mal dicho puede tener
-            consecuencias. ATLAS está diseñado para que eso no pase: cada cosa
-            que afirma debe estar respaldada por una sentencia real que puedas
-            abrir y verificar.
+            consecuencias. Estoy diseñado para que eso no pase: cada afirmación
+            que hago está respaldada por una sentencia real que puedes abrir y
+            verificar.
           </p>
           <p className="mt-4 text-base leading-relaxed text-muted">
-            Si tu pregunta no tiene respuesta en el corpus, ATLAS te lo dice en
-            vez de improvisar. Eso lo hace una primera puerta confiable cuando
-            quieres entender tus derechos sobre playas y zonas costeras, sin
-            necesidad de saber leer un fallo judicial.
+            Si tu pregunta no tiene respuesta en el corpus, te lo digo en vez
+            de improvisar. Es la manera de que puedas entender tus derechos
+            sobre playas y zonas costeras sin necesidad de leer un fallo
+            judicial.
           </p>
         </motion.div>
 
@@ -70,10 +70,10 @@ export function WhyRag() {
             </svg>
           </div>
           <p className="text-base font-medium leading-snug text-foreground">
-            Si la información no está en el corpus, ATLAS lo dice.
+            Si la información no está en el corpus, te lo digo.
           </p>
           <p className="mt-3 text-xs leading-relaxed text-subtle">
-            No inventamos respuestas para parecer útiles. La honestidad sobre
+            No invento respuestas para parecer útil. La honestidad sobre
             los límites es parte del producto.
           </p>
         </motion.aside>

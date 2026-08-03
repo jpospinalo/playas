@@ -134,7 +134,6 @@ export function AuthModal({ open, mode = "explicit", subtitle, onClose }: AuthMo
         >
           <motion.div
             className="absolute inset-0 bg-background/70 backdrop-blur-md"
-            onClick={handleClose}
             aria-hidden="true"
           />
 

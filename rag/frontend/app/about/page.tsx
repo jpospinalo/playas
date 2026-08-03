@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata} from "next";
 import { AboutNav } from "@/components/about/AboutNav";
 import { AboutHero } from "@/components/about/AboutHero";
 import { HowItWorks } from "@/components/about/HowItWorks";
