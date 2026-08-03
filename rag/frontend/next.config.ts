@@ -8,8 +8,8 @@ import type { NextConfig } from "next";
 loadEnv({ path: path.resolve(__dirname, "../.env") });
 
 const nextConfig: NextConfig = {
-output: "standalone",
-allowedDevOrigins: ["13.217.5.1"],
+	output: "standalone",
+	allowedDevOrigins: ["13.217.5.1"],
 };
 
 export default nextConfig;
