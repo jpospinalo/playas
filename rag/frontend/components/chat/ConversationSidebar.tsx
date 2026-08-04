@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "motion/react";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { ConversationList } from "@/components/chat/ConversationList";
@@ -312,12 +314,13 @@ function ExpandedSidebarContent({
   onSignOut,
   onSelectConversation,
 }: SidebarContentProps) {
+  const router = useRouter();
   const hasConversations = conversations.length > 0;
   return (
     <>
       <SidebarHeader onToggleSidebar={onToggleSidebar} />
 
-      <div className="px-2 pt-1">
+      <div className="px-3 pt-2">
         <SidebarPillButton
           label="Nueva consulta"
           icon={<PencilEditIcon />}
@@ -329,6 +332,11 @@ function ExpandedSidebarContent({
           icon={<SearchIcon />}
           emphasis={hasSearch ? "active" : "default"}
           onClick={onOpenSearch}
+        />
+        <SidebarPillButton
+          label="Cómo funciona"
+          icon={<InfoIcon />}
+          onClick={() => router.push("/about")}
         />
       </div>
 
@@ -383,10 +391,11 @@ function CollapsedSidebarContent({
   onCloseProfile: () => void;
   onSignOut: () => Promise<void>;
 }) {
+  const router = useRouter();
   return (
     <motion.div
       key="collapsed"
-      className="flex h-full flex-col items-center gap-1 px-1 pt-1"
+      className="flex h-full flex-col items-center gap-2 px-2 pt-3"
       initial={transitionEnabled ? { opacity: 0 } : false}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -397,7 +406,7 @@ function CollapsedSidebarContent({
         onClick={onToggleSidebar}
         aria-label="Abrir panel"
         title="Abrir panel"
-        className="group/atlas relative mb-2 flex h-10 w-10 items-center justify-center rounded-full text-foreground transition-colors duration-150 hover:bg-elevated focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+        className="group/atlas relative mb-2 flex h-12 w-12 items-center justify-center rounded-full text-foreground transition-colors duration-150 hover:bg-elevated focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background"
       >
         <span className="absolute inset-0 flex items-center justify-center transition-opacity duration-150 group-hover/atlas:opacity-0 group-focus-visible/atlas:opacity-0">
           <AtlasGlyph />
@@ -417,6 +426,11 @@ function CollapsedSidebarContent({
         active={hasSearch}
         onClick={onOpenSearch}
       />
+      <RailButton
+        label="Cómo funciona"
+        icon={<InfoIcon />}
+        onClick={() => router.push("/about")}
+      />
 
       <div className="mt-auto pb-2">
         <SidebarUserMenu
@@ -435,36 +449,26 @@ function CollapsedSidebarContent({
   );
 }
 
-function AtlasGlyph() {
+export function AtlasGlyph() {
   return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="22"
-      height="22"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.6"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className="text-accent"
-      aria-hidden="true"
-    >
-      <path d="M12 3 L20 20 L4 20 Z" opacity="0.4" />
-      <path d="M12 3 L20 20" />
-      <path d="M12 3 L4 20" />
-      <path d="M8 14 H16" opacity="0.55" />
-    </svg>
+    <Image
+      src="/brand/atlas-icon.png"
+      alt=""
+      width={32}
+      height={32}
+      className="shrink-0 rounded-full"
+      priority
+    />
   );
 }
 
 function SidebarHeader({ onToggleSidebar }: { onToggleSidebar: () => void }) {
   return (
-    <div className="flex h-12 items-center justify-between px-4">
-      <div className="flex items-center gap-2">
+    <div className="flex h-14 items-center justify-between px-5">
+      <div className="flex items-center gap-2.5">
         <AtlasGlyph />
         <span
-          className="text-[15px] font-medium tracking-[0.04em] text-foreground"
+          className="text-base font-medium tracking-[0.04em] text-foreground"
           translate="no"
         >
           ATLAS
@@ -474,7 +478,7 @@ function SidebarHeader({ onToggleSidebar }: { onToggleSidebar: () => void }) {
         onClick={onToggleSidebar}
         aria-label="Cerrar panel"
         title="Cerrar panel"
-        className="flex h-8 w-8 items-center justify-center rounded-full text-muted transition-colors hover:bg-elevated hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+        className="flex h-9 w-9 items-center justify-center rounded-full text-muted transition-colors hover:bg-elevated hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
       >
         <PanelIcon />
       </button>
@@ -482,7 +486,7 @@ function SidebarHeader({ onToggleSidebar }: { onToggleSidebar: () => void }) {
   );
 }
 
-function SidebarPillButton({
+export function SidebarPillButton({
   label,
   icon,
   emphasis = "default",
@@ -505,15 +509,15 @@ function SidebarPillButton({
       type="button"
       onClick={onClick}
       aria-label={label}
-      className={`mt-1 flex w-full items-center gap-3 rounded-full px-4 py-2.5 text-[13.5px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${emphasisClasses}`}
+      className={`mt-1 flex w-full items-center gap-3 rounded-full px-4 py-3 text-[14.5px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${emphasisClasses}`}
     >
-      <span className="flex h-4 w-4 shrink-0 items-center justify-center">{icon}</span>
+      <span className="flex h-5 w-5 shrink-0 items-center justify-center">{icon}</span>
       <span className="truncate">{label}</span>
     </button>
   );
 }
 
-function RailButton({
+export function RailButton({
   label,
   icon,
   active = false,
@@ -529,7 +533,7 @@ function RailButton({
       onClick={onClick}
       aria-label={label}
       title={label}
-      className={`flex h-10 w-10 items-center justify-center rounded-full transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
+      className={`flex h-12 w-12 items-center justify-center rounded-full transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
         active
           ? "bg-accent-soft text-accent"
           : "text-muted hover:bg-elevated hover:text-foreground"
@@ -556,12 +560,12 @@ function getUserInfo(user: ReturnType<typeof useAuth>["user"]): UserInfo {
   };
 }
 
-function PanelIcon() {
+export function PanelIcon() {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width="16"
-      height="16"
+      width="18"
+      height="18"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
@@ -576,12 +580,12 @@ function PanelIcon() {
   );
 }
 
-function PlusIcon() {
+export function PlusIcon() {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width="14"
-      height="14"
+      width="16"
+      height="16"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
@@ -600,8 +604,8 @@ function SearchIcon() {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width="15"
-      height="15"
+      width="17"
+      height="17"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
@@ -617,7 +621,29 @@ function SearchIcon() {
   );
 }
 
-function PencilEditIcon() {
+export function InfoIcon() {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      className="shrink-0"
+    >
+      <circle cx="12" cy="12" r="10" />
+      <path d="M12 16v-4" />
+      <path d="M12 8h.01" />
+    </svg>
+  );
+}
+
+export function PencilEditIcon() {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"

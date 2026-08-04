@@ -171,7 +171,11 @@ async def agent_node(state: AgentState) -> dict:
     else:
         _emit_status("generating", "Entendiendo tu pregunta con más precisión…")
 
-    llm = get_generation_llm().bind_tools(ALL_TOOLS)  # type: ignore[union-attr]
+    base_llm = get_generation_llm()
+    # Una vez que ya hay contexto recuperado, no se vuelve a ofrecer `retrieve`:
+    # evita que el LLM decida llamarla de nuevo en vez de responder, lo que
+    # agotaba el recursion_limit en un loop agent ⇆ tools.
+    llm = base_llm if context else base_llm.bind_tools(ALL_TOOLS)  # type: ignore[union-attr]
     system_msg = SystemMessage(content=BASE_INSTRUCTIONS)
     human_turn = _build_human_turn(state["question"], enriched_query, context)
 

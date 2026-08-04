@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { motion } from "motion/react";
 import { ChatInput } from "@/components/chat/ChatInput";
 
@@ -21,7 +22,7 @@ export function EmptyState({
 	onSubmit,
 }: EmptyStateProps) {
 	return (
-		<div className="relative flex flex-1 flex-col items-center justify-center px-4 pb-12 pt-8 sm:px-8 sm:pt-12 lg:px-12">
+		<div className="relative flex flex-1 flex-col items-center justify-start px-4 pb-12 pt-[8vh] sm:px-6 sm:pt-[10vh] lg:px-10 xl:px-16">
 			{/* Glow ambiental — la firma visual, contenida detrás del input */}
 			<div className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden">
 				<div className="relative h-[42vh] w-[64vw] max-h-[440px] max-w-[720px] translate-y-[2vh]">
@@ -35,15 +36,29 @@ export function EmptyState({
 				animate={{ opacity: 1, y: 0 }}
 				transition={{ duration: 0.55, ease: EASE }}
 			>
+				<motion.div
+					initial={{ opacity: 0, y: 8 }}
+					animate={{ opacity: 1, y: 0 }}
+					transition={{ duration: 0.6, delay: 0.02, ease: EASE }}
+				>
+					<Image
+						src="/brand/atlas-logo-full-v2.png"
+						alt="ATLAS"
+						width={204}
+						height={208}
+						className="h-[190px] w-auto sm:h-[220px]"
+						priority
+					/>
+				</motion.div>
+
 				<motion.h1
-					className="text-center text-5xl font-medium tracking-tight text-foreground sm:text-6xl md:text-[4rem]"
+					className="mt-4 text-center text-5xl font-medium tracking-tight text-accent sm:text-6xl md:text-[4rem]"
 					style={{ lineHeight: 1, letterSpacing: "-0.03em" }}
-					translate="no"
 					initial={{ opacity: 0, y: 8 }}
 					animate={{ opacity: 1, y: 0 }}
 					transition={{ duration: 0.6, delay: 0.08, ease: EASE }}
 				>
-					ATLAS
+					Bienvenido
 				</motion.h1>
 
 				<motion.p

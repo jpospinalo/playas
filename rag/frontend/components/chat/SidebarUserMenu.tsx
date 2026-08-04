@@ -170,7 +170,7 @@ function UserMenuPopover({
 			{open && (
 				<motion.div
 					role="menu"
-					className={`${positionClassName} z-50 rounded-2xl border border-border bg-surface p-2 shadow-xl shadow-black/30`}
+					className={`${positionClassName} z-50 rounded-2xl border border-border bg-surface p-2 shadow-xl shadow-secondary-turquoise/15`}
 					initial={{ opacity: 0, y: 6, scale: 0.98 }}
 					animate={{ opacity: 1, y: 0, scale: 1 }}
 					exit={{ opacity: 0, y: 6, scale: 0.98 }}

@@ -105,7 +105,6 @@ export function FeedbackModal({
 				>
 					<motion.div
 						className="absolute inset-0 bg-background/70 backdrop-blur-md"
-						onClick={handleClose}
 						aria-hidden="true"
 					/>
 
@@ -113,7 +112,7 @@ export function FeedbackModal({
 						role="dialog"
 						aria-modal="true"
 						aria-labelledby="feedback-modal-title"
-						className="relative z-10 w-full max-w-md rounded-3xl border border-border bg-elevated p-6 shadow-2xl shadow-black/40"
+						className="relative z-10 w-full max-w-md rounded-3xl border border-border bg-elevated p-6 shadow-2xl shadow-secondary-turquoise/20"
 						initial={{ opacity: 0, scale: 0.96, y: 8 }}
 						animate={{ opacity: 1, scale: 1, y: 0 }}
 						exit={{ opacity: 0, scale: 0.96, y: 8 }}
@@ -191,11 +190,11 @@ export function FeedbackModal({
 								>
 									<h2
 										id="feedback-modal-title"
-										className="mb-1 text-lg font-medium text-foreground"
+										className="mb-1 text-center text-lg font-medium text-foreground"
 									>
 										Califica la conversación
 									</h2>
-									<p className="mb-6 text-sm text-muted">
+									<p className="mb-6 text-center text-sm text-muted">
 										{conversationId
 											? "Tu calificación se asociará a la conversación actual."
 											: "¿Qué tan útil fue el sistema?"}

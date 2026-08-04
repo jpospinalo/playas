@@ -229,7 +229,7 @@ function ConversationActionsMenu({
         {isOpen && (
           <motion.div
             role="menu"
-            className="absolute right-0 top-8 z-50 w-40 rounded-xl border border-border bg-elevated p-1 shadow-lg shadow-black/30"
+            className="absolute right-0 top-8 z-50 w-40 rounded-xl border border-border bg-elevated p-1 shadow-lg shadow-secondary-turquoise/15"
             initial={{ opacity: 0, y: -4, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -4, scale: 0.98 }}

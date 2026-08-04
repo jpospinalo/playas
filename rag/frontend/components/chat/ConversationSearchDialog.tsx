@@ -48,7 +48,7 @@ export function ConversationSearchDialog({
 		<AnimatePresence>
 			{open && (
 				<motion.div
-					className="fixed inset-0 z-50 flex items-start justify-center bg-background/70 px-4 pt-[12vh] backdrop-blur-md"
+					className="fixed inset-0 z-50 flex items-center justify-center bg-background/70 px-4 backdrop-blur-md"
 					initial={{ opacity: 0 }}
 					animate={{ opacity: 1 }}
 					exit={{ opacity: 0 }}
@@ -66,7 +66,7 @@ export function ConversationSearchDialog({
 						aria-modal="true"
 						aria-label="Buscar conversaciones"
 						data-conversation-search-dialog
-						className="relative z-10 flex max-h-[72vh] w-full max-w-xl flex-col overflow-hidden rounded-3xl border border-border bg-elevated shadow-2xl shadow-black/40"
+						className="relative z-10 flex max-h-[72vh] w-full max-w-xl flex-col overflow-hidden rounded-3xl border border-border bg-elevated shadow-2xl shadow-secondary-turquoise/20"
 						initial={{ opacity: 0, y: 18, scale: 0.98 }}
 						animate={{ opacity: 1, y: 0, scale: 1 }}
 						exit={{ opacity: 0, y: 10, scale: 0.98 }}
@@ -109,24 +109,22 @@ function SearchHeader({
 	onClose: () => void;
 }) {
 	return (
-		<div className="border-b border-border p-4">
-			<div className="mb-3 flex items-center justify-between gap-3">
-				<div>
-					<h2 className="text-sm font-medium text-foreground">
-						Buscar conversaciones
-					</h2>
-					<p className="mt-0.5 text-xs text-subtle">
-						Encuentra una conversación por título y ábrela al instante.
-					</p>
-				</div>
-				<button
-					type="button"
-					onClick={onClose}
-					aria-label="Cerrar búsqueda"
-					className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-muted transition-colors hover:bg-surface hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
-				>
-					<CloseIcon />
-				</button>
+		<div className="relative border-b border-border p-4">
+			<button
+				type="button"
+				onClick={onClose}
+				aria-label="Cerrar búsqueda"
+				className="absolute right-4 top-4 flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-muted transition-colors hover:bg-surface hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+			>
+				<CloseIcon />
+			</button>
+			<div className="mb-3 text-center">
+				<h2 className="text-xl font-semibold text-foreground">
+					Buscar conversaciones
+				</h2>
+				<p className="mt-0.5 text-xs text-subtle">
+					Encuentra una conversación por título y ábrela al instante.
+				</p>
 			</div>
 
 			<label htmlFor="conversation-search-dialog" className="sr-only">

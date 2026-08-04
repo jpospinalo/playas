@@ -141,7 +141,7 @@ export function AuthModal({ open, mode = "explicit", subtitle, onClose }: AuthMo
             role="dialog"
             aria-modal="true"
             aria-labelledby="auth-modal-title"
-            className="relative z-10 w-full max-w-sm rounded-3xl border border-border bg-elevated p-6 shadow-2xl shadow-black/40"
+            className="relative z-10 w-full max-w-sm rounded-3xl border border-border bg-elevated p-6 shadow-2xl shadow-secondary-turquoise/20"
             initial={{ opacity: 0, scale: 0.96, y: 8 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.96, y: 8 }}
@@ -169,7 +169,7 @@ export function AuthModal({ open, mode = "explicit", subtitle, onClose }: AuthMo
             </button>
 
             {mode === "recommendation" ? (
-              <div className="mb-6">
+              <div className="mb-6 text-center">
                 <h2
                   id="auth-modal-title"
                   className="text-lg font-medium text-foreground"
@@ -182,7 +182,7 @@ export function AuthModal({ open, mode = "explicit", subtitle, onClose }: AuthMo
                 </p>
               </div>
             ) : (
-              <div className="mb-6">
+              <div className="mb-6 text-center">
                 <h2
                   id="auth-modal-title"
                   className="text-lg font-medium text-foreground"

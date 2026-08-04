@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { AuthModal } from "@/components/common/AuthModal";
 import { ConversationSidebar } from "@/components/chat/ConversationSidebar";
+import { GuestSidebar } from "@/components/chat/GuestSidebar";
 import { useChat } from "@/hooks/useChat";
 import { useConversations } from "@/hooks/useConversations";
 import { ChatHeader } from "@/components/chat/ChatHeader";
@@ -27,6 +28,9 @@ export function ChatInterface() {
 		"recommendation" | "explicit"
 	>("recommendation");
 	const [sidebarOpen, setSidebarOpen] = useState(true);
+	// Sidebar de invitados: se genera al iniciar la conversación pero
+	// arranca cerrado — no comparte la preferencia persistida del sidebar autenticado.
+	const [guestSidebarOpen, setGuestSidebarOpen] = useState(false);
 	const [sidebarTransitionEnabled, setSidebarTransitionEnabled] =
 		useState(false);
 	const [showFeedbackModal, setShowFeedbackModal] = useState(false);
@@ -83,6 +87,10 @@ export function ChatInterface() {
 			window.localStorage.setItem(SIDEBAR_STORAGE_KEY, String(next));
 			return next;
 		});
+	}, []);
+
+	const toggleGuestSidebar = useCallback(() => {
+		setGuestSidebarOpen((current) => !current);
 	}, []);
 
 	const closeSidebarOnMobile = useCallback(() => {
@@ -183,6 +191,7 @@ export function ChatInterface() {
 	}
 
 	const showEmptyState = messages.length === 0 && !loading && !error;
+	const showGuestSidebar = !user && !showEmptyState;
 
 	return (
 		<div className="relative flex flex-1 overflow-hidden">
@@ -206,6 +215,17 @@ export function ChatInterface() {
 				/>
 			)}
 
+			{/* Sidebar reducido para invitados sin sesión que ya iniciaron una conversación */}
+			{showGuestSidebar && (
+				<GuestSidebar
+					isExpanded={guestSidebarOpen}
+					transitionEnabled={sidebarTransitionEnabled}
+					onNewChat={resetChat}
+					onOpenAuth={() => openAuthModal()}
+					onToggleSidebar={toggleGuestSidebar}
+				/>
+			)}
+
 			{/* Área principal del chat */}
 			<div className="flex flex-1 flex-col overflow-hidden">
 				<AuthModal
@@ -220,10 +240,13 @@ export function ChatInterface() {
 					onClose={() => setShowFeedbackModal(false)}
 				/>
 				<ChatHeader
-					onNewChat={user ? undefined : resetChat}
+					onNewChat={user || showGuestSidebar ? undefined : resetChat}
 					onOpenAuth={openAuthModal}
-					onToggleSidebar={user ? toggleSidebar : undefined}
-					sidebarOpen={sidebarOpen}
+					onToggleSidebar={
+						user ? toggleSidebar : showGuestSidebar ? toggleGuestSidebar : undefined
+					}
+					sidebarOpen={user ? sidebarOpen : guestSidebarOpen}
+					hideActions={showGuestSidebar}
 				/>
 
 				<main
@@ -243,7 +266,7 @@ export function ChatInterface() {
 							onSubmit={handleSubmit}
 						/>
 					) : (
-						<div className="mx-auto w-full max-w-3xl flex-1 space-y-5 px-4 py-6">
+						<div className="mx-auto w-full max-w-3xl flex-1 space-y-8 px-4 py-6">
 							<MessageList
 								messages={messages}
 								conversationId={conversationId ?? ""}
@@ -278,29 +301,6 @@ export function ChatInterface() {
 						</div>
 					)}
 				</main>
-
-				{/* Botón flotante de feedback — visible cuando hay mensajes */}
-				<AnimatePresence>
-					{messages.length > 0 && (
-						<div className="pointer-events-none absolute bottom-20 right-4 z-20">
-							<div className="pointer-events-auto">
-								<FeedbackButton
-									onClick={() => {
-										if (user) {
-											setShowFeedbackModal(true);
-										} else {
-											// Guardar intención y pedir login con mensaje contextual
-											pendingFeedbackRef.current = true;
-											openAuthModal(
-												"Debes iniciar sesión para calificar el sistema.",
-											);
-										}
-									}}
-								/>
-							</div>
-						</div>
-					)}
-				</AnimatePresence>
 
 				{/* Floating scroll-to-bottom button — visible when user has scrolled up */}
 				{showScrollButton && messages.length > 0 && (
@@ -338,6 +338,23 @@ export function ChatInterface() {
 						textareaRef={textareaRef}
 						onChange={setInput}
 						onSubmit={() => handleSubmit(input)}
+						sideSlot={
+							messages.length > 0 ? (
+								<FeedbackButton
+									onClick={() => {
+										if (user) {
+											setShowFeedbackModal(true);
+										} else {
+											// Guardar intención y pedir login con mensaje contextual
+											pendingFeedbackRef.current = true;
+											openAuthModal(
+												"Debes iniciar sesión para calificar el sistema.",
+											);
+										}
+									}}
+								/>
+							) : undefined
+						}
 					/>
 				)}
 			</div>

@@ -11,12 +11,12 @@ export function FeedbackButton({ onClick }: FeedbackButtonProps) {
   const [showTooltip, setShowTooltip] = useState(false);
 
   return (
-    <div className="relative">
+    <div className="relative shrink-0">
       <AnimatePresence>
         {showTooltip && (
           <motion.div
             role="tooltip"
-            className="absolute bottom-full right-0 mb-2 whitespace-nowrap rounded-full border border-border bg-elevated px-3 py-1.5 text-xs text-foreground shadow-lg shadow-black/20"
+            className="absolute bottom-full right-0 mb-2 whitespace-nowrap rounded-full border border-border bg-elevated px-3 py-1.5 text-xs text-foreground shadow-lg shadow-secondary-turquoise/12"
             initial={{ opacity: 0, y: 4, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 4, scale: 0.95 }}
@@ -34,7 +34,7 @@ export function FeedbackButton({ onClick }: FeedbackButtonProps) {
         onMouseLeave={() => setShowTooltip(false)}
         onFocus={() => setShowTooltip(true)}
         onBlur={() => setShowTooltip(false)}
-        className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-elevated/80 text-muted backdrop-blur-md transition-colors duration-150 hover:border-border-strong hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+        className="flex h-11 w-11 items-center justify-center rounded-full border border-border bg-elevated/80 text-muted backdrop-blur-md transition-colors duration-150 hover:border-border-strong hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background"
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.8 }}
@@ -44,8 +44,8 @@ export function FeedbackButton({ onClick }: FeedbackButtonProps) {
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          width="17"
-          height="17"
+          width="19"
+          height="19"
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"

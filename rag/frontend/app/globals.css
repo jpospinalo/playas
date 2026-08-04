@@ -13,25 +13,37 @@
   --border: oklch(90% 0.008 210);
   --border-strong: oklch(78% 0.012 210);
 
-  /* Acento — turquesa real de marca ATLAS, derivado del logo */
-  --accent: oklch(48% 0.15 197);
-  --accent-hover: oklch(42% 0.15 197);
+  /* Acento — navy real de marca ATLAS, extraído del logo */
+  --accent: oklch(37% 0.104 250.8);
+  --accent-hover: oklch(32% 0.104 250.8);
   --accent-fg: oklch(99% 0.003 200);
-  --accent-soft: oklch(48% 0.15 197 / 10%);
+  --accent-soft: oklch(37% 0.104 250.8 / 10%);
   /* Legacy aliases — mantienen compat con clases ya escritas */
   --accent-bright: var(--accent-hover);
   --accent-light: var(--accent-soft);
 
   /* Glow ambiental (light: halo agua-sol, casi imperceptible) */
-  --glow-core: oklch(72% 0.15 195);
-  --glow-mid: oklch(58% 0.13 197);
-  --glow-edge: oklch(40% 0.09 205);
+  --glow-core: oklch(72% 0.15 250.8);
+  --glow-mid: oklch(58% 0.13 250.8);
+  --glow-edge: oklch(40% 0.09 250.8);
   --glow-opacity: 0.05;
   --glow-blur: 110px;
 
   /* Citas — mismo hue del acento */
-  --citation: oklch(38% 0.15 200);
-  --citation-fill: oklch(48% 0.15 197 / 8%);
+  --citation: oklch(27% 0.104 250.8);
+  --citation-fill: oklch(37% 0.104 250.8 / 8%);
+
+  /* Secundarios — verde y turquesa del logo, para badges/estados por doc_type */
+  --secondary-green: oklch(42% 0.093 160.9);
+  --secondary-green-soft: oklch(42% 0.093 160.9 / 12%);
+  --secondary-turquoise: oklch(42% 0.095 205.8);
+  --secondary-turquoise-soft: oklch(42% 0.095 205.8 / 12%);
+  /* Turquesa vivo — para botones/CTAs, tono real del agua del logo */
+  --secondary-turquoise-strong: oklch(56% 0.10 205.8);
+  --secondary-turquoise-strong-hover: oklch(50% 0.10 205.8);
+  /* Amarillo — extraído del logo de la universidad, suavizado */
+  --secondary-yellow: oklch(45% 0.13 103.6);
+  --secondary-yellow-soft: oklch(45% 0.13 103.6 / 14%);
 
   /* Funcionales */
   --danger: oklch(55% 0.20 25);
@@ -45,34 +57,44 @@
 }
 
 .dark {
-  /* Dark mode — Abyss (mar nocturno profundo, no negro terminal) */
-  --background: oklch(8% 0.02 220);
-  --surface: oklch(12% 0.025 220);
-  --elevated: oklch(16% 0.028 220);
-  --foreground: oklch(96% 0.005 200);
-  --muted: oklch(68% 0.015 210);
-  --subtle: oklch(48% 0.018 215);
-  --border: oklch(22% 0.02 220);
-  --border-strong: oklch(32% 0.025 220);
+  /* Dark mode — Abyss (mar nocturno suave, no negro puro) */
+  --background: oklch(13% 0.016 220);
+  --surface: oklch(17% 0.02 220);
+  --elevated: oklch(21% 0.022 220);
+  --foreground: oklch(92% 0.006 200);
+  --muted: oklch(66% 0.014 210);
+  --subtle: oklch(50% 0.016 215);
+  --border: oklch(27% 0.018 220);
+  --border-strong: oklch(36% 0.02 220);
 
-  /* Acento — turquesa real de marca, brillante sobre abyss */
-  --accent: oklch(72% 0.15 197);
-  --accent-hover: oklch(78% 0.15 197);
-  --accent-fg: oklch(10% 0.02 245);
-  --accent-soft: oklch(72% 0.15 197 / 14%);
+  /* Acento — navy real de marca, suavizado para armonía sobre abyss */
+  --accent: oklch(58% 0.085 250.8);
+  --accent-hover: oklch(64% 0.085 250.8);
+  --accent-fg: oklch(12% 0.02 245);
+  --accent-soft: oklch(58% 0.085 250.8 / 14%);
   --accent-bright: var(--accent-hover);
   --accent-light: var(--accent-soft);
 
   /* Glow ambiental (dark: presente pero discreto) */
-  --glow-core: oklch(72% 0.15 197);
-  --glow-mid: oklch(58% 0.13 197);
-  --glow-edge: oklch(40% 0.09 205);
-  --glow-opacity: 0.11;
+  --glow-core: oklch(65% 0.11 250.8);
+  --glow-mid: oklch(52% 0.10 250.8);
+  --glow-edge: oklch(36% 0.07 250.8);
+  --glow-opacity: 0.08;
   --glow-blur: 100px;
 
-  /* Citas — mismo hue, brillante */
-  --citation: oklch(72% 0.15 197);
-  --citation-fill: oklch(72% 0.15 197 / 12%);
+  /* Citas — mismo hue, suave */
+  --citation: oklch(58% 0.085 250.8);
+  --citation-fill: oklch(58% 0.085 250.8 / 12%);
+
+  /* Secundarios — verde y turquesa del logo, suavizados para abyss */
+  --secondary-green: oklch(68% 0.08 160.9);
+  --secondary-green-soft: oklch(68% 0.08 160.9 / 14%);
+  --secondary-turquoise: oklch(70% 0.085 205.8);
+  --secondary-turquoise-soft: oklch(70% 0.085 205.8 / 14%);
+  --secondary-turquoise-strong: oklch(62% 0.09 205.8);
+  --secondary-turquoise-strong-hover: oklch(68% 0.09 205.8);
+  --secondary-yellow: oklch(78% 0.12 103.6);
+  --secondary-yellow-soft: oklch(78% 0.12 103.6 / 16%);
 
   --danger: oklch(70% 0.16 25);
   --danger-bg: oklch(70% 0.16 25 / 10%);
@@ -101,6 +123,14 @@
   --color-accent-light: var(--accent-light);
   --color-citation: var(--citation);
   --color-citation-fill: var(--citation-fill);
+  --color-secondary-green: var(--secondary-green);
+  --color-secondary-green-soft: var(--secondary-green-soft);
+  --color-secondary-turquoise: var(--secondary-turquoise);
+  --color-secondary-turquoise-soft: var(--secondary-turquoise-soft);
+  --color-secondary-turquoise-strong: var(--secondary-turquoise-strong);
+  --color-secondary-turquoise-strong-hover: var(--secondary-turquoise-strong-hover);
+  --color-secondary-yellow: var(--secondary-yellow);
+  --color-secondary-yellow-soft: var(--secondary-yellow-soft);
   --color-danger: var(--danger);
   --color-danger-bg: var(--danger-bg);
   --color-success: var(--success);
@@ -235,26 +265,6 @@ body {
 
 .dark .atlas-glow--intense {
   --glow-opacity: 0.20;
-}
-
-/* ─── Skip link ───────────────────────────────────────────────────────────── */
-
-.skip-link {
-  position: absolute;
-  top: -100%;
-  left: 1rem;
-  z-index: 9999;
-  padding: 0.5rem 1rem;
-  background: var(--accent);
-  color: var(--accent-fg);
-  font-size: 0.875rem;
-  border-radius: 9999px;
-  text-decoration: none;
-  transition: top 0.15s;
-}
-
-.skip-link:focus {
-  top: 0.75rem;
 }
 
 /* ─── Heading anchors ─────────────────────────────────────────────────────── */

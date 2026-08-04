@@ -12,9 +12,9 @@ const fadeUp = {
 const STEPS = [
   {
     number: "01",
-    title: "Busco en el corpus",
+    title: "Busco en los documentos",
     description:
-      "Cuando preguntas algo, reviso el corpus completo de sentencias del Consejo de Estado y selecciono los fragmentos más relevantes para tu caso, combinando búsqueda por palabras clave y búsqueda semántica.",
+      "Cuando preguntas algo, reviso las sentencias del Consejo de Estado y selecciono los fragmentos más relevantes para tu caso, combinando búsqueda por palabras clave y búsqueda semántica.",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -35,9 +35,9 @@ const STEPS = [
   },
   {
     number: "02",
-    title: "Me ancla en lo que encuentro",
+    title: "Referencio",
     description:
-      "Solo uso fragmentos reales del corpus como contexto. No invento sentencias ni hago afirmaciones legales sin un documento que las respalde.",
+      "Uso fragmentos reales de las sentencias. No invento, ni hago afirmaciones legales sin un documento que las respalde.",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -59,7 +59,7 @@ const STEPS = [
   },
   {
     number: "03",
-    title: "Respondo y cito",
+    title: "Respondo",
     description:
       "Redacto la respuesta en lenguaje cotidiano, con citas a las sentencias usadas. Cada cita es expandible: puedes ver el extracto exacto y verificarlo.",
     icon: (
@@ -96,15 +96,12 @@ export function HowItWorks() {
         transition={{ duration: 0.5, ease: EASE }}
         className="mx-auto max-w-2xl text-center"
       >
-        <p className="mb-3 text-xs font-medium text-accent">
-          Cómo funciona
-        </p>
         <h2
           id="how-it-works-heading"
-          className="text-balance text-4xl font-medium leading-tight tracking-tight text-foreground md:text-5xl"
+          className="text-balance text-4xl font-medium leading-tight tracking-tight text-accent md:text-5xl"
           style={{ letterSpacing: "-0.02em" }}
         >
-          Cada respuesta se construye en tres pasos.
+          Cada respuesta se construye en tres pasos
         </h2>
       </motion.div>
 

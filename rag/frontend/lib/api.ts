@@ -1,3 +1,4 @@
+import { API_URL } from "@/lib/config";
 import { getToken } from "@/lib/auth";
 import type {
 	FeedbackRequest,
@@ -6,9 +7,6 @@ import type {
 	QueryResponse,
 	StreamEvent,
 } from "@/lib/types";
-
-'Modificacion, trata un string vacio como un falsy'
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
 
 function getAuthHeaders(): Record<string, string> {
 	const token = getToken();

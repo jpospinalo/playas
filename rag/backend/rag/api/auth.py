@@ -54,10 +54,19 @@ def _decode(token: str) -> dict:
 async def get_optional_user(
     creds: HTTPAuthorizationCredentials | None = Depends(_bearer),
 ) -> dict | None:
-    """Retorna el payload del JWT si está presente y es válido; None si no hay token."""
+    """Retorna el payload del JWT si está presente y es válido.
+
+    Si no hay token, o el token presente es inválido/expiró (p. ej. quedó
+    guardado en el navegador de una sesión o despliegue anterior), se trata
+    como anónimo en vez de bloquear el endpoint — la autenticación aquí es
+    opcional, un token roto no debería tumbar la petición.
+    """
     if creds is None:
         return None
-    return _decode(creds.credentials)
+    try:
+        return _decode(creds.credentials)
+    except HTTPException:
+        return None
 
 
 async def get_current_user(

@@ -37,12 +37,11 @@ function docTypeOf(meta: SourceMetadata): DocType {
 const TYPE_BADGE: Record<DocType, { label: string; className: string }> = {
   jurisprudencia: {
     label: "Jurisprudencia",
-    className: "bg-accent-soft text-accent",
+    className: "bg-secondary-turquoise-soft text-secondary-turquoise",
   },
   normativa: {
     label: "Normativa",
-    className:
-      "border border-border-strong/60 bg-elevated text-muted",
+    className: "bg-secondary-green-soft text-secondary-green",
   },
 };
 

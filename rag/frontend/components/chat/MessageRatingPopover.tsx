@@ -84,7 +84,7 @@ function StarRow({
 						<motion.div
 							id={tooltipId}
 							role="tooltip"
-							className="absolute left-0 top-8 z-50 max-w-[280px] rounded-xl border border-border bg-elevated px-3 py-2 text-xs text-muted shadow-lg shadow-black/30"
+							className="absolute left-0 top-8 z-50 max-w-[280px] rounded-xl border border-border bg-elevated px-3 py-2 text-xs text-muted shadow-lg shadow-secondary-turquoise/15"
 							initial={{ opacity: 0, y: -4 }}
 							animate={{ opacity: 1, y: 0 }}
 							exit={{ opacity: 0, y: -4 }}
@@ -222,7 +222,7 @@ export function MessageRatingPopover({
 						role="dialog"
 						aria-modal="true"
 						aria-labelledby="msg-rating-title"
-						className="relative z-10 w-full max-w-sm rounded-3xl border border-border bg-elevated p-6 shadow-2xl shadow-black/40"
+						className="relative z-10 w-full max-w-sm rounded-3xl border border-border bg-elevated p-6 shadow-2xl shadow-secondary-turquoise/20"
 						initial={{ opacity: 0, scale: 0.96, y: 8 }}
 						animate={{ opacity: 1, scale: 1, y: 0 }}
 						exit={{ opacity: 0, scale: 0.96, y: 8 }}
@@ -300,11 +300,11 @@ export function MessageRatingPopover({
 								>
 									<h2
 										id="msg-rating-title"
-										className="mb-1 text-lg font-medium text-foreground"
+										className="mb-1 text-center text-lg font-medium text-foreground"
 									>
 										Calificar esta respuesta
 									</h2>
-									<p className="mb-6 text-sm text-muted">
+									<p className="mb-6 text-center text-sm text-muted">
 										Tu calificación ayuda a mejorar la calidad de las respuestas.
 									</p>
 

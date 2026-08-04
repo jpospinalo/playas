@@ -26,25 +26,17 @@ export function AboutHero() {
       </div>
 
       <motion.div
-        className="relative mx-auto w-full max-w-3xl px-4 pb-20 pt-24 text-center sm:px-6 md:pt-32 lg:px-10"
+        className="relative mx-auto w-full max-w-3xl px-4 pb-20 pt-14 text-center sm:px-6 md:pt-20 lg:px-10 xl:px-16"
         variants={container}
         initial="hidden"
         animate="show"
       >
-        <motion.span
-          variants={item}
-          className="mb-5 inline-flex items-center gap-1.5 rounded-full border border-border bg-surface/40 px-3 py-1 text-[11px] font-medium text-muted backdrop-blur-sm"
-        >
-          <span className="h-1.5 w-1.5 rounded-full bg-accent" aria-hidden="true" />
-          Cómo funciono
-        </motion.span>
-
         <motion.h1
           variants={item}
-          className="text-balance text-4xl font-medium leading-[1.05] tracking-tight text-foreground md:text-6xl"
+          className="text-balance text-4xl font-medium leading-[1.05] tracking-tight text-accent md:text-6xl"
           style={{ letterSpacing: "-0.025em" }}
         >
-          Respuestas claras sobre playas, ancladas en sentencias reales.
+          Respuestas claras sobre playas, ancladas en sentencias reales
         </motion.h1>
 
         <motion.p
@@ -59,7 +51,7 @@ export function AboutHero() {
         <motion.div variants={item} className="mt-10 flex flex-wrap items-center justify-center gap-3">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 rounded-full bg-accent px-5 py-2.5 text-sm font-medium text-accent-fg transition-colors duration-150 hover:bg-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+            className="inline-flex items-center gap-2 rounded-xl bg-secondary-turquoise-strong px-5 py-2.5 text-sm font-medium text-white transition-colors duration-150 hover:bg-secondary-turquoise-strong-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background"
           >
             Hacer una consulta
             <svg
@@ -80,7 +72,7 @@ export function AboutHero() {
           </Link>
           <a
             href="#how-it-works-heading"
-            className="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface/40 px-5 py-2.5 text-sm font-medium text-muted backdrop-blur-sm transition-colors duration-150 hover:border-border-strong hover:bg-elevated hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+            className="inline-flex items-center gap-1.5 rounded-xl border border-border bg-surface/40 px-5 py-2.5 text-sm font-medium text-muted backdrop-blur-sm transition-colors duration-150 hover:border-border-strong hover:bg-elevated hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background"
           >
             Ver cómo funciona
           </a>

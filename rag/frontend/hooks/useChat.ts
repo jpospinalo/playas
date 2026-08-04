@@ -3,12 +3,12 @@
 import { useRef, useState } from "react";
 import { generateConversationTitle, queryRagStream } from "@/lib/api";
 import { getToken } from "@/lib/auth";
+import { API_URL } from "@/lib/config";
 import type { AgentStage, Message, SourceGroup } from "@/lib/types";
 import { normalizeSources } from "@/lib/types";
 import { useAuth } from "@/components/providers/AuthProvider";
 import type { Conversation } from "@/hooks/useConversations";
-'Modificacion para tomar string vacio como falsy y evitar el error 404 en burbuja'
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+
 function generateId(): string {
 	if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
 		return crypto.randomUUID();
