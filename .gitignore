@@ -61,6 +61,8 @@ dist/
 # 11) Terraform state
 *tfstate*
 .terraform/
+*.tfvars
+!*.tfvars.example
 
 # 12) Claude
 settings.local.json

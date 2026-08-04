@@ -15,7 +15,7 @@ export function AboutNav() {
       transition={{ duration: 0.4, ease: EASE }}
     >
       <nav
-        className="mx-auto flex max-w-5xl items-center justify-between px-4 py-6 sm:px-6 sm:py-7 lg:px-10 xl:px-16"
+        className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3 sm:px-6 sm:py-4 lg:px-10 xl:px-16"
         aria-label="Navegación principal"
       >
         <Link

@@ -14,7 +14,7 @@ const STEPS = [
     number: "01",
     title: "Busco en los documentos",
     description:
-      "Cuando preguntas algo, reviso las sentencias del Consejo de Estado y selecciono los fragmentos más relevantes para tu caso, combinando búsqueda por palabras clave y búsqueda semántica.",
+      "Cuando preguntas algo, reviso las sentencias del Consejo de Estado, selecciono los fragmentos más relevantes para tu caso. Combino búsqueda por palabras clave y por contexto.",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -121,7 +121,7 @@ export function HowItWorks() {
           >
             <div className="flex items-center gap-3">
               <div
-                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-accent-soft text-accent"
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-secondary-yellow-soft text-secondary-yellow"
                 aria-hidden="true"
               >
                 {step.icon}
@@ -136,7 +136,7 @@ export function HowItWorks() {
             <h3 className="text-balance text-lg font-semibold text-foreground">
               {step.title}
             </h3>
-            <p className="text-sm leading-relaxed text-muted">
+            <p className="text-justify text-sm leading-relaxed text-muted">
               {step.description}
             </p>
           </motion.li>

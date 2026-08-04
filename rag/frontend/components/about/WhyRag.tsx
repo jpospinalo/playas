@@ -50,7 +50,7 @@ export function WhyRag() {
           transition={{ duration: 0.55, ease: EASE, delay: 0.12 }}
         >
           <div
-            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-secondary-turquoise-soft text-secondary-turquoise"
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-secondary-yellow-soft text-secondary-yellow"
             aria-hidden="true"
           >
             <svg

@@ -1,18 +1,43 @@
-# Copiar a terraform.tfvars y completar con los valores reales
-# terraform.tfvars está en .gitignore (contiene secretos)
+# Copiar a terraform.tfvars y completar con los valores reales:
+#   cp terraform.tfvars.example terraform.tfvars
+# terraform.tfvars está en .gitignore (contiene secretos) — NUNCA debe commitearse.
+# Comparte los valores reales por un canal seguro (gestor de contraseñas, DM), no por git ni chat público.
+
+# ── Generales ──────────────────────────────────────────────────────────────────
+aws_region  = "us-east-1"
+project     = "rag-playas"
+environment = "prod"
+
+backend_image_tag  = "latest"
+frontend_image_tag = "latest"
 
 # ── Obligatorios ──────────────────────────────────────────────────────────────
-postgres_password = "cambia-esta-contrasena"
-jwt_secret_key    = "cambia-esta-clave-secreta-de-32-bytes"
+postgres_password  = "cambia-esta-contrasena"
+jwt_secret_key      = "cambia-esta-clave-secreta-de-32-bytes"
+jwt_algorithm       = "HS256"
+jwt_expire_minutes  = 10080
 
-chroma_host     = "ec2-xxx-xxx-xxx-xxx.compute-1.amazonaws.com"
-ollama_base_url = "http://ec2-xxx-xxx-xxx-xxx.compute-1.amazonaws.com:11434"
+chroma_host       = "ec2-xxx-xxx-xxx-xxx.compute-1.amazonaws.com"
+chroma_port       = 8000
+chroma_collection = "rag_playas"
+
+ollama_base_url        = "http://ec2-xxx-xxx-xxx-xxx.compute-1.amazonaws.com:11434"
+ollama_embedding_model = "embeddinggemma:latest"
+ollama_reranker_model  = "llama3.2:3b"
 
 # ── LLM (al menos uno debe estar configurado) ─────────────────────────────────
-openai_api_key = ""
+openai_api_key     = ""
+openai_model       = "gpt-4o-mini"
+
+openrouter_api_key = ""
+openrouter_model   = "openai/gpt-4o-mini"
+
 google_api_key = ""
+gemini_model   = "gemini-1.5-flash"
+
+# ── Query enrichment ────────────────────────────────────────────────────────────
+query_enrichment_enabled = true
+query_enrichment_hyde    = false
 
 # ── Opcionales ────────────────────────────────────────────────────────────────
 # s3_bucket_name = "rag-playas-data-xxxxxxxxx"
-# backend_image_tag  = "v1.0.0"
-# frontend_image_tag = "v1.0.0"

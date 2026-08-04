@@ -18,7 +18,7 @@ export function AtlasWordmark({
 				priority
 			/>
 			<span
-				className="font-medium tracking-[0.18em] uppercase leading-none text-foreground"
+				className="font-medium tracking-[0.18em] uppercase leading-none text-accent"
 				translate="no"
 			>
 				ATLAS

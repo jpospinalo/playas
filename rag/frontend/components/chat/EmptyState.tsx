@@ -22,10 +22,10 @@ export function EmptyState({
 	onSubmit,
 }: EmptyStateProps) {
 	return (
-		<div className="relative flex flex-1 flex-col items-center justify-start px-4 pb-12 pt-[8vh] sm:px-6 sm:pt-[10vh] lg:px-10 xl:px-16">
+		<div className="relative flex flex-1 flex-col items-center justify-start px-4 pb-12 pt-[3vh] sm:px-6 sm:pt-[4vh] lg:px-10 xl:px-16">
 			{/* Glow ambiental — la firma visual, contenida detrás del input */}
-			<div className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden">
-				<div className="relative h-[42vh] w-[64vw] max-h-[440px] max-w-[720px] translate-y-[2vh]">
+			<div className="pointer-events-none absolute inset-0 flex items-start justify-center overflow-hidden">
+				<div className="relative h-[42vh] w-[64vw] max-h-[440px] max-w-[720px] translate-y-[14vh]">
 					<div className="atlas-glow atlas-glow--intense" aria-hidden="true" />
 				</div>
 			</div>
