@@ -5,7 +5,6 @@ import { AnimatePresence, motion } from "motion/react";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { AuthModal } from "@/components/common/AuthModal";
 import { ConversationSidebar } from "@/components/chat/ConversationSidebar";
-import { GuestSidebar } from "@/components/chat/GuestSidebar";
 import { useChat } from "@/hooks/useChat";
 import { useConversations } from "@/hooks/useConversations";
 import { ChatHeader } from "@/components/chat/ChatHeader";
@@ -23,25 +22,10 @@ const MOBILE_SIDEBAR_QUERY = "(max-width: 767px)";
 
 export function ChatInterface() {
 	const { user, loading: authLoading } = useAuth();
-	const [showAuthModal, setShowAuthModal] = useState(false);
-	const [authModalMode, setAuthModalMode] = useState<
-		"recommendation" | "explicit"
-	>("recommendation");
 	const [sidebarOpen, setSidebarOpen] = useState(true);
-	// Sidebar de invitados: se genera al iniciar la conversación pero
-	// arranca cerrado — no comparte la preferencia persistida del sidebar autenticado.
-	const [guestSidebarOpen, setGuestSidebarOpen] = useState(false);
 	const [sidebarTransitionEnabled, setSidebarTransitionEnabled] =
 		useState(false);
 	const [showFeedbackModal, setShowFeedbackModal] = useState(false);
-	// Si el usuario no autenticado hace clic en FeedbackButton, guardamos la
-	// intención para re-abrir FeedbackModal automáticamente tras el login.
-	const pendingFeedbackRef = useRef(false);
-	const [authModalSubtitle, setAuthModalSubtitle] = useState<
-		string | undefined
-	>(undefined);
-	// Evita mostrar el modal de recomendación más de una vez por sesión
-	const hasPromptedRef = useRef(false);
 
 	const {
 		messages,
@@ -89,48 +73,11 @@ export function ChatInterface() {
 		});
 	}, []);
 
-	const toggleGuestSidebar = useCallback(() => {
-		setGuestSidebarOpen((current) => !current);
-	}, []);
-
 	const closeSidebarOnMobile = useCallback(() => {
 		if (window.matchMedia(MOBILE_SIDEBAR_QUERY).matches) {
 			setSidebarOpen(false);
 		}
 	}, []);
-
-	// Mostrar recomendación de auth una vez al entrar sin sesión
-	useEffect(() => {
-		if (!authLoading && !user && !hasPromptedRef.current) {
-			hasPromptedRef.current = true;
-			const frame = window.requestAnimationFrame(() => {
-				setAuthModalMode("recommendation");
-				setShowAuthModal(true);
-			});
-			return () => window.cancelAnimationFrame(frame);
-		}
-	}, [authLoading, user]);
-
-	// Cerrar el modal de auth cuando el usuario se autentica.
-	// Si había intención de calificar, re-abrir FeedbackModal.
-	useEffect(() => {
-		if (user) {
-			const frame = window.requestAnimationFrame(() => {
-				setShowAuthModal(false);
-				if (pendingFeedbackRef.current) {
-					pendingFeedbackRef.current = false;
-					setShowFeedbackModal(true);
-				}
-			});
-			return () => window.cancelAnimationFrame(frame);
-		}
-	}, [user]);
-
-	function openAuthModal(subtitle?: string) {
-		setAuthModalMode("explicit");
-		setAuthModalSubtitle(subtitle);
-		setShowAuthModal(true);
-	}
 
 	/*
 	 * textareaRef lives here so ChatInterface can focus the input
@@ -191,62 +138,47 @@ export function ChatInterface() {
 	}
 
 	const showEmptyState = messages.length === 0 && !loading && !error;
-	const showGuestSidebar = !user && !showEmptyState;
+
+	// Sin sesión: solo se muestra el modal de login/registro, obligatorio y
+	// no descartable — no hay flujo de invitado.
+	if (authLoading || !user) {
+		return (
+			<div className="relative flex flex-1 overflow-hidden">
+				<AuthModal open={!authLoading} dismissible={false} onClose={() => {}} />
+			</div>
+		);
+	}
 
 	return (
 		<div className="relative flex flex-1 overflow-hidden">
 			{/* Sidebar de conversaciones */}
-			{user && (
-				<ConversationSidebar
-					conversations={conversations}
-					activeConversationId={conversationId}
-					loading={conversationsLoading}
-					isExpanded={sidebarOpen}
-					transitionEnabled={sidebarTransitionEnabled}
-					onSelectConversation={async (conv) => {
-						await loadConversation(conv);
-						closeSidebarOnMobile();
-					}}
-					onNewChat={() => {
-						resetChat();
-						closeSidebarOnMobile();
-					}}
-					onToggleSidebar={toggleSidebar}
-				/>
-			)}
-
-			{/* Sidebar reducido para invitados sin sesión que ya iniciaron una conversación */}
-			{showGuestSidebar && (
-				<GuestSidebar
-					isExpanded={guestSidebarOpen}
-					transitionEnabled={sidebarTransitionEnabled}
-					onNewChat={resetChat}
-					onOpenAuth={() => openAuthModal()}
-					onToggleSidebar={toggleGuestSidebar}
-				/>
-			)}
+			<ConversationSidebar
+				conversations={conversations}
+				activeConversationId={conversationId}
+				loading={conversationsLoading}
+				isExpanded={sidebarOpen}
+				transitionEnabled={sidebarTransitionEnabled}
+				onSelectConversation={async (conv) => {
+					await loadConversation(conv);
+					closeSidebarOnMobile();
+				}}
+				onNewChat={() => {
+					resetChat();
+					closeSidebarOnMobile();
+				}}
+				onToggleSidebar={toggleSidebar}
+			/>
 
 			{/* Área principal del chat */}
 			<div className="flex flex-1 flex-col overflow-hidden">
-				<AuthModal
-					open={showAuthModal}
-					mode={authModalMode}
-					subtitle={authModalSubtitle}
-					onClose={() => setShowAuthModal(false)}
-				/>
 				<FeedbackModal
 					open={showFeedbackModal}
 					conversationId={conversationId}
 					onClose={() => setShowFeedbackModal(false)}
 				/>
 				<ChatHeader
-					onNewChat={user || showGuestSidebar ? undefined : resetChat}
-					onOpenAuth={openAuthModal}
-					onToggleSidebar={
-						user ? toggleSidebar : showGuestSidebar ? toggleGuestSidebar : undefined
-					}
-					sidebarOpen={user ? sidebarOpen : guestSidebarOpen}
-					hideActions={showGuestSidebar}
+					onToggleSidebar={toggleSidebar}
+					sidebarOpen={sidebarOpen}
 				/>
 
 				<main
@@ -340,19 +272,7 @@ export function ChatInterface() {
 						onSubmit={() => handleSubmit(input)}
 						sideSlot={
 							messages.length > 0 ? (
-								<FeedbackButton
-									onClick={() => {
-										if (user) {
-											setShowFeedbackModal(true);
-										} else {
-											// Guardar intención y pedir login con mensaje contextual
-											pendingFeedbackRef.current = true;
-											openAuthModal(
-												"Debes iniciar sesión para calificar el sistema.",
-											);
-										}
-									}}
-								/>
+								<FeedbackButton onClick={() => setShowFeedbackModal(true)} />
 							) : undefined
 						}
 					/>

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { useAuth } from "@/components/providers/AuthProvider";
+import { getLastEmail } from "@/lib/auth";
 
 
 function EyeIcon({ open }: { open: boolean }) {
@@ -48,18 +49,21 @@ const inputClass =
 
 interface AuthModalProps {
   open: boolean;
-  mode?: "recommendation" | "explicit";
-  subtitle?: string;
   onClose: () => void;
+  /** false para el gate obligatorio de inicio: oculta el botón de cerrar. Por defecto true. */
+  dismissible?: boolean;
 }
 
 type Tab = "login" | "register";
 
-export function AuthModal({ open, mode = "explicit", subtitle, onClose }: AuthModalProps) {
-  const { signIn, signUp } = useAuth();
-  const [tab, setTab] = useState<Tab>("login");
+export function AuthModal({ open, onClose, dismissible = true }: AuthModalProps) {
+  const { signIn } = useAuth();
+  // Registro deshabilitado: solo queda el flujo de login. `tab` se conserva
+  // fijo en "login" — el bloque de UI para cambiar de pestaña y el
+  // formulario de registro quedan comentados más abajo por si se reactiva.
+  const [tab] = useState<Tab>("login");
   const [displayName, setDisplayName] = useState("");
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(getLastEmail);
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -69,7 +73,7 @@ export function AuthModal({ open, mode = "explicit", subtitle, onClose }: AuthMo
 
   function resetForm() {
     setDisplayName("");
-    setEmail("");
+    setEmail(getLastEmail());
     setPassword("");
     setConfirmPassword("");
     setShowPassword(false);
@@ -78,28 +82,30 @@ export function AuthModal({ open, mode = "explicit", subtitle, onClose }: AuthMo
     setSubmitting(false);
   }
 
-  function handleTabChange(next: Tab) {
-    setTab(next);
-    setError(null);
-  }
+  // Deshabilitado junto con el tab de registro (ver más abajo).
+  // function handleTabChange(next: Tab) {
+  //   setTab(next);
+  //   setError(null);
+  // }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (submitting) return;
     setError(null);
 
-    if (tab === "register" && password !== confirmPassword) {
-      setError("Las contraseñas no coinciden.");
-      return;
-    }
-
     setSubmitting(true);
     try {
-      if (tab === "login") {
-        await signIn(email, password);
-      } else {
-        await signUp(email, password, displayName);
-      }
+      // Registro deshabilitado: por ahora solo se admite login.
+      // if (tab === "register" && password !== confirmPassword) {
+      //   setError("Las contraseñas no coinciden.");
+      //   return;
+      // }
+      // if (tab === "login") {
+      //   await signIn(email, password);
+      // } else {
+      //   await signUp(email, password, displayName);
+      // }
+      await signIn(email, password);
       resetForm();
       onClose();
     } catch (err: unknown) {
@@ -147,54 +153,40 @@ export function AuthModal({ open, mode = "explicit", subtitle, onClose }: AuthMo
             exit={{ opacity: 0, scale: 0.96, y: 8 }}
             transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
           >
-            <button
-              onClick={handleClose}
-              aria-label="Cerrar"
-              className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full text-muted transition-colors hover:bg-surface hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="15"
-                height="15"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                aria-hidden="true"
+            {dismissible && (
+              <button
+                onClick={handleClose}
+                aria-label="Cerrar"
+                className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full text-muted transition-colors hover:bg-surface hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
               >
-                <path d="M18 6 6 18M6 6l12 12" />
-              </svg>
-            </button>
-
-            {mode === "recommendation" ? (
-              <div className="mb-6 text-center">
-                <h2
-                  id="auth-modal-title"
-                  className="text-lg font-medium text-foreground"
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="15"
+                  height="15"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
                 >
-                  Guarda tu historial
-                </h2>
-                <p className="mt-1.5 text-sm text-muted">
-                  Inicia sesión para conservar tus conversaciones y acceder a
-                  ellas desde cualquier dispositivo.
-                </p>
-              </div>
-            ) : (
-              <div className="mb-6 text-center">
-                <h2
-                  id="auth-modal-title"
-                  className="text-lg font-medium text-foreground"
-                >
-                  {tab === "login" ? "Iniciar sesión" : "Crear cuenta"}
-                </h2>
-                {subtitle && (
-                  <p className="mt-1.5 text-sm text-muted">{subtitle}</p>
-                )}
-              </div>
+                  <path d="M18 6 6 18M6 6l12 12" />
+                </svg>
+              </button>
             )}
 
+            <div className="mb-6 text-center">
+              <h2
+                id="auth-modal-title"
+                className="text-lg font-medium text-foreground"
+              >
+                {tab === "login" ? "Iniciar sesión" : "Crear cuenta"}
+              </h2>
+            </div>
+
+            {/* Registro deshabilitado: se quita el selector de pestañas
+                iniciar sesión / registrarse. Solo queda el flujo de login.
             <div
               role="tablist"
               aria-label="Modo de acceso"
@@ -216,8 +208,10 @@ export function AuthModal({ open, mode = "explicit", subtitle, onClose }: AuthMo
                 </button>
               ))}
             </div>
+            */}
 
             <form onSubmit={handleSubmit} noValidate className="space-y-3.5">
+              {/* Campo de nombre: solo aplicaba al registro, deshabilitado.
               {tab === "register" && (
                 <div>
                   <label
@@ -239,6 +233,7 @@ export function AuthModal({ open, mode = "explicit", subtitle, onClose }: AuthMo
                   />
                 </div>
               )}
+              */}
 
               <div>
                 <label
@@ -291,6 +286,7 @@ export function AuthModal({ open, mode = "explicit", subtitle, onClose }: AuthMo
                 </div>
               </div>
 
+              {/* Campo de confirmación: solo aplicaba al registro, deshabilitado.
               {tab === "register" && (
                 <div>
                   <label
@@ -328,6 +324,7 @@ export function AuthModal({ open, mode = "explicit", subtitle, onClose }: AuthMo
                   )}
                 </div>
               )}
+              */}
 
               <AnimatePresence>
                 {error && (
@@ -356,13 +353,6 @@ export function AuthModal({ open, mode = "explicit", subtitle, onClose }: AuthMo
                     : "Crear cuenta"}
               </button>
             </form>
-
-            <button
-              onClick={handleClose}
-              className="mt-4 w-full text-center text-xs text-subtle transition-colors hover:text-foreground focus-visible:outline-none focus-visible:underline"
-            >
-              Continuar sin cuenta
-            </button>
           </motion.div>
         </motion.div>
       )}

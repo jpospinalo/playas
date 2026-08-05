@@ -10,6 +10,7 @@ import {
 import {
 	clearAuth,
 	getStoredUser,
+	rememberEmail,
 	setAuth,
 	type AuthUser,
 } from "@/lib/auth";
@@ -63,6 +64,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 			role: data.role,
 		};
 		setAuth(data.access_token, authUser);
+		rememberEmail(data.email);
 		setUser(authUser);
 	}
 
@@ -96,6 +98,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 			role: data.role,
 		};
 		setAuth(data.access_token, authUser);
+		rememberEmail(data.email);
 		setUser(authUser);
 	}
 

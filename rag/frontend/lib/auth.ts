@@ -5,6 +5,7 @@
 
 const TOKEN_KEY = "atlas_token";
 const USER_KEY = "atlas_user";
+const LAST_EMAIL_KEY = "atlas_last_email";
 
 export interface AuthUser {
 	user_id: string;
@@ -37,4 +38,18 @@ export function getStoredUser(): AuthUser | null {
 	} catch {
 		return null;
 	}
+}
+
+/**
+ * Recuerda el último correo usado para iniciar sesión, para precargarlo
+ * en el formulario de login la próxima vez (el usuario solo escribe la
+ * contraseña). Se conserva incluso después de cerrar sesión.
+ */
+export function rememberEmail(email: string): void {
+	localStorage.setItem(LAST_EMAIL_KEY, email);
+}
+
+export function getLastEmail(): string {
+	if (typeof window === "undefined") return "";
+	return localStorage.getItem(LAST_EMAIL_KEY) ?? "";
 }
