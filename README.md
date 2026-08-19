@@ -12,6 +12,7 @@ Esta guía cubre el despliegue completo en AWS: servicios de vectores en EC2 y l
 |---|---|
 | Terraform | 1.7 |
 | AWS CLI | 2.x |
+| Session Manager Plugin (AWS) | cualquiera |
 | Docker | 24.x |
 | Python + uv | cualquiera |
 
@@ -37,6 +38,15 @@ sudo apt update && sudo apt install terraform
 
 ```bash
 curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
+- **Instalar Session Manager Plugin (Ubuntu):** requerido por `deploy.sh` para el paso de ECS Exec (`aws ecs execute-command`) que importa los usuarios semilla a PostgreSQL.
+
+```bash
+# x86_64 (usar ubuntu_arm64 en la URL si `uname -m` devuelve aarch64)
+curl "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/ubuntu_64bit/session-manager-plugin.deb" -o session-manager-plugin.deb
+sudo dpkg -i session-manager-plugin.deb
+session-manager-plugin   # debe responder "was installed successfully"
 ```
 
 ## Despliegue automático
@@ -84,6 +94,20 @@ La aplicación queda disponible en `http://<alb_url>`:
 - `/` → Frontend Next.js
 - `/api/` → Backend FastAPI
 - `/api/health` → Healthcheck
+
+### 4. Exportar la base de datos PostgreSQL
+
+Fargate no permite `docker cp` ni montar el volumen EFS directamente, así que
+el script sube el dump a un bucket S3 puente (vía URL prefirmada) y luego lo
+descarga localmente en `data/backups/`:
+
+```bash
+./rag/infrastructure/scripts/export_postgres.sh --bucket <nombre-bucket-s3>
+```
+
+Por defecto conserva la copia en el bucket S3; usar `--delete-remote` para
+borrarla tras la descarga. Requiere el Session Manager Plugin (mismo requisito
+que `deploy.sh`, usa `aws ecs execute-command`).
 
 ---
 

@@ -9,7 +9,7 @@ REGION="${AWS_DEFAULT_REGION:-us-east-1}"
 ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
 ECR_BASE="${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com"
 
-# Obtener URLs de ECR y del ALB desde los outputs de Terraform
+# Obtener URLs de ECR y la URL pública del ALB desde los outputs de Terraform
 BACKEND_REPO=$(terraform -chdir="$(dirname "$0")/.." output -raw ecr_backend_url)
 FRONTEND_REPO=$(terraform -chdir="$(dirname "$0")/.." output -raw ecr_frontend_url)
 ALB_URL=$(terraform -chdir="$(dirname "$0")/.." output -raw alb_url)
@@ -27,10 +27,10 @@ docker build \
   -t "${BACKEND_REPO}:${TAG}" \
   "${RAG_DIR}"
 
-# NEXT_PUBLIC_API_URL se hornea en el JS en tiempo de build (no se lee en runtime).
-# Sin este build-arg, el frontend cae al fallback "http://localhost:8080" y todo
-# fetch desde el navegador falla con "Failed to fetch" fuera de tu máquina.
-echo "▶ Construyendo frontend → ${FRONTEND_REPO}:${TAG} (NEXT_PUBLIC_API_URL=${ALB_URL})"
+echo "▶ Construyendo frontend → ${FRONTEND_REPO}:${TAG}"
+# NEXT_PUBLIC_API_URL se inyecta en build-time (Next.js la inlinea en el bundle
+# del cliente) — sin esto el frontend queda apuntando al valor por defecto
+# (http://localhost:8080) y el navegador del usuario no puede alcanzarlo.
 docker build \
   --build-arg NEXT_PUBLIC_API_URL="${ALB_URL}" \
   -f "${RAG_DIR}/docker/Dockerfile.frontend" \

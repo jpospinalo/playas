@@ -3,9 +3,9 @@
 # Despliega en Vercel UNICAMENTE el tutorial HTML de ground truth.
 #
 # Como funciona:
-#   Copia docs/ground-truth/ATLAS_Tutorial_Ground_Truth.html a una carpeta
-#   temporal aislada como "index.html" y despliega SOLO esa carpeta. Asi el
-#   sitio publicado contiene exclusivamente el HTML (nada del resto del repo).
+#   Copia docs/ground-truth/tutorial2.html a una carpeta temporal aislada
+#   como "index.html" y despliega SOLO esa carpeta. Asi el sitio publicado
+#   contiene exclusivamente el HTML (nada del resto del repo).
 #
 # Requisitos (una sola vez):
 #   - Vercel CLI instalado:   npm i -g vercel
@@ -25,7 +25,7 @@ $ErrorActionPreference = "Stop"
 
 # --- Rutas ---
 $RepoRoot = Split-Path -Parent $PSScriptRoot
-$HtmlPath = Join-Path $RepoRoot "docs/ground-truth/ATLAS_Tutorial_Ground_Truth.html"
+$HtmlPath = Join-Path $RepoRoot "docs/ground-truth/tutorial2.html"
 $Project  = "atlas-tutorial-groundtruth"
 
 if (-not (Test-Path $HtmlPath)) {

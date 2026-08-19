@@ -69,6 +69,22 @@ uv run python rag/scripts/migrate_feedback_ratings.py             # aplica
 
 ---
 
+## Pruebas de carga
+
+### `scripts/load_test.py`
+
+Lanza N usuarios concurrentes contra `/api/query/stream` (el endpoint SSE que usa el frontend) en el ALB de ECS, y reporta latencias (tiempo al primer evento, al primer token, total).
+
+```bash
+uv run python rag/scripts/load_test.py --users 10 --timeout 60
+```
+
+**Nota:** la URL del ALB está hardcodeada en el script (`BASE_URL`); actualízala si el ALB cambia (p. ej. tras recrear la infraestructura Terraform).
+
+**Cuándo usarlo:** para validar manualmente latencia/estabilidad del backend bajo concurrencia antes o después de un despliegue.
+
+---
+
 ## Utilidades ChromaDB (`utils/`)
 
 ### `utils/chroma_count.py`
@@ -113,3 +129,4 @@ uv run python -m utils.list_gemini_models
 | Limpiar ChromaDB para re-indexar | `uv run python -m utils.chroma_clear` |
 | Instalar Docker en Ubuntu | `sudo bash rag/scripts/install-docker-ubuntu.sh` |
 | Migrar feedback a multi-dimensional | `uv run python rag/scripts/migrate_feedback_ratings.py --dry-run` |
+| Prueba de carga contra ECS | `uv run python rag/scripts/load_test.py --users 10` |

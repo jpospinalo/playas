@@ -41,8 +41,8 @@ services:
   # ── Frontend (Next.js) ───────────────────────────────────────────────────────
   frontend:
     build:
-      context: ./frontend
-      dockerfile: ../docker/Dockerfile.frontend
+      context: .
+      dockerfile: docker/Dockerfile.frontend
       args:
         NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
     expose:
