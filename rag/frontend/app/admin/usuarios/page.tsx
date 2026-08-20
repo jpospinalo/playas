@@ -308,7 +308,7 @@ function CreateUserModal({
             <input
               type={showPwd ? "text" : "password"}
               required
-              minLength={6}
+              minLength={8}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className={`${modalInputMonoClass} pr-11`}
@@ -321,7 +321,7 @@ function CreateUserModal({
           <input
             type={showPwd ? "text" : "password"}
             required
-            minLength={6}
+            minLength={8}
             value={confirm}
             onChange={(e) => setConfirm(e.target.value)}
             className={`${modalInputMonoClass} ${confirm && confirm !== password ? "border-danger focus:border-danger focus:shadow-[0_0_0_3px_var(--danger-bg)]" : ""}`}
@@ -415,7 +415,7 @@ function ChangePasswordModal({
             <input
               type={showPwd ? "text" : "password"}
               required
-              minLength={6}
+              minLength={8}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               autoFocus
@@ -429,7 +429,7 @@ function ChangePasswordModal({
           <input
             type={showPwd ? "text" : "password"}
             required
-            minLength={6}
+            minLength={8}
             value={confirm}
             onChange={(e) => setConfirm(e.target.value)}
             className={`${modalInputMonoClass} ${confirm && confirm !== password ? "border-danger focus:border-danger focus:shadow-[0_0_0_3px_var(--danger-bg)]" : ""}`}

@@ -2,25 +2,29 @@
 
 from __future__ import annotations
 
+import logging
 import uuid
 from datetime import UTC, datetime
+from typing import Literal
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from langchain_core.messages import HumanMessage
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from rag.api.auth import get_current_user
 from rag.api.database import get_session
 from rag.api.models import Conversation, Message
+from rag.api.rate_limit import get_title_user
 from rag.core.llm_factory import get_provider
 
 router = APIRouter(prefix="/api/conversations", tags=["conversations"])
+logger = logging.getLogger(__name__)
 
 _TITLE_PROMPT = (
-    "Genera un título conciso (máximo 8 palabras) para una consulta jurídica "
-    "sobre playas y dominio público marítimo-terrestre colombiano. "
+    "Genera un título conciso (máximo 8 palabras) para una consulta jurídica o normativa "
+    "sobre playas, zonas costeras, pesca, turismo, usos, derechos o procedimientos relacionados. "
     "El título debe resumir la esencia de la consulta. "
     "Responde solo con el título, sin comillas ni puntuación final.\n\n"
     "Consulta: {message}"
@@ -28,8 +32,10 @@ _TITLE_PROMPT = (
 
 
 class GenerateTitleRequest(BaseModel):
-    first_message: str
-    conversation_id: str
+    model_config = ConfigDict(str_strip_whitespace=True)
+
+    first_message: str = Field(min_length=1, max_length=4000)
+    conversation_id: str = Field(min_length=1, max_length=64)
 
 
 class GenerateTitleResponse(BaseModel):
@@ -46,8 +52,10 @@ class ConversationOut(BaseModel):
 
 
 class CreateConversationRequest(BaseModel):
-    thread_id: str
-    title: str | None = None
+    model_config = ConfigDict(str_strip_whitespace=True)
+
+    thread_id: str = Field(min_length=1, max_length=128)
+    title: str | None = Field(default=None, max_length=120)
 
 
 class MessageOut(BaseModel):
@@ -59,14 +67,18 @@ class MessageOut(BaseModel):
 
 
 class AddMessageRequest(BaseModel):
-    role: str
-    text: str
-    sources: list | None = None
+    model_config = ConfigDict(str_strip_whitespace=True)
+
+    message_id: str | None = Field(default=None, min_length=1, max_length=64)
+    role: Literal["user", "assistant"]
+    text: str = Field(min_length=1, max_length=50_000)
+    sources: list | None = Field(default=None, max_length=20)
 
 
 class UpdateConversationRequest(BaseModel):
-    title: str | None = None
-    message_count: int | None = None
+    model_config = ConfigDict(str_strip_whitespace=True)
+
+    title: str | None = Field(default=None, min_length=1, max_length=120)
 
 
 @router.get("", response_model=list[ConversationOut])
@@ -172,9 +184,29 @@ async def add_message(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Conversación no encontrada.",
         )
+    if payload.message_id:
+        existing = await session.get(Message, payload.message_id)
+        if existing is not None:
+            if (
+                existing.conversation_id == conversation_id
+                and existing.role == payload.role
+                and existing.text == payload.text
+                and existing.sources == payload.sources
+            ):
+                return MessageOut(
+                    id=existing.id,
+                    role=existing.role,
+                    text=existing.text,
+                    sources=existing.sources,
+                    created_at=existing.created_at.isoformat(),
+                )
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="El identificador del mensaje ya está en uso.",
+            )
     now = datetime.now(UTC)
     msg = Message(
-        id=str(uuid.uuid4()),
+        id=payload.message_id or str(uuid.uuid4()),
         conversation_id=conversation_id,
         role=payload.role,
         text=payload.text,
@@ -201,7 +233,7 @@ async def update_conversation(
     user: dict = Depends(get_current_user),
     session: AsyncSession = Depends(get_session),
 ) -> ConversationOut:
-    """Actualiza el título o el contador de mensajes de una conversación."""
+    """Actualiza el título de una conversación."""
     conv = await session.get(Conversation, conversation_id)
     if conv is None or conv.user_id != user["sub"]:
         raise HTTPException(
@@ -210,8 +242,6 @@ async def update_conversation(
         )
     if payload.title is not None:
         conv.title = payload.title
-    if payload.message_count is not None:
-        conv.message_count = payload.message_count
     conv.updated_at = datetime.now(UTC)
     await session.commit()
     return ConversationOut(
@@ -249,10 +279,17 @@ async def delete_conversation(
 @router.post("/generate-title", response_model=GenerateTitleResponse)
 async def generate_title(
     request: GenerateTitleRequest,
-    user: dict = Depends(get_current_user),
+    user: dict = Depends(get_title_user),
     session: AsyncSession = Depends(get_session),
 ) -> GenerateTitleResponse:
     """Genera un título corto con IA y lo guarda en la conversación."""
+    conv = await session.get(Conversation, request.conversation_id)
+    if conv is None or conv.user_id != user["sub"]:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Conversación no encontrada.",
+        )
+
     provider = get_provider()
     llm = provider.create_llm(temperature=0.3, use_case="title-generation")
 
@@ -260,15 +297,16 @@ async def generate_title(
     try:
         response = await llm.ainvoke([HumanMessage(content=prompt)])
         title = str(response.content).strip().strip('"').strip("'")[:60]
+        if not title:
+            title = request.first_message[:60]
     except Exception as exc:
+        logger.exception("Error generando el título de la conversación")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Error generando el título: {exc}",
+            detail="No fue posible generar el título.",
         ) from exc
 
-    conv = await session.get(Conversation, request.conversation_id)
-    if conv is not None and conv.user_id == user["sub"]:
-        conv.title = title
-        await session.commit()
+    conv.title = title
+    await session.commit()
 
     return GenerateTitleResponse(title=title)

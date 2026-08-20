@@ -9,7 +9,6 @@ final LLM generation prompt.
 
 Configuration (via .env or environment):
     QUERY_ENRICHMENT_ENABLED  – "true" (default) | "false"
-    QUERY_ENRICHMENT_HYDE     – "false" (default) | "true"
 """
 
 from __future__ import annotations
@@ -17,19 +16,17 @@ from __future__ import annotations
 import json
 import logging
 import re
+from typing import Literal, cast
 
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
-from pydantic import BaseModel, Field, ValidationError
+from pydantic import BaseModel, ConfigDict, Field, ValidationError, model_validator
 
 from rag.config import QUERY_ENRICHMENT_ENABLED as ENRICHMENT_ENABLED
-from rag.config import QUERY_ENRICHMENT_HYDE as ENRICHMENT_HYDE
 
 from .llm_factory import get_active_provider, get_enrichment_llm
 from .prompts import (
     ENRICHER_HUMAN_BODY,
-    ENRICHER_HYDE_CLAUSE,
-    ENRICHER_LEGAL_CONCEPTS,
     ENRICHER_SYSTEM,
 )
 
@@ -41,33 +38,45 @@ logger = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------
 
 
-class EnrichedQuery(BaseModel):
-    """Structured output of the enrichment LLM call."""
+QueryRoute = Literal["in_scope", "out_of_scope", "conversation", "needs_clarification"]
+DocumentType = Literal["jurisprudencia", "normativa"]
 
+
+class EnrichedQuery(BaseModel):
+    """Resultado estructurado del análisis de alcance y enriquecimiento."""
+
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+
+    route: QueryRoute = Field(description="Ruta determinista que debe seguir la consulta.")
+    standalone_question: str = Field(
+        min_length=1,
+        max_length=4000,
+        description="Pregunta autosuficiente, resuelta con ayuda del historial reciente.",
+    )
     expanded_query: str = Field(
-        description=(
-            "Cadena de búsqueda enriquecida con términos jurídicos precisos del "
-            "derecho colombiano de costas, sinónimos legales e instituciones relevantes."
-        )
+        min_length=1,
+        max_length=1000,
+        description="Consulta compacta usada por el recuperador híbrido.",
     )
-    legal_concepts: list[str] = Field(
+    doc_types: list[DocumentType] = Field(
         default_factory=list,
-        description="1–3 etiquetas del tipo de problema jurídico identificado.",
+        max_length=2,
+        description="Tipos documentales pertinentes para una consulta dentro del ámbito.",
     )
-    sub_questions: list[str] = Field(
-        default_factory=list,
-        description=(
-            "0–3 sub-preguntas focalizadas que descomponen la consulta en aspectos "
-            "jurídicos independientes. Lista vacía si la consulta ya es específica."
-        ),
-    )
-    hyde_passage: str | None = Field(
-        default=None,
-        description=(
-            "Fragmento hipotético de sentencia que podría aparecer en el corpus. "
-            "Solo se genera cuando QUERY_ENRICHMENT_HYDE=true."
-        ),
-    )
+
+    @model_validator(mode="after")
+    def validate_route_payload(self) -> EnrichedQuery:
+        self.doc_types = list(dict.fromkeys(self.doc_types))
+        words = self.expanded_query.split()
+        if len(words) > 45:
+            self.expanded_query = " ".join(words[:45])
+        if self.route == "in_scope" and not self.doc_types:
+            raise ValueError("Una consulta in_scope debe seleccionar al menos un tipo documental.")
+        if self.route != "in_scope" and self.doc_types:
+            raise ValueError(
+                "Las consultas sin recuperación no deben seleccionar tipos documentales."
+            )
+        return self
 
 
 # ---------------------------------------------------------------------------
@@ -77,11 +86,9 @@ class EnrichedQuery(BaseModel):
 _ENRICHMENT_SYSTEM = ENRICHER_SYSTEM
 
 
-def _build_human_body(include_hyde: bool) -> str:
-    """Returns the task instructions block (without the system framing)."""
-    concepts = ", ".join(ENRICHER_LEGAL_CONCEPTS)
-    hyde_section = ENRICHER_HYDE_CLAUSE if include_hyde else ""
-    return ENRICHER_HUMAN_BODY.format(concepts=concepts, hyde_section=hyde_section)
+def _build_human_body() -> str:
+    """Devuelve las instrucciones del analizador."""
+    return ENRICHER_HUMAN_BODY
 
 
 # ---------------------------------------------------------------------------
@@ -91,7 +98,11 @@ def _build_human_body(include_hyde: bool) -> str:
 _JSON_FENCE_RE = re.compile(r"```(?:json)?\s*([\s\S]*?)```", re.IGNORECASE)
 
 
-def _parse_json_response(text: str, question: str) -> EnrichedQuery:
+def _parse_json_response(
+    text: str,
+    question: str,
+    history_context: str = "",
+) -> EnrichedQuery:
     """Extract and validate JSON from a plain-text LLM response.
 
     Strips markdown code fences if the model added them, then validates
@@ -106,23 +117,23 @@ def _parse_json_response(text: str, question: str) -> EnrichedQuery:
         data = json.loads(json_text)
         result = EnrichedQuery(**data)
         if not result.expanded_query.strip():
-            return _fallback(question)
-        return result
+            return _fallback(question, history_context)
+        return _apply_domain_guard(result, question, history_context)
     except (json.JSONDecodeError, ValidationError, TypeError):
         logger.warning(
             "Failed to parse enrichment JSON response; using fallback.\nRaw output: %s",
             text[:300],
         )
-        return _fallback(question)
+        return _fallback(question, history_context)
 
 
-def _build_prompt(include_hyde: bool) -> ChatPromptTemplate:
+def _build_prompt() -> ChatPromptTemplate:
     """Return the appropriate prompt template for the active provider.
 
     When the provider does not support a dedicated system role (e.g. Gemma via
     Google GenAI), instructions are folded into the single human turn.
     """
-    human_body = _build_human_body(include_hyde)
+    human_body = _build_human_body()
     if not get_active_provider().supports_system_role:
         return ChatPromptTemplate.from_messages(
             [("human", f"INSTRUCCIONES:\n{{instructions}}\n\n{human_body}")]
@@ -140,9 +151,89 @@ def _build_prompt(include_hyde: bool) -> ChatPromptTemplate:
 # ---------------------------------------------------------------------------
 
 
-def _fallback(question: str) -> EnrichedQuery:
-    """Return a minimal enriched query using the original question unchanged."""
-    return EnrichedQuery(expanded_query=question, legal_concepts=[], sub_questions=[])
+_GREETING_RE = re.compile(
+    r"^\s*(hola|buen(?:os|as)\s+(?:d[ií]as|tardes|noches)|gracias|adi[oó]s|hasta luego)[!.?\s]*$",
+    re.IGNORECASE,
+)
+_CAPABILITIES_RE = re.compile(
+    r"\b(qu[eé]\s+(?:puedes|haces|eres)|c[oó]mo\s+(?:funcionas|ayudas)|tus\s+capacidades)\b",
+    re.IGNORECASE,
+)
+_STRONG_SCOPE_RE = re.compile(
+    r"\b(playas?|zona(?:s)?\s+costeras?|costa(?:s)?|litoral|mar[ií]tim[oa]s?|"
+    r"terrenos?\s+de\s+bajamar|bajamar|dimar|capitan[ií]a\s+de\s+puerto|"
+    r"aguas?\s+mar[ií]timas?|bienes?\s+de\s+uso\s+p[uú]blico|acceso\s+al\s+mar|"
+    r"orilla(?:s)?\s+del\s+mar|franja(?:s)?\s+de\s+arena)\b",
+    re.IGNORECASE,
+)
+_RELATED_SCOPE_RE = re.compile(
+    r"\b(pesca|pescadores?|turismo|tur[ií]stic[oa]s?|concesi[oó]n|permisos?|"
+    r"licencias?|sanciones?|procedimientos?|derechos?|ocupaci[oó]n|construcci[oó]n|"
+    r"autoridad\s+competente|uso\s+p[uú]blico|jurisprudencia|normatividad|normas?|"
+    r"acceso|plazos?)\b",
+    re.IGNORECASE,
+)
+_CLEARLY_OUT_OF_SCOPE_RE = re.compile(
+    r"\b(capital\s+de|receta|cocinar|programar|c[oó]digo\s+(?:python|javascript)|"
+    r"resultado\s+(?:de\s+)?f[uú]tbol|tabla\s+de\s+posiciones|pron[oó]stico\s+del\s+tiempo)\b",
+    re.IGNORECASE,
+)
+_FOLLOW_UP_RE = re.compile(
+    r"(?:^\s*[¿?¡!]*\s*y\b|\b(ese|esa|eso|esos|esas|all[ií]|tambi[eé]n|"
+    r"anterior|mencionad[oa]s?|dich[oa]s?|aplica(?:r[ií]a)?)\b)",
+    re.IGNORECASE,
+)
+
+
+def _fallback(question: str, history_context: str = "") -> EnrichedQuery:
+    """Clasificación conservadora usada si el LLM falla o está deshabilitado."""
+    clean_question = question.strip()
+    combined = f"{history_context}\n{clean_question}"
+
+    if _GREETING_RE.search(clean_question) or _CAPABILITIES_RE.search(clean_question):
+        route: QueryRoute = "conversation"
+    elif _CLEARLY_OUT_OF_SCOPE_RE.search(clean_question):
+        route = "out_of_scope"
+    elif _STRONG_SCOPE_RE.search(clean_question):
+        route = "in_scope"
+    elif (
+        history_context
+        and _STRONG_SCOPE_RE.search(combined)
+        and (_FOLLOW_UP_RE.search(clean_question) or _RELATED_SCOPE_RE.search(clean_question))
+    ):
+        route = "in_scope"
+    elif _RELATED_SCOPE_RE.search(clean_question):
+        route = "needs_clarification"
+    else:
+        route = "out_of_scope"
+
+    return EnrichedQuery(
+        route=route,
+        standalone_question=clean_question,
+        expanded_query=clean_question,
+        doc_types=["jurisprudencia", "normativa"] if route == "in_scope" else [],
+    )
+
+
+def _apply_domain_guard(
+    result: EnrichedQuery,
+    question: str,
+    history_context: str,
+) -> EnrichedQuery:
+    """Corrige errores evidentes del clasificador sin sustituir su análisis semántico."""
+    heuristic = _fallback(question, history_context)
+    if heuristic.route == "conversation" or _CLEARLY_OUT_OF_SCOPE_RE.search(question):
+        return heuristic
+    if heuristic.route == "out_of_scope" and result.route == "in_scope":
+        return heuristic
+    if heuristic.route == "in_scope" and result.route != "in_scope":
+        return EnrichedQuery(
+            route="in_scope",
+            standalone_question=result.standalone_question,
+            expanded_query=result.expanded_query,
+            doc_types=result.doc_types or ["jurisprudencia", "normativa"],
+        )
+    return result
 
 
 # ---------------------------------------------------------------------------
@@ -150,7 +241,7 @@ def _fallback(question: str) -> EnrichedQuery:
 # ---------------------------------------------------------------------------
 
 
-def enrich_query(question: str) -> EnrichedQuery:
+def enrich_query(question: str, history_context: str = "") -> EnrichedQuery:
     """Synchronously enrich *question* for better RAG retrieval.
 
     Uses ``with_structured_output`` when the active provider supports tool
@@ -162,50 +253,60 @@ def enrich_query(question: str) -> EnrichedQuery:
     question so the pipeline is unaffected.
     """
     if not ENRICHMENT_ENABLED:
-        return _fallback(question)
+        return _fallback(question, history_context)
 
     try:
         provider = get_active_provider()
-        prompt = _build_prompt(ENRICHMENT_HYDE)
+        prompt = _build_prompt()
         llm = get_enrichment_llm()
 
         if not provider.supports_structured_output:
-            raw: str = (prompt | llm | StrOutputParser()).invoke({"question": question})
-            return _parse_json_response(raw, question)
+            raw: str = (prompt | llm | StrOutputParser()).invoke(
+                {"question": question, "history": history_context or "(sin historial)"}
+            )
+            return _parse_json_response(raw, question, history_context)
 
-        result: EnrichedQuery = (prompt | llm.with_structured_output(EnrichedQuery)).invoke(
-            {"question": question}
+        result = cast(
+            EnrichedQuery,
+            (prompt | llm.with_structured_output(EnrichedQuery)).invoke(
+                {"question": question, "history": history_context or "(sin historial)"}
+            ),
         )
         if not result.expanded_query.strip():
             logger.warning("Enrichment returned an empty expanded_query; using fallback.")
-            return _fallback(question)
-        return result
+            return _fallback(question, history_context)
+        return _apply_domain_guard(result, question, history_context)
     except Exception:
         logger.warning("Query enrichment failed; falling back to original query.", exc_info=True)
-        return _fallback(question)
+        return _fallback(question, history_context)
 
 
-async def enrich_query_async(question: str) -> EnrichedQuery:
+async def enrich_query_async(question: str, history_context: str = "") -> EnrichedQuery:
     """Async variant of :func:`enrich_query`."""
     if not ENRICHMENT_ENABLED:
-        return _fallback(question)
+        return _fallback(question, history_context)
 
     try:
         provider = get_active_provider()
-        prompt = _build_prompt(ENRICHMENT_HYDE)
+        prompt = _build_prompt()
         llm = get_enrichment_llm()
 
         if not provider.supports_structured_output:
-            raw: str = await (prompt | llm | StrOutputParser()).ainvoke({"question": question})
-            return _parse_json_response(raw, question)
+            raw: str = await (prompt | llm | StrOutputParser()).ainvoke(
+                {"question": question, "history": history_context or "(sin historial)"}
+            )
+            return _parse_json_response(raw, question, history_context)
 
-        result: EnrichedQuery = await (prompt | llm.with_structured_output(EnrichedQuery)).ainvoke(
-            {"question": question}
+        result = cast(
+            EnrichedQuery,
+            await (prompt | llm.with_structured_output(EnrichedQuery)).ainvoke(
+                {"question": question, "history": history_context or "(sin historial)"}
+            ),
         )
         if not result.expanded_query.strip():
             logger.warning("Enrichment returned an empty expanded_query; using fallback.")
-            return _fallback(question)
-        return result
+            return _fallback(question, history_context)
+        return _apply_domain_guard(result, question, history_context)
     except Exception:
         logger.warning("Query enrichment failed; falling back to original query.", exc_info=True)
-        return _fallback(question)
+        return _fallback(question, history_context)

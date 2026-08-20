@@ -67,8 +67,8 @@ export function EmptyState({
 					animate={{ opacity: 1, y: 0 }}
 					transition={{ duration: 0.55, delay: 0.16, ease: EASE }}
 				>
-					Soy tu asistente para consultar jurisprudencia y derecho de playas
-					costeras en Colombia.
+					Consulta normatividad y jurisprudencia sobre playas, zonas costeras,
+					derechos, pesca, turismo y procedimientos en Colombia.
 				</motion.p>
 
 				<motion.div
@@ -93,8 +93,8 @@ export function EmptyState({
 					animate={{ opacity: 1 }}
 					transition={{ duration: 0.5, delay: 0.44 }}
 				>
-					Respondo con base en sentencias del Consejo de Estado. No reemplazo
-					la asesoría de un abogado.
+					Las respuestas se basan en las fuentes recuperadas y no reemplazan la
+					asesoría de un abogado.
 				</motion.p>
 			</motion.div>
 		</div>

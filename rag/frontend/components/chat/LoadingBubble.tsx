@@ -9,7 +9,7 @@ interface LoadingBubbleProps {
 }
 
 export function LoadingBubble({ label }: LoadingBubbleProps) {
-  const visibleLabel = label ?? "Explorando el archivo de sentencias…";
+  const visibleLabel = label ?? "Buscando fuentes jurídicas relevantes…";
   return (
     <motion.div
       className="flex justify-start"

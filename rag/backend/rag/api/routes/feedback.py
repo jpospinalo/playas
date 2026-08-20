@@ -15,7 +15,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from rag.api.auth import get_current_user
 from rag.api.database import get_session
-from rag.api.models import Conversation, Feedback, MessageFeedback
+from rag.api.models import Conversation, Feedback, Message, MessageFeedback
 from rag.api.schemas import (
     FeedbackRequest,
     FeedbackResponse,
@@ -36,8 +36,12 @@ async def submit_feedback(
     conversation_title: str | None = None
     if request.conversation_id:
         conv = await session.get(Conversation, request.conversation_id)
-        if conv:
-            conversation_title = conv.title
+        if conv is None or conv.user_id != user["sub"]:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Conversación no encontrada.",
+            )
+        conversation_title = conv.title
 
     feedback = Feedback(
         id=str(uuid.uuid4()),
@@ -66,6 +70,24 @@ async def submit_message_feedback(
 
     Previene duplicados: un usuario solo puede calificar cada mensaje una vez.
     """
+    conv = await session.get(Conversation, request.conversation_id)
+    if conv is None or conv.user_id != user["sub"]:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Conversación no encontrada.",
+        )
+
+    message = await session.get(Message, request.message_id)
+    if (
+        message is None
+        or message.conversation_id != request.conversation_id
+        or message.role != "assistant"
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Mensaje no encontrado.",
+        )
+
     dup = await session.execute(
         select(MessageFeedback).where(
             MessageFeedback.user_id == user["sub"],

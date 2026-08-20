@@ -16,13 +16,22 @@ import jwt
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
+import rag.api.database as database
+from rag.api.models import User
+
 logger = logging.getLogger(__name__)
 
-_SECRET = os.getenv("JWT_SECRET_KEY", "dev-secret-change-me-in-production")
 _ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
 _EXPIRE_MINUTES = int(os.getenv("JWT_EXPIRE_MINUTES", "10080"))  # 7 días
 
 _bearer = HTTPBearer(auto_error=False)
+
+
+def _secret() -> str:
+    value = os.getenv("JWT_SECRET_KEY", "").strip()
+    if not value or value == "dev-secret-change-me-in-production":
+        raise RuntimeError("JWT_SECRET_KEY debe configurarse con un valor seguro.")
+    return value
 
 
 def create_access_token(user_id: str, email: str, role: str) -> str:
@@ -31,14 +40,20 @@ def create_access_token(user_id: str, email: str, role: str) -> str:
         "sub": user_id,
         "email": email,
         "role": role,
+        "iat": datetime.now(UTC),
         "exp": datetime.now(UTC) + timedelta(minutes=_EXPIRE_MINUTES),
     }
-    return jwt.encode(payload, _SECRET, algorithm=_ALGORITHM)
+    return jwt.encode(payload, _secret(), algorithm=_ALGORITHM)
 
 
 def _decode(token: str) -> dict:
     try:
-        return jwt.decode(token, _SECRET, algorithms=[_ALGORITHM])
+        return jwt.decode(
+            token,
+            _secret(),
+            algorithms=[_ALGORITHM],
+            options={"require": ["sub", "email", "role", "iat", "exp"]},
+        )
     except jwt.ExpiredSignatureError as exc:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -63,21 +78,35 @@ async def get_optional_user(
 async def get_current_user(
     user: dict | None = Depends(get_optional_user),
 ) -> dict:
-    """Requiere autenticación. Lanza 401 si no hay token válido."""
+    """Requiere autenticación y refresca identidad/rol desde la base de datos."""
     if user is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Se requiere autenticación para este endpoint.",
         )
-    return user
+    async with database.async_session_factory() as session:
+        db_user = await session.get(User, user["sub"])
+    if db_user is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Usuario no encontrado.",
+        )
+    return {
+        **user,
+        "email": db_user.email,
+        "display_name": db_user.display_name,
+        "role": db_user.role,
+    }
 
 
-async def require_admin(user: dict = Depends(get_current_user)) -> dict:
-    """Requiere rol 'admin' o 'super-admin' en el token. Lanza 403 si no cumple."""
-    role = user.get("role", "user")
+async def require_admin(
+    user: dict = Depends(get_current_user),
+) -> dict:
+    """Requiere un rol administrativo vigente en la base de datos."""
+    role = user["role"]
     if role not in ("admin", "super-admin"):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Acceso denegado.",
         )
-    return user
+    return {**user, "role": role}

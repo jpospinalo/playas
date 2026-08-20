@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { getToken } from "@/lib/auth";
+import { throwIfSessionExpired } from "@/lib/api";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { API_URL } from "@/lib/config";
 
@@ -35,6 +36,7 @@ export function useConversations(): {
 			const res = await fetch(`${API_URL}/api/conversations`, {
 				headers: { Authorization: `Bearer ${token}` },
 			});
+			await throwIfSessionExpired(res, token);
 			if (!res.ok) {
 				setConversations([]);
 				return;

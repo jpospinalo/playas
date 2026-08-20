@@ -4,7 +4,6 @@ import { UserBubble } from "@/components/chat/UserBubble";
 
 interface MessageListProps {
 	messages: Message[];
-	conversationId: string;
 	ratedMessageIds: Set<string>;
 	onMessageRate: (
 		messageId: string,
@@ -15,7 +14,6 @@ interface MessageListProps {
 
 export function MessageList({
 	messages,
-	conversationId,
 	ratedMessageIds,
 	onMessageRate,
 }: MessageListProps) {
@@ -32,7 +30,6 @@ export function MessageList({
 							text={msg.text}
 							sources={msg.sources ?? []}
 							messageId={msg.id}
-							conversationId={conversationId}
 							isRated={ratedMessageIds.has(msg.id)}
 							onRate={onMessageRate}
 						/>

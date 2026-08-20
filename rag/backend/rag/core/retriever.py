@@ -30,9 +30,10 @@ import chromadb
 import requests
 from dotenv import load_dotenv
 from langchain_chroma import Chroma
-from langchain_community.retrievers import BM25Retriever
+from langchain_core.callbacks import CallbackManagerForRetrieverRun
 from langchain_core.documents import Document
 from langchain_core.retrievers import BaseRetriever
+from pydantic import ConfigDict, Field
 
 from .embeddings import OllamaEmbeddings
 
@@ -42,9 +43,11 @@ from .embeddings import OllamaEmbeddings
 
 load_dotenv()
 
-CHROMA_HOST = os.getenv("CHROMA_HOST")
+CHROMA_HOST = os.getenv("CHROMA_HOST") or "localhost"
 CHROMA_PORT = int(os.getenv("CHROMA_PORT", "8000"))
-CHROMA_COLLECTION_NAME = os.getenv("CHROMA_COLLECTION", os.getenv("CHROMA_COLLECTION_NAME", "rag_playas"))
+CHROMA_COLLECTION_NAME = os.getenv(
+    "CHROMA_COLLECTION", os.getenv("CHROMA_COLLECTION_NAME", "rag_playas")
+)
 
 # Máquina de RERANKING (Ollama con llama3.2:3b)
 OLLAMA_RERANK_BASE_URL = os.getenv("OLLAMA_RERANK_BASE_URL")
@@ -56,12 +59,36 @@ EMBEDDINGS = OllamaEmbeddings()
 # Singletons de módulo — reutilizados entre requests
 # ---------------------------------------------------------------------
 
-_chroma_client: chromadb.HttpClient | None = None
+_chroma_client: Any | None = None
 _chroma_vectorstore: Chroma | None = None
 _bm25_base: BM25Retriever | None = None
 
 
-def _get_chroma_client() -> chromadb.HttpClient:
+def _tokenize_bm25(text: str) -> list[str]:
+    """Replica el preprocesamiento histórico de BM25Retriever: ``str.split``."""
+    return text.split()
+
+
+class BM25Retriever(BaseRetriever):
+    """Adaptador mínimo de ``rank_bm25`` compatible con el retriever anterior."""
+
+    vectorizer: Any
+    docs: list[Document] = Field(repr=False)
+    k: int = 4
+
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+
+    def _get_relevant_documents(
+        self,
+        query: str,
+        *,
+        run_manager: CallbackManagerForRetrieverRun,
+    ) -> list[Document]:
+        del run_manager
+        return self.vectorizer.get_top_n(_tokenize_bm25(query), self.docs, n=self.k)
+
+
+def _get_chroma_client() -> Any:
     global _chroma_client
     if _chroma_client is None:
         _chroma_client = chromadb.HttpClient(host=CHROMA_HOST, port=CHROMA_PORT)
@@ -89,7 +116,6 @@ def _get_bm25_base() -> BM25Retriever:
     """
     global _bm25_base
     if _bm25_base is None:
-        from langchain_community.retrievers.bm25 import default_preprocessing_func
         from rank_bm25 import BM25Okapi
 
         docs = load_all_docs_from_chroma()
@@ -108,7 +134,7 @@ def _get_bm25_base() -> BM25Retriever:
                 parts.append(sm)
             augmented_texts.append(" ".join(parts))
 
-        corpus = [default_preprocessing_func(t) for t in augmented_texts]
+        corpus = [_tokenize_bm25(t) for t in augmented_texts]
         vectorizer = BM25Okapi(corpus)
         # k=50 como techo máximo; se limita en get_bm25_retriever()
         _bm25_base = BM25Retriever(vectorizer=vectorizer, docs=docs, k=50)
@@ -210,10 +236,27 @@ class _FilteredRetriever(BaseRetriever):
     inner: BaseRetriever
     doc_types: list[str]
 
-    def _get_relevant_documents(self, query: str) -> list[Document]:
+    def _get_relevant_documents(
+        self,
+        query: str,
+        *,
+        run_manager: CallbackManagerForRetrieverRun,
+    ) -> list[Document]:
+        del run_manager
         docs = self.inner.invoke(query)
         allowed = set(self.doc_types)
         return [d for d in docs if (d.metadata or {}).get("doc_type") in allowed]
+
+
+def _has_retrievable_content(text: str) -> bool:
+    """Filtro conservador post-fusión: descarta candidatos puramente
+    estructurales (sin ningún carácter alfanumérico — p. ej. chunks que solo
+    contienen separadores, guiones o espacios), un problema conocido de un
+    subconjunto de chunks del corpus. No filtra por longitud ni idioma, solo
+    por la ausencia total de contenido alfanumérico, para evitar descartar
+    fragmentos legítimos pero cortos (p. ej. "Prohíbese pescar.").
+    """
+    return any(c.isalnum() for c in text)
 
 
 # ---------------------------------------------------------------------
@@ -235,8 +278,15 @@ class HybridEnsembleRetriever(BaseRetriever):
     weights: list[float]
     c: int = 160  # constante RRF
     id_key: str | None = "chunk_id"
+    max_results: int = 4
 
-    def _get_relevant_documents(self, query: str) -> list[Document]:
+    def _get_relevant_documents(
+        self,
+        query: str,
+        *,
+        run_manager: CallbackManagerForRetrieverRun,
+    ) -> list[Document]:
+        del run_manager
         # Invocar todos los sub-retrievers en paralelo
         with ThreadPoolExecutor(max_workers=len(self.retrievers)) as pool:
             futures = [pool.submit(r.invoke, query) for r in self.retrievers]
@@ -256,12 +306,27 @@ class HybridEnsembleRetriever(BaseRetriever):
                 doc_by_id.setdefault(doc_id, doc)
                 scores[doc_id] = scores.get(doc_id, 0.0) + w / (rank + self.c)
 
-        sorted_ids = sorted(scores, key=scores.get, reverse=True)
-        return [doc_by_id[i] for i in sorted_ids]
+        # Se recorre en orden de score descendente y se descartan los
+        # candidatos sin contenido alfanumérico (basura estructural del
+        # corpus), rellenando con el siguiente mejor candidato en vez de
+        # simplemente truncar a max_results. No afecta a BM25, al vector
+        # store, a los pesos ni a k: opera solo sobre el resultado ya
+        # fusionado, así que nunca devuelve más de max_results documentos.
+        sorted_ids = sorted(scores, key=lambda identifier: scores[identifier], reverse=True)
+        selected: list[Document] = []
+        for doc_id in sorted_ids:
+            if len(selected) >= self.max_results:
+                break
+            doc = doc_by_id[doc_id]
+            if not _has_retrievable_content(doc.page_content or ""):
+                continue
+            selected.append(doc)
+        return selected
 
 
 def get_ensemble_retriever(
-    k: int = 3,
+    k: int = 4,
+    k_candidates: int | None = None,
     bm25_weight: float = 0.3,
     vector_weight: float = 0.7,
     doc_types: list[str] | None = None,
@@ -277,17 +342,22 @@ def get_ensemble_retriever(
     La firma es retrocompatible: con ``doc_types=None`` el comportamiento es
     idéntico al original (ambos tipos, sin filtro).
     """
-    vector_retriever = get_vector_retriever(k=k, doc_types=doc_types)
+    final_k = max(1, k)
+    candidate_k = max(final_k, k_candidates or final_k)
+    vector_retriever = get_vector_retriever(k=candidate_k, doc_types=doc_types)
 
     if doc_types:
-        bm25_inner = get_bm25_retriever(k=k * 4)
+        # BM25 filtra por metadata después de recuperar. Se amplía su conjunto
+        # de candidatos para evitar quedarse corto tras descartar otros tipos.
+        bm25_inner = get_bm25_retriever(k=min(candidate_k * 4, 50))
         bm25_retriever: BaseRetriever = _FilteredRetriever(inner=bm25_inner, doc_types=doc_types)
     else:
-        bm25_retriever = get_bm25_retriever(k=k)
+        bm25_retriever = get_bm25_retriever(k=candidate_k)
 
     return HybridEnsembleRetriever(
         retrievers=[bm25_retriever, vector_retriever],
         weights=[bm25_weight, vector_weight],
+        max_results=final_k,
     )
 
 
@@ -361,10 +431,12 @@ class OllamaReranker:
 
     def __init__(
         self,
-        base_url: str = OLLAMA_RERANK_BASE_URL,
-        model: str = OLLAMA_RERANK_MODEL,
+        base_url: str | None = OLLAMA_RERANK_BASE_URL,
+        model: str | None = OLLAMA_RERANK_MODEL,
         timeout: float = 60.0,
     ) -> None:
+        if not base_url or not model:
+            raise ValueError("OLLAMA_RERANK_BASE_URL y OLLAMA_RERANK_MODEL son obligatorios")
         self.base_url = base_url.rstrip("/")
         self.model = model
         self.timeout = timeout

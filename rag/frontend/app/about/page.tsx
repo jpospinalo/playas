@@ -8,7 +8,7 @@ import { AboutFooter } from "@/components/about/AboutFooter";
 export const metadata: Metadata = {
   title: "Cómo funciona ATLAS",
   description:
-    "ATLAS lee sentencias del Consejo de Estado sobre playas y derecho costero, y te las traduce a un lenguaje claro con citas verificables.",
+    "Consulta normatividad y jurisprudencia colombiana sobre playas y derecho costero mediante respuestas claras con citas verificables.",
 };
 
 export default function AboutPage() {

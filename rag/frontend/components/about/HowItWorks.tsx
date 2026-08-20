@@ -12,9 +12,9 @@ const fadeUp = {
 const STEPS = [
   {
     number: "01",
-    title: "Busco en los documentos",
+    title: "Búsqueda documental",
     description:
-      "Cuando preguntas algo, reviso las sentencias del Consejo de Estado, selecciono los fragmentos más relevantes para tu caso. Combino búsqueda por palabras clave y por contexto.",
+      "La consulta se contrasta con normas y decisiones judiciales, combinando búsqueda por palabras clave y por contexto para seleccionar los fragmentos más relevantes.",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -35,9 +35,9 @@ const STEPS = [
   },
   {
     number: "02",
-    title: "Referencio",
+    title: "Fuentes verificables",
     description:
-      "Uso fragmentos reales de las sentencias. No invento, ni hago afirmaciones legales sin un documento que las respalde.",
+      "La respuesta utiliza fragmentos reales de las fuentes recuperadas y evita conclusiones jurídicas sin respaldo documental.",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -59,9 +59,9 @@ const STEPS = [
   },
   {
     number: "03",
-    title: "Respondo",
+    title: "Respuesta clara",
     description:
-      "Redacto la respuesta en lenguaje cotidiano, con citas a las sentencias usadas. Cada cita es expandible: puedes ver el extracto exacto y verificarlo.",
+      "La respuesta se redacta en lenguaje claro y cita las fuentes utilizadas. Cada cita permite consultar el extracto exacto y verificarlo.",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"

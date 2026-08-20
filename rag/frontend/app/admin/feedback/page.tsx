@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { API_URL } from "@/lib/config";
+import { throwIfSessionExpired } from "@/lib/api";
 
 const PAGE_SIZE = 20;
 
@@ -111,6 +112,7 @@ export default function FeedbackPage() {
 				const res = await fetch(`${API_URL}/api/admin/feedback?${params}`, {
 					headers: { Authorization: `Bearer ${token}` },
 				});
+				await throwIfSessionExpired(res, token);
 				if (!res.ok) throw new Error(`Error ${res.status}`);
 				const data: FeedbackResponse = await res.json();
 				setItems(data.items);

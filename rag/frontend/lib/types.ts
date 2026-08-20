@@ -29,6 +29,7 @@ export interface SourceGroup {
 	/** Nombre del archivo fuente (clave de agrupación). */
 	source: string;
 	title: string;
+	doc_type?: DocType | null;
 	/** Metadatos a nivel documento (doc_type + atribución según tipo). */
 	metadata: SourceMetadata;
 	fragments: SourceFragment[];
@@ -49,8 +50,11 @@ export interface QueryRequest {
 	k_candidates?: number;
 	/** Conversation thread identifier. Reuse across requests to maintain multi-turn context. */
 	thread_id?: string;
-	/** Firestore conversation document ID. Used by the backend to hydrate LangGraph state on server restart. */
+	/** ID persistente de conversación usado para verificar propiedad y reconstruir el historial. */
 	conversation_id?: string;
+	/** ID del mensaje actual ya guardado; evita duplicarlo al hidratar el historial. */
+	current_message_id?: string;
+	doc_types?: DocType[];
 }
 
 export interface QueryResponse {
@@ -58,7 +62,15 @@ export interface QueryResponse {
 	sources: SourceGroup[];
 	context_tokens: number;
 	context_limit: number;
+	enriched_query?: string | null;
+	query_route?: QueryRoute | null;
 }
+
+export type QueryRoute =
+	| "in_scope"
+	| "out_of_scope"
+	| "conversation"
+	| "needs_clarification";
 
 export interface FeedbackRequest {
 	ratings: ConversationRatings;
@@ -121,7 +133,8 @@ export type StreamEvent =
 	| {
 			type: "sources";
 			sources: SourceGroup[];
-			enriched_query?: string | null;
+				enriched_query?: string | null;
+				query_route?: QueryRoute | null;
 			context_tokens?: number;
 			context_limit?: number;
 	  }

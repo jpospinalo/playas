@@ -17,7 +17,6 @@ interface AssistantBubbleProps {
 	text: string;
 	sources: SourceGroup[];
 	messageId: string;
-	conversationId: string;
 	isRated: boolean;
 	onRate: (
 		messageId: string,
@@ -96,7 +95,6 @@ export function AssistantBubble({
 	text,
 	sources,
 	messageId,
-	conversationId: _conversationId,
 	isRated,
 	onRate,
 }: AssistantBubbleProps) {

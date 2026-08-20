@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { API_URL } from "@/lib/config";
+import { throwIfSessionExpired } from "@/lib/api";
 
 const PAGE_SIZE = 20;
 
@@ -121,6 +122,7 @@ export default function MessageFeedbackPage() {
 						headers: { Authorization: `Bearer ${token}` },
 					},
 				);
+				await throwIfSessionExpired(res, token);
 				if (!res.ok) throw new Error(`Error ${res.status}`);
 				const data: MessageFeedbackResponse = await res.json();
 				setItems(data.items);

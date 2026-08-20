@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { API_URL } from "@/lib/config";
+import { throwIfSessionExpired } from "@/lib/api";
 
 
 interface ConversationFeedbackStats {
@@ -111,6 +112,7 @@ async function fetchConversationStats(
 	const res = await fetch(`${API_URL}/api/admin/feedback?page=1&page_size=1`, {
 		headers: { Authorization: `Bearer ${token}` },
 	});
+	await throwIfSessionExpired(res, token);
 	if (!res.ok) throw new Error(`Error ${res.status}`);
 	const data = await res.json();
 	return {
@@ -144,6 +146,7 @@ async function fetchMessageStats(token: string): Promise<MessageFeedbackStats> {
 			},
 		};
 	}
+	await throwIfSessionExpired(res, token);
 	if (!res.ok) throw new Error(`Error ${res.status}`);
 	const data = await res.json();
 	return {

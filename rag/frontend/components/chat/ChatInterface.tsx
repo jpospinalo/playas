@@ -20,8 +20,40 @@ const SCROLL_THRESHOLD = 100; // px from bottom to consider "at bottom"
 const SIDEBAR_STORAGE_KEY = "rag-playas:chat-sidebar-expanded";
 const MOBILE_SIDEBAR_QUERY = "(max-width: 767px)";
 
+/**
+ * Límite de autenticación del chat.
+ *
+ * Solo consulta `useAuth()`. Mientras no haya sesión válida, muestra el modal
+ * de login obligatorio y no monta nada del árbol autenticado (`useChat`,
+ * `useConversations`, etc.), para que ningún estado de conversación pueda
+ * sobrevivir a un cambio de cuenta.
+ *
+ * `AuthenticatedChat` se monta con `key={user.user_id}`: React lo desmonta y
+ * vuelve a montar por completo cada vez que cambia el usuario autenticado
+ * (login, logout o cambio de cuenta sin recargar la página), descartando
+ * mensajes, conversación activa, referencias y el AbortController de
+ * cualquier sesión anterior.
+ */
 export function ChatInterface() {
 	const { user, loading: authLoading } = useAuth();
+
+	if (authLoading || !user) {
+		return (
+			<div className="relative flex flex-1 overflow-hidden">
+				<AuthModal open={!authLoading} dismissible={false} onClose={() => {}} />
+			</div>
+		);
+	}
+
+	return <AuthenticatedChat key={user.user_id} />;
+}
+
+function AuthenticatedChat() {
+	const {
+		conversations,
+		loading: conversationsLoading,
+		refresh: refreshConversations,
+	} = useConversations();
 	const [sidebarOpen, setSidebarOpen] = useState(true);
 	const [sidebarTransitionEnabled, setSidebarTransitionEnabled] =
 		useState(false);
@@ -42,9 +74,7 @@ export function ChatInterface() {
 		resetChat,
 		loadConversation,
 		rateMessage,
-	} = useChat();
-
-	const { conversations, loading: conversationsLoading } = useConversations();
+	} = useChat({ onConversationChanged: refreshConversations });
 
 	useEffect(() => {
 		const stored = window.localStorage.getItem(SIDEBAR_STORAGE_KEY);
@@ -139,16 +169,6 @@ export function ChatInterface() {
 
 	const showEmptyState = messages.length === 0 && !loading && !error;
 
-	// Sin sesión: solo se muestra el modal de login/registro, obligatorio y
-	// no descartable — no hay flujo de invitado.
-	if (authLoading || !user) {
-		return (
-			<div className="relative flex flex-1 overflow-hidden">
-				<AuthModal open={!authLoading} dismissible={false} onClose={() => {}} />
-			</div>
-		);
-	}
-
 	return (
 		<div className="relative flex flex-1 overflow-hidden">
 			{/* Sidebar de conversaciones */}
@@ -201,7 +221,6 @@ export function ChatInterface() {
 						<div className="mx-auto w-full max-w-3xl flex-1 space-y-8 px-4 py-6">
 							<MessageList
 								messages={messages}
-								conversationId={conversationId ?? ""}
 								ratedMessageIds={ratedMessageIds}
 								onMessageRate={rateMessage}
 							/>

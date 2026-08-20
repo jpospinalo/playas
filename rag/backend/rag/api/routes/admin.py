@@ -15,13 +15,14 @@ import uuid
 from datetime import UTC, datetime
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
-from passlib.context import CryptContext
-from sqlalchemy import select
+from sqlalchemy import func, select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from rag.api.auth import require_admin
 from rag.api.database import get_session
 from rag.api.models import Feedback, MessageFeedback, User
+from rag.api.passwords import hash_password
 from rag.api.schemas import (
     AdminFeedbackItem,
     AdminFeedbackResponse,
@@ -37,8 +38,6 @@ from rag.api.schemas import (
 )
 
 router = APIRouter(prefix="/api/admin", tags=["admin"])
-
-_pwd_ctx = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 @router.get("/feedback", response_model=AdminFeedbackResponse)
@@ -232,7 +231,8 @@ async def create_user(
     session: AsyncSession = Depends(get_session),
 ) -> AdminUserItem:
     """Crea una cuenta con rol 'user'. No envía email de verificación."""
-    existing = await session.execute(select(User).where(User.email == payload.email))
+    normalized_email = payload.email.strip().lower()
+    existing = await session.execute(select(User).where(func.lower(User.email) == normalized_email))
     if existing.scalar_one_or_none() is not None:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
@@ -240,14 +240,30 @@ async def create_user(
         )
     user = User(
         id=str(uuid.uuid4()),
-        email=payload.email,
-        password_hash=_pwd_ctx.hash(payload.password),
+        email=normalized_email,
+        password_hash=hash_password(payload.password),
         display_name=payload.displayName,
         role="user",
         created_at=datetime.now(UTC),
     )
     session.add(user)
-    await session.commit()
+    try:
+        await session.commit()
+    except IntegrityError:
+        # Misma condición de carrera que en el registro público (ver
+        # routes/auth.py:register): la comprobación de existencia de arriba no
+        # es atómica con este commit. Se revierte y se confirma si el email ya
+        # existe antes de relanzar cualquier otro error de integridad.
+        await session.rollback()
+        existing_after_race = await session.execute(
+            select(User).where(func.lower(User.email) == normalized_email)
+        )
+        if existing_after_race.scalar_one_or_none() is not None:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="Ese email ya está registrado.",
+            ) from None
+        raise
     return AdminUserItem(
         uid=user.id,
         email=user.email,
@@ -267,8 +283,6 @@ async def update_user_password(
     """Cambia la contraseña de un usuario existente."""
     user = await session.get(User, uid)
     if user is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Usuario no encontrado."
-        )
-    user.password_hash = _pwd_ctx.hash(payload.password)
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Usuario no encontrado.")
+    user.password_hash = hash_password(payload.password)
     await session.commit()

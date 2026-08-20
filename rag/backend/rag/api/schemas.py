@@ -2,25 +2,39 @@
 
 from __future__ import annotations
 
-from pydantic import BaseModel, Field
+from typing import Literal
+
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
+
+QueryRouteValue = Literal["in_scope", "out_of_scope", "conversation", "needs_clarification"]
 
 
 class QueryRequest(BaseModel):
-    question: str = Field(..., min_length=1, description="Consulta jurídica en lenguaje natural")
+    model_config = ConfigDict(str_strip_whitespace=True)
+
+    question: str = Field(
+        ...,
+        min_length=1,
+        max_length=4000,
+        description="Consulta jurídica en lenguaje natural",
+    )
     k: int = Field(default=4, ge=1, le=8, description="Número de fragmentos para el contexto")
     k_candidates: int = Field(
         default=8, ge=4, le=20, description="Candidatos iniciales del retriever"
     )
     thread_id: str | None = Field(
         default=None,
+        max_length=128,
         description=(
             "Identificador de hilo de conversación. Si se proporciona, el agente mantiene "
             "el historial de mensajes entre requests (memoria multi-turno). "
             "Si es None, cada request es independiente."
         ),
     )
-    doc_types: list[str] | None = Field(
+    doc_types: list[Literal["jurisprudencia", "normativa"]] | None = Field(
         default=None,
+        min_length=1,
+        max_length=2,
         description=(
             "Filtro opcional por tipo de documento ('jurisprudencia', 'normativa'). "
             "Si es None (por defecto) se recuperan ambos tipos."
@@ -28,12 +42,36 @@ class QueryRequest(BaseModel):
     )
     conversation_id: str | None = Field(
         default=None,
+        max_length=64,
         description=(
             "ID de la conversación en la base de datos. "
             "Si el MemorySaver está vacío (reinicio del servidor) y se proporciona este campo, "
             "el backend hidrata el estado de LangGraph desde el historial persistido."
         ),
     )
+    current_message_id: str | None = Field(
+        default=None,
+        max_length=64,
+        description=(
+            "ID del mensaje de usuario ya persistido para el turno actual. Se excluye al "
+            "hidratar el historial para evitar duplicar la pregunta."
+        ),
+    )
+
+    @field_validator("doc_types")
+    @classmethod
+    def unique_doc_types(cls, value):
+        if value is not None and len(value) != len(set(value)):
+            raise ValueError("doc_types no puede contener valores duplicados")
+        return value
+
+    @model_validator(mode="after")
+    def validate_related_fields(self) -> QueryRequest:
+        if self.k_candidates < self.k:
+            raise ValueError("k_candidates debe ser mayor o igual que k")
+        if self.current_message_id and not self.conversation_id:
+            raise ValueError("current_message_id requiere conversation_id")
+        return self
 
 
 class SourceFragment(BaseModel):
@@ -107,9 +145,7 @@ class FeedbackRequest(BaseModel):
     comment: str | None = Field(
         default=None, max_length=500, description="Comentario opcional del usuario"
     )
-    conversation_id: str | None = Field(
-        default=None, description="ID de la conversación activa"
-    )
+    conversation_id: str | None = Field(default=None, description="ID de la conversación activa")
 
 
 class FeedbackResponse(BaseModel):
@@ -203,13 +239,19 @@ class AdminUsersResponse(BaseModel):
 
 
 class CreateUserRequest(BaseModel):
-    email: str = Field(..., min_length=3, description="Email del nuevo usuario")
-    password: str = Field(..., min_length=6, description="Contraseña (mínimo 6 caracteres)")
-    displayName: str | None = Field(default=None, description="Nombre para mostrar (opcional)")
+    email: str = Field(..., min_length=3, max_length=320, description="Email del nuevo usuario")
+    password: str = Field(
+        ..., min_length=8, max_length=1024, description="Contraseña (mínimo 8 caracteres)"
+    )
+    displayName: str | None = Field(
+        default=None, max_length=120, description="Nombre para mostrar (opcional)"
+    )
 
 
 class UpdatePasswordRequest(BaseModel):
-    password: str = Field(..., min_length=6, description="Nueva contraseña (mínimo 6 caracteres)")
+    password: str = Field(
+        ..., min_length=8, max_length=1024, description="Nueva contraseña (mínimo 8 caracteres)"
+    )
 
 
 class QueryResponse(BaseModel):
@@ -224,6 +266,10 @@ class QueryResponse(BaseModel):
             "Consulta expandida usada internamente para la recuperación de documentos. "
             "Útil para depuración y evaluación del enriquecimiento."
         ),
+    )
+    query_route: QueryRouteValue | None = Field(
+        default=None,
+        description="Ruta aplicada: in_scope, out_of_scope, conversation o needs_clarification.",
     )
     context_tokens: int = Field(
         default=0,
