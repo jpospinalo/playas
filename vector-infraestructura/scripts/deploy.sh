@@ -19,7 +19,7 @@ RAG_ENV="${RAG_DIR}/.env"
 ECS_TFVARS="${RAG_DIR}/infrastructure/terraform.tfvars"
 
 # Tiempo máximo de espera para que ChromaDB levante tras el boot de la EC2
-CHROMA_WAIT_SECONDS=420   # 7 min — el user-data instala Docker y descarga la imagen
+CHROMA_WAIT_SECONDS=900   # 15 min — el user-data instala Docker y descarga la imagen
 
 # ── Colores ───────────────────────────────────────────────────────────────────
 bold='\033[1m'
