@@ -18,24 +18,24 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
 	title: {
-		default: "ATLAS — Jurisprudencia costera de Colombia",
+		default: "ATLAS — Normatividad y jurisprudencia costera",
 		template: "%s | ATLAS",
 	},
 	description:
-		"ATLAS traduce la jurisprudencia colombiana sobre playas y derecho costero a respuestas claras para cualquier persona, con citas verificables a sentencias del Consejo de Estado.",
+		"Consulta normatividad y jurisprudencia colombiana sobre playas, zonas costeras, derechos, pesca, turismo y procedimientos, con fuentes verificables.",
 	openGraph: {
 		type: "website",
 		locale: "es_CO",
 		siteName: "ATLAS",
-		title: "ATLAS — Jurisprudencia costera de Colombia",
+		title: "ATLAS — Normatividad y jurisprudencia costera",
 		description:
-			"Consulta jurisprudencia colombiana sobre playas y derecho costero. Respuestas claras, con citas a sentencias verificables del Consejo de Estado.",
+			"Consulta normatividad y jurisprudencia colombiana sobre playas y derecho costero, con citas verificables a las fuentes recuperadas.",
 	},
 	twitter: {
 		card: "summary",
 		title: "ATLAS",
 		description:
-			"Jurisprudencia costera colombiana, explicada para cualquier persona.",
+			"Normatividad y jurisprudencia costera colombiana con fuentes verificables.",
 	},
 };
 

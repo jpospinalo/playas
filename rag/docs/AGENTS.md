@@ -52,8 +52,8 @@ rag/                          # RAG serving (API + agent)
 ├── config.py                # Env vars: Chroma, Ollama, LLM, query enrichment
 ├── s3_client.py             # S3 read-only helpers (list, read)
 ├── core/
-│   ├── agent.py             # LangGraph agent: ReAct + fallback graphs
-│   ├── tools.py             # @tool retrieve (hybrid retriever wrapper)
+│   ├── agent.py             # LangGraph: grafo único determinista (no ReAct/tool-calling)
+│   ├── tools.py             # build_context_block + sanitize_replacement_chars (helpers de retrieve_forced)
 │   ├── prompts.py           # System/human prompts for agent + enricher
 │   ├── embeddings.py        # Ollama embedding client (ChromaDB + LangChain)
 │   ├── vectorstore.py       # ChromaDB collection build/update from gold
@@ -63,10 +63,14 @@ rag/                          # RAG serving (API + agent)
 └── api/
     ├── main.py              # FastAPI app (health, query, query/stream)
     ├── schemas.py           # Pydantic request/response models
-    ├── auth.py              # Firebase auth dependencies (optional, required, admin)
-    ├── firebase_admin.py    # Firebase Admin SDK singleton
+    ├── database.py          # SQLAlchemy async session/engine (SQLite/Postgres via DATABASE_URL)
+    ├── models.py            # SQLAlchemy models: User, Conversation, Message, Feedback, ...
+    ├── auth.py              # JWT auth dependencies (get_current_user, require_admin)
+    ├── passwords.py         # Password hashing/verification
+    ├── rate_limit.py        # Reversible sliding-window rate limiters (query, title, login)
     └── routes/
-        ├── conversations.py # POST /api/conversations/generate-title
+        ├── auth.py          # POST /api/auth/login, /register; GET /api/auth/me
+        ├── conversations.py # CRUD conversaciones + POST /generate-title
         ├── feedback.py      # POST /api/feedback, POST /api/feedback/message
         └── admin.py         # GET/POST /api/admin/*
 
@@ -114,28 +118,18 @@ The `doc_type` is fixed once at load time from the source folder and propagates 
 
 ### RAG Agent (LangGraph)
 
-The system is **not a fixed RAG pipeline**: it is a LangGraph agent with multi-turn memory (`MemorySaver`) and a retrieval tool that the LLM invokes only when needed.
-
-**Main graph** (providers with tool calling — OpenAI, OpenRouter, standard Gemini):
+The system is a **single deterministic graph**, the same for every LLM provider — there is no ReAct loop and the LLM never decides whether to retrieve. `build_graph()` (`core/agent.py`) always compiles:
 
 ```
-START → enrich_query → agent ⇆ tools(retrieve) → END
+START → enrich_query → route_after_analysis → {retrieve_forced → generate, respond_without_retrieval} → END
 ```
 
-- `enrich_query` rewrites the query with legal terminology for better recall.
-- `agent` decides whether to invoke `retrieve` (legal query) or respond directly (greeting, meta-question).
-- `tools.retrieve` runs the `HybridEnsembleRetriever` and returns fragments as `ToolMessage` + updates `sources` in state.
-- The agent comes back with docs in context and responds citing `[docN]`.
+- `enrich_query` classifies the query's scope/route and rewrites it with legal terminology for better recall.
+- `route_after_analysis` sends in-domain legal queries to `retrieve_forced`; greetings/meta-questions/out-of-scope queries go straight to `respond_without_retrieval` (no retrieval call at all).
+- `retrieve_forced` always runs the `HybridEnsembleRetriever` exactly once for in-domain queries — retrieval is not optional, unlike a ReAct agent that could invoke a tool zero, one, or many times. It fills `sources` and, via `tools.build_context_block`, the formatted context the LLM sees.
+- `generate` produces the final answer citing `[docN]`.
 
-**Fallback graph** (providers without tool calling — Gemma via Google GenAI):
-
-```
-START → enrich_query → retrieve_forced → generate → END
-```
-
-`build_graph()` selects one or the other based on `get_active_provider().supports_structured_output`.
-
-**Memory** — `thread_id` (frontend UUID) persists history in `MemorySaver` while the process lives. If the server restarts, the endpoint hydrates state from `conversations/{id}/messages` in Firestore using `conversation_id`.
+**Memory** — `thread_id` (frontend UUID) persists in-process history in `MemorySaver` while the server runs. If the server restarts, the endpoint re-hydrates state from `conversations/{id}/messages` in the application database (SQLAlchemy async, see `api/database.py` and `api/models.py`) using `conversation_id`.
 
 **SSE Streaming** — `/api/query/stream` emits `status` (node stage), `token` (live LLM tokens), and a final `sources` event with grouped sources and context metrics.
 
@@ -193,7 +187,7 @@ docker compose logs -f
 docker compose down
 ```
 
-Requires `.env` at root (backend) and Firebase variables passed as build args. See `docker/Dockerfile.backend` and `docker/Dockerfile.frontend` for details.
+The backend reads its config from `.env` at root. The frontend can receive `NEXT_PUBLIC_API_URL` as a build arg during `docker build` (see `docker/Dockerfile.frontend`) — no other build-time variables are required by the current Dockerfiles.
 
 ---
 

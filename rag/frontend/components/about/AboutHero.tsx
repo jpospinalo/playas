@@ -36,16 +36,16 @@ export function AboutHero() {
           className="text-balance text-4xl font-medium leading-[1.05] tracking-tight text-accent md:text-6xl"
           style={{ letterSpacing: "-0.025em" }}
         >
-          Respuestas claras sobre playas, ancladas en sentencias reales
+          Respuestas claras sobre playas, respaldadas por fuentes jurídicas
         </motion.h1>
 
         <motion.p
           variants={item}
           className="mx-auto mt-6 max-w-xl text-balance text-base leading-relaxed text-muted md:text-lg"
         >
-          Leo la jurisprudencia colombiana sobre playas y derecho costero, y
-          te la traduzco a un lenguaje que puedes entender, citando siempre
-          las sentencias que respaldan cada cosa que digo.
+          Consulta normatividad y jurisprudencia colombiana sobre playas y
+          derecho costero en lenguaje claro, con citas que permiten verificar
+          las fuentes utilizadas.
         </motion.p>
 
         <motion.div variants={item} className="mt-10 flex flex-wrap items-center justify-center gap-3">

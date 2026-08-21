@@ -6,6 +6,7 @@ calling os.getenv() directly.
 
 import os
 from pathlib import Path
+from typing import Literal, cast
 
 from dotenv import load_dotenv
 
@@ -67,3 +68,47 @@ DEFAULT_K_CANDIDATES: int = int(os.getenv("DEFAULT_K_CANDIDATES", "10"))
 # Ventana de contexto del modelo de generación (tokens). Ajustar según el
 # modelo activo; los avisos del frontend se derivan de este valor.
 CONTEXT_LIMIT_TOKENS: int = int(os.getenv("CONTEXT_LIMIT_TOKENS", "200000"))
+
+# ── Protección de consultas RAG ─────────────────────────────────────────────
+# off: sin cambio funcional; observe: solo registra; enforce: responde 429.
+_rate_limit_mode = os.getenv("RAG_RATE_LIMIT_MODE", "off").strip().lower()
+RateLimitMode = Literal["off", "observe", "enforce"]
+RATE_LIMIT_MODE: RateLimitMode = (
+    cast(RateLimitMode, _rate_limit_mode)
+    if _rate_limit_mode in {"off", "observe", "enforce"}
+    else "off"
+)
+RATE_LIMIT_REQUESTS: int = int(os.getenv("RAG_RATE_LIMIT_REQUESTS", "10"))
+RATE_LIMIT_WINDOW_SECONDS: float = float(os.getenv("RAG_RATE_LIMIT_WINDOW_SECONDS", "60"))
+
+# ── Protección de generación de título con IA ───────────────────────────────
+# Límite independiente del de consultas RAG: mismo modelo (off/observe/enforce),
+# pero con su propia ventana, ya que generar título es una operación distinta
+# y más barata. off por defecto: sin cambio funcional.
+_title_rate_limit_mode = os.getenv("TITLE_RATE_LIMIT_MODE", "off").strip().lower()
+TITLE_RATE_LIMIT_MODE: RateLimitMode = (
+    cast(RateLimitMode, _title_rate_limit_mode)
+    if _title_rate_limit_mode in {"off", "observe", "enforce"}
+    else "off"
+)
+TITLE_RATE_LIMIT_REQUESTS: int = int(os.getenv("TITLE_RATE_LIMIT_REQUESTS", "5"))
+TITLE_RATE_LIMIT_WINDOW_SECONDS: float = float(
+    os.getenv("TITLE_RATE_LIMIT_WINDOW_SECONDS", "60")
+)
+
+# ── Protección de login ──────────────────────────────────────────────────────
+# Límite reversible sobre /api/auth/login, independiente de los anteriores.
+# La clave combina el email normalizado y la IP de origen (ver routes/auth.py);
+# request.client.host no considera un proxy de confianza (no hay política de
+# X-Forwarded-For configurada), así que enforce no debe activarse en entornos
+# detrás de un proxy/LB sin revisar esa política primero. off por defecto.
+_auth_rate_limit_mode = os.getenv("AUTH_RATE_LIMIT_MODE", "off").strip().lower()
+AUTH_RATE_LIMIT_MODE: RateLimitMode = (
+    cast(RateLimitMode, _auth_rate_limit_mode)
+    if _auth_rate_limit_mode in {"off", "observe", "enforce"}
+    else "off"
+)
+AUTH_RATE_LIMIT_REQUESTS: int = int(os.getenv("AUTH_RATE_LIMIT_REQUESTS", "10"))
+AUTH_RATE_LIMIT_WINDOW_SECONDS: float = float(
+    os.getenv("AUTH_RATE_LIMIT_WINDOW_SECONDS", "300")
+)

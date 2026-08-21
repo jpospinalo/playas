@@ -54,39 +54,21 @@ interface AuthModalProps {
   dismissible?: boolean;
 }
 
-type Tab = "login" | "register";
-
 export function AuthModal({ open, onClose, dismissible = true }: AuthModalProps) {
-  const { signIn } = useAuth();
-  // Registro deshabilitado: solo queda el flujo de login. `tab` se conserva
-  // fijo en "login" — el bloque de UI para cambiar de pestaña y el
-  // formulario de registro quedan comentados más abajo por si se reactiva.
-  const [tab] = useState<Tab>("login");
-  const [displayName, setDisplayName] = useState("");
+  const { signIn, sessionExpiredMessage } = useAuth();
   const [email, setEmail] = useState(getLastEmail);
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   function resetForm() {
-    setDisplayName("");
     setEmail(getLastEmail());
     setPassword("");
-    setConfirmPassword("");
     setShowPassword(false);
-    setShowConfirmPassword(false);
     setError(null);
     setSubmitting(false);
   }
-
-  // Deshabilitado junto con el tab de registro (ver más abajo).
-  // function handleTabChange(next: Tab) {
-  //   setTab(next);
-  //   setError(null);
-  // }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -95,16 +77,6 @@ export function AuthModal({ open, onClose, dismissible = true }: AuthModalProps)
 
     setSubmitting(true);
     try {
-      // Registro deshabilitado: por ahora solo se admite login.
-      // if (tab === "register" && password !== confirmPassword) {
-      //   setError("Las contraseñas no coinciden.");
-      //   return;
-      // }
-      // if (tab === "login") {
-      //   await signIn(email, password);
-      // } else {
-      //   await signUp(email, password, displayName);
-      // }
       await signIn(email, password);
       resetForm();
       onClose();
@@ -120,13 +92,7 @@ export function AuthModal({ open, onClose, dismissible = true }: AuthModalProps)
     onClose();
   }
 
-  const confirmMismatch = tab === "register" && !!confirmPassword && password !== confirmPassword;
-
-  const submitDisabled =
-    submitting ||
-    !email ||
-    !password ||
-    (tab === "register" && (!displayName || !confirmPassword || password !== confirmPassword));
+  const submitDisabled = submitting || !email || !password;
 
   return (
     <AnimatePresence>
@@ -181,60 +147,20 @@ export function AuthModal({ open, onClose, dismissible = true }: AuthModalProps)
                 id="auth-modal-title"
                 className="text-lg font-medium text-foreground"
               >
-                {tab === "login" ? "Iniciar sesión" : "Crear cuenta"}
+                Iniciar sesión
               </h2>
             </div>
 
-            {/* Registro deshabilitado: se quita el selector de pestañas
-                iniciar sesión / registrarse. Solo queda el flujo de login.
-            <div
-              role="tablist"
-              aria-label="Modo de acceso"
-              className="mb-5 flex gap-0.5 rounded-full border border-border bg-surface p-0.5"
-            >
-              {(["login", "register"] as Tab[]).map((t) => (
-                <button
-                  key={t}
-                  role="tab"
-                  aria-selected={tab === t}
-                  onClick={() => handleTabChange(t)}
-                  className={`flex-1 rounded-full px-3 py-1.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
-                    tab === t
-                      ? "bg-elevated text-foreground"
-                      : "text-muted hover:text-foreground"
-                  }`}
-                >
-                  {t === "login" ? "Iniciar sesión" : "Registrarse"}
-                </button>
-              ))}
-            </div>
-            */}
+            {sessionExpiredMessage && (
+              <p
+                role="status"
+                className="mb-3.5 rounded-2xl border border-accent/30 bg-accent-soft px-3.5 py-2.5 text-sm text-accent"
+              >
+                {sessionExpiredMessage}
+              </p>
+            )}
 
             <form onSubmit={handleSubmit} noValidate className="space-y-3.5">
-              {/* Campo de nombre: solo aplicaba al registro, deshabilitado.
-              {tab === "register" && (
-                <div>
-                  <label
-                    htmlFor="auth-display-name"
-                    className="mb-1.5 block text-xs font-medium text-muted"
-                  >
-                    Nombre
-                  </label>
-                  <input
-                    id="auth-display-name"
-                    type="text"
-                    autoComplete="username"
-                    required
-                    value={displayName}
-                    onChange={(e) => setDisplayName(e.target.value)}
-                    placeholder="Tu nombre o apodo"
-                    className={inputClass}
-                    disabled={submitting}
-                  />
-                </div>
-              )}
-              */}
-
               <div>
                 <label
                   htmlFor="auth-email"
@@ -266,11 +192,11 @@ export function AuthModal({ open, onClose, dismissible = true }: AuthModalProps)
                   <input
                     id="auth-password"
                     type={showPassword ? "text" : "password"}
-                    autoComplete={tab === "login" ? "current-password" : "new-password"}
+                    autoComplete="current-password"
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    placeholder={tab === "register" ? "Mínimo 6 caracteres" : "••••••••"}
+                    placeholder="••••••••"
                     className={`${inputClass} pr-11`}
                     disabled={submitting}
                   />
@@ -285,46 +211,6 @@ export function AuthModal({ open, onClose, dismissible = true }: AuthModalProps)
                   </button>
                 </div>
               </div>
-
-              {/* Campo de confirmación: solo aplicaba al registro, deshabilitado.
-              {tab === "register" && (
-                <div>
-                  <label
-                    htmlFor="auth-confirm-password"
-                    className="mb-1.5 block text-xs font-medium text-muted"
-                  >
-                    Confirmar contraseña
-                  </label>
-                  <div className="relative">
-                    <input
-                      id="auth-confirm-password"
-                      type={showConfirmPassword ? "text" : "password"}
-                      autoComplete="new-password"
-                      required
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                      placeholder="Repite tu contraseña"
-                      className={`${inputClass} pr-11 ${
-                        confirmMismatch ? "border-danger focus:border-danger focus:shadow-[0_0_0_3px_var(--danger-bg)]" : ""
-                      }`}
-                      disabled={submitting}
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowConfirmPassword((v) => !v)}
-                      aria-label={showConfirmPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
-                      className="absolute right-2 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full text-subtle transition-colors hover:bg-surface hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
-                      tabIndex={-1}
-                    >
-                      <EyeIcon open={showConfirmPassword} />
-                    </button>
-                  </div>
-                  {confirmMismatch && (
-                    <p className="mt-1 text-xs text-danger">Las contraseñas no coinciden.</p>
-                  )}
-                </div>
-              )}
-              */}
 
               <AnimatePresence>
                 {error && (
@@ -346,11 +232,7 @@ export function AuthModal({ open, onClose, dismissible = true }: AuthModalProps)
                 disabled={submitDisabled}
                 className="mt-2 w-full rounded-full bg-accent px-4 py-2.5 text-sm font-medium text-accent-fg transition-colors hover:bg-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-elevated disabled:cursor-not-allowed disabled:opacity-45"
               >
-                {submitting
-                  ? "Procesando…"
-                  : tab === "login"
-                    ? "Iniciar sesión"
-                    : "Crear cuenta"}
+                {submitting ? "Procesando…" : "Iniciar sesión"}
               </button>
             </form>
           </motion.div>

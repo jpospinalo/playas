@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { API_URL } from "@/lib/config";
+import { throwIfSessionExpired } from "@/lib/api";
 
 const PAGE_SIZE = 20;
 
@@ -94,9 +95,15 @@ export default function FeedbackPage() {
 			setLoading(true);
 			setError(null);
 			try {
-				const { getToken } = await import("@/lib/auth");
+				const { expireAuthSession, getToken } = await import("@/lib/auth");
 				const token = getToken();
-				if (!token) throw new Error("Sin sesión");
+				if (!token) {
+					// Página administrativa: solo se llega aquí ya autenticado, así
+					// que un token ausente es una sesión perdida en otro lado, no el
+					// estado inicial normal. Notifica para que la UI se actualice.
+					expireAuthSession(null);
+					throw new Error("Sin sesión");
+				}
 
 				const params = new URLSearchParams({
 					page: String(p),
@@ -111,6 +118,7 @@ export default function FeedbackPage() {
 				const res = await fetch(`${API_URL}/api/admin/feedback?${params}`, {
 					headers: { Authorization: `Bearer ${token}` },
 				});
+				await throwIfSessionExpired(res, token);
 				if (!res.ok) throw new Error(`Error ${res.status}`);
 				const data: FeedbackResponse = await res.json();
 				setItems(data.items);

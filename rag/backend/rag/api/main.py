@@ -12,8 +12,10 @@ Run with:
 from __future__ import annotations
 
 import json
+import logging
 import re
 import uuid
+from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import Any
@@ -24,7 +26,7 @@ from fastapi.responses import StreamingResponse
 from langchain_core.documents import Document
 from langchain_core.messages import AIMessage, HumanMessage
 
-from rag.api.auth import get_optional_user
+from rag.api.rate_limit import get_query_user
 from rag.api.routes.admin import router as admin_router
 from rag.api.routes.auth import router as auth_router
 from rag.api.routes.conversations import router as conversations_router
@@ -37,6 +39,7 @@ from rag.core.tools import sanitize_replacement_chars
 # ── Singleton del grafo ─────────────────────────────────────────────────────
 
 _graph: Any = None
+logger = logging.getLogger(__name__)
 
 
 def get_graph() -> Any:
@@ -74,7 +77,9 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(
     title="RAG Playas API",
-    description="Sistema de consulta de jurisprudencia española en materia de playas",
+    description=(
+        "Sistema de consulta de jurisprudencia y normatividad colombiana relacionada con playas"
+    ),
     version="0.2.0",
     lifespan=lifespan,
 )
@@ -193,9 +198,15 @@ def _docs_to_source_groups(docs: list[Document]) -> list[SourceGroup]:
     return [groups[s] for s in order]
 
 
-def _make_config(thread_id: str | None, recursion_limit: int = 10) -> dict:
-    """Construye el config de LangGraph con thread_id y recursion_limit."""
-    tid = thread_id or str(uuid.uuid4())
+def _make_config(
+    user_id: str,
+    conversation_id: str | None,
+    thread_id: str | None,
+    recursion_limit: int = 10,
+) -> dict:
+    """Construye una clave de checkpoint aislada por usuario y conversación."""
+    logical_id = conversation_id or thread_id or str(uuid.uuid4())
+    tid = f"user:{user_id}:conversation:{logical_id}"
     return {
         "configurable": {"thread_id": tid},
         "recursion_limit": recursion_limit,
@@ -231,6 +242,21 @@ def _estimate_context_tokens(messages: list) -> int:
     return total_chars // 4
 
 
+def _build_graph_input(request: QueryRequest, messages: list) -> dict[str, Any]:
+    """Construye en un solo lugar el contrato de entrada del grafo."""
+    return {
+        "question": request.question,
+        "standalone_question": None,
+        "enriched_query": None,
+        "query_route": None,
+        "messages": messages,
+        "sources": [],
+        "doc_types": request.doc_types,
+        "k": request.k,
+        "k_candidates": request.k_candidates,
+    }
+
+
 # ── Hydration ──────────────────────────────────────────────────────────────
 
 
@@ -239,6 +265,8 @@ async def _get_initial_messages(
     config: dict,
     conversation_id: str | None,
     question: str,
+    user_id: str,
+    current_message_id: str | None = None,
 ) -> list:
     """Devuelve los mensajes iniciales para invocar el agente.
 
@@ -247,21 +275,42 @@ async def _get_initial_messages(
       e inyecta el contexto completo (útil tras reinicio del servidor).
     - Si no hay estado ni conversation_id: comienza conversación nueva.
     """
-    state = await graph.aget_state(config)
-    has_checkpoint = bool((state.values if hasattr(state, "values") else {}).get("messages"))
-
-    if has_checkpoint:
-        return [HumanMessage(content=question)]
-
     if not conversation_id:
+        if current_message_id:
+            raise HTTPException(
+                status_code=422,
+                detail="current_message_id requiere conversation_id.",
+            )
         return [HumanMessage(content=question)]
 
     from sqlalchemy import select
 
     from rag.api.database import async_session_factory
-    from rag.api.models import Message
+    from rag.api.models import Conversation, Message
 
     async with async_session_factory() as session:
+        conversation = await session.get(Conversation, conversation_id)
+        if conversation is None or conversation.user_id != user_id:
+            raise HTTPException(status_code=404, detail="Conversación no encontrada.")
+
+        if current_message_id:
+            current_message = await session.get(Message, current_message_id)
+            if (
+                current_message is None
+                or current_message.conversation_id != conversation_id
+                or current_message.role != "user"
+                or current_message.text.strip() != question.strip()
+            ):
+                raise HTTPException(
+                    status_code=422,
+                    detail="El mensaje actual no coincide con la conversación y la pregunta.",
+                )
+
+        state = await graph.aget_state(config)
+        has_checkpoint = bool((state.values if hasattr(state, "values") else {}).get("messages"))
+        if has_checkpoint:
+            return [HumanMessage(content=question)]
+
         result = await session.execute(
             select(Message)
             .where(Message.conversation_id == conversation_id)
@@ -271,6 +320,8 @@ async def _get_initial_messages(
 
     history: list = []
     for msg in msgs:
+        if msg.id == current_message_id:
+            continue
         if msg.role == "user":
             history.append(HumanMessage(content=msg.text))
         else:
@@ -291,7 +342,7 @@ async def health() -> dict:
 @app.post("/api/query", response_model=QueryResponse)
 async def query(
     request: QueryRequest,
-    _user: dict | None = Depends(get_optional_user),
+    user: dict = Depends(get_query_user),
 ) -> QueryResponse:
     """Consulta jurídica completa (respuesta JSON).
 
@@ -299,23 +350,29 @@ async def query(
     Soporta memoria multi-turno si se proporciona `thread_id`.
     """
     graph = get_graph()
-    config = _make_config(request.thread_id)
+    config = _make_config(user["sub"], request.conversation_id, request.thread_id)
 
     try:
         initial_messages = await _get_initial_messages(
-            graph, config, request.conversation_id, request.question
+            graph,
+            config,
+            request.conversation_id,
+            request.question,
+            user["sub"],
+            request.current_message_id,
         )
         final_state = await graph.ainvoke(
-            {
-                "question": request.question,
-                "messages": initial_messages,
-                "sources": [],
-                "doc_types": request.doc_types,
-            },
+            _build_graph_input(request, initial_messages),
             config=config,
         )
     except Exception as exc:
-        raise HTTPException(status_code=500, detail=str(exc)) from exc
+        if isinstance(exc, HTTPException):
+            raise
+        logger.exception("Error procesando una consulta RAG")
+        raise HTTPException(
+            status_code=500,
+            detail="No fue posible procesar la consulta.",
+        ) from exc
 
     answer_raw = _extract_answer_from_state(final_state)
     if not answer_raw:
@@ -329,6 +386,7 @@ async def query(
         answer=_clean_answer(answer_raw),
         sources=_docs_to_source_groups(sources),
         enriched_query=enriched_query,
+        query_route=final_state.get("query_route"),
         context_tokens=context_tokens,
         context_limit=CONTEXT_LIMIT_TOKENS,
     )
@@ -337,57 +395,54 @@ async def query(
 @app.post("/api/query/stream")
 async def query_stream(
     request: QueryRequest,
-    _user: dict | None = Depends(get_optional_user),
+    user: dict = Depends(get_query_user),
 ):
-    """Streaming SSE: emite tokens del LLM en tiempo real.
+    """Streaming SSE: emite estados y luego la respuesta validada en fragmentos.
 
     Formato de eventos SSE:
       data: {"type": "token",   "content": "<fragmento>"}
       data: {"type": "sources", "sources": [...], "enriched_query": "..."}
       data: [DONE]
 
-    Los tokens del nodo `agent` se emiten en tiempo real. Al finalizar se envía
-    un evento con los documentos fuente y la consulta enriquecida.
+    La respuesta se valida antes de exponerla para impedir citas inexistentes o
+    conclusiones jurídicas sin respaldo. Al finalizar se envían las fuentes y
+    la consulta enriquecida.
     """
     graph = get_graph()
-    config = _make_config(request.thread_id)
+    config = _make_config(user["sub"], request.conversation_id, request.thread_id)
     initial_messages = await _get_initial_messages(
-        graph, config, request.conversation_id, request.question
+        graph,
+        config,
+        request.conversation_id,
+        request.question,
+        user["sub"],
+        request.current_message_id,
     )
 
-    async def event_generator():
+    async def event_generator() -> AsyncGenerator[str, None]:
         try:
-            # Multi-stream: combinamos los tokens del LLM ("messages") con los
-            # eventos custom de progreso ("custom") que emiten los nodos vía
-            # get_stream_writer. Cada chunk viene como (mode, payload).
+            # La generación se valida dentro del grafo antes de exponerla. Por eso
+            # conservamos el último snapshot de este stream y emitimos su texto validado.
+            values: dict[str, Any] = {}
             async for mode, payload in graph.astream(
-                {
-                    "question": request.question,
-                    "messages": initial_messages,
-                    "sources": [],
-                    "doc_types": request.doc_types,
-                },
+                _build_graph_input(request, initial_messages),
                 config=config,
-                stream_mode=["messages", "custom"],
+                stream_mode=["values", "custom"],
             ):
-                if mode == "messages":
-                    chunk, metadata = payload
-                    # Solo emitir tokens del nodo "agent" o "generate" (no
-                    # enriquecimiento ni ToolMessages)
-                    node = metadata.get("langgraph_node", "")
-                    if node in ("agent", "generate") and isinstance(chunk, AIMessage):
-                        if isinstance(chunk.content, str) and chunk.content:
-                            event = json.dumps({"type": "token", "content": chunk.content})
-                            yield f"data: {event}\n\n"
-                elif mode == "custom":
+                if mode == "custom":
                     # Eventos de estado emitidos por los nodos
                     if isinstance(payload, dict) and payload.get("type") == "status":
                         event = json.dumps(payload)
                         yield f"data: {event}\n\n"
+                elif mode == "values" and isinstance(payload, dict):
+                    values = payload
 
-            # Recuperar el state final para sources y enriched_query
-            final_state = await graph.aget_state(config)
-            values = final_state.values if hasattr(final_state, "values") else {}
+            answer = _clean_answer(_extract_answer_from_state(values))
+            if not answer:
+                answer = "No se encontraron fragmentos relevantes en la base de conocimiento."
+            for start in range(0, len(answer), 120):
+                event = json.dumps({"type": "token", "content": answer[start : start + 120]})
+                yield f"data: {event}\n\n"
 
             sources_raw = values.get("sources") or []
             enriched_query = values.get("enriched_query")
@@ -399,6 +454,7 @@ async def query_stream(
                     "type": "sources",
                     "sources": sources_payload,
                     "enriched_query": enriched_query,
+                    "query_route": values.get("query_route"),
                     "context_tokens": context_tokens,
                     "context_limit": CONTEXT_LIMIT_TOKENS,
                 }
@@ -406,8 +462,9 @@ async def query_stream(
             yield f"data: {event}\n\n"
             yield "data: [DONE]\n\n"
 
-        except Exception as exc:
-            event = json.dumps({"type": "error", "detail": str(exc)})
+        except Exception:
+            logger.exception("Error durante una consulta RAG por streaming")
+            event = json.dumps({"type": "error", "detail": "No fue posible procesar la consulta."})
             yield f"data: {event}\n\n"
 
     return StreamingResponse(

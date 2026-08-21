@@ -2,7 +2,8 @@
 
 import { useEffect, useRef, useState, type KeyboardEvent, type MouseEvent } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { getToken } from "@/lib/auth";
+import { expireAuthSession, getToken } from "@/lib/auth";
+import { throwIfSessionExpired } from "@/lib/api";
 import type { Conversation } from "@/hooks/useConversations";
 import { formatConversationDate } from "@/components/chat/conversationSidebarUtils";
 import { API_URL } from "@/lib/config";
@@ -69,15 +70,26 @@ export function ConversationList({
     if (title) {
       const token = getToken();
       if (token) {
-        await fetch(`${API_URL}/api/conversations/${convId}`, {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ title }),
-        }).catch(() => {});
+        try {
+          const res = await fetch(`${API_URL}/api/conversations/${convId}`, {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ title }),
+          });
+          await throwIfSessionExpired(res, token);
+        } catch {
+          // Error de red o sesión expirada (ya manejada por throwIfSessionExpired
+          // vía el evento global): no bloquea el flujo de edición local.
+        }
         await onConversationsRefresh?.();
+      } else {
+        // Este componente solo se renderiza autenticado: si el token ya no
+        // está, notifica para que la UI se actualice en vez de descartar la
+        // edición en silencio.
+        expireAuthSession(null);
       }
     }
     setEditingId(null);
@@ -99,11 +111,20 @@ export function ConversationList({
     event.stopPropagation();
     const token = getToken();
     if (token) {
-      await fetch(`${API_URL}/api/conversations/${convId}`, {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
-      }).catch(() => {});
+      try {
+        const res = await fetch(`${API_URL}/api/conversations/${convId}`, {
+          method: "DELETE",
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        await throwIfSessionExpired(res, token);
+      } catch {
+        // Error de red o sesión expirada (ya manejada por throwIfSessionExpired
+        // vía el evento global): no bloquea el flujo de eliminación local.
+      }
       await onConversationsRefresh?.();
+    } else {
+      // Igual que en saveEdit: notifica si el token ya no está.
+      expireAuthSession(null);
     }
     setDeletingId(null);
     if (convId === activeConversationId) onNewChat();

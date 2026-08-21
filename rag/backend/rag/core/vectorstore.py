@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 import os
 import time
-from typing import Any
+from typing import Any, cast
 
 import chromadb
 from dotenv import load_dotenv
@@ -20,9 +20,11 @@ from .embeddings import OllamaEmbeddingFunction
 
 load_dotenv()
 
-CHROMA_HOST = os.getenv("CHROMA_HOST")
+CHROMA_HOST = os.getenv("CHROMA_HOST", "localhost")
 CHROMA_PORT = int(os.getenv("CHROMA_PORT", "8000"))
-CHROMA_COLLECTION_NAME = os.getenv("CHROMA_COLLECTION_NAME")
+CHROMA_COLLECTION_NAME = os.getenv(
+    "CHROMA_COLLECTION", os.getenv("CHROMA_COLLECTION_NAME", "rag_playas")
+)
 
 EMBED_FN = OllamaEmbeddingFunction()
 
@@ -39,7 +41,11 @@ INITIAL_BACKOFF = 2.0  # segundos
 # ---------------------------------------------------------------------
 
 
-def sanitize_metadata(meta: dict[str, Any]) -> dict[str, Any]:
+type MetadataValue = str | int | float | bool
+type Metadata = dict[str, MetadataValue]
+
+
+def sanitize_metadata(meta: dict[str, Any]) -> Metadata:
     """
     Adapta metadatos a los tipos permitidos por Chroma 1.x.
 
@@ -48,7 +54,7 @@ def sanitize_metadata(meta: dict[str, Any]) -> dict[str, Any]:
     clave por completo (ej. ``articulo`` es None en el preámbulo de una norma).
     Cualquier lista o dict se convierte en un JSON string.
     """
-    safe: dict[str, Any] = {}
+    safe: Metadata = {}
     for k, v in meta.items():
         if v is None:
             # Chroma rechaza null; omitir la clave (queries usan .get() → None igual).
@@ -95,7 +101,7 @@ def _build_embedding_text(text: str, meta: dict[str, Any]) -> str:
 
 def load_gold_records(
     key: str,
-) -> tuple[list[str], list[str], list[str], list[dict[str, Any]]]:
+) -> tuple[list[str], list[str], list[str], list[Metadata]]:
     """
     Descarga un objeto .jsonl de S3 (capa GOLD) y devuelve
     (ids, texts, embed_texts, metadatas).
@@ -107,7 +113,7 @@ def load_gold_records(
     ids: list[str] = []
     texts: list[str] = []
     embed_texts: list[str] = []
-    metadatas: list[dict[str, Any]] = []
+    metadatas: list[Metadata] = []
 
     file_name = key.split("/")[-1]
     content = read_text(key)
@@ -208,7 +214,7 @@ def build_or_load_vectorstore(
         new_ids: list[str] = []
         new_texts: list[str] = []
         new_embed_texts: list[str] = []
-        new_metadatas: list[dict[str, Any]] = []
+        new_metadatas: list[Metadata] = []
         for i, t, et, m in zip(ids, texts, embed_texts, metadatas, strict=False):
             if i in new_ids_set:
                 new_ids.append(i)
@@ -239,7 +245,9 @@ def build_or_load_vectorstore(
                     collection.add(
                         ids=batch_ids,
                         documents=batch_texts,
-                        metadatas=batch_metas,
+                        # Chroma tipa este argumento como una lista de Mapping.
+                        # Los metadatos ya fueron saneados a sus escalares admitidos.
+                        metadatas=cast(Any, batch_metas),
                         embeddings=embeddings,
                     )
                 except Exception as exc:

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { API_URL } from "@/lib/config";
+import { throwIfSessionExpired } from "@/lib/api";
 
 
 interface ConversationFeedbackStats {
@@ -111,6 +112,7 @@ async function fetchConversationStats(
 	const res = await fetch(`${API_URL}/api/admin/feedback?page=1&page_size=1`, {
 		headers: { Authorization: `Bearer ${token}` },
 	});
+	await throwIfSessionExpired(res, token);
 	if (!res.ok) throw new Error(`Error ${res.status}`);
 	const data = await res.json();
 	return {
@@ -144,6 +146,7 @@ async function fetchMessageStats(token: string): Promise<MessageFeedbackStats> {
 			},
 		};
 	}
+	await throwIfSessionExpired(res, token);
 	if (!res.ok) throw new Error(`Error ${res.status}`);
 	const data = await res.json();
 	return {
@@ -167,9 +170,15 @@ export default function AdminPage() {
 	useEffect(() => {
 		async function load() {
 			try {
-				const { getToken } = await import("@/lib/auth");
+				const { expireAuthSession, getToken } = await import("@/lib/auth");
 				const token = getToken();
-				if (!token) throw new Error("Sin sesión");
+				if (!token) {
+					// Página administrativa: solo se llega aquí ya autenticado, así
+					// que un token ausente es una sesión perdida en otro lado, no el
+					// estado inicial normal. Notifica para que la UI se actualice.
+					expireAuthSession(null);
+					throw new Error("Sin sesión");
+				}
 				const [cs, ms] = await Promise.all([
 					fetchConversationStats(token),
 					fetchMessageStats(token),

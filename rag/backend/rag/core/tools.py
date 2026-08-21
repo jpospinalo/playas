@@ -1,23 +1,22 @@
 # rag/core/tools.py
-"""Tools LangGraph del agente RAG.
+"""Utilidades de recuperación y formateo de contexto del agente RAG.
 
-La tool `retrieve` envuelve el HybridEnsembleRetriever (BM25 + vector, RRF)
-y devuelve un Command que actualiza simultáneamente:
-  - `sources`: lista de Document para la respuesta del endpoint.
-  - `messages`: ToolMessage con el bloque de contexto formateado que ve el LLM.
+El flujo del agente (ver core/agent.py) es determinista: enrich_query →
+route_after_analysis → {retrieve_forced → generate, respond_without_retrieval}.
+No hay tool-calling ni ReAct — el LLM nunca decide si buscar o no. La
+recuperación (retrieve_forced) se ejecuta exactamente una vez, pero solo para
+consultas que enrich_query clasifica como `in_scope`; conversación
+(saludos/meta-preguntas), aclaración y fuera de alcance van directo a
+respond_without_retrieval y no recuperan documentos. Este módulo conserva las
+funciones que ese flujo determinista reutiliza: `build_context_block`
+formatea los documentos recuperados en el bloque de contexto que ve el LLM,
+y `sanitize_replacement_chars` limpia caracteres U+FFFD del pipeline de
+ingesta (ver docs/INGEST_ENCODING_BUG.md).
 """
 
 from __future__ import annotations
 
-from typing import Annotated
-
 from langchain_core.documents import Document
-from langchain_core.messages import ToolMessage
-from langchain_core.tools import InjectedToolCallId, tool
-from langgraph.prebuilt import InjectedState
-from langgraph.types import Command
-
-from .retriever import get_ensemble_retriever
 
 # ---------------------------------------------------------------------------
 # Sanitización (parche temporal)
@@ -113,40 +112,3 @@ def build_context_block(docs: list[Document]) -> str:
         bloques.append("\n".join(parts))
 
     return "\n\n".join(bloques)
-
-
-# ---------------------------------------------------------------------------
-# Tool de recuperación
-# ---------------------------------------------------------------------------
-
-
-@tool
-def retrieve(
-    query: str,
-    k: int = 8,
-    tool_call_id: Annotated[str, InjectedToolCallId] = "",
-    doc_types: Annotated[list[str] | None, InjectedState("doc_types")] = None,
-) -> Command:
-    """Busca jurisprudencia y normativa colombiana relevante (recuperación híbrida BM25 + vector).
-
-    Parámetros:
-        query: Consulta de búsqueda. Usa la consulta enriquecida disponible en el contexto.
-        k: Número de fragmentos a recuperar (por defecto 8).
-
-    Devuelve fragmentos de sentencias del Consejo de Estado y Tribunales
-    Administrativos colombianos y de normativa (decretos, reglamentos) sobre
-    playas, zonas costeras y dominio público. El filtro `doc_types` se inyecta
-    desde el estado del agente (None = ambos tipos).
-    Cita cada fragmento con el marcador [docN] que aparece en el contenido.
-    """
-    docs = get_ensemble_retriever(k=k, doc_types=doc_types).invoke(query)
-    context = build_context_block(docs)
-    return Command(
-        update={
-            "sources": docs,
-            "messages": [ToolMessage(content=context, tool_call_id=tool_call_id)],
-        }
-    )
-
-
-ALL_TOOLS = [retrieve]
