@@ -62,7 +62,7 @@ resource "aws_instance" "chromadb" {
   vpc_security_group_ids = [aws_security_group.chromadb.id]
 
   root_block_device {
-    volume_size = 12
+    volume_size = 30
     volume_type = "gp3"
   }
 
