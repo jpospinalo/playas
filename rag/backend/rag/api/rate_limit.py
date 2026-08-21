@@ -40,6 +40,10 @@ class SlidingWindowRateLimiter:
     límites independientes (p. ej. generación de título, login).
     """
 
+    #: Mensaje por defecto, preservado exactamente igual al que tenía el
+    #: limitador de consultas RAG antes de esta generalización.
+    _DEFAULT_DETAIL = "Se alcanzó temporalmente el límite de consultas. Intenta nuevamente más tarde."
+
     def __init__(
         self,
         *,
@@ -47,6 +51,8 @@ class SlidingWindowRateLimiter:
         max_requests: int = 10,
         window_seconds: float = 60.0,
         clock: Callable[[], float] = time.monotonic,
+        detail: str = _DEFAULT_DETAIL,
+        scope: str = "query",
     ) -> None:
         if max_requests < 1:
             raise ValueError("max_requests debe ser mayor que cero")
@@ -56,6 +62,16 @@ class SlidingWindowRateLimiter:
         self.max_requests = max_requests
         self.window_seconds = window_seconds
         self._clock = clock
+        # `detail` es el texto del 429 devuelto al cliente: cada instancia
+        # (consultas RAG, títulos, login) tiene el suyo, para no mostrar un
+        # mensaje sobre "consultas" cuando en realidad se limitó un login o
+        # una generación de título.
+        self.detail = detail
+        # `scope` es solo una etiqueta estática para los logs en modo
+        # observe (p. ej. "query", "title", "login"). Nunca debe llevar
+        # datos del usuario (email, IP, contraseña, token): esos ya se
+        # excluyen aguas arriba, en la clave que le pasa cada llamador.
+        self.scope = scope
         self._events: dict[str, deque[float]] = defaultdict(deque)
         self._lock = asyncio.Lock()
         self._checks = 0
@@ -91,13 +107,17 @@ class SlidingWindowRateLimiter:
         if not limited:
             return
         if self.mode == "observe":
+            # Solo una etiqueta estática (self.scope), nunca la clave en sí:
+            # para login, la clave ya es un hash SHA-256, pero igual no se
+            # registra aquí para no acoplar este log a su formato.
             logger.warning(
-                "Límite de solicitudes superado en modo observación", extra={"key": key}
+                "Límite de solicitudes superado en modo observación",
+                extra={"scope": self.scope},
             )
             return
         raise HTTPException(
             status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-            detail="Se alcanzó temporalmente el límite de consultas. Intenta nuevamente más tarde.",
+            detail=self.detail,
             headers={"Retry-After": str(retry_after)},
         )
 
@@ -111,12 +131,17 @@ query_rate_limiter = SlidingWindowRateLimiter(
     mode=RATE_LIMIT_MODE,
     max_requests=RATE_LIMIT_REQUESTS,
     window_seconds=RATE_LIMIT_WINDOW_SECONDS,
+    scope="query",
+    # detail: sin especificar, conserva _DEFAULT_DETAIL (el mensaje original
+    # del limitador de consultas RAG), sin cambio alguno.
 )
 
 title_rate_limiter = SlidingWindowRateLimiter(
     mode=TITLE_RATE_LIMIT_MODE,
     max_requests=TITLE_RATE_LIMIT_REQUESTS,
     window_seconds=TITLE_RATE_LIMIT_WINDOW_SECONDS,
+    detail="Se alcanzó temporalmente el límite de generación de títulos. Intenta nuevamente más tarde.",
+    scope="title",
 )
 
 # Sin dependencia de get_current_user: /api/auth/login ocurre antes de la
@@ -126,6 +151,8 @@ login_rate_limiter = SlidingWindowRateLimiter(
     mode=AUTH_RATE_LIMIT_MODE,
     max_requests=AUTH_RATE_LIMIT_REQUESTS,
     window_seconds=AUTH_RATE_LIMIT_WINDOW_SECONDS,
+    detail="Se alcanzó temporalmente el límite de intentos de inicio de sesión. Intenta nuevamente más tarde.",
+    scope="login",
 )
 
 

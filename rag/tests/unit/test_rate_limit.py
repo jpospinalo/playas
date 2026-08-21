@@ -136,3 +136,130 @@ async def test_login_rate_limiter_enforces_independently_per_key() -> None:
 
     # Clave distinta (otro correo o otra IP): no afectada por el límite anterior.
     await limiter.check("email-b:ip-a")
+
+
+# ── Corrección 4: mensajes y configuración por instancia ────────────────────
+
+
+@pytest.mark.anyio
+async def test_query_rate_limiter_keeps_its_original_detail_message() -> None:
+    """El limitador de consultas RAG no cambia su texto de 429 con esta
+    generalización: mismo mensaje que antes, palabra por palabra."""
+    limiter = SlidingWindowRateLimiter(mode="enforce", max_requests=1, window_seconds=60)
+    await limiter.check("user-1")
+    with pytest.raises(HTTPException) as error:
+        await limiter.check("user-1")
+    assert (
+        error.value.detail
+        == "Se alcanzó temporalmente el límite de consultas. Intenta nuevamente más tarde."
+    )
+
+    from rag.api.rate_limit import query_rate_limiter
+
+    assert query_rate_limiter.detail == (
+        "Se alcanzó temporalmente el límite de consultas. Intenta nuevamente más tarde."
+    )
+
+
+@pytest.mark.anyio
+async def test_title_and_login_rate_limiters_have_their_own_detail_message() -> None:
+    """Título y login no deben mostrar el mensaje de "consultas": cada uno
+    tiene su propio texto de 429, y Retry-After sigue presente en ambos."""
+    from rag.api.rate_limit import login_rate_limiter, query_rate_limiter, title_rate_limiter
+
+    title_limiter = SlidingWindowRateLimiter(
+        mode="enforce",
+        max_requests=1,
+        window_seconds=60,
+        detail=title_rate_limiter.detail,
+        scope="title",
+    )
+    login_limiter = SlidingWindowRateLimiter(
+        mode="enforce",
+        max_requests=1,
+        window_seconds=60,
+        detail=login_rate_limiter.detail,
+        scope="login",
+    )
+
+    await title_limiter.check("user-1")
+    with pytest.raises(HTTPException) as title_error:
+        await title_limiter.check("user-1")
+    await login_limiter.check("key-1")
+    with pytest.raises(HTTPException) as login_error:
+        await login_limiter.check("key-1")
+
+    assert "título" in title_error.value.detail
+    assert "inicio de sesión" in login_error.value.detail
+    assert title_error.value.detail != login_error.value.detail
+    assert title_error.value.detail != query_rate_limiter.detail
+    assert login_error.value.detail != query_rate_limiter.detail
+    assert title_error.value.headers is not None and "Retry-After" in title_error.value.headers
+    assert login_error.value.headers is not None and "Retry-After" in login_error.value.headers
+
+
+def test_rate_limiter_instances_default_to_distinct_scopes() -> None:
+    """Cada instancia global se etiqueta con su propio scope, para que un log
+    en modo observe sea identificable sin exponer datos del usuario."""
+    from rag.api.rate_limit import login_rate_limiter, query_rate_limiter, title_rate_limiter
+
+    assert query_rate_limiter.scope == "query"
+    assert title_rate_limiter.scope == "title"
+    assert login_rate_limiter.scope == "login"
+
+
+def test_title_rate_limit_default_requests_is_five() -> None:
+    """El plan aprobado especificó TITLE_RATE_LIMIT_REQUESTS=5; el código y
+    .env.example deben coincidir (el modo sigue en off, así que esto no activa
+    ningún bloqueo nuevo)."""
+    from rag.config import TITLE_RATE_LIMIT_REQUESTS
+
+    assert TITLE_RATE_LIMIT_REQUESTS == 5
+
+
+@pytest.mark.anyio
+async def test_off_mode_never_logs(caplog: pytest.LogCaptureFixture) -> None:
+    """off debe retornar antes de adquirir el lock, guardar eventos o escribir
+    logs — igual que hoy — incluso llamado muchas veces."""
+    limiter = SlidingWindowRateLimiter(mode="off", max_requests=1, window_seconds=60)
+    with caplog.at_level(logging.WARNING):
+        for _ in range(5):
+            await limiter.check("user-1")
+    assert caplog.text == ""
+    assert limiter._events == {}
+
+
+@pytest.mark.anyio
+async def test_login_observe_logs_never_contain_email_ip_or_password(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """El log de modo observe para login debe llevar únicamente la etiqueta
+    estática de scope, nunca el email, la IP ni la contraseña del intento.
+
+    Todos los valores usados abajo son sintéticos, no datos reales: el email
+    usa el dominio `example.com` (RFC 2606, reservado para documentación) y
+    la IP usa el rango `203.0.113.0/24` (RFC 5737, TEST-NET-3, reservado para
+    ejemplos); la "contraseña" es un literal de prueba que nunca se envía a
+    ningún servicio, solo se compara contra el texto del log en memoria.
+    """
+    import hashlib
+
+    email = "someone@example.com"
+    ip = "203.0.113.7"
+    password = "hunter2-super-secret"
+    key = hashlib.sha256(f"{email}:{ip}".encode()).hexdigest()
+
+    limiter = SlidingWindowRateLimiter(
+        mode="observe",
+        max_requests=1,
+        window_seconds=60,
+        scope="login",
+    )
+    with caplog.at_level(logging.WARNING):
+        await limiter.check(key)
+        await limiter.check(key)
+
+    assert email not in caplog.text
+    assert ip not in caplog.text
+    assert password not in caplog.text
+    assert "modo observación" in caplog.text

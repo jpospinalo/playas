@@ -14,13 +14,12 @@ import {
 	getStoredUser,
 	getToken,
 	rememberEmail,
+	SESSION_EXPIRED_MESSAGE,
 	setAuth,
 	type AuthUser,
 	type SessionExpiredDetail,
 } from "@/lib/auth";
 import { API_URL } from "@/lib/config";
-
-const SESSION_EXPIRED_MESSAGE = "Tu sesión expiró. Inicia sesión nuevamente.";
 
 interface AuthContextValue {
 	user: AuthUser | null;
@@ -70,12 +69,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 				return;
 			}
 
+			// El token puede cambiar mientras esta solicitud está en curso (el
+			// usuario cierra sesión e inicia como otro en otra pestaña, sin
+			// recargar esta). canApplyResult() se vuelve a evaluar justo antes de
+			// aplicar cualquier resultado no-401, para que una respuesta tardía de
+			// `token` nunca sobrescriba ni restaure una sesión distinta de la que
+			// está activa en ese momento.
+			const canApplyResult = () => !cancelled && getToken() === token;
+
 			try {
 				const res = await fetch(`${API_URL}/api/auth/me`, {
 					headers: { Authorization: `Bearer ${token}` },
 				});
 				if (res.status === 401) {
-					// Sesión realmente inválida/expirada: expireAuthSession() dispara
+					// Sesión realmente inválida/expirada: expireAuthSession() ya
+					// comprueba internamente que `token` siga siendo el activo, así
+					// que no necesita canApplyResult() aquí. Dispara
 					// AUTH_SESSION_EXPIRED_EVENT, que el listener de arriba atiende.
 					expireAuthSession(token, SESSION_EXPIRED_MESSAGE);
 					return;
@@ -84,19 +93,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 					// Fallo transitorio (red inestable, 5xx, 403 inesperado...): no
 					// eliminar una sesión que podría seguir siendo válida. Se usa la
 					// identidad cacheada como estado provisional; cada endpoint sigue
-					// autorizando por su cuenta, y un 401 posterior sí cerrará la sesión.
-					if (!cancelled) setUser(getStoredUser());
+					// autorizando por su cuenta, y un 401 posterior sí cerrará la
+					// sesión. Solo se aplica si `token` sigue siendo el activo.
+					if (canApplyResult()) setUser(getStoredUser());
 					return;
 				}
 				const data = (await res.json()) as AuthUser;
-				if (!cancelled) {
+				// El token también puede haber cambiado durante la espera de
+				// res.json(), así que se vuelve a comprobar aquí, no solo antes
+				// del fetch.
+				if (canApplyResult()) {
 					setAuth(token, data);
 					setUser(data);
 				}
 			} catch {
 				// Error de red: mismo criterio que arriba, no cerrar la sesión.
-				if (!cancelled) setUser(getStoredUser());
+				if (canApplyResult()) setUser(getStoredUser());
 			} finally {
+				// Termina el estado de carga siempre que el componente siga
+				// montado, incluso si `token` ya no es el activo: de lo contrario,
+				// un cambio de sesión durante esta validación dejaría `loading`
+				// bloqueado en true para siempre. No reactiva ni copia datos de
+				// una sesión anterior — eso ya está condicionado arriba.
 				if (!cancelled) setLoading(false);
 			}
 		}

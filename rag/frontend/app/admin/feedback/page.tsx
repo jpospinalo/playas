@@ -95,9 +95,15 @@ export default function FeedbackPage() {
 			setLoading(true);
 			setError(null);
 			try {
-				const { getToken } = await import("@/lib/auth");
+				const { expireAuthSession, getToken } = await import("@/lib/auth");
 				const token = getToken();
-				if (!token) throw new Error("Sin sesión");
+				if (!token) {
+					// Página administrativa: solo se llega aquí ya autenticado, así
+					// que un token ausente es una sesión perdida en otro lado, no el
+					// estado inicial normal. Notifica para que la UI se actualice.
+					expireAuthSession(null);
+					throw new Error("Sin sesión");
+				}
 
 				const params = new URLSearchParams({
 					page: String(p),

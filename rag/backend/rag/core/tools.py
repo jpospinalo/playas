@@ -2,9 +2,13 @@
 """Utilidades de recuperación y formateo de contexto del agente RAG.
 
 El flujo del agente (ver core/agent.py) es determinista: enrich_query →
-retrieve_forced → generate. No hay tool-calling ni ReAct — el LLM nunca
-decide si buscar o no, la recuperación siempre ocurre. Este módulo conserva
-las funciones que ese flujo determinista reutiliza: `build_context_block`
+route_after_analysis → {retrieve_forced → generate, respond_without_retrieval}.
+No hay tool-calling ni ReAct — el LLM nunca decide si buscar o no. La
+recuperación (retrieve_forced) se ejecuta exactamente una vez, pero solo para
+consultas que enrich_query clasifica como `in_scope`; conversación
+(saludos/meta-preguntas), aclaración y fuera de alcance van directo a
+respond_without_retrieval y no recuperan documentos. Este módulo conserva las
+funciones que ese flujo determinista reutiliza: `build_context_block`
 formatea los documentos recuperados en el bloque de contexto que ve el LLM,
 y `sanitize_replacement_chars` limpia caracteres U+FFFD del pipeline de
 ingesta (ver docs/INGEST_ENCODING_BUG.md).

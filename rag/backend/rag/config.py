@@ -91,7 +91,7 @@ TITLE_RATE_LIMIT_MODE: RateLimitMode = (
     if _title_rate_limit_mode in {"off", "observe", "enforce"}
     else "off"
 )
-TITLE_RATE_LIMIT_REQUESTS: int = int(os.getenv("TITLE_RATE_LIMIT_REQUESTS", "10"))
+TITLE_RATE_LIMIT_REQUESTS: int = int(os.getenv("TITLE_RATE_LIMIT_REQUESTS", "5"))
 TITLE_RATE_LIMIT_WINDOW_SECONDS: float = float(
     os.getenv("TITLE_RATE_LIMIT_WINDOW_SECONDS", "60")
 )

@@ -1,5 +1,5 @@
 import { API_URL } from "@/lib/config";
-import { expireAuthSession, getToken } from "@/lib/auth";
+import { expireAuthSession, getToken, SESSION_EXPIRED_MESSAGE } from "@/lib/auth";
 import type {
 	FeedbackRequest,
 	MessageFeedbackRequest,
@@ -8,16 +8,15 @@ import type {
 	StreamEvent,
 } from "@/lib/types";
 
-const SESSION_EXPIRED_MESSAGE = "Tu sesión expiró. Inicia sesión nuevamente.";
-
 function authHeaders(token: string | null): Record<string, string> {
 	return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
 /**
  * Comprueba si `response` es un 401 y, de serlo, invalida la sesión asociada
- * a `requestToken` (solo si ese token sigue siendo el activo — ver
- * `expireAuthSession`) y lanza un error legible para el usuario.
+ * a `requestToken` (solo si ese token sigue coincidiendo con el activo — ver
+ * `expireAuthSession`; `requestToken` puede ser `null` si la solicitud ya se
+ * hizo sin token) y lanza un error legible para el usuario.
  *
  * Para cualquier otro estado no hace nada: un 403 (sin permiso), 404, 409,
  * 422, 429 o 5xx no significa que el token dejó de ser válido, así que no
@@ -29,7 +28,7 @@ export async function throwIfSessionExpired(
 	requestToken: string | null,
 ): Promise<void> {
 	if (response.status !== 401) return;
-	if (requestToken) expireAuthSession(requestToken, SESSION_EXPIRED_MESSAGE);
+	expireAuthSession(requestToken);
 	throw new Error(SESSION_EXPIRED_MESSAGE);
 }
 
@@ -206,7 +205,15 @@ export async function* queryRagStream(
 	signal?: AbortSignal,
 ): AsyncGenerator<StreamEvent> {
 	const token = getToken();
-	if (!token) throw new Error("La sesión no es válida. Inicia sesión nuevamente.");
+	if (!token) {
+		// El flujo que llega hasta aquí (submit() en useChat) solo es alcanzable
+		// estando autenticado, así que un token ausente significa que se perdió
+		// en otro lado (p. ej. otra pestaña cerró sesión) mientras el estado
+		// React seguía creyendo que había sesión. Notifica para que la UI se
+		// actualice, en vez de solo lanzar un error que deja el chat montado.
+		expireAuthSession(null);
+		throw new Error("La sesión no es válida. Inicia sesión nuevamente.");
+	}
 	const res = await fetch(`${API_URL}/api/query/stream`, {
 		method: "POST",
 		headers: {

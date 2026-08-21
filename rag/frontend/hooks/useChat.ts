@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { queryRagStream, throwIfSessionExpired } from "@/lib/api";
-import { getToken } from "@/lib/auth";
+import { expireAuthSession, getToken } from "@/lib/auth";
 import { API_URL } from "@/lib/config";
 import type { AgentStage, Message, SourceGroup } from "@/lib/types";
 import { normalizeSources } from "@/lib/types";
@@ -130,6 +130,10 @@ export function useChat({ onConversationChanged }: UseChatOptions = {}): UseChat
 	async function _createConversation(firstQuestion: string): Promise<string> {
 		const token = getToken();
 		if (!user || !token) {
+			// Si React todavía cree que hay un usuario pero el token ya no está
+			// (p. ej. otra pestaña cerró sesión), notifica para que la UI se
+			// actualice en vez de solo lanzar un error con el chat aún montado.
+			if (user) expireAuthSession(null);
 			throw new Error("La sesión no es válida. Inicia sesión nuevamente.");
 		}
 
@@ -173,6 +177,9 @@ export function useChat({ onConversationChanged }: UseChatOptions = {}): UseChat
 		if (!q || loading) return;
 		const token = getToken();
 		if (!user || !token) {
+			// Mismo caso que en _createConversation: notifica si React aún cree
+			// que hay sesión activa.
+			if (user) expireAuthSession(null);
 			setError("La sesión no es válida. Inicia sesión nuevamente.");
 			return;
 		}
@@ -349,7 +356,11 @@ export function useChat({ onConversationChanged }: UseChatOptions = {}): UseChat
 	async function loadConversation(conv: Conversation): Promise<void> {
 		abortControllerRef.current?.abort();
 		const token = getToken();
-		if (!token) return;
+		if (!token) {
+			// Igual que arriba: si React aún cree que hay sesión, notifica.
+			if (user) expireAuthSession(null);
+			return;
+		}
 
 		try {
 			const res = await fetch(

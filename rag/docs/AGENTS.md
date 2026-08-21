@@ -187,7 +187,7 @@ docker compose logs -f
 docker compose down
 ```
 
-Requires `.env` at root (backend) and Firebase variables passed as build args. See `docker/Dockerfile.backend` and `docker/Dockerfile.frontend` for details.
+The backend reads its config from `.env` at root. The frontend can receive `NEXT_PUBLIC_API_URL` as a build arg during `docker build` (see `docker/Dockerfile.frontend`) — no other build-time variables are required by the current Dockerfiles.
 
 ---
 
