@@ -57,7 +57,7 @@ resource "aws_security_group" "chromadb" {
 # ------------------------------------------------------------------------------
 resource "aws_instance" "chromadb" {
   ami                    = data.aws_ami.ubuntu_24.id
-  instance_type          = "t3.medium"
+  instance_type          = "t3.large"
   key_name               = var.key_pair_name
   vpc_security_group_ids = [aws_security_group.chromadb.id]
 
