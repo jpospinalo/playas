@@ -109,6 +109,36 @@ Por defecto conserva la copia en el bucket S3; usar `--delete-remote` para
 borrarla tras la descarga. Requiere el Session Manager Plugin (mismo requisito
 que `deploy.sh`, usa `aws ecs execute-command`).
 
+### Alternativa: desplegar desde una EC2 bastion
+
+Si no quieres instalar Terraform, Docker, AWS CLI, etc. localmente, `scripts/deploy_bastion_ec2.sh`
+crea una EC2 temporal que hace todo el trabajo por ti: instala las dependencias, clona el
+repositorio y ejecuta los pasos 1 y 2 del despliegue automático descritos arriba.
+
+Requisitos:
+
+- Key pair `vockey` ya creado en EC2 (estándar en AWS Academy) y su `.pem` descargado localmente
+- `rag/.env` con `OPENAI_API_KEY` configurada (se transfiere a la EC2 por stdin, nunca queda
+  expuesta en logs ni en el script)
+
+```bash
+KEY_FILE=/ruta/a/vockey.pem ./scripts/deploy_bastion_ec2.sh
+```
+
+La EC2 (`m4.large`, Ubuntu 24.04, 50GB, instance profile `LabInstanceProfile`) queda como bastion
+tras el despliegue — puedes conectarte por SSH para depurar o repetir pasos manualmente. El script
+imprime cada paso que ejecuta, tanto localmente como dentro de la instancia.
+
+Usa `BOOTSTRAP_ONLY=1` para solo aprovisionar la EC2 e instalar dependencias (git, Docker,
+Terraform, AWS CLI, uv, Session Manager Plugin) sin ejecutar los despliegues de Terraform:
+
+```bash
+BOOTSTRAP_ONLY=1 KEY_FILE=/ruta/a/vockey.pem ./scripts/deploy_bastion_ec2.sh
+```
+
+Si ya existe una instancia bastion (`rag-playas-bastion`) corriendo, el script la reutiliza en
+vez de crear una nueva.
+
 ---
 
 ## Despliegue manual
@@ -192,6 +222,28 @@ Ollama EC2   ←→ backend  (embeddings)
 | Frontend (Next.js) | ECS Fargate 256 CPU / 512 MB | 3000 |
 | ChromaDB | EC2 `t3.medium` 12 GB | 8000 |
 | Ollama | EC2 `t3.large` 20 GB | 11434 |
+
+---
+
+## Apagar/encender los servicios ECS (ahorro de costos)
+
+Fargate cobra por cómputo mientras las tareas están `RUNNING`. Si no vas a usar la app por un
+tiempo, apaga los servicios `app` y `frontend` sin perder datos — Postgres vive en el volumen EFS,
+no en el contenedor, así que la información persiste:
+
+```bash
+./rag/infrastructure/scripts/stop.sh
+```
+
+Para volver a encenderlos (el script espera a que el servicio `app` quede estable, incluyendo el
+healthcheck de Postgres antes de que arranque el backend):
+
+```bash
+./rag/infrastructure/scripts/start.sh
+```
+
+> El ALB sigue generando costo mientras los servicios están apagados — solo se detiene el cómputo
+> Fargate (backend + postgres + frontend).
 
 ---
 
