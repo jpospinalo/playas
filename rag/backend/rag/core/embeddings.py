@@ -1,11 +1,12 @@
 # src/backend/embeddings.py
 
-import os
 from typing import cast
 
 import requests
 from chromadb.api.types import Documents, EmbeddingFunction, Embeddings
 from langchain_core.embeddings import Embeddings as LCEmbeddings
+
+from rag.config import OLLAMA_BASE_URL, OLLAMA_EMBEDDING_MODEL
 
 
 class OllamaEmbeddingClient:
@@ -18,12 +19,15 @@ class OllamaEmbeddingClient:
     """
 
     def __init__(self) -> None:
-        self.base_url = os.getenv("OLLAMA_BASE_URL") or os.getenv(
-            "OLLAMA_EMBED_BASE_URL", "http://localhost:11434"
-        )
-        self.model = os.getenv("OLLAMA_EMBEDDING_MODEL") or os.getenv(
-            "OLLAMA_EMBED_MODEL", "embeddinggemma:latest"
-        )
+        # T2.4: antes leía OLLAMA_BASE_URL/OLLAMA_EMBEDDING_MODEL (con sus
+        # alias OLLAMA_EMBED_BASE_URL/OLLAMA_EMBED_MODEL) directamente vía
+        # os.getenv(), sin ningún load_dotenv() propio — dependía en
+        # silencio de que algún otro módulo ya hubiera cargado el .env antes
+        # de que se instanciara este cliente. Ahora toma los valores ya
+        # resueltos de rag.config (misma precedencia de alias), sin esa
+        # dependencia implícita del orden de import.
+        self.base_url = OLLAMA_BASE_URL
+        self.model = OLLAMA_EMBEDDING_MODEL
         # Sesión compartida: reutiliza la conexión HTTP entre llamadas sin
         # cambiar el vector devuelto, el modelo ni el proveedor.
         self._session = requests.Session()

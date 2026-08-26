@@ -1,13 +1,14 @@
 """T1.3 — salvaguardas de los scripts operativos de Chroma.
 
 Prohibido tocar Chroma real en estas pruebas: todo se ejercita con clientes
-falsos (``FakeChromaClient``) y, para los dos casos de resolución de
-``CHROMA_HOST``, con una copia del script en un directorio temporal ejecutada
-en un subproceso — nunca contra un servidor real.
+falsos (``FakeChromaClient``) y, para los casos de resolución de host/puerto
+(T2.4: vía ``rag.config``, no un ``load_dotenv()`` propio de cada script),
+con subprocesos que importan el script real — nunca contra un servidor real.
 """
 
 from __future__ import annotations
 
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -233,25 +234,49 @@ def test_main_requires_explicit_collection_argument(monkeypatch: pytest.MonkeyPa
 
 
 # ---------------------------------------------------------------------------
-# Resolución de host: no cae silenciosamente a localhost si rag/.env define
-# otro host. Se ejecuta en subproceso sobre una copia del script en un
-# directorio temporal — nunca importando el módulo real ya cacheado, y sin
-# tocar ningún servidor.
+# T2.4: host/puerto/colección ya no los resuelve cada script con su propio
+# load_dotenv() — vienen de rag.config (resolución centralizada de .env,
+# cubierta a fondo por tests/unit/test_config_env_resolution.py). Aquí solo
+# se confirma (a) que los scripts re-exportan exactamente esos valores, sin
+# copiarlos ni perder la resolución, y (b) que el mecanismo funciona de
+# punta a punta al invocar el script tal como lo documenta docs/SCRIPTS.md
+# (uv run python utils/chroma_count.py), vía RAG_ENV_FILE.
 # ---------------------------------------------------------------------------
 
 
-def _run_import_and_print_host(tmp_path: Path, script_name: str) -> str:
-    rag_dir = tmp_path / "rag"
-    utils_dir = rag_dir / "utils"
-    utils_dir.mkdir(parents=True)
-    (rag_dir / ".env").write_text("CHROMA_HOST=chroma.interno.example\nCHROMA_PORT=9000\n")
-    source = (_UTILS_DIR / script_name).read_text()
-    (utils_dir / script_name).write_text(source)
+def test_chroma_count_reexports_rag_config_constants() -> None:
+    from rag import config
+
+    assert chroma_count.CHROMA_HOST is config.CHROMA_HOST
+    assert chroma_count.CHROMA_PORT is config.CHROMA_PORT
+    assert chroma_count.CHROMA_COLLECTION is config.CHROMA_COLLECTION
+
+
+def test_chroma_clear_reexports_rag_config_constants() -> None:
+    from rag import config
+
+    assert chroma_clear.CHROMA_HOST is config.CHROMA_HOST
+    assert chroma_clear.CHROMA_PORT is config.CHROMA_PORT
+    # chroma_clear.py deliberadamente NO importa CHROMA_COLLECTION: --collection
+    # sigue sin default propio (ver T1.3/T2.4) — un borrado siempre exige el
+    # nombre exacto de la colección de forma explícita.
+    assert not hasattr(chroma_clear, "CHROMA_COLLECTION")
+
+
+def _run_script_with_env_file(tmp_path: Path, script_name: str, attr: str) -> str:
+    env_file = tmp_path / "custom.env"
+    env_file.write_text("CHROMA_HOST=chroma.interno.example\nCHROMA_PORT=9000\n")
+
+    env = dict(os.environ)
+    env["RAG_ENV_FILE"] = str(env_file)
+    for name in ("CHROMA_HOST", "CHROMA_PORT", "CHROMA_COLLECTION", "CHROMA_COLLECTION_NAME"):
+        env.pop(name, None)
 
     module_name = script_name.removesuffix(".py")
     result = subprocess.run(
-        [sys.executable, "-c", f"import {module_name}; print({module_name}.CHROMA_HOST)"],
-        cwd=str(utils_dir),
+        [sys.executable, "-c", f"import {module_name}; print({module_name}.{attr})"],
+        cwd=str(_UTILS_DIR),
+        env=env,
         capture_output=True,
         text=True,
         timeout=20,
@@ -260,9 +285,11 @@ def _run_import_and_print_host(tmp_path: Path, script_name: str) -> str:
     return result.stdout.strip()
 
 
-def test_chroma_count_reads_host_from_env_file(tmp_path: Path) -> None:
-    assert _run_import_and_print_host(tmp_path, "chroma_count.py") == "chroma.interno.example"
+def test_chroma_count_picks_up_rag_env_file_end_to_end(tmp_path: Path) -> None:
+    host = _run_script_with_env_file(tmp_path, "chroma_count.py", "CHROMA_HOST")
+    assert host == "chroma.interno.example"
 
 
-def test_chroma_clear_reads_host_from_env_file(tmp_path: Path) -> None:
-    assert _run_import_and_print_host(tmp_path, "chroma_clear.py") == "chroma.interno.example"
+def test_chroma_clear_picks_up_rag_env_file_end_to_end(tmp_path: Path) -> None:
+    host = _run_script_with_env_file(tmp_path, "chroma_clear.py", "CHROMA_HOST")
+    assert host == "chroma.interno.example"

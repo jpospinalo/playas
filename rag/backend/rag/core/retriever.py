@@ -21,7 +21,6 @@ Componentes principales:
 
 from __future__ import annotations
 
-import os
 import re
 from concurrent.futures import ThreadPoolExecutor
 from typing import Any
@@ -29,30 +28,30 @@ from typing import Any
 import chromadb
 import numpy as np
 import requests
-from dotenv import load_dotenv
 from langchain_chroma import Chroma
 from langchain_core.callbacks import CallbackManagerForRetrieverRun
 from langchain_core.documents import Document
 from langchain_core.retrievers import BaseRetriever
 from pydantic import ConfigDict, Field
 
+from rag.config import CHROMA_COLLECTION as CHROMA_COLLECTION_NAME
+from rag.config import (
+    CHROMA_HOST,
+    CHROMA_PORT,
+    OLLAMA_RERANK_BASE_URL,
+    OLLAMA_RERANK_MODEL,
+)
+
 from .embeddings import OllamaEmbeddings
 
 # ---------------------------------------------------------------------
 # Configuración
 # ---------------------------------------------------------------------
-
-load_dotenv()
-
-CHROMA_HOST = os.getenv("CHROMA_HOST") or "localhost"
-CHROMA_PORT = int(os.getenv("CHROMA_PORT", "8000"))
-CHROMA_COLLECTION_NAME = os.getenv(
-    "CHROMA_COLLECTION", os.getenv("CHROMA_COLLECTION_NAME", "rag_playas")
-)
-
-# Máquina de RERANKING (Ollama con llama3.2:3b)
-OLLAMA_RERANK_BASE_URL = os.getenv("OLLAMA_RERANK_BASE_URL")
-OLLAMA_RERANK_MODEL = os.getenv("OLLAMA_RERANK_MODEL")
+#
+# T2.4: CHROMA_HOST/CHROMA_PORT/CHROMA_COLLECTION_NAME/OLLAMA_RERANK_*
+# ahora vienen de rag.config (resolución centralizada de .env, T2.3) en vez
+# de leerse aquí con un load_dotenv() + os.getenv() propios. Mismos nombres
+# y misma precedencia de alias que antes — ver rag/config.py.
 
 EMBEDDINGS = OllamaEmbeddings()
 

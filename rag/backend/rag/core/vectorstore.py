@@ -3,28 +3,24 @@
 from __future__ import annotations
 
 import json
-import os
 import time
 from typing import Any, cast
 
 import chromadb
-from dotenv import load_dotenv
 
-from ..config import DOC_TYPES, GOLD_PREFIX, layer_prefix
+from ..config import CHROMA_COLLECTION as CHROMA_COLLECTION_NAME
+from ..config import CHROMA_HOST, CHROMA_PORT, DOC_TYPES, GOLD_PREFIX, layer_prefix
 from ..s3_client import list_keys, read_text
 from .embeddings import OllamaEmbeddingFunction
 
 # ---------------------------------------------------------------------
 # Constantes y configuración
 # ---------------------------------------------------------------------
-
-load_dotenv()
-
-CHROMA_HOST = os.getenv("CHROMA_HOST", "localhost")
-CHROMA_PORT = int(os.getenv("CHROMA_PORT", "8000"))
-CHROMA_COLLECTION_NAME = os.getenv(
-    "CHROMA_COLLECTION", os.getenv("CHROMA_COLLECTION_NAME", "rag_playas")
-)
+#
+# T2.4: CHROMA_HOST/CHROMA_PORT/CHROMA_COLLECTION_NAME ahora vienen de
+# rag.config (resolución centralizada de .env, T2.3) en vez de un
+# load_dotenv() + os.getenv() propios. Mismos nombres y misma precedencia de
+# alias que antes.
 
 EMBED_FN = OllamaEmbeddingFunction()
 

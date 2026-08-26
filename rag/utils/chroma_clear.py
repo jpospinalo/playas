@@ -6,26 +6,24 @@ default) y la bandera ``--execute`` para intentar el borrado; aun con
 ``--execute`` exige escribir el nombre EXACTO de la colección como
 confirmación. Se cancela si la confirmación no coincide o si la ejecución no
 es interactiva (sin terminal disponible para confirmar con seguridad).
+
+T2.4: host/puerto vienen de ``rag.config`` (resolución centralizada de
+``.env``, T2.3) en vez de un ``load_dotenv()`` propio. ``--collection``
+sigue sin tener default propio ni tomar ``CHROMA_COLLECTION`` del entorno:
+un borrado siempre exige que quien lo ejecuta escriba el nombre exacto de la
+colección de forma explícita, nunca uno resuelto implícitamente.
 """
 
 from __future__ import annotations
 
 import argparse
-import os
 import sys
 from collections.abc import Callable
-from pathlib import Path
 from typing import Any
 
 import chromadb
-from dotenv import load_dotenv
 
-# ── Configuración ────────────────────────────────────────────────────────────
-BASE_DIR = Path(__file__).resolve().parent.parent
-load_dotenv(BASE_DIR / ".env")
-
-CHROMA_HOST = os.getenv("CHROMA_HOST", "localhost")
-CHROMA_PORT = int(os.getenv("CHROMA_PORT", "8000"))
+from rag.config import CHROMA_HOST, CHROMA_PORT
 
 
 def describe_collection(client: Any, collection_name: str) -> int:
