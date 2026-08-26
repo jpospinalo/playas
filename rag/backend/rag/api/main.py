@@ -1,7 +1,8 @@
 """FastAPI application para el sistema RAG de jurisprudencia de playas.
 
-Expone tres endpoints sobre el agente LangGraph:
+Expone estos endpoints sobre el agente LangGraph:
   GET  /api/health          — liveness check
+  GET  /api/ready            — readiness check (T2.5; ver docstring de `ready()`)
   POST /api/query           — respuesta completa (JSON)
   POST /api/query/stream    — streaming SSE con tokens del LLM
 
@@ -11,6 +12,7 @@ Run with:
 
 from __future__ import annotations
 
+import asyncio
 import json
 import logging
 import re
@@ -22,7 +24,7 @@ from typing import Any
 
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import StreamingResponse
+from fastapi.responses import JSONResponse, StreamingResponse
 from langchain_core.documents import Document
 from langchain_core.messages import AIMessage, HumanMessage
 
@@ -33,8 +35,15 @@ from rag.api.routes.conversations import router as conversations_router
 from rag.api.routes.feedback import router as feedback_router
 from rag.api.schemas import QueryRequest, QueryResponse, SourceFragment, SourceGroup
 from rag.config import CONTEXT_LIMIT_TOKENS
-from rag.core.retriever import init_retrievers
+from rag.core.retriever import bm25_index_is_empty, init_retrievers
 from rag.core.tools import sanitize_replacement_chars
+
+# T2.5: timeout corto por defecto para el chequeo de base de datos en
+# /api/ready — una base de datos colgada no debe bloquear el readiness probe
+# indefinidamente. Como constante de módulo para que las pruebas puedan
+# ejercer el timeout real sin esperarlo (pasando un valor pequeño explícito
+# a `_check_database_ready`).
+READY_DB_TIMEOUT_SECONDS = 2.0
 
 # ── Singleton del grafo ─────────────────────────────────────────────────────
 
@@ -337,6 +346,69 @@ async def _get_initial_messages(
 async def health() -> dict:
     """Liveness check."""
     return {"status": "ok"}
+
+
+async def _check_database_ready(timeout: float = READY_DB_TIMEOUT_SECONDS) -> bool:
+    """Verifica que la base de datos responda una consulta trivial dentro
+    de ``timeout`` segundos.
+
+    Solo para uso interno de ``/api/ready``: cualquier fallo (timeout,
+    conexión rechazada, credenciales inválidas, lo que sea) se colapsa a
+    ``False`` sin propagar la excepción ni su mensaje — no debe filtrarse
+    ningún detalle de infraestructura (host, credenciales) a quien consulta
+    el endpoint.
+    """
+    from sqlalchemy import text
+
+    from rag.api.database import async_session_factory
+
+    async def _ping() -> None:
+        async with async_session_factory() as session:
+            await session.execute(text("SELECT 1"))
+
+    try:
+        await asyncio.wait_for(_ping(), timeout=timeout)
+    except Exception:
+        return False
+    return True
+
+
+@app.get("/api/ready")
+async def ready() -> JSONResponse:
+    """Readiness check (T2.5): a diferencia de ``/api/health`` (liveness,
+    siempre ``{"status": "ok"}`` si el proceso responde), este endpoint
+    verifica que las dependencias necesarias para atender una consulta estén
+    realmente disponibles:
+
+    - ``graph_compiled``  — el grafo LangGraph ya terminó de compilarse en
+      el lifespan de arranque.
+    - ``index_not_empty`` — el índice BM25 se inicializó con un corpus no
+      vacío. Se apoya en ``retriever.bm25_index_is_empty()`` (expuesta desde
+      T2.1 justo con este propósito), pero SOLO se evalúa cuando el grafo ya
+      compiló: ``bm25_index_is_empty()`` devuelve ``False`` tanto si el
+      índice tiene contenido como si aún no se inicializó (ver su
+      docstring), así que evaluarla antes de que el lifespan termine
+      reportaría un falso "no vacío".
+    - ``database``        — una consulta trivial a la base de datos responde
+      dentro de un timeout corto (no bloquea el probe si la base está
+      caída/colgada).
+
+    No invoca ningún LLM ni el grafo (nunca llama a ``graph.ainvoke`` /
+    ``graph.astream``). No expone detalles de infraestructura ni mensajes de
+    excepción: solo booleanos por chequeo. Devuelve 200 si todos los
+    chequeos pasan, 503 si falta alguno.
+    """
+    graph_compiled = _graph is not None
+    checks = {
+        "graph_compiled": graph_compiled,
+        "index_not_empty": graph_compiled and not bm25_index_is_empty(),
+        "database": await _check_database_ready(),
+    }
+    is_ready = all(checks.values())
+    return JSONResponse(
+        status_code=200 if is_ready else 503,
+        content={"status": "ready" if is_ready else "not_ready", "checks": checks},
+    )
 
 
 @app.post("/api/query", response_model=QueryResponse)

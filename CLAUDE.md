@@ -111,7 +111,7 @@ rag/backend/rag/
 │   ├── query_enricher.py      # LLM query rewriting (legal terminology, sub-questions)
 │   └── llm_factory.py         # Provider factory: OpenAI → OpenRouter → Gemini → error
 └── api/
-    ├── main.py                # FastAPI app (lifespan builds graph + init_db, health, query, query/stream)
+    ├── main.py                # FastAPI app (lifespan builds graph + init_db, health, ready, query, query/stream)
     ├── auth.py                 # JWT dependencies: get_optional_user / get_current_user / require_admin
     ├── database.py             # Async SQLAlchemy engine/session (Postgres in prod, SQLite fallback)
     ├── models.py                # SQLAlchemy models: User, Conversation, Message, Feedback, MessageFeedback
