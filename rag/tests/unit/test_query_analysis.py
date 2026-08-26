@@ -149,7 +149,7 @@ def test_enriched_query_normalizes_doc_types_and_word_limit() -> None:
 # ── Plan de corrección — enrutamiento de consultas jurídicas costeras ───────
 #
 # Regresión para los falsos negativos y falsos positivos confirmados por el
-# equipo jurídico (ver PLAN_CORRECCION_ENRUTAMIENTO_CONSULTAS_JURIDICAS.md).
+# equipo jurídico (ver docs/archive/PLAN_CORRECCION_ENRUTAMIENTO_CONSULTAS_JURIDICAS.md).
 
 CASO_PESCADOR = (
     "Soy pescador artesanal y vivo con mi familia de lo que gano en el mar. "
