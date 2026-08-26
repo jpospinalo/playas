@@ -88,6 +88,30 @@ class ActiveQueryTracker:
             logger.info("active_queries=%d", self._count)
 
 
+def log_full_context_size(*, chars: int) -> None:
+    """Registra el tamaño real de lo que se envía al LLM de generación (T3.7).
+
+    Métrica puramente interna, solo para logs: nunca se expone por la API ni
+    se guarda en ningún estado. Distinta a propósito del campo público
+    ``context_tokens`` (calculado en ``api/main.py::_estimate_context_tokens``
+    a partir del historial en ``state["messages"]``, sin contar el system
+    prompt ni los documentos recuperados en el turno actual): esta función en
+    cambio refleja lo que efectivamente compone el prompt de generación —
+    system prompt + contexto recuperado + pregunta — para poder diagnosticar
+    consumo real de contexto sin alterar el significado ni el valor de
+    ``context_tokens``.
+
+    La firma solo acepta un conteo de caracteres ya calculado por quien
+    llama, nunca el texto en sí — así ningún contenido de negocio puede
+    llegar a este log por construcción.
+    """
+    logger.info(
+        "full_context_chars=%d full_context_tokens_est=%d",
+        chars,
+        chars // 4,
+    )
+
+
 def log_retained_conversations(checkpointer: object) -> None:
     """Registra cuántas conversaciones (``thread_id``) retiene el checkpointer.
 

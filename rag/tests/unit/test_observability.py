@@ -106,6 +106,66 @@ def test_log_citation_format_error_logs_only_doc_count(
 
 
 # ---------------------------------------------------------------------------
+# log_full_context_size (T3.7)
+# ---------------------------------------------------------------------------
+#
+# Métrica interna, solo para logs: cuántos caracteres (y una estimación de
+# tokens) se envían realmente al LLM de generación (system prompt + contexto
+# recuperado + pregunta). Deliberadamente NO es el mismo cálculo que
+# `_estimate_context_tokens` en api/main.py (que solo cuenta el historial de
+# `state["messages"]`, sin system prompt ni documentos del turno actual, y
+# alimenta el campo público `context_tokens` de la API) — nunca debe leerse
+# ni escribirse desde aquí, y esta función nunca se expone por la API.
+
+
+def test_log_full_context_size_logs_chars_and_estimated_tokens(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    with caplog.at_level(logging.INFO, logger="rag.observability"):
+        obs.log_full_context_size(chars=4000)
+
+    assert len(caplog.records) == 1
+    message = caplog.records[0].message
+    assert "full_context_chars=4000" in message
+    assert "full_context_tokens_est=1000" in message
+    assert caplog.records[0].levelno == logging.INFO
+
+
+def test_log_full_context_size_rounds_down_the_token_estimate(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    with caplog.at_level(logging.INFO, logger="rag.observability"):
+        obs.log_full_context_size(chars=10)
+
+    assert "full_context_chars=10" in caplog.records[0].message
+    assert "full_context_tokens_est=2" in caplog.records[0].message
+
+
+def test_log_full_context_size_handles_zero_chars(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    with caplog.at_level(logging.INFO, logger="rag.observability"):
+        obs.log_full_context_size(chars=0)
+
+    assert "full_context_chars=0" in caplog.records[0].message
+    assert "full_context_tokens_est=0" in caplog.records[0].message
+
+
+def test_log_full_context_size_only_accepts_a_char_count_never_text(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Prueba estructural: la función solo puede recibir un conteo (int), no
+    contenido real — así es imposible que el texto del contexto o de la
+    pregunta llegue a este log, sin importar cómo se le llame."""
+    with caplog.at_level(logging.INFO, logger="rag.observability"):
+        obs.log_full_context_size(chars=len(_SENTINEL_QUESTION) + len(_SENTINEL_DOC_TEXT))
+
+    full_output = "\n".join(r.message for r in caplog.records)
+    assert _SENTINEL_QUESTION not in full_output
+    assert _SENTINEL_DOC_TEXT not in full_output
+
+
+# ---------------------------------------------------------------------------
 # ActiveQueryTracker
 # ---------------------------------------------------------------------------
 

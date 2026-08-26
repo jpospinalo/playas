@@ -11,12 +11,13 @@ etapa/ruta y conteos.
 from __future__ import annotations
 
 import logging
+import re
 from types import SimpleNamespace
 
 import pytest
 from langchain_core.documents import Document
 from langchain_core.language_models.fake_chat_models import FakeListChatModel
-from langchain_core.messages import HumanMessage
+from langchain_core.messages import AIMessage, HumanMessage
 
 import rag.core.agent as agent_module
 from rag.core.query_enricher import EnrichedQuery
@@ -184,3 +185,135 @@ async def test_invalid_citations_logs_a_citation_format_error(
     )
     warning_messages = [r.message for r in caplog.records if r.levelno == logging.WARNING]
     assert any("citation_format_error" in m and "doc_count=1" in m for m in warning_messages)
+
+
+# ---------------------------------------------------------------------------
+# T3.7 — log_full_context_size conectado a generate_node
+# ---------------------------------------------------------------------------
+#
+# Complementa `test_observability.py` (que prueba `log_full_context_size` en
+# aislamiento): aquí se prueba que `generate_node` la invoca con un conteo
+# derivado de contenido real (no un valor fijo), y que ese conteo es
+# deliberadamente independiente de lo que alimenta el campo público
+# `context_tokens` de la API (el historial en `state["messages"]`, calculado
+# aparte en `api/main.py::_estimate_context_tokens`) — para no correr el
+# riesgo de que ambas métricas se confundan o se acoplen sin querer.
+
+_FULL_CONTEXT_RE = re.compile(r"full_context_chars=(\d+)")
+
+
+def _extract_full_context_chars(caplog: pytest.LogCaptureFixture) -> int:
+    match = next(
+        (m for r in caplog.records if (m := _FULL_CONTEXT_RE.search(r.message))),
+        None,
+    )
+    assert match is not None, "no se logueó full_context_chars"
+    return int(match.group(1))
+
+
+def _generate_only_state(question: str, extra_messages: list | None = None) -> dict:
+    return {
+        "question": question,
+        "standalone_question": None,
+        "enriched_query": None,
+        "query_route": "in_scope",
+        "messages": list(extra_messages or []) + [HumanMessage(content=question)],
+        "sources": [],
+        "doc_types": None,
+        "k": 2,
+        "k_candidates": 5,
+    }
+
+
+def _mock_generation(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(
+        agent_module,
+        "get_active_provider",
+        lambda: SimpleNamespace(supports_system_role=True),
+    )
+    monkeypatch.setattr(
+        agent_module,
+        "get_generation_llm",
+        lambda: FakeListChatModel(responses=["Respuesta con cita [doc1]."] * 10),
+    )
+
+
+@pytest.mark.anyio
+async def test_generate_node_logs_full_context_size_without_leaking_text(
+    monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
+) -> None:
+    _mock_generation(monkeypatch)
+    state = _generate_only_state(_SENTINEL_QUESTION)
+    state["sources"] = [Document(page_content=_SENTINEL_DOC_TEXT, metadata={"chunk_id": "1"})]
+
+    with caplog.at_level(logging.INFO, logger="rag.observability"):
+        await agent_module.generate_node(state)
+
+    full_output = "\n".join(r.message for r in caplog.records)
+    assert "full_context_chars=" in full_output
+    assert "full_context_tokens_est=" in full_output
+    assert _SENTINEL_QUESTION not in full_output
+    assert _SENTINEL_DOC_TEXT not in full_output
+
+
+@pytest.mark.anyio
+async def test_full_context_size_grows_with_actual_document_content(
+    monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
+) -> None:
+    """El conteo debe reflejar contenido real recuperado, no un valor fijo."""
+    _mock_generation(monkeypatch)
+
+    short_state = _generate_only_state("¿Aplica la norma?")
+    short_state["sources"] = [Document(page_content="Fragmento breve.", metadata={"chunk_id": "1"})]
+
+    long_state = _generate_only_state("¿Aplica la norma?")
+    long_state["sources"] = [
+        Document(page_content="Fragmento extenso. " * 200, metadata={"chunk_id": "1"})
+    ]
+
+    with caplog.at_level(logging.INFO, logger="rag.observability"):
+        await agent_module.generate_node(short_state)
+        short_chars = _extract_full_context_chars(caplog)
+
+    caplog.clear()
+    with caplog.at_level(logging.INFO, logger="rag.observability"):
+        await agent_module.generate_node(long_state)
+        long_chars = _extract_full_context_chars(caplog)
+
+    assert long_chars > short_chars
+
+
+@pytest.mark.anyio
+async def test_full_context_size_is_independent_of_conversation_history_length(
+    monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
+) -> None:
+    """A diferencia de `context_tokens` (que crece con el historial en
+    `state["messages"]`), esta métrica interna solo depende del prompt de
+    generación del turno actual (instrucciones + contexto + pregunta) — debe
+    dar el mismo valor sin importar cuántos turnos previos traiga el estado."""
+    _mock_generation(monkeypatch)
+    question = "¿Aplica la norma sobre concesiones playeras?"
+    docs = [Document(page_content="Fragmento del corpus.", metadata={"chunk_id": "1"})]
+
+    no_history_state = _generate_only_state(question)
+    no_history_state["sources"] = docs
+
+    long_history = [
+        HumanMessage(content=f"Turno previo {i}")
+        if i % 2 == 0
+        else AIMessage(content=f"Respuesta {i}")
+        for i in range(20)
+    ]
+    with_history_state = _generate_only_state(question, extra_messages=long_history)
+    with_history_state["sources"] = docs
+
+    with caplog.at_level(logging.INFO, logger="rag.observability"):
+        await agent_module.generate_node(no_history_state)
+        chars_without_history = _extract_full_context_chars(caplog)
+
+    caplog.clear()
+    with caplog.at_level(logging.INFO, logger="rag.observability"):
+        await agent_module.generate_node(with_history_state)
+        chars_with_history = _extract_full_context_chars(caplog)
+
+    assert chars_with_history == chars_without_history

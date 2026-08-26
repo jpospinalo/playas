@@ -22,7 +22,7 @@ from langgraph.graph.message import add_messages
 from typing_extensions import TypedDict
 
 from .llm_factory import get_active_provider, get_generation_llm
-from .observability import log_citation_format_error, stage_timer
+from .observability import log_citation_format_error, log_full_context_size, stage_timer
 from .prompts import AGENT_FALLBACK_HUMAN_TEMPLATE, AGENT_SYSTEM
 from .query_enricher import EnrichedQuery, QueryRoute, enrich_query_async
 from .retriever import get_ensemble_retriever
@@ -239,6 +239,11 @@ async def generate_node(state: AgentState) -> dict:
         llm = get_generation_llm()
         chain = prompt | llm | StrOutputParser()
         question = _compose_generation_question(state)
+        # T3.7: métrica interna de tamaño real del prompt de generación
+        # (system prompt + contexto recuperado + pregunta), solo para logs —
+        # no afecta ni sustituye a `context_tokens` (campo público, calculado
+        # en api/main.py a partir del historial en `state["messages"]`).
+        log_full_context_size(chars=len(BASE_INSTRUCTIONS) + len(context) + len(question))
         answer = str(await chain.ainvoke({"context": context, "question": question})).strip()
 
         if not _validate_citations(answer, len(docs)):
