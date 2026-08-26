@@ -93,9 +93,15 @@ def test_bm25_retriever_with_none_vectorizer_returns_empty_directly() -> None:
 
 
 def test_nonempty_corpus_still_builds_real_bm25_index(monkeypatch: pytest.MonkeyPatch) -> None:
+    # 3 documentos, no 2: con corpus de solo 2 documentos, el piso de
+    # epsilon que rank_bm25 aplica a idf negativo puede anular el score de
+    # términos que sí se solapan (verificado empíricamente) — algo ajeno a
+    # esta prueba y ya cubierto por T2.2 (filtro de score cero). Un tercer
+    # documento evita depender de ese caso límite.
     docs = [
         Document(page_content="acceso público a la playa", metadata={"id": "1"}),
         Document(page_content="permiso de pesca artesanal", metadata={"id": "2"}),
+        Document(page_content="restricción de acceso costero", metadata={"id": "3"}),
     ]
     monkeypatch.setattr(retriever_module, "load_all_docs_from_chroma", lambda: docs)
 

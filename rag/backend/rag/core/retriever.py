@@ -27,6 +27,7 @@ from concurrent.futures import ThreadPoolExecutor
 from typing import Any
 
 import chromadb
+import numpy as np
 import requests
 from dotenv import load_dotenv
 from langchain_chroma import Chroma
@@ -78,6 +79,23 @@ class BM25Retriever(BaseRetriever):
     construye ningún índice. ``_get_relevant_documents`` devuelve entonces
     una lista vacía —igual que un índice real sin coincidencias— en vez de
     fabricar evidencia.
+
+    Con un vectorizador real, no se usa ``rank_bm25``'s ``get_top_n()``:
+    internamente hace ``np.argsort(get_scores(query))[::-1][:n]`` sin filtrar
+    nada, así que con un corpus más chico que ``k`` (o documentos sin ningún
+    término en común con la consulta) completaba igual el top-k con
+    documentos de score EXACTAMENTE 0 — evidencia fabricada, sin señal
+    léxica real, que competía en la fusión RRF como si fuera un candidato
+    genuino. Se reimplementa el mismo cálculo (``get_scores`` +
+    ``np.argsort(scores)[::-1]``, idéntico al que ``get_top_n`` ya hacía
+    internamente) descartando los índices con score == 0 antes de completar
+    el top-k. El orden de desempate ante scores iguales se preserva
+    deliberadamente igual a como lo produce ``np.argsort`` con quicksort (su
+    ``kind`` por defecto, sin especificar — NO estable ante empates): es un
+    detalle de implementación de NumPy, no una garantía documentada por
+    ``np.argsort``, pero es exactamente el mismo comportamiento que ya tenía
+    el índice histórico vía ``get_top_n``, así que no se introduce ningún
+    cambio de desempate nuevo.
     """
 
     vectorizer: Any | None
@@ -95,7 +113,24 @@ class BM25Retriever(BaseRetriever):
         del run_manager
         if self.vectorizer is None:
             return []
-        return self.vectorizer.get_top_n(_tokenize_bm25(query), self.docs, n=self.k)
+
+        assert self.vectorizer.corpus_size == len(self.docs), (
+            "Los documentos no coinciden con el corpus indexado por BM25."
+        )
+
+        scores = self.vectorizer.get_scores(_tokenize_bm25(query))
+        order = np.argsort(scores)[::-1]
+
+        selected: list[Document] = []
+        for idx in order:
+            if len(selected) >= self.k:
+                break
+            if scores[idx] == 0:
+                # Sin señal léxica real: no fabricar evidencia solo para
+                # completar el top-k solicitado.
+                continue
+            selected.append(self.docs[idx])
+        return selected
 
 
 def _get_chroma_client() -> Any:
