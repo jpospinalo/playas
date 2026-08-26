@@ -8,7 +8,6 @@ consulta enriquecida sea verificable.
 
 from __future__ import annotations
 
-import asyncio
 import re
 from typing import Annotated, Any, NotRequired
 
@@ -217,7 +216,11 @@ async def retrieve_forced_node(state: AgentState) -> dict:
             k_candidates=k_candidates,
             doc_types=doc_types,
         )
-        docs = await asyncio.to_thread(retriever.invoke, query)
+        # T3.2: una sola capa de concurrencia — ainvoke() orquesta BM25 y el
+        # retriever vectorial internamente (asyncio.gather + to_thread, sin
+        # ThreadPoolExecutor anidado). Ya no se envuelve aquí en
+        # asyncio.to_thread(retriever.invoke, ...).
+        docs = await retriever.ainvoke(query)
         selected = docs[:k]
         # Conteo, no contenido: cuántos documentos, no cuáles ni su texto.
         fields["doc_count"] = len(selected)

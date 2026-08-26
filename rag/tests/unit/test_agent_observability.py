@@ -65,6 +65,9 @@ async def test_in_scope_run_logs_all_three_stage_timers_without_leaking_question
                 Document(page_content=_SENTINEL_DOC_TEXT, metadata={"chunk_id": "2"}),
             ]
 
+        async def ainvoke(self, query: str) -> list[Document]:
+            return self.invoke(query)
+
     monkeypatch.setattr(agent_module, "enrich_query_async", analyze)
     monkeypatch.setattr(agent_module, "get_ensemble_retriever", lambda **kwargs: FakeRetriever())
     monkeypatch.setattr(
@@ -151,6 +154,9 @@ async def test_invalid_citations_logs_a_citation_format_error(
         def invoke(self, query: str) -> list[Document]:
             del query
             return [Document(page_content="fragmento", metadata={"chunk_id": "1"})]
+
+        async def ainvoke(self, query: str) -> list[Document]:
+            return self.invoke(query)
 
     monkeypatch.setattr(agent_module, "enrich_query_async", analyze)
     monkeypatch.setattr(agent_module, "get_ensemble_retriever", lambda **kwargs: FakeRetriever())

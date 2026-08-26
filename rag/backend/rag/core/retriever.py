@@ -4,7 +4,11 @@
 Combina búsqueda léxica (BM25 sobre texto aumentado con keywords y resumen)
 con búsqueda semántica (embeddings de Ollama vía ChromaDB) usando Weighted
 Reciprocal Rank Fusion (RRF, c=160). Los sub-retrievers se ejecutan en
-paralelo mediante ThreadPoolExecutor.
+paralelo desde una única capa de concurrencia async (``asyncio.gather`` +
+``asyncio.to_thread`` por sub-retriever, sin ningún ``ThreadPoolExecutor``
+propio — T3.2) cuando se invoca vía ``ainvoke()``; ``invoke()`` (síncrono)
+sigue disponible y produce el mismo resultado, ejecutando los sub-retrievers
+secuencialmente.
 
 Singletons de módulo (ChromaDB client, vectorstore, BM25 index) se pre-calientan
 en el arranque de la app vía ``init_retrievers()`` y se reutilizan entre requests.
@@ -21,8 +25,8 @@ Componentes principales:
 
 from __future__ import annotations
 
+import asyncio
 import re
-from concurrent.futures import ThreadPoolExecutor
 from typing import Any
 
 import chromadb
@@ -333,9 +337,15 @@ class HybridEnsembleRetriever(BaseRetriever):
     Retriever híbrido que combina varios sub-retrievers usando
     Weighted Reciprocal Rank Fusion (RRF).
 
-    Los sub-retrievers se invocan en paralelo mediante un ThreadPoolExecutor,
-    reduciendo la latencia porque BM25 (CPU) y la búsqueda vectorial (IO/HTTP)
-    pueden ejecutarse concurrentemente.
+    Concurrencia (T3.2): una sola capa. ``ainvoke()`` (usado por el grafo en
+    producción, ver ``agent.retrieve_forced_node``) despacha todos los
+    sub-retrievers con ``asyncio.gather`` + ``asyncio.to_thread`` — cada
+    sub-retriever corre en el executor por defecto de asyncio, sin crear
+    ningún ``ThreadPoolExecutor`` propio anidado dentro de otra capa de
+    concurrencia. ``invoke()`` (síncrono, para scripts/demo) ejecuta los
+    mismos sub-retrievers de forma secuencial y produce exactamente el mismo
+    resultado fusionado — la fusión RRF no depende del orden de ejecución,
+    solo del orden de ``self.retrievers``.
     """
 
     retrievers: list[BaseRetriever]
@@ -344,19 +354,8 @@ class HybridEnsembleRetriever(BaseRetriever):
     id_key: str | None = "chunk_id"
     max_results: int = 4
 
-    def _get_relevant_documents(
-        self,
-        query: str,
-        *,
-        run_manager: CallbackManagerForRetrieverRun,
-    ) -> list[Document]:
-        del run_manager
-        # Invocar todos los sub-retrievers en paralelo
-        with ThreadPoolExecutor(max_workers=len(self.retrievers)) as pool:
-            futures = [pool.submit(r.invoke, query) for r in self.retrievers]
-            all_results: list[list[Document]] = [f.result() for f in futures]
-
-        # Fusión de rankings con RRF ponderado
+    def _fuse(self, all_results: list[list[Document]]) -> list[Document]:
+        """Fusión RRF ponderada, común a las rutas síncrona y asíncrona."""
         scores: dict[str, float] = {}
         doc_by_id: dict[str, Document] = {}
 
@@ -386,6 +385,30 @@ class HybridEnsembleRetriever(BaseRetriever):
                 continue
             selected.append(doc)
         return selected
+
+    def _get_relevant_documents(
+        self,
+        query: str,
+        *,
+        run_manager: CallbackManagerForRetrieverRun,
+    ) -> list[Document]:
+        del run_manager
+        all_results: list[list[Document]] = [r.invoke(query) for r in self.retrievers]
+        return self._fuse(all_results)
+
+    async def _aget_relevant_documents(
+        self,
+        query: str,
+        *,
+        run_manager: Any,
+    ) -> list[Document]:
+        del run_manager
+        # Única capa de concurrencia: un asyncio.to_thread por sub-retriever,
+        # despachados juntos con gather. Sin ThreadPoolExecutor propio.
+        all_results: list[list[Document]] = await asyncio.gather(
+            *(asyncio.to_thread(r.invoke, query) for r in self.retrievers)
+        )
+        return self._fuse(all_results)
 
 
 def get_ensemble_retriever(
