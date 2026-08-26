@@ -34,8 +34,8 @@ evaluation/ragas_eval_dataset.json
 evaluation/ragas_eval_summary.json
 
 # 6) Configuración sensible / secretos
-.env
-.env.production
+.env*
+!.env.example
 *.pem
 *.key
 *.crt
@@ -84,3 +84,7 @@ ARCHITECTURE_ANALYSIS.md
 
 # 15) Carpeta temporal de sincronización usada por Claude para revisiones — no debe versionarse
 _claude_sync/
+
+# 16) Binarios de terceros descargados (instaladores, plugins) — no deben versionarse
+*.deb
+session-manager-plugin.deb
