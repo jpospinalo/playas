@@ -20,7 +20,7 @@ from typing import Literal, cast
 
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
-from pydantic import BaseModel, ConfigDict, Field, ValidationError, model_validator
+from pydantic import BaseModel, ConfigDict, Field, ValidationError, field_validator, model_validator
 
 from rag.config import QUERY_ENRICHMENT_ENABLED as ENRICHMENT_ENABLED
 
@@ -42,6 +42,34 @@ QueryRoute = Literal["in_scope", "out_of_scope", "conversation", "needs_clarific
 DocumentType = Literal["jurisprudencia", "normativa"]
 
 
+# Límites de ``expanded_query``: única fuente de verdad, referenciada tanto
+# por el ``Field`` (que los hace cumplir) como por ``_normalize_expanded_query``
+# (que los aplica antes de que Pydantic los exija).
+_EXPANDED_QUERY_MAX_WORDS = 45
+_EXPANDED_QUERY_MAX_CHARS = 1000
+
+
+def _normalize_expanded_query(text: str) -> str:
+    """Compacta ``text`` para que respete simultáneamente el máximo de
+    palabras y el de caracteres de ``expanded_query``.
+
+    Idempotente: aplicarla dos veces produce el mismo resultado que aplicarla
+    una. Se invoca como validador ``mode="before"`` del campo — es decir,
+    ANTES de que Pydantic aplique ``max_length`` — porque el recorte por
+    palabras por sí solo no basta: una entrada de hasta 4.000 caracteres sin
+    espacios es una única "palabra" para ``str.split()``, así que el límite
+    de 45 palabras no la reduce en absoluto y una versión de esta función que
+    corriera DESPUÉS de ``max_length=1000`` (como un validador ``mode="after"``)
+    nunca llegaría a ejecutarse: Pydantic ya habría rechazado el valor.
+    """
+    words = text.split()
+    if len(words) > _EXPANDED_QUERY_MAX_WORDS:
+        text = " ".join(words[:_EXPANDED_QUERY_MAX_WORDS])
+    if len(text) > _EXPANDED_QUERY_MAX_CHARS:
+        text = text[:_EXPANDED_QUERY_MAX_CHARS]
+    return text
+
+
 class EnrichedQuery(BaseModel):
     """Resultado estructurado del análisis de alcance y enriquecimiento."""
 
@@ -55,7 +83,7 @@ class EnrichedQuery(BaseModel):
     )
     expanded_query: str = Field(
         min_length=1,
-        max_length=1000,
+        max_length=_EXPANDED_QUERY_MAX_CHARS,
         description="Consulta compacta usada por el recuperador híbrido.",
     )
     doc_types: list[DocumentType] = Field(
@@ -64,12 +92,19 @@ class EnrichedQuery(BaseModel):
         description="Tipos documentales pertinentes para una consulta dentro del ámbito.",
     )
 
+    @field_validator("expanded_query", mode="before")
+    @classmethod
+    def _normalize_expanded_query_field(cls, value: object) -> object:
+        """Único mecanismo de recorte de ``expanded_query`` (ver
+        ``_normalize_expanded_query``). No añadir un segundo recorte —p. ej.
+        por caracteres en ``_fallback()``— con reglas distintas."""
+        if isinstance(value, str):
+            return _normalize_expanded_query(value)
+        return value
+
     @model_validator(mode="after")
     def validate_route_payload(self) -> EnrichedQuery:
         self.doc_types = list(dict.fromkeys(self.doc_types))
-        words = self.expanded_query.split()
-        if len(words) > 45:
-            self.expanded_query = " ".join(words[:45])
         if self.route == "in_scope" and not self.doc_types:
             raise ValueError("Una consulta in_scope debe seleccionar al menos un tipo documental.")
         if self.route != "in_scope" and self.doc_types:
