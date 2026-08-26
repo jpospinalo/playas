@@ -70,9 +70,17 @@ def _tokenize_bm25(text: str) -> list[str]:
 
 
 class BM25Retriever(BaseRetriever):
-    """Adaptador mínimo de ``rank_bm25`` compatible con el retriever anterior."""
+    """Adaptador mínimo de ``rank_bm25`` compatible con el retriever anterior.
 
-    vectorizer: Any
+    ``vectorizer`` es ``None`` cuando el corpus está vacío: ``BM25Okapi([])``
+    lanza ``ZeroDivisionError`` (divide por la longitud promedio de
+    documento, indefinida con cero documentos), así que en ese caso no se
+    construye ningún índice. ``_get_relevant_documents`` devuelve entonces
+    una lista vacía —igual que un índice real sin coincidencias— en vez de
+    fabricar evidencia.
+    """
+
+    vectorizer: Any | None
     docs: list[Document] = Field(repr=False)
     k: int = 4
 
@@ -85,6 +93,8 @@ class BM25Retriever(BaseRetriever):
         run_manager: CallbackManagerForRetrieverRun,
     ) -> list[Document]:
         del run_manager
+        if self.vectorizer is None:
+            return []
         return self.vectorizer.get_top_n(_tokenize_bm25(query), self.docs, n=self.k)
 
 
@@ -113,16 +123,23 @@ def _get_bm25_base() -> BM25Retriever:
     El corpus se indexa con texto aumentado (page_content + keywords_str + summary)
     para mejorar el recall con terminología jurídica curada por Gemini, pero los
     documentos devueltos conservan el page_content original sin modificaciones.
+
+    Corpus vacío: no se invoca ``BM25Okapi([])`` (lanza ``ZeroDivisionError``)
+    ni se fabrica un documento placeholder como evidencia falsa —lo que antes
+    permitía que BM25 devolviera ese placeholder como si fuera un fragmento
+    real del corpus—. En su lugar, el índice queda sin vectorizador: las
+    búsquedas devuelven una lista vacía (ver ``BM25Retriever``), y el arranque
+    de la app (``init_retrievers()``) no falla por tener la colección vacía.
     """
     global _bm25_base
     if _bm25_base is None:
-        from rank_bm25 import BM25Okapi
-
         docs = load_all_docs_from_chroma()
 
         if not docs:
-            placeholder = Document(page_content="sin documentos", metadata={})
-            docs = [placeholder]
+            _bm25_base = BM25Retriever(vectorizer=None, docs=[], k=50)
+            return _bm25_base
+
+        from rank_bm25 import BM25Okapi
 
         augmented_texts: list[str] = []
         for d in docs:
@@ -139,6 +156,19 @@ def _get_bm25_base() -> BM25Retriever:
         # k=50 como techo máximo; se limita en get_bm25_retriever()
         _bm25_base = BM25Retriever(vectorizer=vectorizer, docs=docs, k=50)
     return _bm25_base
+
+
+def bm25_index_is_empty() -> bool:
+    """``True`` si el índice BM25 ya se construyó y el corpus está vacío.
+
+    Distingue "aún no inicializado" (``_bm25_base is None`` → ``False``, ya
+    que no hay nada que reportar como vacío todavía) de "inicializado pero
+    sin evidencia" (``True``). Pensado como gancho interno para un futuro
+    endpoint de readiness (T2.5): permite comprobar el estado del corpus sin
+    volver a consultar Chroma en cada chequeo. No expone estado nuevo por sí
+    sola —no hay ningún endpoint que la use todavía—.
+    """
+    return _bm25_base is not None and not _bm25_base.docs
 
 
 def init_retrievers() -> None:
