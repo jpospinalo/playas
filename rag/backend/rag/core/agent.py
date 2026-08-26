@@ -23,6 +23,7 @@ from langgraph.graph.message import add_messages
 from typing_extensions import TypedDict
 
 from .llm_factory import get_active_provider, get_generation_llm
+from .observability import log_citation_format_error, stage_timer
 from .prompts import AGENT_FALLBACK_HUMAN_TEMPLATE, AGENT_SYSTEM
 from .query_enricher import EnrichedQuery, QueryRoute, enrich_query_async
 from .retriever import get_ensemble_retriever
@@ -167,8 +168,12 @@ def _validate_citations(answer: str, doc_count: int) -> bool:
 
 async def enrich_query_node(state: AgentState) -> dict:
     _emit_status("enriching", "Analizando el alcance y contexto de tu pregunta…")
-    history_context = _history_for_analysis(state["messages"], state["question"])
-    analysis: EnrichedQuery = await enrich_query_async(state["question"], history_context)
+    with stage_timer("enrich_query") as fields:
+        history_context = _history_for_analysis(state["messages"], state["question"])
+        analysis: EnrichedQuery = await enrich_query_async(state["question"], history_context)
+        # `route` es un enum cerrado (QueryRoute), no texto libre de la
+        # pregunta — seguro de loguear.
+        fields["route"] = analysis.route
 
     requested_doc_types = state.get("doc_types")
     effective_doc_types = requested_doc_types or analysis.doc_types
@@ -201,18 +206,22 @@ async def respond_without_retrieval_node(state: AgentState) -> dict:
 
 async def retrieve_forced_node(state: AgentState) -> dict:
     _emit_status("retrieving", "Buscando evidencia en jurisprudencia y normatividad…")
-    query = _compose_retrieval_query(state)
-    doc_types = state.get("doc_types") or None
-    k = min(max(int(state.get("k", 4)), 1), 8)
-    k_candidates = min(max(int(state.get("k_candidates", 8)), k), 20)
+    with stage_timer("retrieve_forced") as fields:
+        query = _compose_retrieval_query(state)
+        doc_types = state.get("doc_types") or None
+        k = min(max(int(state.get("k", 4)), 1), 8)
+        k_candidates = min(max(int(state.get("k_candidates", 8)), k), 20)
 
-    retriever = get_ensemble_retriever(
-        k=k,
-        k_candidates=k_candidates,
-        doc_types=doc_types,
-    )
-    docs = await asyncio.to_thread(retriever.invoke, query)
-    return {"sources": docs[:k]}
+        retriever = get_ensemble_retriever(
+            k=k,
+            k_candidates=k_candidates,
+            doc_types=doc_types,
+        )
+        docs = await asyncio.to_thread(retriever.invoke, query)
+        selected = docs[:k]
+        # Conteo, no contenido: cuántos documentos, no cuáles ni su texto.
+        fields["doc_count"] = len(selected)
+    return {"sources": selected}
 
 
 async def generate_node(state: AgentState) -> dict:
@@ -221,15 +230,17 @@ async def generate_node(state: AgentState) -> dict:
     if not docs:
         return {"messages": [AIMessage(content=_NO_EVIDENCE_RESPONSE)]}
 
-    context = build_context_block(docs)
-    prompt = _get_fallback_prompt()
-    llm = get_generation_llm()
-    chain = prompt | llm | StrOutputParser()
-    question = _compose_generation_question(state)
-    answer = str(await chain.ainvoke({"context": context, "question": question})).strip()
+    with stage_timer("generate", doc_count=len(docs)):
+        context = build_context_block(docs)
+        prompt = _get_fallback_prompt()
+        llm = get_generation_llm()
+        chain = prompt | llm | StrOutputParser()
+        question = _compose_generation_question(state)
+        answer = str(await chain.ainvoke({"context": context, "question": question})).strip()
 
-    if not _validate_citations(answer, len(docs)):
-        answer = _INVALID_CITATIONS_RESPONSE
+        if not _validate_citations(answer, len(docs)):
+            log_citation_format_error(doc_count=len(docs))
+            answer = _INVALID_CITATIONS_RESPONSE
     return {"messages": [AIMessage(content=answer)]}
 
 

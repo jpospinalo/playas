@@ -35,6 +35,7 @@ from rag.api.routes.conversations import router as conversations_router
 from rag.api.routes.feedback import router as feedback_router
 from rag.api.schemas import QueryRequest, QueryResponse, SourceFragment, SourceGroup
 from rag.config import CONTEXT_LIMIT_TOKENS
+from rag.core.observability import ActiveQueryTracker, log_retained_conversations
 from rag.core.retriever import bm25_index_is_empty, init_retrievers
 from rag.core.tools import sanitize_replacement_chars
 
@@ -49,6 +50,10 @@ READY_DB_TIMEOUT_SECONDS = 2.0
 
 _graph: Any = None
 logger = logging.getLogger(__name__)
+
+# T3.1: gauge de consultas en curso, sin contenido de negocio (ver
+# rag.core.observability). Un único proceso, un único tracker de módulo.
+ACTIVE_QUERIES = ActiveQueryTracker()
 
 
 def get_graph() -> Any:
@@ -424,27 +429,32 @@ async def query(
     graph = get_graph()
     config = _make_config(user["sub"], request.conversation_id, request.thread_id)
 
-    try:
-        initial_messages = await _get_initial_messages(
-            graph,
-            config,
-            request.conversation_id,
-            request.question,
-            user["sub"],
-            request.current_message_id,
-        )
-        final_state = await graph.ainvoke(
-            _build_graph_input(request, initial_messages),
-            config=config,
-        )
-    except Exception as exc:
-        if isinstance(exc, HTTPException):
-            raise
-        logger.exception("Error procesando una consulta RAG")
-        raise HTTPException(
-            status_code=500,
-            detail="No fue posible procesar la consulta.",
-        ) from exc
+    with ACTIVE_QUERIES.track():
+        try:
+            initial_messages = await _get_initial_messages(
+                graph,
+                config,
+                request.conversation_id,
+                request.question,
+                user["sub"],
+                request.current_message_id,
+            )
+            final_state = await graph.ainvoke(
+                _build_graph_input(request, initial_messages),
+                config=config,
+            )
+        except Exception as exc:
+            if isinstance(exc, HTTPException):
+                raise
+            logger.exception("Error procesando una consulta RAG")
+            raise HTTPException(
+                status_code=500,
+                detail="No fue posible procesar la consulta.",
+            ) from exc
+        finally:
+            # Estado de retención DESPUÉS de esta consulta (incluye la
+            # conversación que se acaba de procesar, si es nueva).
+            log_retained_conversations(graph.checkpointer)
 
     answer_raw = _extract_answer_from_state(final_state)
     if not answer_raw:
@@ -492,52 +502,59 @@ async def query_stream(
     )
 
     async def event_generator() -> AsyncGenerator[str, None]:
-        try:
-            # La generación se valida dentro del grafo antes de exponerla. Por eso
-            # conservamos el último snapshot de este stream y emitimos su texto validado.
-            values: dict[str, Any] = {}
-            async for mode, payload in graph.astream(
-                _build_graph_input(request, initial_messages),
-                config=config,
-                stream_mode=["values", "custom"],
-            ):
-                if mode == "custom":
-                    # Eventos de estado emitidos por los nodos
-                    if isinstance(payload, dict) and payload.get("type") == "status":
-                        event = json.dumps(payload)
-                        yield f"data: {event}\n\n"
-                elif mode == "values" and isinstance(payload, dict):
-                    values = payload
+        with ACTIVE_QUERIES.track():
+            try:
+                # La generación se valida dentro del grafo antes de exponerla. Por eso
+                # conservamos el último snapshot de este stream y emitimos su texto validado.
+                values: dict[str, Any] = {}
+                async for mode, payload in graph.astream(
+                    _build_graph_input(request, initial_messages),
+                    config=config,
+                    stream_mode=["values", "custom"],
+                ):
+                    if mode == "custom":
+                        # Eventos de estado emitidos por los nodos
+                        if isinstance(payload, dict) and payload.get("type") == "status":
+                            event = json.dumps(payload)
+                            yield f"data: {event}\n\n"
+                    elif mode == "values" and isinstance(payload, dict):
+                        values = payload
 
-            answer = _clean_answer(_extract_answer_from_state(values))
-            if not answer:
-                answer = "No se encontraron fragmentos relevantes en la base de conocimiento."
-            for start in range(0, len(answer), 120):
-                event = json.dumps({"type": "token", "content": answer[start : start + 120]})
+                answer = _clean_answer(_extract_answer_from_state(values))
+                if not answer:
+                    answer = "No se encontraron fragmentos relevantes en la base de conocimiento."
+                for start in range(0, len(answer), 120):
+                    event = json.dumps({"type": "token", "content": answer[start : start + 120]})
+                    yield f"data: {event}\n\n"
+
+                sources_raw = values.get("sources") or []
+                enriched_query = values.get("enriched_query")
+                context_tokens = _estimate_context_tokens(values.get("messages", []))
+
+                sources_payload = [g.model_dump() for g in _docs_to_source_groups(sources_raw)]
+                event = json.dumps(
+                    {
+                        "type": "sources",
+                        "sources": sources_payload,
+                        "enriched_query": enriched_query,
+                        "query_route": values.get("query_route"),
+                        "context_tokens": context_tokens,
+                        "context_limit": CONTEXT_LIMIT_TOKENS,
+                    }
+                )
                 yield f"data: {event}\n\n"
+                yield "data: [DONE]\n\n"
 
-            sources_raw = values.get("sources") or []
-            enriched_query = values.get("enriched_query")
-            context_tokens = _estimate_context_tokens(values.get("messages", []))
-
-            sources_payload = [g.model_dump() for g in _docs_to_source_groups(sources_raw)]
-            event = json.dumps(
-                {
-                    "type": "sources",
-                    "sources": sources_payload,
-                    "enriched_query": enriched_query,
-                    "query_route": values.get("query_route"),
-                    "context_tokens": context_tokens,
-                    "context_limit": CONTEXT_LIMIT_TOKENS,
-                }
-            )
-            yield f"data: {event}\n\n"
-            yield "data: [DONE]\n\n"
-
-        except Exception:
-            logger.exception("Error durante una consulta RAG por streaming")
-            event = json.dumps({"type": "error", "detail": "No fue posible procesar la consulta."})
-            yield f"data: {event}\n\n"
+            except Exception:
+                logger.exception("Error durante una consulta RAG por streaming")
+                event = json.dumps(
+                    {"type": "error", "detail": "No fue posible procesar la consulta."}
+                )
+                yield f"data: {event}\n\n"
+            finally:
+                # Estado de retención DESPUÉS de esta consulta (incluye la
+                # conversación que se acaba de procesar, si es nueva).
+                log_retained_conversations(graph.checkpointer)
 
     return StreamingResponse(
         event_generator(),
