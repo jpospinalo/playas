@@ -73,15 +73,20 @@ uv run python rag/scripts/migrate_feedback_ratings.py             # aplica
 
 ### `scripts/load_test.py`
 
-Lanza N usuarios concurrentes contra `/api/query/stream` (el endpoint SSE que usa el frontend) en el ALB de ECS, y reporta latencias (tiempo al primer evento, al primer token, total).
+Lanza N usuarios concurrentes contra `/api/query/stream` (el endpoint SSE que usa el frontend), y reporta latencias (tiempo al primer evento `status`, a la primera fracción de respuesta, total — con min/avg/p50/p95/p99/max).
 
 ```bash
-uv run python rag/scripts/load_test.py --users 10 --timeout 60
+export RAG_LOAD_TEST_TOKEN=<jwt>   # el endpoint exige autenticación
+uv run python rag/scripts/load_test.py --url http://localhost:8080 --users 10 --timeout 60
 ```
 
-**Nota:** la URL del ALB está hardcodeada en el script (`BASE_URL`); actualízala si el ALB cambia (p. ej. tras recrear la infraestructura Terraform).
+**Sin URL por defecto:** `--url` es obligatorio. Apuntar a un host que no sea local exige además `--allow-remote` y, en una terminal interactiva, escribir el host exacto como confirmación — así se evita generar tráfico de carga contra el ALB de producción por accidente.
 
-**Cuándo usarlo:** para validar manualmente latencia/estabilidad del backend bajo concurrencia antes o después de un despliegue.
+**Credencial:** el endpoint exige un JWT válido; pásalo por `RAG_LOAD_TEST_TOKEN` (recomendado) o `--token`. Sin ninguno de los dos el script se detiene con un mensaje claro (`--allow-unauthenticated` para el caso excepcional de un backend sin auth).
+
+**Nota sobre "primer token":** el backend calcula la respuesta completa y luego la trocea en fragmentos que emite sin pausas — no hay streaming incremental real de tokens. El tiempo a la "primera fracción de respuesta" reportado por el script es, en la práctica, casi igual al tiempo total; no lo interpretes como time-to-first-token.
+
+**Cuándo usarlo:** para validar manualmente latencia/estabilidad del backend bajo concurrencia antes o después de un despliegue. Ejecutarlo contra producción requiere autorización explícita — no es un chequeo de solo lectura.
 
 ---
 
