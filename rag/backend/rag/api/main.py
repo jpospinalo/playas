@@ -18,7 +18,7 @@ import logging
 import re
 import uuid
 from collections.abc import AsyncGenerator
-from contextlib import asynccontextmanager
+from contextlib import AsyncExitStack, asynccontextmanager
 from pathlib import Path
 from typing import Any
 
@@ -29,7 +29,7 @@ from langchain_core.documents import Document
 from langchain_core.messages import AIMessage, HumanMessage
 
 from rag.api.conversation_lock import ConversationLockRegistry
-from rag.api.rate_limit import get_query_user
+from rag.api.rate_limit import backpressure, get_query_user
 from rag.api.routes.admin import router as admin_router
 from rag.api.routes.auth import router as auth_router
 from rag.api.routes.conversations import router as conversations_router
@@ -436,35 +436,40 @@ async def query(
     config = _make_config(user["sub"], request.conversation_id, request.thread_id)
     thread_id = config["configurable"]["thread_id"]
 
-    with ACTIVE_QUERIES.track():
-        # T3.5: serializa turnos concurrentes sobre esta misma conversación
-        # (ver rag.api.conversation_lock) — no afecta a otras conversaciones.
-        async with CONVERSATION_LOCKS.lock_for(thread_id):
-            try:
-                initial_messages = await _get_initial_messages(
-                    graph,
-                    config,
-                    request.conversation_id,
-                    request.question,
-                    user["sub"],
-                    request.current_message_id,
-                )
-                final_state = await graph.ainvoke(
-                    _build_graph_input(request, initial_messages),
-                    config=config,
-                )
-            except Exception as exc:
-                if isinstance(exc, HTTPException):
-                    raise
-                logger.exception("Error procesando una consulta RAG")
-                raise HTTPException(
-                    status_code=500,
-                    detail="No fue posible procesar la consulta.",
-                ) from exc
-            finally:
-                # Estado de retención DESPUÉS de esta consulta (incluye la
-                # conversación que se acaba de procesar, si es nueva).
-                log_retained_conversations(graph.checkpointer)
+    # T3.6: rechaza rápido (503) si el proceso ya está en su límite de
+    # concurrencia — antes de contabilizar en ACTIVE_QUERIES y antes de
+    # competir por el lock de conversación (rag.api.rate_limit.backpressure,
+    # off por defecto).
+    async with backpressure.slot():
+        with ACTIVE_QUERIES.track():
+            # T3.5: serializa turnos concurrentes sobre esta misma conversación
+            # (ver rag.api.conversation_lock) — no afecta a otras conversaciones.
+            async with CONVERSATION_LOCKS.lock_for(thread_id):
+                try:
+                    initial_messages = await _get_initial_messages(
+                        graph,
+                        config,
+                        request.conversation_id,
+                        request.question,
+                        user["sub"],
+                        request.current_message_id,
+                    )
+                    final_state = await graph.ainvoke(
+                        _build_graph_input(request, initial_messages),
+                        config=config,
+                    )
+                except Exception as exc:
+                    if isinstance(exc, HTTPException):
+                        raise
+                    logger.exception("Error procesando una consulta RAG")
+                    raise HTTPException(
+                        status_code=500,
+                        detail="No fue posible procesar la consulta.",
+                    ) from exc
+                finally:
+                    # Estado de retención DESPUÉS de esta consulta (incluye la
+                    # conversación que se acaba de procesar, si es nueva).
+                    log_retained_conversations(graph.checkpointer)
 
     answer_raw = _extract_answer_from_state(final_state)
     if not answer_raw:
@@ -504,15 +509,22 @@ async def query_stream(
     config = _make_config(user["sub"], request.conversation_id, request.thread_id)
     thread_id = config["configurable"]["thread_id"]
 
-    # T3.5: se adquiere aquí (antes de la hidratación) y se libera al final
-    # de event_generator() — deliberadamente NO es un solo `async with` que
-    # envuelva ambos, porque _get_initial_messages() debe poder seguir
-    # lanzando su HTTPException (404/422) ANTES de que exista el
-    # StreamingResponse, igual que hoy; el lock solo necesita cubrir desde
-    # aquí hasta que termine el streaming, sin cambiar ese contrato de
-    # errores.
-    lock = CONVERSATION_LOCKS.lock_for(thread_id)
-    await lock.acquire()
+    # T3.6 + T3.5: ambos se adquieren aquí (antes de la hidratación) y se
+    # liberan al final de event_generator() — deliberadamente NO es un solo
+    # `async with` que envuelva ambos, porque _get_initial_messages() debe
+    # poder seguir lanzando su HTTPException (404/422, o 503 de
+    # backpressure) ANTES de que exista el StreamingResponse, igual que hoy;
+    # solo necesitan cubrir desde aquí hasta que termine el streaming, sin
+    # cambiar ese contrato de errores. AsyncExitStack por lo mismo que el
+    # lock manual: se entra en un scope y se cierra en otro.
+    resource_stack = AsyncExitStack()
+    await resource_stack.enter_async_context(backpressure.slot())
+    try:
+        lock = CONVERSATION_LOCKS.lock_for(thread_id)
+        await lock.acquire()
+    except BaseException:
+        await resource_stack.aclose()
+        raise
     try:
         initial_messages = await _get_initial_messages(
             graph,
@@ -524,6 +536,7 @@ async def query_stream(
         )
     except BaseException:
         lock.release()
+        await resource_stack.aclose()
         raise
 
     async def event_generator() -> AsyncGenerator[str, None]:
@@ -581,6 +594,7 @@ async def query_stream(
                 # conversación que se acaba de procesar, si es nueva).
                 log_retained_conversations(graph.checkpointer)
                 lock.release()
+                await resource_stack.aclose()
 
     return StreamingResponse(
         event_generator(),

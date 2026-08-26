@@ -227,3 +227,21 @@ AUTH_RATE_LIMIT_MODE: RateLimitMode = (
 )
 AUTH_RATE_LIMIT_REQUESTS: int = int(os.getenv("AUTH_RATE_LIMIT_REQUESTS", "10"))
 AUTH_RATE_LIMIT_WINDOW_SECONDS: float = float(os.getenv("AUTH_RATE_LIMIT_WINDOW_SECONDS", "300"))
+
+# ── Backpressure de concurrencia (T3.6) ─────────────────────────────────────
+# Distinto del rate limiting de arriba: esos limitan CUÁNTAS solicitudes por
+# ventana de tiempo puede hacer una MISMA clave (usuario/IP/email). Esto
+# limita cuántas consultas RAG pueden estar EN VUELO simultáneamente en todo
+# el proceso, sin importar de qué usuario sean — protege a Chroma/Ollama/el
+# proveedor LLM de saturarse bajo carga concurrente alta, no bajo ráfagas de
+# un mismo usuario. Reusa el mismo modelo off/observe/enforce por
+# consistencia, pero es un mecanismo distinto (semáforo de concurrencia, no
+# ventana deslizante) — ver rag.api.rate_limit.ConcurrencyBackpressure.
+# off por defecto: sin cambio funcional.
+_backpressure_mode = os.getenv("RAG_BACKPRESSURE_MODE", "off").strip().lower()
+BACKPRESSURE_MODE: RateLimitMode = (
+    cast(RateLimitMode, _backpressure_mode)
+    if _backpressure_mode in {"off", "observe", "enforce"}
+    else "off"
+)
+BACKPRESSURE_MAX_CONCURRENT: int = int(os.getenv("RAG_BACKPRESSURE_MAX_CONCURRENT", "20"))
