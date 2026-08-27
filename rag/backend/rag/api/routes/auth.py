@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import hashlib
 import logging
-import os
 import uuid
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
@@ -18,11 +17,11 @@ from rag.api.database import get_session
 from rag.api.models import User
 from rag.api.passwords import hash_password, verify_password
 from rag.api.rate_limit import login_rate_limiter
+from rag.config import REGISTER_ENABLED as _REGISTER_ENABLED
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
-_REGISTER_ENABLED = os.getenv("REGISTER_ENABLED", "false").lower() == "true"
 
 
 class LoginRequest(BaseModel):

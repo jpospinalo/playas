@@ -18,11 +18,10 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
 import rag.api.database as database
 from rag.api.models import User
+from rag.config import JWT_ALGORITHM as _ALGORITHM
+from rag.config import JWT_EXPIRE_MINUTES as _EXPIRE_MINUTES
 
 logger = logging.getLogger(__name__)
-
-_ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
-_EXPIRE_MINUTES = int(os.getenv("JWT_EXPIRE_MINUTES", "10080"))  # 7 días
 
 _bearer = HTTPBearer(auto_error=False)
 

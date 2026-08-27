@@ -245,3 +245,31 @@ BACKPRESSURE_MODE: RateLimitMode = (
     else "off"
 )
 BACKPRESSURE_MAX_CONCURRENT: int = int(os.getenv("RAG_BACKPRESSURE_MAX_CONCURRENT", "20"))
+
+# ── Base de datos ────────────────────────────────────────────────────────────
+# C1: antes vivía como `os.getenv("DATABASE_URL", ...)` a nivel de módulo en
+# api/database.py. api/rate_limit.py importa api/auth.py (que importa
+# api/database.py) ANTES de importar este módulo — si database.py se
+# importaba primero en el proceso (como ocurre al importar rag.api.main), su
+# constante quedaba fijada a partir de os.environ *antes* de que el .env
+# resuelto por RAG_ENV_FILE se hubiera cargado. Centralizarla aquí garantiza
+# que cualquier módulo que la use dispare primero la carga del .env de este
+# archivo, sin importar el orden de imports.
+DATABASE_URL: str = os.getenv("DATABASE_URL", "sqlite+aiosqlite:///./data/atlas.db")
+
+# ── Autenticación JWT ──────────────────────────────────────────────────────
+# C1: mismo problema de orden de imports que DATABASE_URL (ver arriba) —
+# api/auth.py leía JWT_ALGORITHM/JWT_EXPIRE_MINUTES con os.getenv() directo.
+# JWT_SECRET_KEY se deja fuera a propósito: auth.py ya lo lee de forma
+# perezosa dentro de una función (_secret()), evaluada en cada request, no al
+# importar el módulo — no sufre este bug, y no hay razón para mover una
+# constante sensible sin necesidad.
+JWT_ALGORITHM: str = os.getenv("JWT_ALGORITHM", "HS256")
+JWT_EXPIRE_MINUTES: int = int(os.getenv("JWT_EXPIRE_MINUTES", "10080"))  # 7 días
+
+# ── Registro de nuevas cuentas ─────────────────────────────────────────────
+# C1: api/routes/auth.py se importa en main.py después de que algo más ya
+# forzó la carga de este módulo, así que en la práctica no sufría el bug de
+# orden — se centraliza aquí de todas formas por consistencia con
+# DATABASE_URL/JWT_*, con el mismo default y el mismo parseo exacto.
+REGISTER_ENABLED: bool = os.getenv("REGISTER_ENABLED", "false").lower() == "true"
