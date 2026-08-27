@@ -400,6 +400,17 @@ async def ready() -> JSONResponse:
     ``graph.astream``). No expone detalles de infraestructura ni mensajes de
     excepción: solo booleanos por chequeo. Devuelve 200 si todos los
     chequeos pasan, 503 si falta alguno.
+
+    C9 — alcance real, para que no se lea como más de lo que es: NINGUNO de
+    los tres chequeos llama a ChromaDB ni a Ollama en el momento de la
+    consulta. ``graph_compiled`` e ``index_not_empty`` reflejan el estado de
+    la conexión a Chroma y del snapshot BM25 tomados una única vez durante
+    el arranque (``lifespan``) — si Chroma u Ollama se caen DESPUÉS de que
+    el proceso ya inició, este endpoint sigue reportando "ready" hasta que
+    una consulta real falle. No se añade ningún ping periódico real a esos
+    servicios (fuera de alcance de este plan de correcciones): esto es
+    documentación de un comportamiento existente, no un cambio de
+    comportamiento.
     """
     graph_compiled = _graph is not None
     checks = {

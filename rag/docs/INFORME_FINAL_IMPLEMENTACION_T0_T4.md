@@ -2,8 +2,21 @@
 
 **Fecha:** 2026-08-27
 **Rama:** `v2` (todos los cambios, pasados y futuros de esta implementación, viven aquí — instrucción explícita del usuario)
-**Estado del repo:** 20 commits locales por delante de `origin/v2`. **Ningún push realizado** — el usuario indicó explícitamente que el push lo haría manualmente él mismo ("Por ahora no hagas push solo commits. El push lo haré manual").
-**Alcance ejecutado:** T0 → T4.3 completos, más este informe. T3.3 y T3.4 quedaron **detenidos deliberadamente** (ver §3).
+**Estado del repo:** 21 commits locales por delante de `origin/v2` en el momento de cerrar este informe (el commit extra frente a la cifra citada más abajo en el cuerpo del informe es este mismo documento). **Ningún push realizado** — el usuario indicó explícitamente que el push lo haría manualmente él mismo ("Por ahora no hagas push solo commits. El push lo haré manual").
+**Alcance ejecutado:** T0 → T4.3, más este informe. T4.2 quedó **parcial** (el import roto se corrigió, pero la incompatibilidad `ragas`/`langchain-community` sigue sin resolver — ver §4.3). T3.3 y T3.4 quedaron **detenidos deliberadamente** (ver §3).
+
+> **Corrección (C9, plan de correcciones posteriores v1.0):** esta sección y las
+> §1, §5 y §6 originales contaban "16 entregas" con "14 completadas" y
+> reportaban T4.2 como completa sin matiz. El conteo correcto es **19
+> entregas** (T0 · T1.1–T1.3 · T2.1–T2.5 · T3.1–T3.7 · T4.1–T4.3 = 1+3+5+7+3)
+> con **17 completadas** (19 − T3.3 − T3.4 pendientes) — la cifra "16/14"
+> original no coincidía con su propia lista de etiquetas. Además, T4.2 solo
+> resolvió el `ModuleNotFoundError` de los scripts de evaluación; la
+> incompatibilidad real de dependencias (`ragas`/`langchain-community`,
+> documentada en §4.3) sigue sin resolverse, así que T4.2 se marca **parcial**,
+> no completa. El conteo de commits ("20 por delante de `origin/v2`") tampoco
+> incluía el commit del informe mismo — con él, eran 21. Los valores
+> corregidos se aplican también más abajo, en el cuerpo original del informe.
 
 ---
 
@@ -18,7 +31,7 @@ Se implementó el plan técnico v1.3 sobre el módulo `rag/` del repositorio `pl
 - Sin cambios a prompts, lógica de clasificación, umbrales de evidencia/citación, contratos públicos de la API, LangGraph (su estructura de nodos/aristas) ni al frontend.
 - Sin escritura real en Chroma, sin acceso a infraestructura real (AWS/Ollama en producción), sin reindexación de datos.
 
-De las 16 entregas del plan (T0, T1.1–T1.3, T2.1–T2.5, T3.1–T3.7, T4.1–T4.3), **14 se completaron**. **T3.3 y T3.4 quedaron pendientes por decisión explícita del usuario**, tras detectarse un conflicto genuino de diseño que el propio plan identifica como condición de parada (§3).
+De las **19 entregas** del plan (T0, T1.1–T1.3, T2.1–T2.5, T3.1–T3.7, T4.1–T4.3 = 1+3+5+7+3), **17 se completaron** y **1 quedó parcial (T4.2**, por la incompatibilidad de dependencias documentada en §4.3, no por decisión de alcance). **T3.3 y T3.4 quedaron pendientes por decisión explícita del usuario**, tras detectarse un conflicto genuino de diseño que el propio plan identifica como condición de parada (§3).
 
 ---
 
@@ -51,7 +64,7 @@ De las 16 entregas del plan (T0, T1.1–T1.3, T2.1–T2.5, T3.1–T3.7, T4.1–T
 - `1335730` (T4.1a) — Formato mecánico (`ruff format`) de 4 archivos pendientes de una línea base anterior, incluido el archivo del banco de 21 preguntas — se verificó **programáticamente** (comparación byte a byte de las constantes antes/después) que el contenido del banco no cambió, solo se retiraron paréntesis redundantes de sintaxis.
 - `bb1d9de` (T4.1b) — `ci.yml` y `tests.yml` ejecutaban exactamente los mismos tests por paquete; se confirmó la duplicación y se fusionaron en `ci.yml` (que además ya encadenaba tests detrás de lint, un comportamiento más correcto), preservando el cache de `uv` y las opciones de cobertura de `tests.yml`. `tests.yml` se eliminó.
 - `4f322dc` (T4.1c) — `mypy` habilitado en CI **solo para `rag/`** (0 errores verificados en 28 archivos de `backend/rag/`). **No** se habilitó para `ingesta/`, que tiene 5 errores preexistentes ajenos a este plan (ver §4).
-- `6c013be` (T4.2) — Los scripts `evaluation/ragas_eval_gemma.py` y `evaluation/ragas_eval_ollama.py` importaban `rag.core.generator.generate_answer`, un módulo que ya no existía (huérfano desde la migración del agente al grafo único de `core/agent.py`) — fallaban con `ModuleNotFoundError` antes de poder ejecutarse. Se restauró `core/generator.py` como adaptador delgado que invoca el mismo `build_graph()` que sirve `/api/query` (sin tocar el grafo), con un `thread_id` efímero por llamada. También se limpiaron comentarios de cabecera obsoletos ("TODO: cambiar a playas, actualmente poe"). `scripts/load_test.py` (ya endurecido en T0) se verificó sin cambios.
+- `6c013be` (T4.2 — **parcial**, ver corrección C9 al inicio del informe) — Los scripts `evaluation/ragas_eval_gemma.py` y `evaluation/ragas_eval_ollama.py` importaban `rag.core.generator.generate_answer`, un módulo que ya no existía (huérfano desde la migración del agente al grafo único de `core/agent.py`) — fallaban con `ModuleNotFoundError` antes de poder ejecutarse. Se restauró `core/generator.py` como adaptador delgado que invoca el mismo `build_graph()` que sirve `/api/query` (sin tocar el grafo), con un `thread_id` efímero por llamada. También se limpiaron comentarios de cabecera obsoletos ("TODO: cambiar a playas, actualmente poe"). `scripts/load_test.py` (ya endurecido en T0) se verificó sin cambios. **Esto corrigió el `ModuleNotFoundError`, pero no deja los scripts de evaluación ejecutables de punta a punta**: la incompatibilidad real de dependencias `ragas`/`langchain-community` (§4.3) sigue sin resolverse, así que esta entrega se marca parcial, no completa.
 - `28eca22` (T4.3) — Eliminada `demo()` de `core/retriever.py` (código muerto demostrable: cero llamadores reales, no documentada en ningún script/Makefile/doc mantenido). `OllamaReranker` se **conservó deliberadamente** — ver §4.
 
 ---
@@ -95,13 +108,14 @@ Ejecutado inmediatamente antes de este informe, sobre el estado final de `v2` (c
 | Banco de 21 preguntas | Contenido verificado idéntico byte a byte tras el único cambio que lo tocó (formato) |
 | Cambios a prompts/clasificación/LangGraph/contratos públicos/frontend | Ninguno |
 | Escrituras/reindexación en Chroma real | Ninguna |
-| `git push` | Ninguno realizado — 20 commits locales por delante de `origin/v2`, el usuario hará el push manualmente |
+| `git push` | Ninguno realizado — 21 commits locales por delante de `origin/v2` (incluyendo este informe), el usuario hará el push manualmente |
 
 ---
 
 ## 6. Definición de terminado
 
-- [x] T0, T1.1–T1.3, T2.1–T2.5, T3.1, T3.2, T3.5, T3.6, T3.7, T4.1–T4.3 implementados, cada uno con test rojo→verde propio y commit independiente.
+- [x] T0, T1.1–T1.3, T2.1–T2.5, T3.1, T3.2, T3.5, T3.6, T3.7, T4.1, T4.3 implementados, cada uno con test rojo→verde propio y commit independiente.
+- [~] T4.2 implementada solo parcialmente: corrigió el `ModuleNotFoundError` de los scripts de evaluación, pero la incompatibilidad `ragas`/`langchain-community` (§4.3) sigue sin resolver.
 - [x] T3.3/T3.4 detenidos explícitamente por el usuario, con el hallazgo documentado (`T3.3_HISTORIAL_SQL.md`) y no perdido.
 - [x] Suite completa, ruff y mypy en verde sobre el estado final de `v2`.
 - [x] Banco de 21 preguntas preservado sin cambios de contenido ni de expectativas.

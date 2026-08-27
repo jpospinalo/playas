@@ -104,13 +104,18 @@ uv run python -m utils.chroma_count
 
 ### `utils/chroma_clear.py`
 
-**Elimina todos los documentos** de la colección activa en ChromaDB. Pide confirmación interactiva.
+**Elimina todos los documentos** de una colección de ChromaDB. **Simulación (dry-run) por defecto** — sin `--execute` solo muestra host, colección y cantidad de documentos, sin borrar nada. `--collection` es obligatorio (sin valor por defecto: nunca borra una colección resuelta implícitamente del entorno).
 
 ```bash
-uv run python -m utils.chroma_clear
+# Dry-run: solo describe la colección, no borra nada
+uv run python -m utils.chroma_clear --collection rag_playas
+
+# Borrado real: además exige escribir el nombre EXACTO de la colección
+# como confirmación interactiva (se cancela si no hay terminal disponible)
+uv run python -m utils.chroma_clear --collection rag_playas --execute
 ```
 
-**Precaución:** operación destructiva. Úsala cuando se quiere re-indexar desde cero.
+**Precaución:** con `--execute`, operación destructiva. Úsala cuando se quiere re-indexar desde cero.
 
 ---
 
@@ -131,7 +136,7 @@ uv run python -m utils.list_gemini_models
 | Tarea | Comando |
 |-------|---------|
 | Verificar chunks en ChromaDB | `uv run python -m utils.chroma_count` |
-| Limpiar ChromaDB para re-indexar | `uv run python -m utils.chroma_clear` |
+| Limpiar ChromaDB para re-indexar | `uv run python -m utils.chroma_clear --collection rag_playas --execute` |
 | Instalar Docker en Ubuntu | `sudo bash rag/scripts/install-docker-ubuntu.sh` |
 | Migrar feedback a multi-dimensional | `uv run python rag/scripts/migrate_feedback_ratings.py --dry-run` |
-| Prueba de carga contra ECS | `uv run python rag/scripts/load_test.py --users 10` |
+| Prueba de carga contra ECS | `uv run python rag/scripts/load_test.py --url http://localhost:8080 --users 10` |

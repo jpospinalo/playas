@@ -2,7 +2,10 @@ name: CI
 
 on:
   push:
-    branches: [main, develop]
+    # v2 (C9): rama de integración activa — el trabajo actual se acumula ahí
+    # antes de fusionarse a main vía PR; sin incluirla aquí, cada push a v2
+    # corría sin CI hasta el momento del PR.
+    branches: [main, develop, v2]
   pull_request:
     branches: [main]
 
