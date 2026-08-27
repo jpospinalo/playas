@@ -36,6 +36,7 @@ from rag.api.routes.conversations import router as conversations_router
 from rag.api.routes.feedback import router as feedback_router
 from rag.api.schemas import QueryRequest, QueryResponse, SourceFragment, SourceGroup
 from rag.config import CONTEXT_LIMIT_TOKENS
+from rag.core.agent import extract_answer_from_state as _extract_answer_from_state
 from rag.core.observability import ActiveQueryTracker, log_retained_conversations
 from rag.core.retriever import bm25_index_is_empty, init_retrievers
 from rag.core.tools import sanitize_replacement_chars
@@ -231,15 +232,6 @@ def _make_config(
         "configurable": {"thread_id": tid},
         "recursion_limit": recursion_limit,
     }
-
-
-def _extract_answer_from_state(state: dict) -> str:
-    """Extrae el contenido del último AIMessage del state."""
-    messages = state.get("messages", [])
-    for msg in reversed(messages):
-        if isinstance(msg, AIMessage) and msg.content:
-            return str(msg.content)
-    return ""
 
 
 def _estimate_context_tokens(messages: list) -> int:

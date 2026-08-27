@@ -10,8 +10,11 @@ agente a un único grafo determinista en ``rag.core.agent``).
 No reimplementa retrieval ni generación: invoca exactamente el mismo grafo
 que sirve ``/api/query`` (``rag.core.agent.build_graph()``, sin modificarlo)
 y reutiliza la misma extracción de respuesta que usa la API
-(``rag.api.main._extract_answer_from_state``), para no duplicar esa lógica
-ni arriesgar que ambas rutas diverjan.
+(``rag.core.agent.extract_answer_from_state`` — C7: antes se importaba
+desde ``rag.api.main``, lo que forzaba cargar FastAPI y toda la capa HTTP
+solo por esta función pura; ahora ambos la importan desde ``core.agent``,
+sin duplicar la lógica ni depender uno del otro), para no arriesgar que
+ambas rutas diverjan.
 
 Cada llamada compila un grafo nuevo y usa un ``thread_id`` efímero propio —
 sin relación con conversaciones reales ni memoria compartida entre preguntas
@@ -27,8 +30,7 @@ import uuid
 from langchain_core.documents import Document
 from langchain_core.messages import HumanMessage
 
-from rag.api.main import _extract_answer_from_state
-from rag.core.agent import build_graph
+from rag.core.agent import build_graph, extract_answer_from_state
 
 
 async def _ainvoke_graph(question: str) -> tuple[str, list[Document]]:
@@ -46,7 +48,7 @@ async def _ainvoke_graph(question: str) -> tuple[str, list[Document]]:
         "sources": [],
     }
     final_state = await graph.ainvoke(state_input, config=config)
-    answer = _extract_answer_from_state(final_state)
+    answer = extract_answer_from_state(final_state)
     docs = final_state.get("sources") or []
     return answer, docs
 

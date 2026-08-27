@@ -159,6 +159,25 @@ def _history_for_analysis(messages: list[BaseMessage], question: str) -> str:
     return "\n".join(reversed(selected))
 
 
+def extract_answer_from_state(state: dict) -> str:
+    """Extrae el contenido del último ``AIMessage`` del state del grafo.
+
+    C7: vivía como una función privada (``_extract_answer_from_state``) en
+    ``rag.api.main``, y ``rag.core.generator`` — un adaptador pensado para
+    uso offline, sin servidor (ver su docstring) — la importaba desde ahí.
+    Eso invertía la dependencia: una herramienta de ``core/`` terminaba
+    forzando la carga completa de FastAPI, los routers y la base de datos
+    solo por esta función pura. Se mueve aquí, pública y tipada, para que
+    tanto ``api.main`` como ``core.generator`` la importen desde el mismo
+    lugar sin duplicar la lógica ni depender uno del otro.
+    """
+    messages = state.get("messages", [])
+    for msg in reversed(messages):
+        if isinstance(msg, AIMessage) and msg.content:
+            return str(msg.content)
+    return ""
+
+
 def _validate_citations(answer: str, doc_count: int) -> bool:
     """Comprueba que una respuesta jurídica cite al menos un documento existente."""
     references = [int(value) for value in _CITATION_RE.findall(answer)]
