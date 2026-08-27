@@ -264,23 +264,9 @@ def _import_and_print(env: dict[str, str], attrs: list[str]) -> list[str]:
     return result.stdout.strip().splitlines()
 
 
-def _empty_env_file() -> str:
-    """Ruta a un .env vacío recién creado — NUNCA el ``rag/.env`` real de
-    este repo, aunque exista en disco. C2: antes, ``_minimal_env()`` se
-    limitaba a *eliminar* ``RAG_ENV_FILE`` del entorno copiado, sin fijarlo a
-    ningún valor — eso deja que ``_resolve_env_file()`` siga buscando hacia
-    arriba (cwd, luego la raíz del repo) y termine cargando el ``.env`` real
-    de un desarrollador si existe, contaminando cualquier prueba que asuma
-    "sin configuración" o "solo mi alias". Reproducido localmente: con un
-    ``rag/.env`` real presente, 4 de estas pruebas fallaban antes de este
-    cambio."""
-    fd, path = tempfile.mkstemp(suffix=".env")
-    os.close(fd)
-    return path
-
-
-def _minimal_env(**overrides: str) -> dict[str, str]:
-    """Entorno mínimo para subprocesos de prueba.
+@pytest.fixture
+def minimal_env(tmp_path: Path):
+    """Fábrica de entornos mínimos para subprocesos de prueba.
 
     Por defecto, ``RAG_ENV_FILE`` apunta a un ``.env`` vacío propio de esta
     llamada — nunca al ``.env`` real de este repo — así que un subproceso
@@ -290,55 +276,96 @@ def _minimal_env(**overrides: str) -> dict[str, str]:
     ``test_rag_env_file_is_actually_loaded_into_constants`` y
     ``test_rag_env_file_missing_fails_loudly_at_import``), que gana sobre
     este valor por defecto.
+
+    C2: sin ``RAG_ENV_FILE`` fijado explícitamente, ``_resolve_env_file()``
+    sigue buscando hacia arriba (cwd, luego la raíz del repo) y termina
+    cargando el ``.env`` real de un desarrollador si existe, contaminando
+    cualquier prueba que asuma "sin configuración" o "solo mi alias" —
+    reproducido localmente: con un ``rag/.env`` real presente, 4 de estas
+    pruebas fallaban sin este valor por defecto.
+
+    H3: cada llamada crea su propio ``.env`` vacío dentro de ``tmp_path`` —
+    el directorio temporal que pytest crea y limpia por prueba — en vez de
+    ``tempfile.mkstemp()`` directamente en la raíz del directorio temporal
+    del sistema, que no se borraba nunca (21 archivos sueltos tras una
+    corrida completa de esta suite, ver
+    ``test_minimal_env_does_not_leak_env_files_into_the_system_tmp_root``).
     """
-    env = {
-        k: v
-        for k, v in os.environ.items()
-        if not k.startswith(("CHROMA_", "OLLAMA_", "RAG_ENV_FILE"))
-    }
-    env["RAG_ENV_FILE"] = _empty_env_file()
-    env.update(overrides)
-    return env
+    counter = {"n": 0}
+
+    def _make(**overrides: str) -> dict[str, str]:
+        counter["n"] += 1
+        empty_env_file = tmp_path / f"minimal-{counter['n']}.env"
+        empty_env_file.write_text("", encoding="utf-8")
+
+        env = {
+            k: v
+            for k, v in os.environ.items()
+            if not k.startswith(("CHROMA_", "OLLAMA_", "RAG_ENV_FILE"))
+        }
+        env["RAG_ENV_FILE"] = str(empty_env_file)
+        env.update(overrides)
+        return env
+
+    return _make
 
 
-def test_chroma_collection_name_alias_used_when_primary_absent() -> None:
+def test_minimal_env_does_not_leak_env_files_into_the_system_tmp_root(minimal_env) -> None:
+    """H3: ``_empty_env_file()`` usaba ``tempfile.mkstemp()``, que crea el
+    archivo directamente en la raíz del directorio temporal del sistema
+    (``tempfile.gettempdir()``) y nunca lo borraba — 21 archivos ``.env``
+    quedaron ahí tras una corrida completa de esta suite durante la
+    verificación independiente. El reemplazo (fixture ``minimal_env``, ver
+    arriba) delega el ciclo de vida a ``tmp_path`` — que pytest administra
+    en un subdirectorio propio, nunca en la raíz del directorio temporal del
+    sistema — así que la raíz del sistema no debe recibir ningún ``.env``
+    nuevo al construir un entorno mínimo."""
+    system_tmp_root = Path(tempfile.gettempdir())
+    before = set(system_tmp_root.glob("*.env"))
+
+    minimal_env()
+
+    after = set(system_tmp_root.glob("*.env"))
+    new_files = after - before
+    assert not new_files, f"archivos .env nuevos en la raíz del tmp del sistema: {new_files}"
+
+
+def test_chroma_collection_name_alias_used_when_primary_absent(minimal_env) -> None:
     out = _import_and_print(
-        _minimal_env(CHROMA_COLLECTION_NAME="legacy_name"), ["CHROMA_COLLECTION"]
+        minimal_env(CHROMA_COLLECTION_NAME="legacy_name"), ["CHROMA_COLLECTION"]
     )
     assert out == ["legacy_name"]
 
 
-def test_chroma_collection_primary_wins_over_alias() -> None:
+def test_chroma_collection_primary_wins_over_alias(minimal_env) -> None:
     out = _import_and_print(
-        _minimal_env(CHROMA_COLLECTION="nueva", CHROMA_COLLECTION_NAME="legacy_name"),
+        minimal_env(CHROMA_COLLECTION="nueva", CHROMA_COLLECTION_NAME="legacy_name"),
         ["CHROMA_COLLECTION"],
     )
     assert out == ["nueva"]
 
 
-def test_ollama_rerank_model_accepts_legacy_rerankermodel_alias() -> None:
+def test_ollama_rerank_model_accepts_legacy_rerankermodel_alias(minimal_env) -> None:
     out = _import_and_print(
-        _minimal_env(OLLAMA_RERANKER_MODEL="mistral-legacy"), ["OLLAMA_RERANK_MODEL"]
+        minimal_env(OLLAMA_RERANKER_MODEL="mistral-legacy"), ["OLLAMA_RERANK_MODEL"]
     )
     assert out == ["mistral-legacy"]
 
 
-def test_ollama_rerank_model_none_when_nothing_set() -> None:
-    out = _import_and_print(_minimal_env(), ["OLLAMA_RERANK_MODEL"])
+def test_ollama_rerank_model_none_when_nothing_set(minimal_env) -> None:
+    out = _import_and_print(minimal_env(), ["OLLAMA_RERANK_MODEL"])
     assert out == ["None"]
 
 
-def test_ollama_embedding_aliases_resolve() -> None:
+def test_ollama_embedding_aliases_resolve(minimal_env) -> None:
     out = _import_and_print(
-        _minimal_env(
-            OLLAMA_EMBED_BASE_URL="http://legacy:11434", OLLAMA_EMBED_MODEL="legacy-model"
-        ),
+        minimal_env(OLLAMA_EMBED_BASE_URL="http://legacy:11434", OLLAMA_EMBED_MODEL="legacy-model"),
         ["OLLAMA_BASE_URL", "OLLAMA_EMBEDDING_MODEL"],
     )
     assert out == ["http://legacy:11434", "legacy-model"]
 
 
-def test_rag_env_file_is_actually_loaded_into_constants(tmp_path: Path) -> None:
+def test_rag_env_file_is_actually_loaded_into_constants(tmp_path: Path, minimal_env) -> None:
     """Extremo a extremo: RAG_ENV_FILE apuntando a un .env real cambia el
     valor de una constante de config.py — antes de esta entrega, esto no
     funcionaba salvo que otro módulo ya hubiera cargado el .env primero."""
@@ -346,14 +373,14 @@ def test_rag_env_file_is_actually_loaded_into_constants(tmp_path: Path) -> None:
     env_file.write_text("CHROMA_COLLECTION=desde_rag_env_file\n")
 
     out = _import_and_print(
-        _minimal_env(RAG_ENV_FILE=str(env_file)),
+        minimal_env(RAG_ENV_FILE=str(env_file)),
         ["CHROMA_COLLECTION"],
     )
     assert out == ["desde_rag_env_file"]
 
 
-def test_rag_env_file_missing_fails_loudly_at_import() -> None:
-    env = _minimal_env(RAG_ENV_FILE="/no/existe/en/absoluto.env")
+def test_rag_env_file_missing_fails_loudly_at_import(minimal_env) -> None:
+    env = minimal_env(RAG_ENV_FILE="/no/existe/en/absoluto.env")
     result = subprocess.run(
         [sys.executable, "-c", "from rag import config"],
         cwd=str(_BACKEND_DIR),
