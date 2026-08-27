@@ -17,7 +17,7 @@ Servicios externos requeridos: ChromaDB y Ollama (embeddings) en EC2.
 ## 1. Clonar el repositorio y ubicarse en `rag/`
 
 ```bash
-git clone https://github.com/camilousa/playas.git
+git clone https://github.com/jpospinalo/playas.git
 cd playas/rag
 ```
 

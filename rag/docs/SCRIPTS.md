@@ -54,21 +54,6 @@ docker exec -it ollama ollama pull phi4-mini:3.8b
 
 ---
 
-## Migraciones
-
-### `scripts/migrate_feedback_ratings.py`
-
-Migra documentos de feedback del formato legacy (`rating: int`) al formato multi-dimensional (`ratings: {tone, length, usability, overall}`).
-
-```bash
-uv run python rag/scripts/migrate_feedback_ratings.py --dry-run   # vista previa
-uv run python rag/scripts/migrate_feedback_ratings.py             # aplica
-```
-
-**Cuándo usarlo:** Una sola vez, después de desplegar el sistema de feedback multi-dimensional.
-
----
-
 ## Pruebas de carga
 
 ### `scripts/load_test.py`
@@ -138,5 +123,4 @@ uv run python -m utils.list_gemini_models
 | Verificar chunks en ChromaDB | `uv run python -m utils.chroma_count` |
 | Limpiar ChromaDB para re-indexar | `uv run python -m utils.chroma_clear --collection rag_playas --execute` |
 | Instalar Docker en Ubuntu | `sudo bash rag/scripts/install-docker-ubuntu.sh` |
-| Migrar feedback a multi-dimensional | `uv run python rag/scripts/migrate_feedback_ratings.py --dry-run` |
 | Prueba de carga contra ECS | `uv run python rag/scripts/load_test.py --url http://localhost:8080 --users 10` |
