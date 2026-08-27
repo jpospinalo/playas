@@ -1,6 +1,4 @@
-# evaluation/ragas_eval_gemmini.py
-
-# TODO: Cambiar a playas (actualmente poe)
+# evaluation/ragas_eval_gemma.py
 
 from __future__ import annotations
 
