@@ -157,12 +157,14 @@ START → enrich_query → route_after_analysis → {retrieve_forced → generat
 
 ## CI/CD
 
-Two GitHub Actions workflows in `.github/workflows/`:
-
-- **`ci.yml`** — Runs on push to `main`/`develop` and PRs to `main`. Two jobs:
+One GitHub Actions workflow, **`ci.yml`** (`.github/workflows/`). Runs on push to `main`/`develop`
+and PRs to `main`. Two jobs:
   - `quality`: Ruff lint + format check
   - `test`: Unit tests with coverage upload to Codecov (depends on `quality`)
-- **`tests.yml`** — Same triggers. Runs unit tests with coverage report on Python 3.12.
+
+> There used to be a second workflow, `tests.yml`, duplicating the same unit test run with minor
+> differences (uv caching, `--cov-report=term-missing`). Merged into `ci.yml` (T4.1) after
+> confirming both ran the same tests — no coverage was lost.
 
 Type checking (`mypy`) is disabled in CI due to lingering errors in production modules.
 

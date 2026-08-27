@@ -226,12 +226,16 @@ START → enrich_query → retrieve_forced → generate → END
 
 ## CI/CD
 
-Two GitHub Actions workflows in `.github/workflows/`, each running **separate jobs per package** (`working-directory: ingesta` and `working-directory: rag`):
-
-- **`ci.yml`** — Runs on push to `main`/`develop` and PRs to `main`. Per package:
+One GitHub Actions workflow, **`ci.yml`** (`.github/workflows/`), running **separate jobs per package**
+(`working-directory: ingesta` and `working-directory: rag`) on push to `main`/`develop` and PRs to
+`main`. Per package:
   - `quality`: Ruff lint + format check
   - `test`: Unit tests with coverage upload to Codecov (depends on `quality`)
-- **`tests.yml`** — Same triggers. Runs unit tests with coverage report on a Python version matrix.
+
+> There used to be a second workflow, `tests.yml`, that duplicated the same unit test run per
+> package with minor differences (uv caching, `--cov-report=term-missing`). It was merged into
+> `ci.yml` (T4.1) after confirming the two ran the exact same tests — `ci.yml` kept its stricter
+> quality-gated job structure and picked up `tests.yml`'s caching and `fail_ci_if_error: false`.
 
 Type checking (`mypy`) is disabled in CI for both packages due to lingering errors.
 
