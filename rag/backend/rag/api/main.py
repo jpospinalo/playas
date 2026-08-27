@@ -436,17 +436,21 @@ async def query(
     config = _make_config(user["sub"], request.conversation_id, request.thread_id)
     thread_id = config["configurable"]["thread_id"]
 
-    # T3.6: rechaza rápido (503) si el proceso ya está en su límite de
-    # concurrencia — antes de contabilizar en ACTIVE_QUERIES y antes de
-    # competir por el lock de conversación (rag.api.rate_limit.backpressure,
-    # off por defecto).
-    async with backpressure.slot():
-        with ACTIVE_QUERIES.track():
-            # T3.5/C3: serializa turnos concurrentes sobre esta misma
-            # conversación (ver rag.api.conversation_lock) — no afecta a
-            # otras conversaciones. hold() administra su propio ciclo de
-            # vida (cuenta referencias, limpia la entrada al salir).
-            async with CONVERSATION_LOCKS.hold(thread_id):
+    # C4: el lock de conversación se adquiere PRIMERO, y el slot de
+    # backpressure DESPUÉS, justo antes del trabajo que consume recursos.
+    # Antes era al revés: una segunda solicitud de una conversación que ya
+    # tiene un turno en curso reservaba un slot global de backpressure solo
+    # para quedarse esperando el lock de SU conversación — sin hacer ningún
+    # trabajo real — restándole capacidad a conversaciones independientes.
+    # Con este orden, esperar el lock nunca consume un slot; si backpressure
+    # rechaza con 503 una vez adquirido el lock, la salida de este `async
+    # with` lo libera de inmediato (sin código especial: es la propagación
+    # normal de la excepción). Mismo orden en /api/query/stream — evita
+    # tanto la falta de equidad como un futuro deadlock por orden
+    # inconsistente entre los dos endpoints.
+    async with CONVERSATION_LOCKS.hold(thread_id):
+        async with backpressure.slot():
+            with ACTIVE_QUERIES.track():
                 try:
                     initial_messages = await _get_initial_messages(
                         graph,
@@ -522,10 +526,16 @@ async def query_stream(
     # scope y se cierra en otro, y aclose() los libera en orden inverso ante
     # cualquier salida (éxito, excepción o cancelación), sin necesidad de
     # llevar la cuenta manual de qué se adquirió.
+    #
+    # C4: lock PRIMERO, backpressure DESPUÉS — mismo orden que /api/query,
+    # y por el mismo motivo: esperar el lock de conversación no debe
+    # consumir un slot global. Si backpressure rechaza con 503 tras haber
+    # adquirido el lock, el `except` de abajo cierra el stack (libera el
+    # lock) antes de relanzar.
     resource_stack = AsyncExitStack()
     try:
-        await resource_stack.enter_async_context(backpressure.slot())
         await resource_stack.enter_async_context(CONVERSATION_LOCKS.hold(thread_id))
+        await resource_stack.enter_async_context(backpressure.slot())
     except BaseException:
         await resource_stack.aclose()
         raise
