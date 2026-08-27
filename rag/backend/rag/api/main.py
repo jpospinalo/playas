@@ -442,9 +442,11 @@ async def query(
     # off por defecto).
     async with backpressure.slot():
         with ACTIVE_QUERIES.track():
-            # T3.5: serializa turnos concurrentes sobre esta misma conversación
-            # (ver rag.api.conversation_lock) — no afecta a otras conversaciones.
-            async with CONVERSATION_LOCKS.lock_for(thread_id):
+            # T3.5/C3: serializa turnos concurrentes sobre esta misma
+            # conversación (ver rag.api.conversation_lock) — no afecta a
+            # otras conversaciones. hold() administra su propio ciclo de
+            # vida (cuenta referencias, limpia la entrada al salir).
+            async with CONVERSATION_LOCKS.hold(thread_id):
                 try:
                     initial_messages = await _get_initial_messages(
                         graph,
@@ -509,19 +511,21 @@ async def query_stream(
     config = _make_config(user["sub"], request.conversation_id, request.thread_id)
     thread_id = config["configurable"]["thread_id"]
 
-    # T3.6 + T3.5: ambos se adquieren aquí (antes de la hidratación) y se
-    # liberan al final de event_generator() — deliberadamente NO es un solo
-    # `async with` que envuelva ambos, porque _get_initial_messages() debe
+    # T3.6 + T3.5/C3: ambos se adquieren aquí (antes de la hidratación) y se
+    # liberan al final de event_generator() — deliberadamente NO se resuelve
+    # todo antes del StreamingResponse, porque _get_initial_messages() debe
     # poder seguir lanzando su HTTPException (404/422, o 503 de
     # backpressure) ANTES de que exista el StreamingResponse, igual que hoy;
-    # solo necesitan cubrir desde aquí hasta que termine el streaming, sin
-    # cambiar ese contrato de errores. AsyncExitStack por lo mismo que el
-    # lock manual: se entra en un scope y se cierra en otro.
+    # solo necesitan cubrir desde aquí hasta que termine el streaming.
+    # Ambos recursos se registran en el mismo AsyncExitStack (hold() es un
+    # context manager async como backpressure.slot()) — se entra en un
+    # scope y se cierra en otro, y aclose() los libera en orden inverso ante
+    # cualquier salida (éxito, excepción o cancelación), sin necesidad de
+    # llevar la cuenta manual de qué se adquirió.
     resource_stack = AsyncExitStack()
-    await resource_stack.enter_async_context(backpressure.slot())
     try:
-        lock = CONVERSATION_LOCKS.lock_for(thread_id)
-        await lock.acquire()
+        await resource_stack.enter_async_context(backpressure.slot())
+        await resource_stack.enter_async_context(CONVERSATION_LOCKS.hold(thread_id))
     except BaseException:
         await resource_stack.aclose()
         raise
@@ -535,7 +539,6 @@ async def query_stream(
             request.current_message_id,
         )
     except BaseException:
-        lock.release()
         await resource_stack.aclose()
         raise
 
@@ -593,7 +596,6 @@ async def query_stream(
                 # Estado de retención DESPUÉS de esta consulta (incluye la
                 # conversación que se acaba de procesar, si es nueva).
                 log_retained_conversations(graph.checkpointer)
-                lock.release()
                 await resource_stack.aclose()
 
     return StreamingResponse(

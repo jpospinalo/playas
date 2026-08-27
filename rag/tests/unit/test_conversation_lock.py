@@ -129,19 +129,41 @@ async def test_concurrent_turns_on_the_same_thread_do_not_lose_a_message(
         main_module.app.dependency_overrides.clear()
 
 
-def test_lock_registry_gives_independent_locks_per_key() -> None:
+@pytest.mark.anyio
+async def test_lock_registry_gives_independent_locks_per_key() -> None:
     """Garantía estructural, sin timing: el registro es por clave — dos
     conversaciones distintas nunca comparten lock, y la misma conversación
-    siempre obtiene el mismo lock (para que sí se serialice consigo misma)."""
+    siempre obtiene el mismo lock (para que sí se serialice consigo misma).
+
+    Se inspecciona `_entries` directamente (mismo paquete que la
+    implementación) para comprobar identidad de lock sin depender de
+    timing real — equivalente estructural al `lock_for()` que existía antes
+    de C3, ahora que `hold()` no devuelve el lock crudo."""
     from rag.api.conversation_lock import ConversationLockRegistry
 
     registry = ConversationLockRegistry()
-    lock_a1 = registry.lock_for("thread-a")
-    lock_a2 = registry.lock_for("thread-a")
-    lock_b = registry.lock_for("thread-b")
 
-    assert lock_a1 is lock_a2
-    assert lock_a1 is not lock_b
+    async with registry.hold("thread-a"):
+        lock_a1 = registry._entries["thread-a"].lock
+        async with registry.hold("thread-b"):
+            lock_b = registry._entries["thread-b"].lock
+            assert lock_a1 is not lock_b
+
+    # Tras salir de ambos `hold()`, ninguna entrada debería sobrevivir (ver
+    # test_registry_is_empty_after_processing_many_unique_keys), así que
+    # "la misma conversación siempre obtiene el mismo lock" solo es
+    # observable MIENTRAS hay una reserva viva sobre esa clave — se prueba
+    # aquí con dos reservas anidadas sobre "thread-a".
+    async with registry.hold("thread-a"):
+        lock_a2 = registry._entries["thread-a"].lock
+
+        async def _second_reservation() -> asyncio.Lock:
+            entry = await registry._reserve("thread-a")
+            await registry._release("thread-a", entry)
+            return entry.lock
+
+        lock_a3 = await _second_reservation()
+        assert lock_a2 is lock_a3
 
 
 @pytest.mark.anyio
@@ -212,3 +234,91 @@ async def test_concurrent_turns_on_different_threads_start_without_waiting_on_ea
         assert gap < 0.08, f"arrancaron con {gap:.3f}s de diferencia — parece serializado"
     finally:
         main_module.app.dependency_overrides.clear()
+
+
+# ---------------------------------------------------------------------------
+# C3 — ciclo de vida del registro: la entrada de cada conversación debe
+# desaparecer en cuanto nadie la usa ni la espera, sin excepciones.
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.anyio
+async def test_registry_is_empty_after_processing_many_unique_keys_sequentially() -> None:
+    """El registro no debe crecer con el total histórico de conversaciones:
+    tras procesar muchas claves distintas una tras otra, no debe quedar
+    ninguna entrada retenida."""
+    from rag.api.conversation_lock import ConversationLockRegistry
+
+    registry = ConversationLockRegistry()
+
+    for i in range(200):
+        async with registry.hold(f"conversacion-{i}"):
+            pass
+
+    assert registry._entries == {}
+
+
+@pytest.mark.anyio
+async def test_exception_inside_hold_still_cleans_up_the_entry() -> None:
+    """Una excepción dentro del bloque `hold()` no debe dejar la entrada
+    huérfana en el registro ni el lock retenido."""
+    from rag.api.conversation_lock import ConversationLockRegistry
+
+    registry = ConversationLockRegistry()
+
+    with pytest.raises(RuntimeError, match="boom"):
+        async with registry.hold("thread-con-error"):
+            raise RuntimeError("boom")
+
+    assert registry._entries == {}
+
+    # El lock debe poder volver a adquirirse de inmediato — no quedó tomado.
+    async with registry.hold("thread-con-error"):
+        pass
+
+
+@pytest.mark.anyio
+async def test_cancelling_a_waiter_leaves_no_lock_or_registry_entry_behind() -> None:
+    """Cancelar una tarea mientras espera el lock de conversación (p. ej. el
+    cliente cierra la conexión mientras su turno está en cola detrás de
+    otro turno de la misma conversación) no debe dejar el lock bloqueado ni
+    una entrada huérfana en el registro."""
+    from rag.api.conversation_lock import ConversationLockRegistry
+
+    registry = ConversationLockRegistry()
+    holder_ready = asyncio.Event()
+    release_holder = asyncio.Event()
+
+    async def _hold_first() -> None:
+        async with registry.hold("thread-cancelado"):
+            holder_ready.set()
+            await release_holder.wait()
+
+    async def _wait_and_get_cancelled() -> None:
+        async with registry.hold("thread-cancelado"):
+            pass  # nunca debería llegar aquí: se cancela mientras espera
+
+    holder_task = asyncio.create_task(_hold_first())
+    await holder_ready.wait()
+
+    waiter_task = asyncio.create_task(_wait_and_get_cancelled())
+    # Cede el control para que waiter_task alcance a registrarse como
+    # esperando el lock (incrementa el contador) antes de cancelarla.
+    await asyncio.sleep(0.02)
+    waiter_task.cancel()
+    with pytest.raises(asyncio.CancelledError):
+        await waiter_task
+
+    # El titular sigue con el lock — la cancelación del que esperaba no debe
+    # haberlo afectado. La entrada sigue viva porque el titular la retiene.
+    assert "thread-cancelado" in registry._entries
+    assert registry._entries["thread-cancelado"].lock.locked()
+
+    release_holder.set()
+    await holder_task
+
+    # Con nadie sosteniéndolo ni esperándolo, la entrada debe desaparecer, y
+    # el lock debe quedar libre y reutilizable de inmediato.
+    assert registry._entries == {}
+    async with registry.hold("thread-cancelado"):
+        pass
