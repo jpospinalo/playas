@@ -38,6 +38,7 @@ from types import SimpleNamespace
 import pytest
 from langchain_core.documents import Document
 from langchain_core.language_models.fake_chat_models import FakeListChatModel
+from starlette.requests import ClientDisconnect
 
 import rag.core.agent as agent_module
 import rag.core.query_enricher as query_enricher_module
@@ -384,3 +385,72 @@ async def test_normal_completion_preserves_event_shape(
 
     tokens = "".join(e["content"] for e in events if e["type"] == "token")
     assert tokens == "Respuesta completa [doc1]."
+
+
+@pytest.mark.anyio
+async def test_asgi_send_failure_before_first_event_releases_all_resources(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """H1: si el envío ASGI de `http.response.start` falla (p. ej. el
+    cliente ya se desconectó) ANTES de que el iterador del stream ejecute su
+    primer `__anext__`, el cuerpo de `event_generator()` nunca llega a
+    correr — su `try/finally` no se alcanza. Lock de conversación y slot de
+    backpressure, adquiridos en `query_stream()` antes del `StreamingResponse`,
+    deben liberarse igual, sin depender de que el generador se haya iniciado.
+
+    Se ejercita el ciclo ASGI real (`response(scope, receive, send)`), no
+    solo `body_iterator`, porque es justo la diferencia entre ambos caminos
+    la que produce la fuga."""
+    import rag.api.main as main_module
+
+    _setup_basic(monkeypatch)
+
+    graph_started = False
+
+    class _TrackingRetriever:
+        async def ainvoke(self, query: str) -> list[Document]:
+            nonlocal graph_started
+            graph_started = True
+            return [Document(page_content="fragmento", metadata={"chunk_id": "1"})]
+
+    monkeypatch.setattr(
+        agent_module, "get_ensemble_retriever", lambda **kwargs: _TrackingRetriever()
+    )
+    monkeypatch.setattr(
+        agent_module,
+        "get_generation_llm",
+        lambda: FakeListChatModel(responses=["no debería usarse"]),
+    )
+
+    graph = agent_module.build_graph()
+    monkeypatch.setattr(main_module, "_graph", graph)
+    backpressure_double = ConcurrencyBackpressure(mode="enforce", max_concurrent=3)
+    monkeypatch.setattr(main_module, "backpressure", backpressure_double)
+    locks = ConversationLockRegistry()
+    monkeypatch.setattr(main_module, "CONVERSATION_LOCKS", locks)
+
+    user = {"sub": "test-user"}
+    response = await main_module.query_stream(
+        _make_request(_QUESTION_A, "sse-thread-desconexion-temprana"), user
+    )
+
+    # Recursos ya adquiridos antes de que exista el StreamingResponse.
+    assert backpressure_double.in_flight == 1
+    assert "user:test-user:conversation:sse-thread-desconexion-temprana" in locks._entries
+
+    async def _send(message: dict) -> None:
+        if message["type"] == "http.response.start":
+            raise OSError("cliente desconectado antes de recibir encabezados")
+
+    async def _receive() -> dict:
+        return {"type": "http.disconnect"}
+
+    scope = {"type": "http", "asgi": {"spec_version": "2.4"}}
+
+    with pytest.raises(ClientDisconnect):
+        await response(scope, _receive, _send)
+
+    assert backpressure_double.in_flight == 0
+    assert locks._entries == {}
+    assert main_module.ACTIVE_QUERIES.count == 0
+    assert graph_started is False

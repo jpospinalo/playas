@@ -27,6 +27,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, StreamingResponse
 from langchain_core.documents import Document
 from langchain_core.messages import AIMessage, HumanMessage
+from starlette.types import Receive, Scope, Send
 
 from rag.api.conversation_lock import ConversationLockRegistry
 from rag.api.rate_limit import backpressure, get_query_user
@@ -498,6 +499,33 @@ async def query(
     )
 
 
+class _ResourceManagedStreamingResponse(StreamingResponse):
+    """`StreamingResponse` que garantiza el cierre de `resource_stack` sin
+    importar en qué punto del ciclo ASGI falle el envío.
+
+    `AsyncExitStack.aclose()` YA se llama en el `finally` de
+    `event_generator()` (§ abajo) — eso cubre toda salida que llegue a
+    ejecutar el cuerpo del generador (éxito, excepción, cancelación tras el
+    primer `__anext__`). El caso que ese `finally` no cubre es que el propio
+    envío ASGI del `http.response.start` falle (p. ej. cliente ya
+    desconectado): Starlette lanza esa excepción ANTES de iterar
+    `body_iterator` por primera vez, así que el generador nunca llega a
+    ejecutarse y su `finally` nunca se alcanza (H1). Esta subclase cierra el
+    mismo `resource_stack` también en ese caso — `aclose()` de
+    `AsyncExitStack` es seguro de llamar más de una vez (la segunda vez es
+    no-op), así que no hay doble liberación."""
+
+    def __init__(self, *args: Any, resource_stack: AsyncExitStack, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        self._resource_stack = resource_stack
+
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        try:
+            await super().__call__(scope, receive, send)
+        finally:
+            await self._resource_stack.aclose()
+
+
 @app.post("/api/query/stream")
 async def query_stream(
     request: QueryRequest,
@@ -611,11 +639,12 @@ async def query_stream(
                 log_retained_conversations(graph.checkpointer)
                 await resource_stack.aclose()
 
-    return StreamingResponse(
+    return _ResourceManagedStreamingResponse(
         event_generator(),
         media_type="text/event-stream",
         headers={
             "Cache-Control": "no-cache",
             "X-Accel-Buffering": "no",
         },
+        resource_stack=resource_stack,
     )
