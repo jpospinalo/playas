@@ -19,8 +19,10 @@ resuelve al directorio correcto).
 
 from __future__ import annotations
 
+import os
 import subprocess
 import sys
+import tempfile
 from collections.abc import Iterator
 from pathlib import Path
 
@@ -262,14 +264,39 @@ def _import_and_print(env: dict[str, str], attrs: list[str]) -> list[str]:
     return result.stdout.strip().splitlines()
 
 
-def _minimal_env(**overrides: str) -> dict[str, str]:
-    import os
+def _empty_env_file() -> str:
+    """Ruta a un .env vacío recién creado — NUNCA el ``rag/.env`` real de
+    este repo, aunque exista en disco. C2: antes, ``_minimal_env()`` se
+    limitaba a *eliminar* ``RAG_ENV_FILE`` del entorno copiado, sin fijarlo a
+    ningún valor — eso deja que ``_resolve_env_file()`` siga buscando hacia
+    arriba (cwd, luego la raíz del repo) y termine cargando el ``.env`` real
+    de un desarrollador si existe, contaminando cualquier prueba que asuma
+    "sin configuración" o "solo mi alias". Reproducido localmente: con un
+    ``rag/.env`` real presente, 4 de estas pruebas fallaban antes de este
+    cambio."""
+    fd, path = tempfile.mkstemp(suffix=".env")
+    os.close(fd)
+    return path
 
+
+def _minimal_env(**overrides: str) -> dict[str, str]:
+    """Entorno mínimo para subprocesos de prueba.
+
+    Por defecto, ``RAG_ENV_FILE`` apunta a un ``.env`` vacío propio de esta
+    llamada — nunca al ``.env`` real de este repo — así que un subproceso
+    que use este entorno sin más parte genuinamente de "nada configurado".
+    Una prueba que sí quiera validar carga real de un ``.env`` pasa su
+    propio ``RAG_ENV_FILE`` explícito en ``overrides`` (como ya hacen
+    ``test_rag_env_file_is_actually_loaded_into_constants`` y
+    ``test_rag_env_file_missing_fails_loudly_at_import``), que gana sobre
+    este valor por defecto.
+    """
     env = {
         k: v
         for k, v in os.environ.items()
         if not k.startswith(("CHROMA_", "OLLAMA_", "RAG_ENV_FILE"))
     }
+    env["RAG_ENV_FILE"] = _empty_env_file()
     env.update(overrides)
     return env
 
