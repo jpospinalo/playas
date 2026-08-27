@@ -585,39 +585,3 @@ Responde SOLO con un número (puede tener decimales), sin texto adicional.
 
         scored.sort(key=lambda x: x[0], reverse=True)
         return [d for s, d in scored[:top_k]]
-
-
-# ---------------------------------------------------------------------
-# Ejemplo de uso desde terminal
-# ---------------------------------------------------------------------
-
-
-def demo(
-    query: str = "¿cómo se llamaba el gato del cuento?",
-    k: int = 4,
-    use_reranker: bool = False,
-) -> None:
-    """
-    Demostración rápida de uso del retriever híbrido y el reranker.
-    """
-    base_retriever = get_ensemble_retriever(k=5)
-    candidates = base_retriever.invoke(query)
-
-    if use_reranker:
-        reranker = OllamaReranker()
-        docs = reranker.rerank(query, candidates, top_k=k)
-    else:
-        docs = candidates[:k]
-
-    print(f"\nConsulta: {query}\n")
-    for i, d in enumerate(docs, start=1):
-        meta = d.metadata or {}
-        src = meta.get("source", "desconocido")
-        chunk_id = meta.get("chunk_id", meta.get("id", "sin_id"))
-        print(f"[{i}] source={src} | chunk_id={chunk_id}")
-        print(d.page_content.replace("\n", " "))
-        print("-" * 80)
-
-
-if __name__ == "__main__":
-    demo(query="¿cómo se llamaba el gato del cuento?")
