@@ -38,9 +38,7 @@ class Conversation(Base):
     __tablename__ = "conversations"
 
     id: Mapped[str] = mapped_column(String, primary_key=True, default=_uuid)
-    user_id: Mapped[str] = mapped_column(
-        String, ForeignKey("users.id"), nullable=False, index=True
-    )
+    user_id: Mapped[str] = mapped_column(String, ForeignKey("users.id"), nullable=False, index=True)
     thread_id: Mapped[str] = mapped_column(String, nullable=False)
     title: Mapped[str | None] = mapped_column(String)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)
