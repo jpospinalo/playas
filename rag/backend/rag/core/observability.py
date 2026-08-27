@@ -89,7 +89,8 @@ class ActiveQueryTracker:
 
 
 def log_full_context_size(*, chars: int) -> None:
-    """Registra el tamaño real de lo que se envía al LLM de generación (T3.7).
+    """Registra el tamaño del prompt de generación, medido en caracteres de
+    los mensajes que ``ChatPromptTemplate`` produjo (T3.7).
 
     Métrica puramente interna, solo para logs: nunca se expone por la API ni
     se guarda en ningún estado. Distinta a propósito del campo público
@@ -100,6 +101,13 @@ def log_full_context_size(*, chars: int) -> None:
     system prompt + contexto recuperado + pregunta — para poder diagnosticar
     consumo real de contexto sin alterar el significado ni el valor de
     ``context_tokens``.
+
+    H2: el conteo son caracteres del CONTENIDO de los mensajes que arma
+    LangChain al formatear el ``ChatPromptTemplate`` — no bytes de la
+    serialización de red hacia el proveedor (que añade su propio formato de
+    request) ni una cuenta exacta de tokens según el tokenizador específico
+    del modelo. ``full_context_tokens_est`` es una estimación gruesa
+    (``chars // 4``), no un valor medido.
 
     La firma solo acepta un conteo de caracteres ya calculado por quien
     llama, nunca el texto en sí — así ningún contenido de negocio puede

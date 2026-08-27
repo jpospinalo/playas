@@ -256,7 +256,7 @@ async def generate_node(state: AgentState) -> dict:
         context = build_context_block(docs)
         prompt = _get_fallback_prompt()
         llm = get_generation_llm()
-        chain = prompt | llm | StrOutputParser()
+        chain = llm | StrOutputParser()
         question = _compose_generation_question(state)
         # T3.7 + C8: métrica interna de tamaño real del prompt de generación,
         # solo para logs — no afecta ni sustituye a `context_tokens` (campo
@@ -266,14 +266,19 @@ async def generate_node(state: AgentState) -> dict:
         # del template — las etiquetas <context>/<question>, el recordatorio
         # de citación, y en el caso sin system role el envoltorio
         # "INSTRUCCIONES:\n...\n\n") se formatea el MISMO ChatPromptTemplate
-        # que se le pasa al LLM (`format_messages` es templating local, no
-        # dispara ninguna llamada de red) y se cuentan los caracteres de los
-        # mensajes ya formateados — el tamaño exacto de lo que efectivamente
-        # se envía, sin necesitar una segunda llamada al LLM.
-        formatted_messages = prompt.format_messages(context=context, question=question)
-        full_context_chars = sum(len(str(m.content)) for m in formatted_messages)
+        # que se le pasa al LLM y se cuentan los caracteres de los mensajes
+        # ya formateados — el tamaño exacto de lo que efectivamente se
+        # envía. H2: se formatea UNA sola vez — `prompt.ainvoke(...)`
+        # construye el `PromptValue` que se usa tanto para medir
+        # `full_context_chars` (vía `to_messages()`, templating local, sin
+        # red) como para invocar al LLM directamente (`chain.ainvoke`, sin
+        # el `prompt` de vuelta en el pipe) — antes se formateaba el mismo
+        # prompt dos veces: una aquí y otra, de forma implícita, dentro del
+        # chain LCEL al incluir `prompt | llm`.
+        prompt_value = await prompt.ainvoke({"context": context, "question": question})
+        full_context_chars = sum(len(str(m.content)) for m in prompt_value.to_messages())
         log_full_context_size(chars=full_context_chars)
-        answer = str(await chain.ainvoke({"context": context, "question": question})).strip()
+        answer = str(await chain.ainvoke(prompt_value)).strip()
 
         if not _validate_citations(answer, len(docs)):
             log_citation_format_error(doc_count=len(docs))

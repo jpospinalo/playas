@@ -17,7 +17,8 @@ from types import SimpleNamespace
 import pytest
 from langchain_core.documents import Document
 from langchain_core.language_models.fake_chat_models import FakeListChatModel
-from langchain_core.messages import AIMessage, HumanMessage
+from langchain_core.messages import AIMessage, BaseMessage, HumanMessage
+from langchain_core.prompts import ChatPromptTemplate
 
 import rag.core.agent as agent_module
 from rag.core.query_enricher import EnrichedQuery
@@ -457,3 +458,86 @@ async def test_full_context_size_precision_still_never_leaks_text(
     full_output = "\n".join(r.message for r in caplog.records)
     assert _SENTINEL_QUESTION not in full_output
     assert _SENTINEL_DOC_TEXT not in full_output
+
+
+# ---------------------------------------------------------------------------
+# H2 — generate_node formatea el prompt UNA sola vez.
+#
+# Antes de H2: `generate_node` llama a `prompt.format_messages(...)` (sync)
+# para medir `full_context_chars`, y por separado arma `chain = prompt | llm
+# | StrOutputParser()` invocado con `.ainvoke(...)` — el chain LCEL async
+# resuelve el prompt vía `ChatPromptTemplate.ainvoke` → `aformat_prompt` →
+# `aformat_messages` (el método ASÍNCRONO, un camino de código distinto del
+# `format_messages` síncrono). El prompt se templa dos veces por consulta,
+# una por cada método. Se instrumentan ambos — `format_messages` y
+# `aformat_messages` — compartiendo un único contador, para medir el total
+# real de formateos sin importar cuál use cada llamada.
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.anyio
+async def test_generate_node_formats_the_prompt_only_once(
+    monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
+) -> None:
+    """H2: el prompt de generación debe formatearse una sola vez por
+    consulta, y los mensajes que efectivamente recibe el LLM deben ser los
+    mismos que se usaron para calcular `full_context_chars`."""
+    _mock_generation(monkeypatch)
+
+    calls = {"n": 0}
+    original_format_messages = ChatPromptTemplate.format_messages
+    original_aformat_messages = ChatPromptTemplate.aformat_messages
+
+    def counting_format_messages(self: ChatPromptTemplate, **kwargs: object) -> list[BaseMessage]:
+        calls["n"] += 1
+        return original_format_messages(self, **kwargs)
+
+    async def counting_aformat_messages(
+        self: ChatPromptTemplate, **kwargs: object
+    ) -> list[BaseMessage]:
+        calls["n"] += 1
+        return await original_aformat_messages(self, **kwargs)
+
+    monkeypatch.setattr(ChatPromptTemplate, "format_messages", counting_format_messages)
+    monkeypatch.setattr(ChatPromptTemplate, "aformat_messages", counting_aformat_messages)
+
+    received_messages: list[BaseMessage] = []
+
+    class _RecordingFakeLLM(FakeListChatModel):
+        async def _agenerate(self, messages, *args, **kwargs):  # type: ignore[override]
+            received_messages.extend(messages)
+            return await super()._agenerate(messages, *args, **kwargs)
+
+    monkeypatch.setattr(
+        agent_module,
+        "get_generation_llm",
+        lambda: _RecordingFakeLLM(responses=["Respuesta con cita [doc1]."]),
+    )
+
+    question = "¿Aplica la norma sobre concesiones playeras?"
+    docs = [
+        Document(
+            page_content="Fragmento del corpus con contenido real.", metadata={"chunk_id": "1"}
+        )
+    ]
+    state = _generate_only_state(question)
+    state["sources"] = docs
+
+    with caplog.at_level(logging.INFO, logger="rag.observability"):
+        await agent_module.generate_node(state)
+        logged_chars = _extract_full_context_chars(caplog)
+
+    assert calls["n"] == 1, f"el prompt se formateó {calls['n']} veces, se esperaba 1"
+
+    context = agent_module.build_context_block(docs)
+    # Mensajes de referencia, calculados con el método SIN instrumentar para
+    # no contaminar el contador de arriba.
+    expected_messages = original_format_messages(
+        agent_module.PROMPT_WITH_SYSTEM, context=context, question=question
+    )
+    expected_chars = sum(len(str(m.content)) for m in expected_messages)
+    assert logged_chars == expected_chars
+
+    received_contents = [str(m.content) for m in received_messages]
+    expected_contents = [str(m.content) for m in expected_messages]
+    assert received_contents == expected_contents
