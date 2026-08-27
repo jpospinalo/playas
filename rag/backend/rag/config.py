@@ -177,11 +177,15 @@ OPENROUTER_MODEL: str = os.getenv("OPENROUTER_MODEL", "gpt-5.4-mini")
 
 # ── Query enrichment ────────────────────────────────────────────────────────
 QUERY_ENRICHMENT_ENABLED: bool = os.getenv("QUERY_ENRICHMENT_ENABLED", "true").lower() == "true"
-QUERY_ENRICHMENT_HYDE: bool = os.getenv("QUERY_ENRICHMENT_HYDE", "false").lower() == "true"
-
-# ── Retriever ──────────────────────────────────────────────────────────────
-DEFAULT_K: int = int(os.getenv("DEFAULT_K", "4"))
-DEFAULT_K_CANDIDATES: int = int(os.getenv("DEFAULT_K_CANDIDATES", "10"))
+# C10: QUERY_ENRICHMENT_HYDE y DEFAULT_K/DEFAULT_K_CANDIDATES (que vivían
+# aquí) se retiraron por ser código muerto demostrable — verificado por
+# búsqueda global en todo el repo inmediatamente antes de eliminarlas:
+# ningún módulo de api/, core/, evaluation/, scripts/ ni utils/ las leía.
+# La generación HyDE nunca se conectó al enriquecimiento real; el `k`/
+# `k_candidates` que sí se usan en el flujo de retrieval vienen del
+# `QueryRequest` de la API y de los defaults inline de
+# `agent.py::retrieve_forced_node`, nunca de estas constantes. Ver
+# `tests/unit/test_config_no_dead_code.py`.
 
 # ── Contexto de conversación ────────────────────────────────────────────────
 # Ventana de contexto del modelo de generación (tokens). Ajustar según el

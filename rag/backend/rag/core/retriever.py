@@ -19,8 +19,12 @@ Componentes principales:
     (usado para BM25, que no soporta filtros de metadata nativos).
   - ``OllamaReranker`` — reranker opcional basado en LLM (no usado en el flujo
     principal; disponible para experimentación).
-  - ``balance_by_doc_type()`` — función pura para garantizar cuota mínima por
-    tipo de documento en los top-k resultados.
+
+C10: ``balance_by_doc_type()`` se retiró de este módulo por ser código
+muerto demostrable — su único consumidor en todo el repo era un archivo de
+pruebas dedicado exclusivamente a ejercitarla (``test_retriever_balance.py``,
+retirado junto con ella), sin ningún caller real en ``api/``, ``core/`` ni
+``evaluation/``. Ver ``tests/unit/test_retriever_no_dead_code.py``.
 """
 
 from __future__ import annotations
@@ -446,63 +450,6 @@ def get_ensemble_retriever(
         weights=[bm25_weight, vector_weight],
         max_results=final_k,
     )
-
-
-def balance_by_doc_type(
-    docs: list[Document],
-    k: int,
-    min_per_type: dict[str, int] | None = None,
-) -> list[Document]:
-    """
-    Devuelve los top-k documentos de una lista ya ordenada por relevancia,
-    garantizando una cuota mínima por ``doc_type``.
-
-    Para cada tipo ``t`` en ``min_per_type``, asegura que el resultado incluya al
-    menos ``min_per_type[t]`` documentos de ese tipo (si existen en ``docs``),
-    tomando los mejor rankeados de cada tipo para cubrir la cuota y completando
-    el resto con los documentos restantes en su orden original de relevancia.
-
-    Si ``min_per_type`` es None, devuelve ``docs[:k]`` sin cambios.
-
-    Función pura y testeable, pensada para que el caller la use tras la fusión
-    (p.ej. en el agente/generador) y evite que la normativa quede tapada por la
-    jurisprudencia cuando ambos tipos compiten por los primeros puestos. No está
-    conectada de forma obligatoria al flujo de retrieval.
-    """
-    if min_per_type is None:
-        return docs[:k]
-
-    selected: list[Document] = []
-    selected_ids: set[int] = set()
-
-    def _doc_type(doc: Document) -> Any:
-        return (doc.metadata or {}).get("doc_type")
-
-    # 1) Cubrir la cuota mínima por tipo con los mejor rankeados de cada uno.
-    for dtype, quota in min_per_type.items():
-        if quota <= 0:
-            continue
-        taken = 0
-        for idx, doc in enumerate(docs):
-            if taken >= quota or len(selected) >= k:
-                break
-            if idx in selected_ids:
-                continue
-            if _doc_type(doc) == dtype:
-                selected.append(doc)
-                selected_ids.add(idx)
-                taken += 1
-
-    # 2) Completar hasta k con el resto, respetando el orden de relevancia.
-    for idx, doc in enumerate(docs):
-        if len(selected) >= k:
-            break
-        if idx in selected_ids:
-            continue
-        selected.append(doc)
-        selected_ids.add(idx)
-
-    return selected[:k]
 
 
 # ---------------------------------------------------------------------
