@@ -317,3 +317,143 @@ async def test_full_context_size_is_independent_of_conversation_history_length(
         chars_with_history = _extract_full_context_chars(caplog)
 
     assert chars_with_history == chars_without_history
+
+
+# ---------------------------------------------------------------------------
+# C8 — full_context_chars debe reflejar el prompt REALMENTE formateado.
+#
+# Antes de C8, `generate_node` aproximaba el tamaño sumando por separado
+# `len(BASE_INSTRUCTIONS) + len(context) + len(question)` — eso ignora todo
+# el texto literal del template (`<context>`/`</context>`,
+# `<question>`/`</question>`, el recordatorio de citación, y en el caso sin
+# system role el envoltorio "INSTRUCCIONES:\n{instructions}\n\n"), así que
+# subestima el tamaño real de lo que efectivamente se le envía al LLM. Estas
+# pruebas comparan contra el valor de referencia calculado formateando el
+# MISMO `ChatPromptTemplate` que usa `generate_node` (sin hacer ninguna
+# llamada a un LLM: `format_messages` es solo templating local), para ambos
+# proveedores (con y sin system role) — sin tocar `context_tokens` ni el
+# contrato público.
+# ---------------------------------------------------------------------------
+
+
+def _expected_full_context_chars(*, prompt, context: str, question: str) -> int:
+    """Referencia independiente: la suma de caracteres de los mensajes que
+    ChatPromptTemplate realmente produce para este prompt — el mismo cálculo
+    que generate_node debe hacer, reconstruido aquí desde la prueba (no
+    llamando a la implementación) para que la comparación sea significativa."""
+    formatted = prompt.format_messages(context=context, question=question)
+    return sum(len(str(m.content)) for m in formatted)
+
+
+@pytest.mark.anyio
+async def test_full_context_size_matches_the_actually_formatted_prompt_with_system_role(
+    monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
+) -> None:
+    _mock_generation(monkeypatch)  # supports_system_role=True → PROMPT_WITH_SYSTEM
+    question = "¿Aplica la norma sobre concesiones playeras?"
+    docs = [
+        Document(
+            page_content="Fragmento del corpus con contenido real.", metadata={"chunk_id": "1"}
+        )
+    ]
+    state = _generate_only_state(question)
+    state["sources"] = docs
+
+    with caplog.at_level(logging.INFO, logger="rag.observability"):
+        await agent_module.generate_node(state)
+        logged_chars = _extract_full_context_chars(caplog)
+
+    context = agent_module.build_context_block(docs)
+    expected = _expected_full_context_chars(
+        prompt=agent_module.PROMPT_WITH_SYSTEM, context=context, question=question
+    )
+    assert logged_chars == expected
+
+    # La aproximación anterior (suma de longitudes por separado, sin el
+    # texto literal del template) habría dado un valor distinto — confirma
+    # que la prueba realmente distingue precisión, no solo que exista un log.
+    naive_approximation = len(agent_module.BASE_INSTRUCTIONS) + len(context) + len(question)
+    assert logged_chars != naive_approximation
+
+
+@pytest.mark.anyio
+async def test_full_context_size_matches_the_actually_formatted_prompt_without_system_role(
+    monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
+) -> None:
+    monkeypatch.setattr(
+        agent_module,
+        "get_active_provider",
+        lambda: SimpleNamespace(supports_system_role=False),
+    )
+    monkeypatch.setattr(
+        agent_module,
+        "get_generation_llm",
+        lambda: FakeListChatModel(responses=["Respuesta con cita [doc1]."] * 10),
+    )
+    question = "¿Qué autoridad decide sobre una concesión de playa?"
+    docs = [
+        Document(page_content="Otro fragmento distinto del corpus.", metadata={"chunk_id": "1"})
+    ]
+    state = _generate_only_state(question)
+    state["sources"] = docs
+
+    with caplog.at_level(logging.INFO, logger="rag.observability"):
+        await agent_module.generate_node(state)
+        logged_chars = _extract_full_context_chars(caplog)
+
+    context = agent_module.build_context_block(docs)
+    prompt = agent_module.PROMPT_NO_SYSTEM.partial(instructions=agent_module.BASE_INSTRUCTIONS)
+    expected = _expected_full_context_chars(prompt=prompt, context=context, question=question)
+    assert logged_chars == expected
+
+
+@pytest.mark.anyio
+async def test_full_context_size_precision_does_not_add_a_second_llm_call(
+    monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
+) -> None:
+    """Formatear el prompt para medirlo (`ChatPromptTemplate.format_messages`)
+    es templating local — no debe traducirse en una llamada adicional al LLM
+    de generación."""
+    calls = {"n": 0}
+
+    class _CountingFakeLLM(FakeListChatModel):
+        async def ainvoke(self, *args, **kwargs):  # type: ignore[override]
+            calls["n"] += 1
+            return await super().ainvoke(*args, **kwargs)
+
+    monkeypatch.setattr(
+        agent_module,
+        "get_active_provider",
+        lambda: SimpleNamespace(supports_system_role=True),
+    )
+    monkeypatch.setattr(
+        agent_module,
+        "get_generation_llm",
+        lambda: _CountingFakeLLM(responses=["Respuesta con cita [doc1]."]),
+    )
+    state = _generate_only_state("¿Aplica la norma?")
+    state["sources"] = [Document(page_content="Fragmento.", metadata={"chunk_id": "1"})]
+
+    with caplog.at_level(logging.INFO, logger="rag.observability"):
+        await agent_module.generate_node(state)
+
+    assert calls["n"] == 1
+
+
+@pytest.mark.anyio
+async def test_full_context_size_precision_still_never_leaks_text(
+    monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
+) -> None:
+    """Aunque ahora se formatea el prompt completo para medirlo con
+    precisión, el log sigue recibiendo solo el conteo (`chars=int`) — nunca
+    el contenido de los mensajes formateados."""
+    _mock_generation(monkeypatch)
+    state = _generate_only_state(_SENTINEL_QUESTION)
+    state["sources"] = [Document(page_content=_SENTINEL_DOC_TEXT, metadata={"chunk_id": "1"})]
+
+    with caplog.at_level(logging.INFO, logger="rag.observability"):
+        await agent_module.generate_node(state)
+
+    full_output = "\n".join(r.message for r in caplog.records)
+    assert _SENTINEL_QUESTION not in full_output
+    assert _SENTINEL_DOC_TEXT not in full_output

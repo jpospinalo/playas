@@ -258,11 +258,21 @@ async def generate_node(state: AgentState) -> dict:
         llm = get_generation_llm()
         chain = prompt | llm | StrOutputParser()
         question = _compose_generation_question(state)
-        # T3.7: métrica interna de tamaño real del prompt de generación
-        # (system prompt + contexto recuperado + pregunta), solo para logs —
-        # no afecta ni sustituye a `context_tokens` (campo público, calculado
-        # en api/main.py a partir del historial en `state["messages"]`).
-        log_full_context_size(chars=len(BASE_INSTRUCTIONS) + len(context) + len(question))
+        # T3.7 + C8: métrica interna de tamaño real del prompt de generación,
+        # solo para logs — no afecta ni sustituye a `context_tokens` (campo
+        # público, calculado en api/main.py a partir del historial en
+        # `state["messages"]`). C8: en vez de sumar `len()` de las piezas por
+        # separado (subestimaba el tamaño real: ignoraba el texto literal
+        # del template — las etiquetas <context>/<question>, el recordatorio
+        # de citación, y en el caso sin system role el envoltorio
+        # "INSTRUCCIONES:\n...\n\n") se formatea el MISMO ChatPromptTemplate
+        # que se le pasa al LLM (`format_messages` es templating local, no
+        # dispara ninguna llamada de red) y se cuentan los caracteres de los
+        # mensajes ya formateados — el tamaño exacto de lo que efectivamente
+        # se envía, sin necesitar una segunda llamada al LLM.
+        formatted_messages = prompt.format_messages(context=context, question=question)
+        full_context_chars = sum(len(str(m.content)) for m in formatted_messages)
+        log_full_context_size(chars=full_context_chars)
         answer = str(await chain.ainvoke({"context": context, "question": question})).strip()
 
         if not _validate_citations(answer, len(docs)):
