@@ -166,7 +166,8 @@ and PRs to `main`. Two jobs:
 > differences (uv caching, `--cov-report=term-missing`). Merged into `ci.yml` (T4.1) after
 > confirming both ran the same tests — no coverage was lost.
 
-Type checking (`mypy`) is disabled in CI due to lingering errors in production modules.
+Type checking (`mypy`) runs in CI as of T4.1 (`backend/rag/` has no outstanding errors, verified
+locally with `make typecheck`).
 
 ---
 

@@ -99,6 +99,14 @@ jobs:
       - name: Ruff format check
         run: uv run ruff format --check backend/rag/ tests/ evaluation/
 
+      # T4.1: habilitado solo para rag/ (backend/rag/ está limpio — 0 errores
+      # verificados localmente). ingesta/ queda fuera de este cambio: tiene
+      # errores de mypy preexistentes y ajenos a este plan (stubs de boto3,
+      # dos problemas de tipos en pdf_to_md/ y splitter_and_enrich.py), y no
+      # está dentro del alcance del módulo RAG.
+      - name: Mypy
+        run: uv run mypy backend/rag/
+
   rag-test:
     name: RAG — Unit Tests
     runs-on: ubuntu-latest

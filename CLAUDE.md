@@ -237,7 +237,10 @@ One GitHub Actions workflow, **`ci.yml`** (`.github/workflows/`), running **sepa
 > `ci.yml` (T4.1) after confirming the two ran the exact same tests — `ci.yml` kept its stricter
 > quality-gated job structure and picked up `tests.yml`'s caching and `fail_ci_if_error: false`.
 
-Type checking (`mypy`) is disabled in CI for both packages due to lingering errors.
+Type checking (`mypy`) runs in CI for `rag/` (T4.1 — `backend/rag/` has no outstanding errors). It
+remains disabled in CI for `ingesta/`, which still has a handful of lingering errors (missing
+`boto3`/`botocore` stubs, two pre-existing type issues in `pdf_to_md/images.py` and
+`splitter_and_enrich.py`) outside this plan's scope.
 
 ---
 
