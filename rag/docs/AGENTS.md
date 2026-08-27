@@ -157,7 +157,7 @@ START → enrich_query → route_after_analysis → {retrieve_forced → generat
 
 ## CI/CD
 
-One GitHub Actions workflow, **`ci.yml`** (`.github/workflows/`). Runs on push to `main`/`develop`
+One GitHub Actions workflow, **`ci.yml`** (`.github/workflows/`). Runs on push to `main`/`develop`/`v2`
 and PRs to `main`. Two jobs:
   - `quality`: Ruff lint + format check
   - `test`: Unit tests with coverage upload to Codecov (depends on `quality`)

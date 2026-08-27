@@ -227,7 +227,7 @@ START → enrich_query → retrieve_forced → generate → END
 ## CI/CD
 
 One GitHub Actions workflow, **`ci.yml`** (`.github/workflows/`), running **separate jobs per package**
-(`working-directory: ingesta` and `working-directory: rag`) on push to `main`/`develop` and PRs to
+(`working-directory: ingesta` and `working-directory: rag`) on push to `main`/`develop`/`v2` and PRs to
 `main`. Per package:
   - `quality`: Ruff lint + format check
   - `test`: Unit tests with coverage upload to Codecov (depends on `quality`)
