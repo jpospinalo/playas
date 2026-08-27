@@ -280,6 +280,17 @@ def build_or_load_vectorstore(
                             f"[{file_idx}/{total_files}] {file_name} → {service}. "
                             f"Chunks: {batch_ids[:5]}"
                         ) from exc
+                else:
+                    # C6: esta cláusula es el `else` de `try/except` (no del
+                    # `for`) — se ejecuta únicamente cuando el `try` NO lanzó,
+                    # nunca durante un reintento manejado por el `except` de
+                    # arriba. Es el único punto de salida por éxito: antes
+                    # faltaba, y el `for` seguía hasta agotar MAX_RETRIES
+                    # intentos incluso tras un batch ya insertado
+                    # correctamente, reenviando el mismo batch a Ollama
+                    # (embeddings) y Chroma (add) hasta 2 veces más de forma
+                    # redundante y silenciosa.
+                    break
 
             if num_batches == 1:
                 print(f"       {len(batch_ids)} chunks → OK")
