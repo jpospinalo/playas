@@ -131,7 +131,7 @@ START → enrich_query → route_after_analysis → {retrieve_forced → generat
 
 **Memory** — `thread_id` (frontend UUID) persists in-process history in `MemorySaver` while the server runs. If the server restarts, the endpoint re-hydrates state from `conversations/{id}/messages` in the application database (SQLAlchemy async, see `api/database.py` and `api/models.py`) using `conversation_id`.
 
-**SSE Streaming** — `/api/query/stream` emits `status` (node stage), `token` (live LLM tokens), and a final `sources` event with grouped sources and context metrics.
+**SSE Streaming** — `/api/query/stream` does **not** stream tokens live from the LLM. `generate_node` awaits the full completion (`chain.ainvoke`, not `.astream()`), validates its citations, and only then does `event_generator()` (`api/main.py`) slice the already-complete, already-validated answer into fixed-size text fragments emitted as consecutive `token` events with no delay between them — not real incremental generation. The endpoint emits `status` (node stage, live via `get_stream_writer()`), then those `token` fragments, then a final `sources` event with grouped sources and context metrics.
 
 ### LLM Provider Fallback
 
