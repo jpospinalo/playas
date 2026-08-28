@@ -7,7 +7,8 @@ import logging
 import math
 import time
 from collections import defaultdict, deque
-from collections.abc import Callable
+from collections.abc import AsyncIterator, Callable
+from contextlib import asynccontextmanager
 
 from fastapi import Depends, HTTPException, status
 
@@ -16,6 +17,8 @@ from rag.config import (
     AUTH_RATE_LIMIT_MODE,
     AUTH_RATE_LIMIT_REQUESTS,
     AUTH_RATE_LIMIT_WINDOW_SECONDS,
+    BACKPRESSURE_MAX_CONCURRENT,
+    BACKPRESSURE_MODE,
     RATE_LIMIT_MODE,
     RATE_LIMIT_REQUESTS,
     RATE_LIMIT_WINDOW_SECONDS,
@@ -42,7 +45,9 @@ class SlidingWindowRateLimiter:
 
     #: Mensaje por defecto, preservado exactamente igual al que tenía el
     #: limitador de consultas RAG antes de esta generalización.
-    _DEFAULT_DETAIL = "Se alcanzó temporalmente el límite de consultas. Intenta nuevamente más tarde."
+    _DEFAULT_DETAIL = (
+        "Se alcanzó temporalmente el límite de consultas. Intenta nuevamente más tarde."
+    )
 
     def __init__(
         self,
@@ -153,6 +158,89 @@ login_rate_limiter = SlidingWindowRateLimiter(
     window_seconds=AUTH_RATE_LIMIT_WINDOW_SECONDS,
     detail="Se alcanzó temporalmente el límite de intentos de inicio de sesión. Intenta nuevamente más tarde.",
     scope="login",
+)
+
+
+class ConcurrencyBackpressure:
+    """Límite de concurrencia global de proceso (T3.6) — NO por clave, NO por
+    ventana de tiempo.
+
+    Distinto de ``SlidingWindowRateLimiter``: ese acota cuántas solicitudes
+    por ventana de tiempo puede hacer UNA MISMA clave (usuario/IP/email);
+    esto acota cuántas consultas pueden estar EN VUELO simultáneamente en
+    todo el proceso, sin importar de qué clave sean — protege a
+    Chroma/Ollama/el proveedor LLM de saturarse bajo carga concurrente alta
+    agregada, no bajo ráfagas de un usuario. Reusa el mismo modelo
+    off/observe/enforce por consistencia de configuración, pero es un
+    mecanismo genuinamente distinto (contador de concurrencia, no ventana
+    deslizante) — nunca comparte estado con los limitadores de arriba.
+
+    ``off``: no contabiliza ni bloquea nada (cero overhead, comportamiento
+    actual). ``observe``: contabiliza y registra cuando se superaría el
+    límite, pero nunca bloquea ni rechaza. ``enforce``: rechaza con 503 de
+    inmediato (sin encolar/esperar) si ya hay ``max_concurrent`` consultas en
+    vuelo.
+    """
+
+    _DEFAULT_DETAIL = (
+        "El servicio está temporalmente saturado. Intenta nuevamente en unos segundos."
+    )
+
+    def __init__(
+        self,
+        *,
+        mode: RateLimitMode = "off",
+        max_concurrent: int = 20,
+        detail: str = _DEFAULT_DETAIL,
+        scope: str = "query",
+    ) -> None:
+        if max_concurrent < 1:
+            raise ValueError("max_concurrent debe ser mayor que cero")
+        self.mode = mode
+        self.max_concurrent = max_concurrent
+        self.detail = detail
+        self.scope = scope
+        self._lock = asyncio.Lock()
+        self._in_flight = 0
+
+    @property
+    def in_flight(self) -> int:
+        return self._in_flight
+
+    @asynccontextmanager
+    async def slot(self) -> AsyncIterator[None]:
+        if self.mode == "off":
+            yield
+            return
+
+        async with self._lock:
+            at_capacity = self._in_flight >= self.max_concurrent
+            if at_capacity and self.mode == "enforce":
+                raise HTTPException(
+                    status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                    detail=self.detail,
+                    headers={"Retry-After": "1"},
+                )
+            if at_capacity:
+                # observe: nunca bloquea ni rechaza, solo deja constancia.
+                # Nunca se registra la clave/usuario aquí, solo la etiqueta
+                # estática de scope, igual que SlidingWindowRateLimiter.
+                logger.warning(
+                    "Límite de concurrencia superado en modo observación",
+                    extra={"scope": self.scope},
+                )
+            self._in_flight += 1
+        try:
+            yield
+        finally:
+            async with self._lock:
+                self._in_flight -= 1
+
+
+backpressure = ConcurrencyBackpressure(
+    mode=BACKPRESSURE_MODE,
+    max_concurrent=BACKPRESSURE_MAX_CONCURRENT,
+    scope="query",
 )
 
 

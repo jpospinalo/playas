@@ -304,8 +304,13 @@ export function MessageRatingPopover({
 									>
 										Calificar esta respuesta
 									</h2>
-									<p className="mb-6 text-center text-sm text-muted">
+									<p className="mb-1 text-center text-sm text-muted">
 										Tu calificación ayuda a mejorar la calidad de las respuestas.
+									</p>
+									<p className="mb-6 text-center text-xs text-subtle">
+										Esto califica solo esta respuesta puntual. Para calificar tu
+										experiencia general con la conversación, usa el ícono de
+										estrella junto al cuadro de mensaje.
 									</p>
 
 									<form

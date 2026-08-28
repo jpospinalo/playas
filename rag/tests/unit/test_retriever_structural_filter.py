@@ -94,7 +94,9 @@ def test_never_exceeds_max_results_even_with_many_valid_candidates() -> None:
 def test_all_structural_input_yields_empty_result() -> None:
     retriever = HybridEnsembleRetriever(
         retrievers=[
-            _StaticRetriever(docs=[_doc("junk-1", "---"), _doc("junk-2", "___"), _doc("junk-3", "   ")]),
+            _StaticRetriever(
+                docs=[_doc("junk-1", "---"), _doc("junk-2", "___"), _doc("junk-3", "   ")]
+            ),
         ],
         weights=[1.0],
         max_results=4,

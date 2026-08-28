@@ -147,12 +147,6 @@ variable "query_enrichment_enabled" {
   default     = true
 }
 
-variable "query_enrichment_hyde" {
-  description = "Activar HyDE en el enriquecimiento"
-  type        = bool
-  default     = false
-}
-
 # ── S3 ────────────────────────────────────────────────────────────────────────
 
 variable "s3_bucket_name" {

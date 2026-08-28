@@ -84,6 +84,9 @@ async def test_in_scope_route_uses_enrichment_limits_k_and_validates_citations(
                 for index in range(4)
             ]
 
+        async def ainvoke(self, query: str) -> list[Document]:
+            return self.invoke(query)
+
     def make_retriever(**kwargs):
         captured.update(kwargs)
         return FakeRetriever()
@@ -173,6 +176,9 @@ async def test_legitimate_full_case_reaches_retrieval_exactly_once(
             call_count["n"] += 1
             return [Document(page_content="fragmento", metadata={"chunk_id": "1"})]
 
+        async def ainvoke(self, query: str) -> list[Document]:
+            return self.invoke(query)
+
     monkeypatch.setattr(agent_module, "get_ensemble_retriever", lambda **kwargs: FakeRetriever())
     monkeypatch.setattr(
         agent_module,
@@ -252,6 +258,9 @@ async def test_long_narrative_case_reaches_retriever_with_full_question_preserve
             call_count["n"] += 1
             captured["query"] = query
             return [Document(page_content="fragmento", metadata={"chunk_id": "1"})]
+
+        async def ainvoke(self, query: str) -> list[Document]:
+            return self.invoke(query)
 
     monkeypatch.setattr(agent_module, "get_ensemble_retriever", lambda **kwargs: FakeRetriever())
     monkeypatch.setattr(

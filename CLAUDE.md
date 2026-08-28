@@ -102,8 +102,8 @@ rag/backend/rag/
 ├── config.py                 # Env vars: S3, Chroma, Ollama, LLM, query enrichment, context limit
 ├── s3_client.py              # S3 read-only helpers (list, read)
 ├── core/
-│   ├── agent.py              # LangGraph agent: ReAct + fallback graphs
-│   ├── tools.py               # @tool retrieve (hybrid retriever wrapper)
+│   ├── agent.py              # LangGraph: single deterministic graph (enrich_query → route → retrieve/respond → generate)
+│   ├── tools.py               # build_context_block (formats retrieved docs) + sanitize_replacement_chars (encoding patch)
 │   ├── prompts.py             # System/human prompts for agent + enricher
 │   ├── embeddings.py          # Ollama embedding client (ChromaDB + LangChain)
 │   ├── vectorstore.py         # ChromaDB collection build/update from gold (run via -m)
@@ -111,7 +111,7 @@ rag/backend/rag/
 │   ├── query_enricher.py      # LLM query rewriting (legal terminology, sub-questions)
 │   └── llm_factory.py         # Provider factory: OpenAI → OpenRouter → Gemini → error
 └── api/
-    ├── main.py                # FastAPI app (lifespan builds graph + init_db, health, query, query/stream)
+    ├── main.py                # FastAPI app (lifespan builds graph + init_db, health, ready, query, query/stream)
     ├── auth.py                 # JWT dependencies: get_optional_user / get_current_user / require_admin
     ├── database.py             # Async SQLAlchemy engine/session (Postgres in prod, SQLite fallback)
     ├── models.py                # SQLAlchemy models: User, Conversation, Message, Feedback, MessageFeedback
@@ -177,30 +177,21 @@ The `doc_type` is fixed once at load time from the source folder and propagates 
 
 ### RAG Agent (LangGraph)
 
-The system is **not a fixed RAG pipeline**: it is a LangGraph agent with multi-turn memory (`MemorySaver`) and a retrieval tool that the LLM invokes only when needed.
-
-**Main graph** (providers with tool calling — OpenAI, OpenRouter, standard Gemini):
+The system is **not tool-calling / ReAct**: `build_graph()` compiles a single deterministic graph, the same one for every LLM provider — there is no branching by `supports_structured_output` or any other provider capability, and the LLM never decides whether to retrieve.
 
 ```
-START → enrich_query → agent ⇆ tools(retrieve) → END
+START → enrich_query → route_after_analysis → {retrieve_forced → generate, respond_without_retrieval} → END
 ```
 
-- `enrich_query` rewrites the query with legal terminology for better recall.
-- `agent` decides whether to invoke `retrieve` (legal query) or respond directly (greeting, meta-question).
-- `tools.retrieve` runs the `HybridEnsembleRetriever` and returns fragments as `ToolMessage` + updates `sources` in state.
-- The agent comes back with docs in context and responds citing `[docN]`.
-
-**Fallback graph** (providers without tool calling — Gemma via Google GenAI):
-
-```
-START → enrich_query → retrieve_forced → generate → END
-```
-
-`build_graph()` selects one or the other based on `get_active_provider().supports_structured_output`.
+- `enrich_query` rewrites the query with legal terminology for recall and classifies it into one of four routes (`in_scope`, `out_of_scope`, `conversation`, `needs_clarification`).
+- `route_after_analysis` is a plain conditional edge: `in_scope` → `retrieve_forced`, anything else → `respond_without_retrieval`.
+- `retrieve_forced` runs the `HybridEnsembleRetriever` unconditionally — exactly once, only for `in_scope` queries — and stores the fragments in `sources`.
+- `generate` builds the answer from `sources` (`build_context_block`), validates its citations (`_validate_citations`), and falls back to a fixed no-evidence/invalid-citations response if either check fails.
+- `respond_without_retrieval` answers greetings/meta-questions, asks for clarification, or returns the fixed out-of-scope response — without ever calling the retriever or the generation LLM.
 
 **Memory** — `thread_id` (frontend UUID) persists history in `MemorySaver` while the process lives. If the server restarts, `main.py` hydrates state from the `messages` table (via SQLAlchemy, `rag/api/models.py::Message`) filtered by `conversation_id`.
 
-**SSE Streaming** — `/api/query/stream` emits `status` (node stage), `token` (live LLM tokens), and a final `sources` event with grouped sources and context metrics.
+**SSE Streaming** — `/api/query/stream` does **not** stream tokens live from the LLM. `generate_node` awaits the full completion (`chain.ainvoke`, not `.astream()`), validates its citations, and only then does `main.py`'s `event_generator()` slice the already-complete, already-validated answer into fixed-size text fragments emitted as consecutive `token` events (no delay between them — not real incremental generation). The endpoint emits `status` (node stage, live via `get_stream_writer()`), then those `token` fragments, then a final `sources` event with grouped sources and context metrics.
 
 ### LLM Provider Fallback
 
@@ -226,14 +217,21 @@ START → enrich_query → retrieve_forced → generate → END
 
 ## CI/CD
 
-Two GitHub Actions workflows in `.github/workflows/`, each running **separate jobs per package** (`working-directory: ingesta` and `working-directory: rag`):
-
-- **`ci.yml`** — Runs on push to `main`/`develop` and PRs to `main`. Per package:
+One GitHub Actions workflow, **`ci.yml`** (`.github/workflows/`), running **separate jobs per package**
+(`working-directory: ingesta` and `working-directory: rag`) on push to `main`/`develop`/`v2` and PRs to
+`main`. Per package:
   - `quality`: Ruff lint + format check
   - `test`: Unit tests with coverage upload to Codecov (depends on `quality`)
-- **`tests.yml`** — Same triggers. Runs unit tests with coverage report on a Python version matrix.
 
-Type checking (`mypy`) is disabled in CI for both packages due to lingering errors.
+> There used to be a second workflow, `tests.yml`, that duplicated the same unit test run per
+> package with minor differences (uv caching, `--cov-report=term-missing`). It was merged into
+> `ci.yml` (T4.1) after confirming the two ran the exact same tests — `ci.yml` kept its stricter
+> quality-gated job structure and picked up `tests.yml`'s caching and `fail_ci_if_error: false`.
+
+Type checking (`mypy`) runs in CI for `rag/` (T4.1 — `backend/rag/` has no outstanding errors). It
+remains disabled in CI for `ingesta/`, which still has a handful of lingering errors (missing
+`boto3`/`botocore` stubs, two pre-existing type issues in `pdf_to_md/images.py` and
+`splitter_and_enrich.py`) outside this plan's scope.
 
 ---
 

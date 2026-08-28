@@ -1,6 +1,4 @@
-# evaluation/ragas_eval.py
-
-# TODO: Cambiar a playas (actualmente poe)
+# evaluation/ragas_eval_ollama.py
 
 from __future__ import annotations
 

@@ -80,7 +80,7 @@ Con aprobación automática (sin confirmación interactiva de Terraform):
    (la EC2 necesita instalar Docker y arrancar el contenedor — puede tardar varios minutos)
 ..........
 ✓ ChromaDB disponible
-▶ Importando chroma-rag_playas_magdalena-20260617-195224.jsonl.gz → ChromaDB 54.x.x.x:8000...
+▶ Importando chroma-rag_playas_magdalena-20260731-135720.jsonl.gz → ChromaDB 54.x.x.x:8000...
   Importing 1842 documents in batches of 100 ...
   1842/1842 (100.0%)  312 docs/s  errors=0
 ✓ Importación completada
@@ -132,7 +132,7 @@ terraform output
 # 5. Importar datos a ChromaDB manualmente
 cd ../rag
 uv run python3 ../data/import_to_chromadb.py \
-  ../data/chroma-rag_playas_magdalena-20260617-195224.jsonl.gz \
+  ../data/chroma-rag_playas_magdalena-20260731-135720.jsonl.gz \
   --host <chromadb_public_ip> \
   --port 8000
 ```

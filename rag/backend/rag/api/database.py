@@ -2,12 +2,11 @@
 
 from __future__ import annotations
 
-import os
 from collections.abc import AsyncGenerator
 
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
-_DATABASE_URL = os.getenv("DATABASE_URL", "sqlite+aiosqlite:///./data/atlas.db")
+from rag.config import DATABASE_URL as _DATABASE_URL
 
 _connect_args = {"check_same_thread": False} if "sqlite" in _DATABASE_URL else {}
 
