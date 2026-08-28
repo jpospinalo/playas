@@ -50,9 +50,7 @@ def anyio_backend() -> str:
     return "asyncio"
 
 
-def _mocked_session(
-    execute_results: list, commit_error: Exception
-) -> tuple[MagicMock, list[str]]:
+def _mocked_session(execute_results: list, commit_error: Exception) -> tuple[MagicMock, list[str]]:
     """Sesión simulada: `execute` devuelve `execute_results` en orden (uno por
     llamada), `commit` lanza `commit_error`, `rollback` y `add` son no-ops.
 
@@ -122,9 +120,7 @@ async def test_register_masks_concurrent_duplicate_email_as_conflict(
         commit_error=integrity_error,
     )
 
-    payload = RegisterRequest(
-        email="race@example.com", password="supersecret1", display_name=None
-    )
+    payload = RegisterRequest(email="race@example.com", password="supersecret1", display_name=None)
     with pytest.raises(HTTPException) as error:
         await register(payload, session)
 

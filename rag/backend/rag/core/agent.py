@@ -8,7 +8,6 @@ consulta enriquecida sea verificable.
 
 from __future__ import annotations
 
-import asyncio
 import re
 from typing import Annotated, Any, NotRequired
 
@@ -23,6 +22,7 @@ from langgraph.graph.message import add_messages
 from typing_extensions import TypedDict
 
 from .llm_factory import get_active_provider, get_generation_llm
+from .observability import log_citation_format_error, log_full_context_size, stage_timer
 from .prompts import AGENT_FALLBACK_HUMAN_TEMPLATE, AGENT_SYSTEM
 from .query_enricher import EnrichedQuery, QueryRoute, enrich_query_async
 from .retriever import get_ensemble_retriever
@@ -159,6 +159,25 @@ def _history_for_analysis(messages: list[BaseMessage], question: str) -> str:
     return "\n".join(reversed(selected))
 
 
+def extract_answer_from_state(state: dict) -> str:
+    """Extrae el contenido del último ``AIMessage`` del state del grafo.
+
+    C7: vivía como una función privada (``_extract_answer_from_state``) en
+    ``rag.api.main``, y ``rag.core.generator`` — un adaptador pensado para
+    uso offline, sin servidor (ver su docstring) — la importaba desde ahí.
+    Eso invertía la dependencia: una herramienta de ``core/`` terminaba
+    forzando la carga completa de FastAPI, los routers y la base de datos
+    solo por esta función pura. Se mueve aquí, pública y tipada, para que
+    tanto ``api.main`` como ``core.generator`` la importen desde el mismo
+    lugar sin duplicar la lógica ni depender uno del otro.
+    """
+    messages = state.get("messages", [])
+    for msg in reversed(messages):
+        if isinstance(msg, AIMessage) and msg.content:
+            return str(msg.content)
+    return ""
+
+
 def _validate_citations(answer: str, doc_count: int) -> bool:
     """Comprueba que una respuesta jurídica cite al menos un documento existente."""
     references = [int(value) for value in _CITATION_RE.findall(answer)]
@@ -167,8 +186,12 @@ def _validate_citations(answer: str, doc_count: int) -> bool:
 
 async def enrich_query_node(state: AgentState) -> dict:
     _emit_status("enriching", "Analizando el alcance y contexto de tu pregunta…")
-    history_context = _history_for_analysis(state["messages"], state["question"])
-    analysis: EnrichedQuery = await enrich_query_async(state["question"], history_context)
+    with stage_timer("enrich_query") as fields:
+        history_context = _history_for_analysis(state["messages"], state["question"])
+        analysis: EnrichedQuery = await enrich_query_async(state["question"], history_context)
+        # `route` es un enum cerrado (QueryRoute), no texto libre de la
+        # pregunta — seguro de loguear.
+        fields["route"] = analysis.route
 
     requested_doc_types = state.get("doc_types")
     effective_doc_types = requested_doc_types or analysis.doc_types
@@ -201,18 +224,26 @@ async def respond_without_retrieval_node(state: AgentState) -> dict:
 
 async def retrieve_forced_node(state: AgentState) -> dict:
     _emit_status("retrieving", "Buscando evidencia en jurisprudencia y normatividad…")
-    query = _compose_retrieval_query(state)
-    doc_types = state.get("doc_types") or None
-    k = min(max(int(state.get("k", 4)), 1), 8)
-    k_candidates = min(max(int(state.get("k_candidates", 8)), k), 20)
+    with stage_timer("retrieve_forced") as fields:
+        query = _compose_retrieval_query(state)
+        doc_types = state.get("doc_types") or None
+        k = min(max(int(state.get("k", 4)), 1), 8)
+        k_candidates = min(max(int(state.get("k_candidates", 8)), k), 20)
 
-    retriever = get_ensemble_retriever(
-        k=k,
-        k_candidates=k_candidates,
-        doc_types=doc_types,
-    )
-    docs = await asyncio.to_thread(retriever.invoke, query)
-    return {"sources": docs[:k]}
+        retriever = get_ensemble_retriever(
+            k=k,
+            k_candidates=k_candidates,
+            doc_types=doc_types,
+        )
+        # T3.2: una sola capa de concurrencia — ainvoke() orquesta BM25 y el
+        # retriever vectorial internamente (asyncio.gather + to_thread, sin
+        # ThreadPoolExecutor anidado). Ya no se envuelve aquí en
+        # asyncio.to_thread(retriever.invoke, ...).
+        docs = await retriever.ainvoke(query)
+        selected = docs[:k]
+        # Conteo, no contenido: cuántos documentos, no cuáles ni su texto.
+        fields["doc_count"] = len(selected)
+    return {"sources": selected}
 
 
 async def generate_node(state: AgentState) -> dict:
@@ -221,15 +252,37 @@ async def generate_node(state: AgentState) -> dict:
     if not docs:
         return {"messages": [AIMessage(content=_NO_EVIDENCE_RESPONSE)]}
 
-    context = build_context_block(docs)
-    prompt = _get_fallback_prompt()
-    llm = get_generation_llm()
-    chain = prompt | llm | StrOutputParser()
-    question = _compose_generation_question(state)
-    answer = str(await chain.ainvoke({"context": context, "question": question})).strip()
+    with stage_timer("generate", doc_count=len(docs)):
+        context = build_context_block(docs)
+        prompt = _get_fallback_prompt()
+        llm = get_generation_llm()
+        chain = llm | StrOutputParser()
+        question = _compose_generation_question(state)
+        # T3.7 + C8: métrica interna de tamaño real del prompt de generación,
+        # solo para logs — no afecta ni sustituye a `context_tokens` (campo
+        # público, calculado en api/main.py a partir del historial en
+        # `state["messages"]`). C8: en vez de sumar `len()` de las piezas por
+        # separado (subestimaba el tamaño real: ignoraba el texto literal
+        # del template — las etiquetas <context>/<question>, el recordatorio
+        # de citación, y en el caso sin system role el envoltorio
+        # "INSTRUCCIONES:\n...\n\n") se formatea el MISMO ChatPromptTemplate
+        # que se le pasa al LLM y se cuentan los caracteres de los mensajes
+        # ya formateados — el tamaño exacto de lo que efectivamente se
+        # envía. H2: se formatea UNA sola vez — `prompt.ainvoke(...)`
+        # construye el `PromptValue` que se usa tanto para medir
+        # `full_context_chars` (vía `to_messages()`, templating local, sin
+        # red) como para invocar al LLM directamente (`chain.ainvoke`, sin
+        # el `prompt` de vuelta en el pipe) — antes se formateaba el mismo
+        # prompt dos veces: una aquí y otra, de forma implícita, dentro del
+        # chain LCEL al incluir `prompt | llm`.
+        prompt_value = await prompt.ainvoke({"context": context, "question": question})
+        full_context_chars = sum(len(str(m.content)) for m in prompt_value.to_messages())
+        log_full_context_size(chars=full_context_chars)
+        answer = str(await chain.ainvoke(prompt_value)).strip()
 
-    if not _validate_citations(answer, len(docs)):
-        answer = _INVALID_CITATIONS_RESPONSE
+        if not _validate_citations(answer, len(docs)):
+            log_citation_format_error(doc_count=len(docs))
+            answer = _INVALID_CITATIONS_RESPONSE
     return {"messages": [AIMessage(content=answer)]}
 
 

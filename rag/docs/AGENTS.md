@@ -131,7 +131,7 @@ START → enrich_query → route_after_analysis → {retrieve_forced → generat
 
 **Memory** — `thread_id` (frontend UUID) persists in-process history in `MemorySaver` while the server runs. If the server restarts, the endpoint re-hydrates state from `conversations/{id}/messages` in the application database (SQLAlchemy async, see `api/database.py` and `api/models.py`) using `conversation_id`.
 
-**SSE Streaming** — `/api/query/stream` emits `status` (node stage), `token` (live LLM tokens), and a final `sources` event with grouped sources and context metrics.
+**SSE Streaming** — `/api/query/stream` does **not** stream tokens live from the LLM. `generate_node` awaits the full completion (`chain.ainvoke`, not `.astream()`), validates its citations, and only then does `event_generator()` (`api/main.py`) slice the already-complete, already-validated answer into fixed-size text fragments emitted as consecutive `token` events with no delay between them — not real incremental generation. The endpoint emits `status` (node stage, live via `get_stream_writer()`), then those `token` fragments, then a final `sources` event with grouped sources and context metrics.
 
 ### LLM Provider Fallback
 
@@ -157,14 +157,17 @@ START → enrich_query → route_after_analysis → {retrieve_forced → generat
 
 ## CI/CD
 
-Two GitHub Actions workflows in `.github/workflows/`:
-
-- **`ci.yml`** — Runs on push to `main`/`develop` and PRs to `main`. Two jobs:
+One GitHub Actions workflow, **`ci.yml`** (`.github/workflows/`). Runs on push to `main`/`develop`/`v2`
+and PRs to `main`. Two jobs:
   - `quality`: Ruff lint + format check
   - `test`: Unit tests with coverage upload to Codecov (depends on `quality`)
-- **`tests.yml`** — Same triggers. Runs unit tests with coverage report on Python 3.12.
 
-Type checking (`mypy`) is disabled in CI due to lingering errors in production modules.
+> There used to be a second workflow, `tests.yml`, duplicating the same unit test run with minor
+> differences (uv caching, `--cov-report=term-missing`). Merged into `ci.yml` (T4.1) after
+> confirming both ran the same tests — no coverage was lost.
+
+Type checking (`mypy`) runs in CI as of T4.1 (`backend/rag/` has no outstanding errors, verified
+locally with `make typecheck`).
 
 ---
 

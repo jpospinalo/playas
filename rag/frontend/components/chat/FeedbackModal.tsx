@@ -26,12 +26,37 @@ const DIMENSIONS: { key: DimensionKey; label: string }[] = [
 	{ key: "overall", label: "Calificación general" },
 ];
 
-const RATING_LABELS: Record<number, string> = {
+/**
+ * Etiquetas de calidad (malo↔excelente), usadas por las dimensiones que sí
+ * son una escala de calidad: tono, usabilidad, calificación general.
+ */
+const QUALITY_LABELS: Record<number, string> = {
 	1: "Muy malo",
 	2: "Malo",
 	3: "Regular",
 	4: "Bueno",
 	5: "Excelente",
+};
+
+/**
+ * "Longitud" no es una escala de calidad: es una característica bipolar
+ * (muy corta ↔ muy larga). Reutilizar las etiquetas malo↔excelente aquí
+ * hacía que un 1 estrella no dijera si el problema era que sobraba o
+ * faltaba texto. Estas etiquetas dedicadas hacen el resultado accionable.
+ */
+const LENGTH_LABELS: Record<number, string> = {
+	1: "Muy corta",
+	2: "Corta",
+	3: "Adecuada",
+	4: "Larga",
+	5: "Muy larga",
+};
+
+const DIMENSION_LABELS: Record<DimensionKey, Record<number, string>> = {
+	tone: QUALITY_LABELS,
+	length: LENGTH_LABELS,
+	usability: QUALITY_LABELS,
+	overall: QUALITY_LABELS,
 };
 
 type SubmitState = "idle" | "loading" | "success" | "error";
@@ -194,10 +219,15 @@ export function FeedbackModal({
 									>
 										Califica la conversación
 									</h2>
-									<p className="mb-6 text-center text-sm text-muted">
+									<p className="mb-1 text-center text-sm text-muted">
 										{conversationId
 											? "Tu calificación se asociará a la conversación actual."
 											: "¿Qué tan útil fue el sistema?"}
+									</p>
+									<p className="mb-6 text-center text-xs text-subtle">
+										Esto califica tu experiencia general con la conversación.
+										Si quieres calificar una respuesta puntual, usa el ícono de
+										calificación junto a esa respuesta.
 									</p>
 
 									<form
@@ -222,7 +252,7 @@ export function FeedbackModal({
 																<button
 																	key={star}
 																	type="button"
-																	aria-label={`${star} estrella${star > 1 ? "s" : ""}`}
+																	aria-label={DIMENSION_LABELS[key][star]}
 																	aria-pressed={selected[key] === star}
 																	onClick={() =>
 																		setSelected((prev) => ({
@@ -283,7 +313,7 @@ export function FeedbackModal({
 																		exit={{ opacity: 0, y: 4 }}
 																		transition={{ duration: 0.15 }}
 																	>
-																		{RATING_LABELS[activeVal]}
+																		{DIMENSION_LABELS[key][activeVal]}
 																	</motion.span>
 																)}
 															</AnimatePresence>

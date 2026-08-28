@@ -187,6 +187,7 @@ function AuthenticatedChat() {
 					closeSidebarOnMobile();
 				}}
 				onToggleSidebar={toggleSidebar}
+				onConversationsRefresh={refreshConversations}
 			/>
 
 			{/* Área principal del chat */}

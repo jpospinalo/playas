@@ -24,6 +24,14 @@ interface ConversationSidebarProps {
   onSelectConversation: (conv: Conversation) => Promise<void>;
   onNewChat: () => void;
   onToggleSidebar: () => void;
+  /**
+   * Refresca el listado de conversaciones (p. ej. tras renombrar o eliminar
+   * una conversación). Es obligatorio: sin esta prop, ConversationList no
+   * tiene forma de avisarle al padre que debe volver a pedir el listado, y
+   * el sidebar queda mostrando datos obsoletos hasta que se recarga la
+   * página.
+   */
+  onConversationsRefresh: () => Promise<void>;
 }
 
 export function ConversationSidebar({
@@ -35,6 +43,7 @@ export function ConversationSidebar({
   onSelectConversation,
   onNewChat,
   onToggleSidebar,
+  onConversationsRefresh,
 }: ConversationSidebarProps) {
   const { user, role, signOut } = useAuth();
   const [search, setSearch] = useState("");
@@ -109,6 +118,7 @@ export function ConversationSidebar({
         onCloseProfile={() => setProfileOpen(false)}
         onSignOut={handleSignOut}
         onSelectConversation={handleSelectConversation}
+        onConversationsRefresh={onConversationsRefresh}
       />
 
       <MobileSidebar
@@ -130,6 +140,7 @@ export function ConversationSidebar({
         onCloseProfile={() => setProfileOpen(false)}
         onSignOut={handleSignOut}
         onSelectConversation={handleSelectConversation}
+        onConversationsRefresh={onConversationsRefresh}
       />
 
       <ConversationSearchDialog
@@ -162,6 +173,7 @@ interface SidebarContentProps {
   onCloseProfile: () => void;
   onSignOut: () => Promise<void>;
   onSelectConversation: (conv: Conversation) => Promise<void>;
+  onConversationsRefresh: () => Promise<void>;
 }
 
 function DesktopSidebar({
@@ -182,6 +194,7 @@ function DesktopSidebar({
   onCloseProfile,
   onSignOut,
   onSelectConversation,
+  onConversationsRefresh,
 }: SidebarContentProps & {
   expanded: boolean;
   transitionEnabled: boolean;
@@ -226,6 +239,7 @@ function DesktopSidebar({
               onCloseProfile={onCloseProfile}
               onSignOut={onSignOut}
               onSelectConversation={onSelectConversation}
+              onConversationsRefresh={onConversationsRefresh}
             />
           </motion.div>
         ) : (
@@ -264,6 +278,7 @@ function MobileSidebar({
   onCloseProfile,
   onSignOut,
   onSelectConversation,
+  onConversationsRefresh,
 }: SidebarContentProps & { open: boolean }) {
   return (
     <AnimatePresence>
@@ -291,6 +306,7 @@ function MobileSidebar({
             onCloseProfile={onCloseProfile}
             onSignOut={onSignOut}
             onSelectConversation={onSelectConversation}
+            onConversationsRefresh={onConversationsRefresh}
           />
         </motion.aside>
       )}
@@ -313,6 +329,7 @@ function ExpandedSidebarContent({
   onCloseProfile,
   onSignOut,
   onSelectConversation,
+  onConversationsRefresh,
 }: SidebarContentProps) {
   const router = useRouter();
   const hasConversations = conversations.length > 0;
@@ -352,6 +369,7 @@ function ExpandedSidebarContent({
           loading={loading}
           onSelectConversation={onSelectConversation}
           onNewChat={onNewChat}
+          onConversationsRefresh={onConversationsRefresh}
         />
       </div>
 

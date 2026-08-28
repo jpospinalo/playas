@@ -3,28 +3,24 @@
 from __future__ import annotations
 
 import json
-import os
 import time
 from typing import Any, cast
 
 import chromadb
-from dotenv import load_dotenv
 
-from ..config import DOC_TYPES, GOLD_PREFIX, layer_prefix
+from ..config import CHROMA_COLLECTION as CHROMA_COLLECTION_NAME
+from ..config import CHROMA_HOST, CHROMA_PORT, DOC_TYPES, GOLD_PREFIX, layer_prefix
 from ..s3_client import list_keys, read_text
 from .embeddings import OllamaEmbeddingFunction
 
 # ---------------------------------------------------------------------
 # Constantes y configuración
 # ---------------------------------------------------------------------
-
-load_dotenv()
-
-CHROMA_HOST = os.getenv("CHROMA_HOST", "localhost")
-CHROMA_PORT = int(os.getenv("CHROMA_PORT", "8000"))
-CHROMA_COLLECTION_NAME = os.getenv(
-    "CHROMA_COLLECTION", os.getenv("CHROMA_COLLECTION_NAME", "rag_playas")
-)
+#
+# T2.4: CHROMA_HOST/CHROMA_PORT/CHROMA_COLLECTION_NAME ahora vienen de
+# rag.config (resolución centralizada de .env, T2.3) en vez de un
+# load_dotenv() + os.getenv() propios. Mismos nombres y misma precedencia de
+# alias que antes.
 
 EMBED_FN = OllamaEmbeddingFunction()
 
@@ -284,6 +280,17 @@ def build_or_load_vectorstore(
                             f"[{file_idx}/{total_files}] {file_name} → {service}. "
                             f"Chunks: {batch_ids[:5]}"
                         ) from exc
+                else:
+                    # C6: esta cláusula es el `else` de `try/except` (no del
+                    # `for`) — se ejecuta únicamente cuando el `try` NO lanzó,
+                    # nunca durante un reintento manejado por el `except` de
+                    # arriba. Es el único punto de salida por éxito: antes
+                    # faltaba, y el `for` seguía hasta agotar MAX_RETRIES
+                    # intentos incluso tras un batch ya insertado
+                    # correctamente, reenviando el mismo batch a Ollama
+                    # (embeddings) y Chroma (add) hasta 2 veces más de forma
+                    # redundante y silenciosa.
+                    break
 
             if num_batches == 1:
                 print(f"       {len(batch_ids)} chunks → OK")

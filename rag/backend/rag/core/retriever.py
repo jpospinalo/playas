@@ -4,7 +4,11 @@
 Combina búsqueda léxica (BM25 sobre texto aumentado con keywords y resumen)
 con búsqueda semántica (embeddings de Ollama vía ChromaDB) usando Weighted
 Reciprocal Rank Fusion (RRF, c=160). Los sub-retrievers se ejecutan en
-paralelo mediante ThreadPoolExecutor.
+paralelo desde una única capa de concurrencia async (``asyncio.gather`` +
+``asyncio.to_thread`` por sub-retriever, sin ningún ``ThreadPoolExecutor``
+propio — T3.2) cuando se invoca vía ``ainvoke()``; ``invoke()`` (síncrono)
+sigue disponible y produce el mismo resultado, ejecutando los sub-retrievers
+secuencialmente.
 
 Singletons de módulo (ChromaDB client, vectorstore, BM25 index) se pre-calientan
 en el arranque de la app vía ``init_retrievers()`` y se reutilizan entre requests.
@@ -15,43 +19,47 @@ Componentes principales:
     (usado para BM25, que no soporta filtros de metadata nativos).
   - ``OllamaReranker`` — reranker opcional basado en LLM (no usado en el flujo
     principal; disponible para experimentación).
-  - ``balance_by_doc_type()`` — función pura para garantizar cuota mínima por
-    tipo de documento en los top-k resultados.
+
+C10: ``balance_by_doc_type()`` se retiró de este módulo por ser código
+muerto demostrable — su único consumidor en todo el repo era un archivo de
+pruebas dedicado exclusivamente a ejercitarla (``test_retriever_balance.py``,
+retirado junto con ella), sin ningún caller real en ``api/``, ``core/`` ni
+``evaluation/``. Ver ``tests/unit/test_retriever_no_dead_code.py``.
 """
 
 from __future__ import annotations
 
-import os
+import asyncio
 import re
-from concurrent.futures import ThreadPoolExecutor
 from typing import Any
 
 import chromadb
+import numpy as np
 import requests
-from dotenv import load_dotenv
 from langchain_chroma import Chroma
 from langchain_core.callbacks import CallbackManagerForRetrieverRun
 from langchain_core.documents import Document
 from langchain_core.retrievers import BaseRetriever
 from pydantic import ConfigDict, Field
 
+from rag.config import CHROMA_COLLECTION as CHROMA_COLLECTION_NAME
+from rag.config import (
+    CHROMA_HOST,
+    CHROMA_PORT,
+    OLLAMA_RERANK_BASE_URL,
+    OLLAMA_RERANK_MODEL,
+)
+
 from .embeddings import OllamaEmbeddings
 
 # ---------------------------------------------------------------------
 # Configuración
 # ---------------------------------------------------------------------
-
-load_dotenv()
-
-CHROMA_HOST = os.getenv("CHROMA_HOST") or "localhost"
-CHROMA_PORT = int(os.getenv("CHROMA_PORT", "8000"))
-CHROMA_COLLECTION_NAME = os.getenv(
-    "CHROMA_COLLECTION", os.getenv("CHROMA_COLLECTION_NAME", "rag_playas")
-)
-
-# Máquina de RERANKING (Ollama con llama3.2:3b)
-OLLAMA_RERANK_BASE_URL = os.getenv("OLLAMA_RERANK_BASE_URL")
-OLLAMA_RERANK_MODEL = os.getenv("OLLAMA_RERANK_MODEL")
+#
+# T2.4: CHROMA_HOST/CHROMA_PORT/CHROMA_COLLECTION_NAME/OLLAMA_RERANK_*
+# ahora vienen de rag.config (resolución centralizada de .env, T2.3) en vez
+# de leerse aquí con un load_dotenv() + os.getenv() propios. Mismos nombres
+# y misma precedencia de alias que antes — ver rag/config.py.
 
 EMBEDDINGS = OllamaEmbeddings()
 
@@ -70,9 +78,34 @@ def _tokenize_bm25(text: str) -> list[str]:
 
 
 class BM25Retriever(BaseRetriever):
-    """Adaptador mínimo de ``rank_bm25`` compatible con el retriever anterior."""
+    """Adaptador mínimo de ``rank_bm25`` compatible con el retriever anterior.
 
-    vectorizer: Any
+    ``vectorizer`` es ``None`` cuando el corpus está vacío: ``BM25Okapi([])``
+    lanza ``ZeroDivisionError`` (divide por la longitud promedio de
+    documento, indefinida con cero documentos), así que en ese caso no se
+    construye ningún índice. ``_get_relevant_documents`` devuelve entonces
+    una lista vacía —igual que un índice real sin coincidencias— en vez de
+    fabricar evidencia.
+
+    Con un vectorizador real, no se usa ``rank_bm25``'s ``get_top_n()``:
+    internamente hace ``np.argsort(get_scores(query))[::-1][:n]`` sin filtrar
+    nada, así que con un corpus más chico que ``k`` (o documentos sin ningún
+    término en común con la consulta) completaba igual el top-k con
+    documentos de score EXACTAMENTE 0 — evidencia fabricada, sin señal
+    léxica real, que competía en la fusión RRF como si fuera un candidato
+    genuino. Se reimplementa el mismo cálculo (``get_scores`` +
+    ``np.argsort(scores)[::-1]``, idéntico al que ``get_top_n`` ya hacía
+    internamente) descartando los índices con score == 0 antes de completar
+    el top-k. El orden de desempate ante scores iguales se preserva
+    deliberadamente igual a como lo produce ``np.argsort`` con quicksort (su
+    ``kind`` por defecto, sin especificar — NO estable ante empates): es un
+    detalle de implementación de NumPy, no una garantía documentada por
+    ``np.argsort``, pero es exactamente el mismo comportamiento que ya tenía
+    el índice histórico vía ``get_top_n``, así que no se introduce ningún
+    cambio de desempate nuevo.
+    """
+
+    vectorizer: Any | None
     docs: list[Document] = Field(repr=False)
     k: int = 4
 
@@ -85,7 +118,26 @@ class BM25Retriever(BaseRetriever):
         run_manager: CallbackManagerForRetrieverRun,
     ) -> list[Document]:
         del run_manager
-        return self.vectorizer.get_top_n(_tokenize_bm25(query), self.docs, n=self.k)
+        if self.vectorizer is None:
+            return []
+
+        assert self.vectorizer.corpus_size == len(self.docs), (
+            "Los documentos no coinciden con el corpus indexado por BM25."
+        )
+
+        scores = self.vectorizer.get_scores(_tokenize_bm25(query))
+        order = np.argsort(scores)[::-1]
+
+        selected: list[Document] = []
+        for idx in order:
+            if len(selected) >= self.k:
+                break
+            if scores[idx] == 0:
+                # Sin señal léxica real: no fabricar evidencia solo para
+                # completar el top-k solicitado.
+                continue
+            selected.append(self.docs[idx])
+        return selected
 
 
 def _get_chroma_client() -> Any:
@@ -113,16 +165,23 @@ def _get_bm25_base() -> BM25Retriever:
     El corpus se indexa con texto aumentado (page_content + keywords_str + summary)
     para mejorar el recall con terminología jurídica curada por Gemini, pero los
     documentos devueltos conservan el page_content original sin modificaciones.
+
+    Corpus vacío: no se invoca ``BM25Okapi([])`` (lanza ``ZeroDivisionError``)
+    ni se fabrica un documento placeholder como evidencia falsa —lo que antes
+    permitía que BM25 devolviera ese placeholder como si fuera un fragmento
+    real del corpus—. En su lugar, el índice queda sin vectorizador: las
+    búsquedas devuelven una lista vacía (ver ``BM25Retriever``), y el arranque
+    de la app (``init_retrievers()``) no falla por tener la colección vacía.
     """
     global _bm25_base
     if _bm25_base is None:
-        from rank_bm25 import BM25Okapi
-
         docs = load_all_docs_from_chroma()
 
         if not docs:
-            placeholder = Document(page_content="sin documentos", metadata={})
-            docs = [placeholder]
+            _bm25_base = BM25Retriever(vectorizer=None, docs=[], k=50)
+            return _bm25_base
+
+        from rank_bm25 import BM25Okapi
 
         augmented_texts: list[str] = []
         for d in docs:
@@ -139,6 +198,19 @@ def _get_bm25_base() -> BM25Retriever:
         # k=50 como techo máximo; se limita en get_bm25_retriever()
         _bm25_base = BM25Retriever(vectorizer=vectorizer, docs=docs, k=50)
     return _bm25_base
+
+
+def bm25_index_is_empty() -> bool:
+    """``True`` si el índice BM25 ya se construyó y el corpus está vacío.
+
+    Distingue "aún no inicializado" (``_bm25_base is None`` → ``False``, ya
+    que no hay nada que reportar como vacío todavía) de "inicializado pero
+    sin evidencia" (``True``). Pensado como gancho interno para un futuro
+    endpoint de readiness (T2.5): permite comprobar el estado del corpus sin
+    volver a consultar Chroma en cada chequeo. No expone estado nuevo por sí
+    sola —no hay ningún endpoint que la use todavía—.
+    """
+    return _bm25_base is not None and not _bm25_base.docs
 
 
 def init_retrievers() -> None:
@@ -269,9 +341,15 @@ class HybridEnsembleRetriever(BaseRetriever):
     Retriever híbrido que combina varios sub-retrievers usando
     Weighted Reciprocal Rank Fusion (RRF).
 
-    Los sub-retrievers se invocan en paralelo mediante un ThreadPoolExecutor,
-    reduciendo la latencia porque BM25 (CPU) y la búsqueda vectorial (IO/HTTP)
-    pueden ejecutarse concurrentemente.
+    Concurrencia (T3.2): una sola capa. ``ainvoke()`` (usado por el grafo en
+    producción, ver ``agent.retrieve_forced_node``) despacha todos los
+    sub-retrievers con ``asyncio.gather`` + ``asyncio.to_thread`` — cada
+    sub-retriever corre en el executor por defecto de asyncio, sin crear
+    ningún ``ThreadPoolExecutor`` propio anidado dentro de otra capa de
+    concurrencia. ``invoke()`` (síncrono, para scripts/demo) ejecuta los
+    mismos sub-retrievers de forma secuencial y produce exactamente el mismo
+    resultado fusionado — la fusión RRF no depende del orden de ejecución,
+    solo del orden de ``self.retrievers``.
     """
 
     retrievers: list[BaseRetriever]
@@ -280,19 +358,8 @@ class HybridEnsembleRetriever(BaseRetriever):
     id_key: str | None = "chunk_id"
     max_results: int = 4
 
-    def _get_relevant_documents(
-        self,
-        query: str,
-        *,
-        run_manager: CallbackManagerForRetrieverRun,
-    ) -> list[Document]:
-        del run_manager
-        # Invocar todos los sub-retrievers en paralelo
-        with ThreadPoolExecutor(max_workers=len(self.retrievers)) as pool:
-            futures = [pool.submit(r.invoke, query) for r in self.retrievers]
-            all_results: list[list[Document]] = [f.result() for f in futures]
-
-        # Fusión de rankings con RRF ponderado
+    def _fuse(self, all_results: list[list[Document]]) -> list[Document]:
+        """Fusión RRF ponderada, común a las rutas síncrona y asíncrona."""
         scores: dict[str, float] = {}
         doc_by_id: dict[str, Document] = {}
 
@@ -322,6 +389,30 @@ class HybridEnsembleRetriever(BaseRetriever):
                 continue
             selected.append(doc)
         return selected
+
+    def _get_relevant_documents(
+        self,
+        query: str,
+        *,
+        run_manager: CallbackManagerForRetrieverRun,
+    ) -> list[Document]:
+        del run_manager
+        all_results: list[list[Document]] = [r.invoke(query) for r in self.retrievers]
+        return self._fuse(all_results)
+
+    async def _aget_relevant_documents(
+        self,
+        query: str,
+        *,
+        run_manager: Any,
+    ) -> list[Document]:
+        del run_manager
+        # Única capa de concurrencia: un asyncio.to_thread por sub-retriever,
+        # despachados juntos con gather. Sin ThreadPoolExecutor propio.
+        all_results: list[list[Document]] = await asyncio.gather(
+            *(asyncio.to_thread(r.invoke, query) for r in self.retrievers)
+        )
+        return self._fuse(all_results)
 
 
 def get_ensemble_retriever(
@@ -359,63 +450,6 @@ def get_ensemble_retriever(
         weights=[bm25_weight, vector_weight],
         max_results=final_k,
     )
-
-
-def balance_by_doc_type(
-    docs: list[Document],
-    k: int,
-    min_per_type: dict[str, int] | None = None,
-) -> list[Document]:
-    """
-    Devuelve los top-k documentos de una lista ya ordenada por relevancia,
-    garantizando una cuota mínima por ``doc_type``.
-
-    Para cada tipo ``t`` en ``min_per_type``, asegura que el resultado incluya al
-    menos ``min_per_type[t]`` documentos de ese tipo (si existen en ``docs``),
-    tomando los mejor rankeados de cada tipo para cubrir la cuota y completando
-    el resto con los documentos restantes en su orden original de relevancia.
-
-    Si ``min_per_type`` es None, devuelve ``docs[:k]`` sin cambios.
-
-    Función pura y testeable, pensada para que el caller la use tras la fusión
-    (p.ej. en el agente/generador) y evite que la normativa quede tapada por la
-    jurisprudencia cuando ambos tipos compiten por los primeros puestos. No está
-    conectada de forma obligatoria al flujo de retrieval.
-    """
-    if min_per_type is None:
-        return docs[:k]
-
-    selected: list[Document] = []
-    selected_ids: set[int] = set()
-
-    def _doc_type(doc: Document) -> Any:
-        return (doc.metadata or {}).get("doc_type")
-
-    # 1) Cubrir la cuota mínima por tipo con los mejor rankeados de cada uno.
-    for dtype, quota in min_per_type.items():
-        if quota <= 0:
-            continue
-        taken = 0
-        for idx, doc in enumerate(docs):
-            if taken >= quota or len(selected) >= k:
-                break
-            if idx in selected_ids:
-                continue
-            if _doc_type(doc) == dtype:
-                selected.append(doc)
-                selected_ids.add(idx)
-                taken += 1
-
-    # 2) Completar hasta k con el resto, respetando el orden de relevancia.
-    for idx, doc in enumerate(docs):
-        if len(selected) >= k:
-            break
-        if idx in selected_ids:
-            continue
-        selected.append(doc)
-        selected_ids.add(idx)
-
-    return selected[:k]
 
 
 # ---------------------------------------------------------------------
@@ -498,39 +532,3 @@ Responde SOLO con un número (puede tener decimales), sin texto adicional.
 
         scored.sort(key=lambda x: x[0], reverse=True)
         return [d for s, d in scored[:top_k]]
-
-
-# ---------------------------------------------------------------------
-# Ejemplo de uso desde terminal
-# ---------------------------------------------------------------------
-
-
-def demo(
-    query: str = "¿cómo se llamaba el gato del cuento?",
-    k: int = 4,
-    use_reranker: bool = False,
-) -> None:
-    """
-    Demostración rápida de uso del retriever híbrido y el reranker.
-    """
-    base_retriever = get_ensemble_retriever(k=5)
-    candidates = base_retriever.invoke(query)
-
-    if use_reranker:
-        reranker = OllamaReranker()
-        docs = reranker.rerank(query, candidates, top_k=k)
-    else:
-        docs = candidates[:k]
-
-    print(f"\nConsulta: {query}\n")
-    for i, d in enumerate(docs, start=1):
-        meta = d.metadata or {}
-        src = meta.get("source", "desconocido")
-        chunk_id = meta.get("chunk_id", meta.get("id", "sin_id"))
-        print(f"[{i}] source={src} | chunk_id={chunk_id}")
-        print(d.page_content.replace("\n", " "))
-        print("-" * 80)
-
-
-if __name__ == "__main__":
-    demo(query="¿cómo se llamaba el gato del cuento?")
