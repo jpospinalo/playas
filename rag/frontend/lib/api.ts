@@ -4,7 +4,6 @@ import type {
 	FeedbackRequest,
 	MessageFeedbackRequest,
 	QueryRequest,
-	QueryResponse,
 	StreamEvent,
 } from "@/lib/types";
 
@@ -30,22 +29,6 @@ export async function throwIfSessionExpired(
 	if (response.status !== 401) return;
 	expireAuthSession(requestToken);
 	throw new Error(SESSION_EXPIRED_MESSAGE);
-}
-
-export async function queryRag(request: QueryRequest): Promise<QueryResponse> {
-	const token = getToken();
-	const res = await fetch(`${API_URL}/api/query`, {
-		method: "POST",
-		headers: { "Content-Type": "application/json", ...authHeaders(token) },
-		body: JSON.stringify(request),
-	});
-
-	await throwIfSessionExpired(res, token);
-	if (!res.ok) {
-		throw new Error(await readErrorDetail(res));
-	}
-
-	return res.json() as Promise<QueryResponse>;
 }
 
 /**
@@ -187,13 +170,6 @@ export async function submitMessageFeedback(
 	}
 
 	return res.json() as Promise<{ id: string }>;
-}
-
-/** @deprecated Use submitConversationFeedback instead. */
-export async function submitFeedback(
-	request: FeedbackRequest,
-): Promise<{ id: string }> {
-	return submitConversationFeedback(request);
 }
 
 /**

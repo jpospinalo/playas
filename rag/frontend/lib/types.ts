@@ -57,15 +57,6 @@ export interface QueryRequest {
 	doc_types?: DocType[];
 }
 
-export interface QueryResponse {
-	answer: string;
-	sources: SourceGroup[];
-	context_tokens: number;
-	context_limit: number;
-	enriched_query?: string | null;
-	query_route?: QueryRoute | null;
-}
-
 export type QueryRoute =
 	| "in_scope"
 	| "out_of_scope"

@@ -270,10 +270,6 @@ body {
   transition: opacity 350ms ease-out;
 }
 
-.atlas-glow--streaming {
-  animation: var(--animate-glow-pulse);
-}
-
 .atlas-glow--intense {
   --glow-opacity: 0.10;
 }
@@ -594,9 +590,5 @@ h3[id] {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
-  }
-
-  .atlas-glow--streaming {
-    animation: none;
   }
 }
