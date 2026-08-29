@@ -1,13 +1,17 @@
-.PHONY: install lint format typecheck test test-cov test-integration app frontend clean help
+.PHONY: install lint format format-check typecheck test test-cov test-integration \
+	frontend-lint frontend-typecheck frontend-build quality app frontend clean help
 
-install:  ## Instalar dependencias (incluidas las de desarrollo)
-	uv sync --group dev
+install:  ## Instalar dependencias de todo el workspace (incluidas las de desarrollo)
+	uv sync --all-packages --group dev
 
 lint:  ## Verificar errores de estilo y lógica con ruff
-	uv run ruff check backend/rag/ tests/ evaluation/
+	uv run ruff check backend/rag/ tests/ evaluation/ scripts/ utils/
 
 format:  ## Formatear código con ruff
-	uv run ruff format backend/rag/ tests/ evaluation/
+	uv run ruff format backend/rag/ tests/ evaluation/ scripts/ utils/
+
+format-check:  ## Verificar formato sin modificar archivos (usado en CI)
+	uv run ruff format --check backend/rag/ tests/ evaluation/ scripts/ utils/
 
 typecheck:  ## Verificar tipos con mypy
 	uv run mypy backend/rag/
@@ -20,6 +24,24 @@ test-cov:  ## Ejecutar tests con informe de cobertura
 
 test-integration:  ## Ejecutar tests de integración (requiere servicios activos)
 	uv run pytest tests/integration/ -m integration
+
+frontend-lint:  ## Lint del frontend (eslint)
+	cd frontend && bun run lint
+
+frontend-typecheck:  ## Chequeo de tipos del frontend (tsc --noEmit)
+	cd frontend && bunx tsc --noEmit
+
+frontend-build:  ## Build de producción del frontend
+	cd frontend && bun run build
+
+quality:  ## Ejecutar todos los checks de calidad (backend + frontend), sin modificar archivos
+	$(MAKE) lint
+	$(MAKE) format-check
+	$(MAKE) typecheck
+	$(MAKE) test
+	$(MAKE) frontend-lint
+	$(MAKE) frontend-typecheck
+	$(MAKE) frontend-build
 
 app:  ## Lanzar la API FastAPI
 	uv run uvicorn rag.api.main:app --reload --port 8080
