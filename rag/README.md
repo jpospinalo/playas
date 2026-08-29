@@ -17,7 +17,7 @@ ver el `CLAUDE.md` en la raíz del repositorio para el mapa completo.
 make install        # uv sync --all-packages --group dev (workspace: backend/)
 make test            # pytest tests/unit/ -v (486 pruebas)
 make lint             # ruff check backend/rag/ tests/ evaluation/ scripts/ utils/
-make app              # uvicorn rag.api.main:app --reload --port 8080  (se ejecuta desde rag/)
+make app              # uvicorn rag.api.main:app --app-dir backend --reload --port 8080 (desde rag/)
 ```
 
 ```bash

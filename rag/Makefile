@@ -29,7 +29,7 @@ frontend-lint:  ## Lint del frontend (eslint)
 	cd frontend && bun run lint
 
 frontend-typecheck:  ## Chequeo de tipos del frontend (tsc --noEmit)
-	cd frontend && bunx tsc --noEmit
+	cd frontend && bun run typecheck
 
 frontend-build:  ## Build de producción del frontend
 	cd frontend && bun run build
@@ -44,7 +44,7 @@ quality:  ## Ejecutar todos los checks de calidad (backend + frontend), sin modi
 	$(MAKE) frontend-build
 
 app:  ## Lanzar la API FastAPI
-	uv run uvicorn rag.api.main:app --reload --port 8080
+	uv run uvicorn rag.api.main:app --app-dir backend --reload --port 8080
 
 frontend:  ## Lanzar el frontend Next.js
 	cd frontend && bun run dev

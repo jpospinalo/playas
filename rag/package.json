@@ -1,6 +1,7 @@
 {
   "name": "rag-playas",
   "private": true,
+  "packageManager": "bun@1.3.13",
   "workspaces": [
     "frontend"
   ]
