@@ -3,6 +3,8 @@
 Stack: FastAPI + Next.js + PostgreSQL + Nginx, orquestado con Docker Compose.
 Servicios externos requeridos: ChromaDB y Ollama (embeddings) en EC2.
 
+Para el despliegue en AWS ECS Fargate (alternativa a este stack de un solo host) ver [`infrastructure/README.md`](../infrastructure/README.md). Para la arquitectura del sistema ver [`ARCHITECTURE.md`](ARCHITECTURE.md).
+
 ---
 
 ## Requisitos previos

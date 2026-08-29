@@ -2,6 +2,8 @@
 
 Referencia de scripts de despliegue, SageMaker, utilidades ChromaDB y migraciones del subsistema RAG.
 
+Los scripts de infraestructura ECS Fargate (`deploy.sh`, `push_images.sh`, `start.sh`, `stop.sh`, `export_postgres.sh`) están documentados en [`../infrastructure/README.md`](../infrastructure/README.md), no aquí.
+
 ---
 
 ## Despliegue

@@ -1,6 +1,8 @@
 # ATLAS — Frontend
 
-Frontend Next.js del sistema **ATLAS**. Interfaz de chat conversacional con streaming SSE, autenticación Firebase, historial de conversaciones, sistema dual de feedback y panel de administración.
+Frontend Next.js del sistema **ATLAS**. Interfaz de chat conversacional con
+streaming SSE, autenticación JWT propia, historial de conversaciones (SQL),
+sistema dual de feedback y panel de administración.
 
 ---
 
@@ -10,26 +12,56 @@ Frontend Next.js del sistema **ATLAS**. Interfaz de chat conversacional con stre
 |---------|---------|-----------|
 | `next` | 16.2.3 | Framework React (App Router) |
 | `react` / `react-dom` | 19.2.4 | UI library |
-| `firebase` | 12.12.1 | Auth + Firestore cliente |
+| `geist` | 1.7.2 | Fuentes Geist / Geist Mono (auto-hospedadas) |
 | `motion` | 12.38.0 | Animaciones (Framer Motion) |
 | `next-themes` | 0.4.6 | Temas claro/oscuro/sistema |
 | `react-markdown` + `remark-gfm` | 10.1.0 / 4.0.1 | Renderizado de markdown con GFM |
 | `tailwindcss` | 4 | CSS utility-first (config CSS-first, sin `tailwind.config`) |
 | `typescript` | 5 | Tipado estático |
 
-Package manager: **bun**.
+Package manager: **bun**. No hay dependencia de Firebase — la autenticación es
+propia (JWT) contra el backend FastAPI, ver más abajo.
 
 ---
 
 ## Desarrollo
 
 ```bash
+bun install
 bun dev        # http://localhost:3000
-bun build      # build de producción
-bun lint       # eslint
+bun run build  # build de producción
+bun run lint   # eslint
+bunx tsc --noEmit  # chequeo de tipos
 ```
 
-Requiere `frontend/.env.local` con las variables de Firebase y la URL de la API. Ver variables en el README raíz del proyecto.
+Requiere `frontend/.env.local` con `NEXT_PUBLIC_API_URL` (URL del backend;
+vacío para usar rutas relativas detrás de un proxy como nginx — ver
+`../docs/DESPLIEGUE.md`).
+
+---
+
+## Autenticación (JWT, sin Firebase)
+
+No hay Firebase Auth ni Firestore en este proyecto — fueron removidos por
+completo en junio de 2026. El flujo actual:
+
+- `lib/auth.ts` — gestiona el token y el usuario en `localStorage`
+  (`atlas_token`, `atlas_user`). Expone `getToken`, `setAuth`, `clearAuth`,
+  y el evento `atlas:session-expired` que dispara cualquier llamada
+  autenticada que reciba un `401`.
+- `components/providers/AuthProvider.tsx` — valida la sesión contra
+  `GET /api/auth/me` al montar la app, escucha `atlas:session-expired` para
+  cerrar sesión en memoria, y expone `signIn`/`signOut`/`user`/`role` vía
+  `useAuth()`. `signIn` llama a `POST /api/auth/login`.
+- Las conversaciones y mensajes viven en la base de datos SQL del backend
+  (Postgres/SQLite vía SQLAlchemy), no en un store de cliente — el frontend
+  llama a `/api/conversations` y `/api/conversations/{id}/messages` por
+  cada operación; no hay listener en tiempo real, `useConversations`
+  refresca con `fetch` explícito.
+- El acceso admin se decide por el campo `role` que devuelve
+  `/api/auth/me`/`/api/auth/login`; el backend también lo revalida vía
+  `require_admin` en cada endpoint `/api/admin/*` — no hay verificación
+  client-side independiente de un store externo.
 
 ---
 
@@ -46,7 +78,7 @@ Requiere `frontend/.env.local` con las variables de Firebase y la URL de la API.
 
 **Layouts:**
 - `app/layout.tsx` — Layout raíz: fuentes Geist, `ThemeProvider`, `AuthProvider`, metadata OpenGraph.
-- `app/admin/layout.tsx` — Layout admin con sidebar: verifica `role` en Firestore, muestra 403 para no-admins.
+- `app/admin/layout.tsx` — Layout admin con sidebar: verifica `role` (de `useAuth()`), muestra 403 para no-admins.
 
 ---
 
@@ -78,7 +110,7 @@ Requiere `frontend/.env.local` con las variables de Firebase y la URL de la API.
 
 | Componente | Responsabilidad |
 |------------|-----------------|
-| `AuthModal` | Modal login/register con tabs. Modos `"recommendation"` (soft) y `"explicit"` (forzado). Traducción de errores Firebase al español. |
+| `AuthModal` | Modal login/register con tabs. Modos `"recommendation"` (soft) y `"explicit"` (forzado). |
 | `ThemeToggle` | Control segmentado de 3 posiciones: claro / sistema / oscuro. |
 | `AtlasWordmark` | Texto "ATLAS" estilizado con letter-spacing. |
 
@@ -96,7 +128,7 @@ Requiere `frontend/.env.local` con las variables de Firebase y la URL de la API.
 
 | Provider | Responsabilidad |
 |----------|-----------------|
-| `AuthProvider` | Contexto Firebase Auth. Escucha `onAuthStateChanged`. En primer login crea `users/{uid}` con role `"user"`. Expone: `user`, `role`, `loading`, `signIn`, `signUp`, `signOut`. |
+| `AuthProvider` | Contexto de sesión JWT (ver "Autenticación" arriba). Expone `user`, `role`, `loading`, `sessionExpiredMessage`, `signIn`, `signOut`. |
 | `ThemeProvider` | Wrapper de `next-themes`. Config: `attribute="class"`, `defaultTheme="system"`. |
 
 ---
@@ -110,30 +142,26 @@ Máquina de estados del chat. Gestiona el ciclo completo de una conversación.
 **Retorna:** `messages`, `input`, `loading`, `isStreaming`, `stage` (`"enriching"` | `"retrieving"` | `"generating"`), `error`, `contextPercent`, `conversationId`, `ratedMessageIds`, `setInput`, `submit`, `resetChat`, `loadConversation`, `rateMessage`.
 
 **Flujo:**
-1. Genera `thread_id` (UUID) estable por sesión.
-2. Primer mensaje crea doc en Firestore `conversations/{id}` + genera título con IA en background.
-3. Streaming SSE vía `queryRagStream` async generator, actualizando mensajes en tiempo real.
-4. Persiste mensajes user/assistant en subcollection Firestore.
-5. `loadConversation` hidrata desde Firestore ordenado por `createdAt`.
-6. `rateMessage` envía feedback por mensaje y marca localmente.
+1. Genera `thread_id` (UUID) estable por sesión de chat.
+2. Primer mensaje crea la conversación vía `POST /api/conversations` (backend SQL) + genera título con IA en background.
+3. Cada turno se persiste con `POST /api/conversations/{id}/messages` (pregunta y respuesta, por separado), con un reintento para errores transitorios (no para `401`, que expira la sesión de inmediato).
+4. Streaming SSE vía `queryRagStream` async generator, actualizando mensajes en tiempo real.
+5. `loadConversation` hidrata desde `GET /api/conversations/{id}/messages`, ordenado por el backend.
+6. `rateMessage` envía feedback por mensaje (`POST /api/feedback/message`) y marca localmente.
 
 ### `useConversations.ts`
 
-Listener en tiempo real de Firestore para las conversaciones del usuario autenticado.
+Lista las conversaciones del usuario autenticado vía `GET /api/conversations`, con `refresh()` explícito (sin listener en tiempo real).
 
-**Retorna:** `{ conversations, loading }`.
-
-Usa `onSnapshot` filtrado por `userId`, ordenado por `updatedAt desc`.
+**Retorna:** `{ conversations, loading, refresh }`.
 
 ---
 
 ## Librería (`lib/`)
 
-### `firebase.ts`
+### `auth.ts`
 
-Inicialización del cliente Firebase. Solo browser (stubs SSR). Singleton vía `getApps()`.
-
-**Exporta:** `auth`, `db`.
+Gestión de sesión JWT en el cliente — token y usuario en `localStorage`, más el mecanismo de expiración de sesión seguro frente a carreras entre pestañas/sesiones (ver comentarios en el archivo). Sin dependencias externas.
 
 ### `api.ts`
 
@@ -145,24 +173,29 @@ Cliente API con funciones tipadas:
 | `queryRag(request)` | POST `/api/query` | Query no-streaming (no usado en UI actual). |
 | `generateConversationTitle(...)` | POST `/api/conversations/generate-title` | Título generado por IA. |
 | `submitConversationFeedback(request)` | POST `/api/feedback` | Feedback multi-dimensión. |
+| `submitFeedback(request)` | — | **Deprecado**, alias de `submitConversationFeedback`. |
 | `submitMessageFeedback(request)` | POST `/api/feedback/message` | Feedback por mensaje (409 = duplicado). |
 | `listAdminUsers()` | GET `/api/admin/users` | Lista de usuarios. |
 | `createAdminUser(input)` | POST `/api/admin/users` | Crear usuario. |
 | `updateAdminUserPassword(uid, pwd)` | PATCH `/api/admin/users/{uid}/password` | Cambiar contraseña. |
 
-Todas las requests autenticadas usan `getAuthHeaders()` → `auth.currentUser.getIdToken(true)`.
+Todas las requests autenticadas usan `Authorization: Bearer <token>` (`lib/auth.ts::getToken()`). Un `401` en cualquiera de ellas pasa por `throwIfSessionExpired`, que expira la sesión de forma segura frente a condiciones de carrera (ver `lib/auth.ts::expireAuthSession`).
 
 ### `types.ts`
 
 Interfaces TypeScript: `Message`, `SourceGroup`, `SourceFragment`, `QueryRequest`, `QueryResponse`, `StreamEvent`, `FeedbackRequest`, `MessageFeedbackRequest`, `ConversationRatings`, `MessageRatings`, `AgentStage`, `DocType`, tipos admin.
 
-Función `normalizeSources(raw)` para convertir formato legacy a `SourceGroup[]`.
+Función `normalizeSources(raw)` para convertir el shape plano legado (previo a la migración a `SourceGroup[]`) al shape actual.
+
+### `config.ts`
+
+`API_URL` — `process.env.NEXT_PUBLIC_API_URL` con fallback a `http://localhost:8080`.
 
 ---
 
 ## Sistema de diseño: "Bioluminiscencia"
 
-El sistema visual de ATLAS está definido en `globals.css` con tokens OKLCH y dos temas:
+El sistema visual de ATLAS está definido en `globals.css` con tokens OKLCH y dos temas — ver `../docs/DESIGN.md` para la especificación completa:
 
 - **Shore (claro):** Fondo luminoso, acento turquesa sobre superficie blanca.
 - **Abyss (oscuro):** Fondo oceánico profundo, glow bioluminescente turquesa-verde.
@@ -182,7 +215,8 @@ El sistema visual de ATLAS está definido en `globals.css` con tokens OKLCH y do
 ## Decisiones arquitectónicas
 
 - **Sin API routes** — el frontend es un SPA puro que habla directamente con el backend Python vía `NEXT_PUBLIC_API_URL`. No hay directorio `app/api/`.
-- **Sin tailwind.config** — Tailwind v4 usa configuración CSS-first via `@theme inline` en `globals.css`.
+- **Sin tailwind.config** — Tailwind v4 usa configuración CSS-first vía `@theme inline` en `globals.css`.
 - **SSE streaming** — `queryRagStream` es un async generator que lee `ReadableStream` de `fetch`, parsea eventos SSE `data:` y yield `StreamEvent` tipados.
-- **Firestore como store** — conversaciones y mensajes viven en Firestore, no en el backend. El backend recibe `conversation_id` y `thread_id` para hidratar estado de LangGraph.
-- **Acceso admin por roles** — el role se almacena en Firestore `users/{uid}.role` y se verifica client-side en el layout admin. El backend también valida vía Firebase ID token.
+- **Sesión sin backend de terceros** — token JWT + datos de usuario en `localStorage`; el backend es la única fuente de verdad de identidad y roles (ver "Autenticación" arriba).
+- **Conversaciones en SQL del backend** — no en un store de cliente. El frontend recibe `conversation_id`/`thread_id` y persiste/lee cada turno vía REST.
+- **Acceso admin por roles** — el `role` viene de la respuesta de auth del backend (`/api/auth/me`, `/api/auth/login`) y se revalida server-side en cada endpoint `/api/admin/*` vía `require_admin`.

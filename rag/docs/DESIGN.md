@@ -149,6 +149,8 @@ components:
 
 # Design System: ATLAS
 
+> Esta es la especificación de diseño (prescriptiva), no un inventario del estado de implementación. Para lo que existe hoy en el código —componentes, rutas, stack— ver [`../frontend/README.md`](../frontend/README.md). Algunos elementos descritos aquí pueden no estar implementados todavía en la UI actual.
+
 ## 1. Overview
 
 **Creative North Star: "Bioluminiscencia"**
