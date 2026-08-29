@@ -1,18 +1,26 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Geist_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import { AuthProvider } from "@/components/providers/AuthProvider";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import "./globals.css";
 
-const inter = Inter({
+// Fuentes auto-hospedadas (sin llamadas de red en build/runtime).
+// Mismos archivos que sirven next/font/google para Inter/Geist Mono con
+// subset "latin" — Inter-Variable.woff2 extraído del paquete npm oficial
+// @fontsource-variable/inter (Fontsource, licencia OFL — ver
+// ./fonts/Inter-OFL-LICENSE.txt); GeistMono-Variable.woff2 extraído del
+// paquete npm oficial "geist" (Vercel), ya una dependencia del proyecto.
+const inter = localFont({
+	src: "./fonts/Inter-Variable.woff2",
 	variable: "--font-sans",
-	subsets: ["latin"],
+	weight: "100 900",
 	display: "swap",
 });
 
-const geistMono = Geist_Mono({
+const geistMono = localFont({
+	src: "./fonts/GeistMono-Variable.woff2",
 	variable: "--font-mono",
-	subsets: ["latin"],
+	weight: "100 900",
 	display: "swap",
 });
 
