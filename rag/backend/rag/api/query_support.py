@@ -2,11 +2,9 @@
 grafo hacia el contrato HTTP/SSE, y construcción de config/hidratación de
 mensajes para invocarlo.
 
-Extraído mecánicamente de `api/main.py` (Fase 3 del plan de reorganización
-v1.1) — mismo comportamiento, sin cambios de lógica. `_make_config` y
-`_get_initial_messages` se reexportan desde `api/main.py` porque las
-pruebas existentes los importan desde ahí (`from rag.api.main import
-_get_initial_messages, _make_config`, ver `tests/unit/test_conversation_hydration.py`).
+`_make_config` y `_get_initial_messages` se reexportan desde `api/main.py`
+porque `tests/unit/test_conversation_hydration.py` los importa desde ahí
+(`from rag.api.main import _get_initial_messages, _make_config`).
 """
 
 from __future__ import annotations

@@ -19,10 +19,17 @@ backend/rag/
 │   ├── embeddings.py           # Cliente de embeddings Ollama (ChromaDB + LangChain)
 │   ├── vectorstore.py          # Build/update de la colección ChromaDB desde gold
 │   ├── retriever.py            # BM25 + vector + HybridEnsembleRetriever (RRF c=160)
-│   ├── query_enricher.py       # Reescritura de consulta + clasificación de ruta
+│   ├── query_enricher.py       # Construcción del prompt del enricher, parseo JSON, API pública enrich_query/enrich_query_async
+│   ├── domain_scope.py         # Esquema EnrichedQuery + clasificador determinista de alcance costero/jurídico
+│   ├── generator.py            # Adaptador para scripts de evaluación offline (invoca el mismo grafo real)
+│   ├── observability.py        # Instrumentación de logging (etapas del grafo, conteos, sin filtrar contenido)
 │   └── llm_factory.py          # OpenAI → OpenRouter → Gemini → error
 └── api/
     ├── main.py                 # App FastAPI: lifespan (compila grafo + init_db), health, ready, query, query/stream
+    ├── query_support.py         # Helpers de main.py: fuentes, contexto, config del grafo, hidratación de historial
+    ├── conversation_lock.py     # Registro de locks por conversación (evita turnos concurrentes en el mismo thread_id)
+    ├── rate_limit.py             # Rate limiting (query, generate-title, login) + backpressure de concurrencia global
+    ├── passwords.py              # Hash y verificación de contraseñas (SHA-256 + bcrypt)
     ├── auth.py                  # Dependencias JWT: get_optional_user / get_current_user / require_admin
     ├── database.py              # Motor/sesión async SQLAlchemy (Postgres en prod, SQLite de respaldo)
     ├── models.py                 # User, Conversation, Message, Feedback, MessageFeedback
@@ -90,9 +97,10 @@ Dos mecanismos independientes, con propósitos distintos:
   escritura ocurre siempre, tenga o no el servidor un checkpoint en memoria
   para esa conversación.
 
-`api/main.py::_get_initial_messages()` es el único lugar que lee de SQL para
-alimentar el grafo, y solo lo hace cuando `MemorySaver` no tiene estado para
-ese `thread_id` — típicamente el primer turno de una conversación tras un
+`api/query_support.py::_get_initial_messages()` es el único lugar que lee de
+SQL para alimentar el grafo — `api/main.py` la importa desde ahí (extraída
+de `main.py` por organización interna, sin cambio de comportamiento) — y
+solo lo hace cuando `MemorySaver` no tiene estado para ese `thread_id` — típicamente el primer turno de una conversación tras un
 reinicio del servidor. En ese caso, hace un `SELECT` de **todos** los
 mensajes de la conversación (sin límite) y los inyecta como
 `HumanMessage`/`AIMessage` en el estado inicial. Este historial completo
@@ -125,8 +133,7 @@ agrupadas y las métricas de contexto.
 
 ## 6. Autenticación
 
-Auth propia con **JWT + PostgreSQL** — no Firebase (removido por completo en
-junio de 2026). `api/auth.py` emite/valida tokens HS256
+Auth propia con **JWT + PostgreSQL**. `api/auth.py` emite/valida tokens HS256
 (`JWT_SECRET_KEY` / `JWT_ALGORITHM` / `JWT_EXPIRE_MINUTES`); las contraseñas
 se hashean con SHA-256 seguido de bcrypt (`api/routes/auth.py`).
 
@@ -152,20 +159,23 @@ de ambos vía Google GenAI).
 ## 8. Infraestructura externa (AWS)
 
 - **ChromaDB + Ollama** — EC2, provisionadas por Terraform en
-  `../vector-infraestructura/` (colección `rag_playas`, puerto 8000;
+  `../../vector-infraestructura/` (colección `rag_playas`, puerto 8000;
   modelo de embeddings `embeddinggemma:latest` en el puerto 11434).
-  Reranker opcional: Ollama `mistral`.
+  Reranker opcional (`OllamaReranker`, no usado en el flujo principal):
+  modelo `llama3.2:3b` por defecto (`OLLAMA_RERANKER_MODEL` en
+  `.env.example` y `variable.ollama_reranker_model` en
+  `../infrastructure/variables.tf`).
 - **App RAG (backend + frontend)** — ECS Fargate, provisionada por
-  Terraform en `infrastructure/`. El servicio `app` corre el backend
+  Terraform en `../infrastructure/`. El servicio `app` corre el backend
   FastAPI y un sidecar `postgres:16-alpine` (datos en volumen EFS) en la
   misma tarea; `DATABASE_URL` apunta a `localhost:5432`.
 - **Bucket de datos** — S3, provisionado por Terraform en
-  `../ingesta/infrastructure/`, con las capas `raw/bronze/silver/gold`.
+  `../../ingesta/infrastructure/`, con las capas `raw/bronze/silver/gold`.
 
 ## 9. Estructura de documentos indexados
 
 **Jurisprudencia** (sentencias del Consejo de Estado) sigue una estructura
-de 4 secciones (ver `../ingesta/docs/DOCUMENT_SECTIONS.md`): Contexto del
+de 4 secciones (ver `../../ingesta/docs/DOCUMENT_SECTIONS.md`): Contexto del
 caso, Desarrollo procesal, Argumentación jurídica, Decisión.
 
 **Normativa** (decretos, reglamentos) se segmenta por `Artículo N` (regex

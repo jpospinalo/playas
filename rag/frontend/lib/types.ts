@@ -135,10 +135,11 @@ export type StreamEvent =
 // ── Helpers ────────────────────────────────────────────────────────────────
 
 /**
- * Acepta sources tanto en el shape nuevo (SourceGroup[]) como en el shape
- * plano legado (objetos con `content`/`source`/`title`) que persistieron en
- * Firestore antes de la migración. Convierte el shape viejo en grupos de un
- * solo fragmento para que el resto de la UI sea agnóstica.
+ * Acepta sources tanto en el shape nuevo (SourceGroup[]) como en un shape
+ * plano legado (objetos con `content`/`source`/`title`) que puede persistir
+ * en conversaciones antiguas guardadas antes de adoptar `SourceGroup[]`.
+ * Convierte el shape viejo en grupos de un solo fragmento para que el resto
+ * de la UI sea agnóstica.
  */
 export function normalizeSources(raw: unknown): SourceGroup[] {
 	if (!Array.isArray(raw)) return [];

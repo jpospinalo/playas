@@ -2,8 +2,8 @@ name: CI
 
 on:
   push:
-    # main es la rama de integración activa (v2 ya no recibe trabajo nuevo,
-    # por decisión explícita — se mantiene en el disparador por si se retoma).
+    # main es la rama de integración activa. v2 se conserva en el disparador
+    # por compatibilidad, aunque no recibe trabajo activo actualmente.
     branches: [main, develop, v2]
   pull_request:
     branches: [main]
@@ -101,11 +101,10 @@ jobs:
       - name: Ruff format check
         run: uv run ruff format --check backend/rag/ tests/ evaluation/ scripts/ utils/
 
-      # T4.1: habilitado solo para rag/ (backend/rag/ está limpio — 0 errores
-      # verificados localmente). ingesta/ queda fuera de este cambio: tiene
-      # errores de mypy preexistentes y ajenos a este plan (stubs de boto3,
-      # dos problemas de tipos en pdf_to_md/ y splitter_and_enrich.py), y no
-      # está dentro del alcance del módulo RAG.
+      # Mypy corre solo para rag/ (backend/rag/ está limpio — 0 errores).
+      # ingesta/ queda fuera: tiene errores de tipos preexistentes (stubs de
+      # boto3, dos problemas en pdf_to_md/ y splitter_and_enrich.py) ajenos
+      # al módulo RAG.
       - name: Mypy
         run: uv run mypy backend/rag/
 

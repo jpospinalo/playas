@@ -118,6 +118,35 @@ uv run python -m utils.list_gemini_models
 
 ---
 
+## Herramientas externas al runtime del RAG
+
+### Tutorial de construcción de ground truth (`docs/ground-truth/`)
+
+Subsistema autocontenido, ajeno al pipeline de ingesta/servicio del RAG, para
+publicar el tutorial interno de construcción de ground truth como una página
+web independiente:
+
+- `docs/ground-truth/tutorial2.html` — el tutorial en sí.
+- `docs/index.html` — redirige a `./ground-truth/tutorial2.html`.
+- `scripts/deploy-tutorial-html.ps1` — despliega **únicamente** ese HTML
+  (copiado a una carpeta temporal aislada) al proyecto Vercel
+  `atlas-tutorial-groundtruth`; requiere Vercel CLI (`npm i -g vercel`) y
+  sesión iniciada (`vercel login`).
+
+```powershell
+pwsh scripts/deploy-tutorial-html.ps1            # despliega a producción
+pwsh scripts/deploy-tutorial-html.ps1 -Preview   # despliega una preview
+```
+
+`docs/ground-truth/` también contiene material relacionado con el mismo
+tutorial, no enlazado desde `tutorial2.html`
+(`ATLAS_Cartilla_Ground_Truth.md`, `ATLAS_Tutorial_Construccion_Ground_Truth.md`,
+`ATLAS_Tutorial_Plataforma.md`, `1.jpeg`). Herramienta del equipo
+jurídico/de anotación, no del servicio RAG — no la modifiques al tocar
+`backend/rag/` o `frontend/`.
+
+---
+
 ## Resumen de uso frecuente
 
 | Tarea | Comando |

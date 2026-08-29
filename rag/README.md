@@ -14,10 +14,10 @@ ver el `CLAUDE.md` en la raíz del repositorio para el mapa completo.
 ## Empezar aquí
 
 ```bash
-make install        # uv sync --group dev (workspace: backend/)
+make install        # uv sync --all-packages --group dev (workspace: backend/)
 make test            # pytest tests/unit/ -v (486 pruebas)
 make lint             # ruff check backend/rag/ tests/ evaluation/ scripts/ utils/
-make app              # uvicorn rag.api.main:app --reload --port 8080  (desde backend/)
+make app              # uvicorn rag.api.main:app --reload --port 8080  (se ejecuta desde rag/)
 ```
 
 ```bash
@@ -38,12 +38,11 @@ al menos un proveedor LLM (OpenAI/OpenRouter/Gemini), `JWT_SECRET_KEY` y
 | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | Arquitectura real del sistema: agente LangGraph, retriever híbrido, memoria, streaming SSE, auth JWT+SQL |
 | [`docs/DESPLIEGUE.md`](docs/DESPLIEGUE.md) | Despliegue con Docker Compose, variables de entorno, solución de problemas |
 | [`docs/PRODUCT.md`](docs/PRODUCT.md) | Producto: usuarios, propósito, personalidad de marca |
-| [`docs/DESIGN.md`](docs/DESIGN.md) | Sistema de diseño ("Bioluminiscencia"): color, tipografía, componentes |
+| [`docs/DESIGN.md`](docs/DESIGN.md) | Especificación prescriptiva del sistema de diseño ("Bioluminiscencia"): color, tipografía, componentes — el objetivo a implementar |
 | [`docs/SCRIPTS.md`](docs/SCRIPTS.md) | Scripts operacionales: despliegue, SageMaker, utilidades ChromaDB |
 | [`docs/SMOKE_TESTS.md`](docs/SMOKE_TESTS.md) | Pruebas de humo contra un despliegue real |
-| [`frontend/README.md`](frontend/README.md) | Frontend: stack, rutas, componentes, hooks |
+| [`frontend/README.md`](frontend/README.md) | Inventario del frontend tal como está implementado: stack, rutas, componentes, hooks |
 | [`infrastructure/README.md`](infrastructure/README.md) | Infraestructura ECS Fargate (Terraform) |
-| `docs/archive/` | Informes y planes de iteraciones ya cerradas — no describen el estado actual |
 
 ## Estructura
 

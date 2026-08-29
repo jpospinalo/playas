@@ -12,15 +12,22 @@ sistema dual de feedback y panel de administración.
 |---------|---------|-----------|
 | `next` | 16.2.3 | Framework React (App Router) |
 | `react` / `react-dom` | 19.2.4 | UI library |
-| `geist` | 1.7.2 | Fuentes Geist / Geist Mono (auto-hospedadas) |
+| `geist` | 1.7.2 | Fuente Geist Mono (monoespaciada, auto-hospedada) |
 | `motion` | 12.38.0 | Animaciones (Framer Motion) |
 | `next-themes` | 0.4.6 | Temas claro/oscuro/sistema |
 | `react-markdown` + `remark-gfm` | 10.1.0 / 4.0.1 | Renderizado de markdown con GFM |
 | `tailwindcss` | 4 | CSS utility-first (config CSS-first, sin `tailwind.config`) |
 | `typescript` | 5 | Tipado estático |
 
-Package manager: **bun**. No hay dependencia de Firebase — la autenticación es
-propia (JWT) contra el backend FastAPI, ver más abajo.
+Fuentes: **Inter** (sans, variable) y **Geist Mono** (monoespaciada) — ambas
+auto-hospedadas como `.woff2` en `app/fonts/` vía `next/font/local`, sin
+dependencia de red en build ni en runtime. Inter se vendoriza desde el
+paquete npm `@fontsource-variable/inter` (licencia OFL, ver
+`app/fonts/Inter-OFL-LICENSE.txt`); Geist Mono viene empaquetada en la
+dependencia `geist` (ver `app/fonts/Geist-OFL-LICENSE.txt`).
+
+Package manager: **bun**. La autenticación es propia (JWT) contra el backend
+FastAPI, ver más abajo.
 
 ---
 
@@ -28,10 +35,10 @@ propia (JWT) contra el backend FastAPI, ver más abajo.
 
 ```bash
 bun install
-bun dev        # http://localhost:3000
-bun run build  # build de producción
-bun run lint   # eslint
-bunx tsc --noEmit  # chequeo de tipos
+bun dev             # http://localhost:3000
+bun run build       # build de producción
+bun run lint        # eslint
+bun run typecheck   # chequeo de tipos (tsc --noEmit)
 ```
 
 Requiere `frontend/.env.local` con `NEXT_PUBLIC_API_URL` (URL del backend;
@@ -40,10 +47,9 @@ vacío para usar rutas relativas detrás de un proxy como nginx — ver
 
 ---
 
-## Autenticación (JWT, sin Firebase)
+## Autenticación (JWT propio)
 
-No hay Firebase Auth ni Firestore en este proyecto — fueron removidos por
-completo en junio de 2026. El flujo actual:
+El flujo actual:
 
 - `lib/auth.ts` — gestiona el token y el usuario en `localStorage`
   (`atlas_token`, `atlas_user`). Expone `getToken`, `setAuth`, `clearAuth`,
@@ -77,7 +83,7 @@ completo en junio de 2026. El flujo actual:
 | `/admin/usuarios` | `app/admin/usuarios/page.tsx` | Gestión de usuarios (crear, cambiar contraseña) | Admin |
 
 **Layouts:**
-- `app/layout.tsx` — Layout raíz: fuentes Geist, `ThemeProvider`, `AuthProvider`, metadata OpenGraph.
+- `app/layout.tsx` — Layout raíz: fuentes Inter/Geist Mono auto-hospedadas, `ThemeProvider`, `AuthProvider`, metadata OpenGraph.
 - `app/admin/layout.tsx` — Layout admin con sidebar: verifica `role` (de `useAuth()`), muestra 403 para no-admins.
 
 ---
@@ -165,15 +171,13 @@ Gestión de sesión JWT en el cliente — token y usuario en `localStorage`, má
 
 ### `api.ts`
 
-Cliente API con funciones tipadas:
+Cliente API vigente, con funciones tipadas:
 
 | Función | Endpoint | Descripción |
 |---------|----------|-------------|
-| `queryRagStream(request)` | POST `/api/query/stream` | AsyncGenerator SSE. Yield `StreamEvent` (`token`, `sources`, `status`, `error`). |
-| `queryRag(request)` | POST `/api/query` | Query no-streaming (no usado en UI actual). |
+| `queryRagStream(request)` | POST `/api/query/stream` | AsyncGenerator SSE. Yield `StreamEvent` (`token`, `sources`, `status`, `error`). Única vía de consulta usada por la UI. |
 | `generateConversationTitle(...)` | POST `/api/conversations/generate-title` | Título generado por IA. |
 | `submitConversationFeedback(request)` | POST `/api/feedback` | Feedback multi-dimensión. |
-| `submitFeedback(request)` | — | **Deprecado**, alias de `submitConversationFeedback`. |
 | `submitMessageFeedback(request)` | POST `/api/feedback/message` | Feedback por mensaje (409 = duplicado). |
 | `listAdminUsers()` | GET `/api/admin/users` | Lista de usuarios. |
 | `createAdminUser(input)` | POST `/api/admin/users` | Crear usuario. |
@@ -183,7 +187,7 @@ Todas las requests autenticadas usan `Authorization: Bearer <token>` (`lib/auth.
 
 ### `types.ts`
 
-Interfaces TypeScript: `Message`, `SourceGroup`, `SourceFragment`, `QueryRequest`, `QueryResponse`, `StreamEvent`, `FeedbackRequest`, `MessageFeedbackRequest`, `ConversationRatings`, `MessageRatings`, `AgentStage`, `DocType`, tipos admin.
+Interfaces TypeScript: `Message`, `SourceGroup`, `SourceFragment`, `QueryRequest`, `StreamEvent`, `FeedbackRequest`, `MessageFeedbackRequest`, `ConversationRatings`, `MessageRatings`, `AgentStage`, `DocType`, tipos admin.
 
 Función `normalizeSources(raw)` para convertir el shape plano legado (previo a la migración a `SourceGroup[]`) al shape actual.
 

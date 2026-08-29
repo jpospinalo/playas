@@ -174,4 +174,3 @@ docker compose down -v       # elimina también el volumen de PostgreSQL
 | `NetworkError` al consultar en la app | `NEXT_PUBLIC_API_URL` apunta a `localhost:8080` | Dejarlo vacío y reconstruir el frontend |
 | `{"detail":"Not Found"}` en consultas | `NEXT_PUBLIC_API_URL=/api` genera rutas duplicadas (`/api/api/...`) | Dejarlo vacío y reconstruir el frontend |
 | `ZeroDivisionError` en BM25 | Colección ChromaDB vacía al arrancar | Importar documentos antes de levantar el stack |
-| `Property 'displayName' does not exist` | Referencia a campo Firebase eliminado | Usar `display_name` (snake_case) |

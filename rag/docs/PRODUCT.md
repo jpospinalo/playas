@@ -1,24 +1,21 @@
 # Product
 
-## Register
-
-product
-
 ## Users
 
-ATLAS sirve a **abogados y profesionales del derecho** que investigan y litigan sobre playas, dominio público marítimo-terrestre y normatividad costera en Colombia. Tres arquetipos principales:
+ATLAS sirve a cualquier persona que necesite orientarse en normatividad y jurisprudencia colombiana sobre playas y zonas costeras — no solo a profesionales del derecho. Arquetipos principales:
 
-- **El litigante activo.** Lleva un caso ante la jurisdicción contencioso-administrativa y necesita identificar precedentes del Consejo de Estado, líneas jurisprudenciales consolidadas y sentencias de unificación relevantes. Llega con una teoría del caso; busca respaldo doctrinal y fáctico preciso.
-- **El asesor corporativo o institucional.** Asesora a entidades territoriales, concesionarios portuarios, operadores turísticos o inmobiliarios sobre el régimen de bienes de uso público y las limitaciones al dominio privado en zonas costeras. Necesita criterios claros y citas verificables para conceptos formales.
-- **El investigador o docente.** Académico de derecho administrativo, ambiental o marítimo que mapea la evolución jurisprudencial del Consejo de Estado en materia costera. Prioriza trazabilidad, cobertura del corpus y acceso directo a los textos originales.
+- **El profesional jurídico.** Abogados litigantes, asesores corporativos o institucionales e investigadores/docentes que necesitan identificar precedentes del Consejo de Estado, normas vigentes (decretos y su articulado) y citas verificables para un caso, un concepto o una investigación.
+- **El ciudadano, pescador o miembro de una comunidad costera.** Quiere entender sus derechos de acceso y uso de la playa, qué autoridad es competente, o qué procedimiento seguir ante una restricción, un conflicto de uso o una afectación ambiental — sin formación jurídica previa.
+- **El operador de turismo o la empresa con actividad en zona costera.** Necesita conocer los permisos, concesiones, requisitos y sanciones aplicables a su actividad (hospedaje, actividades náuticas, ocupación de playa) sobre bienes de uso público.
+- **El funcionario público.** Consulta competencias de autoridades (DIMAR, capitanías de puerto, entes territoriales) y el marco normativo aplicable a un trámite o una actuación administrativa.
 
-Todos leen jurisprudencia profesionalmente. Conocen la terminología técnica — dominio público marítimo-terrestre, playa marítima, INVEMAR, DIMAR, acción de tutela, nulidad y restablecimiento del derecho, sentencia de unificación — y esperan que ATLAS la use con precisión, no que la simplifique.
+Cada consulta puede usar terminología técnica (dominio público marítimo-terrestre, playa marítima, INVEMAR, DIMAR, acción de tutela, concesión, bajamar) o lenguaje cotidiano ("¿puedo pescar aquí?", "¿quién autoriza un chiringuito en la playa?"); ATLAS responde con precisión técnica en ambos casos, sin asumir que quien pregunta ya conoce el vocabulario jurídico.
 
 ## Product Purpose
 
-ATLAS recupera y sintetiza jurisprudencia colombiana sobre playas y derecho costero para profesionales del derecho. El corpus son sentencias del Consejo de Estado procesadas mediante un pipeline RAG híbrido. Cada respuesta combina los elementos pertinentes al caso: identificación de la línea jurisprudencial aplicable, extractos textuales de las providencias relevantes, análisis de los criterios de decisión del tribunal y las fuentes verificables con acceso al texto original.
+ATLAS recupera y sintetiza normatividad (decretos y su articulado) y jurisprudencia (sentencias del Consejo de Estado) colombianas sobre playas y derecho costero, mediante un pipeline RAG híbrido sobre un corpus de ambos tipos de documento. Cada respuesta depende de la evidencia efectivamente recuperada para esa consulta: identifica las normas o precedentes pertinentes, cita extractos textuales de las fuentes recuperadas y muestra esas fuentes con acceso al texto original para que quien consulta pueda verificarlas.
 
-Éxito: el abogado formula una consulta en lenguaje técnico-jurídico, obtiene una respuesta igualmente técnica respaldada en jurisprudencia trazable, y puede citarla directamente en su escrito o concepto sin pasos intermedios de interpretación.
+Éxito: quien consulta — profesional del derecho o no — obtiene una respuesta trazable a fuentes normativas o jurisprudenciales verificables, con las citas necesarias para contrastarlas. ATLAS apoya la orientación y la investigación; no reemplaza la verificación profesional de un abogado antes de usar la respuesta en un escrito, concepto o actuación con efectos legales.
 
 ## Brand Personality
 
@@ -36,11 +33,11 @@ ATLAS no es un sistema de razonamiento autónomo, y lo deja claro. Es un motor d
 
 ## Design Principles
 
-1. **Hablamos en el idioma del derecho.** Cada respuesta usa la terminología técnica correcta — sin eufemismos, sin simplificaciones. El usuario es un profesional; se le trata como tal.
-2. **La respuesta es el producto; todo lo demás es marco.** El chat, las citas, la navegación existen para servir al análisis jurisprudencial. Ningún elemento de UI gana atención por encima de lo que el abogado vino a leer.
+1. **Hablamos en el idioma del derecho, sin exigirlo de quien pregunta.** Cada respuesta usa la terminología técnica correcta — sin eufemismos, sin simplificaciones que la desvirtúen — tanto si la consulta llegó en lenguaje técnico como si llegó en lenguaje cotidiano.
+2. **La respuesta es el producto; todo lo demás es marco.** El chat, las citas, la navegación existen para servir a la orientación normativa y jurisprudencial. Ningún elemento de UI gana atención por encima de lo que la persona vino a leer.
 3. **Una sola decisión visual fuerte sostiene la identidad.** El glow ambiental bioluminiscente es la firma de ATLAS. Todo lo demás es neutro y disciplinado. No competimos contra nuestra propia firma con decoración adicional.
-4. **Las fuentes son el núcleo, no el apéndice.** Cada cita es expandible, cada extracto es legible, cada sentencia es navegable hasta el texto original. El profesional necesita citar fuentes primarias; ATLAS las pone a un click de distancia.
-5. **ATLAS es un motor de recuperación, no un oráculo.** El producto es honesto sobre su naturaleza: sintetiza lo que el Consejo de Estado ha dicho, no interpreta lo que debería decir. El criterio jurídico sigue siendo del abogado.
+4. **Las fuentes son el núcleo, no el apéndice.** Cada cita es expandible, cada extracto es legible, cada fuente es navegable hasta el texto original. Quien consulta necesita poder verificar la fuente primaria; ATLAS la pone a un click de distancia.
+5. **ATLAS es un motor de recuperación, no un oráculo.** El producto es honesto sobre su naturaleza: sintetiza lo que la norma o el Consejo de Estado han dicho, no interpreta lo que deberían decir. El criterio de aplicación a un caso concreto sigue siendo de un profesional del derecho.
 
 ## Accessibility & Inclusion
 
