@@ -9,7 +9,8 @@ import "./globals.css";
 // subset "latin" — Inter-Variable.woff2 extraído del paquete npm oficial
 // @fontsource-variable/inter (Fontsource, licencia OFL — ver
 // ./fonts/Inter-OFL-LICENSE.txt); GeistMono-Variable.woff2 extraído del
-// paquete npm oficial "geist" (Vercel), ya una dependencia del proyecto.
+// paquete npm oficial "geist" (Vercel), ya una dependencia del proyecto
+// (licencia OFL — ver ./fonts/Geist-OFL-LICENSE.txt).
 const inter = localFont({
 	src: "./fonts/Inter-Variable.woff2",
 	variable: "--font-sans",
