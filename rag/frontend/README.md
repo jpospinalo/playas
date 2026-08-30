@@ -103,11 +103,13 @@ El flujo actual:
 | `AssistantBubble` | Burbuja izquierda con markdown. Convierte `[docN]` en badges interactivos que abren popover con metadata de fuente. Botón "Calificar" por mensaje. |
 | `SourcesAccordion` | Acordeón expandible debajo de respuestas. Muestra grupos de fuentes con metadata y fragmentos. |
 | `LoadingBubble` | Dots animados + label de etapa en vivo ("Navegando miles de paginas..."). |
+| `TypingDots` | Indicador visual de tres puntos animados, usado por `LoadingBubble`. |
 | `ContextWarning` | Banner de advertencia al 60-80% (soft) y 80%+ (crítico) de uso de contexto. |
 | `ConversationSidebar` | Sidebar dual: desktop (272px/60px animado) y mobile (overlay 264px). |
 | `ConversationList` | Lista de conversaciones con rename inline, menú de tres puntos, confirmación de borrado. |
 | `ConversationSearchDialog` | Modal de búsqueda de conversaciones por título. |
 | `SidebarUserMenu` | Menú de usuario al pie del sidebar: avatar, admin link (si admin), tema, cerrar sesión. |
+| `conversationSidebarUtils.ts` | Constantes compartidas de dimensiones y transición del sidebar (`SIDEBAR_EXPANDED_WIDTH`, `SIDEBAR_COLLAPSED_WIDTH`, `SIDEBAR_TRANSITION`) y `formatConversationDate()`. |
 | `FeedbackButton` | Botón flotante de estrella (esquina inferior derecha). |
 | `FeedbackModal` | Formulario de feedback de conversación: 4 dimensiones (tono, longitud, usabilidad, general) + comentario. |
 | `MessageRatingPopover` | Feedback por mensaje: pertinencia + accuracy + respuesta esperada. |
@@ -189,7 +191,7 @@ Todas las requests autenticadas usan `Authorization: Bearer <token>` (`lib/auth.
 
 Interfaces TypeScript: `Message`, `SourceGroup`, `SourceFragment`, `QueryRequest`, `StreamEvent`, `FeedbackRequest`, `MessageFeedbackRequest`, `ConversationRatings`, `MessageRatings`, `AgentStage`, `DocType`, tipos admin.
 
-Función `normalizeSources(raw)` para convertir el shape plano legado (previo a la migración a `SourceGroup[]`) al shape actual.
+Función `normalizeSources(raw)` para convertir conversaciones antiguas guardadas en el shape plano legado al shape actual (`SourceGroup[]`).
 
 ### `config.ts`
 

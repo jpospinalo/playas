@@ -13,7 +13,7 @@ Cada consulta puede usar terminología técnica (dominio público marítimo-terr
 
 ## Product Purpose
 
-ATLAS recupera y sintetiza normatividad (decretos y su articulado) y jurisprudencia (sentencias del Consejo de Estado) colombianas sobre playas y derecho costero, mediante un pipeline RAG híbrido sobre un corpus de ambos tipos de documento. Cada respuesta depende de la evidencia efectivamente recuperada para esa consulta: identifica las normas o precedentes pertinentes, cita extractos textuales de las fuentes recuperadas y muestra esas fuentes con acceso al texto original para que quien consulta pueda verificarlas.
+ATLAS recupera y sintetiza normatividad (decretos y su articulado) y jurisprudencia (sentencias del Consejo de Estado) colombianas sobre playas y derecho costero, mediante un pipeline RAG híbrido sobre un corpus de ambos tipos de documento. Cada respuesta depende de la evidencia recuperada para la consulta: identifica las normas o precedentes pertinentes, cita fragmentos de los documentos recuperados y muestra sus metadatos e identificadores de fuente para facilitar su contraste.
 
 Éxito: quien consulta — profesional del derecho o no — obtiene una respuesta trazable a fuentes normativas o jurisprudenciales verificables, con las citas necesarias para contrastarlas. ATLAS apoya la orientación y la investigación; no reemplaza la verificación profesional de un abogado antes de usar la respuesta en un escrito, concepto o actuación con efectos legales.
 
@@ -27,7 +27,7 @@ ATLAS no es un sistema de razonamiento autónomo, y lo deja claro. Es un motor d
 
 - **Legis, SUIN-Juriscol y portales jurídicos tradicionales:** útiles para búsquedas por número de expediente o texto exacto, pero sin capacidad de recuperación semántica ni síntesis jurisprudencial. ATLAS va más allá: entiende la consulta en lenguaje técnico-jurídico y devuelve la línea de precedentes relevante, no una lista de documentos.
 - **ChatGPT, Gemini y wrappers genéricos de LLM:** misma plantilla en todas partes, sin identidad, sin contexto de dominio. Si ATLAS se confunde con cualquier asistente genérico, falló.
-- **SaaS navy + dorado, "trust badges", azul institucional con serif clásico:** el reflejo de primer orden para "herramienta legal seria". Predecible y aburrido. La versión anterior de ATLAS cayó precisamente aquí.
+- **SaaS navy + dorado, "trust badges", azul institucional con serif clásico:** el reflejo de primer orden para "herramienta legal seria". Predecible y aburrido.
 - **Editorial-tipográfico oscuro (serif grande + dark mode + mucha tipografía):** el reflejo de segundo orden para "herramienta de IA que quiere verse premium". También predecible.
 - **Estética "gov.co aburrido":** funcional pero sin alma. ATLAS es un servicio público, pero uno hecho con el mismo cuidado que un producto privado de calidad.
 
@@ -36,7 +36,7 @@ ATLAS no es un sistema de razonamiento autónomo, y lo deja claro. Es un motor d
 1. **Hablamos en el idioma del derecho, sin exigirlo de quien pregunta.** Cada respuesta usa la terminología técnica correcta — sin eufemismos, sin simplificaciones que la desvirtúen — tanto si la consulta llegó en lenguaje técnico como si llegó en lenguaje cotidiano.
 2. **La respuesta es el producto; todo lo demás es marco.** El chat, las citas, la navegación existen para servir a la orientación normativa y jurisprudencial. Ningún elemento de UI gana atención por encima de lo que la persona vino a leer.
 3. **Una sola decisión visual fuerte sostiene la identidad.** El glow ambiental bioluminiscente es la firma de ATLAS. Todo lo demás es neutro y disciplinado. No competimos contra nuestra propia firma con decoración adicional.
-4. **Las fuentes son el núcleo, no el apéndice.** Cada cita es expandible, cada extracto es legible, cada fuente es navegable hasta el texto original. Quien consulta necesita poder verificar la fuente primaria; ATLAS la pone a un click de distancia.
+4. **Las fuentes son el núcleo, no el apéndice.** Cada cita es expandible, cada extracto es legible, cada fuente expone su metadata e identificadores de origen. Quien consulta necesita poder contrastar la fuente primaria con la evidencia que ATLAS ya le muestra.
 5. **ATLAS es un motor de recuperación, no un oráculo.** El producto es honesto sobre su naturaleza: sintetiza lo que la norma o el Consejo de Estado han dicho, no interpreta lo que deberían decir. El criterio de aplicación a un caso concreto sigue siendo de un profesional del derecho.
 
 ## Accessibility & Inclusion
@@ -45,7 +45,7 @@ Sin requisitos formales de WCAG numerados, pero con criterios concretos:
 
 - **Tema claro, oscuro y system** (`prefers-color-scheme`) pensados con igual cuidado. Ninguno es "el bueno" y otro "el toggle de cortesía".
 - **`prefers-reduced-motion` respetado globalmente.** El glow ambiental se vuelve estático bajo esa preferencia, las pulsaciones y transiciones desaparecen.
-- **Foco visible en todos los elementos interactivos**, con anillo claro tanto en dark como en light.
 - **Lenguaje técnico preciso** como requisito de calidad: los términos jurídicos se usan con rigor, no se evitan ni se simplifican.
-- **Soporte para teclado completo** en chat, citas expandibles, popovers y navegación.
-- **Contraste mínimo AA** verificado en ambos temas, incluyendo texto sobre el glow.
+- La interfaz incorpora controles semánticos, navegación por teclado, foco
+  visible y respeto por `prefers-reduced-motion`. No se declara conformidad con
+  un nivel WCAG específico sin una auditoría formal.

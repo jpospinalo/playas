@@ -135,7 +135,7 @@ agrupadas y las métricas de contexto.
 
 Auth propia con **JWT + PostgreSQL**. `api/auth.py` emite/valida tokens HS256
 (`JWT_SECRET_KEY` / `JWT_ALGORITHM` / `JWT_EXPIRE_MINUTES`); las contraseñas
-se hashean con SHA-256 seguido de bcrypt (`api/routes/auth.py`).
+se hashean con SHA-256 seguido de bcrypt (`api/passwords.py`).
 
 En el frontend, `lib/auth.ts` guarda el token y el usuario en
 `localStorage` (sin cookies, sin SDK de terceros); `AuthProvider`
@@ -162,9 +162,11 @@ de ambos vía Google GenAI).
   `../../vector-infraestructura/` (colección `rag_playas`, puerto 8000;
   modelo de embeddings `embeddinggemma:latest` en el puerto 11434).
   Reranker opcional (`OllamaReranker`, no usado en el flujo principal):
-  modelo `llama3.2:3b` por defecto (`OLLAMA_RERANKER_MODEL` en
-  `.env.example` y `variable.ollama_reranker_model` en
-  `../infrastructure/variables.tf`).
+  requiere `OLLAMA_RERANK_BASE_URL` y `OLLAMA_RERANK_MODEL` (o su alias
+  legado `OLLAMA_RERANKER_MODEL`) explícitos — `config.py` no define un
+  valor por defecto. `llama3.2:3b` es el valor configurado en
+  `.env.example` y el valor por defecto de `variable.ollama_reranker_model`
+  en `../infrastructure/variables.tf`.
 - **App RAG (backend + frontend)** — ECS Fargate, provisionada por
   Terraform en `../infrastructure/`. El servicio `app` corre el backend
   FastAPI y un sidecar `postgres:16-alpine` (datos en volumen EFS) en la
