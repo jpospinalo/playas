@@ -20,11 +20,8 @@ Componentes principales:
   - ``OllamaReranker`` — reranker opcional basado en LLM (no usado en el flujo
     principal; disponible para experimentación).
 
-``balance_by_doc_type()`` no existe en este módulo: su único consumidor en
-todo el repo era un archivo de pruebas dedicado exclusivamente a
-ejercitarla (``test_retriever_balance.py``), sin ningún caller real en
-``api/``, ``core/`` ni ``evaluation/`` — código muerto demostrable, retirado
-junto con su test. Ver ``tests/unit/test_retriever_no_dead_code.py``.
+``balance_by_doc_type()`` no forma parte de la API de este módulo. Su ausencia
+se protege mediante ``tests/unit/test_retriever_no_dead_code.py``.
 """
 
 from __future__ import annotations

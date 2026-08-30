@@ -16,7 +16,7 @@ pruebas, ``test_concurrent_turns_on_different_threads_start_without_waiting_on_e
 
 Ciclo de vida: ``hold(key)`` es un context manager async que cuenta
 referencias (titular + quienes esperan) sobre el ``asyncio.Lock`` de cada
-conversación y elimina la entrada del ``defaultdict`` en cuanto nadie más
+conversación y elimina la entrada del registro en cuanto nadie más
 la necesita — el diccionario crece solo con las conversaciones que
 realmente tienen un turno en vuelo, no con el total histórico de
 conversaciones distintas.

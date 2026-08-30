@@ -155,9 +155,9 @@ OLLAMA_EMBEDDING_MODEL: str = cast(
 # principal). Sin valor por defecto — igual que retriever.py hoy, que exige
 # ambas variables explícitamente y falla si faltan; un default aquí
 # habilitaría en silencio un reranker que nadie configuró. OLLAMA_RERANK_MODEL
-# es el nombre realmente usado por retriever.py; OLLAMA_RERANKER_MODEL (sin
-# estar conectado a ningún caller real) se conserva como alias secundario
-# por compatibilidad con quien ya lo tenga en su .env.
+# es el nombre realmente usado por retriever.py; OLLAMA_RERANKER_MODEL se
+# conserva como alias secundario por compatibilidad con configuraciones
+# existentes.
 OLLAMA_RERANK_BASE_URL: str | None = _env("OLLAMA_RERANK_BASE_URL")
 OLLAMA_RERANK_MODEL: str | None = _env("OLLAMA_RERANK_MODEL", "OLLAMA_RERANKER_MODEL")
 

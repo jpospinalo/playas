@@ -105,7 +105,7 @@ El flujo actual:
 | `LoadingBubble` | Dots animados + label de etapa en vivo ("Navegando miles de paginas..."). |
 | `TypingDots` | Indicador visual de tres puntos animados, usado por `LoadingBubble`. |
 | `ContextWarning` | Banner de advertencia al 60-80% (soft) y 80%+ (crítico) de uso de contexto. |
-| `ConversationSidebar` | Sidebar dual: desktop (272px/60px animado) y mobile (overlay 264px). |
+| `ConversationSidebar` | Sidebar dual: desktop (288px expandido y 76px colapsado, con transición animada) y móvil como overlay. |
 | `ConversationList` | Lista de conversaciones con rename inline, menú de tres puntos, confirmación de borrado. |
 | `ConversationSearchDialog` | Modal de búsqueda de conversaciones por título. |
 | `SidebarUserMenu` | Menú de usuario al pie del sidebar: avatar, admin link (si admin), tema, cerrar sesión. |
@@ -214,7 +214,7 @@ El sistema visual de ATLAS está definido en `globals.css` con tokens OKLCH y do
 
 **Animaciones personalizadas:** `message-in`, `typing-dot`, `fade-in`, `glow-pulse`.
 
-**Accesibilidad:** Soporte completo de `prefers-reduced-motion`, skip-link, focus rings visibles, contraste AA.
+**Accesibilidad:** regla CSS global para `prefers-reduced-motion` y estilos de foco visible. No se declara conformidad WCAG ni contraste AA sin una auditoría formal.
 
 ---
 
