@@ -2,7 +2,7 @@
 
 Expone estos endpoints sobre el agente LangGraph:
   GET  /api/health          — liveness check
-  GET  /api/ready            — readiness check (T2.5; ver docstring de `ready()`)
+  GET  /api/ready            — readiness check (ver docstring de `ready()`)
   POST /api/query           — respuesta completa (JSON)
   POST /api/query/stream    — streaming SSE con tokens del LLM
 
@@ -44,8 +44,8 @@ from rag.core.agent import extract_answer_from_state as _extract_answer_from_sta
 from rag.core.observability import ActiveQueryTracker, log_retained_conversations
 from rag.core.retriever import bm25_index_is_empty, init_retrievers
 
-# T2.5: timeout corto por defecto para el chequeo de base de datos en
-# /api/ready — una base de datos colgada no debe bloquear el readiness probe
+# Timeout corto por defecto para el chequeo de base de datos en /api/ready
+# — una base de datos colgada no debe bloquear el readiness probe
 # indefinidamente. Como constante de módulo para que las pruebas puedan
 # ejercer el timeout real sin esperarlo (pasando un valor pequeño explícito
 # a `_check_database_ready`).
@@ -56,13 +56,13 @@ READY_DB_TIMEOUT_SECONDS = 2.0
 _graph: Any = None
 logger = logging.getLogger(__name__)
 
-# T3.1: gauge de consultas en curso, sin contenido de negocio (ver
+# Gauge de consultas en curso, sin contenido de negocio (ver
 # rag.core.observability). Un único proceso, un único tracker de módulo.
 ACTIVE_QUERIES = ActiveQueryTracker()
 
-# T3.5: lock por conversación (ver rag.api.conversation_lock) — serializa
-# turnos concurrentes sobre el MISMO thread_id, demostrado necesario por un
-# test de interleaving real. No serializa entre conversaciones distintas.
+# Lock por conversación (ver rag.api.conversation_lock) — serializa turnos
+# concurrentes sobre el MISMO thread_id, demostrado necesario por un test
+# de interleaving real. No serializa entre conversaciones distintas.
 CONVERSATION_LOCKS = ConversationLockRegistry()
 
 
@@ -219,18 +219,18 @@ async def query(
     config = _make_config(user["sub"], request.conversation_id, request.thread_id)
     thread_id = config["configurable"]["thread_id"]
 
-    # C4: el lock de conversación se adquiere PRIMERO, y el slot de
-    # backpressure DESPUÉS, justo antes del trabajo que consume recursos.
-    # Antes era al revés: una segunda solicitud de una conversación que ya
-    # tiene un turno en curso reservaba un slot global de backpressure solo
-    # para quedarse esperando el lock de SU conversación — sin hacer ningún
-    # trabajo real — restándole capacidad a conversaciones independientes.
-    # Con este orden, esperar el lock nunca consume un slot; si backpressure
-    # rechaza con 503 una vez adquirido el lock, la salida de este `async
-    # with` lo libera de inmediato (sin código especial: es la propagación
-    # normal de la excepción). Mismo orden en /api/query/stream — evita
-    # tanto la falta de equidad como un futuro deadlock por orden
-    # inconsistente entre los dos endpoints.
+    # El lock de conversación se adquiere PRIMERO, y el slot de
+    # backpressure DESPUÉS, justo antes del trabajo que consume recursos:
+    # en el orden inverso, una segunda solicitud de una conversación que ya
+    # tiene un turno en curso reservaría un slot global de backpressure
+    # solo para quedarse esperando el lock de SU conversación — sin hacer
+    # ningún trabajo real — restándole capacidad a conversaciones
+    # independientes. Con este orden, esperar el lock nunca consume un
+    # slot; si backpressure rechaza con 503 una vez adquirido el lock, la
+    # salida de este `async with` lo libera de inmediato (sin código
+    # especial: es la propagación normal de la excepción). Mismo orden en
+    # /api/query/stream — evita tanto la falta de equidad como un futuro
+    # deadlock por orden inconsistente entre los dos endpoints.
     async with CONVERSATION_LOCKS.hold(thread_id):
         async with backpressure.slot():
             with ACTIVE_QUERIES.track():
@@ -289,7 +289,7 @@ class _ResourceManagedStreamingResponse(StreamingResponse):
     envío ASGI del `http.response.start` falle (p. ej. cliente ya
     desconectado): Starlette lanza esa excepción ANTES de iterar
     `body_iterator` por primera vez, así que el generador nunca llega a
-    ejecutarse y su `finally` nunca se alcanza (H1). Esta subclase cierra el
+    ejecutarse y su `finally` nunca se alcanza. Esta subclase cierra el
     mismo `resource_stack` también en ese caso — `aclose()` de
     `AsyncExitStack` es seguro de llamar más de una vez (la segunda vez es
     no-op), así que no hay doble liberación."""
@@ -325,20 +325,21 @@ async def query_stream(
     config = _make_config(user["sub"], request.conversation_id, request.thread_id)
     thread_id = config["configurable"]["thread_id"]
 
-    # T3.6 + T3.5/C3: ambos se adquieren aquí (antes de la hidratación) y se
-    # liberan al final de event_generator() — deliberadamente NO se resuelve
-    # todo antes del StreamingResponse, porque _get_initial_messages() debe
-    # poder seguir lanzando su HTTPException (404/422, o 503 de
-    # backpressure) ANTES de que exista el StreamingResponse, igual que hoy;
-    # solo necesitan cubrir desde aquí hasta que termine el streaming.
-    # Ambos recursos se registran en el mismo AsyncExitStack (hold() es un
-    # context manager async como backpressure.slot()) — se entra en un
-    # scope y se cierra en otro, y aclose() los libera en orden inverso ante
-    # cualquier salida (éxito, excepción o cancelación), sin necesidad de
-    # llevar la cuenta manual de qué se adquirió.
+    # El lock de conversación y el slot de backpressure se adquieren aquí
+    # (antes de la hidratación) y se liberan al final de
+    # event_generator() — deliberadamente NO se resuelve todo antes del
+    # StreamingResponse, porque _get_initial_messages() debe poder seguir
+    # lanzando su HTTPException (404/422, o 503 de backpressure) ANTES de
+    # que exista el StreamingResponse; solo necesitan cubrir desde aquí
+    # hasta que termine el streaming. Ambos recursos se registran en el
+    # mismo AsyncExitStack (hold() es un context manager async como
+    # backpressure.slot()) — se entra en un scope y se cierra en otro, y
+    # aclose() los libera en orden inverso ante cualquier salida (éxito,
+    # excepción o cancelación), sin necesidad de llevar la cuenta manual de
+    # qué se adquirió.
     #
-    # C4: lock PRIMERO, backpressure DESPUÉS — mismo orden que /api/query,
-    # y por el mismo motivo: esperar el lock de conversación no debe
+    # Lock PRIMERO, backpressure DESPUÉS — mismo orden que /api/query, y
+    # por el mismo motivo: esperar el lock de conversación no debe
     # consumir un slot global. Si backpressure rechaza con 503 tras haber
     # adquirido el lock, el `except` de abajo cierra el stack (libera el
     # lock) antes de relanzar.

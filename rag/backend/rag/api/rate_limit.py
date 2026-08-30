@@ -162,7 +162,7 @@ login_rate_limiter = SlidingWindowRateLimiter(
 
 
 class ConcurrencyBackpressure:
-    """Límite de concurrencia global de proceso (T3.6) — NO por clave, NO por
+    """Límite de concurrencia global de proceso — NO por clave, NO por
     ventana de tiempo.
 
     Distinto de ``SlidingWindowRateLimiter``: ese acota cuántas solicitudes

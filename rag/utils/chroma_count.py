@@ -5,14 +5,13 @@ la colección no existe, en vez de ``get_or_create_collection()``, que la
 crearía en silencio y reportaría cero documentos de una colección que el
 script mismo acaba de inventar.
 
-T2.4: host/puerto/colección vienen de ``rag.config`` (resolución
-centralizada de ``.env``, T2.3) en vez de un ``load_dotenv()`` propio.
-Cambio de comportamiento deliberado: el nombre de colección por defecto pasa
-de ``rag_playas_docs`` (el default histórico de este script, que nunca
-coincidió con ninguna colección real) a ``rag_playas`` (el default real de
-la app, el mismo que usan ``core/retriever.py`` y ``core/vectorstore.py``);
-además, ahora se acepta también ``CHROMA_COLLECTION`` (con precedencia sobre
-``CHROMA_COLLECTION_NAME``), igual que el resto de la app.
+Host, puerto y colección vienen de ``rag.config`` (resolución
+centralizada de ``.env``) en vez de un ``load_dotenv()`` propio. El nombre
+de colección por defecto es ``rag_playas`` — el mismo que usan
+``core/retriever.py`` y ``core/vectorstore.py`` —, no ``rag_playas_docs``
+(un default histórico de este script que nunca coincidió con ninguna
+colección real). También se acepta ``CHROMA_COLLECTION`` (con precedencia
+sobre ``CHROMA_COLLECTION_NAME``), igual que el resto de la app.
 """
 
 from __future__ import annotations

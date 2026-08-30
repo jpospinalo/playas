@@ -3,25 +3,23 @@
 All modules in rag/ should import their settings from here instead of
 calling os.getenv() directly.
 
-Resolución de ``.env`` (T2.3): antes de esta entrega, este módulo cargaba
+Resolución de ``.env``: este módulo ya no depende de
 ``load_dotenv(BASE_DIR / ".env")`` con ``BASE_DIR = Path(__file__).resolve()
 .parent.parent`` — dos niveles arriba de ``config.py`` (``rag/backend/rag/
 config.py``), lo que resuelve a ``rag/backend/.env``. Ese archivo nunca
 existió: el ``.env`` real vive en ``rag/.env`` (junto a ``.env.example``),
 un nivel más arriba. Ese ``load_dotenv()`` con ruta explícita no busca hacia
 arriba —a diferencia de ``load_dotenv()`` sin argumentos, que sí camina el
-árbol de directorios—, así que la llamada era, en la práctica, un no-op: las
-constantes de este módulo terminaban leyendo ``rag/.env`` solo si algún otro
-módulo con su propio ``load_dotenv()`` correcto (p. ej. ``core/retriever.py``
-o ``core/vectorstore.py``) ya se había importado antes en el mismo proceso y
-había poblado ``os.environ`` como efecto secundario — una dependencia
-implícita del orden de import, nunca garantizada. Verificado que ninguna de
-las constantes ``CHROMA_*``/``OLLAMA_*`` de este archivo se usa hoy en otro
-módulo (inventario T2.3: solo se importan desde aquí ``CONTEXT_LIMIT_TOKENS``,
-las variables de rate limit, ``GEMINI_MODEL``, ``OPENROUTER_*``,
-``QUERY_ENRICHMENT_ENABLED`` y, vía ``vectorstore.py``, ``DOC_TYPES``/
-``GOLD_PREFIX``/``layer_prefix``), así que el bug no afectaba ningún flujo en
-producción — pero sí bloqueaba centralizar la config en T2.4.
+árbol de directorios—, así que esa llamada era, en la práctica, un no-op:
+las constantes de este módulo terminaban leyendo ``rag/.env`` solo si algún
+otro módulo con su propio ``load_dotenv()`` correcto (p. ej.
+``core/retriever.py`` o ``core/vectorstore.py``) ya se había importado
+antes en el mismo proceso y había poblado ``os.environ`` como efecto
+secundario — una dependencia implícita del orden de import, nunca
+garantizada. Las constantes ``CHROMA_*``/``OLLAMA_*`` de este archivo se
+resuelven hoy de forma confiable sin depender de ese orden:
+``core/retriever.py``, ``core/vectorstore.py`` y ``core/embeddings.py`` las
+importan directamente desde aquí.
 
 Nueva resolución, en este orden:
   1. ``RAG_ENV_FILE`` si está definida — falla ruidosamente
@@ -157,10 +155,9 @@ OLLAMA_EMBEDDING_MODEL: str = cast(
 # principal). Sin valor por defecto — igual que retriever.py hoy, que exige
 # ambas variables explícitamente y falla si faltan; un default aquí
 # habilitaría en silencio un reranker que nadie configuró. OLLAMA_RERANK_MODEL
-# es el nombre realmente usado por retriever.py; OLLAMA_RERANKER_MODEL (el
-# nombre que este archivo exponía antes de esta entrega, sin estar conectado
-# a ningún caller real) se conserva como alias secundario por compatibilidad
-# con quien ya lo tenga en su .env.
+# es el nombre realmente usado por retriever.py; OLLAMA_RERANKER_MODEL (sin
+# estar conectado a ningún caller real) se conserva como alias secundario
+# por compatibilidad con quien ya lo tenga en su .env.
 OLLAMA_RERANK_BASE_URL: str | None = _env("OLLAMA_RERANK_BASE_URL")
 OLLAMA_RERANK_MODEL: str | None = _env("OLLAMA_RERANK_MODEL", "OLLAMA_RERANKER_MODEL")
 
@@ -177,15 +174,13 @@ OPENROUTER_MODEL: str = os.getenv("OPENROUTER_MODEL", "gpt-5.4-mini")
 
 # ── Query enrichment ────────────────────────────────────────────────────────
 QUERY_ENRICHMENT_ENABLED: bool = os.getenv("QUERY_ENRICHMENT_ENABLED", "true").lower() == "true"
-# C10: QUERY_ENRICHMENT_HYDE y DEFAULT_K/DEFAULT_K_CANDIDATES (que vivían
-# aquí) se retiraron por ser código muerto demostrable — verificado por
-# búsqueda global en todo el repo inmediatamente antes de eliminarlas:
-# ningún módulo de api/, core/, evaluation/, scripts/ ni utils/ las leía.
-# La generación HyDE nunca se conectó al enriquecimiento real; el `k`/
-# `k_candidates` que sí se usan en el flujo de retrieval vienen del
-# `QueryRequest` de la API y de los defaults inline de
-# `agent.py::retrieve_forced_node`, nunca de estas constantes. Ver
-# `tests/unit/test_config_no_dead_code.py`.
+# QUERY_ENRICHMENT_HYDE y DEFAULT_K/DEFAULT_K_CANDIDATES no existen en este
+# módulo: ningún módulo de api/, core/, evaluation/, scripts/ ni utils/ las
+# lee — código muerto demostrable, retirado. La generación HyDE nunca se
+# conectó al enriquecimiento real; el `k`/`k_candidates` que sí se usan en
+# el flujo de retrieval vienen del `QueryRequest` de la API y de los
+# defaults inline de `agent.py::retrieve_forced_node`, nunca de estas
+# constantes. Ver `tests/unit/test_config_no_dead_code.py`.
 
 # ── Contexto de conversación ────────────────────────────────────────────────
 # Ventana de contexto del modelo de generación (tokens). Ajustar según el
@@ -232,7 +227,7 @@ AUTH_RATE_LIMIT_MODE: RateLimitMode = (
 AUTH_RATE_LIMIT_REQUESTS: int = int(os.getenv("AUTH_RATE_LIMIT_REQUESTS", "10"))
 AUTH_RATE_LIMIT_WINDOW_SECONDS: float = float(os.getenv("AUTH_RATE_LIMIT_WINDOW_SECONDS", "300"))
 
-# ── Backpressure de concurrencia (T3.6) ─────────────────────────────────────
+# ── Backpressure de concurrencia ─────────────────────────────────────────
 # Distinto del rate limiting de arriba: esos limitan CUÁNTAS solicitudes por
 # ventana de tiempo puede hacer una MISMA clave (usuario/IP/email). Esto
 # limita cuántas consultas RAG pueden estar EN VUELO simultáneamente en todo
@@ -251,29 +246,31 @@ BACKPRESSURE_MODE: RateLimitMode = (
 BACKPRESSURE_MAX_CONCURRENT: int = int(os.getenv("RAG_BACKPRESSURE_MAX_CONCURRENT", "20"))
 
 # ── Base de datos ────────────────────────────────────────────────────────────
-# C1: antes vivía como `os.getenv("DATABASE_URL", ...)` a nivel de módulo en
-# api/database.py. api/rate_limit.py importa api/auth.py (que importa
-# api/database.py) ANTES de importar este módulo — si database.py se
-# importaba primero en el proceso (como ocurre al importar rag.api.main), su
-# constante quedaba fijada a partir de os.environ *antes* de que el .env
-# resuelto por RAG_ENV_FILE se hubiera cargado. Centralizarla aquí garantiza
-# que cualquier módulo que la use dispare primero la carga del .env de este
+# Centralizada aquí, no como `os.getenv("DATABASE_URL", ...)` a nivel de
+# módulo en api/database.py: api/rate_limit.py importa api/auth.py (que
+# importa api/database.py) ANTES de importar este módulo — si
+# api/database.py leyera DATABASE_URL directamente y se importara primero
+# en el proceso (como ocurre al importar rag.api.main), esa constante
+# quedaría fijada a partir de os.environ *antes* de que el .env resuelto
+# por RAG_ENV_FILE se hubiera cargado. Centralizarla aquí garantiza que
+# cualquier módulo que la use dispare primero la carga del .env de este
 # archivo, sin importar el orden de imports.
 DATABASE_URL: str = os.getenv("DATABASE_URL", "sqlite+aiosqlite:///./data/atlas.db")
 
 # ── Autenticación JWT ──────────────────────────────────────────────────────
-# C1: mismo problema de orden de imports que DATABASE_URL (ver arriba) —
-# api/auth.py leía JWT_ALGORITHM/JWT_EXPIRE_MINUTES con os.getenv() directo.
-# JWT_SECRET_KEY se deja fuera a propósito: auth.py ya lo lee de forma
-# perezosa dentro de una función (_secret()), evaluada en cada request, no al
-# importar el módulo — no sufre este bug, y no hay razón para mover una
-# constante sensible sin necesidad.
+# Mismo problema de orden de imports que DATABASE_URL (ver arriba):
+# api/auth.py leería JWT_ALGORITHM/JWT_EXPIRE_MINUTES con os.getenv()
+# directo si no estuvieran centralizadas aquí. JWT_SECRET_KEY se deja fuera
+# a propósito: auth.py ya lo lee de forma perezosa dentro de una función
+# (_secret()), evaluada en cada request, no al importar el módulo — no
+# sufre este bug, y no hay razón para mover una constante sensible sin
+# necesidad.
 JWT_ALGORITHM: str = os.getenv("JWT_ALGORITHM", "HS256")
 JWT_EXPIRE_MINUTES: int = int(os.getenv("JWT_EXPIRE_MINUTES", "10080"))  # 7 días
 
 # ── Registro de nuevas cuentas ─────────────────────────────────────────────
-# C1: api/routes/auth.py se importa en main.py después de que algo más ya
-# forzó la carga de este módulo, así que en la práctica no sufría el bug de
-# orden — se centraliza aquí de todas formas por consistencia con
-# DATABASE_URL/JWT_*, con el mismo default y el mismo parseo exacto.
+# api/routes/auth.py se importa en main.py después de que algo más ya
+# fuerza la carga de este módulo, así que en la práctica no sufriría el
+# mismo bug de orden que DATABASE_URL/JWT_* — se centraliza aquí de todas
+# formas por consistencia, con el mismo default y el mismo parseo exacto.
 REGISTER_ENABLED: bool = os.getenv("REGISTER_ENABLED", "false").lower() == "true"

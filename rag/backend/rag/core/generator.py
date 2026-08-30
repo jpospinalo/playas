@@ -1,20 +1,19 @@
 """Adaptador síncrono de conveniencia para invocar el grafo RAG real desde
 herramientas offline (los scripts de evaluación en ``evaluation/``).
 
-T4.2 — restaura ``rag.core.generator.generate_answer``: los scripts
-``evaluation/ragas_eval_gemma.py`` y ``evaluation/ragas_eval_ollama.py``
-hacían ``from rag.core.generator import generate_answer`` contra un módulo
-que ya no existía en el código actual (quedó huérfano tras la migración del
-agente a un único grafo determinista en ``rag.core.agent``).
+Existe porque ``evaluation/ragas_eval_gemma.py`` y
+``evaluation/ragas_eval_ollama.py`` hacen
+``from rag.core.generator import generate_answer``: sin este módulo, ese
+import fallaría contra la arquitectura actual de un único grafo
+determinista en ``rag.core.agent``.
 
 No reimplementa retrieval ni generación: invoca exactamente el mismo grafo
-que sirve ``/api/query`` (``rag.core.agent.build_graph()``, sin modificarlo)
-y reutiliza la misma extracción de respuesta que usa la API
-(``rag.core.agent.extract_answer_from_state`` — C7: antes se importaba
-desde ``rag.api.main``, lo que forzaba cargar FastAPI y toda la capa HTTP
-solo por esta función pura; ahora ambos la importan desde ``core.agent``,
-sin duplicar la lógica ni depender uno del otro), para no arriesgar que
-ambas rutas diverjan.
+que sirve ``/api/query`` (``rag.core.agent.build_graph()``, sin
+modificarlo) y reutiliza la misma extracción de respuesta que usa la API
+(``rag.core.agent.extract_answer_from_state``, importada por ambos desde
+``core.agent`` — no desde ``rag.api.main``, para no forzar cargar FastAPI y
+toda la capa HTTP solo por esta función pura, ni duplicar la lógica entre
+ambos — así ambas rutas no pueden divergir).
 
 Cada llamada compila un grafo nuevo y usa un ``thread_id`` efímero propio —
 sin relación con conversaciones reales ni memoria compartida entre preguntas

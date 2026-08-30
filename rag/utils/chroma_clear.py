@@ -7,11 +7,11 @@ default) y la bandera ``--execute`` para intentar el borrado; aun con
 confirmación. Se cancela si la confirmación no coincide o si la ejecución no
 es interactiva (sin terminal disponible para confirmar con seguridad).
 
-T2.4: host/puerto vienen de ``rag.config`` (resolución centralizada de
-``.env``, T2.3) en vez de un ``load_dotenv()`` propio. ``--collection``
-sigue sin tener default propio ni tomar ``CHROMA_COLLECTION`` del entorno:
-un borrado siempre exige que quien lo ejecuta escriba el nombre exacto de la
-colección de forma explícita, nunca uno resuelto implícitamente.
+Host y puerto vienen de ``rag.config`` (resolución centralizada de
+``.env``) en vez de un ``load_dotenv()`` propio. ``--collection`` sigue sin
+tener default propio ni tomar ``CHROMA_COLLECTION`` del entorno: un borrado
+siempre exige que quien lo ejecuta escriba el nombre exacto de la colección
+de forma explícita, nunca uno resuelto implícitamente.
 """
 
 from __future__ import annotations

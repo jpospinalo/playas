@@ -162,14 +162,13 @@ def _history_for_analysis(messages: list[BaseMessage], question: str) -> str:
 def extract_answer_from_state(state: dict) -> str:
     """Extrae el contenido del último ``AIMessage`` del state del grafo.
 
-    C7: vivía como una función privada (``_extract_answer_from_state``) en
-    ``rag.api.main``, y ``rag.core.generator`` — un adaptador pensado para
-    uso offline, sin servidor (ver su docstring) — la importaba desde ahí.
-    Eso invertía la dependencia: una herramienta de ``core/`` terminaba
-    forzando la carga completa de FastAPI, los routers y la base de datos
-    solo por esta función pura. Se mueve aquí, pública y tipada, para que
-    tanto ``api.main`` como ``core.generator`` la importen desde el mismo
-    lugar sin duplicar la lógica ni depender uno del otro.
+    Vive aquí, pública y tipada, en vez de en ``rag.api.main`` (de donde
+    también la importa ``rag.core.generator`` — un adaptador pensado para
+    uso offline, sin servidor; ver su docstring): así ninguna herramienta
+    de ``core/`` termina forzando la carga completa de FastAPI, los routers
+    y la base de datos solo por esta función pura, y tanto ``api.main``
+    como ``core.generator`` la importan desde el mismo lugar sin duplicar
+    la lógica ni depender uno del otro.
     """
     messages = state.get("messages", [])
     for msg in reversed(messages):
@@ -235,9 +234,9 @@ async def retrieve_forced_node(state: AgentState) -> dict:
             k_candidates=k_candidates,
             doc_types=doc_types,
         )
-        # T3.2: una sola capa de concurrencia — ainvoke() orquesta BM25 y el
+        # Una sola capa de concurrencia — ainvoke() orquesta BM25 y el
         # retriever vectorial internamente (asyncio.gather + to_thread, sin
-        # ThreadPoolExecutor anidado). Ya no se envuelve aquí en
+        # ThreadPoolExecutor anidado). No se envuelve aquí en
         # asyncio.to_thread(retriever.invoke, ...).
         docs = await retriever.ainvoke(query)
         selected = docs[:k]
@@ -258,23 +257,23 @@ async def generate_node(state: AgentState) -> dict:
         llm = get_generation_llm()
         chain = llm | StrOutputParser()
         question = _compose_generation_question(state)
-        # T3.7 + C8: métrica interna de tamaño real del prompt de generación,
-        # solo para logs — no afecta ni sustituye a `context_tokens` (campo
+        # Métrica interna de tamaño real del prompt de generación, solo
+        # para logs — no afecta ni sustituye a `context_tokens` (campo
         # público, calculado en api/main.py a partir del historial en
-        # `state["messages"]`). C8: en vez de sumar `len()` de las piezas por
-        # separado (subestimaba el tamaño real: ignoraba el texto literal
+        # `state["messages"]`). En vez de sumar `len()` de las piezas por
+        # separado (subestimaría el tamaño real: ignora el texto literal
         # del template — las etiquetas <context>/<question>, el recordatorio
         # de citación, y en el caso sin system role el envoltorio
-        # "INSTRUCCIONES:\n...\n\n") se formatea el MISMO ChatPromptTemplate
+        # "INSTRUCCIONES:\n...\n\n"), se formatea el MISMO ChatPromptTemplate
         # que se le pasa al LLM y se cuentan los caracteres de los mensajes
         # ya formateados — el tamaño exacto de lo que efectivamente se
-        # envía. H2: se formatea UNA sola vez — `prompt.ainvoke(...)`
-        # construye el `PromptValue` que se usa tanto para medir
-        # `full_context_chars` (vía `to_messages()`, templating local, sin
-        # red) como para invocar al LLM directamente (`chain.ainvoke`, sin
-        # el `prompt` de vuelta en el pipe) — antes se formateaba el mismo
-        # prompt dos veces: una aquí y otra, de forma implícita, dentro del
-        # chain LCEL al incluir `prompt | llm`.
+        # envía. Se formatea UNA sola vez: `prompt.ainvoke(...)` construye
+        # el `PromptValue` que se usa tanto para medir `full_context_chars`
+        # (vía `to_messages()`, templating local, sin red) como para invocar
+        # al LLM directamente (`chain.ainvoke`, sin el `prompt` de vuelta en
+        # el pipe) — evita formatear el mismo prompt dos veces: una aquí y
+        # otra, de forma implícita, dentro del chain LCEL al incluir
+        # `prompt | llm`.
         prompt_value = await prompt.ainvoke({"context": context, "question": question})
         full_context_chars = sum(len(str(m.content)) for m in prompt_value.to_messages())
         log_full_context_size(chars=full_context_chars)

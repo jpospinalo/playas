@@ -14,9 +14,9 @@ ese destino.
 
 **Credencial explícita.** ``/api/query/stream`` exige autenticación JWT
 (``get_query_user`` → ``get_current_user`` en ``rag/backend/rag/api/main.py``
-y ``rate_limit.py``); la versión anterior de este script nunca envió un
-``Authorization`` header, así que toda petición habría fallado con 401 contra
-el backend real. El token se lee de la variable de entorno
+y ``rate_limit.py``); sin un header ``Authorization`` explícito, toda
+petición fallaría con 401 contra el backend real. El token se lee de la
+variable de entorno
 ``RAG_LOAD_TEST_TOKEN`` (recomendado — no queda en el historial de la shell)
 o de ``--token`` si no hay alternativa. Sin ninguno de los dos, el script se
 detiene con un mensaje claro en vez de reportar en silencio una tanda de

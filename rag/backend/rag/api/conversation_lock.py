@@ -1,5 +1,5 @@
 # rag/api/conversation_lock.py
-"""T3.5 — lock por conversación. C3 — ciclo de vida administrado.
+"""Lock por conversación, con ciclo de vida administrado.
 
 Añadido ÚNICAMENTE porque un test demuestra interleaving real (ver
 ``tests/unit/test_conversation_lock.py``): dos turnos concurrentes sobre el
@@ -14,14 +14,12 @@ No serializa nada más: conversaciones con ``thread_id`` distintos siguen
 avanzando en paralelo sin esperarse entre sí (ver el mismo archivo de
 pruebas, ``test_concurrent_turns_on_different_threads_start_without_waiting_on_each_other``).
 
-C3 — ciclo de vida: la versión original (``lock_for()``) entregaba el
-``asyncio.Lock`` crudo desde un ``defaultdict`` que nunca eliminaba claves —
-crecía con el total histórico de conversaciones distintas, no con las que
-realmente tienen un turno en vuelo, pese a que su propio docstring afirmaba
-lo contrario. Se sustituye por ``hold(key)``, un context manager async que
-cuenta referencias (titular + quienes esperan) y elimina la entrada en
-cuanto nadie más la necesita — sin debilitar la serialización por
-conversación que demostró T3.5.
+Ciclo de vida: ``hold(key)`` es un context manager async que cuenta
+referencias (titular + quienes esperan) sobre el ``asyncio.Lock`` de cada
+conversación y elimina la entrada del ``defaultdict`` en cuanto nadie más
+la necesita — el diccionario crece solo con las conversaciones que
+realmente tienen un turno en vuelo, no con el total histórico de
+conversaciones distintas.
 """
 
 from __future__ import annotations

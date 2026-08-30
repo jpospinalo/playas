@@ -19,13 +19,11 @@ class OllamaEmbeddingClient:
     """
 
     def __init__(self) -> None:
-        # T2.4: antes leía OLLAMA_BASE_URL/OLLAMA_EMBEDDING_MODEL (con sus
-        # alias OLLAMA_EMBED_BASE_URL/OLLAMA_EMBED_MODEL) directamente vía
-        # os.getenv(), sin ningún load_dotenv() propio — dependía en
-        # silencio de que algún otro módulo ya hubiera cargado el .env antes
-        # de que se instanciara este cliente. Ahora toma los valores ya
-        # resueltos de rag.config (misma precedencia de alias), sin esa
-        # dependencia implícita del orden de import.
+        # Toma OLLAMA_BASE_URL/OLLAMA_EMBEDDING_MODEL (con sus alias
+        # OLLAMA_EMBED_BASE_URL/OLLAMA_EMBED_MODEL) ya resueltos de
+        # rag.config, en vez de leerlos directamente vía os.getenv(): evita
+        # depender en silencio de que algún otro módulo ya haya cargado el
+        # .env antes de que se instancie este cliente.
         self.base_url = OLLAMA_BASE_URL
         self.model = OLLAMA_EMBEDDING_MODEL
         # Sesión compartida: reutiliza la conexión HTTP entre llamadas sin
@@ -77,8 +75,8 @@ class OllamaEmbeddingClient:
         """Compatibilidad retroactiva: acepta EXACTAMENTE un texto.
 
         No implementa un lote real —Ollama no lo ofrece— y por eso rechaza
-        explícitamente cero o varios textos en vez de aceptarlos e ignorar
-        todos menos el primero, como hacía la versión anterior.
+        explícitamente cero o varios textos, en vez de aceptarlos e ignorar
+        todos menos el primero.
         """
         if len(texts) != 1:
             raise ValueError(

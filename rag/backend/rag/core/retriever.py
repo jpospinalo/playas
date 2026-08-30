@@ -6,7 +6,7 @@ con búsqueda semántica (embeddings de Ollama vía ChromaDB) usando Weighted
 Reciprocal Rank Fusion (RRF, c=160). Los sub-retrievers se ejecutan en
 paralelo desde una única capa de concurrencia async (``asyncio.gather`` +
 ``asyncio.to_thread`` por sub-retriever, sin ningún ``ThreadPoolExecutor``
-propio — T3.2) cuando se invoca vía ``ainvoke()``; ``invoke()`` (síncrono)
+propio) cuando se invoca vía ``ainvoke()``; ``invoke()`` (síncrono)
 sigue disponible y produce el mismo resultado, ejecutando los sub-retrievers
 secuencialmente.
 
@@ -20,11 +20,11 @@ Componentes principales:
   - ``OllamaReranker`` — reranker opcional basado en LLM (no usado en el flujo
     principal; disponible para experimentación).
 
-C10: ``balance_by_doc_type()`` se retiró de este módulo por ser código
-muerto demostrable — su único consumidor en todo el repo era un archivo de
-pruebas dedicado exclusivamente a ejercitarla (``test_retriever_balance.py``,
-retirado junto con ella), sin ningún caller real en ``api/``, ``core/`` ni
-``evaluation/``. Ver ``tests/unit/test_retriever_no_dead_code.py``.
+``balance_by_doc_type()`` no existe en este módulo: su único consumidor en
+todo el repo era un archivo de pruebas dedicado exclusivamente a
+ejercitarla (``test_retriever_balance.py``), sin ningún caller real en
+``api/``, ``core/`` ni ``evaluation/`` — código muerto demostrable, retirado
+junto con su test. Ver ``tests/unit/test_retriever_no_dead_code.py``.
 """
 
 from __future__ import annotations
@@ -56,10 +56,10 @@ from .embeddings import OllamaEmbeddings
 # Configuración
 # ---------------------------------------------------------------------
 #
-# T2.4: CHROMA_HOST/CHROMA_PORT/CHROMA_COLLECTION_NAME/OLLAMA_RERANK_*
-# ahora vienen de rag.config (resolución centralizada de .env, T2.3) en vez
-# de leerse aquí con un load_dotenv() + os.getenv() propios. Mismos nombres
-# y misma precedencia de alias que antes — ver rag/config.py.
+# CHROMA_HOST/CHROMA_PORT/CHROMA_COLLECTION_NAME/OLLAMA_RERANK_* vienen de
+# rag.config (resolución centralizada de .env) en vez de leerse aquí con un
+# load_dotenv() + os.getenv() propios. Mismos nombres y misma precedencia
+# de alias — ver rag/config.py.
 
 EMBEDDINGS = OllamaEmbeddings()
 
@@ -205,10 +205,9 @@ def bm25_index_is_empty() -> bool:
 
     Distingue "aún no inicializado" (``_bm25_base is None`` → ``False``, ya
     que no hay nada que reportar como vacío todavía) de "inicializado pero
-    sin evidencia" (``True``). Pensado como gancho interno para un futuro
-    endpoint de readiness (T2.5): permite comprobar el estado del corpus sin
-    volver a consultar Chroma en cada chequeo. No expone estado nuevo por sí
-    sola —no hay ningún endpoint que la use todavía—.
+    sin evidencia" (``True``). La usa ``GET /api/ready`` (ver
+    ``api/main.py``) para comprobar el estado del corpus sin volver a
+    consultar Chroma en cada chequeo.
     """
     return _bm25_base is not None and not _bm25_base.docs
 
@@ -341,7 +340,7 @@ class HybridEnsembleRetriever(BaseRetriever):
     Retriever híbrido que combina varios sub-retrievers usando
     Weighted Reciprocal Rank Fusion (RRF).
 
-    Concurrencia (T3.2): una sola capa. ``ainvoke()`` (usado por el grafo en
+    Concurrencia: una sola capa. ``ainvoke()`` (usado por el grafo en
     producción, ver ``agent.retrieve_forced_node``) despacha todos los
     sub-retrievers con ``asyncio.gather`` + ``asyncio.to_thread`` — cada
     sub-retriever corre en el executor por defecto de asyncio, sin crear

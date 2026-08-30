@@ -1,5 +1,5 @@
 # rag/core/observability.py
-"""T3.1 — observabilidad/logging del pipeline RAG.
+"""Observabilidad/logging del pipeline RAG.
 
 Instrumentación pura (no cambia ningún comportamiento de negocio): latencia
 por etapa del grafo, ruta de clasificación, conteo de documentos
@@ -90,7 +90,7 @@ class ActiveQueryTracker:
 
 def log_full_context_size(*, chars: int) -> None:
     """Registra el tamaño del prompt de generación, medido en caracteres de
-    los mensajes que ``ChatPromptTemplate`` produjo (T3.7).
+    los mensajes que ``ChatPromptTemplate`` produjo.
 
     Métrica puramente interna, solo para logs: nunca se expone por la API ni
     se guarda en ningún estado. Distinta a propósito del campo público
@@ -102,7 +102,7 @@ def log_full_context_size(*, chars: int) -> None:
     consumo real de contexto sin alterar el significado ni el valor de
     ``context_tokens``.
 
-    H2: el conteo son caracteres del CONTENIDO de los mensajes que arma
+    El conteo son caracteres del CONTENIDO de los mensajes que arma
     LangChain al formatear el ``ChatPromptTemplate`` — no bytes de la
     serialización de red hacia el proveedor (que añade su propio formato de
     request) ni una cuenta exacta de tokens según el tokenizador específico

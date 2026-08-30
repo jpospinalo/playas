@@ -17,10 +17,10 @@ from .embeddings import OllamaEmbeddingFunction
 # Constantes y configuración
 # ---------------------------------------------------------------------
 #
-# T2.4: CHROMA_HOST/CHROMA_PORT/CHROMA_COLLECTION_NAME ahora vienen de
-# rag.config (resolución centralizada de .env, T2.3) en vez de un
-# load_dotenv() + os.getenv() propios. Mismos nombres y misma precedencia de
-# alias que antes.
+# CHROMA_HOST/CHROMA_PORT/CHROMA_COLLECTION_NAME vienen de rag.config
+# (resolución centralizada de .env) en vez de un load_dotenv() +
+# os.getenv() propios. Mismos nombres y misma precedencia de alias que el
+# resto de la app.
 
 EMBED_FN = OllamaEmbeddingFunction()
 
@@ -281,11 +281,11 @@ def build_or_load_vectorstore(
                             f"Chunks: {batch_ids[:5]}"
                         ) from exc
                 else:
-                    # C6: esta cláusula es el `else` de `try/except` (no del
+                    # Esta cláusula es el `else` de `try/except` (no del
                     # `for`) — se ejecuta únicamente cuando el `try` NO lanzó,
                     # nunca durante un reintento manejado por el `except` de
-                    # arriba. Es el único punto de salida por éxito: antes
-                    # faltaba, y el `for` seguía hasta agotar MAX_RETRIES
+                    # arriba. Es el único punto de salida por éxito: sin
+                    # ella, el `for` seguiría hasta agotar MAX_RETRIES
                     # intentos incluso tras un batch ya insertado
                     # correctamente, reenviando el mismo batch a Ollama
                     # (embeddings) y Chroma (add) hasta 2 veces más de forma
