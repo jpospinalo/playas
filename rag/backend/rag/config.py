@@ -187,15 +187,42 @@ QUERY_ENRICHMENT_ENABLED: bool = os.getenv("QUERY_ENRICHMENT_ENABLED", "true").l
 # modelo activo; los avisos del frontend se derivan de este valor.
 CONTEXT_LIMIT_TOKENS: int = int(os.getenv("CONTEXT_LIMIT_TOKENS", "200000"))
 
+# A3.6 — presupuesto de contexto en modo observación. Umbral (en caracteres
+# del prompt de generación ya formateado — ver
+# `core.observability.log_full_context_size`) por encima del cual se emite un
+# warning estructurado. Es un punto de partida deliberadamente conservador
+# para empezar a recolectar datos reales, no un límite calibrado: esta ola
+# NO trunca chunks ni respuestas, y no fija `max_tokens` de generación (eso
+# podría cortar respuestas jurídicas actualmente válidas). La calibración
+# queda sujeta a las mediciones de la Ola C.
+CONTEXT_BUDGET_WARNING_CHARS: int = int(os.getenv("RAG_CONTEXT_BUDGET_WARNING_CHARS", "80000"))
+
 # ── Protección de consultas RAG ─────────────────────────────────────────────
 # off: sin cambio funcional; observe: solo registra; enforce: responde 429.
-_rate_limit_mode = os.getenv("RAG_RATE_LIMIT_MODE", "off").strip().lower()
 RateLimitMode = Literal["off", "observe", "enforce"]
-RATE_LIMIT_MODE: RateLimitMode = (
-    cast(RateLimitMode, _rate_limit_mode)
-    if _rate_limit_mode in {"off", "observe", "enforce"}
-    else "off"
-)
+_VALID_MODES: frozenset[str] = frozenset({"off", "observe", "enforce"})
+
+
+def _parse_mode(env_var: str, default: str = "off") -> RateLimitMode:
+    """Lee y valida un modo off/observe/enforce desde una variable de entorno.
+
+    Un valor mal escrito en el entorno de despliegue no debe degradar
+    silenciosamente una protección a "off": si `env_var` está definida pero
+    su valor no es uno de los tres válidos, falla de forma explícita
+    nombrando la variable, en vez de asumir el default en silencio.
+    """
+    raw = os.getenv(env_var)
+    if raw is None:
+        return cast(RateLimitMode, default)
+    value = raw.strip().lower()
+    if value not in _VALID_MODES:
+        raise ValueError(
+            f"{env_var} tiene un valor inválido: {raw!r}. Debe ser uno de {sorted(_VALID_MODES)}."
+        )
+    return cast(RateLimitMode, value)
+
+
+RATE_LIMIT_MODE: RateLimitMode = _parse_mode("RAG_RATE_LIMIT_MODE")
 RATE_LIMIT_REQUESTS: int = int(os.getenv("RAG_RATE_LIMIT_REQUESTS", "10"))
 RATE_LIMIT_WINDOW_SECONDS: float = float(os.getenv("RAG_RATE_LIMIT_WINDOW_SECONDS", "60"))
 
@@ -203,12 +230,7 @@ RATE_LIMIT_WINDOW_SECONDS: float = float(os.getenv("RAG_RATE_LIMIT_WINDOW_SECOND
 # Límite independiente del de consultas RAG: mismo modelo (off/observe/enforce),
 # pero con su propia ventana, ya que generar título es una operación distinta
 # y más barata. off por defecto: sin cambio funcional.
-_title_rate_limit_mode = os.getenv("TITLE_RATE_LIMIT_MODE", "off").strip().lower()
-TITLE_RATE_LIMIT_MODE: RateLimitMode = (
-    cast(RateLimitMode, _title_rate_limit_mode)
-    if _title_rate_limit_mode in {"off", "observe", "enforce"}
-    else "off"
-)
+TITLE_RATE_LIMIT_MODE: RateLimitMode = _parse_mode("TITLE_RATE_LIMIT_MODE")
 TITLE_RATE_LIMIT_REQUESTS: int = int(os.getenv("TITLE_RATE_LIMIT_REQUESTS", "5"))
 TITLE_RATE_LIMIT_WINDOW_SECONDS: float = float(os.getenv("TITLE_RATE_LIMIT_WINDOW_SECONDS", "60"))
 
@@ -218,12 +240,7 @@ TITLE_RATE_LIMIT_WINDOW_SECONDS: float = float(os.getenv("TITLE_RATE_LIMIT_WINDO
 # request.client.host no considera un proxy de confianza (no hay política de
 # X-Forwarded-For configurada), así que enforce no debe activarse en entornos
 # detrás de un proxy/LB sin revisar esa política primero. off por defecto.
-_auth_rate_limit_mode = os.getenv("AUTH_RATE_LIMIT_MODE", "off").strip().lower()
-AUTH_RATE_LIMIT_MODE: RateLimitMode = (
-    cast(RateLimitMode, _auth_rate_limit_mode)
-    if _auth_rate_limit_mode in {"off", "observe", "enforce"}
-    else "off"
-)
+AUTH_RATE_LIMIT_MODE: RateLimitMode = _parse_mode("AUTH_RATE_LIMIT_MODE")
 AUTH_RATE_LIMIT_REQUESTS: int = int(os.getenv("AUTH_RATE_LIMIT_REQUESTS", "10"))
 AUTH_RATE_LIMIT_WINDOW_SECONDS: float = float(os.getenv("AUTH_RATE_LIMIT_WINDOW_SECONDS", "300"))
 
@@ -237,12 +254,7 @@ AUTH_RATE_LIMIT_WINDOW_SECONDS: float = float(os.getenv("AUTH_RATE_LIMIT_WINDOW_
 # consistencia, pero es un mecanismo distinto (semáforo de concurrencia, no
 # ventana deslizante) — ver rag.api.rate_limit.ConcurrencyBackpressure.
 # off por defecto: sin cambio funcional.
-_backpressure_mode = os.getenv("RAG_BACKPRESSURE_MODE", "off").strip().lower()
-BACKPRESSURE_MODE: RateLimitMode = (
-    cast(RateLimitMode, _backpressure_mode)
-    if _backpressure_mode in {"off", "observe", "enforce"}
-    else "off"
-)
+BACKPRESSURE_MODE: RateLimitMode = _parse_mode("RAG_BACKPRESSURE_MODE")
 BACKPRESSURE_MAX_CONCURRENT: int = int(os.getenv("RAG_BACKPRESSURE_MAX_CONCURRENT", "20"))
 
 # ── Base de datos ────────────────────────────────────────────────────────────
@@ -274,3 +286,49 @@ JWT_EXPIRE_MINUTES: int = int(os.getenv("JWT_EXPIRE_MINUTES", "10080"))  # 7 dí
 # mismo bug de orden que DATABASE_URL/JWT_* — se centraliza aquí de todas
 # formas por consistencia, con el mismo default y el mismo parseo exacto.
 REGISTER_ENABLED: bool = os.getenv("REGISTER_ENABLED", "false").lower() == "true"
+
+# ── Concurrencia de hashing de contraseñas (bcrypt) ─────────────────────────
+# bcrypt es deliberadamente costoso en CPU (ver api/passwords.py). Este valor
+# acota cuántas operaciones de hash/verificación pueden ejecutarse a la vez en
+# TODO el proceso — un semáforo module-level en api/passwords.py, reutilizado
+# por hash_password_async/verify_password_async, cubre automáticamente los
+# cinco sitios de llamada existentes (login, registro, alta de usuario admin,
+# cambio de contraseña admin, re-hash oportunista). Distinto de los rate
+# limiters de arriba: no es por usuario/IP/ventana, sino un tope de
+# concurrencia global de proceso, igual en espíritu a RAG_BACKPRESSURE_
+# MAX_CONCURRENT pero para bcrypt en vez de consultas RAG.
+PASSWORD_HASH_MAX_CONCURRENT: int = int(os.getenv("PASSWORD_HASH_MAX_CONCURRENT", "2"))
+if PASSWORD_HASH_MAX_CONCURRENT < 1:
+    raise ValueError(
+        "PASSWORD_HASH_MAX_CONCURRENT debe ser >= 1 "
+        f"(valor actual: {PASSWORD_HASH_MAX_CONCURRENT})."
+    )
+
+# ── Timeouts de consulta (A3.3) ─────────────────────────────────────────────
+# El ALB y Nginx delante de este servicio tienen 300s de timeout de
+# INACTIVIDAD (sin bytes nuevos en la conexión) — no un límite total de
+# duración. Los defaults de aquí son deliberadamente conservadores
+# (280/285s), pensados solo para producir un corte CONTROLADO (504 JSON /
+# evento SSE de error) unos segundos ANTES de que el proxy externo mate la
+# conexión sin avisar — no para acortar consultas legítimas. Valores
+# menores (90, 60, 240s) se descartaron como defaults iniciales: quedan
+# como candidatos para una calibración posterior con datos reales de
+# producción. Usar valores pequeños solo en pruebas, nunca como default de
+# despliegue.
+
+# /api/query (JSON, sin datos intermedios): timeout TOTAL de
+# `graph.ainvoke(...)` (enrich → retrieve → generate). Al vencer, el
+# endpoint responde 504 de forma controlada en vez de dejar que el proxy
+# corte la conexión sin explicación en el cliente.
+QUERY_TOTAL_TIMEOUT_SECONDS: float = float(os.getenv("RAG_QUERY_TOTAL_TIMEOUT_SECONDS", "280"))
+
+# /api/query/stream (SSE): deliberadamente SIN timeout total — los eventos
+# intermedios (`status`) mantienen viva la conexión más allá de 280s de
+# forma legítima; imponer un techo total cortaría consultas SSE largas pero
+# sanas. En su lugar, timeout POR ETAPA: si el grafo no produce NINGÚN
+# evento nuevo (ni `status` ni una actualización de estado) durante este
+# tiempo, se asume una etapa colgada y se corta de forma controlada — antes
+# de que esa inactividad llegue a los 300s del proxy externo.
+QUERY_STREAM_STAGE_TIMEOUT_SECONDS: float = float(
+    os.getenv("RAG_QUERY_STREAM_STAGE_TIMEOUT_SECONDS", "285")
+)

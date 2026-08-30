@@ -15,7 +15,7 @@ ver el `CLAUDE.md` en la raíz del repositorio para el mapa completo.
 
 ```bash
 make install        # uv sync --all-packages --group dev (workspace: backend/)
-make test            # pytest tests/unit/ -v (486 pruebas)
+make test            # pytest tests/unit/ -v
 make lint             # ruff check backend/rag/ tests/ evaluation/ scripts/ utils/
 make app              # uvicorn rag.api.main:app --app-dir backend --reload --port 8080 (desde rag/)
 ```
@@ -52,7 +52,7 @@ rag/
 ├── frontend/        # Next.js 16 / React 19 (bun)
 ├── infrastructure/  # Terraform: ECS Fargate, ALB, ECR, EFS
 ├── docker/           # Dockerfiles + nginx.conf
-├── evaluation/       # Scripts de evaluación RAGAS
+├── evaluation/       # Evaluación RAGAS + diagnósticos offline reproducibles (RRF, cobertura de citas)
 ├── scripts/          # Ops one-offs (Docker install, SageMaker, pruebas de carga)
 ├── utils/            # CLI: conteo/limpieza ChromaDB, listado de modelos Gemini
 ├── tests/            # unit/ + integration/

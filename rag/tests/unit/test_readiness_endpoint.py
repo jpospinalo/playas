@@ -24,6 +24,7 @@ que ``test_expanded_query_length.py``.
 from __future__ import annotations
 
 import asyncio
+from collections.abc import Iterator
 from types import SimpleNamespace
 
 import pytest
@@ -34,6 +35,10 @@ from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 import rag.api.main as main_module
 import rag.core.retriever as retriever_module
 from rag.api.models import Base
+
+# Engines creados por _working_db_setup() en esta ejecución de pytest,
+# pendientes de dispose() — ver _dispose_test_db_engines() más abajo.
+_pending_engines: list = []
 
 
 @pytest.fixture
@@ -80,7 +85,36 @@ async def _working_db_setup(tmp_path) -> async_sessionmaker:
     engine = create_async_engine(f"sqlite+aiosqlite:///{tmp_path}/ready_test.db")
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+    _pending_engines.append(engine)
     return async_sessionmaker(engine, expire_on_commit=False)
+
+
+@pytest.fixture(autouse=True)
+def _dispose_test_db_engines() -> Iterator[None]:
+    """Cierra, al final de cada prueba, cualquier engine que ``_working_db_setup()``
+    haya creado durante ella.
+
+    Sin este cierre explícito, el hilo en segundo plano de ``aiosqlite`` de
+    un engine podía seguir vivo después de que ``asyncio.run()`` cerrara su
+    propio event loop (varias pruebas de este archivo crean el engine así,
+    fuera de cualquier prueba async) y terminaba fallando con "Event loop is
+    closed" al intentar reportar su resultado — ruido intermitente
+    (``PytestUnhandledThreadExceptionWarning``) al correr la suite completa,
+    más visible al añadir pruebas async adicionales en el mismo proceso
+    (p.ej. A1.4 — ``test_shutdown_cleanup.py``). El dispose ocurre en su
+    propio ``asyncio.run()`` para no depender de si la prueba que lo generó
+    era sync o async.
+    """
+    yield
+    if not _pending_engines:
+        return
+    engines, _pending_engines[:] = list(_pending_engines), []
+
+    async def _dispose_all() -> None:
+        for engine in engines:
+            await engine.dispose()
+
+    asyncio.run(_dispose_all())
 
 
 def _client() -> TestClient:

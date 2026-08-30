@@ -24,11 +24,15 @@ class QueryRequest(BaseModel):
     )
     thread_id: str | None = Field(
         default=None,
+        min_length=1,
         max_length=128,
         description=(
             "Identificador de hilo de conversación. Si se proporciona, el agente mantiene "
             "el historial de mensajes entre requests (memoria multi-turno). "
-            "Si es None, cada request es independiente."
+            "Si es None, cada request es independiente. Si además se envía "
+            "conversation_id, este último mantiene la precedencia actual (ver "
+            "query_support._make_config: logical_id = conversation_id or thread_id "
+            "or uuid4()); thread_id no está deprecado."
         ),
     )
     doc_types: list[Literal["jurisprudencia", "normativa"]] | None = Field(
@@ -42,6 +46,7 @@ class QueryRequest(BaseModel):
     )
     conversation_id: str | None = Field(
         default=None,
+        min_length=1,
         max_length=64,
         description=(
             "ID de la conversación en la base de datos. "
@@ -51,6 +56,7 @@ class QueryRequest(BaseModel):
     )
     current_message_id: str | None = Field(
         default=None,
+        min_length=1,
         max_length=64,
         description=(
             "ID del mensaje de usuario ya persistido para el turno actual. Se excluye al "
@@ -86,8 +92,18 @@ class SourceFragment(BaseModel):
 
 
 class SourceGroup(BaseModel):
-    source: str = Field(default="", description="Nombre del archivo fuente; clave de agrupación")
-    title: str = Field(default="", description="Título legible del documento")
+    # A3.4 — `source`/`title`/`fragments` pasaron a ser requeridos (sin
+    # default): `_docs_to_source_groups` (api/query_support.py), único
+    # productor interno de este modelo, ya los provee siempre los tres
+    # explícitamente, así que no cambia el contrato de `/api/query`. Lo que
+    # sí habilita es que `AddMessageRequest.sources` (conversations.py)
+    # rechace con 422 una estructura arbitraria como `{"foo": "bar"}` — antes
+    # pasaba la validación completa porque los tres campos tenían default.
+    # `source`/`title` siguen aceptando "" (un doc sin esos metadatos sigue
+    # siendo válido); lo que ya no se acepta es la ausencia total de la
+    # clave.
+    source: str = Field(..., description="Nombre del archivo fuente; clave de agrupación")
+    title: str = Field(..., description="Título legible del documento")
     doc_type: str | None = Field(
         default=None,
         description="Tipo de documento: 'jurisprudencia' o 'normativa'. Permite al frontend "
@@ -98,7 +114,9 @@ class SourceGroup(BaseModel):
         description="Metadatos a nivel documento (Corporación, Radicado, Magistrado, Tema, Archivo, No)",
     )
     fragments: list[SourceFragment] = Field(
-        default_factory=list, description="Fragmentos recuperados pertenecientes a este documento"
+        ...,
+        min_length=1,
+        description="Fragmentos recuperados pertenecientes a este documento",
     )
 
 

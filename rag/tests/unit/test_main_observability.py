@@ -68,8 +68,12 @@ def test_query_endpoint_logs_retained_conversations_count_not_thread_id(
             r.message for r in caplog.records if r.message.startswith("retained_conversations=")
         ]
         assert len(retained_messages) == 1
-        # Al menos esta conversación quedó retenida en el checkpointer.
-        assert retained_messages[0] == "retained_conversations=1"
+        # Esta consulta no trae `conversation_id` ni `thread_id`: es efímera
+        # (basura de un solo uso, ver `_is_ephemeral_query` en api/main.py) y
+        # A3.1 la borra del checkpointer antes de este log — por eso el
+        # conteo es 0, no 1. Antes de A3.1 este checkpoint quedaba huérfano
+        # para siempre; el conteo en 0 es justamente la prueba de que ya no.
+        assert retained_messages[0] == "retained_conversations=0"
 
         full_output = "\n".join(r.message for r in caplog.records)
         assert "test-user" not in full_output

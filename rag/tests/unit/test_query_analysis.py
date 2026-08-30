@@ -111,6 +111,42 @@ def test_arbitrary_question_cannot_be_forced_into_scope_by_model() -> None:
     assert result.route == "out_of_scope"
 
 
+def test_invalid_json_parse_failure_never_logs_raw_model_output(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """El log de fallo de parseo debe registrar solo metadatos (proveedor,
+    clase de excepción, aviso de fallback) — nunca el texto crudo devuelto
+    por el modelo, que puede repetir la pregunta, el historial o cualquier
+    dato sensible. Se usa un decoy string que, si apareciera en el log,
+    demostraría que el texto crudo se filtró."""
+    decoy = "SECRETO-USUARIO-no-debe-aparecer-en-el-log-12345"
+    malformed_json = f"esto no es JSON válido — {decoy}"
+
+    with caplog.at_level("WARNING", logger="rag.core.query_enricher"):
+        result = _parse_json_response(
+            malformed_json,
+            "¿Qué permisos exige DIMAR para pescar desde una playa?",
+            provider_name="OpenAIProvider",
+        )
+
+    assert result.expanded_query == "¿Qué permisos exige DIMAR para pescar desde una playa?"
+    assert decoy not in caplog.text
+    assert malformed_json not in caplog.text
+    assert "provider=OpenAIProvider" in caplog.text
+    assert "exception_class=JSONDecodeError" in caplog.text
+    assert "fallback_used=true" in caplog.text
+
+
+def test_invalid_json_parse_failure_logs_unknown_provider_when_not_given(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    with caplog.at_level("WARNING", logger="rag.core.query_enricher"):
+        _parse_json_response("not json at all", "¿Puede un hotel impedir el acceso público?")
+
+    assert "provider=unknown" in caplog.text
+    assert "exception_class=JSONDecodeError" in caplog.text
+
+
 def test_analysis_prompt_injects_question_and_history(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(
         query_enricher,

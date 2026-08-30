@@ -21,8 +21,14 @@ from langgraph.graph import END, START, StateGraph
 from langgraph.graph.message import add_messages
 from typing_extensions import TypedDict
 
+from ..config import CONTEXT_BUDGET_WARNING_CHARS
 from .llm_factory import get_active_provider, get_generation_llm
-from .observability import log_citation_format_error, log_full_context_size, stage_timer
+from .observability import (
+    log_citation_format_error,
+    log_context_budget_warning,
+    log_full_context_size,
+    stage_timer,
+)
 from .prompts import AGENT_FALLBACK_HUMAN_TEMPLATE, AGENT_SYSTEM
 from .query_enricher import EnrichedQuery, QueryRoute, enrich_query_async
 from .retriever import get_ensemble_retriever
@@ -277,6 +283,12 @@ async def generate_node(state: AgentState) -> dict:
         prompt_value = await prompt.ainvoke({"context": context, "question": question})
         full_context_chars = sum(len(str(m.content)) for m in prompt_value.to_messages())
         log_full_context_size(chars=full_context_chars)
+        # A3.6 — presupuesto de contexto en modo observación: solo advierte,
+        # no trunca ni fija max_tokens (ver CONTEXT_BUDGET_WARNING_CHARS).
+        if full_context_chars > CONTEXT_BUDGET_WARNING_CHARS:
+            log_context_budget_warning(
+                chars=full_context_chars, doc_count=len(docs), stage="generate"
+            )
         answer = str(await chain.ainvoke(prompt_value)).strip()
 
         if not _validate_citations(answer, len(docs)):

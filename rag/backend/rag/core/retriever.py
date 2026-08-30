@@ -37,7 +37,7 @@ from langchain_chroma import Chroma
 from langchain_core.callbacks import CallbackManagerForRetrieverRun
 from langchain_core.documents import Document
 from langchain_core.retrievers import BaseRetriever
-from pydantic import ConfigDict, Field
+from pydantic import ConfigDict, Field, model_validator
 
 from rag.config import CHROMA_COLLECTION as CHROMA_COLLECTION_NAME
 from rag.config import (
@@ -219,6 +219,26 @@ def init_retrievers() -> None:
     _get_bm25_base()
 
 
+def close_retrievers() -> None:
+    """Libera los singletons del retriever al apagar la aplicación.
+
+    Cierra la sesión HTTP del cliente de embeddings compartido (``EMBEDDINGS``,
+    la única conexión propia que este módulo mantiene abierta) y resetea los
+    singletons de módulo (cliente Chroma, vectorstore, índice BM25) a
+    ``None`` para que un ``init_retrievers()`` posterior — por ejemplo entre
+    pruebas — los reconstruya desde cero. No invoca ningún método privado o
+    no documentado del cliente de Chroma: su conexión HTTP se libera junto
+    con el objeto en cuanto pierde todas las referencias. Idempotente: llamar
+    dos veces no falla (``EMBEDDINGS.close()`` ya lo es, y resetear a
+    ``None`` un singleton que ya es ``None`` es un no-op).
+    """
+    global _chroma_client, _chroma_vectorstore, _bm25_base
+    EMBEDDINGS.close()
+    _chroma_client = None
+    _chroma_vectorstore = None
+    _bm25_base = None
+
+
 # ---------------------------------------------------------------------
 # Utilidades: cargar docs de Chroma
 # ---------------------------------------------------------------------
@@ -228,19 +248,30 @@ def load_all_docs_from_chroma() -> list[Document]:
     """
     Lee todos los documentos de la colección en Chroma usando el cliente
     singleton (evita abrir nuevas conexiones en cada llamada).
+
+    ``ids``/``documents``/``metadatas`` son tres listas paralelas devueltas
+    por la misma llamada a Chroma — deben tener exactamente la misma
+    longitud. Antes, ``zip(..., strict=False)`` truncaba en silencio a la
+    más corta si alguna vez no coincidían (una respuesta corrupta o
+    parcial), descartando candidatos sin ningún aviso. Se falla
+    explícitamente en su lugar.
     """
     collection = _get_chroma_client().get_collection(name=CHROMA_COLLECTION_NAME)
     raw = collection.get(include=["documents", "metadatas"])
 
-    docs: list[Document] = []
     ids = raw.get("ids", [])
+    documents = raw.get("documents", [])
+    metadatas = raw.get("metadatas", [])
+    if not (len(ids) == len(documents) == len(metadatas)):
+        raise RuntimeError(
+            "Chroma devolvió longitudes inconsistentes para ids/documents/metadatas "
+            f"(ids={len(ids)}, documents={len(documents)}, metadatas={len(metadatas)}) "
+            "— no se puede construir el corpus de forma confiable a partir de una "
+            "respuesta corrupta o parcial."
+        )
 
-    for text, meta, _id in zip(
-        raw.get("documents", []),
-        raw.get("metadatas", []),
-        ids,
-        strict=False,
-    ):
+    docs: list[Document] = []
+    for text, meta, _id in zip(documents, metadatas, ids, strict=True):
         if not text:
             continue
         metadata: dict[str, Any] = meta or {}
@@ -354,8 +385,36 @@ class HybridEnsembleRetriever(BaseRetriever):
     id_key: str | None = "chunk_id"
     max_results: int = 4
 
+    @model_validator(mode="after")
+    def _validate_retrievers_and_weights_match(self) -> HybridEnsembleRetriever:
+        """Un ``HybridEnsembleRetriever`` con más pesos que retrievers (o
+        viceversa) es una configuración estructuralmente inválida: antes de
+        este chequeo, ``zip(all_results, self.weights, strict=False)`` en
+        ``_fuse()`` truncaba en silencio a la lista más corta, descartando
+        candidatos o pesos sin ningún aviso. Falla explícitamente en su
+        lugar, en el momento de construcción — antes de que llegue siquiera
+        una consulta. No cambia nada para la única configuración que este
+        módulo construye hoy (``get_ensemble_retriever()``: siempre 2
+        retrievers y 2 pesos, BM25 + vector), así que el ranking sobre una
+        configuración válida permanece idéntico.
+        """
+        if len(self.retrievers) != len(self.weights):
+            raise ValueError(
+                "HybridEnsembleRetriever: el número de retrievers "
+                f"({len(self.retrievers)}) no coincide con el número de pesos "
+                f"({len(self.weights)})."
+            )
+        return self
+
     def _fuse(self, all_results: list[list[Document]]) -> list[Document]:
         """Fusión RRF ponderada, común a las rutas síncrona y asíncrona."""
+        if len(all_results) != len(self.weights):
+            raise ValueError(
+                "HybridEnsembleRetriever._fuse(): el número de listas de resultados "
+                f"({len(all_results)}) no coincide con el número de pesos "
+                f"({len(self.weights)}) — configuración estructural inválida antes "
+                "de fusionar."
+            )
         scores: dict[str, float] = {}
         doc_by_id: dict[str, Document] = {}
 

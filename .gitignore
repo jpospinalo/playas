@@ -32,6 +32,12 @@ data/gold/
 # 5) Resultados de evaluación (pueden contener datos sensibles)
 evaluation/ragas_eval_dataset.json
 evaluation/ragas_eval_summary.json
+# C6/8.3 — evidencia generada por los diagnósticos offline de Ola C
+# (rrf_diagnostic.py, citation_coverage.py): reproducible a partir de los
+# scripts versionados, no se versiona el JSON de salida en sí. Patrón
+# acotado a propósito a *_report.json dentro de evaluation/ — no un patrón
+# más amplio que pudiera ocultar datasets o fuentes también versionados ahí.
+rag/evaluation/*_report.json
 
 # 6) Configuración sensible / secretos
 .env*

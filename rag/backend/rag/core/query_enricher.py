@@ -31,6 +31,7 @@ from .domain_scope import (
     EnrichedQuery,
     _apply_domain_guard,
     _fallback,
+    _is_deterministic_terminal,
 )
 from .domain_scope import (
     QueryRoute as QueryRoute,
@@ -73,6 +74,8 @@ def _parse_json_response(
     text: str,
     question: str,
     history_context: str = "",
+    *,
+    provider_name: str = "",
 ) -> EnrichedQuery:
     """Extract and validate JSON from a plain-text LLM response.
 
@@ -90,10 +93,14 @@ def _parse_json_response(
         if not result.expanded_query.strip():
             return _fallback(question, history_context)
         return _apply_domain_guard(result, question, history_context)
-    except (json.JSONDecodeError, ValidationError, TypeError):
+    except (json.JSONDecodeError, ValidationError, TypeError) as exc:
+        # Nunca se registra el texto crudo del modelo (puede contener la
+        # pregunta, el historial o cualquier dato sensible que el LLM haya
+        # repetido) — solo metadatos suficientes para diagnosticar el fallo.
         logger.warning(
-            "Failed to parse enrichment JSON response; using fallback.\nRaw output: %s",
-            text[:300],
+            "query_enrichment_json_parse_failed provider=%s exception_class=%s fallback_used=true",
+            provider_name or "unknown",
+            type(exc).__name__,
         )
         return _fallback(question, history_context)
 
@@ -132,8 +139,19 @@ def enrich_query(question: str, history_context: str = "") -> EnrichedQuery:
     If enrichment is disabled or any error occurs, returns a fallback
     :class:`EnrichedQuery` whose ``expanded_query`` equals the original
     question so the pipeline is unaffected.
+
+    Also skips the LLM call — going straight to :func:`_fallback` — when
+    ``question`` alone (regardless of ``history_context``) already resolves
+    to a deterministic terminal route (see :func:`_is_deterministic_terminal`):
+    an unambiguous off-topic request, or a greeting/meta-question. Any other
+    route (``in_scope``, ``needs_clarification``, or an ``out_of_scope`` that
+    isn't from that unambiguous family) can still change with history or
+    genuine ambiguity, so the LLM keeps running for those.
     """
     if not ENRICHMENT_ENABLED:
+        return _fallback(question, history_context)
+
+    if _is_deterministic_terminal(question):
         return _fallback(question, history_context)
 
     try:
@@ -145,7 +163,9 @@ def enrich_query(question: str, history_context: str = "") -> EnrichedQuery:
             raw: str = (prompt | llm | StrOutputParser()).invoke(
                 {"question": question, "history": history_context or "(sin historial)"}
             )
-            return _parse_json_response(raw, question, history_context)
+            return _parse_json_response(
+                raw, question, history_context, provider_name=type(provider).__name__
+            )
 
         result = cast(
             EnrichedQuery,
@@ -163,8 +183,16 @@ def enrich_query(question: str, history_context: str = "") -> EnrichedQuery:
 
 
 async def enrich_query_async(question: str, history_context: str = "") -> EnrichedQuery:
-    """Async variant of :func:`enrich_query`."""
+    """Async variant of :func:`enrich_query`.
+
+    Keeps the same deterministic-terminal short-circuit as the sync version
+    — see its docstring — so both variants skip the LLM in exactly the same
+    cases.
+    """
     if not ENRICHMENT_ENABLED:
+        return _fallback(question, history_context)
+
+    if _is_deterministic_terminal(question):
         return _fallback(question, history_context)
 
     try:
@@ -176,7 +204,9 @@ async def enrich_query_async(question: str, history_context: str = "") -> Enrich
             raw: str = await (prompt | llm | StrOutputParser()).ainvoke(
                 {"question": question, "history": history_context or "(sin historial)"}
             )
-            return _parse_json_response(raw, question, history_context)
+            return _parse_json_response(
+                raw, question, history_context, provider_name=type(provider).__name__
+            )
 
         result = cast(
             EnrichedQuery,

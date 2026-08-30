@@ -14,7 +14,11 @@ dev = [
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-pythonpath = ["backend"]
+# "." (rag/ root) se añade en C1.1 para que las pruebas puedan importar el
+# paquete `evaluation/` (diagnóstico RRF) igual que ya importan `rag` vía
+# "backend" — no cambia qué pruebas se descubren (testpaths sigue apuntando
+# solo a tests/), solo qué queda en sys.path durante la colección.
+pythonpath = ["backend", "."]
 addopts = "-v --tb=short"
 markers = [
     "integration: tests that require live external services (Chroma, Ollama, Gemini)",

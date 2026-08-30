@@ -120,6 +120,27 @@ def log_full_context_size(*, chars: int) -> None:
     )
 
 
+def log_context_budget_warning(*, chars: int, doc_count: int, stage: str) -> None:
+    """A3.6 — advertencia estructurada cuando el prompt de generación supera
+    ``config.CONTEXT_BUDGET_WARNING_CHARS`` (ver ese umbral para el
+    razonamiento). Modo puramente observacional: esta ola no trunca chunks
+    ni respuestas ni fija ``max_tokens`` — solo dimensiona el problema para
+    calibrar en la Ola C.
+
+    Registra únicamente caracteres totales, cantidad de documentos y la
+    etapa — nunca contenido, igual que ``log_full_context_size``, del cual
+    esta función es un complemento (no lo sustituye): esta se activa
+    condicionalmente y a nivel warning, la otra registra siempre a nivel
+    info.
+    """
+    logger.warning(
+        "context_budget_exceeded stage=%s full_context_chars=%d doc_count=%d",
+        stage,
+        chars,
+        doc_count,
+    )
+
+
 def log_retained_conversations(checkpointer: object) -> None:
     """Registra cuántas conversaciones (``thread_id``) retiene el checkpointer.
 

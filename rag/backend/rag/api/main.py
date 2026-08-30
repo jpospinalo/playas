@@ -39,10 +39,14 @@ from rag.api.routes.auth import router as auth_router
 from rag.api.routes.conversations import router as conversations_router
 from rag.api.routes.feedback import router as feedback_router
 from rag.api.schemas import QueryRequest, QueryResponse
-from rag.config import CONTEXT_LIMIT_TOKENS
+from rag.config import (
+    CONTEXT_LIMIT_TOKENS,
+    QUERY_STREAM_STAGE_TIMEOUT_SECONDS,
+    QUERY_TOTAL_TIMEOUT_SECONDS,
+)
 from rag.core.agent import extract_answer_from_state as _extract_answer_from_state
 from rag.core.observability import ActiveQueryTracker, log_retained_conversations
-from rag.core.retriever import bm25_index_is_empty, init_retrievers
+from rag.core.retriever import bm25_index_is_empty, close_retrievers, init_retrievers
 
 # Timeout corto por defecto para el chequeo de base de datos en /api/ready
 # — una base de datos colgada no debe bloquear el readiness probe
@@ -72,6 +76,65 @@ def get_graph() -> Any:
     return _graph
 
 
+def _is_ephemeral_query(request: QueryRequest) -> bool:
+    """``True`` si el checkpoint de esta consulta es basura de un solo uso.
+
+    ``_make_config`` genera un ``thread_id`` aleatorio cuando ni
+    ``conversation_id`` ni ``thread_id`` vienen en la request (ver su
+    docstring): ese identificador nunca se devuelve al cliente en
+    ``QueryResponse``/eventos SSE, así que ninguna solicitud futura puede
+    volver a referenciarlo — a diferencia de una conversación con
+    ``conversation_id`` (persistida en la base de datos, limpiada al
+    borrarla — A3.2) o con ``thread_id`` explícito (memoria multi-turno
+    efímera pero intencional: el cliente SÍ puede volver a usarlo). Sin este
+    chequeo, cada consulta de una sola vez sin memoria deja un checkpoint
+    huérfano en ``MemorySaver.storage`` para siempre — una fuga de memoria
+    del proceso sin ningún ciclo de vida que la limite.
+    """
+    return request.conversation_id is None and request.thread_id is None
+
+
+async def _cleanup_ephemeral_checkpoint(graph: Any, request: QueryRequest, thread_id: str) -> None:
+    """Borra el checkpoint de una consulta efímera (ver ``_is_ephemeral_query``).
+
+    Se llama siempre desde un ``finally`` — éxito, error de negocio o
+    cancelación — porque en los tres casos el checkpoint es igualmente
+    irrecuperable para el cliente. ``adelete_thread`` es idempotente (no-op
+    si el thread nunca llegó a escribir un checkpoint), así que es seguro
+    llamarlo incluso si la consulta falló antes de invocar el grafo.
+
+    C2 — un fallo de ``adelete_thread`` (backend del checkpointer caído,
+    error interno de LangGraph, lo que sea) se captura y se registra aquí
+    mismo, sin dejarlo propagar: antes, al no tener manejo propio, esta
+    función se invocaba dentro de un ``finally`` plano en ambos endpoints —
+    una excepción aquí reemplazaba en silencio (semántica de Python) el
+    valor de retorno o la excepción original que ese ``finally`` estaba
+    terminando de propagar, descartando una respuesta ya exitosa o
+    sustituyendo el error real por uno de limpieza sin relación. Solo se
+    captura ``Exception``: ``asyncio.CancelledError`` hereda de
+    ``BaseException`` en Python 3.8+, así que una cancelación real sigue
+    propagándose sin que este ``except`` la intercepte ni la silencie.
+
+    v1.2/C2 — el warning NO usa ``exc_info=True``: el mensaje de la
+    excepción (o su traceback formateado) puede contener, sin que este
+    código lo controle, cualquier valor que el backend del checkpointer
+    haya decidido incluir — potencialmente el propio ``thread_id`` u otro
+    identificador interno, si ese backend los interpola en su excepción. En
+    vez de arriesgarse a filtrar eso al log, se registra únicamente un
+    evento fijo más el nombre de la clase de la excepción
+    (``type(exc).__name__``, nunca su mensaje) — suficiente señal operativa
+    para saber que la limpieza falló y de qué tipo de error se trató, sin
+    exponer ``thread_id``, contenido de negocio (pregunta/respuesta) ni
+    ningún dato interpolado por una dependencia externa.
+    """
+    if not _is_ephemeral_query(request):
+        return
+    try:
+        await graph.checkpointer.adelete_thread(thread_id)
+    except Exception as exc:
+        logger.warning("ephemeral_checkpoint_cleanup_failed error_type=%s", type(exc).__name__)
+
+
 # ── Lifespan ───────────────────────────────────────────────────────────────
 
 
@@ -83,17 +146,46 @@ async def lifespan(app: FastAPI):
     - Índice BM25 completo (construido una sola vez desde el corpus de Chroma)
     - Vectorstore LangChain-Chroma (singleton)
     - Grafo LangGraph compilado (singleton con MemorySaver)
+
+    C3 — el ``try`` cubre TODO el arranque (``init_db``, ``init_retrievers``,
+    ``build_graph``), no solo el bloque ``yield``: un fallo en cualquiera de
+    los tres pasos de arranque llega igual al ``finally`` de abajo y libera
+    lo que ya alcanzó a abrirse, en vez de dejarlo huérfano. ``_graph`` (el
+    singleton de módulo, leído por ``get_graph()``) y ``app.state.graph``
+    (leído por rutas que reciben ``Request``, p. ej. la limpieza de
+    checkpoint en ``routes/conversations.py`` — C4) se asignan juntos al
+    mismo objeto compilado y se resetean juntos a ``None`` al salir, en
+    cualquier camino (apagado limpio, fallo de arranque, o excepción durante
+    el cuerpo del servidor) — nunca queda uno de los dos apuntando a un
+    grafo ya cerrado mientras el otro es ``None``.
+
+    Al salir, libera lo que este lifespan dejó abierto: la sesión HTTP del
+    cliente de embeddings y los singletons de retriever
+    (``close_retrievers()``), y el engine SQLAlchemy (``engine.dispose()``,
+    que cierra el pool de conexiones a la base de datos). Estas dos
+    liberaciones están en su propio ``try/finally`` anidado para que un
+    fallo de ``close_retrievers()`` nunca impida que ``engine.dispose()``
+    se ejecute.
     """
     import asyncio
 
-    from rag.api.database import init_db
+    from rag.api.database import engine, init_db
     from rag.core.agent import build_graph
 
     global _graph
-    await init_db()
-    await asyncio.to_thread(init_retrievers)
-    _graph = build_graph()
-    yield
+    try:
+        await init_db()
+        await asyncio.to_thread(init_retrievers)
+        _graph = build_graph()
+        app.state.graph = _graph
+        yield
+    finally:
+        _graph = None
+        app.state.graph = None
+        try:
+            close_retrievers()
+        finally:
+            await engine.dispose()
 
 
 # ── App ────────────────────────────────────────────────────────────────────
@@ -243,10 +335,26 @@ async def query(
                         user["sub"],
                         request.current_message_id,
                     )
-                    final_state = await graph.ainvoke(
-                        _build_graph_input(request, initial_messages),
-                        config=config,
+                    final_state = await asyncio.wait_for(
+                        graph.ainvoke(
+                            _build_graph_input(request, initial_messages),
+                            config=config,
+                        ),
+                        timeout=QUERY_TOTAL_TIMEOUT_SECONDS,
                     )
+                except TimeoutError as exc:
+                    # Corte CONTROLADO (504) antes de que el ALB/Nginx
+                    # delante de este servicio corten la conexión por
+                    # inactividad a los 300s (A3.3) — sin este timeout, el
+                    # cliente vería la conexión morir sin ninguna respuesta.
+                    logger.warning(
+                        "query_total_timeout timeout_seconds=%.1f",
+                        QUERY_TOTAL_TIMEOUT_SECONDS,
+                    )
+                    raise HTTPException(
+                        status_code=504,
+                        detail="La consulta superó el tiempo máximo permitido.",
+                    ) from exc
                 except Exception as exc:
                     if isinstance(exc, HTTPException):
                         raise
@@ -256,8 +364,9 @@ async def query(
                         detail="No fue posible procesar la consulta.",
                     ) from exc
                 finally:
-                    # Estado de retención DESPUÉS de esta consulta (incluye la
-                    # conversación que se acaba de procesar, si es nueva).
+                    # Limpieza ANTES del log de retención, para que ese conteo
+                    # ya refleje el estado sin la basura de un solo uso (A3.1).
+                    await _cleanup_ephemeral_checkpoint(graph, request, thread_id)
                     log_retained_conversations(graph.checkpointer)
 
     answer_raw = _extract_answer_from_state(final_state)
@@ -369,11 +478,26 @@ async def query_stream(
                 # La generación se valida dentro del grafo antes de exponerla. Por eso
                 # conservamos el último snapshot de este stream y emitimos su texto validado.
                 values: dict[str, Any] = {}
-                async for mode, payload in graph.astream(
+                # Timeout POR ETAPA (A3.3), no total: se mide el tiempo ENTRE
+                # eventos consecutivos del grafo (`__anext__()` en vez de
+                # `async for` directo), no la duración completa del stream —
+                # los eventos `status` intermedios pueden mantener viva una
+                # consulta más larga que QUERY_STREAM_STAGE_TIMEOUT_SECONDS
+                # legítimamente. Si el grafo se queda sin producir NINGÚN
+                # evento nuevo durante ese tiempo, se asume una etapa colgada.
+                stream_iterator = graph.astream(
                     _build_graph_input(request, initial_messages),
                     config=config,
                     stream_mode=["values", "custom"],
-                ):
+                ).__aiter__()
+                while True:
+                    try:
+                        mode, payload = await asyncio.wait_for(
+                            stream_iterator.__anext__(),
+                            timeout=QUERY_STREAM_STAGE_TIMEOUT_SECONDS,
+                        )
+                    except StopAsyncIteration:
+                        break
                     if mode == "custom":
                         # Eventos de estado emitidos por los nodos
                         if isinstance(payload, dict) and payload.get("type") == "status":
@@ -407,6 +531,22 @@ async def query_stream(
                 yield f"data: {event}\n\n"
                 yield "data: [DONE]\n\n"
 
+            except TimeoutError:
+                # Corte CONTROLADO antes de que el ALB/Nginx delante de este
+                # servicio corten la conexión por inactividad a los 300s
+                # (A3.3) — la etapa actual del grafo no produjo ningún
+                # evento nuevo dentro del timeout configurado.
+                logger.warning(
+                    "query_stream_stage_timeout timeout_seconds=%.1f",
+                    QUERY_STREAM_STAGE_TIMEOUT_SECONDS,
+                )
+                event = json.dumps(
+                    {
+                        "type": "error",
+                        "detail": "La consulta superó el tiempo máximo de espera de una etapa.",
+                    }
+                )
+                yield f"data: {event}\n\n"
             except Exception:
                 logger.exception("Error durante una consulta RAG por streaming")
                 event = json.dumps(
@@ -414,10 +554,23 @@ async def query_stream(
                 )
                 yield f"data: {event}\n\n"
             finally:
-                # Estado de retención DESPUÉS de esta consulta (incluye la
-                # conversación que se acaba de procesar, si es nueva).
-                log_retained_conversations(graph.checkpointer)
-                await resource_stack.aclose()
+                # C2 — try/finally anidado: resource_stack.aclose() (libera
+                # el lock de conversación y el slot de backpressure) debe
+                # ejecutarse pase lo que pase en el bloque interior, incluso
+                # si log_retained_conversations() llegara a lanzar (la
+                # limpieza del checkpoint ya no puede — ver
+                # _cleanup_ephemeral_checkpoint, que captura Exception
+                # internamente). Con el finally plano anterior, una
+                # excepción en cualquiera de las dos líneas de arriba habría
+                # impedido que esta última corriera, dejando el lock/slot
+                # sin liberar.
+                try:
+                    # Limpieza ANTES del log de retención, misma razón que en
+                    # /api/query — ver _cleanup_ephemeral_checkpoint (A3.1).
+                    await _cleanup_ephemeral_checkpoint(graph, request, thread_id)
+                    log_retained_conversations(graph.checkpointer)
+                finally:
+                    await resource_stack.aclose()
 
     return _ResourceManagedStreamingResponse(
         event_generator(),

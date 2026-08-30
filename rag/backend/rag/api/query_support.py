@@ -119,6 +119,19 @@ def _docs_to_source_groups(docs: list[Document]) -> list[SourceGroup]:
     return [groups[s] for s in order]
 
 
+def _conversation_thread_id(user_id: str, logical_id: str) -> str:
+    """Clave de checkpoint del ``MemorySaver``, aislada por usuario y conversación.
+
+    Único punto donde se arma este formato: lo usa ``_make_config`` (para
+    nuevas consultas) y ``routes/conversations.py::delete_conversation``
+    (para limpiar, con el mismo ``conversation_id`` como ``logical_id``, el
+    checkpoint en memoria del proceso al borrar la conversación de la base
+    de datos — A3.2). Mantenerlo en un solo lugar evita que ambos puntos se
+    desincronicen si el formato cambia en el futuro.
+    """
+    return f"user:{user_id}:conversation:{logical_id}"
+
+
 def _make_config(
     user_id: str,
     conversation_id: str | None,
@@ -127,7 +140,7 @@ def _make_config(
 ) -> dict:
     """Construye una clave de checkpoint aislada por usuario y conversación."""
     logical_id = conversation_id or thread_id or str(uuid.uuid4())
-    tid = f"user:{user_id}:conversation:{logical_id}"
+    tid = _conversation_thread_id(user_id, logical_id)
     return {
         "configurable": {"thread_id": tid},
         "recursion_limit": recursion_limit,

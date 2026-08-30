@@ -29,7 +29,7 @@ from pathlib import Path
 import pytest
 
 from rag import config as config_module
-from rag.config import _env, _find_repo_root, _resolve_env_file
+from rag.config import _env, _find_repo_root, _parse_mode, _resolve_env_file
 
 _BACKEND_DIR = Path(config_module.__file__).resolve().parents[1]
 
@@ -392,3 +392,128 @@ def test_rag_env_file_missing_fails_loudly_at_import(minimal_env) -> None:
     assert result.returncode != 0
     assert "RAG_ENV_FILE" in result.stderr
     assert "FileNotFoundError" in result.stderr
+
+
+# ---------------------------------------------------------------------------
+# _parse_mode() — A1.3: off/observe/enforce estricto, sin default silencioso
+# ---------------------------------------------------------------------------
+#
+# RAG_RATE_LIMIT_MODE, TITLE_RATE_LIMIT_MODE, AUTH_RATE_LIMIT_MODE y
+# RAG_BACKPRESSURE_MODE comparten esta validación. Antes, un valor no
+# reconocido (typo, valor de otra versión, etc.) se degradaba en silencio a
+# "off" — desactivando una protección sin ningún aviso. Ahora falla de forma
+# explícita, nombrando la variable, al importar rag.config.
+
+
+@pytest.mark.parametrize("value", ["off", "observe", "enforce"])
+def test_parse_mode_accepts_the_three_valid_values(
+    value: str, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setenv("SOME_MODE_VAR", value)
+    assert _parse_mode("SOME_MODE_VAR") == value
+
+
+def test_parse_mode_is_case_insensitive_and_strips_whitespace(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("SOME_MODE_VAR", "  ENFORCE  ")
+    assert _parse_mode("SOME_MODE_VAR") == "enforce"
+
+
+def test_parse_mode_uses_default_when_var_unset(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.delenv("SOME_MODE_VAR", raising=False)
+    assert _parse_mode("SOME_MODE_VAR") == "off"
+    assert _parse_mode("SOME_MODE_VAR", default="observe") == "observe"
+
+
+def test_parse_mode_raises_and_names_the_variable_on_invalid_value(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("SOME_MODE_VAR", "enable")
+    with pytest.raises(ValueError, match="SOME_MODE_VAR") as error:
+        _parse_mode("SOME_MODE_VAR")
+    assert "enable" in str(error.value)
+
+
+def test_parse_mode_treats_empty_string_as_invalid_not_as_unset(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # A diferencia de _env(), aquí una variable *definida* pero vacía es un
+    # valor inválido explícito, no "no definida" — evita que un despliegue
+    # con RAG_RATE_LIMIT_MODE="" (en vez de ausente) se interprete como off.
+    monkeypatch.setenv("SOME_MODE_VAR", "")
+    with pytest.raises(ValueError, match="SOME_MODE_VAR"):
+        _parse_mode("SOME_MODE_VAR")
+
+
+@pytest.mark.parametrize(
+    "env_var",
+    [
+        "RAG_RATE_LIMIT_MODE",
+        "TITLE_RATE_LIMIT_MODE",
+        "AUTH_RATE_LIMIT_MODE",
+        "RAG_BACKPRESSURE_MODE",
+    ],
+)
+def test_invalid_mode_env_var_fails_loudly_at_import(env_var: str, minimal_env) -> None:
+    env = minimal_env(**{env_var: "not-a-valid-mode"})
+    result = subprocess.run(
+        [sys.executable, "-c", "from rag import config"],
+        cwd=str(_BACKEND_DIR),
+        env=env,
+        capture_output=True,
+        text=True,
+        timeout=20,
+    )
+    assert result.returncode != 0, result.stdout
+    assert env_var in result.stderr
+    assert "ValueError" in result.stderr
+
+
+def test_all_four_mode_constants_default_to_off_when_unset(minimal_env) -> None:
+    out = _import_and_print(
+        minimal_env(),
+        [
+            "RATE_LIMIT_MODE",
+            "TITLE_RATE_LIMIT_MODE",
+            "AUTH_RATE_LIMIT_MODE",
+            "BACKPRESSURE_MODE",
+        ],
+    )
+    assert out == ["off", "off", "off", "off"]
+
+
+# ---------------------------------------------------------------------------
+# PASSWORD_HASH_MAX_CONCURRENT — C1/3.1: >= 1 exigido explícitamente al
+# importar, sin degradarse en silencio a un valor por defecto.
+# ---------------------------------------------------------------------------
+
+
+def test_password_hash_max_concurrent_defaults_to_two(minimal_env) -> None:
+    out = _import_and_print(minimal_env(), ["PASSWORD_HASH_MAX_CONCURRENT"])
+    assert out == ["2"]
+
+
+def test_password_hash_max_concurrent_reads_the_env_var(minimal_env) -> None:
+    out = _import_and_print(
+        minimal_env(PASSWORD_HASH_MAX_CONCURRENT="5"), ["PASSWORD_HASH_MAX_CONCURRENT"]
+    )
+    assert out == ["5"]
+
+
+@pytest.mark.parametrize("invalid_value", ["0", "-1", "-100"])
+def test_password_hash_max_concurrent_rejects_values_below_one(
+    invalid_value: str, minimal_env
+) -> None:
+    env = minimal_env(PASSWORD_HASH_MAX_CONCURRENT=invalid_value)
+    result = subprocess.run(
+        [sys.executable, "-c", "from rag import config"],
+        cwd=str(_BACKEND_DIR),
+        env=env,
+        capture_output=True,
+        text=True,
+        timeout=20,
+    )
+    assert result.returncode != 0, result.stdout
+    assert "PASSWORD_HASH_MAX_CONCURRENT" in result.stderr
+    assert "ValueError" in result.stderr

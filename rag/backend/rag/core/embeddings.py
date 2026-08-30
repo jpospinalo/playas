@@ -30,6 +30,15 @@ class OllamaEmbeddingClient:
         # cambiar el vector devuelto, el modelo ni el proveedor.
         self._session = requests.Session()
 
+    def close(self) -> None:
+        """Cierra la conexión HTTP subyacente.
+
+        Idempotente: ``requests.Session.close()`` ya lo es (llamarlo más de
+        una vez, o sobre una sesión nunca usada, no lanza), así que esto no
+        necesita una bandera de "ya cerrado" propia.
+        """
+        self._session.close()
+
     def embed_one(self, text: str) -> list[float]:
         """Calcula el embedding de un único texto.
 
@@ -108,3 +117,7 @@ class OllamaEmbeddings(LCEmbeddings):
 
     def embed_query(self, text: str) -> list[float]:
         return self._client.embed_one(text)
+
+    def close(self) -> None:
+        """Cierra la sesión HTTP del cliente subyacente. Idempotente."""
+        self._client.close()

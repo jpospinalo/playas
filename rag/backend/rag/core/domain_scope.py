@@ -520,6 +520,25 @@ def _inherit_context_from_history(
     return coastal, legal
 
 
+def _is_deterministic_terminal(question: str) -> bool:
+    """``True`` cuando ``_fallback()`` produce, para ``question`` sola, una
+    ruta terminal determinista que NO depende del historial: familia #5
+    (solicitud inequívocamente ajena -> ``out_of_scope``) o familia #6
+    (conversación/meta-pregunta -> ``conversation``).
+
+    ``_fallback()`` evalúa estas dos familias sobre ``clean_question`` en
+    solitario, ANTES de invocar ``_inherit_context_from_history()`` — ningún
+    historial, por extenso que sea, puede cambiar su resultado. Por eso (y
+    solo por eso) es seguro que ``enrich_query``/``enrich_query_async``
+    salten la llamada al LLM en estos dos casos exclusivamente: para
+    cualquier otra ruta (``in_scope``, ``needs_clarification``, o un
+    ``out_of_scope`` que no venga de la familia #5) el historial sí puede
+    cambiar el resultado, así que el LLM debe seguir evaluándose.
+    """
+    clean_question = question.strip()
+    return _has_unambiguous_off_topic_intent(clean_question) or _is_meta_question(clean_question)
+
+
 def _fallback(question: str, history_context: str = "") -> EnrichedQuery:
     """Clasificación conservadora usada si el LLM falla o está deshabilitado.
 

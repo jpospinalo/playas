@@ -201,3 +201,48 @@ def test_langchain_embeddings_embed_query_uses_embed_one(monkeypatch: pytest.Mon
 
     assert calls == ["consulta"]
     assert result == [9.0]
+
+
+# ---------------------------------------------------------------------------
+# close() — A1.4: liberar la sesión HTTP al apagar la app, sin llamadas de red
+# ---------------------------------------------------------------------------
+
+
+def test_client_close_closes_the_underlying_session(monkeypatch: pytest.MonkeyPatch) -> None:
+    client, mock_session = _client_with_mocked_session(monkeypatch)
+
+    client.close()
+
+    mock_session.close.assert_called_once()
+
+
+def test_client_close_is_idempotent(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Llamar close() dos veces no debe fallar — requests.Session.close() ya
+    es idempotente, y no se agrega ninguna bandera propia que lo impida."""
+    client, mock_session = _client_with_mocked_session(monkeypatch)
+
+    client.close()
+    client.close()
+
+    assert mock_session.close.call_count == 2
+
+
+def test_embeddings_close_delegates_to_client(monkeypatch: pytest.MonkeyPatch) -> None:
+    emb = OllamaEmbeddings()
+    mock_session = MagicMock()
+    monkeypatch.setattr(emb._client, "_session", mock_session)
+
+    emb.close()
+
+    mock_session.close.assert_called_once()
+
+
+def test_client_close_never_makes_a_network_call(monkeypatch: pytest.MonkeyPatch) -> None:
+    """close() no debe invocar post()/get() ni ningún otro método de red del
+    cliente subyacente — solo Session.close()."""
+    client, mock_session = _client_with_mocked_session(monkeypatch)
+
+    client.close()
+
+    mock_session.post.assert_not_called()
+    mock_session.get.assert_not_called()

@@ -15,8 +15,9 @@ from datetime import UTC, datetime, timedelta
 import jwt
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from sqlalchemy.ext.asyncio import AsyncSession
 
-import rag.api.database as database
+from rag.api.database import get_session
 from rag.api.models import User
 from rag.config import JWT_ALGORITHM as _ALGORITHM
 from rag.config import JWT_EXPIRE_MINUTES as _EXPIRE_MINUTES
@@ -76,15 +77,31 @@ async def get_optional_user(
 
 async def get_current_user(
     user: dict | None = Depends(get_optional_user),
+    session: AsyncSession = Depends(get_session),
 ) -> dict:
-    """Requiere autenticación y refresca identidad/rol desde la base de datos."""
+    """Requiere autenticación y refresca identidad/rol desde la base de datos.
+
+    A4.2 — antes abría su PROPIA sesión (``async with
+    database.async_session_factory() as session``), independiente de
+    cualquier sesión que el endpoint mismo pidiera vía ``Depends(get_session)``:
+    dos conexiones/sesiones por solicitud en cualquier endpoint protegido que
+    también usara la base de datos (todos los de ``routes/admin.py``,
+    ``routes/conversations.py``, ``routes/feedback.py``). Ahora declara
+    ``session`` como una dependencia más — FastAPI resuelve cada dependencia
+    UNA sola vez por solicitud y cachea el resultado (``use_cache=True`` es
+    el default de ``Depends``), así que si el propio endpoint también declara
+    ``Depends(get_session)`` recibe la MISMA instancia de sesión que ya usó
+    esta función, no una segunda. No se crea una sesión global ni se
+    comparte una ``AsyncSession`` entre solicitudes distintas: cada solicitud
+    sigue teniendo su propia sesión vía el generador de ``get_session``, que
+    FastAPI cierra al terminar la solicitud como siempre.
+    """
     if user is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Se requiere autenticación para este endpoint.",
         )
-    async with database.async_session_factory() as session:
-        db_user = await session.get(User, user["sub"])
+    db_user = await session.get(User, user["sub"])
     if db_user is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
