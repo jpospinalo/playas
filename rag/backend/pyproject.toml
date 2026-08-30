@@ -21,6 +21,7 @@ dependencies = [
     "requests",
     "numpy",
     "typing-extensions",
+    "starlette",
     "rich>=13.0",
     "langgraph>=0.3",
     "sqlalchemy[asyncio]>=2.0",
