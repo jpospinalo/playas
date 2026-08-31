@@ -1,5 +1,5 @@
 .PHONY: install lint format format-check typecheck test test-cov test-integration \
-	frontend-lint frontend-typecheck frontend-build quality app frontend clean help
+	frontend-lint frontend-typecheck frontend-test frontend-build quality app frontend clean help
 
 install:  ## Instalar dependencias de todo el workspace (incluidas las de desarrollo)
 	uv sync --all-packages --group dev
@@ -31,6 +31,9 @@ frontend-lint:  ## Lint del frontend (eslint)
 frontend-typecheck:  ## Chequeo de tipos del frontend (tsc --noEmit)
 	cd frontend && bun run typecheck
 
+frontend-test:  ## Ejecutar tests unitarios del frontend (Vitest)
+	cd frontend && bun run test
+
 frontend-build:  ## Build de producción del frontend
 	cd frontend && bun run build
 
@@ -41,6 +44,7 @@ quality:  ## Ejecutar todos los checks de calidad (backend + frontend), sin modi
 	$(MAKE) test
 	$(MAKE) frontend-lint
 	$(MAKE) frontend-typecheck
+	$(MAKE) frontend-test
 	$(MAKE) frontend-build
 
 app:  ## Lanzar la API FastAPI

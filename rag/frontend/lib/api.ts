@@ -66,7 +66,7 @@ export async function generateConversationTitle(
 	}
 }
 
-async function readErrorDetail(res: Response): Promise<string> {
+export async function readErrorDetail(res: Response): Promise<string> {
 	try {
 		const data = (await res.clone().json()) as { detail?: string };
 		if (data?.detail) return data.detail;

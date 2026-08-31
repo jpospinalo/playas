@@ -5,6 +5,10 @@ import { UserBubble } from "@/components/chat/UserBubble";
 interface MessageListProps {
 	messages: Message[];
 	ratedMessageIds: Set<string>;
+	/** A5 — IDs de mensajes de asistente cuyo reintento de guardado está en curso. */
+	persistingMessageIds?: Set<string>;
+	/** A5 — reintenta guardar una respuesta con `persistenceStatus: "failed"`. */
+	onRetryPersist?: (messageId: string) => void;
 	onMessageRate: (
 		messageId: string,
 		ratings: { pertinence: number; accuracy: number },
@@ -15,6 +19,8 @@ interface MessageListProps {
 export function MessageList({
 	messages,
 	ratedMessageIds,
+	persistingMessageIds,
+	onRetryPersist,
 	onMessageRate,
 }: MessageListProps) {
 	return (
@@ -31,6 +37,9 @@ export function MessageList({
 							sources={msg.sources ?? []}
 							messageId={msg.id}
 							isRated={ratedMessageIds.has(msg.id)}
+							persistenceFailed={msg.persistenceStatus === "failed"}
+							retryingPersist={persistingMessageIds?.has(msg.id) ?? false}
+							onRetryPersist={() => onRetryPersist?.(msg.id)}
 							onRate={onMessageRate}
 						/>
 					)),

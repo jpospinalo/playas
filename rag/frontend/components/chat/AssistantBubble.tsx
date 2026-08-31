@@ -18,6 +18,12 @@ interface AssistantBubbleProps {
 	sources: SourceGroup[];
 	messageId: string;
 	isRated: boolean;
+	/** A5 — true si esta respuesta (ya completa) no pudo guardarse en el backend. */
+	persistenceFailed?: boolean;
+	/** A5 — true mientras un reintento manual de guardado está en curso. */
+	retryingPersist?: boolean;
+	/** A5 — dispara el reintento manual de guardado. Requerido si `persistenceFailed`. */
+	onRetryPersist?: () => void;
 	onRate: (
 		messageId: string,
 		ratings: { pertinence: number; accuracy: number },
@@ -96,6 +102,9 @@ export function AssistantBubble({
 	sources,
 	messageId,
 	isRated,
+	persistenceFailed = false,
+	retryingPersist = false,
+	onRetryPersist,
 	onRate,
 }: AssistantBubbleProps) {
 	const processedText = useMemo(() => prepareMarkdown(text), [text]);
@@ -313,6 +322,26 @@ export function AssistantBubble({
 					)}
 				</div>
 				<SourcesAccordion sources={sources} />
+
+				{/* A5 — la respuesta ya se generó por completo pero no se pudo
+				    guardar: aviso no destructivo (la respuesta sigue visible
+				    arriba) + reintento manual, nunca automático. */}
+				{persistenceFailed && (
+					<div
+						role="alert"
+						className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 rounded-lg border border-danger/30 bg-danger-bg px-3 py-2 text-xs text-danger"
+					>
+						<span>Esta respuesta no se pudo guardar.</span>
+						<button
+							type="button"
+							onClick={() => onRetryPersist?.()}
+							disabled={retryingPersist}
+							className="font-medium underline underline-offset-2 hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-danger disabled:cursor-not-allowed disabled:opacity-60 disabled:no-underline"
+						>
+							{retryingPersist ? "Reintentando…" : "Reintentar"}
+						</button>
+					</div>
+				)}
 
 				{/* Action button: rate this message */}
 				<div className="relative mt-3 flex justify-end">

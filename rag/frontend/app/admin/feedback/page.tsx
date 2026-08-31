@@ -1,8 +1,14 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { API_URL } from "@/lib/config";
 import { throwIfSessionExpired } from "@/lib/api";
+import {
+	colombiaEndOfDayIso,
+	colombiaStartOfDayIso,
+	isValidDateRange,
+	isValidNumericRange,
+} from "@/lib/adminDateRange";
 
 const PAGE_SIZE = 20;
 
@@ -30,6 +36,20 @@ interface FeedbackResponse {
 	avg_ratings: RatingDimensions;
 	distributions: { overall: Record<string, number> };
 }
+
+interface AppliedFilters {
+	minOverall: string;
+	maxOverall: string;
+	startDate: string;
+	endDate: string;
+}
+
+const EMPTY_FILTERS: AppliedFilters = {
+	minOverall: "",
+	maxOverall: "",
+	startDate: "",
+	endDate: "",
+};
 
 function Stars({ rating }: { rating: number }) {
 	return (
@@ -82,16 +102,31 @@ export default function FeedbackPage() {
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 
-	// Filtros
-	const [minOverall, setMinOverall] = useState<string>("");
-	const [maxOverall, setMaxOverall] = useState<string>("");
-	const [startDate, setStartDate] = useState("");
-	const [endDate, setEndDate] = useState("");
+	// A3.1 — filtros "borrador" (lo que el usuario está escribiendo/
+	// seleccionando) separados de los filtros "aplicados" (lo que realmente
+	// se envía al backend). Escribir o seleccionar ya NO dispara ninguna
+	// solicitud por sí mismo — solo "Aplicar filtros" lo hace.
+	const [draftMinOverall, setDraftMinOverall] = useState<string>("");
+	const [draftMaxOverall, setDraftMaxOverall] = useState<string>("");
+	const [draftStartDate, setDraftStartDate] = useState("");
+	const [draftEndDate, setDraftEndDate] = useState("");
+	const [filterError, setFilterError] = useState<string | null>(null);
+	const [appliedFilters, setAppliedFilters] =
+		useState<AppliedFilters>(EMPTY_FILTERS);
+
+	// A3.5 — controla la cancelación de la solicitud anterior cuando una
+	// nueva la reemplaza (cambio de página o de filtros aplicados antes de
+	// que la solicitud previa terminara).
+	const abortRef = useRef<AbortController | null>(null);
 
 	const totalPages = Math.ceil(total / PAGE_SIZE);
 
 	const load = useCallback(
 		async (p: number) => {
+			abortRef.current?.abort();
+			const controller = new AbortController();
+			abortRef.current = controller;
+
 			setLoading(true);
 			setError(null);
 			try {
@@ -109,47 +144,91 @@ export default function FeedbackPage() {
 					page: String(p),
 					page_size: String(PAGE_SIZE),
 				});
-				if (minOverall) params.set("min_overall", minOverall);
-				if (maxOverall) params.set("max_overall", maxOverall);
-				if (startDate)
-					params.set("start_date", new Date(startDate).toISOString());
-				if (endDate) params.set("end_date", new Date(endDate).toISOString());
+				if (appliedFilters.minOverall)
+					params.set("min_overall", appliedFilters.minOverall);
+				if (appliedFilters.maxOverall)
+					params.set("max_overall", appliedFilters.maxOverall);
+				// A3.7 — interpretadas como día calendario de Colombia (UTC-5),
+				// no como medianoche UTC (ver lib/adminDateRange.ts).
+				if (appliedFilters.startDate)
+					params.set(
+						"start_date",
+						colombiaStartOfDayIso(appliedFilters.startDate),
+					);
+				if (appliedFilters.endDate)
+					params.set("end_date", colombiaEndOfDayIso(appliedFilters.endDate));
 
 				const res = await fetch(`${API_URL}/api/admin/feedback?${params}`, {
 					headers: { Authorization: `Bearer ${token}` },
+					signal: controller.signal,
 				});
 				await throwIfSessionExpired(res, token);
 				if (!res.ok) throw new Error(`Error ${res.status}`);
 				const data: FeedbackResponse = await res.json();
+				// Una respuesta obsoleta (ya reemplazada por una solicitud más
+				// nueva) no debe pisar el resultado vigente.
+				if (abortRef.current !== controller) return;
 				setItems(data.items);
 				setTotal(data.total);
 				setAvgRatings(
 					data.avg_ratings ?? { tone: 0, length: 0, usability: 0, overall: 0 },
 				);
 			} catch (e) {
+				// A3.6 — una cancelación deliberada (AbortError) no es un error
+				// visible para el usuario, es la consecuencia normal de haber
+				// disparado una solicitud más reciente.
+				if (e instanceof DOMException && e.name === "AbortError") return;
+				if (abortRef.current !== controller) return;
 				setError(e instanceof Error ? e.message : "Error desconocido");
 			} finally {
-				setLoading(false);
+				if (abortRef.current === controller) setLoading(false);
 			}
 		},
-		[minOverall, maxOverall, startDate, endDate],
+		[appliedFilters],
 	);
 
 	useEffect(() => {
 		load(page);
+		// G2.1 — aborta la solicitud activa al desmontar o antes de que el
+		// efecto se vuelva a ejecutar (cambio de página/filtros), para que
+		// una respuesta tardía de un efecto ya reemplazado nunca actualice
+		// el estado de un componente desmontado ni pise datos más nuevos.
+		return () => {
+			abortRef.current?.abort();
+		};
 	}, [load, page]);
 
 	function applyFilters() {
+		// A3.3 — validación antes de disparar la solicitud: mínimo <= máximo,
+		// fecha inicial <= fecha final.
+		if (!isValidNumericRange(draftMinOverall, draftMaxOverall)) {
+			setFilterError("El mínimo general no puede ser mayor que el máximo.");
+			return;
+		}
+		if (!isValidDateRange(draftStartDate, draftEndDate)) {
+			setFilterError(
+				"La fecha «Desde» no puede ser posterior a la fecha «Hasta».",
+			);
+			return;
+		}
+		setFilterError(null);
 		setPage(1);
-		load(1);
+		setAppliedFilters({
+			minOverall: draftMinOverall,
+			maxOverall: draftMaxOverall,
+			startDate: draftStartDate,
+			endDate: draftEndDate,
+		});
 	}
 
 	function clearFilters() {
-		setMinOverall("");
-		setMaxOverall("");
-		setStartDate("");
-		setEndDate("");
+		setDraftMinOverall("");
+		setDraftMaxOverall("");
+		setDraftStartDate("");
+		setDraftEndDate("");
+		setFilterError(null);
 		setPage(1);
+		setAppliedFilters(EMPTY_FILTERS);
 	}
 
 	return (
@@ -177,12 +256,16 @@ export default function FeedbackPage() {
 			<div className="rounded-2xl border border-border bg-elevated/40 p-5 backdrop-blur-sm">
 				<div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
 					<div>
-						<label className="mb-1 block text-xs text-subtle">
+						<label
+							htmlFor="fb-min-overall"
+							className="mb-1 block text-xs text-subtle"
+						>
 							General mínimo
 						</label>
 						<select
-							value={minOverall}
-							onChange={(e) => setMinOverall(e.target.value)}
+							id="fb-min-overall"
+							value={draftMinOverall}
+							onChange={(e) => setDraftMinOverall(e.target.value)}
 							className="w-full rounded-full border border-border bg-surface px-3 py-1.5 text-sm text-foreground focus:border-accent focus:outline-none focus:shadow-[0_0_0_3px_var(--accent-soft)]"
 						>
 							<option value="">—</option>
@@ -194,12 +277,16 @@ export default function FeedbackPage() {
 						</select>
 					</div>
 					<div>
-						<label className="mb-1 block text-xs text-subtle">
+						<label
+							htmlFor="fb-max-overall"
+							className="mb-1 block text-xs text-subtle"
+						>
 							General máximo
 						</label>
 						<select
-							value={maxOverall}
-							onChange={(e) => setMaxOverall(e.target.value)}
+							id="fb-max-overall"
+							value={draftMaxOverall}
+							onChange={(e) => setDraftMaxOverall(e.target.value)}
 							className="w-full rounded-full border border-border bg-surface px-3 py-1.5 text-sm text-foreground focus:border-accent focus:outline-none focus:shadow-[0_0_0_3px_var(--accent-soft)]"
 						>
 							<option value="">—</option>
@@ -211,24 +298,41 @@ export default function FeedbackPage() {
 						</select>
 					</div>
 					<div>
-						<label className="mb-1 block text-xs text-subtle">Desde</label>
+						<label
+							htmlFor="fb-start-date"
+							className="mb-1 block text-xs text-subtle"
+						>
+							Desde
+						</label>
 						<input
+							id="fb-start-date"
 							type="date"
-							value={startDate}
-							onChange={(e) => setStartDate(e.target.value)}
+							value={draftStartDate}
+							onChange={(e) => setDraftStartDate(e.target.value)}
 							className="w-full rounded-full border border-border bg-surface px-3 py-1.5 text-sm text-foreground focus:border-accent focus:outline-none focus:shadow-[0_0_0_3px_var(--accent-soft)]"
 						/>
 					</div>
 					<div>
-						<label className="mb-1 block text-xs text-subtle">Hasta</label>
+						<label
+							htmlFor="fb-end-date"
+							className="mb-1 block text-xs text-subtle"
+						>
+							Hasta
+						</label>
 						<input
+							id="fb-end-date"
 							type="date"
-							value={endDate}
-							onChange={(e) => setEndDate(e.target.value)}
+							value={draftEndDate}
+							onChange={(e) => setDraftEndDate(e.target.value)}
 							className="w-full rounded-full border border-border bg-surface px-3 py-1.5 text-sm text-foreground focus:border-accent focus:outline-none focus:shadow-[0_0_0_3px_var(--accent-soft)]"
 						/>
 					</div>
 				</div>
+				{filterError && (
+					<p role="alert" className="mt-3 text-xs text-danger">
+						{filterError}
+					</p>
+				)}
 				<div className="mt-4 flex items-center gap-2">
 					<button
 						onClick={applyFilters}
@@ -261,16 +365,19 @@ export default function FeedbackPage() {
 				<div className="overflow-hidden rounded-2xl border border-border bg-elevated/40 backdrop-blur-sm">
 					<div className="overflow-x-auto">
 						<table className="min-w-full divide-y divide-border text-sm">
+							<caption className="sr-only">
+								Calificaciones de conversación registradas
+							</caption>
 							<thead>
 								<tr className="bg-surface/50">
-									<th className="px-4 py-3 text-left text-[11px] font-medium text-subtle">Fecha</th>
-									<th className="px-4 py-3 text-left text-[11px] font-medium text-subtle">Usuario</th>
-									<th className="px-4 py-3 text-left text-[11px] font-medium text-subtle">Tono</th>
-									<th className="px-4 py-3 text-left text-[11px] font-medium text-subtle">Longitud</th>
-									<th className="px-4 py-3 text-left text-[11px] font-medium text-subtle">Usabilidad</th>
-									<th className="px-4 py-3 text-left text-[11px] font-medium text-subtle">General</th>
-									<th className="px-4 py-3 text-left text-[11px] font-medium text-subtle">Comentario</th>
-									<th className="px-4 py-3 text-left text-[11px] font-medium text-subtle">Conversación</th>
+									<th scope="col" className="px-4 py-3 text-left text-[11px] font-medium text-subtle">Fecha</th>
+									<th scope="col" className="px-4 py-3 text-left text-[11px] font-medium text-subtle">Usuario</th>
+									<th scope="col" className="px-4 py-3 text-left text-[11px] font-medium text-subtle">Tono</th>
+									<th scope="col" className="px-4 py-3 text-left text-[11px] font-medium text-subtle">Longitud</th>
+									<th scope="col" className="px-4 py-3 text-left text-[11px] font-medium text-subtle">Usabilidad</th>
+									<th scope="col" className="px-4 py-3 text-left text-[11px] font-medium text-subtle">General</th>
+									<th scope="col" className="px-4 py-3 text-left text-[11px] font-medium text-subtle">Comentario</th>
+									<th scope="col" className="px-4 py-3 text-left text-[11px] font-medium text-subtle">Conversación</th>
 								</tr>
 							</thead>
 							<tbody className="divide-y divide-border">

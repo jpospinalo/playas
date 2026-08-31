@@ -2,12 +2,17 @@
 
 import { useEffect, useState } from "react";
 import { motion } from "motion/react";
+import { MAX_QUESTION_CHARS, QUESTION_COUNTER_THRESHOLD } from "@/lib/contracts";
 
 type Variant = "hero" | "docked";
 
 interface ChatInputProps {
 	value: string;
 	loading: boolean;
+	/** A6 — true solo mientras hay una generación en streaming activa que se puede detener. */
+	canCancel?: boolean;
+	/** A6 — detiene la generación en curso. Requerido si `canCancel` puede ser true. */
+	onCancel?: () => void;
 	textareaRef: React.RefObject<HTMLTextAreaElement | null>;
 	onChange: (value: string) => void;
 	onSubmit: () => void;
@@ -20,6 +25,8 @@ const MAX_HEIGHT_PX = 200; // ~8 lines
 export function ChatInput({
 	value,
 	loading,
+	canCancel = false,
+	onCancel,
 	textareaRef,
 	onChange,
 	onSubmit,
@@ -35,7 +42,10 @@ export function ChatInput({
 	}, [value, textareaRef]);
 
 	function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
-		if (e.key === "Enter" && !e.shiftKey) {
+		// A7 — mientras un IME sigue componiendo (acentos, teclados CJK, etc.),
+		// el Enter que confirma la composición no debe también enviar la
+		// consulta: `isComposing` distingue ese Enter "interno" del real.
+		if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) {
 			e.preventDefault();
 			onSubmit();
 		}
@@ -43,6 +53,11 @@ export function ChatInput({
 
 	const trimmed = value.trim();
 	const canSend = !loading && trimmed.length > 0;
+	// A6 — mientras la generación está activa, el mismo botón se convierte
+	// en "Detener": nunca aparece durante la creación de la conversación ni
+	// la persistencia de la pregunta/respuesta (fases donde `loading` es
+	// true pero `canCancel` es false).
+	const showCancel = canCancel && Boolean(onCancel);
 	const [swing, setSwing] = useState(0);
 
 	const form = (
@@ -71,21 +86,64 @@ export function ChatInput({
 					autoComplete="off"
 					spellCheck
 					disabled={loading}
+					maxLength={MAX_QUESTION_CHARS}
 					className="min-w-0 flex-1 resize-none bg-transparent py-1 text-[15px] leading-6 text-foreground placeholder:text-subtle focus:outline-none disabled:opacity-50"
 					style={{ overflowY: "hidden" }}
 				/>
+				{/* A7 — contador visible solo cerca del límite; no es una
+				    validación en sí (el backend y `useChat.submit` ya la
+				    aplican), solo evita que el límite tome al usuario por
+				    sorpresa. */}
+				{value.length >= QUESTION_COUNTER_THRESHOLD && (
+					<span
+						aria-hidden="true"
+						className={`shrink-0 self-end pb-1.5 text-[11px] tabular-nums ${
+							value.length >= MAX_QUESTION_CHARS
+								? "text-danger"
+								: "text-subtle"
+						}`}
+					>
+						{value.length}/{MAX_QUESTION_CHARS}
+					</span>
+				)}
 				<button
-					type="submit"
-					disabled={!canSend}
-					aria-label={loading ? "Consultando…" : "Enviar consulta"}
-					onClick={() => canSend && setSwing((s) => s + 1)}
+					type={showCancel ? "button" : "submit"}
+					disabled={showCancel ? false : !canSend}
+					aria-label={
+						showCancel
+							? "Detener generación"
+							: loading
+								? "Consultando…"
+								: "Enviar consulta"
+					}
+					onClick={(e) => {
+						if (showCancel) {
+							e.preventDefault();
+							onCancel?.();
+							return;
+						}
+						if (canSend) setSwing((s) => s + 1);
+					}}
 					className={`flex h-8 w-8 shrink-0 items-center justify-center self-end rounded-xl transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
-						canSend
-							? "bg-accent text-accent-fg hover:bg-accent-hover"
-							: "bg-elevated text-subtle"
+						showCancel
+							? "bg-danger text-surface hover:opacity-90"
+							: canSend
+								? "bg-accent text-accent-fg hover:bg-accent-hover"
+								: "bg-elevated text-subtle"
 					}`}
 				>
-					{loading ? (
+					{showCancel ? (
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							width="12"
+							height="12"
+							viewBox="0 0 24 24"
+							fill="currentColor"
+							aria-hidden="true"
+						>
+							<rect x="4" y="4" width="16" height="16" rx="2" />
+						</svg>
+					) : loading ? (
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
 							width="13"

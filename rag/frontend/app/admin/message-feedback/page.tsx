@@ -1,8 +1,14 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { API_URL } from "@/lib/config";
 import { throwIfSessionExpired } from "@/lib/api";
+import {
+	colombiaEndOfDayIso,
+	colombiaStartOfDayIso,
+	isValidDateRange,
+	isValidNumericRange,
+} from "@/lib/adminDateRange";
 
 const PAGE_SIZE = 20;
 
@@ -31,6 +37,24 @@ interface MessageFeedbackResponse {
 		accuracy: Record<string, number>;
 	};
 }
+
+interface AppliedFilters {
+	minPertinence: string;
+	maxPertinence: string;
+	minAccuracy: string;
+	maxAccuracy: string;
+	startDate: string;
+	endDate: string;
+}
+
+const EMPTY_FILTERS: AppliedFilters = {
+	minPertinence: "",
+	maxPertinence: "",
+	minAccuracy: "",
+	maxAccuracy: "",
+	startDate: "",
+	endDate: "",
+};
 
 function Stars({ rating }: { rating: number }) {
 	return (
@@ -82,21 +106,37 @@ export default function MessageFeedbackPage() {
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 
-	// Filtros
-	const [minPertinence, setMinPertinence] = useState<string>("");
-	const [maxPertinence, setMaxPertinence] = useState<string>("");
-	const [minAccuracy, setMinAccuracy] = useState<string>("");
-	const [maxAccuracy, setMaxAccuracy] = useState<string>("");
-	const [startDate, setStartDate] = useState("");
-	const [endDate, setEndDate] = useState("");
+	// A3.1 — filtros "borrador" (lo que el usuario está escribiendo/
+	// seleccionando) separados de los filtros "aplicados" (lo que realmente
+	// se envía al backend). Escribir o seleccionar ya NO dispara ninguna
+	// solicitud por sí mismo — solo "Aplicar filtros" lo hace.
+	const [draftMinPertinence, setDraftMinPertinence] = useState<string>("");
+	const [draftMaxPertinence, setDraftMaxPertinence] = useState<string>("");
+	const [draftMinAccuracy, setDraftMinAccuracy] = useState<string>("");
+	const [draftMaxAccuracy, setDraftMaxAccuracy] = useState<string>("");
+	const [draftStartDate, setDraftStartDate] = useState("");
+	const [draftEndDate, setDraftEndDate] = useState("");
+	const [filterError, setFilterError] = useState<string | null>(null);
+	const [appliedFilters, setAppliedFilters] =
+		useState<AppliedFilters>(EMPTY_FILTERS);
 
-	// Expanding expected answer
+	// Expanding expected answer — sin relación con los filtros, se conserva
+	// intacto.
 	const [expandedId, setExpandedId] = useState<string | null>(null);
+
+	// A3.5 — controla la cancelación de la solicitud anterior cuando una
+	// nueva la reemplaza (cambio de página o de filtros aplicados antes de
+	// que la solicitud previa terminara).
+	const abortRef = useRef<AbortController | null>(null);
 
 	const totalPages = Math.ceil(total / PAGE_SIZE);
 
 	const load = useCallback(
 		async (p: number) => {
+			abortRef.current?.abort();
+			const controller = new AbortController();
+			abortRef.current = controller;
+
 			setLoading(true);
 			setError(null);
 			try {
@@ -114,58 +154,105 @@ export default function MessageFeedbackPage() {
 					page: String(p),
 					page_size: String(PAGE_SIZE),
 				});
-				if (minPertinence) params.set("min_pertinence", minPertinence);
-				if (maxPertinence) params.set("max_pertinence", maxPertinence);
-				if (minAccuracy) params.set("min_accuracy", minAccuracy);
-				if (maxAccuracy) params.set("max_accuracy", maxAccuracy);
-				if (startDate)
-					params.set("start_date", new Date(startDate).toISOString());
-				if (endDate) params.set("end_date", new Date(endDate).toISOString());
+				if (appliedFilters.minPertinence)
+					params.set("min_pertinence", appliedFilters.minPertinence);
+				if (appliedFilters.maxPertinence)
+					params.set("max_pertinence", appliedFilters.maxPertinence);
+				if (appliedFilters.minAccuracy)
+					params.set("min_accuracy", appliedFilters.minAccuracy);
+				if (appliedFilters.maxAccuracy)
+					params.set("max_accuracy", appliedFilters.maxAccuracy);
+				// A3.7 — interpretadas como día calendario de Colombia (UTC-5),
+				// no como medianoche UTC (ver lib/adminDateRange.ts).
+				if (appliedFilters.startDate)
+					params.set(
+						"start_date",
+						colombiaStartOfDayIso(appliedFilters.startDate),
+					);
+				if (appliedFilters.endDate)
+					params.set("end_date", colombiaEndOfDayIso(appliedFilters.endDate));
 
 				const res = await fetch(
 					`${API_URL}/api/admin/message-feedback?${params}`,
 					{
 						headers: { Authorization: `Bearer ${token}` },
+						signal: controller.signal,
 					},
 				);
 				await throwIfSessionExpired(res, token);
 				if (!res.ok) throw new Error(`Error ${res.status}`);
 				const data: MessageFeedbackResponse = await res.json();
+				// Una respuesta obsoleta (ya reemplazada por una solicitud más
+				// nueva) no debe pisar el resultado vigente.
+				if (abortRef.current !== controller) return;
 				setItems(data.items);
 				setTotal(data.total);
 			} catch (e) {
+				// A3.6 — una cancelación deliberada (AbortError) no es un error
+				// visible para el usuario, es la consecuencia normal de haber
+				// disparado una solicitud más reciente.
+				if (e instanceof DOMException && e.name === "AbortError") return;
+				if (abortRef.current !== controller) return;
 				setError(e instanceof Error ? e.message : "Error desconocido");
 			} finally {
-				setLoading(false);
+				if (abortRef.current === controller) setLoading(false);
 			}
 		},
-		[
-			minPertinence,
-			maxPertinence,
-			minAccuracy,
-			maxAccuracy,
-			startDate,
-			endDate,
-		],
+		[appliedFilters],
 	);
 
 	useEffect(() => {
 		load(page);
+		// G2.1 — aborta la solicitud activa al desmontar o antes de que el
+		// efecto se vuelva a ejecutar (cambio de página/filtros), para que
+		// una respuesta tardía de un efecto ya reemplazado nunca actualice
+		// el estado de un componente desmontado ni pise datos más nuevos.
+		return () => {
+			abortRef.current?.abort();
+		};
 	}, [load, page]);
 
 	function applyFilters() {
+		// A3.3 — validación antes de disparar la solicitud: mínimo <= máximo
+		// (en ambas dimensiones), fecha inicial <= fecha final.
+		if (!isValidNumericRange(draftMinPertinence, draftMaxPertinence)) {
+			setFilterError(
+				"La pertinencia mínima no puede ser mayor que la máxima.",
+			);
+			return;
+		}
+		if (!isValidNumericRange(draftMinAccuracy, draftMaxAccuracy)) {
+			setFilterError("La precisión mínima no puede ser mayor que la máxima.");
+			return;
+		}
+		if (!isValidDateRange(draftStartDate, draftEndDate)) {
+			setFilterError(
+				"La fecha «Desde» no puede ser posterior a la fecha «Hasta».",
+			);
+			return;
+		}
+		setFilterError(null);
 		setPage(1);
-		load(1);
+		setAppliedFilters({
+			minPertinence: draftMinPertinence,
+			maxPertinence: draftMaxPertinence,
+			minAccuracy: draftMinAccuracy,
+			maxAccuracy: draftMaxAccuracy,
+			startDate: draftStartDate,
+			endDate: draftEndDate,
+		});
 	}
 
 	function clearFilters() {
-		setMinPertinence("");
-		setMaxPertinence("");
-		setMinAccuracy("");
-		setMaxAccuracy("");
-		setStartDate("");
-		setEndDate("");
+		setDraftMinPertinence("");
+		setDraftMaxPertinence("");
+		setDraftMinAccuracy("");
+		setDraftMaxAccuracy("");
+		setDraftStartDate("");
+		setDraftEndDate("");
+		setFilterError(null);
 		setPage(1);
+		setAppliedFilters(EMPTY_FILTERS);
 	}
 
 	return (
@@ -185,12 +272,16 @@ export default function MessageFeedbackPage() {
 			<div className="rounded-2xl border border-border bg-elevated/40 p-5 backdrop-blur-sm">
 				<div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
 					<div>
-						<label className="mb-1 block text-xs text-subtle">
+						<label
+							htmlFor="mf-min-pertinence"
+							className="mb-1 block text-xs text-subtle"
+						>
 							Pertinencia mín
 						</label>
 						<select
-							value={minPertinence}
-							onChange={(e) => setMinPertinence(e.target.value)}
+							id="mf-min-pertinence"
+							value={draftMinPertinence}
+							onChange={(e) => setDraftMinPertinence(e.target.value)}
 							className="w-full rounded-full border border-border bg-surface px-3 py-1.5 text-sm text-foreground focus:border-accent focus:outline-none focus:shadow-[0_0_0_3px_var(--accent-soft)]"
 						>
 							<option value="">—</option>
@@ -202,12 +293,16 @@ export default function MessageFeedbackPage() {
 						</select>
 					</div>
 					<div>
-						<label className="mb-1 block text-xs text-subtle">
+						<label
+							htmlFor="mf-max-pertinence"
+							className="mb-1 block text-xs text-subtle"
+						>
 							Pertinencia máx
 						</label>
 						<select
-							value={maxPertinence}
-							onChange={(e) => setMaxPertinence(e.target.value)}
+							id="mf-max-pertinence"
+							value={draftMaxPertinence}
+							onChange={(e) => setDraftMaxPertinence(e.target.value)}
 							className="w-full rounded-full border border-border bg-surface px-3 py-1.5 text-sm text-foreground focus:border-accent focus:outline-none focus:shadow-[0_0_0_3px_var(--accent-soft)]"
 						>
 							<option value="">—</option>
@@ -219,12 +314,16 @@ export default function MessageFeedbackPage() {
 						</select>
 					</div>
 					<div>
-						<label className="mb-1 block text-xs text-subtle">
+						<label
+							htmlFor="mf-min-accuracy"
+							className="mb-1 block text-xs text-subtle"
+						>
 							Precisión mín
 						</label>
 						<select
-							value={minAccuracy}
-							onChange={(e) => setMinAccuracy(e.target.value)}
+							id="mf-min-accuracy"
+							value={draftMinAccuracy}
+							onChange={(e) => setDraftMinAccuracy(e.target.value)}
 							className="w-full rounded-full border border-border bg-surface px-3 py-1.5 text-sm text-foreground focus:border-accent focus:outline-none focus:shadow-[0_0_0_3px_var(--accent-soft)]"
 						>
 							<option value="">—</option>
@@ -236,12 +335,16 @@ export default function MessageFeedbackPage() {
 						</select>
 					</div>
 					<div>
-						<label className="mb-1 block text-xs text-subtle">
+						<label
+							htmlFor="mf-max-accuracy"
+							className="mb-1 block text-xs text-subtle"
+						>
 							Precisión máx
 						</label>
 						<select
-							value={maxAccuracy}
-							onChange={(e) => setMaxAccuracy(e.target.value)}
+							id="mf-max-accuracy"
+							value={draftMaxAccuracy}
+							onChange={(e) => setDraftMaxAccuracy(e.target.value)}
 							className="w-full rounded-full border border-border bg-surface px-3 py-1.5 text-sm text-foreground focus:border-accent focus:outline-none focus:shadow-[0_0_0_3px_var(--accent-soft)]"
 						>
 							<option value="">—</option>
@@ -253,24 +356,41 @@ export default function MessageFeedbackPage() {
 						</select>
 					</div>
 					<div>
-						<label className="mb-1 block text-xs text-subtle">Desde</label>
+						<label
+							htmlFor="mf-start-date"
+							className="mb-1 block text-xs text-subtle"
+						>
+							Desde
+						</label>
 						<input
+							id="mf-start-date"
 							type="date"
-							value={startDate}
-							onChange={(e) => setStartDate(e.target.value)}
+							value={draftStartDate}
+							onChange={(e) => setDraftStartDate(e.target.value)}
 							className="w-full rounded-full border border-border bg-surface px-3 py-1.5 text-sm text-foreground focus:border-accent focus:outline-none focus:shadow-[0_0_0_3px_var(--accent-soft)]"
 						/>
 					</div>
 					<div>
-						<label className="mb-1 block text-xs text-subtle">Hasta</label>
+						<label
+							htmlFor="mf-end-date"
+							className="mb-1 block text-xs text-subtle"
+						>
+							Hasta
+						</label>
 						<input
+							id="mf-end-date"
 							type="date"
-							value={endDate}
-							onChange={(e) => setEndDate(e.target.value)}
+							value={draftEndDate}
+							onChange={(e) => setDraftEndDate(e.target.value)}
 							className="w-full rounded-full border border-border bg-surface px-3 py-1.5 text-sm text-foreground focus:border-accent focus:outline-none focus:shadow-[0_0_0_3px_var(--accent-soft)]"
 						/>
 					</div>
 				</div>
+				{filterError && (
+					<p role="alert" className="mt-3 text-xs text-danger">
+						{filterError}
+					</p>
+				)}
 				<div className="mt-4 flex items-center gap-2">
 					<button
 						onClick={applyFilters}
@@ -303,13 +423,16 @@ export default function MessageFeedbackPage() {
 				<div className="overflow-hidden rounded-2xl border border-border bg-elevated/40 backdrop-blur-sm">
 					<div className="overflow-x-auto">
 						<table className="min-w-full divide-y divide-border text-sm">
+							<caption className="sr-only">
+								Calificaciones por mensaje registradas
+							</caption>
 							<thead>
 								<tr className="bg-surface/50">
-									<th className="px-4 py-3 text-left text-[11px] font-medium text-subtle">Fecha</th>
-									<th className="px-4 py-3 text-left text-[11px] font-medium text-subtle">Usuario</th>
-									<th className="px-4 py-3 text-left text-[11px] font-medium text-subtle">Pertinencia</th>
-									<th className="px-4 py-3 text-left text-[11px] font-medium text-subtle">Precisión</th>
-									<th className="px-4 py-3 text-left text-[11px] font-medium text-subtle">Respuesta esperada</th>
+									<th scope="col" className="px-4 py-3 text-left text-[11px] font-medium text-subtle">Fecha</th>
+									<th scope="col" className="px-4 py-3 text-left text-[11px] font-medium text-subtle">Usuario</th>
+									<th scope="col" className="px-4 py-3 text-left text-[11px] font-medium text-subtle">Pertinencia</th>
+									<th scope="col" className="px-4 py-3 text-left text-[11px] font-medium text-subtle">Precisión</th>
+									<th scope="col" className="px-4 py-3 text-left text-[11px] font-medium text-subtle">Respuesta esperada</th>
 								</tr>
 							</thead>
 							<tbody className="divide-y divide-border">

@@ -1,18 +1,38 @@
 "use client";
 
-import { useEffect, useRef, useState, type KeyboardEvent, type MouseEvent } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type KeyboardEvent,
+  type MouseEvent,
+} from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { expireAuthSession, getToken } from "@/lib/auth";
-import { throwIfSessionExpired } from "@/lib/api";
+import { readErrorDetail, throwIfSessionExpired } from "@/lib/api";
 import type { Conversation } from "@/hooks/useConversations";
 import { formatConversationDate } from "@/components/chat/conversationSidebarUtils";
 import { API_URL } from "@/lib/config";
 
+// A2 — el backend acepta hasta 120 caracteres para el título de una
+// conversación (`UpdateConversationRequest.title`, `max_length=120`); antes
+// el campo truncaba en silencio a 60 sin que esa cifra correspondiera a
+// ningún límite real del contrato.
+const MAX_TITLE_CHARS = 120;
 
 interface ConversationListProps {
   conversations: Conversation[];
   activeConversationId: string | null;
   loading: boolean;
+  /**
+   * A4 — mensaje del último intento fallido de refrescar el listado (ver
+   * `useConversations`). La lista de `conversations` recibida sigue siendo
+   * la última válida conocida incluso cuando este campo no es null: el
+   * fallo se muestra como un aviso, nunca como una lista vaciada.
+   */
+  loadError?: string | null;
+  /** Reintenta el refresco tras `loadError`. Requerido si se pasa `loadError`. */
+  onRetryLoad?: () => Promise<void>;
   onSelectConversation: (conv: Conversation) => Promise<void>;
   onNewChat: () => void;
   onConversationsRefresh?: () => Promise<void>;
@@ -22,15 +42,27 @@ export function ConversationList({
   conversations,
   activeConversationId,
   loading,
+  loadError = null,
+  onRetryLoad,
   onSelectConversation,
   onNewChat,
   onConversationsRefresh,
 }: ConversationListProps) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editTitle, setEditTitle] = useState("");
+  const [editError, setEditError] = useState<string | null>(null);
+  const [savingEdit, setSavingEdit] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [deletingInFlight, setDeletingInFlight] = useState(false);
   const [menuOpenId, setMenuOpenId] = useState<string | null>(null);
   const editInputRef = useRef<HTMLInputElement>(null);
+  // A2.5 — guardas síncronas contra doble envío por Enter+blur (o doble
+  // clic en "Eliminar"): se fijan ANTES del primer `await`, así que un
+  // segundo disparo que llegue mientras el primero sigue en vuelo se corta
+  // de inmediato, sin depender del re-render de los estados `saving*`.
+  const savingEditRef = useRef(false);
+  const deletingInFlightRef = useRef(false);
 
   useEffect(() => {
     if (editingId) editInputRef.current?.focus();
@@ -61,82 +93,179 @@ export function ConversationList({
     event.stopPropagation();
     setMenuOpenId(null);
     setDeletingId(null);
+    setDeleteError(null);
     setEditingId(conv.id);
     setEditTitle(conv.title ?? "");
+    setEditError(null);
   }
 
   async function saveEdit(convId: string) {
-    const title = editTitle.trim().slice(0, 60);
-    if (title) {
-      const token = getToken();
-      if (token) {
-        try {
-          const res = await fetch(`${API_URL}/api/conversations/${convId}`, {
-            method: "PATCH",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify({ title }),
-          });
-          await throwIfSessionExpired(res, token);
-        } catch {
-          // Error de red o sesión expirada (ya manejada por throwIfSessionExpired
-          // vía el evento global): no bloquea el flujo de edición local.
-        }
-        await onConversationsRefresh?.();
-      } else {
-        // Este componente solo se renderiza autenticado: si el token ya no
-        // está, notifica para que la UI se actualice en vez de descartar la
-        // edición en silencio.
-        expireAuthSession(null);
-      }
+    if (savingEditRef.current) return;
+
+    const original = conversations.find((c) => c.id === convId)?.title ?? "";
+    const title = editTitle.trim();
+
+    // A2.9 — título vacío: mantener la edición abierta con un mensaje de
+    // validación, nunca cerrarla ni enviar la solicitud.
+    if (!title) {
+      setEditError("El título no puede estar vacío.");
+      return;
     }
-    setEditingId(null);
+    if (title.length > MAX_TITLE_CHARS) {
+      setEditError(
+        `El título no puede superar ${MAX_TITLE_CHARS} caracteres.`,
+      );
+      return;
+    }
+    // A2.8 — sin cambios: cerrar la edición sin hacer ninguna solicitud.
+    if (title === original) {
+      setEditingId(null);
+      setEditError(null);
+      return;
+    }
+
+    const token = getToken();
+    if (!token) {
+      // Este componente solo se renderiza autenticado: si el token ya no
+      // está, notifica para que la UI se actualice en vez de descartar la
+      // edición en silencio.
+      expireAuthSession(null);
+      return;
+    }
+
+    savingEditRef.current = true;
+    setSavingEdit(true);
+    setEditError(null);
+    try {
+      const res = await fetch(`${API_URL}/api/conversations/${convId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ title }),
+      });
+      await throwIfSessionExpired(res, token);
+      // A2.1 — comprobar siempre res.ok después de tratar el 401: un
+      // fallo real (4xx/5xx) ya no se trataba como éxito silencioso.
+      if (!res.ok) {
+        setEditError(await readErrorDetail(res));
+        return;
+      }
+      // A2.3 — la edición solo se cierra cuando el renombrado fue
+      // confirmado por el backend.
+      setEditingId(null);
+      setEditError(null);
+      // A2.7 — refrescar la lista únicamente tras un éxito confirmado.
+      await onConversationsRefresh?.();
+    } catch (error) {
+      // A2.2 — error local comprensible, sin vaciar el historial: la
+      // edición se mantiene abierta para que el usuario pueda reintentar
+      // o cancelar con Escape.
+      setEditError(
+        error instanceof Error
+          ? error.message
+          : "No fue posible renombrar la conversación.",
+      );
+    } finally {
+      savingEditRef.current = false;
+      setSavingEdit(false);
+    }
   }
 
   function handleEditKeyDown(event: KeyboardEvent, convId: string) {
     if (event.key === "Enter") saveEdit(convId);
-    if (event.key === "Escape") setEditingId(null);
+    if (event.key === "Escape") {
+      setEditingId(null);
+      setEditError(null);
+    }
   }
 
   function requestDelete(convId: string, event: MouseEvent) {
     event.stopPropagation();
     setMenuOpenId(null);
     setEditingId(null);
+    setEditError(null);
     setDeletingId(convId);
+    setDeleteError(null);
   }
 
   async function confirmDelete(convId: string, event: MouseEvent) {
     event.stopPropagation();
+    if (deletingInFlightRef.current) return;
+
     const token = getToken();
-    if (token) {
-      try {
-        const res = await fetch(`${API_URL}/api/conversations/${convId}`, {
-          method: "DELETE",
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        await throwIfSessionExpired(res, token);
-      } catch {
-        // Error de red o sesión expirada (ya manejada por throwIfSessionExpired
-        // vía el evento global): no bloquea el flujo de eliminación local.
-      }
-      await onConversationsRefresh?.();
-    } else {
+    if (!token) {
       // Igual que en saveEdit: notifica si el token ya no está.
       expireAuthSession(null);
+      return;
     }
-    setDeletingId(null);
-    if (convId === activeConversationId) onNewChat();
+
+    deletingInFlightRef.current = true;
+    setDeletingInFlight(true);
+    setDeleteError(null);
+    try {
+      const res = await fetch(`${API_URL}/api/conversations/${convId}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      await throwIfSessionExpired(res, token);
+      // A2.1 — mismo chequeo explícito de res.ok que en saveEdit.
+      if (!res.ok) {
+        setDeleteError(await readErrorDetail(res));
+        return;
+      }
+      setDeletingId(null);
+      setDeleteError(null);
+      // A2.7 — refrescar solo tras éxito confirmado.
+      await onConversationsRefresh?.();
+      // A2.4 — onNewChat() solo se dispara después de eliminar con éxito
+      // la conversación que estaba activa, nunca antes ni ante un fallo.
+      if (convId === activeConversationId) onNewChat();
+    } catch (error) {
+      setDeleteError(
+        error instanceof Error
+          ? error.message
+          : "No fue posible eliminar la conversación.",
+      );
+    } finally {
+      deletingInFlightRef.current = false;
+      setDeletingInFlight(false);
+    }
   }
 
   function cancelDelete(event: MouseEvent) {
     event.stopPropagation();
     setDeletingId(null);
+    setDeleteError(null);
   }
 
   if (loading && conversations.length === 0) {
     return <p className="px-5 py-4 text-xs text-subtle">Cargando…</p>;
+  }
+
+  // A4 — un fallo de carga con la lista todavía vacía (nunca hubo una lista
+  // válida que conservar) se muestra como error explícito con reintento, en
+  // vez de la copia genérica "aún no tienes conversaciones" (que sería
+  // engañosa: el usuario sí podría tener conversaciones, solo que no se
+  // pudieron cargar).
+  if (!loading && loadError && conversations.length === 0) {
+    return (
+      <div className="px-5 py-4">
+        <p role="alert" className="text-xs text-danger">
+          {loadError}
+        </p>
+        {onRetryLoad && (
+          <button
+            type="button"
+            onClick={() => onRetryLoad()}
+            className="mt-1.5 text-xs font-medium text-accent hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+          >
+            Reintentar
+          </button>
+        )}
+      </div>
+    );
   }
 
   if (!loading && conversations.length === 0) {
@@ -148,7 +277,27 @@ export function ConversationList({
   }
 
   return (
-    <ul className="px-2 pb-2">
+    <>
+      {/* A4 — fallo de refresco con una lista previa aún válida: se conserva
+          la lista en pantalla y el aviso se muestra aparte, sin bloquear ni
+          vaciar nada. */}
+      {loadError && (
+        <div className="flex items-center justify-between gap-2 px-5 py-2">
+          <p role="alert" className="truncate text-[11px] text-danger">
+            {loadError}
+          </p>
+          {onRetryLoad && (
+            <button
+              type="button"
+              onClick={() => onRetryLoad()}
+              className="shrink-0 text-[11px] font-medium text-accent hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+            >
+              Reintentar
+            </button>
+          )}
+        </div>
+      )}
+      <ul className="px-2 pb-2">
       {conversations.map((conv) => {
         const isActive = conv.id === activeConversationId;
         const isDeleting = deletingId === conv.id;
@@ -166,16 +315,25 @@ export function ConversationList({
           >
             <div className="min-w-0 flex-1 py-2">
               {isEditing ? (
-                <input
-                  ref={editInputRef}
-                  value={editTitle}
-                  onChange={(event) => setEditTitle(event.target.value)}
-                  onBlur={() => saveEdit(conv.id)}
-                  onKeyDown={(event) => handleEditKeyDown(event, conv.id)}
-                  maxLength={60}
-                  className="w-full rounded-md border border-accent bg-background px-1.5 py-0.5 text-[13px] text-foreground focus:outline-none"
-                  onClick={(event) => event.stopPropagation()}
-                />
+                <div className="min-w-0">
+                  <input
+                    ref={editInputRef}
+                    value={editTitle}
+                    onChange={(event) => setEditTitle(event.target.value)}
+                    onBlur={() => saveEdit(conv.id)}
+                    onKeyDown={(event) => handleEditKeyDown(event, conv.id)}
+                    maxLength={MAX_TITLE_CHARS}
+                    disabled={savingEdit}
+                    aria-invalid={editError ? "true" : undefined}
+                    className="w-full rounded-md border border-accent bg-background px-1.5 py-0.5 text-[13px] text-foreground focus:outline-none disabled:opacity-60"
+                    onClick={(event) => event.stopPropagation()}
+                  />
+                  {editError && (
+                    <p role="alert" className="mt-0.5 truncate text-[10px] text-danger">
+                      {editError}
+                    </p>
+                  )}
+                </div>
               ) : (
                 <button
                   type="button"
@@ -205,6 +363,8 @@ export function ConversationList({
             {isDeleting && (
               <div className="absolute inset-x-2 top-full z-10 mt-1">
                 <DeleteConfirmation
+                  error={deleteError}
+                  inFlight={deletingInFlight}
                   onConfirm={(event) => confirmDelete(conv.id, event)}
                   onCancel={cancelDelete}
                 />
@@ -213,7 +373,8 @@ export function ConversationList({
           </li>
         );
       })}
-    </ul>
+      </ul>
+    </>
   );
 }
 
@@ -283,9 +444,13 @@ function ConversationActionsMenu({
 }
 
 function DeleteConfirmation({
+  error,
+  inFlight,
   onConfirm,
   onCancel,
 }: {
+  error: string | null;
+  inFlight: boolean;
   onConfirm: (event: MouseEvent) => void;
   onCancel: (event: MouseEvent) => void;
 }) {
@@ -297,16 +462,23 @@ function DeleteConfirmation({
       <p className="text-[10px] font-medium text-danger">
         ¿Eliminar esta conversación?
       </p>
+      {error && (
+        <p role="alert" className="mt-1 text-[10px] text-danger">
+          {error}
+        </p>
+      )}
       <div className="mt-1.5 flex items-center gap-1.5">
         <button
           onClick={onConfirm}
-          className="rounded-md bg-danger px-2 py-1 text-[10px] font-medium text-surface transition-colors hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-danger focus-visible:ring-offset-2"
+          disabled={inFlight}
+          className="rounded-md bg-danger px-2 py-1 text-[10px] font-medium text-surface transition-colors hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-danger focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
         >
-          Eliminar
+          {inFlight ? "Eliminando…" : "Eliminar"}
         </button>
         <button
           onClick={onCancel}
-          className="rounded-md px-2 py-1 text-[10px] text-muted transition-colors hover:bg-surface hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+          disabled={inFlight}
+          className="rounded-md px-2 py-1 text-[10px] text-muted transition-colors hover:bg-surface hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent disabled:cursor-not-allowed disabled:opacity-60"
         >
           Cancelar
         </button>

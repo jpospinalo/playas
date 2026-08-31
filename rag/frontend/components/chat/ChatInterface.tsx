@@ -52,6 +52,7 @@ function AuthenticatedChat() {
 	const {
 		conversations,
 		loading: conversationsLoading,
+		error: conversationsError,
 		refresh: refreshConversations,
 	} = useConversations();
 	const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -69,10 +70,15 @@ function AuthenticatedChat() {
 		contextPercent,
 		conversationId,
 		ratedMessageIds,
+		persistingMessageIds,
+		canCancel,
+		generationStopped,
 		setInput,
 		submit,
 		resetChat,
 		loadConversation,
+		retryPersistMessage,
+		cancel,
 		rateMessage,
 	} = useChat({ onConversationChanged: refreshConversations });
 
@@ -176,6 +182,7 @@ function AuthenticatedChat() {
 				conversations={conversations}
 				activeConversationId={conversationId}
 				loading={conversationsLoading}
+				loadError={conversationsError}
 				isExpanded={sidebarOpen}
 				transitionEnabled={sidebarTransitionEnabled}
 				onSelectConversation={async (conv) => {
@@ -223,6 +230,8 @@ function AuthenticatedChat() {
 							<MessageList
 								messages={messages}
 								ratedMessageIds={ratedMessageIds}
+								persistingMessageIds={persistingMessageIds}
+								onRetryPersist={retryPersistMessage}
 								onMessageRate={rateMessage}
 							/>
 
@@ -244,6 +253,24 @@ function AuthenticatedChat() {
 										transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
 									>
 										{error}
+									</motion.div>
+								)}
+							</AnimatePresence>
+
+							{/* A6 — aviso breve y no persistente tras detener una
+							    generación con "Detener": nunca se trata como un
+							    error de red. */}
+							<AnimatePresence>
+								{generationStopped && (
+									<motion.div
+										role="status"
+										className="rounded-xl border border-border bg-elevated/60 px-4 py-3 text-sm text-muted"
+										initial={{ opacity: 0, y: 8 }}
+										animate={{ opacity: 1, y: 0 }}
+										exit={{ opacity: 0, y: -4 }}
+										transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+									>
+										Generación detenida.
 									</motion.div>
 								)}
 							</AnimatePresence>
@@ -287,6 +314,8 @@ function AuthenticatedChat() {
 					<ChatInput
 						value={input}
 						loading={loading}
+						canCancel={canCancel}
+						onCancel={cancel}
 						textareaRef={textareaRef}
 						onChange={setInput}
 						onSubmit={() => handleSubmit(input)}

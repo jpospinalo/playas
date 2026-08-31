@@ -19,6 +19,8 @@ interface ConversationSidebarProps {
   conversations: Conversation[];
   activeConversationId: string | null;
   loading: boolean;
+  /** A4 — ver `useConversations`: mensaje del último refresco fallido, con la última lista válida aún en `conversations`. */
+  loadError?: string | null;
   isExpanded: boolean;
   transitionEnabled: boolean;
   onSelectConversation: (conv: Conversation) => Promise<void>;
@@ -38,6 +40,7 @@ export function ConversationSidebar({
   conversations,
   activeConversationId,
   loading,
+  loadError = null,
   isExpanded,
   transitionEnabled,
   onSelectConversation,
@@ -107,6 +110,7 @@ export function ConversationSidebar({
         conversations={conversations}
         activeConversationId={activeConversationId}
         loading={loading}
+        loadError={loadError}
         onToggleSidebar={handleToggleSidebar}
         onNewChat={handleNewChat}
         onOpenSearch={openSearch}
@@ -130,6 +134,7 @@ export function ConversationSidebar({
         conversations={conversations}
         activeConversationId={activeConversationId}
         loading={loading}
+        loadError={loadError}
         onToggleSidebar={handleToggleSidebar}
         onNewChat={handleNewChat}
         onOpenSearch={openSearch}
@@ -166,6 +171,7 @@ interface SidebarContentProps {
   conversations: Conversation[];
   activeConversationId: string | null;
   loading: boolean;
+  loadError?: string | null;
   onToggleSidebar: () => void;
   onNewChat: () => void;
   onOpenSearch: () => void;
@@ -186,6 +192,7 @@ function DesktopSidebar({
   conversations,
   activeConversationId,
   loading,
+  loadError,
   onToggleSidebar,
   onNewChat,
   onOpenSearch,
@@ -232,6 +239,7 @@ function DesktopSidebar({
               conversations={conversations}
               activeConversationId={activeConversationId}
               loading={loading}
+              loadError={loadError}
               onToggleSidebar={onToggleSidebar}
               onNewChat={onNewChat}
               onOpenSearch={onOpenSearch}
@@ -271,6 +279,7 @@ function MobileSidebar({
   conversations,
   activeConversationId,
   loading,
+  loadError,
   onToggleSidebar,
   onNewChat,
   onOpenSearch,
@@ -299,6 +308,7 @@ function MobileSidebar({
             conversations={conversations}
             activeConversationId={activeConversationId}
             loading={loading}
+            loadError={loadError}
             onToggleSidebar={onToggleSidebar}
             onNewChat={onNewChat}
             onOpenSearch={onOpenSearch}
@@ -322,6 +332,7 @@ function ExpandedSidebarContent({
   conversations,
   activeConversationId,
   loading,
+  loadError,
   onToggleSidebar,
   onNewChat,
   onOpenSearch,
@@ -367,6 +378,8 @@ function ExpandedSidebarContent({
           conversations={conversations}
           activeConversationId={activeConversationId}
           loading={loading}
+          loadError={loadError}
+          onRetryLoad={onConversationsRefresh}
           onSelectConversation={onSelectConversation}
           onNewChat={onNewChat}
           onConversationsRefresh={onConversationsRefresh}

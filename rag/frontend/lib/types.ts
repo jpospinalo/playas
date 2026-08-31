@@ -40,6 +40,14 @@ export interface Message {
 	role: "user" | "assistant";
 	text: string;
 	sources?: SourceGroup[];
+	/**
+	 * A5 — estado LOCAL (nunca se envía al backend) de si esta respuesta del
+	 * asistente, ya generada por completo, quedó sin guardar en la base de
+	 * datos. `"failed"` habilita un aviso no destructivo + reintento manual
+	 * en la UI; ausente/`undefined` es el estado normal (guardada, o aún no
+	 * aplica por tratarse de un mensaje de usuario).
+	 */
+	persistenceStatus?: "failed";
 }
 
 export interface QueryRequest {
