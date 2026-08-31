@@ -279,4 +279,43 @@ describe("MessageFeedbackPage — filtros administrativos (A3)", () => {
 		await user.click(screen.getByRole("button", { name: "Ver menos" }));
 		expect(screen.getByRole("button", { name: "Ver más" })).toBeInTheDocument();
 	});
+
+	it("los botones 'Ver más'/'Ver menos' exponen un indicador de foco visible", async () => {
+		const user = userEvent.setup();
+		const fetchMock = fetch as unknown as ReturnType<typeof vi.fn>;
+		const longAnswer = "x".repeat(80);
+		fetchMock.mockResolvedValue(
+			jsonResponse({
+				...emptyResponse(),
+				total: 1,
+				items: [
+					{
+						id: "mf1",
+						userId: "u1",
+						userEmail: "user@example.com",
+						conversationId: "conv-1",
+						messageId: "msg-1",
+						ratings: { pertinence: 4, accuracy: 4 },
+						expectedAnswer: longAnswer,
+						createdAt: "2026-08-20T10:00:00Z",
+					},
+				],
+			}),
+		);
+
+		render(<MessageFeedbackPage />);
+		await waitFor(() =>
+			expect(screen.getByText("user@example.com")).toBeInTheDocument(),
+		);
+
+		// Los botones deben exponer un indicador de foco visible propio (no
+		// basta con `text-accent hover:underline`): un usuario de teclado que
+		// llega a ellos con Tab necesita saber que están enfocados.
+		const verMas = screen.getByRole("button", { name: "Ver más" });
+		expect(verMas.className).toContain("focus-visible:ring-2");
+
+		await user.click(verMas);
+		const verMenos = screen.getByRole("button", { name: "Ver menos" });
+		expect(verMenos.className).toContain("focus-visible:ring-2");
+	});
 });

@@ -39,9 +39,16 @@ export function ChatInterface() {
 
 	if (authLoading || !user) {
 		return (
-			<div className="relative flex flex-1 overflow-hidden">
+			// Este estado (sin sesión) también necesita su propio landmark
+			// `<main id="main-content">`, igual que el resto de las vistas, para
+			// que el enlace de salto y la estructura de landmarks sean
+			// consistentes en toda la app.
+			<main
+				id="main-content"
+				className="relative flex flex-1 overflow-hidden"
+			>
 				<AuthModal open={!authLoading} dismissible={false} onClose={() => {}} />
-			</div>
+			</main>
 		);
 	}
 
@@ -56,6 +63,23 @@ function AuthenticatedChat() {
 		refresh: refreshConversations,
 	} = useConversations();
 	const [sidebarOpen, setSidebarOpen] = useState(true);
+	// Estado del panel off-canvas móvil, deliberadamente independiente de
+	// `sidebarOpen` (que persiste la preferencia de colapso del riel de
+	// escritorio en localStorage): el panel móvil siempre arranca cerrado y
+	// este estado nunca se lee de ni se escribe en localStorage.
+	const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+	// "Presencia modal" del panel móvil off-canvas: a diferencia de
+	// `mobileSidebarOpen` (que solo indica si el panel está entrando o
+	// saliendo), esta bandera sigue en `true` durante toda su animación de
+	// salida y solo baja a `false` cuando `ConversationSidebar` confirma,
+	// vía `onMobileExitComplete`, que el panel ya terminó de salir. La usa
+	// el `inert` del área principal del chat, más abajo: debe seguir
+	// bloqueada mientras el panel sigue montado y visible, no solo
+	// mientras `mobileSidebarOpen` es `true`.
+	const [mobileSidebarPresent, setMobileSidebarPresent] =
+		useState(mobileSidebarOpen);
+	const [prevMobileSidebarOpen, setPrevMobileSidebarOpen] =
+		useState(mobileSidebarOpen);
 	const [sidebarTransitionEnabled, setSidebarTransitionEnabled] =
 		useState(false);
 	const [showFeedbackModal, setShowFeedbackModal] = useState(false);
@@ -73,6 +97,7 @@ function AuthenticatedChat() {
 		persistingMessageIds,
 		canCancel,
 		generationStopped,
+		generationFinished,
 		setInput,
 		submit,
 		resetChat,
@@ -81,6 +106,18 @@ function AuthenticatedChat() {
 		cancel,
 		rateMessage,
 	} = useChat({ onConversationChanged: refreshConversations });
+
+	// El panel vuelve a entrar: su presencia se activa de inmediato (no hay
+	// que esperar ninguna animación para empezar a bloquear el área
+	// principal). Se ajusta durante el render, comparando con el valor
+	// anterior guardado en estado (mismo patrón que `ConversationSidebar`
+	// usa para su propia "presencia modal").
+	if (mobileSidebarOpen !== prevMobileSidebarOpen) {
+		setPrevMobileSidebarOpen(mobileSidebarOpen);
+		if (mobileSidebarOpen) {
+			setMobileSidebarPresent(true);
+		}
+	}
 
 	useEffect(() => {
 		const stored = window.localStorage.getItem(SIDEBAR_STORAGE_KEY);
@@ -101,7 +138,38 @@ function AuthenticatedChat() {
 		};
 	}, []);
 
+	// Si el viewport deja de ser móvil (p. ej. al redimensionar la ventana o
+	// rotar el dispositivo) mientras el panel off-canvas sigue abierto, se
+	// cierra automáticamente: de lo contrario `mobileSidebarOpen` quedaría en
+	// `true` indefinidamente (ni el botón que lo cierra, visible solo con
+	// `md:hidden`, ni el backdrop, también `md:hidden`, ver
+	// ConversationSidebar, seguirían siendo alcanzables en el nuevo viewport
+	// de escritorio), mientras el `inert` que ese estado activa sobre el
+	// área principal del chat sí permanecería.
+	useEffect(() => {
+		const mql = window.matchMedia(MOBILE_SIDEBAR_QUERY);
+		function handleViewportChange(event: MediaQueryListEvent) {
+			if (!event.matches) {
+				// Ya no coincide con el query móvil: el viewport pasó a
+				// escritorio.
+				setMobileSidebarOpen(false);
+			}
+		}
+		mql.addEventListener("change", handleViewportChange);
+		return () => mql.removeEventListener("change", handleViewportChange);
+	}, []);
+
+	// Según el viewport activo al momento del click, alterna el riel de
+	// escritorio (persistido) o el panel móvil (no persistido). El mismo
+	// botón de hamburguesa (`ChatHeader`, solo visible con `md:hidden`) y el
+	// mismo botón "×"/riel colapsado de `ConversationSidebar` (solo visibles
+	// en su propio viewport) funcionan sin cambios: cada uno solo es
+	// alcanzable en el viewport para el que tiene sentido.
 	const toggleSidebar = useCallback(() => {
+		if (window.matchMedia(MOBILE_SIDEBAR_QUERY).matches) {
+			setMobileSidebarOpen((current) => !current);
+			return;
+		}
 		setSidebarOpen((current) => {
 			const next = !current;
 			window.localStorage.setItem(SIDEBAR_STORAGE_KEY, String(next));
@@ -109,10 +177,23 @@ function AuthenticatedChat() {
 		});
 	}, []);
 
+	// Cierre explícito del panel móvil (backdrop, botón de cierre, Escape
+	// vía `useDialog` dentro de `ConversationSidebar`).
+	const closeMobileSidebar = useCallback(() => {
+		setMobileSidebarOpen(false);
+	}, []);
+
 	const closeSidebarOnMobile = useCallback(() => {
 		if (window.matchMedia(MOBILE_SIDEBAR_QUERY).matches) {
-			setSidebarOpen(false);
+			setMobileSidebarOpen(false);
 		}
+	}, []);
+
+	// `ConversationSidebar` la invoca cuando el panel móvil (y su backdrop)
+	// ya terminaron por completo su animación de salida — nunca antes. Solo
+	// entonces se suelta el `inert` del área principal del chat.
+	const handleMobileSidebarExitComplete = useCallback(() => {
+		setMobileSidebarPresent(false);
 	}, []);
 
 	/*
@@ -175,6 +256,39 @@ function AuthenticatedChat() {
 
 	const showEmptyState = messages.length === 0 && !loading && !error;
 
+	// Región de estado angosta y dedicada para el progreso de la generación
+	// (etapa mientras se espera el primer token, luego "generando
+	// respuesta"), en vez de anunciar todo el `<main>` con `aria-live`, lo
+	// que convertiría cualquier cambio dentro del área de conversación
+	// (incluida cada actualización de la respuesta en streaming) en un
+	// anuncio para el lector de pantalla. Los avisos de error y de
+	// "Generación detenida" ya son regiones vivas propias (`role="alert"` /
+	// `role="status"`), así que no dependen de este texto.
+	//
+	// `generationFinished` tiene prioridad sobre `loading`: el
+	// streaming puede terminar (y `generationFinished` pasar a `true`,
+	// ver `useChat.submit()`) mientras `loading` sigue en `true` durante
+	// el guardado posterior de la respuesta — una persistencia lenta ya
+	// no retiene el anuncio de "Generando respuesta…" después de que el
+	// usuario ya vio la respuesta completa en pantalla. `generationFinished`
+	// solo pasa a `true` para la operación vigente y solo tras un
+	// streaming que sí completó con éxito (nunca tras un error o una
+	// cancelación, que ya tienen sus propias regiones vivas), y se
+	// limpia de nuevo al iniciar la siguiente operación — así que ni un
+	// reinicio del chat, un cambio de conversación, ni una operación
+	// obsoleta que termine tarde pueden anunciar un final que no
+	// corresponde a la respuesta vigente. Antes del primer token (y
+	// antes del primer evento de estado del servidor), `stageMessage`
+	// todavía es `null`: sin una etapa por defecto, la región quedaba
+	// vacía justo cuando el envío recién empieza.
+	const streamingStatus = generationFinished
+		? "Respuesta finalizada."
+		: loading
+			? isStreaming
+				? "Generando respuesta…"
+				: (stageMessage ?? "Procesando consulta…")
+			: "";
+
 	return (
 		<div className="relative flex flex-1 overflow-hidden">
 			{/* Sidebar de conversaciones */}
@@ -184,21 +298,35 @@ function AuthenticatedChat() {
 				loading={conversationsLoading}
 				loadError={conversationsError}
 				isExpanded={sidebarOpen}
+				mobileOpen={mobileSidebarOpen}
 				transitionEnabled={sidebarTransitionEnabled}
 				onSelectConversation={async (conv) => {
-					await loadConversation(conv);
 					closeSidebarOnMobile();
+					await loadConversation(conv);
 				}}
 				onNewChat={() => {
 					resetChat();
 					closeSidebarOnMobile();
 				}}
 				onToggleSidebar={toggleSidebar}
+				onCloseMobile={closeMobileSidebar}
+				onMobileExitComplete={handleMobileSidebarExitComplete}
 				onConversationsRefresh={refreshConversations}
 			/>
 
-			{/* Área principal del chat */}
-			<div className="flex flex-1 flex-col overflow-hidden">
+			{/* Área principal del chat: `inert` mientras el panel móvil sigue
+			    montado (abierto o todavía animando su salida), para sacarla del
+			    árbol de tabulación y ocultarla de la tecnología de asistencia,
+			    igual que el resto de la página detrás de un overlay modal (el
+			    propio panel y su backdrop viven fuera de este `<div>`, así que
+			    no se ven afectados). Usa `mobileSidebarPresent`, no
+			    `mobileSidebarOpen` directamente: debe seguir bloqueada durante
+			    toda la animación de salida, no solo mientras el panel está
+			    nominalmente "abierto" (ver `onMobileExitComplete` arriba). */}
+			<div
+				className="flex flex-1 flex-col overflow-hidden"
+				inert={mobileSidebarPresent}
+			>
 				<FeedbackModal
 					open={showFeedbackModal}
 					conversationId={conversationId}
@@ -206,7 +334,7 @@ function AuthenticatedChat() {
 				/>
 				<ChatHeader
 					onToggleSidebar={toggleSidebar}
-					sidebarOpen={sidebarOpen}
+					sidebarOpen={mobileSidebarOpen}
 				/>
 
 				<main
@@ -214,9 +342,11 @@ function AuthenticatedChat() {
 					id="main-content"
 					className="flex flex-1 flex-col overflow-y-auto"
 					aria-label="Conversación"
-					aria-live="polite"
-					aria-atomic="false"
 				>
+					<div role="status" aria-live="polite" aria-atomic="true" className="sr-only">
+						{streamingStatus}
+					</div>
+
 					{showEmptyState ? (
 						<EmptyState
 							input={input}

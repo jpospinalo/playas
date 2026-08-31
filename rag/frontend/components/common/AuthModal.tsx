@@ -4,6 +4,7 @@ import { useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { getLastEmail } from "@/lib/auth";
+import { useDialog } from "@/components/common/useDialog";
 
 
 function EyeIcon({ open }: { open: boolean }) {
@@ -93,6 +94,12 @@ export function AuthModal({ open, onClose, dismissible = true }: AuthModalProps)
   }
 
   const submitDisabled = submitting || !email || !password;
+  // El gate obligatorio de inicio (dismissible=false) nunca debe poder
+  // cerrarse (ni por Escape ni por click en el backdrop), y mientras se
+  // envía el formulario tampoco: el usuario debe ver el resultado del
+  // intento en curso antes de poder descartarlo.
+  const closeBlocked = !dismissible || submitting;
+  const { panelRef, titleId } = useDialog({ open, onClose: handleClose, closeBlocked });
 
   return (
     <AnimatePresence>
@@ -107,13 +114,16 @@ export function AuthModal({ open, onClose, dismissible = true }: AuthModalProps)
           <motion.div
             className="absolute inset-0 bg-background/70 backdrop-blur-md"
             aria-hidden="true"
+            onClick={!closeBlocked ? handleClose : undefined}
           />
 
           <motion.div
+            ref={panelRef}
+            tabIndex={-1}
             role="dialog"
             aria-modal="true"
-            aria-labelledby="auth-modal-title"
-            className="relative z-10 w-full max-w-sm rounded-3xl border border-border bg-elevated p-6 shadow-2xl shadow-secondary-turquoise/20"
+            aria-labelledby={titleId}
+            className="relative z-10 w-full max-w-sm max-h-[calc(100dvh-2rem)] overflow-y-auto rounded-3xl border border-border bg-elevated p-6 shadow-2xl shadow-secondary-turquoise/20"
             initial={{ opacity: 0, scale: 0.96, y: 8 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.96, y: 8 }}
@@ -122,8 +132,9 @@ export function AuthModal({ open, onClose, dismissible = true }: AuthModalProps)
             {dismissible && (
               <button
                 onClick={handleClose}
+                disabled={submitting}
                 aria-label="Cerrar"
-                className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full text-muted transition-colors hover:bg-surface hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full text-muted transition-colors hover:bg-surface hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent disabled:cursor-not-allowed disabled:opacity-45"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -144,7 +155,7 @@ export function AuthModal({ open, onClose, dismissible = true }: AuthModalProps)
 
             <div className="mb-6 text-center">
               <h2
-                id="auth-modal-title"
+                id={titleId}
                 className="text-lg font-medium text-foreground"
               >
                 Iniciar sesión
@@ -205,7 +216,6 @@ export function AuthModal({ open, onClose, dismissible = true }: AuthModalProps)
                     onClick={() => setShowPassword((v) => !v)}
                     aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
                     className="absolute right-2 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full text-subtle transition-colors hover:bg-surface hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
-                    tabIndex={-1}
                   >
                     <EyeIcon open={showPassword} />
                   </button>

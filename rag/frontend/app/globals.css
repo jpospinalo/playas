@@ -9,7 +9,11 @@
   --elevated: oklch(99% 0.003 200);
   --foreground: oklch(18% 0.03 245);
   --muted: oklch(44% 0.018 215);
-  --subtle: oklch(60% 0.015 210);
+  /* L=55% da >=4.63:1 sobre background/surface/elevated en modo claro
+     (medido: 4.63:1 / 4.82:1 / 4.69:1 respectivamente vía OKLCH -> sRGB
+     lineal -> luminancia relativa WCAG), por encima del umbral 4.5:1 exigido
+     para texto normal (no "large text"). */
+  --subtle: oklch(55% 0.015 210);
   --border: oklch(90% 0.008 210);
   --border-strong: oklch(78% 0.012 210);
 
@@ -70,15 +74,22 @@
   --elevated: oklch(21% 0.022 220);
   --foreground: oklch(92% 0.006 200);
   --muted: oklch(66% 0.014 210);
-  --subtle: oklch(50% 0.016 215);
+  /* L=61% da >=4.68:1 sobre background/surface/elevated en modo oscuro
+     (medido: 5.33:1 / 5.06:1 / 4.68:1 respectivamente, mismo método que
+     arriba), por encima del umbral 4.5:1. */
+  --subtle: oklch(61% 0.016 215);
   --border: oklch(27% 0.018 220);
   --border-strong: oklch(36% 0.02 220);
 
-  /* Acento — navy real de marca, suavizado para armonía sobre abyss */
-  --accent: oklch(58% 0.085 250.8);
+  /* Acento — navy real de marca, suavizado para armonía sobre abyss.
+     L=61% da >=4.5:1 como texto pequeño sobre background/surface/elevated
+     (medido: 5.33:1 / 5.06:1 / 4.68:1 respectivamente, vía OKLCH -> sRGB
+     lineal -> luminancia relativa WCAG, mismo método que --subtle arriba).
+     Con el valor anterior (58%) fallaba sobre elevated: 4.14:1. */
+  --accent: oklch(61% 0.085 250.8);
   --accent-hover: oklch(64% 0.085 250.8);
   --accent-fg: oklch(12% 0.02 245);
-  --accent-soft: oklch(58% 0.085 250.8 / 14%);
+  --accent-soft: oklch(61% 0.085 250.8 / 14%);
   --accent-bright: var(--accent-hover);
   --accent-light: var(--accent-soft);
 
@@ -89,9 +100,11 @@
   --glow-opacity: 0.08;
   --glow-blur: 100px;
 
-  /* Citas — mismo hue, suave */
-  --citation: oklch(58% 0.085 250.8);
-  --citation-fill: oklch(58% 0.085 250.8 / 12%);
+  /* Citas — mismo hue que el acento, mismo ajuste de contraste (ver --accent
+     arriba: L=61% en vez de 58%, para llegar a >=4.5:1 como texto pequeño en
+     .doc-badge y .rag-prose code sobre background/surface/elevated). */
+  --citation: oklch(61% 0.085 250.8);
+  --citation-fill: oklch(61% 0.085 250.8 / 12%);
 
   /* Secundarios — verde y turquesa del logo, suavizados para abyss */
   --secondary-green: oklch(68% 0.08 160.9);
@@ -329,6 +342,15 @@ h3[id] {
   z-index: 50;
   max-width: 360px;
   min-width: 240px;
+  /* Todo el popover (tipo, título, metadatos, sección, resumen, fuente,
+     y el fragmento citado) comparte un único límite de altura relativo al
+     viewport, con scroll propio: en un viewport bajo, el conjunto podía
+     desbordar por arriba o por abajo sin forma de desplazarse hasta las
+     partes no visibles. El margen (0.5rem por lado) coincide con el que
+     usa el recorte vertical en AssistantBubble.tsx vía
+     `POPOVER_VIEWPORT_MARGIN`. */
+  max-height: calc(100dvh - 1rem);
+  overflow-y: auto;
   background: var(--elevated);
   border: 1px solid var(--border);
   border-radius: 1rem;
@@ -458,6 +480,10 @@ h3[id] {
   max-width: 68ch;
   color: var(--foreground);
   font-size: 0.9375rem;
+  /* Citas legales, radicados y URLs largas sin espacios (mas comunes en
+     este dominio que en prosa general) podian forzar desbordamiento
+     horizontal sin un punto de quiebre disponible. */
+  overflow-wrap: anywhere;
 }
 
 .rag-prose p {
@@ -561,7 +587,16 @@ h3[id] {
 }
 
 .rag-prose table {
-  width: 100%;
+  /* Las tablas GFM no tienen contenedor con scroll horizontal propio (a
+     diferencia de .rag-prose pre, que si lo tiene): una tabla con muchas
+     columnas desborda el ancho de .rag-prose (68ch) y, con el, la columna
+     del mensaje. Mismo patron que usa GitHub para markdown GFM: `display:
+     block` en el propio <table> habilita `overflow-x: auto` directamente
+     sobre el, sin necesitar un <div> envolvente adicional. */
+  display: block;
+  width: max-content;
+  max-width: 100%;
+  overflow-x: auto;
   border-collapse: collapse;
   font-size: 0.88em;
   margin: 0.8em 0;

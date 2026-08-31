@@ -9,7 +9,6 @@ interface LoadingBubbleProps {
 }
 
 export function LoadingBubble({ label }: LoadingBubbleProps) {
-  const visibleLabel = label ?? "Buscando fuentes jurídicas relevantes…";
   return (
     <motion.div
       className="flex justify-start"
@@ -25,7 +24,13 @@ export function LoadingBubble({ label }: LoadingBubbleProps) {
             <motion.span
               key={label}
               className="text-xs text-muted"
-              aria-live="polite"
+              // Sin `aria-live` propio: ChatInterface ya expone una única
+              // región de estado angosta (`role="status" aria-live="polite"`)
+              // que anuncia el mismo progreso de la generación (ver
+              // `streamingStatus` allí); una región viva aquí también
+              // anunciaría cada cambio de etapa dos veces. Este `<span>`
+              // sigue siendo el texto VISIBLE junto a los puntos de carga,
+              // sin convertirse en una región viva propia.
               initial={{ opacity: 0, x: 4 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0 }}
@@ -33,9 +38,17 @@ export function LoadingBubble({ label }: LoadingBubbleProps) {
             >
               {label}
             </motion.span>
-          ) : null}
+          ) : (
+            // Sin `label` no hay ningún texto visible junto a los puntos de
+            // carga: este `sr-only` es la única forma en que un lector de
+            // pantalla se entera de que hay una generación en curso. Con
+            // `label` presente, el `motion.span` de arriba ya expone ese
+            // mismo texto — repetirlo aquí duplicaba el nombre accesible.
+            <span className="sr-only">
+              Buscando fuentes jurídicas relevantes…
+            </span>
+          )}
         </AnimatePresence>
-        <span className="sr-only">{visibleLabel}</span>
       </div>
     </motion.div>
   );

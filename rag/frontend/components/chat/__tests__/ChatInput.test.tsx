@@ -100,4 +100,25 @@ describe("ChatInput — campo de consulta (A7)", () => {
 			screen.getByText(`${QUESTION_COUNTER_THRESHOLD}/${MAX_QUESTION_CHARS}`),
 		).toBeInTheDocument();
 	});
+
+	it("sideSlot permanece en flujo normal por defecto (sin absolute) y solo flota afuera a partir de xl", () => {
+		setup({
+			value: "",
+			sideSlot: <button type="button">Calificar el sistema</button>,
+		});
+
+		const slotButton = screen.getByRole("button", { name: "Calificar el sistema" });
+		const slotWrapper = slotButton.parentElement;
+		expect(slotWrapper).not.toBeNull();
+
+		const classes = (slotWrapper as HTMLElement).className.split(/\s+/);
+		// `absolute left-full` NO debe aplicarse siempre: a 320px de ancho,
+		// sin espacio a la derecha del formulario (ya max-w-3xl), el botón
+		// quedaría fuera del viewport. Solo debe activarse a partir de `xl`,
+		// vía clases con ese prefijo (sin cálculos de ancho por JS).
+		expect(classes).not.toContain("absolute");
+		expect(classes).not.toContain("left-full");
+		expect(classes).toContain("xl:absolute");
+		expect(classes).toContain("xl:left-full");
+	});
 });

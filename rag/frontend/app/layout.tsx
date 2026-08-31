@@ -67,11 +67,22 @@ export default function RootLayout({
 			suppressHydrationWarning
 		>
 			<body className="min-h-full flex flex-col bg-background text-foreground">
+				{/* Enlace de salto: primer elemento enfocable del documento. Oculto
+				    visualmente hasta recibir foco (Tab desde el inicio de la
+				    página); apunta al `id="main-content"` que cada vista coloca en
+				    su propio landmark `<main>` (ver ChatInterface, admin layout y
+				    app/about/page.tsx). El wrapper de abajo no lleva ese id: es un
+				    `<div>` sin semántica de landmark, para no duplicar el id con
+				    el `<main id="main-content">` propio de cada vista. */}
+				<a
+					href="#main-content"
+					className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-accent focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-accent-fg focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-background"
+				>
+					Saltar al contenido principal
+				</a>
 				<ThemeProvider>
 					<AuthProvider>
-						<div id="main-content" className="contents">
-							{children}
-						</div>
+						<div className="contents">{children}</div>
 					</AuthProvider>
 				</ThemeProvider>
 			</body>

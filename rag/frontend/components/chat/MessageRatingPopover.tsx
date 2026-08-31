@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "motion/react";
+import { useDialog } from "@/components/common/useDialog";
 
 interface MessageRatings {
 	pertinence: number;
@@ -61,6 +62,7 @@ function StarRow({
 					onFocus={() => setShowTooltip(true)}
 					onBlur={() => setShowTooltip(false)}
 					aria-describedby={tooltipId}
+					aria-label={`Qué significa esta calificación: ${label}`}
 				>
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
@@ -203,6 +205,11 @@ export function MessageRatingPopover({
 		[allRated, submitState, pertinence, accuracy, expectedAnswer, onSubmit],
 	);
 
+	// Igual que en FeedbackModal: mientras se envía, ni Escape ni el
+	// backdrop deben poder cerrar el diálogo.
+	const closeBlocked = submitState === "loading";
+	const { panelRef, titleId } = useDialog({ open, onClose: handleClose, closeBlocked });
+
 	return (
 		<AnimatePresence onExitComplete={handleExited}>
 			{open && (
@@ -216,18 +223,32 @@ export function MessageRatingPopover({
 					<motion.div
 						className="absolute inset-0 bg-background/70 backdrop-blur-md"
 						aria-hidden="true"
+						onClick={!closeBlocked ? handleClose : undefined}
 					/>
 
 					<motion.div
+						ref={panelRef}
+						tabIndex={-1}
 						role="dialog"
 						aria-modal="true"
-						aria-labelledby="msg-rating-title"
-						className="relative z-10 w-full max-w-sm rounded-3xl border border-border bg-elevated p-6 shadow-2xl shadow-secondary-turquoise/20"
+						aria-labelledby={titleId}
+						className="relative z-10 w-full max-w-sm max-h-[calc(100dvh-2rem)] overflow-y-auto rounded-3xl border border-border bg-elevated p-6 shadow-2xl shadow-secondary-turquoise/20"
 						initial={{ opacity: 0, scale: 0.96, y: 8 }}
 						animate={{ opacity: 1, scale: 1, y: 0 }}
 						exit={{ opacity: 0, scale: 0.96, y: 8 }}
 						transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
 					>
+						{/* Nombre accesible persistente: `aria-labelledby={titleId}` del
+						   panel debe resolver a un elemento vivo durante TODO su ciclo de
+						   vida, incluida la transición a la rama "success" (el <h2> visible
+						   de la rama "form" se desmonta ahí, ver más abajo). Este <h2>
+						   sr-only cubre ambas ramas; el <h2> visible de "form" lleva
+						   `aria-hidden` para que el lector de pantalla no encuentre el
+						   mismo título dos veces mientras ambos coexisten en el DOM. */}
+						<h2 id={titleId} className="sr-only">
+							Calificar esta respuesta
+						</h2>
+
 						{submitState !== "loading" && (
 							<button
 								onClick={handleClose}
@@ -277,7 +298,7 @@ export function MessageRatingPopover({
 											<path d="M20 6 9 17l-5-5" />
 										</svg>
 									</div>
-									<div>
+									<div role="status">
 										<p className="text-base font-medium text-foreground">
 											¡Gracias por tu calificación!
 										</p>
@@ -298,12 +319,18 @@ export function MessageRatingPopover({
 									initial={{ opacity: 1 }}
 									exit={{ opacity: 0 }}
 								>
-									<h2
-										id="msg-rating-title"
+									{/* Elemento presentacional, no un <h2>: el nombre accesible del
+									   diálogo ya lo aporta el <h2 id={titleId}> sr-only de arriba
+									   (persistente durante todo el ciclo de vida). Un segundo <h2>
+									   aquí, aunque llevara `aria-hidden`, seguiría siendo un
+									   encabezado semántico duplicado en el DOM. Mismo texto y clases:
+									   sin cambio visual. */}
+									<p
+										aria-hidden="true"
 										className="mb-1 text-center text-lg font-medium text-foreground"
 									>
 										Calificar esta respuesta
-									</h2>
+									</p>
 									<p className="mb-1 text-center text-sm text-muted">
 										Tu calificación ayuda a mejorar la calidad de las respuestas.
 									</p>

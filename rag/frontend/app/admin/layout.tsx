@@ -23,9 +23,12 @@ export default function AdminLayout({
 
 	if (loading) {
 		return (
-			<div className="flex min-h-screen items-center justify-center bg-background">
+			<main
+				id="main-content"
+				className="flex min-h-screen items-center justify-center bg-background"
+			>
 				<span className="text-sm text-muted">Verificando acceso…</span>
-			</div>
+			</main>
 		);
 	}
 
@@ -33,7 +36,10 @@ export default function AdminLayout({
 
 	if (role !== "admin" && role !== "super-admin") {
 		return (
-			<div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-background px-4 text-center">
+			<main
+				id="main-content"
+				className="flex min-h-screen flex-col items-center justify-center gap-4 bg-background px-4 text-center"
+			>
 				<div className="text-5xl font-medium tracking-tight text-accent">403</div>
 				<p className="text-base font-medium text-foreground">Acceso restringido</p>
 				<p className="max-w-sm text-sm text-muted">
@@ -46,7 +52,7 @@ export default function AdminLayout({
 				>
 					Volver a ATLAS
 				</Link>
-			</div>
+			</main>
 		);
 	}
 
@@ -58,9 +64,13 @@ export default function AdminLayout({
 	];
 
 	return (
-		<div className="flex min-h-screen bg-background">
-			<aside className="flex w-60 shrink-0 flex-col border-r border-border bg-elevated/60 backdrop-blur-md">
-				<div className="flex h-12 items-center gap-2 px-4">
+		// El `<aside>` de administración no tiene panel off-canvas propio (a
+		// diferencia del sidebar del chat): en viewports angostos usa una
+		// navegación superior compacta y desplazable horizontalmente
+		// (`< md`); a partir de `md:` vuelve a ser el riel vertical.
+		<div className="flex min-h-screen flex-col bg-background md:flex-row">
+			<aside className="flex shrink-0 items-center gap-1 overflow-x-auto border-b border-border bg-elevated/60 px-2 py-2 backdrop-blur-md md:w-60 md:flex-col md:items-stretch md:gap-0 md:overflow-visible md:border-b-0 md:border-r md:px-0 md:py-0">
+				<div className="flex h-12 shrink-0 items-center gap-2 px-2 md:px-4">
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
 						width="20"
@@ -85,12 +95,12 @@ export default function AdminLayout({
 					>
 						ATLAS
 					</span>
-					<span className="text-[11px] font-medium uppercase tracking-[0.1em] text-subtle">
+					<span className="hidden text-[11px] font-medium uppercase tracking-[0.1em] text-subtle md:inline">
 						Admin
 					</span>
 				</div>
 
-				<nav className="flex flex-col gap-px px-2 py-2">
+				<nav className="flex shrink-0 items-center gap-px md:flex-col md:items-stretch md:px-2 md:py-2">
 					{navLinks.map(({ href, label }) => {
 						const isActive =
 							href === "/admin"
@@ -100,7 +110,8 @@ export default function AdminLayout({
 							<Link
 								key={href}
 								href={href}
-								className={`rounded-full px-4 py-2 text-[13.5px] transition-colors ${
+								aria-current={isActive ? "page" : undefined}
+								className={`whitespace-nowrap rounded-full px-4 py-2 text-[13.5px] transition-colors ${
 									isActive
 										? "bg-elevated text-foreground"
 										: "text-muted hover:bg-elevated hover:text-foreground"
@@ -112,14 +123,15 @@ export default function AdminLayout({
 					})}
 				</nav>
 
-				<div className="mt-auto flex flex-col gap-2 border-t border-border px-3 py-3">
-					<div className="flex items-center justify-between px-1">
-						<span className="text-xs text-subtle">Tema</span>
+				<div className="ml-auto flex shrink-0 items-center gap-2 md:ml-0 md:mt-auto md:flex-col md:items-stretch md:gap-2 md:border-t md:border-border md:px-3 md:py-3">
+					<div className="flex items-center gap-2 md:justify-between md:px-1">
+						<span className="hidden text-xs text-subtle md:inline">Tema</span>
 						<ThemeToggle />
 					</div>
 					<Link
 						href="/"
-						className="flex items-center gap-1.5 rounded-full px-3 py-2 text-xs text-muted transition-colors hover:bg-elevated hover:text-foreground"
+						aria-label="Volver a ATLAS"
+						className="flex items-center gap-1.5 rounded-full px-2 py-1.5 text-xs text-muted transition-colors hover:bg-elevated hover:text-foreground md:px-3 md:py-2"
 					>
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
@@ -135,12 +147,14 @@ export default function AdminLayout({
 						>
 							<path d="m15 18-6-6 6-6" />
 						</svg>
-						Volver a ATLAS
+						<span className="hidden md:inline">Volver a ATLAS</span>
 					</Link>
 				</div>
 			</aside>
 
-			<main className="flex-1 overflow-auto p-6 lg:p-8">{children}</main>
+			<main id="main-content" className="flex-1 overflow-auto p-6 lg:p-8">
+				{children}
+			</main>
 		</div>
 	);
 }

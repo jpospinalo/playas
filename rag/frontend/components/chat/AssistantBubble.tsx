@@ -1,6 +1,13 @@
 "use client";
 
-import { useState, useEffect, useRef, useMemo, useCallback } from "react";
+import {
+	useState,
+	useEffect,
+	useRef,
+	useMemo,
+	useCallback,
+	useId,
+} from "react";
 import { motion } from "motion/react";
 import ReactMarkdown, { type Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -36,6 +43,17 @@ interface PopoverState {
 	top: number;
 	left: number;
 }
+
+// Debe coincidir con el `max-width` real que aplica `.doc-popover--rich`
+// en globals.css (la variante que este componente usa siempre) — no con el
+// `max-width` de la clase base `.doc-popover`, que es distinto, o el
+// clamping horizontal asumiría un ancho menor al real y el popover podría
+// desbordar el borde derecho del contenedor.
+const POPOVER_MAX_WIDTH = 380;
+// Separación vertical entre el badge de cita y el popover.
+const POPOVER_GAP = 6;
+// Aire mínimo respecto al borde inferior del viewport al recortar verticalmente.
+const POPOVER_VIEWPORT_MARGIN = 8;
 
 // Etiquetas del popover para jurisprudencia (orden + clave/label).
 const POPOVER_JURIS_META: Array<[string, string]> = [
@@ -108,6 +126,7 @@ export function AssistantBubble({
 	onRate,
 }: AssistantBubbleProps) {
 	const processedText = useMemo(() => prepareMarkdown(text), [text]);
+	const popoverId = useId();
 
 	// Mapa global: índice de fragmento ([docN] → N) → fragmento + grupo padre.
 	const fragmentLookup = useMemo(() => {
@@ -132,6 +151,9 @@ export function AssistantBubble({
 	const popoverRef = useRef<PopoverState | null>(null);
 	const popoverElRef = useRef<HTMLDivElement>(null);
 	const proseRef = useRef<HTMLDivElement>(null);
+	// Badge que abrió el popover actualmente visible, para devolverle el
+	// foco al cerrar (Escape, click afuera, o alternar a otra cita).
+	const triggerElRef = useRef<HTMLButtonElement | null>(null);
 
 	const setPopover = useCallback((p: PopoverState | null) => {
 		popoverRef.current = p;
@@ -160,9 +182,93 @@ export function AssistantBubble({
 		};
 	}, [popover, setPopover]);
 
-	// ReactMarkdown component overrides. Defined with useMemo so that the
-	// markdown tree is not rebuilt on every render — only when setPopover or
-	// proseRef identity changes (i.e. effectively once).
+	// El popover no es `role="tooltip"` (contenido rico, desplazable,
+	// enfocable), así que el foco se gestiona como una divulgación
+	// (disclosure) no modal: al abrirse, el foco entra al contenedor del
+	// popover para que quede alcanzable por teclado sin depender del orden de
+	// tabulación del resto del mensaje; al cerrarse (Escape, click afuera, o
+	// alternar a otra cita), el foco vuelve al badge que lo abrió. A
+	// diferencia de `useDialog`, deliberadamente NO se atrapa el foco con
+	// Tab: el popover no es modal y el usuario debe poder seguir tabulando
+	// hacia el resto de la respuesta mientras está abierto.
+	useEffect(() => {
+		if (popover) {
+			popoverElRef.current?.focus();
+			return;
+		}
+		triggerElRef.current?.focus();
+	}, [popover]);
+
+	// Recorte vertical: si el popover recién medido se sale por debajo del
+	// viewport, se desplaza hacia arriba lo justo para volver a quedar
+	// visible (mismo criterio que el clamping horizontal ya existente, que
+	// evita que se salga por el borde derecho del contenedor).
+	//
+	// Ese desplazamiento hacia arriba (o la posición inicial, si el badge
+	// que lo abrió ya está cerca del borde superior en un viewport bajo)
+	// puede a su vez sacar el popover por ARRIBA del viewport. No basta con
+	// evitar que `top` baje de 0 relativo al propio wrapper (`proseRef`),
+	// porque eso no dice nada sobre el borde superior REAL del viewport: el
+	// wrapper puede empezar más arriba de ese borde (mensaje desplazado
+	// dentro del área de chat). `wrapperTop` convierte `nextTop` (relativo
+	// al wrapper) a coordenadas de viewport para comprobar el
+	// margen superior con el mismo criterio que ya se usa para el inferior.
+	// Con el `max-height` del propio popover acotado a `100dvh` (ver
+	// `.doc-popover` en globals.css), ambos márgenes son satisfacibles a la
+	// vez en la práctica.
+	useEffect(() => {
+		if (!popover) return;
+		const el = popoverElRef.current;
+		if (!el) return;
+
+		const rect = el.getBoundingClientRect();
+		let nextTop = popover.top;
+
+		const bottomOverflow =
+			rect.bottom - (window.innerHeight - POPOVER_VIEWPORT_MARGIN);
+		if (bottomOverflow > 0) {
+			nextTop -= bottomOverflow;
+		}
+
+		const wrapperTop = rect.top - popover.top;
+		const topOverflow = POPOVER_VIEWPORT_MARGIN - (wrapperTop + nextTop);
+		if (topOverflow > 0) {
+			nextTop += topOverflow;
+		}
+
+		if (nextTop !== popover.top) {
+			setPopover({ ...popover, top: nextTop });
+		}
+		// Solo depende de qué cita está abierta y de su posición horizontal:
+		// una vez recortado el `top`, no debe volver a medirse y ajustarse a
+		// sí mismo en bucle.
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [popover?.fragmentIndex, popover?.left]);
+
+	// Lectura declarativa: `aria-expanded` se lee directamente de
+	// `popoverRef.current` (siempre al día — `setPopover` lo actualiza de
+	// forma síncrona, ver arriba) en cada invocación de `a()`, en vez de un
+	// efecto imperativo que recorre el DOM. Esto NO añade `popover` a las
+	// dependencias del `useMemo` de `components` (ver abajo): la identidad
+	// de `a` sigue sin cambiar entre renders, así que React no desmonta el
+	// `<button>` al abrir/cerrar. Esto depende empíricamente de que
+	// ReactMarkdown vuelva a invocar `a()` en cada re-render de
+	// `AssistantBubble` — y en este árbol, sí lo hace: ReactMarkdown no está
+	// envuelto en `React.memo`, así que cualquier cambio de estado en
+	// `AssistantBubble` (incluido abrir/cerrar `popover`) lo vuelve a
+	// renderizar como
+	// cualquier otro componente hijo no memoizado, y `remarkPlugins=
+	// {[remarkGfm]}` (un array literal nuevo en cada render) impide
+	// además cualquier memoización interna por identidad de props que
+	// pudiera saltarse ese re-render. Verificado empíricamente con la
+	// batería de pruebas existente (incluida la que comprueba que el badge
+	// NO se desmonta al alternar el popover): ver AssistantBubble.test.tsx.
+
+	// ReactMarkdown component overrides. Defined with useMemo so the badge
+	// render functions aren't recreated on every high-frequency streaming
+	// update (`text`/`processedText` changing token by token) NOR on every
+	// citation popover open/close (`popover` is deliberately NOT a
+	// dependency — ver el efecto de arriba).
 	const components = useMemo<Components>(
 		() => ({
 			// Intercept links whose href matches the #docref-N pattern we injected.
@@ -181,7 +287,25 @@ export function AssistantBubble({
 						aria-label={
 							hasFragment ? `Ver fuente ${n}` : `Fuente ${n} no disponible`
 						}
+						// Con `disabled` real (no solo `aria-disabled` + `pointer-events:
+						// none` en CSS), el elemento queda fuera del orden de tabulación
+						// y el navegador nunca despacha eventos de activación, que es lo
+						// que `aria-disabled` por sí solo no garantiza.
+						disabled={!hasFragment}
 						aria-disabled={!hasFragment}
+						// El popover es una divulgación (disclosure) que este botón
+						// controla, no un tooltip pasivo. El valor inicial es siempre
+						// "false" (recién montado, cerrado); el efecto de arriba lo
+						// mantiene sincronizado después. Lectura declarativa (ver
+						// comentario arriba, sobre `components`): valor recalculado en
+						// cada invocación de `a()` a partir de `popoverRef.current`, no
+						// de una prop reactiva.
+						aria-expanded={
+							hasFragment
+								? (popoverRef.current?.fragmentIndex === n ? "true" : "false")
+								: undefined
+						}
+						aria-controls={hasFragment ? popoverId : undefined}
 						onClick={(e) => {
 							e.preventDefault();
 
@@ -195,17 +319,18 @@ export function AssistantBubble({
 							if (!proseRef.current) return;
 
 							const btn = e.currentTarget;
+							triggerElRef.current = btn;
 							const wrapperRect = proseRef.current.getBoundingClientRect();
 							const btnRect = btn.getBoundingClientRect();
 
 							setPopover({
 								fragmentIndex: n,
-								top: btnRect.bottom - wrapperRect.top + 6,
+								top: btnRect.bottom - wrapperRect.top + POPOVER_GAP,
 								left: Math.max(
 									0,
 									Math.min(
 										btnRect.left - wrapperRect.left,
-										wrapperRect.width - 360,
+										wrapperRect.width - POPOVER_MAX_WIDTH,
 									),
 								),
 							});
@@ -216,7 +341,7 @@ export function AssistantBubble({
 				);
 			},
 		}),
-		[setPopover, fragmentLookup],
+		[setPopover, fragmentLookup, popoverId],
 	);
 
 	const active = popover
@@ -262,8 +387,13 @@ export function AssistantBubble({
 					{popover && active && (
 						<div
 							ref={popoverElRef}
+							id={popoverId}
+							role="region"
 							className="doc-popover doc-popover--rich"
-							role="tooltip"
+							tabIndex={-1}
+							aria-label={`Fuente ${popover.fragmentIndex}${
+								activeTitle ? `: ${activeTitle}` : ""
+							}`}
 							style={{ top: popover.top, left: popover.left }}
 						>
 							{activeDocType && (
@@ -309,7 +439,15 @@ export function AssistantBubble({
 								) : null;
 							})()}
 
-							<p className="doc-popover-content doc-popover-content--scroll">
+							{/* Región desplazable enfocable individualmente
+							    (`tabIndex={0}`), para que un usuario de teclado
+							    pueda entrar a ella y desplazarse con flechas /
+							    Av Pág cuando el contenido del fragmento excede la
+							    altura máxima. */}
+							<p
+								className="doc-popover-content doc-popover-content--scroll"
+								tabIndex={0}
+							>
 								{active.fragment.content}
 							</p>
 

@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useRef, type RefObject } from "react";
+import { useRef, type RefObject } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import type { Conversation } from "@/hooks/useConversations";
 import { formatConversationDate } from "@/components/chat/conversationSidebarUtils";
+import { useDialog } from "@/components/common/useDialog";
 
 interface ConversationSearchDialogProps {
 	open: boolean;
@@ -31,18 +32,16 @@ export function ConversationSearchDialog({
 	const inputRef = useRef<HTMLInputElement>(null);
 	const hasSearch = search.trim().length > 0;
 
-	useEffect(() => {
-		if (!open) return;
-
-		inputRef.current?.focus();
-
-		const closeOnEscape = (event: KeyboardEvent) => {
-			if (event.key === "Escape") onClose();
-		};
-
-		document.addEventListener("keydown", closeOnEscape);
-		return () => document.removeEventListener("keydown", closeOnEscape);
-	}, [open, onClose]);
+	// Usa la primitiva `useDialog` compartida en vez de un `useEffect`
+	// local de Escape + foco inicial: mismo comportamiento (foco va al
+	// campo de búsqueda, no al primer elemento focusable del panel, que
+	// sería el botón de cerrar) vía `initialFocusRef`, y además contiene
+	// el foco con Tab/Shift+Tab y lo restaura al disparador al cerrar.
+	const { panelRef, titleId } = useDialog({
+		open,
+		onClose,
+		initialFocusRef: inputRef,
+	});
 
 	return (
 		<AnimatePresence>
@@ -55,16 +54,24 @@ export function ConversationSearchDialog({
 					transition={{ duration: 0.16 }}
 					aria-hidden="false"
 				>
-					<button
-						type="button"
+					{/* Overlay de cierre por click-afuera: se usa `<div
+					   aria-hidden>` (no `<button>`) para que quede fuera del orden de
+					   tabulación, igual que el mismo patrón usado en FeedbackModal y
+					   MessageRatingPopover — un usuario de teclado ya cierra este
+					   diálogo con Escape (vía useDialog), así que este overlay de
+					   pantalla completa no aporta nada por Tab y, como botón real,
+					   quedaría enfocable sin ningún indicador visible al recibir foco. */}
+					<div
 						className="absolute inset-0 cursor-default"
-						aria-label="Cerrar búsqueda"
+						aria-hidden="true"
 						onClick={onClose}
 					/>
 					<motion.div
+						ref={panelRef}
+						tabIndex={-1}
 						role="dialog"
 						aria-modal="true"
-						aria-label="Buscar conversaciones"
+						aria-labelledby={titleId}
 						data-conversation-search-dialog
 						className="relative z-10 flex max-h-[72vh] w-full max-w-xl flex-col overflow-hidden rounded-3xl border border-border bg-elevated shadow-2xl shadow-secondary-turquoise/20"
 						initial={{ opacity: 0, y: 18, scale: 0.98 }}
@@ -73,6 +80,7 @@ export function ConversationSearchDialog({
 						transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
 					>
 						<SearchHeader
+							titleId={titleId}
 							inputRef={inputRef}
 							search={search}
 							hasSearch={hasSearch}
@@ -96,12 +104,14 @@ export function ConversationSearchDialog({
 }
 
 function SearchHeader({
+	titleId,
 	inputRef,
 	search,
 	hasSearch,
 	onSearchChange,
 	onClose,
 }: {
+	titleId: string;
 	inputRef: RefObject<HTMLInputElement | null>;
 	search: string;
 	hasSearch: boolean;
@@ -119,7 +129,7 @@ function SearchHeader({
 				<CloseIcon />
 			</button>
 			<div className="mb-3 text-center">
-				<h2 className="text-xl font-semibold text-foreground">
+				<h2 id={titleId} className="text-xl font-semibold text-foreground">
 					Buscar conversaciones
 				</h2>
 				<p className="mt-0.5 text-xs text-subtle">

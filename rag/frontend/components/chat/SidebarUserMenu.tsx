@@ -87,7 +87,6 @@ function ExpandedUserMenu({
 				type="button"
 				onClick={onToggle}
 				aria-label="Abrir menú de perfil"
-				aria-haspopup="menu"
 				aria-expanded={open}
 				className="flex w-full items-center gap-3 rounded-full px-2 py-1.5 text-left transition-colors hover:bg-elevated focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
 			>
@@ -130,10 +129,9 @@ function CollapsedUserMenu({
 				type="button"
 				onClick={onToggle}
 				aria-label="Abrir menú de perfil"
-				aria-haspopup="menu"
 				aria-expanded={open}
 				title={userEmail}
-				className="flex h-10 w-10 items-center justify-center rounded-full bg-accent text-xs font-semibold text-white transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
+				className="flex h-10 w-10 items-center justify-center rounded-full bg-accent text-xs font-semibold text-accent-fg transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
 			>
 				{userInitial}
 			</button>
@@ -169,7 +167,14 @@ function UserMenuPopover({
 		<AnimatePresence>
 			{open && (
 				<motion.div
-					role="menu"
+					// Este panel es una divulgación (disclosure) ordinaria, no un
+					// menú de aplicación: no hay navegación por flechas ni
+					// activación por letra inicial, solo un enlace, un control de
+					// tema y un botón de cierre de sesión. `role="menu"`/`menuitem`
+					// exigirían ese contrato de teclado, que este widget no
+					// implementa, así que se usa semántica ordinaria (sin rol
+					// especial en el contenedor; los hijos siguen siendo un
+					// `<a>`/`<button>` normales).
 					className={`${positionClassName} z-50 rounded-2xl border border-border bg-surface p-2 shadow-xl shadow-secondary-turquoise/15`}
 					initial={{ opacity: 0, y: 6, scale: 0.98 }}
 					animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -185,7 +190,6 @@ function UserMenuPopover({
 					{isAdmin && (
 						<Link
 							href="/admin"
-							role="menuitem"
 							className="mt-1 flex w-full items-center gap-2 rounded-xl px-2.5 py-2 text-sm text-foreground transition-colors hover:bg-accent/8 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
 						>
 							<ShieldIcon />
@@ -199,7 +203,6 @@ function UserMenuPopover({
 					<div className="my-1 border-t border-border" />
 					<button
 						type="button"
-						role="menuitem"
 						onClick={onSignOut}
 						className="flex w-full items-center gap-2 rounded-xl px-2.5 py-2 text-left text-sm text-danger transition-colors hover:bg-danger-bg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-danger"
 					>

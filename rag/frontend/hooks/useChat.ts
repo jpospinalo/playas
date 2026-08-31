@@ -48,6 +48,16 @@ export interface UseChatReturn {
 	 * envío, cambiar de conversación o reiniciar el chat.
 	 */
 	generationStopped: boolean;
+	/**
+	 * True justo después de que la generación en streaming de la respuesta
+	 * terminó con éxito para la operación vigente (independiente de si el
+	 * guardado posterior de la respuesta tuvo éxito o falló). Se limpia
+	 * igual que `generationStopped`: al iniciar un nuevo envío, cambiar de
+	 * conversación o reiniciar el chat. Nunca se pone en true tras un error
+	 * o una cancelación, ni desde una operación que ya dejó de ser la
+	 * vigente (`isCurrentRun()` deja de cumplirse antes).
+	 */
+	generationFinished: boolean;
 	setInput: (value: string) => void;
 	submit: (question: string) => Promise<void>;
 	resetChat: () => void;
@@ -141,6 +151,8 @@ export function useChat({ onConversationChanged }: UseChatOptions = {}): UseChat
 	// `UseChatReturn`.
 	const [canCancel, setCanCancel] = useState(false);
 	const [generationStopped, setGenerationStopped] = useState(false);
+	// Ver el comentario de `generationFinished` en `UseChatReturn`.
+	const [generationFinished, setGenerationFinished] = useState(false);
 	// Sincrónica: distingue un AbortError disparado por `cancel()` (debe
 	// mostrar "Generación detenida") de uno disparado por otra causa —
 	// desmontaje del componente, o `resetChat()`/cambio de conversación
@@ -290,6 +302,7 @@ export function useChat({ onConversationChanged }: UseChatOptions = {}): UseChat
 		setStageMessage(null);
 		setError(null);
 		setGenerationStopped(false);
+		setGenerationFinished(false);
 		streamingStartedRef.current = false;
 
 		const localUserId = generateId();
@@ -446,6 +459,14 @@ export function useChat({ onConversationChanged }: UseChatOptions = {}): UseChat
 				throw new Error("El servidor no devolvió una respuesta completa.");
 			}
 			streamSucceeded = true;
+			// Se marca en cuanto el stream produjo la respuesta completa,
+			// no al final de la persistencia (fase siguiente, que puede tardar
+			// o fallar sin que eso afecte lo que ya se muestra en pantalla). El
+			// consumidor (`ChatInterface`) le da prioridad sobre `loading` al
+			// anunciar el progreso, así que este valor decide el anuncio desde
+			// aquí en adelante, aunque `loading` siga en `true` mientras se
+			// guarda la respuesta.
+			setGenerationFinished(true);
 		} catch (err) {
 			// A6 — al detener deliberadamente, la respuesta parcial se retira
 			// del chat (igual que ante cualquier otro fallo de streaming), la
@@ -695,6 +716,7 @@ export function useChat({ onConversationChanged }: UseChatOptions = {}): UseChat
 			setStageMessage(null);
 			setError(null);
 			setGenerationStopped(false);
+			setGenerationFinished(false);
 			setContextPercent(0);
 			streamingStartedRef.current = false;
 		} catch (err) {
@@ -758,6 +780,7 @@ export function useChat({ onConversationChanged }: UseChatOptions = {}): UseChat
 		setStageMessage(null);
 		setError(null);
 		setGenerationStopped(false);
+		setGenerationFinished(false);
 		setCanCancel(false);
 		setContextPercent(0);
 		_setConversationId(null);
@@ -782,6 +805,7 @@ export function useChat({ onConversationChanged }: UseChatOptions = {}): UseChat
 		persistingMessageIds,
 		canCancel,
 		generationStopped,
+		generationFinished,
 		setInput,
 		submit,
 		resetChat,

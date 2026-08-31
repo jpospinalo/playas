@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { submitConversationFeedback } from "@/lib/api";
+import { useDialog } from "@/components/common/useDialog";
 
 interface FeedbackModalProps {
 	open: boolean;
@@ -118,6 +119,12 @@ export function FeedbackModal({
 		}
 	}
 
+	// Mientras se envía la calificación, ni Escape ni el backdrop deben poder
+	// cerrar el diálogo (igual que el botón de cierre explícito, que solo se
+	// renderiza cuando `submitState !== "loading"`).
+	const closeBlocked = submitState === "loading";
+	const { panelRef, titleId } = useDialog({ open, onClose: handleClose, closeBlocked });
+
 	return (
 		<AnimatePresence onExitComplete={handleExited}>
 			{open && (
@@ -131,18 +138,32 @@ export function FeedbackModal({
 					<motion.div
 						className="absolute inset-0 bg-background/70 backdrop-blur-md"
 						aria-hidden="true"
+						onClick={!closeBlocked ? handleClose : undefined}
 					/>
 
 					<motion.div
+						ref={panelRef}
+						tabIndex={-1}
 						role="dialog"
 						aria-modal="true"
-						aria-labelledby="feedback-modal-title"
-						className="relative z-10 w-full max-w-md rounded-3xl border border-border bg-elevated p-6 shadow-2xl shadow-secondary-turquoise/20"
+						aria-labelledby={titleId}
+						className="relative z-10 w-full max-w-md max-h-[calc(100dvh-2rem)] overflow-y-auto rounded-3xl border border-border bg-elevated p-6 shadow-2xl shadow-secondary-turquoise/20"
 						initial={{ opacity: 0, scale: 0.96, y: 8 }}
 						animate={{ opacity: 1, scale: 1, y: 0 }}
 						exit={{ opacity: 0, scale: 0.96, y: 8 }}
 						transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
 					>
+						{/* Nombre accesible persistente: `aria-labelledby={titleId}` del
+						   panel debe resolver a un elemento vivo durante TODO su ciclo de
+						   vida, incluida la transición a la rama "success" (el <h2> visible
+						   de la rama "form" se desmonta ahí, ver más abajo). Este <h2>
+						   sr-only cubre ambas ramas; el <h2> visible de "form" lleva
+						   `aria-hidden` para que el lector de pantalla no encuentre el
+						   mismo título dos veces mientras ambos coexisten en el DOM. */}
+						<h2 id={titleId} className="sr-only">
+							Califica la conversación
+						</h2>
+
 						{submitState !== "loading" && (
 							<button
 								onClick={handleClose}
@@ -192,7 +213,7 @@ export function FeedbackModal({
 											<path d="M20 6 9 17l-5-5" />
 										</svg>
 									</div>
-									<div>
+									<div role="status">
 										<p className="text-base font-medium text-foreground">
 											¡Gracias por tu calificación!
 										</p>
@@ -213,12 +234,18 @@ export function FeedbackModal({
 									initial={{ opacity: 1 }}
 									exit={{ opacity: 0 }}
 								>
-									<h2
-										id="feedback-modal-title"
+									{/* Elemento presentacional, no un <h2>: el nombre accesible del
+									   diálogo ya lo aporta el <h2 id={titleId}> sr-only de arriba
+									   (persistente durante todo el ciclo de vida). Un segundo <h2>
+									   aquí, aunque llevara `aria-hidden`, seguiría siendo un
+									   encabezado semántico duplicado en el DOM. Mismo texto y clases:
+									   sin cambio visual. */}
+									<p
+										aria-hidden="true"
 										className="mb-1 text-center text-lg font-medium text-foreground"
 									>
 										Califica la conversación
-									</h2>
+									</p>
 									<p className="mb-1 text-center text-sm text-muted">
 										{conversationId
 											? "Tu calificación se asociará a la conversación actual."

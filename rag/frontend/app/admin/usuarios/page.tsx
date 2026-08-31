@@ -7,6 +7,7 @@ import {
   listAdminUsers,
   updateAdminUserPassword,
 } from "@/lib/api";
+import { useDialog } from "@/components/common/useDialog";
 
 const ROLE_STYLES: Record<string, string> = {
   "super-admin": "bg-foreground/8 text-foreground border-foreground/15",
@@ -135,13 +136,14 @@ export default function UsuariosPage() {
         <div className="overflow-hidden rounded-2xl border border-border bg-elevated/40 backdrop-blur-sm">
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-border text-sm">
+              <caption className="sr-only">Usuarios registrados</caption>
               <thead>
                 <tr className="bg-surface/50">
-                  <th className="px-4 py-3 text-left text-[11px] font-medium text-subtle">Email</th>
-                  <th className="px-4 py-3 text-left text-[11px] font-medium text-subtle">Nombre</th>
-                  <th className="px-4 py-3 text-left text-[11px] font-medium text-subtle">Rol</th>
-                  <th className="px-4 py-3 text-left text-[11px] font-medium text-subtle">Registro</th>
-                  <th className="px-4 py-3 text-right text-[11px] font-medium text-subtle">Acciones</th>
+                  <th scope="col" className="px-4 py-3 text-left text-[11px] font-medium text-subtle">Email</th>
+                  <th scope="col" className="px-4 py-3 text-left text-[11px] font-medium text-subtle">Nombre</th>
+                  <th scope="col" className="px-4 py-3 text-left text-[11px] font-medium text-subtle">Rol</th>
+                  <th scope="col" className="px-4 py-3 text-left text-[11px] font-medium text-subtle">Registro</th>
+                  <th scope="col" className="px-4 py-3 text-right text-[11px] font-medium text-subtle">Acciones</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
@@ -202,14 +204,31 @@ export default function UsuariosPage() {
   );
 }
 
-function ModalShell({ children, onClose }: { children: React.ReactNode; onClose: () => void }) {
+function ModalShell({
+  children,
+  onClose,
+  panelRef,
+  titleId,
+  closeBlocked,
+}: {
+  children: React.ReactNode;
+  onClose: () => void;
+  panelRef: React.RefObject<HTMLDivElement | null>;
+  titleId: string;
+  closeBlocked: boolean;
+}) {
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-background/70 p-4 backdrop-blur-md"
-      onClick={onClose}
+      onClick={!closeBlocked ? onClose : undefined}
     >
       <div
-        className="w-full max-w-md rounded-3xl border border-border bg-elevated p-6 shadow-2xl shadow-black/40"
+        ref={panelRef}
+        tabIndex={-1}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
+        className="w-full max-w-md max-h-[calc(100dvh-2rem)] overflow-y-auto rounded-3xl border border-border bg-elevated p-6 shadow-2xl shadow-black/40"
         onClick={(e) => e.stopPropagation()}
       >
         {children}
@@ -228,9 +247,8 @@ function PasswordToggleButton({
   return (
     <button
       type="button"
-      tabIndex={-1}
       onClick={onToggle}
-      className="absolute inset-y-0 right-0 flex items-center px-3 text-subtle transition-colors hover:text-foreground"
+      className="absolute inset-y-0 right-0 flex items-center px-3 text-subtle transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-surface"
       aria-label={visible ? "Ocultar contraseña" : "Mostrar contraseña"}
     >
       {visible ? (
@@ -262,6 +280,11 @@ function CreateUserModal({
   const [displayName, setDisplayName] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [err, setErr] = useState<string | null>(null);
+  // Este modal está siempre "abierto" mientras existe (el padre lo desmonta
+  // al cerrar, en vez de ocultarlo con `open`), así que `open: true` es
+  // correcto aquí: el hook igual reclama foco inicial y activa Escape/trap
+  // en el efecto de montaje.
+  const { panelRef, titleId } = useDialog({ open: true, onClose, closeBlocked: submitting });
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -286,8 +309,8 @@ function CreateUserModal({
   }
 
   return (
-    <ModalShell onClose={onClose}>
-      <h2 className="text-lg font-medium text-foreground">Crear usuario</h2>
+    <ModalShell onClose={onClose} panelRef={panelRef} titleId={titleId} closeBlocked={submitting}>
+      <h2 id={titleId} className="text-lg font-medium text-foreground">Crear usuario</h2>
       <p className="mt-1.5 text-xs text-muted">
         El usuario se creará con rol <code className="font-mono text-foreground">user</code>.
       </p>
@@ -351,7 +374,7 @@ function CreateUserModal({
             type="button"
             onClick={onClose}
             disabled={submitting}
-            className="rounded-full px-4 py-2 text-xs font-medium text-muted transition-colors hover:bg-surface hover:text-foreground disabled:opacity-50"
+            className="rounded-full px-4 py-2 text-xs font-medium text-muted transition-colors hover:bg-surface hover:text-foreground disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-elevated"
           >
             Cancelar
           </button>
@@ -382,6 +405,7 @@ function ChangePasswordModal({
   const [showPwd, setShowPwd] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [err, setErr] = useState<string | null>(null);
+  const { panelRef, titleId } = useDialog({ open: true, onClose, closeBlocked: submitting });
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -402,8 +426,8 @@ function ChangePasswordModal({
   }
 
   return (
-    <ModalShell onClose={onClose}>
-      <h2 className="text-lg font-medium text-foreground">Cambiar contraseña</h2>
+    <ModalShell onClose={onClose} panelRef={panelRef} titleId={titleId} closeBlocked={submitting}>
+      <h2 id={titleId} className="text-lg font-medium text-foreground">Cambiar contraseña</h2>
       <p className="mt-1.5 text-xs text-muted">
         Para <span className="font-mono text-foreground">{target.email}</span>. El cambio
         es inmediato y no envía notificaciones.
@@ -450,7 +474,7 @@ function ChangePasswordModal({
             type="button"
             onClick={onClose}
             disabled={submitting}
-            className="rounded-full px-4 py-2 text-xs font-medium text-muted transition-colors hover:bg-surface hover:text-foreground disabled:opacity-50"
+            className="rounded-full px-4 py-2 text-xs font-medium text-muted transition-colors hover:bg-surface hover:text-foreground disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-elevated"
           >
             Cancelar
           </button>

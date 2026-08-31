@@ -8,6 +8,7 @@ import { useAuth } from "@/components/providers/AuthProvider";
 import { ConversationList } from "@/components/chat/ConversationList";
 import { ConversationSearchDialog } from "@/components/chat/ConversationSearchDialog";
 import { SidebarUserMenu } from "@/components/chat/SidebarUserMenu";
+import { useDialog } from "@/components/common/useDialog";
 import {
   SIDEBAR_COLLAPSED_WIDTH,
   SIDEBAR_EXPANDED_WIDTH,
@@ -21,11 +22,31 @@ interface ConversationSidebarProps {
   loading: boolean;
   /** A4 — ver `useConversations`: mensaje del último refresco fallido, con la última lista válida aún en `conversations`. */
   loadError?: string | null;
+  /** Colapsado/expandido del riel de escritorio. Persistido; NO controla el panel móvil (ver `mobileOpen`). */
   isExpanded: boolean;
+  /**
+   * Abierto/cerrado del panel off-canvas móvil. Deliberadamente
+   * independiente de `isExpanded` (que persiste la preferencia de
+   * colapso del riel de escritorio en localStorage): el panel móvil
+   * siempre arranca cerrado y no comparte ese booleano persistido.
+   */
+  mobileOpen: boolean;
   transitionEnabled: boolean;
   onSelectConversation: (conv: Conversation) => Promise<void>;
   onNewChat: () => void;
+  /** Alterna el panel relevante para el viewport actual (riel de escritorio o panel móvil). */
   onToggleSidebar: () => void;
+  /** Cierra específicamente el panel móvil (backdrop, botón de cierre, Escape). */
+  onCloseMobile: () => void;
+  /**
+   * Notifica al padre (`ChatInterface`) cuando el panel móvil termina por
+   * completo su animación de salida — nunca antes. El padre la usa para
+   * soltar el `inert` que mantiene bloqueada el área principal del chat
+   * mientras el panel sigue montado y visible (ver "presencia modal",
+   * `mobilePresent`, más abajo). Opcional: los consumidores que no
+   * necesiten `inert` (p. ej. pruebas) pueden omitirla.
+   */
+  onMobileExitComplete?: () => void;
   /**
    * Refresca el listado de conversaciones (p. ej. tras renombrar o eliminar
    * una conversación). Es obligatorio: sin esta prop, ConversationList no
@@ -42,16 +63,35 @@ export function ConversationSidebar({
   loading,
   loadError = null,
   isExpanded,
+  mobileOpen,
   transitionEnabled,
   onSelectConversation,
   onNewChat,
   onToggleSidebar,
+  onCloseMobile,
+  onMobileExitComplete,
   onConversationsRefresh,
 }: ConversationSidebarProps) {
   const { user, role, signOut } = useAuth();
   const [search, setSearch] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
+  // Recuerda que la búsqueda debe abrirse en cuanto el panel móvil
+  // termine de salir (ver `openSearch` y `handleMobileExitComplete` más
+  // abajo): mientras `MobileSidebar` sigue animando su salida, su nodo
+  // `role="dialog" aria-modal="true"` sigue montado, así que abrir la
+  // búsqueda de inmediato dejaría dos diálogos modales coexistiendo.
+  const [pendingMobileSearch, setPendingMobileSearch] = useState(false);
+  // "Presencia modal" del panel móvil: a diferencia de `mobileOpen` (que
+  // solo indica si el panel está entrando o saliendo), esta bandera sigue
+  // en `true` durante toda la animación de salida y solo baja a `false`
+  // cuando `handleMobileExitComplete` confirma que ya terminó. La usa
+  // `MobileSidebar` para mantener activo `useDialog` (atrapado de Tab,
+  // retorno de foco recién al terminar) mientras el panel sigue visible, y
+  // este componente la reenvía a `ChatInterface` (vía
+  // `onMobileExitComplete`) para que mantenga el área principal del chat
+  // con `inert` durante ese mismo tramo.
+  const [mobilePresent, setMobilePresent] = useState(mobileOpen);
   const isAdmin = role === "admin" || role === "super-admin";
 
   const searchResults = conversations.filter((conversation) =>
@@ -60,9 +100,36 @@ export function ConversationSidebar({
   const hasSearch = search.trim().length > 0;
   const userInfo = getUserInfo(user);
 
+  // Si el panel móvil vuelve a abrirse antes de que termine de salir (p.
+  // ej. el usuario lo reabre mientras una búsqueda pospuesta todavía
+  // espera `handleMobileExitComplete`), esa apertura pendiente ya no
+  // corresponde: se cancela. Se ajusta durante el render, comparando con
+  // el valor anterior guardado en estado (no en una ref: React no permite
+  // leer `ref.current` durante el render), y solo se llama a `setState`
+  // cuando la comparación detecta un cambio real: es el patrón que React
+  // recomienda para reaccionar a un cambio de prop sin la renderización en
+  // cascada extra que provocaría hacerlo en un `useEffect` (ver
+  // "Adjusting some state when a prop changes" en la documentación de
+  // React).
+  const [prevMobileOpen, setPrevMobileOpen] = useState(mobileOpen);
+  if (mobileOpen !== prevMobileOpen) {
+    setPrevMobileOpen(mobileOpen);
+    if (mobileOpen) {
+      // El panel vuelve a entrar: su presencia se activa de inmediato (no
+      // hay que esperar ninguna animación para empezar a bloquear el
+      // fondo). Cualquier búsqueda pospuesta de una salida anterior ya no
+      // corresponde.
+      setMobilePresent(true);
+      if (pendingMobileSearch) {
+        setPendingMobileSearch(false);
+      }
+    }
+  }
+
   function closePanels() {
     setSearchOpen(false);
     setProfileOpen(false);
+    setPendingMobileSearch(false);
   }
 
   function handleNewChat() {
@@ -75,9 +142,49 @@ export function ConversationSidebar({
     onToggleSidebar();
   }
 
+  // Única salida del panel móvil (backdrop, botón "×" del encabezado y
+  // Escape vía `useDialog`); separada de `handleToggleSidebar`, que además
+  // sirve para *abrir* el riel de escritorio y no debe reutilizarse aquí.
+  function closeMobilePanel() {
+    closePanels();
+    onCloseMobile();
+  }
+
   function openSearch() {
     setProfileOpen(false);
+    // El disparador puede ser tanto el propio panel móvil como el riel
+    // de escritorio (comparten esta función). Si el panel móvil está
+    // abierto, su nodo `role="dialog" aria-modal="true"` sigue montado
+    // mientras `AnimatePresence` anima la salida: abrir la búsqueda de
+    // inmediato dejaría, durante esa animación, dos diálogos modales
+    // coexistiendo en el documento. Se pospone la apertura hasta que
+    // `handleMobileExitComplete` confirme que el panel ya terminó de
+    // salir.
+    if (mobileOpen) {
+      setPendingMobileSearch(true);
+      onCloseMobile();
+      return;
+    }
     setSearchOpen(true);
+  }
+
+  // Conectado directamente a `AnimatePresence.onExitComplete` dentro de
+  // `MobileSidebar`: se dispara una única vez, cuando el panel móvil y su
+  // backdrop (ambos dentro del mismo `AnimatePresence` ahora) terminaron
+  // por completo su animación de salida (nunca durante ella). Libera la
+  // presencia modal — con lo que `useDialog` en `MobileSidebar` suelta el
+  // foco hacia el disparador, y `ChatInterface`, vía
+  // `onMobileExitComplete`, suelta el `inert` del área principal — y, si
+  // había una búsqueda pospuesta, recién ahí la abre: así se garantiza que
+  // el diálogo del panel ya no existe en el documento antes de montar el
+  // de búsqueda.
+  function handleMobileExitComplete() {
+    setMobilePresent(false);
+    onMobileExitComplete?.();
+    if (pendingMobileSearch) {
+      setPendingMobileSearch(false);
+      setSearchOpen(true);
+    }
   }
 
   async function handleSelectConversation(conv: Conversation) {
@@ -92,14 +199,6 @@ export function ConversationSidebar({
 
   return (
     <>
-      {isExpanded && (
-        <div
-          className="fixed inset-0 z-30 bg-foreground/20 md:hidden"
-          onClick={handleToggleSidebar}
-          aria-hidden="true"
-        />
-      )}
-
       <DesktopSidebar
         expanded={isExpanded}
         transitionEnabled={transitionEnabled}
@@ -126,7 +225,9 @@ export function ConversationSidebar({
       />
 
       <MobileSidebar
-        open={isExpanded}
+        open={mobileOpen}
+        present={mobilePresent}
+        onExitComplete={handleMobileExitComplete}
         hasSearch={hasSearch}
         profileOpen={profileOpen}
         userInfo={userInfo}
@@ -135,7 +236,7 @@ export function ConversationSidebar({
         activeConversationId={activeConversationId}
         loading={loading}
         loadError={loadError}
-        onToggleSidebar={handleToggleSidebar}
+        onToggleSidebar={closeMobilePanel}
         onNewChat={handleNewChat}
         onOpenSearch={openSearch}
         onToggleProfile={() => {
@@ -272,6 +373,8 @@ function DesktopSidebar({
 
 function MobileSidebar({
   open,
+  present,
+  onExitComplete,
   hasSearch,
   profileOpen,
   userInfo,
@@ -288,17 +391,81 @@ function MobileSidebar({
   onSignOut,
   onSelectConversation,
   onConversationsRefresh,
-}: SidebarContentProps & { open: boolean }) {
+}: SidebarContentProps & {
+  open: boolean;
+  /**
+   * "Presencia modal": sigue en `true` mientras el panel sigue montado
+   * saliendo, no solo mientras `open` es `true`. Ver el estado homónimo en
+   * `ConversationSidebar`.
+   */
+  present: boolean;
+  onExitComplete: () => void;
+}) {
+  // El panel móvil es un overlay a pantalla completa sobre el resto de la
+  // app (con backdrop propio): a diferencia del popover de citas no modal
+  // (ver AssistantBubble), aquí sí corresponde atrapar el foco con Tab
+  // mientras está abierto y devolverlo al disparador (el botón de
+  // hamburguesa del header) al cerrar. `onToggleSidebar` para esta
+  // instancia siempre significa "cerrar": el padre (`ConversationSidebar`)
+  // le pasa `closeMobilePanel`, la misma función que usan el backdrop y
+  // el botón "×" del encabezado. El único overlay anidado que persiste
+  // dentro de este panel es el menú de perfil (`SidebarUserMenu`, con su
+  // propio listener de Escape independiente, sin pasar por `useDialog`):
+  // `closeBlocked` evita que ESTE `useDialog` dispare también su propio
+  // `onClose` por Escape mientras el menú de perfil sigue abierto encima
+  // — la misma pulsación primero cierra el menú (listener propio de
+  // `SidebarUserMenu`); una segunda pulsación, ya sin overlay anidado,
+  // cierra el panel móvil con normalidad. `closeBlocked` no toca el
+  // atrapado de Tab (que solo le concierne al enfoque, no al cierre).
+  // `open` (arriba) solo controla si el panel está entrando o saliendo —
+  // es la señal que `AnimatePresence` necesita para arrancar su propia
+  // animación de salida. `useDialog` en cambio recibe `present`: sigue
+  // activo (atrapa Tab, escucha Escape) mientras el panel sigue montado
+  // saliendo, y solo suelta el foco hacia el disparador cuando la
+  // presencia baja a `false` (en `handleMobileExitComplete`, ya con el
+  // panel fuera del documento).
+  const { panelRef } = useDialog({
+    open: present,
+    onClose: onToggleSidebar,
+    closeBlocked: profileOpen,
+  });
+
   return (
-    <AnimatePresence>
+    // `onExitComplete` reenvía directamente el callback del padre: se
+    // dispara cuando el backdrop y el panel —ambos dentro de este mismo
+    // `AnimatePresence`, así que permanecen montados juntos durante toda
+    // la salida— terminan por completo su animación, momento en el que el
+    // componente padre puede soltar la presencia modal y abrir con
+    // seguridad el diálogo de búsqueda si había una apertura pospuesta
+    // (ver `openSearch`/`handleMobileExitComplete` en ConversationSidebar).
+    <AnimatePresence onExitComplete={onExitComplete}>
+      {open && (
+        <motion.div
+          key="mobile-sidebar-backdrop"
+          className="fixed inset-0 z-30 bg-foreground/20 md:hidden"
+          onClick={onToggleSidebar}
+          aria-hidden="true"
+          // Sin fade propio: `exit` aquí solo sirve para que
+          // `AnimatePresence` lo mantenga montado (requisito suyo para
+          // diferir el desmontaje) hasta que el panel también termine, sin
+          // cambiar la apariencia del backdrop.
+          exit={{ opacity: 1 }}
+          transition={SIDEBAR_TRANSITION}
+        />
+      )}
       {open && (
         <motion.aside
+          key="mobile-sidebar-panel"
+          ref={panelRef}
+          tabIndex={-1}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Historial de conversaciones"
           className="fixed inset-y-0 left-0 z-40 flex w-64 flex-col border-r border-border bg-surface md:hidden"
           initial={{ x: -264 }}
           animate={{ x: 0 }}
           exit={{ x: -264 }}
           transition={SIDEBAR_TRANSITION}
-          aria-label="Historial de conversaciones"
         >
           <ExpandedSidebarContent
             hasSearch={hasSearch}

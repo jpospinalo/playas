@@ -460,7 +460,7 @@ export default function MessageFeedbackPage() {
 														{item.expectedAnswer}{" "}
 														<button
 															onClick={() => setExpandedId(null)}
-															className="text-accent hover:underline"
+															className="text-accent hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:rounded-sm"
 														>
 															Ver menos
 														</button>
@@ -471,7 +471,7 @@ export default function MessageFeedbackPage() {
 														{item.expectedAnswer.length > 50 && (
 															<button
 																onClick={() => setExpandedId(item.id)}
-																className="text-accent hover:underline"
+																className="text-accent hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:rounded-sm"
 															>
 																Ver más
 															</button>

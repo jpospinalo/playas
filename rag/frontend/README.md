@@ -214,7 +214,7 @@ El sistema visual de ATLAS está definido en `globals.css` con tokens OKLCH y do
 
 **Animaciones personalizadas:** `message-in`, `typing-dot`, `fade-in`, `glow-pulse`.
 
-**Accesibilidad:** regla CSS global para `prefers-reduced-motion` y estilos de foco visible. No se declara conformidad WCAG ni contraste AA sin una auditoría formal.
+**Accesibilidad:** `prefers-reduced-motion` se respeta tanto en CSS (regla global) como en las animaciones de `motion/react` (`MotionConfig reducedMotion="user"` en `ThemeProvider`), además de estilos de foco visible. No se declara conformidad WCAG ni contraste AA sin una auditoría formal.
 
 ---
 

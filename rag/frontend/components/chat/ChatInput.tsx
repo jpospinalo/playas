@@ -194,10 +194,21 @@ export function ChatInput({
 
 	return (
 		<div className="relative shrink-0 px-4 pb-[calc(1rem+1cm)] pt-2 sm:pb-[calc(1.5rem+1cm)]">
-			<div className="relative mx-auto w-full max-w-3xl">
-				{form}
+			{/* `sideSlot` (el botón de feedback) NO debe usar `absolute
+			    left-full` de forma incondicional: al posicionarlo fuera del
+			    ancho de este contenedor (ya `max-w-3xl` y centrado), en un
+			    viewport angosto de 320px no queda espacio a la derecha y el
+			    botón terminaría fuera del viewport, inalcanzable. Por debajo de
+			    `xl` se mantiene en flujo normal (fila flex, junto al
+			    formulario, compitiendo por el ancho disponible); solo a partir
+			    de `xl` — donde sí sobra espacio horizontal a los lados del
+			    bloque centrado — vuelve a flotar afuera con la posición
+			    absoluta original. Sin cálculos de ancho por JS: es un cambio
+			    puramente de CSS por punto de quiebre. */}
+			<div className="mx-auto flex w-full max-w-3xl items-center gap-2 xl:relative xl:block">
+				<div className="min-w-0 flex-1">{form}</div>
 				{sideSlot && (
-					<div className="pointer-events-auto absolute left-full top-1/2 -translate-y-1/2 pl-[0.5cm]">
+					<div className="pointer-events-auto shrink-0 xl:absolute xl:left-full xl:top-1/2 xl:-translate-y-1/2 xl:pl-[0.5cm]">
 						{sideSlot}
 					</div>
 				)}
