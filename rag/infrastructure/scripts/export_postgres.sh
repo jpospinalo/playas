@@ -101,13 +101,19 @@ s3 = boto3.client('s3', region_name='${REGION}', config=Config(signature_version
 print(s3.generate_presigned_url('put_object', Params={'Bucket': '${BUCKET}', 'Key': '${KEY}'}, ExpiresIn=1800))
 ")
 
-# ── 3. pg_dump dentro del contenedor + subida vía curl ────────────────────────
+# ── 3. pg_dump dentro del contenedor + subida vía curl (con fallback a wget) ──
 log "Ejecutando pg_dump en el contenedor postgres y subiendo a S3..."
 REMOTE_CMD="pg_dump -U ${DB_USER} -Fc ${DB_NAME} > /tmp/${KEY} && \
 ls -la /tmp/${KEY} && \
-curl -sS -X PUT -T /tmp/${KEY} \"${PRESIGN_URL}\" -o /tmp/curl_out.txt -w 'HTTP_STATUS:%{http_code}\n' && \
-cat /tmp/curl_out.txt && \
-rm -f /tmp/${KEY} /tmp/curl_out.txt"
+( command -v curl >/dev/null 2>&1 || apk add --no-cache curl >/tmp/apk_out.txt 2>&1 || true ) && \
+if command -v curl >/dev/null 2>&1; then \
+  curl -sS -X PUT -T /tmp/${KEY} \"${PRESIGN_URL}\" -o /tmp/upload_out.txt -w \"HTTP_STATUS:%{http_code}\n\"; \
+else \
+  echo \"curl no disponible, probando wget...\"; \
+  wget -q --method=PUT --body-file=/tmp/${KEY} \"${PRESIGN_URL}\" -O /tmp/upload_out.txt 2>/tmp/wget_err.txt && echo \"HTTP_STATUS:200\" || (cat /tmp/wget_err.txt; echo \"HTTP_STATUS:000\"); \
+fi && \
+cat /tmp/upload_out.txt 2>/dev/null; \
+rm -f /tmp/${KEY} /tmp/upload_out.txt /tmp/apk_out.txt /tmp/wget_err.txt"
 
 EXEC_OUTPUT=$(aws ecs execute-command \
   --cluster "${CLUSTER}" \
