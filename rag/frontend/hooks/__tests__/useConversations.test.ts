@@ -104,4 +104,19 @@ describe("useConversations (A4)", () => {
 		expect(result.current.conversations[0].id).toBe("c-new");
 		expect(result.current.error).toBeNull();
 	});
+
+	it("un timeout local del refresco se muestra como el mensaje controlado, no el texto nativo del DOMException", async () => {
+		const fetchMock = fetch as unknown as ReturnType<typeof vi.fn>;
+		fetchMock.mockRejectedValue(
+			new DOMException("The operation was aborted due to timeout", "TimeoutError"),
+		);
+
+		const { result } = renderHook(() => useConversations());
+
+		await waitFor(() =>
+			expect(result.current.error).toBe(
+				"La solicitud tardó demasiado. Intenta nuevamente.",
+			),
+		);
+	});
 });

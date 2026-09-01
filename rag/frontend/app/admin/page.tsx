@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { API_URL } from "@/lib/config";
+import { restErrorMessage, withRestTimeout } from "@/lib/httpTimeout";
 import { throwIfSessionExpired } from "@/lib/api";
 
 
@@ -111,6 +112,7 @@ async function fetchConversationStats(
 ): Promise<ConversationFeedbackStats> {
 	const res = await fetch(`${API_URL}/api/admin/feedback?page=1&page_size=1`, {
 		headers: { Authorization: `Bearer ${token}` },
+		signal: withRestTimeout(),
 	});
 	await throwIfSessionExpired(res, token);
 	if (!res.ok) throw new Error(`Error ${res.status}`);
@@ -134,6 +136,7 @@ async function fetchMessageStats(token: string): Promise<MessageFeedbackStats> {
 		`${API_URL}/api/admin/message-feedback?page=1&page_size=1`,
 		{
 			headers: { Authorization: `Bearer ${token}` },
+			signal: withRestTimeout(),
 		},
 	);
 	if (res.status === 404) {
@@ -186,7 +189,7 @@ export default function AdminPage() {
 				setConvStats(cs);
 				setMsgStats(ms);
 			} catch (e) {
-				setError(e instanceof Error ? e.message : "Error desconocido");
+				setError(restErrorMessage(e, "Error desconocido"));
 			} finally {
 				setLoading(false);
 			}

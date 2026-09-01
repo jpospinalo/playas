@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { API_URL } from "@/lib/config";
+import { restErrorMessage, withRestTimeout } from "@/lib/httpTimeout";
 import { throwIfSessionExpired } from "@/lib/api";
 import {
 	colombiaEndOfDayIso,
@@ -160,7 +161,7 @@ export default function FeedbackPage() {
 
 				const res = await fetch(`${API_URL}/api/admin/feedback?${params}`, {
 					headers: { Authorization: `Bearer ${token}` },
-					signal: controller.signal,
+					signal: withRestTimeout(controller.signal),
 				});
 				await throwIfSessionExpired(res, token);
 				if (!res.ok) throw new Error(`Error ${res.status}`);
@@ -179,9 +180,15 @@ export default function FeedbackPage() {
 				// disparado una solicitud más reciente.
 				if (e instanceof DOMException && e.name === "AbortError") return;
 				if (abortRef.current !== controller) return;
-				setError(e instanceof Error ? e.message : "Error desconocido");
+				setError(restErrorMessage(e, "Error desconocido"));
 			} finally {
-				if (abortRef.current === controller) setLoading(false);
+				// Limpia la referencia por identidad: si esta sigue siendo la
+				// solicitud vigente, ya terminó y no queda nada que una carga
+				// posterior (otra página o filtro) pudiera necesitar cancelar.
+				if (abortRef.current === controller) {
+					setLoading(false);
+					abortRef.current = null;
+				}
 			}
 		},
 		[appliedFilters],

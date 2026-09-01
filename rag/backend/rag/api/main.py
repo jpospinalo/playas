@@ -414,7 +414,28 @@ class _ResourceManagedStreamingResponse(StreamingResponse):
             await self._resource_stack.aclose()
 
 
-@app.post("/api/query/stream")
+@app.post(
+    "/api/query/stream",
+    # Corrige SOLO la documentación OpenAPI de esta ruta — sin
+    # `response_model`/anotación de retorno, FastAPI declararía por
+    # defecto el 200 como `application/json` con un schema vacío (`{}`),
+    # aunque en tiempo de ejecución esta ruta siempre responde con
+    # `media_type="text/event-stream"` (ver `_ResourceManagedStreamingResponse`
+    # más abajo). `response_class=StreamingResponse` es solo una pista para
+    # que FastAPI genere el 200 por defecto sin el `application/json` vacío
+    # de su fallback habitual — la función igual retorna directamente su
+    # propia `_ResourceManagedStreamingResponse` (subclase de
+    # `StreamingResponse`), así que el comportamiento real no cambia.
+    # `responses` amplía esa entrada 200 con el media type real; no pisa el
+    # 422 que FastAPI ya agrega por el body validado.
+    response_class=StreamingResponse,
+    responses={
+        200: {
+            "description": "Successful Response",
+            "content": {"text/event-stream": {"schema": {"type": "string"}}},
+        }
+    },
+)
 async def query_stream(
     request: QueryRequest,
     user: dict = Depends(get_query_user),

@@ -180,3 +180,86 @@ describe("useChat — submit(): fallo de streaming vs. fallo de persistencia (A5
 		expect(firstRetryCallCount).toBe(1);
 	});
 });
+
+// jsdom implementa `DOMException` en un realm cuyo `Error` no coincide con
+// el `Error` global que usa el resto del módulo bajo prueba: una instancia
+// real de `DOMException` allí falla `instanceof Error`, aunque
+// `instanceof DOMException` siga funcionando. En un navegador real (un
+// único realm) esto no ocurre — `AbortSignal.timeout()` produce un
+// `DOMException` que SÍ es `instanceof Error`. Este reemplazo, activo solo
+// dentro de cada prueba que lo usa (`vi.unstubAllGlobals()` ya lo revierte
+// en el `afterEach` existente), reproduce ese comportamiento de navegador
+// real para ejercitar el límite de presentación tal como se comporta en
+// producción.
+class TimeoutDOMException extends Error {
+	constructor(message: string, name: string) {
+		super(message);
+		this.name = name;
+	}
+}
+
+describe("useChat — submit(): timeout REST en la creación de la conversación y en el guardado de la pregunta", () => {
+	beforeEach(() => {
+		vi.stubGlobal("fetch", vi.fn());
+		vi.stubGlobal("DOMException", TimeoutDOMException);
+	});
+
+	afterEach(() => {
+		vi.unstubAllGlobals();
+		vi.clearAllMocks();
+	});
+
+	it("un timeout al crear la conversación muestra el mensaje controlado, no el texto nativo del DOMException", async () => {
+		const fetchMock = fetch as unknown as ReturnType<typeof vi.fn>;
+		fetchMock.mockRejectedValueOnce(
+			new DOMException("The operation was aborted due to timeout", "TimeoutError"),
+		);
+
+		const { result } = renderHook(() => useChat());
+
+		await act(async () => {
+			await result.current.submit("¿Qué dice la norma?");
+		});
+
+		expect(result.current.error).toBe(
+			"La solicitud tardó demasiado. Intenta nuevamente.",
+		);
+		// La pregunta optimista se retira: no queda ningún mensaje colgado de
+		// una conversación que nunca llegó a crearse.
+		expect(result.current.messages).toHaveLength(0);
+		// El texto se restaura en el input para que la persona no lo pierda.
+		expect(result.current.input).toBe("¿Qué dice la norma?");
+		expect(result.current.loading).toBe(false);
+		// Sin conversación creada, nunca debió iniciarse el stream.
+		expect(queryRagStream).not.toHaveBeenCalled();
+	});
+
+	it("un timeout al persistir la pregunta (dos intentos agotados) muestra el mensaje controlado, no el texto nativo del DOMException", async () => {
+		const fetchMock = fetch as unknown as ReturnType<typeof vi.fn>;
+		fetchMock
+			.mockResolvedValueOnce(jsonResponse({ id: "conv-1" })) // _createConversation
+			.mockRejectedValueOnce(
+				new DOMException("The operation was aborted due to timeout", "TimeoutError"),
+			) // persistMessage intento 1
+			.mockRejectedValueOnce(
+				new DOMException("The operation was aborted due to timeout", "TimeoutError"),
+			); // persistMessage intento 2
+
+		const { result } = renderHook(() => useChat());
+
+		await act(async () => {
+			await result.current.submit("¿Qué dice la norma?");
+		});
+
+		expect(result.current.error).toBe(
+			"La solicitud tardó demasiado. Intenta nuevamente.",
+		);
+		expect(result.current.messages).toHaveLength(0);
+		expect(result.current.input).toBe("¿Qué dice la norma?");
+		expect(result.current.loading).toBe(false);
+		expect(queryRagStream).not.toHaveBeenCalled();
+		// Exactamente dos intentos de persistencia (más la creación previa):
+		// la política de reintentos de `persistMessage` no cambió.
+		expect(fetchMock).toHaveBeenCalledTimes(3);
+	});
+});

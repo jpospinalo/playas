@@ -5,6 +5,7 @@ import { expireAuthSession, getToken } from "@/lib/auth";
 import { throwIfSessionExpired } from "@/lib/api";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { API_URL } from "@/lib/config";
+import { restErrorMessage, withRestTimeout } from "@/lib/httpTimeout";
 
 export interface Conversation {
 	id: string;
@@ -49,6 +50,7 @@ export function useConversations(): {
 			// expiración. Este es un vaciado deliberado (sesión perdida), no un
 			// fallo transitorio: `error` se limpia, no se fija.
 			abortRef.current?.abort();
+			abortRef.current = null;
 			if (user) expireAuthSession(null);
 			setConversations([]);
 			setError(null);
@@ -56,6 +58,7 @@ export function useConversations(): {
 		}
 		if (!user) {
 			abortRef.current?.abort();
+			abortRef.current = null;
 			setConversations([]);
 			setError(null);
 			return;
@@ -69,7 +72,7 @@ export function useConversations(): {
 		try {
 			const res = await fetch(`${API_URL}/api/conversations`, {
 				headers: { Authorization: `Bearer ${token}` },
-				signal: controller.signal,
+				signal: withRestTimeout(controller.signal),
 			});
 			await throwIfSessionExpired(res, token);
 			if (!res.ok) throw new Error(`Error ${res.status}`);
@@ -102,13 +105,17 @@ export function useConversations(): {
 			// hace `setConversations([])`: la última lista válida se conserva,
 			// y el aviso de error convive con ella en la UI (ver
 			// ConversationList).
-			setError(
-				e instanceof Error
-					? e.message
-					: "No fue posible cargar las conversaciones.",
-			);
+			setError(restErrorMessage(e, "No fue posible cargar las conversaciones."));
 		} finally {
-			if (abortRef.current === controller) setLoading(false);
+			// Limpia la referencia por identidad: si esta sigue siendo la
+			// solicitud vigente, ya terminó (éxito, error o cancelación) y no
+			// queda nada que un `refresh()` futuro pudiera necesitar cancelar.
+			// Si ya no coincide (un `refresh()` más reciente la reemplazó
+			// mientras esta resolvía), no la toca.
+			if (abortRef.current === controller) {
+				setLoading(false);
+				abortRef.current = null;
+			}
 		}
 	}, [user]);
 

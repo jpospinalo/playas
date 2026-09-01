@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { queryRagStream, throwIfSessionExpired } from "@/lib/api";
 import { expireAuthSession, getToken } from "@/lib/auth";
 import { API_URL } from "@/lib/config";
+import { restErrorMessage, withRestTimeout } from "@/lib/httpTimeout";
 import { MAX_QUESTION_CHARS } from "@/lib/contracts";
 import type { AgentStage, Message, SourceGroup } from "@/lib/types";
 import { normalizeSources } from "@/lib/types";
@@ -112,6 +113,10 @@ async function persistMessage(input: PersistMessageInput): Promise<{ id: string 
 						text: input.text,
 						sources: input.sources ?? null,
 					}),
+					// Cada intento del bucle de reintento recibe su propio
+					// presupuesto de 60s — un intento que agota su límite no debe
+					// dejar sin tiempo al reintento siguiente.
+					signal: withRestTimeout(),
 				},
 			);
 		} catch (error) {
@@ -244,6 +249,7 @@ export function useChat({ onConversationChanged }: UseChatOptions = {}): UseChat
 					thread_id: threadIdRef.current,
 					title: firstQuestion.slice(0, 120) || `Chat ${dateStr} ${timeStr}`,
 				}),
+				signal: withRestTimeout(),
 			});
 			await throwIfSessionExpired(res, token);
 			if (!res.ok) throw new Error("No fue posible crear la conversación.");
@@ -322,9 +328,7 @@ export function useChat({ onConversationChanged }: UseChatOptions = {}): UseChat
 				setMessages((prev) => prev.filter((message) => message.id !== localUserId));
 				setInput(q);
 				setLoading(false);
-				setError(
-					err instanceof Error ? err.message : "No fue posible crear la conversación.",
-				);
+				setError(restErrorMessage(err, "No fue posible crear la conversación."));
 				return;
 			}
 		}
@@ -363,7 +367,7 @@ export function useChat({ onConversationChanged }: UseChatOptions = {}): UseChat
 			setMessages((prev) => prev.filter((message) => message.id !== localUserId));
 			setInput(q);
 			setLoading(false);
-			setError(err instanceof Error ? err.message : "No fue posible guardar la pregunta.");
+			setError(restErrorMessage(err, "No fue posible guardar la pregunta."));
 			return;
 		}
 
@@ -657,6 +661,17 @@ export function useChat({ onConversationChanged }: UseChatOptions = {}): UseChat
 			abortControllerRef.current = null;
 		}
 		setCanCancel(false);
+		// Detiene de inmediato el estado TRANSITORIO de una generación
+		// que pudiera seguir en curso (isStreaming/stage/stageMessage): el
+		// usuario ya eligió otra conversación, así que no debe seguir viendo
+		// "Construyendo una respuesta..." mientras esta carga resuelve. Los
+		// MENSAJES visibles, en cambio, se conservan tal cual hasta que esta
+		// carga tenga éxito (más abajo) — nunca se vacían solo por empezar a
+		// cargar otra conversación.
+		setIsStreaming(false);
+		setStage(null);
+		setStageMessage(null);
+		streamingStartedRef.current = false;
 
 		// A4 — cancela una carga anterior aún en vuelo (p. ej. el usuario hizo
 		// clic en otra conversación antes de que la primera terminara), pero
@@ -666,10 +681,26 @@ export function useChat({ onConversationChanged }: UseChatOptions = {}): UseChat
 		const controller = new AbortController();
 		loadConversationAbortRef.current = controller;
 
+		// Marca este intento como la carga activa desde este punto (no
+		// solo al terminar), para que la UI pueda reflejar que hay una carga
+		// en curso mientras la solicitud está en vuelo.
+		setLoading(true);
+
 		const token = getToken();
 		if (!token) {
 			// Igual que arriba: si React aún cree que hay sesión, notifica.
 			if (user) expireAuthSession(null);
+			// Sin token no hay ninguna solicitud que hacer: libera el
+			// `loading` que se acaba de marcar arriba (solo si esta operación
+			// sigue siendo la vigente) para no dejarlo atascado.
+			if (chatRunIdRef.current === runId) setLoading(false);
+			// Limpia la referencia por identidad: sin solicitud que hacer, no
+			// queda nada que una carga futura pudiera necesitar cancelar. Solo
+			// si sigue siendo la propia (nada pudo haberla reemplazado todavía
+			// — no hubo ningún `await` entre crearla y este punto).
+			if (loadConversationAbortRef.current === controller) {
+				loadConversationAbortRef.current = null;
+			}
 			return;
 		}
 
@@ -678,7 +709,7 @@ export function useChat({ onConversationChanged }: UseChatOptions = {}): UseChat
 				`${API_URL}/api/conversations/${conv.id}/messages`,
 				{
 					headers: { Authorization: `Bearer ${token}` },
-					signal: controller.signal,
+					signal: withRestTimeout(controller.signal),
 				},
 			);
 			await throwIfSessionExpired(res, token);
@@ -719,6 +750,14 @@ export function useChat({ onConversationChanged }: UseChatOptions = {}): UseChat
 			setGenerationFinished(false);
 			setContextPercent(0);
 			streamingStartedRef.current = false;
+			// Limpia la referencia por identidad: si esta sigue siendo la
+			// carga vigente, ya terminó y no queda nada que una carga futura
+			// pudiera necesitar cancelar. Si ya no coincide (una carga más
+			// nueva la reemplazó mientras esta resolvía), no la toca — nunca
+			// debe borrar el controller de esa carga posterior.
+			if (loadConversationAbortRef.current === controller) {
+				loadConversationAbortRef.current = null;
+			}
 		} catch (err) {
 			// Una cancelación deliberada (superada por otra selección) no es un
 			// error visible para el usuario.
@@ -728,11 +767,15 @@ export function useChat({ onConversationChanged }: UseChatOptions = {}): UseChat
 			// A4 — a diferencia del comportamiento anterior (fallar en
 			// silencio), la conversación actualmente visible se conserva tal
 			// cual estaba y se muestra un error explícito del intento fallido.
-			setError(
-				err instanceof Error
-					? err.message
-					: "No fue posible cargar la conversación.",
-			);
+			setError(restErrorMessage(err, "No fue posible cargar la conversación."));
+			// Libera el `loading` únicamente porque ya se confirmó arriba
+			// que esta operación sigue siendo la dueña; una carga ya superada
+			// jamás llega hasta aquí (los dos `return` anteriores la detienen
+			// antes), así que nunca apaga el `loading` de la que la reemplazó.
+			setLoading(false);
+			if (loadConversationAbortRef.current === controller) {
+				loadConversationAbortRef.current = null;
+			}
 		}
 	}
 

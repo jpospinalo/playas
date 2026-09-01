@@ -151,17 +151,17 @@ Máquina de estados del chat. Gestiona el ciclo completo de una conversación.
 
 **Flujo:**
 1. Genera `thread_id` (UUID) estable por sesión de chat.
-2. Primer mensaje crea la conversación vía `POST /api/conversations` (backend SQL) + genera título con IA en background.
+2. Primer mensaje crea la conversación vía `POST /api/conversations` (backend SQL), con el título fijado a los primeros 120 caracteres de la pregunta (o una marca de fecha/hora si está vacía). `generateConversationTitle` existe como función/endpoint (ver tabla de `api.ts` más abajo), pero la UI vigente no lo invoca.
 3. Cada turno se persiste con `POST /api/conversations/{id}/messages` (pregunta y respuesta, por separado), con un reintento para errores transitorios (no para `401`, que expira la sesión de inmediato).
 4. Streaming SSE vía `queryRagStream` async generator, actualizando mensajes en tiempo real.
-5. `loadConversation` hidrata desde `GET /api/conversations/{id}/messages`, ordenado por el backend.
+5. `loadConversation` hidrata desde `GET /api/conversations/{id}/messages`, ordenado por el backend. Cada llamada reclama la propiedad del estado compartido (un id de operación monotónico + el `AbortController` dedicado a la carga, comparados por identidad): detiene de inmediato el estado transitorio de una generación en curso (`isStreaming`/`stage`), pero solo reemplaza los mensajes visibles y libera `loading` si, al resolver, sigue siendo la operación vigente — una respuesta tardía de una selección ya superada nunca pisa la conversación que el usuario ve.
 6. `rateMessage` envía feedback por mensaje (`POST /api/feedback/message`) y marca localmente.
 
 ### `useConversations.ts`
 
 Lista las conversaciones del usuario autenticado vía `GET /api/conversations`, con `refresh()` explícito (sin listener en tiempo real).
 
-**Retorna:** `{ conversations, loading, refresh }`.
+**Retorna:** `{ conversations, loading, error, refresh }`. `error` es el mensaje del último intento de refresco fallido, o `null` si el más reciente tuvo éxito (o todavía no se ha intentado ninguno). Un fallo transitorio (red caída, error del backend) nunca vacía `conversations`: la última lista válida conocida se conserva en pantalla, y `error` es lo único que le permite a la UI mostrar un aviso con opción de reintentar (`refresh`).
 
 ---
 
@@ -177,8 +177,8 @@ Cliente API vigente, con funciones tipadas:
 
 | Función | Endpoint | Descripción |
 |---------|----------|-------------|
-| `queryRagStream(request)` | POST `/api/query/stream` | AsyncGenerator SSE. Yield `StreamEvent` (`token`, `sources`, `status`, `error`). Única vía de consulta usada por la UI. |
-| `generateConversationTitle(...)` | POST `/api/conversations/generate-title` | Título generado por IA. |
+| `queryRagStream(request)` | POST `/api/query/stream` | AsyncGenerator SSE. Yield `StreamEvent` (`token`, `sources`, `status`, `error`). Única vía de consulta usada por la UI. Sin límite de tiempo común (ver abajo); conserva únicamente la señal de cancelación que ya recibía. |
+| `generateConversationTitle(...)` | POST `/api/conversations/generate-title` | Título generado por IA, con fallback silencioso a los primeros 50 caracteres del mensaje. Tampoco tiene el límite de tiempo común — llamada al LLM con su propio presupuesto. |
 | `submitConversationFeedback(request)` | POST `/api/feedback` | Feedback multi-dimensión. |
 | `submitMessageFeedback(request)` | POST `/api/feedback/message` | Feedback por mensaje (409 = duplicado). |
 | `listAdminUsers()` | GET `/api/admin/users` | Lista de usuarios. |
@@ -186,6 +186,10 @@ Cliente API vigente, con funciones tipadas:
 | `updateAdminUserPassword(uid, pwd)` | PATCH `/api/admin/users/{uid}/password` | Cambiar contraseña. |
 
 Todas las requests autenticadas usan `Authorization: Bearer <token>` (`lib/auth.ts::getToken()`). Un `401` en cualquiera de ellas pasa por `throwIfSessionExpired`, que expira la sesión de forma segura frente a condiciones de carrera (ver `lib/auth.ts::expireAuthSession`).
+
+Las operaciones REST de duración finita — autenticación, listar/cargar/crear/renombrar/borrar conversaciones, persistencia de mensajes y feedback, y las pantallas de administración — comparten un límite de tiempo conservador de 60s (`lib/httpTimeout.ts::withRestTimeout`, sobre `AbortSignal.timeout()`/`AbortSignal.any()`), que se combina con cualquier señal de cancelación propia del llamador sin reemplazarla. Quedan fuera, deliberadamente, `queryRagStream` (streaming) y `generateConversationTitle` (ver tabla arriba). El límite aplica POR INTENTO, no por operación completa: `persistMessage` (`hooks/useChat.ts`) hace como máximo dos intentos ante un error transitorio o `5xx`, y cada uno recibe su propio presupuesto completo de 60s — un intento que agota su límite no le resta tiempo al siguiente.
+
+Los mensajes de error HTTP mostrados al usuario pasan por un único lector seguro (`lib/api.ts::readErrorDetail`): intenta `{"detail": "..."}` de un cuerpo JSON, luego texto plano corto y de confianza, y si no hay nada usable (cuerpo vacío, JSON sin `detail`, HTML de un proxy, o un cuerpo demasiado largo) usa un mensaje por código — nunca muestra JSON serializado ni un cuerpo sin acotar.
 
 ### `types.ts`
 
@@ -222,7 +226,7 @@ El sistema visual de ATLAS está definido en `globals.css` con tokens OKLCH y do
 
 - **Sin API routes** — el frontend es un SPA puro que habla directamente con el backend Python vía `NEXT_PUBLIC_API_URL`. No hay directorio `app/api/`.
 - **Sin tailwind.config** — Tailwind v4 usa configuración CSS-first vía `@theme inline` en `globals.css`.
-- **SSE streaming** — `queryRagStream` es un async generator que lee `ReadableStream` de `fetch`, parsea eventos SSE `data:` y yield `StreamEvent` tipados.
+- **SSE streaming** — `queryRagStream` es un async generator que lee el `ReadableStream` de `fetch` y yield `StreamEvent` tipados. El reensamblado de bloques SSE y su interpretación viven en `lib/sseParser.ts` (`SseEventAccumulator`/`parseStreamEvent`): tolera separadores `\n`/`\r\n`/`\r` mezclados y fragmentados en cualquier punto entre chunks, líneas de comentario (`:...`), varias líneas `data:` por bloque (unidas con `\n`), e ignora tipos de evento desconocidos sin romper el stream. Si el consumidor abandona el generador antes de `[DONE]` (cancelación del usuario, un error de parseo, o una nueva selección de conversación), `queryRagStream` cancela el `reader` subyacente además de soltar su lock — un fallo al cancelar nunca reemplaza el error real ni produce uno nuevo si no lo había.
 - **Sesión sin backend de terceros** — token JWT + datos de usuario en `localStorage`; el backend es la única fuente de verdad de identidad y roles (ver "Autenticación" arriba).
 - **Conversaciones en SQL del backend** — no en un store de cliente. El frontend recibe `conversation_id`/`thread_id` y persiste/lee cada turno vía REST.
 - **Acceso admin por roles** — el `role` viene de la respuesta de auth del backend (`/api/auth/me`, `/api/auth/login`) y se revalida server-side en cada endpoint `/api/admin/*` vía `require_admin`.

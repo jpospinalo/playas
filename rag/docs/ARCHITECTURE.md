@@ -131,6 +131,13 @@ pausa entre ellos — no es generación incremental real. El endpoint emite
 fragmentos `token`, y finalmente un evento `sources` con las fuentes
 agrupadas y las métricas de contexto.
 
+El OpenAPI generado por FastAPI declara el `200` de este endpoint como
+`text/event-stream` (antes declaraba, por defecto, `application/json` con
+un schema vacío — un artefacto de no tener `response_model`, que nunca
+reflejó lo que el endpoint realmente envía). La respuesta real —
+`_ResourceManagedStreamingResponse`, sus headers, sus eventos y el
+terminador `[DONE]` — no cambió; solo su documentación en `/openapi.json`.
+
 ## 6. Autenticación
 
 Auth propia con **JWT + PostgreSQL**. `api/auth.py` emite/valida tokens HS256

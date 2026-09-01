@@ -13,6 +13,7 @@ import { readErrorDetail, throwIfSessionExpired } from "@/lib/api";
 import type { Conversation } from "@/hooks/useConversations";
 import { formatConversationDate } from "@/components/chat/conversationSidebarUtils";
 import { API_URL } from "@/lib/config";
+import { restErrorMessage, withRestTimeout } from "@/lib/httpTimeout";
 
 // A2 — el backend acepta hasta 120 caracteres para el título de una
 // conversación (`UpdateConversationRequest.title`, `max_length=120`); antes
@@ -144,6 +145,7 @@ export function ConversationList({
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ title }),
+        signal: withRestTimeout(),
       });
       await throwIfSessionExpired(res, token);
       // A2.1 — comprobar siempre res.ok después de tratar el 401: un
@@ -162,11 +164,7 @@ export function ConversationList({
       // A2.2 — error local comprensible, sin vaciar el historial: la
       // edición se mantiene abierta para que el usuario pueda reintentar
       // o cancelar con Escape.
-      setEditError(
-        error instanceof Error
-          ? error.message
-          : "No fue posible renombrar la conversación.",
-      );
+      setEditError(restErrorMessage(error, "No fue posible renombrar la conversación."));
     } finally {
       savingEditRef.current = false;
       setSavingEdit(false);
@@ -208,6 +206,7 @@ export function ConversationList({
       const res = await fetch(`${API_URL}/api/conversations/${convId}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
+        signal: withRestTimeout(),
       });
       await throwIfSessionExpired(res, token);
       // A2.1 — mismo chequeo explícito de res.ok que en saveEdit.
@@ -223,11 +222,7 @@ export function ConversationList({
       // la conversación que estaba activa, nunca antes ni ante un fallo.
       if (convId === activeConversationId) onNewChat();
     } catch (error) {
-      setDeleteError(
-        error instanceof Error
-          ? error.message
-          : "No fue posible eliminar la conversación.",
-      );
+      setDeleteError(restErrorMessage(error, "No fue posible eliminar la conversación."));
     } finally {
       deletingInFlightRef.current = false;
       setDeletingInFlight(false);

@@ -8,6 +8,7 @@ import {
   updateAdminUserPassword,
 } from "@/lib/api";
 import { useDialog } from "@/components/common/useDialog";
+import { restErrorMessage } from "@/lib/httpTimeout";
 
 const ROLE_STYLES: Record<string, string> = {
   "super-admin": "bg-foreground/8 text-foreground border-foreground/15",
@@ -60,7 +61,7 @@ export default function UsuariosPage() {
       setUsers(items);
       setError(null);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Error desconocido");
+      setError(restErrorMessage(e, "Error desconocido"));
     } finally {
       setLoading(false);
     }
@@ -302,7 +303,7 @@ function CreateUserModal({
       });
       onCreated(u);
     } catch (ex) {
-      setErr(ex instanceof Error ? ex.message : "Error desconocido");
+      setErr(restErrorMessage(ex, "Error desconocido"));
     } finally {
       setSubmitting(false);
     }
@@ -419,7 +420,7 @@ function ChangePasswordModal({
       await updateAdminUserPassword(target.uid, password);
       onUpdated();
     } catch (ex) {
-      setErr(ex instanceof Error ? ex.message : "Error desconocido");
+      setErr(restErrorMessage(ex, "Error desconocido"));
     } finally {
       setSubmitting(false);
     }

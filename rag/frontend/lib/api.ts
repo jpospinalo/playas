@@ -1,5 +1,7 @@
 import { API_URL } from "@/lib/config";
 import { expireAuthSession, getToken, SESSION_EXPIRED_MESSAGE } from "@/lib/auth";
+import { parseStreamEvent, SSE_DONE, SseEventAccumulator } from "@/lib/sseParser";
+import { withRestTimeout } from "@/lib/httpTimeout";
 import type {
 	FeedbackRequest,
 	MessageFeedbackRequest,
@@ -66,15 +68,79 @@ export async function generateConversationTitle(
 	}
 }
 
-export async function readErrorDetail(res: Response): Promise<string> {
-	try {
-		const data = (await res.clone().json()) as { detail?: string };
-		if (data?.detail) return data.detail;
-	} catch {
-		// no es JSON
+/** Longitud máxima de un detalle de error mostrado al usuario. Un cuerpo
+ * más largo se recorta — nunca se muestra tal cual — para no exponer
+ * volcados internos ni desbordar la UI. */
+const MAX_ERROR_DETAIL_LENGTH = 500;
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+	return typeof value === "object" && value !== null;
+}
+
+/**
+ * `true` si el cuerpo no debe mostrarse como texto plano: un content-type
+ * que no sea `text/plain`/`application/json` (p. ej. `text/html` de un
+ * proxy o balanceador, o algo binario), o un cuerpo que empieza como HTML
+ * aunque el content-type mienta.
+ */
+function looksLikeUntrustedBody(
+	trimmedText: string,
+	contentType: string | null,
+): boolean {
+	if (contentType && !/^(text\/plain|application\/json)\b/i.test(contentType)) {
+		return true;
 	}
+	const start = trimmedText.slice(0, 15).toLowerCase();
+	return start.startsWith("<!doctype") || start.startsWith("<html");
+}
+
+/**
+ * Lector único y seguro del detalle de un error HTTP, usado en toda la app
+ * (feedback, administración, login, streaming, carga/edición/borrado de
+ * conversaciones). Intenta, en orden: 1) `{"detail": "..."}` de un cuerpo
+ * JSON; 2) texto plano corto y de confianza; 3) `fallback` (por defecto,
+ * el mensaje genérico por código) cuando el cuerpo está vacío, es JSON sin
+ * `detail` utilizable, o no parece texto plano de confianza (HTML de un
+ * proxy, binario, demasiado largo).
+ *
+ * Nunca muestra JSON serializado como mensaje (antes, un cuerpo JSON válido
+ * pero sin `detail` terminaba mostrándose como si fuera texto plano —
+ * ver `api.test.ts` para el contrato que este cambio preserva en los casos
+ * que sí funcionaban). Este saneamiento solo decide qué TEXTO se muestra;
+ * nunca decide si la solicitud fue exitosa (eso ya lo resolvió `res.ok`
+ * antes de llamar a esta función).
+ */
+export async function readErrorDetail(
+	res: Response,
+	fallback: string = `Error del servidor (${res.status})`,
+): Promise<string> {
+	// `res.headers` se lee de forma defensiva: algunas pruebas simulan la
+	// `Response` con un objeto plano que no incluye `headers`. Con una
+	// `Response` real esto es exactamente `res.headers.get(...)`.
+	const contentType = res.headers?.get?.("content-type") ?? null;
+	const declaresJson = contentType != null && /^application\/json\b/i.test(contentType);
+
+	try {
+		const data: unknown = await res.clone().json();
+		if (isRecord(data) && typeof data.detail === "string" && data.detail.trim()) {
+			return data.detail.trim().slice(0, MAX_ERROR_DETAIL_LENGTH);
+		}
+		// JSON válido pero sin `detail` usable: nunca se reintenta como texto
+		// plano (eso mostraría el JSON serializado tal cual).
+		return fallback;
+	} catch {
+		// El cuerpo no es JSON válido. Si el `Content-Type` declaraba
+		// `application/json`, ese cuerpo NUNCA se muestra como texto plano —
+		// podría ser JSON truncado o corrupto, no un mensaje pensado para
+		// leerse tal cual — así que se usa el fallback directamente sin
+		// releerlo como texto.
+		if (declaresJson) return fallback;
+	}
+
 	const text = await res.text().catch(() => "");
-	return text.trim() || `Error del servidor (${res.status})`;
+	const trimmed = text.trim();
+	if (!trimmed || looksLikeUntrustedBody(trimmed, contentType)) return fallback;
+	return trimmed.slice(0, MAX_ERROR_DETAIL_LENGTH);
 }
 
 export interface AdminUserRow {
@@ -89,6 +155,7 @@ export async function listAdminUsers(): Promise<AdminUserRow[]> {
 	const token = getToken();
 	const res = await fetch(`${API_URL}/api/admin/users`, {
 		headers: { ...authHeaders(token) },
+		signal: withRestTimeout(),
 	});
 	await throwIfSessionExpired(res, token);
 	if (!res.ok) throw new Error(await readErrorDetail(res));
@@ -110,6 +177,7 @@ export async function createAdminUser(input: {
 			password: input.password,
 			displayName: input.displayName ?? null,
 		}),
+		signal: withRestTimeout(),
 	});
 	await throwIfSessionExpired(res, token);
 	if (!res.ok) throw new Error(await readErrorDetail(res));
@@ -125,6 +193,7 @@ export async function updateAdminUserPassword(
 		method: "PATCH",
 		headers: { "Content-Type": "application/json", ...authHeaders(token) },
 		body: JSON.stringify({ password }),
+		signal: withRestTimeout(),
 	});
 	await throwIfSessionExpired(res, token);
 	if (!res.ok) throw new Error(await readErrorDetail(res));
@@ -138,12 +207,12 @@ export async function submitConversationFeedback(
 		method: "POST",
 		headers: { "Content-Type": "application/json", ...authHeaders(token) },
 		body: JSON.stringify(request),
+		signal: withRestTimeout(),
 	});
 
 	await throwIfSessionExpired(res, token);
 	if (!res.ok) {
-		const detail = await res.text().catch(() => "");
-		throw new Error(detail.trim() || `Error del servidor (${res.status})`);
+		throw new Error(await readErrorDetail(res));
 	}
 
 	return res.json() as Promise<{ id: string }>;
@@ -157,6 +226,7 @@ export async function submitMessageFeedback(
 		method: "POST",
 		headers: { "Content-Type": "application/json", ...authHeaders(token) },
 		body: JSON.stringify(request),
+		signal: withRestTimeout(),
 	});
 
 	if (res.status === 409) {
@@ -165,8 +235,7 @@ export async function submitMessageFeedback(
 
 	await throwIfSessionExpired(res, token);
 	if (!res.ok) {
-		const detail = await res.text().catch(() => "");
-		throw new Error(detail.trim() || `Error del servidor (${res.status})`);
+		throw new Error(await readErrorDetail(res));
 	}
 
 	return res.json() as Promise<{ id: string }>;
@@ -208,7 +277,14 @@ export async function* queryRagStream(
 	if (!res.body) throw new Error("El servidor no devolvió un flujo de respuesta.");
 	const reader = res.body.getReader();
 	const decoder = new TextDecoder();
-	let buffer = "";
+	const accumulator = new SseEventAccumulator();
+	// Solo se vuelve `true` justo antes del `return` normal al ver `[DONE]`.
+	// En cualquier otro camino de salida (error de lectura/parseo, abort
+	// externo, o el consumidor abandona el generador antes de tiempo) el
+	// stream se dio por terminado sin que el servidor lo cerrara con
+	// `[DONE]`, así que corresponde cancelar la lectura subyacente en vez
+	// de solo soltar el lock.
+	let finishedByDone = false;
 
 	try {
 		while (true) {
@@ -217,22 +293,28 @@ export async function* queryRagStream(
 				throw new Error("El flujo de respuesta terminó de forma inesperada.");
 			}
 
-			buffer += decoder.decode(value, { stream: true });
-
-			const parts = buffer.split("\n\n");
-			buffer = parts.pop() ?? "";
-
-			for (const part of parts) {
-				const line = part.trim();
-				if (!line.startsWith("data: ")) continue;
-
-				const data = line.slice(6);
-				if (data === "[DONE]") return;
-
-				yield JSON.parse(data) as StreamEvent;
+			const rawEvents = accumulator.push(decoder.decode(value, { stream: true }));
+			for (const raw of rawEvents) {
+				const parsed = parseStreamEvent(raw);
+				if (parsed === null) continue; // tipo desconocido: se ignora, no rompe el stream
+				if (parsed === SSE_DONE) {
+					finishedByDone = true;
+					return;
+				}
+				yield parsed;
 			}
 		}
 	} finally {
+		if (!finishedByDone) {
+			try {
+				await reader.cancel();
+			} catch {
+				// Best-effort: un fallo al cancelar nunca debe reemplazar (ni
+				// sumarse a) el error real que ya determina cómo termina el
+				// generador, ni producir una excepción cuando el consumidor
+				// simplemente dejó de iterar sin que hubiera ningún error.
+			}
+		}
 		reader.releaseLock();
 	}
 }

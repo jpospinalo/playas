@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { useAuth } from "@/components/providers/AuthProvider";
+import { restErrorMessage } from "@/lib/httpTimeout";
 import { getLastEmail } from "@/lib/auth";
 import { useDialog } from "@/components/common/useDialog";
 
@@ -82,7 +83,7 @@ export function AuthModal({ open, onClose, dismissible = true }: AuthModalProps)
       resetForm();
       onClose();
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Ocurrió un error. Intenta de nuevo.");
+      setError(restErrorMessage(err, "Ocurrió un error. Intenta de nuevo."));
     } finally {
       setSubmitting(false);
     }

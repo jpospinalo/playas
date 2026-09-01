@@ -20,6 +20,8 @@ import {
 	type SessionExpiredDetail,
 } from "@/lib/auth";
 import { API_URL } from "@/lib/config";
+import { readErrorDetail } from "@/lib/api";
+import { withRestTimeout } from "@/lib/httpTimeout";
 
 interface AuthContextValue {
 	user: AuthUser | null;
@@ -80,6 +82,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 			try {
 				const res = await fetch(`${API_URL}/api/auth/me`, {
 					headers: { Authorization: `Bearer ${token}` },
+					signal: withRestTimeout(),
 				});
 				if (res.status === 401) {
 					// Sesión realmente inválida/expirada: expireAuthSession() ya
@@ -130,12 +133,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
 			body: JSON.stringify({ email, password }),
+			signal: withRestTimeout(),
 		});
 		if (!res.ok) {
-			const data = (await res.json().catch(() => ({}))) as {
-				detail?: string;
-			};
-			throw new Error(data.detail ?? "Correo o contraseña incorrectos.");
+			// Mismo mensaje de respaldo de siempre ("credenciales incorrectas"),
+			// pero leído con `readErrorDetail`: nunca muestra un cuerpo JSON
+			// serializado si el backend responde con una forma inesperada, y
+			// evita duplicar la lógica de lectura de `detail`.
+			throw new Error(
+				await readErrorDetail(res, "Correo o contraseña incorrectos."),
+			);
 		}
 		const data = (await res.json()) as {
 			access_token: string;

@@ -97,8 +97,16 @@ describe("ConversationList — renombrar y eliminar (A2)", () => {
 		(fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
 			ok: false,
 			status: 500,
-			clone: () => ({ json: async () => ({}) }),
+			// Cuerpo de texto plano real: `.json()` debe rechazar (como lo haría
+			// una `Response` real cuyo texto no es JSON válido), no resolver a
+			// `{}`. `readErrorDetail` cae a `.text()` en ese caso.
+			clone: () => ({
+				json: async () => {
+					throw new SyntaxError("Unexpected token 'f', \"fallo simu\"... is not valid JSON");
+				},
+			}),
 			text: async () => "fallo simulado del servidor",
+			headers: new Headers({ "Content-Type": "text/plain" }),
 		});
 		const onConversationsRefresh = vi.fn();
 		render(
