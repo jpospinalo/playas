@@ -1,7 +1,7 @@
 # evaluation/rrf_diagnostic.py
-"""C1.1 — Diagnóstico reproducible de RRF (Weighted Reciprocal Rank Fusion).
+"""Diagnóstico reproducible de RRF (Weighted Reciprocal Rank Fusion).
 
-Script de evaluación (Ola C — no cambia comportamiento de producción). Reutiliza
+Script de evaluación (no cambia comportamiento de producción). Reutiliza
 la infraestructura existente de ``evaluation/`` (mismo directorio, misma
 convención de `main()` + JSON de salida que ``ragas_eval_gemma.py`` /
 ``ragas_eval_ollama.py``) en vez de crear un segundo framework de evaluación.

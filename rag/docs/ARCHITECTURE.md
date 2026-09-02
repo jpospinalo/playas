@@ -196,3 +196,20 @@ artículo.
 propaga por todas las capas del pipeline de ingesta; la colección ChromaDB
 es compartida, y el filtrado por `doc_type` permite servir ambos tipos
 desde el mismo retriever.
+
+## 10. Evaluación offline (`evaluation/`)
+
+`evaluation/` es infraestructura offline de evaluación y diagnóstico, nunca
+parte de la ruta de servicio: ningún módulo de `api/` o `core/` la importa
+(la única conexión es al revés — `evaluation/ragas_eval_gemma.py` y
+`evaluation/ragas_eval_ollama.py` usan `rag.core.generator.generate_answer`,
+que sí invoca el grafo real de producción, `rag.core.agent.build_graph()`,
+sin modificarlo, para que la evaluación observe exactamente el mismo
+comportamiento que sirve `/api/query`).
+
+Evalúa con RAGAS (`ragas_common.py` + un adaptador por juez intercambiable,
+Gemini u Ollama) sobre el dataset jurídico versionado y firmado
+`evaluation/data/legal-ground-truth-v0.1.json` (cargador y validación en
+`evaluation/ground_truth.py`); ver
+[`docs/SCRIPTS.md`](SCRIPTS.md#evaluación-del-rag) para los comandos, las
+variables de entorno obligatorias y la forma exacta del reporte.

@@ -1,0 +1,10 @@
+# Reportes de evaluación RAGAS reproducible sobre
+# legal-ground-truth-v0.1 (ragas_eval_gemma.py / ragas_eval_ollama.py vía
+# ragas_common.write_report()): reproducibles a partir del dataset
+# versionado + el código, no se versionan (pueden contener respuestas
+# generadas y puntajes de una corrida concreta).
+#
+# Archivo separado (en vez de una entrada en el .gitignore raíz del
+# repositorio) para no tocar el .gitignore raíz, compartido con
+# ../ingesta/ y otros componentes fuera de rag/.
+results/

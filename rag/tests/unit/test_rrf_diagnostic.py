@@ -1,8 +1,8 @@
-"""C1.1 — Pruebas del diagnóstico reproducible de RRF (``evaluation/rrf_diagnostic.py``).
+"""Pruebas del diagnóstico reproducible de RRF (``evaluation/rrf_diagnostic.py``).
 
-Estas pruebas no ejercitan producción: verifican que el propio diagnóstico de
-Ola C sea correcto y determinista, ya que el reporte que produce se usa como
-evidencia (informe RRF, sección 14 del plan). Confirman tres cosas:
+Estas pruebas no ejercitan producción: verifican que el propio diagnóstico
+sea correcto y determinista, ya que el reporte que produce se usa como
+evidencia de evaluación offline. Confirman tres cosas:
 
 1. Los pesos/``c`` que el diagnóstico lee son exactamente los de producción
    (``get_ensemble_retriever`` / ``HybridEnsembleRetriever``) — si alguna vez
@@ -70,14 +70,14 @@ def test_shared_candidate_accumulates_both_contributions_and_wins() -> None:
 def test_mixed_scenario_order_matches_manual_rrf_calculation() -> None:
     """Réplica exacta del escenario ya validado en
     ``test_retriever_invariants.py::test_hybrid_fusion_with_valid_config_ranks_identically_to_before``,
-    pero ejercitando el diagnóstico de Ola C en vez del retriever directamente."""
+    pero ejercitando el diagnóstico offline en vez del retriever directamente."""
     result = scenario_final_ranking_mixed()
     assert result["orden_resultante"] == result["orden_esperado_por_score"]
     assert result["orden_resultante"] == ["b", "d", "a", "c"]
 
 
 def test_bm25_exclusive_never_beats_vector_within_realistic_k_range() -> None:
-    """La afirmación central de C1.1: si la búsqueda vectorial entrega al
+    """La afirmación central del diagnóstico: si la búsqueda vectorial entrega al
     menos k candidatos (k entre 4 y 20 — rango real de ``k_candidates``),
     un candidato exclusivo de BM25 en su mejor rank posible (1) no compite
     con ellos."""

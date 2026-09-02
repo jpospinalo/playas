@@ -123,9 +123,11 @@ def log_full_context_size(*, chars: int) -> None:
 def log_context_budget_warning(*, chars: int, doc_count: int, stage: str) -> None:
     """A3.6 — advertencia estructurada cuando el prompt de generación supera
     ``config.CONTEXT_BUDGET_WARNING_CHARS`` (ver ese umbral para el
-    razonamiento). Modo puramente observacional: esta ola no trunca chunks
-    ni respuestas ni fija ``max_tokens`` — solo dimensiona el problema para
-    calibrar en la Ola C.
+    razonamiento). Modo puramente observacional: no trunca chunks ni
+    respuestas ni fija ``max_tokens`` — solo dimensiona el problema. La
+    calibración de ese umbral (o de un futuro ``max_tokens``) queda
+    deliberadamente pendiente hasta contar con datos reales de este propio
+    warning.
 
     Registra únicamente caracteres totales, cantidad de documentos y la
     etapa — nunca contenido, igual que ``log_full_context_size``, del cual

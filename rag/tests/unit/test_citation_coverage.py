@@ -1,10 +1,10 @@
-"""C1.3 — Pruebas de la utilidad offline de cobertura sintáctica de citas
+"""Pruebas de la utilidad offline de cobertura sintáctica de citas
 (``evaluation/citation_coverage.py``).
 
 Esta utilidad no es un guard online — no se importa desde ``core/agent.py``
 ni desde ninguna ruta de ``api/`` — así que estas pruebas verifican
 únicamente que la utilidad misma sea correcta y determinista, ya que su
-salida se usa como evidencia (informe de citas, sección 14 del plan).
+salida se usa como evidencia de evaluación offline.
 
 También confirma que reutiliza exactamente el mismo patrón de cita que
 ``_validate_citations()`` usa en la ruta online (``_CITATION_RE`` de

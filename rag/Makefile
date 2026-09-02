@@ -14,7 +14,7 @@ format-check:  ## Verificar formato sin modificar archivos (usado en CI)
 	uv run ruff format --check backend/rag/ tests/ evaluation/ scripts/ utils/
 
 typecheck:  ## Verificar tipos con mypy
-	uv run mypy backend/rag/
+	uv run mypy backend/rag/ evaluation/
 
 test:  ## Ejecutar tests unitarios
 	uv run pytest tests/unit/

@@ -1,96 +1,53 @@
 # evaluation/ragas_eval_ollama.py
+"""Adaptador RAGAS: juez servido por Ollama + embeddings de producción,
+sobre ``legal-ground-truth-v0.1``.
+
+La infraestructura compartida (carga y validación del dataset, generación
+sin truncar, construcción del dataset RAGAS, ejecución de métricas, resumen
+y reporte reproducible) vive en ``ragas_common.py`` — este módulo solo
+aporta su juez (Ollama con limpieza y normalización estricta de JSON), sus
+embeddings y su lista de métricas.
+
+Uso:
+    uv run python -m evaluation.ragas_eval_ollama                 # evaluación real
+    uv run python -m evaluation.ragas_eval_ollama --validate-only # solo valida config, sin red
+"""
 
 from __future__ import annotations
 
 import json
-import os
+import sys
 import warnings
+from pathlib import Path
 from typing import Any
 
-from datasets import Dataset
 from langchain_ollama import ChatOllama, OllamaEmbeddings
-from ragas import evaluate
-from ragas.metrics import (
-    answer_relevancy,
-)
-from ragas.run_config import RunConfig
 
-from rag.core.generator import generate_answer
+from evaluation.ground_truth import load_ground_truth_cases
+from evaluation.ragas_common import (
+    build_ragas_dataset,
+    case_ids_evaluated,
+    generate_case_rows,
+    normalize_required_env,
+    run_metrics,
+    validate_only,
+    wants_validate_only,
+    write_report,
+)
+from rag.config import OLLAMA_BASE_URL, OLLAMA_EMBEDDING_MODEL
 
 warnings.filterwarnings("ignore", category=FutureWarning)
 
+REPORT_PATH = Path("evaluation/results/legal-ground-truth-v0.1-ollama.json")
 
-# ============================================================
-#  1. Ítems de prueba
-# ============================================================
-
-"""
-TEST_ITEMS: List[Dict[str, str]] = [
-    {
-        "question": "¿Cómo se llamaba el gato del cuento 'El gato negro'?",
-        "ground_truth": "El gato del narrador se llamaba Plutón.",
-    },
-    {
-        "question": "¿Dónde se posó el cuervo en el cuento 'El cuervo'?",
-        "ground_truth": "El cuervo se posó sobre un busto de Minerva o Palas, sobre la puerta.",
-    },
-    {
-        "question": "¿Qué relación tenía Leonora con el narrador en 'El cuervo'?",
-        "ground_truth": "Leonora era la amada del narrador, cuya muerte le causó profunda desventura.",
-    },
-    {
-        "question": "¿Qué órgano del cuerpo es central en el cuento 'El corazón delator'?",
-        "ground_truth": "El órgano central del cuento es el corazón del anciano.",
-    },
-]
-"""
-
-TEST_ITEMS: list[dict[str, str]] = [
-    {
-        "question": "¿Cómo se llamaba el gato del cuento 'El gato negro'?",
-        "ground_truth": "El gato del narrador se llamaba Plutón.",
-    },
-]
+# Métricas activas: solo `answer_relevancy` (ver la lista `metrics` en
+# main(), más abajo). Elegir o calibrar qué métricas correr es una decisión
+# de evaluación deliberada, no una limitación técnica de este adaptador;
+# esta lista se conserva sin cambios.
 
 
 # ============================================================
-#  2. Construir dataset a partir de tu RAG
-# ============================================================
-
-MAX_CONTEXT_DOCS = 2  # solo 2 chunks por pregunta para pruebas rápidas
-
-
-def build_eval_dataset() -> tuple[Dataset, list[dict[str, Any]]]:
-    rows: list[dict[str, Any]] = []
-
-    for item in TEST_ITEMS:
-        question = item["question"]
-        gt = item["ground_truth"]
-
-        answer, docs = generate_answer(question)
-        answer = answer or ""  # defensa por si generate_answer devuelve None
-
-        # Limitar la cantidad de docs enviados a RAGAS
-        docs = docs or []
-        docs = docs[:MAX_CONTEXT_DOCS]
-
-        contexts = [d.page_content for d in docs]
-
-        rows.append(
-            {
-                "question": question,
-                "answer": answer,
-                "contexts": contexts,
-                "ground_truth": gt,
-            }
-        )
-
-    dataset = Dataset.from_list(rows)
-    return dataset, rows
-
-
-# ============================================================
-#  3. Juez en Ollama con limpieza estricta de JSON
+#  1. Juez en Ollama con limpieza estricta de JSON
 # ============================================================
 
 
@@ -293,25 +250,21 @@ class JsonStrictOllama(ChatOllama):
         return self._postprocess_result(res)
 
 
-def get_ragas_models():
+def get_ragas_models(
+    judge_base_url: str, judge_model_name: str
+) -> tuple[JsonStrictOllama, OllamaEmbeddings]:
     """
     Modelos para RAGAS:
 
-    - LLM juez: Mistral (u otro modelo) servido por Ollama en un endpoint
-      accesible vía ngrok (por defecto: https://98d22ba5053f.ngrok-free.app).
-      Se puede cambiar con la variable de entorno OLLAMA_EVAL_BASE_URL
-      y el nombre de modelo con OLLAMA_EVAL_MODEL.
-
-    - Embeddings: embeddinggemma en Ollama local (por defecto http://localhost:11434),
-      modificable con OLLAMA_EMBED_BASE_URL y OLLAMA_EMBED_MODEL.
+    - LLM juez: el modelo servido por Ollama en ``judge_base_url``
+      (endpoint de evaluación, distinto del Ollama de producción), con el
+      modelo indicado por ``judge_model_name``. Ambos llegan ya
+      normalizados (no vacíos, sin espacios) desde OLLAMA_EVAL_BASE_URL /
+      OLLAMA_EVAL_MODEL -- este adaptador no vuelve a leer esas variables
+      de entorno aquí.
+    - Embeddings: los mismos que usa producción (``rag.config``), para que
+      RAGAS evalúe contra el contexto real que ve el sistema.
     """
-    judge_base_url = os.getenv("OLLAMA_EVAL_BASE_URL")
-
-    judge_model_name = os.getenv("OLLAMA_EVAL_MODEL")
-
-    embed_base_url = os.getenv("OLLAMA_EMBED_BASE_URL")
-    embed_model_name = os.getenv("OLLAMA_EMBED_MODEL")
-
     llm_judge = JsonStrictOllama(
         model=judge_model_name,
         base_url=judge_base_url,
@@ -323,108 +276,65 @@ def get_ragas_models():
     )
 
     embeddings = OllamaEmbeddings(
-        model=embed_model_name,
-        base_url=embed_base_url,
+        model=OLLAMA_EMBEDDING_MODEL,
+        base_url=OLLAMA_BASE_URL,
     )
 
     return llm_judge, embeddings
 
 
 # ============================================================
-#  4. Ejecutar evaluación RAGAS (por ahora solo context_precision)
+#  2. Punto de entrada
 # ============================================================
 
 
-def run_ragas_evaluation(dataset: Dataset) -> dict[str, Any]:
-    """
-    Ejecuta RAGAS sobre el dataset dado usando:
+def main() -> int:
+    if wants_validate_only():
+        return validate_only(["OLLAMA_EVAL_BASE_URL", "OLLAMA_EVAL_MODEL"])
 
-        - context_precision (por ahora)
-        - LLM juez y embeddings de get_ragas_models()
-    """
-    llm_judge, embeddings = get_ragas_models()
+    # 1) Cargar y validar el dataset una sola vez.
+    cases = load_ground_truth_cases()
 
-    metrics = [
-        # context_precision,
-        # context_recall,
-        # faithfulness,
-        answer_relevancy,
-    ]
+    # 2)-3) Validar la configuración obligatoria ANTES de tocar RAGAS, red
+    # o cualquier cliente -- un valor ausente o compuesto solo por espacios
+    # nunca debe llegar a un constructor.
+    env_values, missing = normalize_required_env(["OLLAMA_EVAL_BASE_URL", "OLLAMA_EVAL_MODEL"])
+    if missing:
+        print(f"variables de entorno obligatorias faltantes: {', '.join(missing)}")
+        return 1
 
-    for m in metrics:
-        m.llm = llm_judge
-        m.embeddings = embeddings
+    # 4) Solo después de validar: importar RAGAS y construir juez/embeddings.
+    from ragas.metrics import answer_relevancy
 
-    run_config = RunConfig(
-        timeout=600,
-        max_workers=1,
+    judge_base_url = env_values["OLLAMA_EVAL_BASE_URL"]
+    judge_model_name = env_values["OLLAMA_EVAL_MODEL"]
+    llm_judge, embeddings = get_ragas_models(
+        judge_base_url=judge_base_url, judge_model_name=judge_model_name
     )
+    metrics = [answer_relevancy]
 
-    print("\n=== Ejecutando métricas RAGAS ===")
+    # 5) Generar usando los casos ya cargados en el paso 1.
+    rows = generate_case_rows(cases)
+    dataset = build_ragas_dataset(rows)
+    case_ids = case_ids_evaluated(rows)
+    metric_results = run_metrics(dataset, metrics, llm_judge, embeddings, case_ids)
 
-    res = evaluate(
-        dataset=dataset,
-        metrics=metrics,
-        llm=llm_judge,
-        embeddings=embeddings,
-        raise_exceptions=True,
-        run_config=run_config,
+    write_report(
+        provider="ollama",
+        model=judge_model_name,
+        metrics_executed=[m.name for m in metrics],
+        rows=rows,
+        metric_results=metric_results,
+        extra_config={
+            "judge_base_url": judge_base_url,
+            "embeddings_model": OLLAMA_EMBEDDING_MODEL,
+            "embeddings_base_url": OLLAMA_BASE_URL,
+        },
+        output_path=REPORT_PATH,
     )
-
-    df = res.to_pandas()
-    all_results: dict[str, Any] = {}
-
-    for m in metrics:
-        name = m.name
-        if name not in df.columns:
-            continue
-        series = df[name]
-        valid_values = [float(v) for v in series.tolist() if v == v]  # filtra NaN
-        all_results[name] = {
-            "per_sample": valid_values,
-            "mean": float(sum(valid_values) / len(valid_values)) if valid_values else float("nan"),
-        }
-
-    return all_results
-
-
-# ============================================================
-#  5. Guardar JSONs y punto de entrada
-# ============================================================
-
-
-def _ensure_parent_dir(path: str) -> None:
-    parent = os.path.dirname(path)
-    if parent:
-        os.makedirs(parent, exist_ok=True)
-
-
-def main(
-    dataset_json_path: str = "evaluation/ragas_eval_dataset.json",
-    summary_json_path: str = "evaluation/ragas_eval_summary.json",
-) -> None:
-    dataset, rows = build_eval_dataset()
-
-    _ensure_parent_dir(dataset_json_path)
-    _ensure_parent_dir(summary_json_path)
-
-    with open(dataset_json_path, "w", encoding="utf-8") as f:
-        json.dump(rows, f, ensure_ascii=False, indent=2)
-
-    results = run_ragas_evaluation(dataset)
-
-    metrics_summary: dict[str, Any] = {
-        "n_samples": len(rows),
-        "metrics": {name: vals["mean"] for name, vals in results.items()},
-    }
-
-    with open(summary_json_path, "w", encoding="utf-8") as f:
-        json.dump(metrics_summary, f, ensure_ascii=False, indent=2)
-
-    print(f"\nDataset de evaluación guardado en: {dataset_json_path}")
-    print(f"Resumen de métricas guardado en:  {summary_json_path}")
-    print("Resumen:", metrics_summary)
+    print(f"Reporte escrito en: {REPORT_PATH}")
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

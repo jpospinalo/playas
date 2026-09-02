@@ -1,9 +1,9 @@
 # evaluation/citation_coverage.py
-"""C1.3 — Cobertura sintáctica de citas offline.
+"""Cobertura sintáctica de citas offline.
 
-Utilidad de evaluación (Ola C — no un guard online, no cambia comportamiento
-de producción). Vive en ``evaluation/`` junto al resto de la infraestructura
-de evaluación existente en vez de crear un segundo framework.
+Utilidad de evaluación (no un guard online, no cambia comportamiento de
+producción). Vive en ``evaluation/`` junto al resto de la infraestructura de
+evaluación existente en vez de crear un segundo framework.
 
 Mide, sobre respuestas ya generadas (reales o sintéticas), cuatro señales
 puramente sintácticas — nunca semánticas, no requiere ningún LLM adicional:
@@ -21,7 +21,7 @@ pasa/no-pasa) — para que esta utilidad offline nunca pueda divergir en
 silencio de lo que el backend realmente reconoce como cita. A diferencia de
 ``_validate_citations()``, esta utilidad no decide pasa/no-pasa: reporta
 métricas descriptivas por respuesta y agregadas sobre un dataset sintético,
-pensadas como evidencia para el informe de Ola C (sección 14 del plan), no
+pensadas como evidencia de evaluación offline, no
 para bloquear ni modificar ninguna respuesta real. No se importa ni se
 invoca desde ``core/agent.py`` ni desde ninguna ruta de ``api/``.
 """
@@ -61,8 +61,7 @@ def _split_paragraphs(answer: str) -> list[str]:
     """Divide la respuesta en párrafos por línea en blanco, descartando los
     que quedan vacíos tras recortar espacios. Es una heurística sintáctica
     simple (no NLP): suficiente para "¿qué bloques de texto no llevan
-    ninguna cita?", que es la pregunta que C1.3 pide medir — no intenta
-    identificar oraciones jurídicas individuales.
+    ninguna cita?" — no intenta identificar oraciones jurídicas individuales.
     """
     return [p.strip() for p in answer.split("\n\n") if p.strip()]
 
@@ -166,7 +165,7 @@ def analyze_dataset(
 
 
 def summarize(rows: list[dict[str, Any]]) -> dict[str, Any]:
-    """Resumen agregado — las cuatro señales de C1.3 sobre el dataset completo."""
+    """Resumen agregado — las cuatro señales de cobertura de citas sobre el dataset completo."""
     n = len(rows)
     with_citation = sum(1 for r in rows if r["has_any_citation"])
     total_paragraphs = sum(r["paragraph_count"] for r in rows)

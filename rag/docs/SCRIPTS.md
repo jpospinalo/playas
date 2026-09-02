@@ -118,6 +118,101 @@ uv run python -m utils.list_gemini_models
 
 ---
 
+## Evaluación del RAG
+
+Evaluación reproducible con [RAGAS](https://github.com/vibrantlabsai/ragas)
+sobre un dataset jurídico versionado, en `evaluation/` (`ragas_common.py` +
+un adaptador por juez intercambiable). No forma parte de la ruta de
+servicio — ver la sección "Evaluación offline" de
+[`docs/ARCHITECTURE.md`](ARCHITECTURE.md#10-evaluación-offline-evaluation).
+
+**⚠️ Requiere autorización explícita antes de correrse de verdad.** Una
+corrida real invoca el grafo real de producción pregunta por pregunta y
+llama a un LLM/juez externo (Gemini u Ollama) por cada métrica — no es un
+comando inocuo para ejecutar "para probar". `--validate-only` (más abajo)
+no tiene ese costo ni ese riesgo.
+
+### Dataset (`evaluation/data/legal-ground-truth-v0.1.json`)
+
+21 preguntas jurídicas reales sobre playas/dominio público
+marítimo-terrestre, cada una con sus 5 campos obligatorios diligenciados:
+`doc_principal`, `doc_secundario`, `pregunta`, `respuesta`,
+`ubicacion_evidencia` (más `id`). Cargador y validación de ese contrato en
+`evaluation/ground_truth.py`: si falta alguno de esos cinco campos o
+contiene un valor vacío, `load_ground_truth_cases()` falla explícitamente
+en vez de evaluar un registro incompleto en silencio.
+
+Los registros `registro-017` a `registro-022` (`AMBIGUOUS_DOCUMENT_CASE_IDS`
+en `ragas_common.py`) tienen referencias documentales aún ambiguas (no
+permiten identificar inequívocamente la sentencia esperada) — se incluyen
+en la evaluación de todas las demás métricas, pero se excluyen por diseño
+de cualquier métrica de "documento esperado".
+
+### Comandos
+
+```bash
+uv run python -m evaluation.ragas_eval_gemma                  # juez Gemini: evaluación real
+uv run python -m evaluation.ragas_eval_ollama                 # juez Ollama: evaluación real
+uv run python -m evaluation.ragas_eval_gemma  --validate-only # solo valida config y dataset, sin red
+uv run python -m evaluation.ragas_eval_ollama --validate-only # solo valida config y dataset, sin red
+```
+
+`--validate-only` carga y valida el dataset, imprime cuáles de las
+variables de entorno obligatorias faltan (sin nunca imprimir su valor) y
+sale con 0/1 — nunca importa `ragas` ni abre una conexión de red. Es lo
+que hay que correr para confirmar que el entorno está listo, sin disparar
+una evaluación real.
+
+**Variables de entorno obligatorias** (ver `.env.example`, sección
+"Evaluación"; ausentes, vacías o solo espacios cuentan como faltantes):
+
+| Adaptador | Variables | Métricas reales que ejecuta |
+|---|---|---|
+| `ragas_eval_gemma.py` | `GOOGLE_API_KEY2` (`GEMINI_MODEL` opcional, default `gemma-3-27b-it`) | `context_precision`, `context_recall`, `faithfulness`, `answer_relevancy` |
+| `ragas_eval_ollama.py` | `OLLAMA_EVAL_BASE_URL`, `OLLAMA_EVAL_MODEL` (sin default: obligatorias) | `answer_relevancy` |
+
+Ambos adaptadores validan esa configuración **antes** de importar `ragas`
+o construir cualquier cliente — un valor faltante nunca llega a un
+constructor, tanto en `--validate-only` como en una corrida real.
+
+### Reporte (`evaluation/results/*.json`, no versionado)
+
+Cada corrida real escribe un JSON reproducible con, entre otros campos:
+
+- `dataset`, `annotation`, `dataset_sha256` — identidad exacta del dataset evaluado.
+- `git`: `{"commit": "<sha o \"desconocido\">", "dirty": true|false|null}` —
+  estado del árbol en el momento de la corrida (`dirty=true` con cambios sin
+  commit, `null` si no se pudo determinar). Un árbol sucio no impide
+  escribir el reporte, solo se advierte por stdout y se refleja aquí: el
+  reporte no corresponde entonces exactamente al código de `git.commit`.
+- `metric_results`: por métrica, `{"mean": ..., "scores_by_case": {"<case_id>": <puntaje o null>, ...}, "scored_count": ..., "missing_count": ...}`
+  — cada puntaje queda asociado a su `case_id` explícitamente, nunca por
+  posición; un valor no finito que devuelva RAGAS para un caso se conserva
+  como `null` (información, no se descarta). Un caso cuya generación falló
+  nunca aparece aquí (se identifica por su `error` en `cases`, no por un
+  `null`).
+- `cases` — una fila por caso (incluidos los que fallaron en generación,
+  con su `error`), con `expected_document_metric` explicando por qué se
+  omite esa métrica para ese caso (`"omitted:ambiguous_reference"` para
+  17–22, `"omitted:no_deterministic_mapping_available"` para el resto: no
+  existe hoy un mapeo determinista entre `doc_principal`/`doc_secundario`
+  del dataset y la metadata real del corpus indexado en ChromaDB).
+- `summary`, `errors` — agregados derivados de `cases`/`metric_results`.
+
+### RAGAS y `langchain-community`
+
+`ragas==0.4.3` (última versión publicada) importa
+`ChatVertexAI` desde `langchain_community.chat_models.vertexai`, símbolo
+que `langchain-community` retiró en 0.4.x. El grupo `dev` de
+`pyproject.toml` fija `langchain-community==0.3.31` (que sí lo expone)
+para que `import ragas` funcione sin tocar `ragas` ni añadir
+`langchain-google-vertexai` — ver el comentario junto al pin en
+`pyproject.toml`. El pin es solo de desarrollo/evaluación: no cambia
+ninguna dependencia de producción (`uv export --no-dev --package rag` es
+idéntico con o sin él).
+
+---
+
 ## Herramientas externas al runtime del RAG
 
 ### Tutorial de construcción de ground truth (`docs/ground-truth/`)

@@ -7,6 +7,7 @@ from types import SimpleNamespace
 import pytest
 
 import rag.core.query_enricher as query_enricher
+from evaluation.ground_truth import load_ground_truth_cases
 from rag.core.prompts import AGENT_SYSTEM, ENRICHER_HUMAN_BODY, ENRICHER_SYSTEM
 from rag.core.query_enricher import (
     EnrichedQuery,
@@ -368,99 +369,17 @@ def test_previously_passing_domain_questions_still_pass() -> None:
         assert _fallback(question).route == "out_of_scope", question
 
 
-# ── Revisión posterior — banco completo de 21 preguntas jurídicas ──────────
+# ── Banco jurídico completo — fuente única: legal-ground-truth-v0.1 ────────
 #
-# Texto verbatim entregado por el equipo jurídico para esta ronda de
-# revisión. No se resume, parafrasea ni sustituye por frases más simples
-# (ver informe de esta ronda). Cada pregunta debe llegar a in_scope y
-# alcanzar el recuperador; "válida" no implica que el corpus tenga
-# evidencia suficiente para una conclusión jurídica completa.
+# Las 21 preguntas provienen del dataset versionado
+# (evaluation/data/legal-ground-truth-v0.1.json), cargado y validado por
+# evaluation/ground_truth.py — la misma fuente que usa la evaluación
+# offline/online en evaluation/. No hay copias hardcodeadas del texto aquí:
+# una pregunta debe llegar a in_scope y alcanzar el recuperador; "válida"
+# no implica que el corpus tenga evidencia suficiente para una conclusión
+# jurídica completa.
 
-CASO_21_01_MOTOS_PARASAILING = """Vivo en un apartamento frente a la playa de El Rodadero desde hace varios años. Últimamente he notado que en la zona cercana al edificio donde vivimos están funcionando motos acuáticas y actividades de parasailing casi todo el día, especialmente en temporadas altas. Algunos vecinos consideran que estas actividades atraen turismo y ayudan a la economía del sector, pero otros creen que las motos están pasando demasiado cerca de las personas que se bañan y que eso puede generar accidentes o problemas de seguridad.
-Hace unos días incluso hubo una discusión entre turistas y trabajadores de una empresa de deportes náuticos porque unos pedían que se alejaran más de la orilla y la empresa respondía que tenían autorización para operar ahí. La verdad yo no sé cómo funciona ese tema ni quién define hasta dónde pueden trabajar estas empresas. ¿DIMAR establece zonas específicas para estas actividades o las empresas pueden operar libremente en cualquier parte de la playa mientras tengan permiso?"""
-
-CASO_21_02_CLUB_NAUTICO_MUELLE = """Con unos socios queremos construir un pequeño club náutico con muelle flotante en una playa de Santa Marta, con capacidad para 20 embarcaciones. Ya tenemos el diseño y el capital. ¿Basta con pedir la concesión marítima directamente a la Capitanía de Puerto y esperar la aprobación, o hay pasos previos? ¿Cuánto tiempo estimado nos tomaría, y qué pasa si un vecino o la comunidad se opone al proyecto?"""
-
-CASO_21_03_HOTEL_MALLA_GUARDIA = """Frente a mi casa hay un hotel que tiene concesión marítima sobre la franja de playa. Desde hace un mes pusieron una malla y un guardia que no deja pasar a nadie que no sea huésped, argumentando que es 'zona restringida por seguridad del hotel'. Cuando les pregunté con qué autorización hicieron eso, me dijeron que como tienen la concesión, pueden decidir quién entra. ¿Es legal que un hotel declare por su cuenta un área restringida en la playa? ¿Y qué puedo hacer si efectivamente me están negando el paso?"""
-
-CASO_21_04_ALQUILER_CARPAS_TARIMA = """Mi familia vive desde hace muchos años frente a una playa y durante las vacaciones solemos alquilar carpas, mesas y sillas a los turistas para obtener ingresos adicionales. Este año queremos ampliar el negocio instalando una tarima de madera, una zona con sombrillas y un pequeño módulo desmontable donde vender bebidas. Pensamos dejar toda la infraestructura instalada durante tres meses porque desmontarla todos los días resulta muy costoso.
-Un vecino nos dijo que, como las estructuras son desmontables y no vamos a construir nada en cemento, no necesitamos autorización de DIMAR.
-¿Es cierto que podemos instalar toda esa infraestructura sin solicitar un permiso? En caso de necesitarlo, ¿qué condiciones establece la norma para este tipo de instalaciones temporales?"""
-
-CASO_21_05_FESTIVAL_JAC = """Soy presidente de una Junta de Acción Comunal de un corregimiento costero y estamos organizando un festival cultural en la playa para promover el turismo local. Esperamos la asistencia de unas 2.000 personas y habrá presentaciones musicales, venta de comidas, sonido profesional y actividades recreativas durante todo un fin de semana.
-La Alcaldía nos informó que apoya el evento y nos expedirá el permiso correspondiente. Sin embargo, algunas personas nos dicen que, por realizarse en la playa, debemos hacer un trámite adicional ante otra entidad.
-¿Con la autorización de la Alcaldía es suficiente para realizar el evento o debemos solicitar algún otro permiso? En caso de necesitarlo, ¿qué documentos debemos presentar?"""
-
-CASO_21_06_PESCADOR_TAGANGA = """Soy pescador artesanal en Playa Taganga, Santa Marta. Desde hace veinte años trabajo en esta playa: allí dejo mi bote y vendo el pescado que capturo. Hace poco me enteré de que una empresa quiere hacer un proyecto turístico en la zona y que podría empezar a utilizar parte de la playa donde normalmente trabajo. Me preocupa que, por el proyecto, ya no pueda seguir realizando mi actividad como antes. ¿Qué puedo hacer para conocer qué se va a construir y para expresar mi preocupación ante las autoridades?"""
-
-CASO_21_07_VENDEDORA_PLAYA_CRISTAL = """Yo vivo en una vereda y cada temporada de vacaciones viajo hasta Playa Cristal para vender jugos y las artesanías que hago con mis hijos. Con lo que gano allí compro la comida de la casa y pago parte de los estudios de mis hijos. Llevo un puesto pequeño que puedo recoger al final del día y solo trabajo durante la temporada en la que llegan más turistas. Pero me preocupa que un día llegue una autoridad y me diga que no puedo seguir vendiendo o que me pongan una multa. Yo no sé si estoy haciendo algo ilegal ni qué tendría que hacer para poder seguir trabajando tranquila. ¿Qué puedo hacer?"""
-
-CASO_21_08_RESIDENTE_CLUB_PLAYA = """Vivo desde niño en El Rodadero, Santa Marta, y siempre he ido a esa playa con mi familia. Hace poco escuché que una empresa quiere poner un club de playa y que algunas partes podrían quedar solo para las personas que paguen o sean clientes del lugar. A mí me preocupa que los habitantes de siempre ya no podamos disfrutar la playa como antes. ¿Qué puedo hacer para saber si eso se puede hacer y qué puedo hacer si de verdad empiezan a impedirle a la gente entrar?"""
-
-CASO_21_09_COMUNIDAD_INDIGENA_GUAJIRA = """Pertenezco a una comunidad indígena que vive cerca de una playa en La Guajira. Desde hace muchos años usamos ese lugar para nuestros rituales y otras actividades de nuestra comunidad. Ahora nos enteramos de que quieren hacer un proyecto turístico allí y nos preocupa que eso cambie la forma en la que usamos el lugar o que ya no podamos entrar como antes. Nosotros no sabemos bien qué puede hacer la comunidad en una situación así ni si tienen que escucharnos antes de tomar una decisión. ¿Qué podemos hacer?"""
-
-CASO_21_10_PROYECTO_TURISTICO_PLAYA_BLANCA = """Soy joven y quiero montar un proyecto turístico en Playa Blanca, Cartagena. La idea es poner baños, duchas, algunos kioscos y espacios para que los visitantes puedan estar más cómodos. He preguntado un poco y me han dicho que para hacer algo así necesito pedir permiso, pero no entiendo muy bien qué debo tramitar ni qué responsabilidades tendría después. También me preocupa que el proyecto termine afectando la playa o a las personas que ya trabajan y viven de ella. ¿Qué debería tener en cuenta antes de empezar?"""
-
-CASO_21_11_BODA_EN_LA_PLAYA = """Tengo una empresa de eventos en Cartagena y un cliente me contrató para realizar una boda sobre la playa. Debemos instalar una tarima, una pista de baile, una carpa, iluminación y mobiliario que permanecerá instalado durante dos días.
-Es la primera vez que organizo un evento en una playa y no sé si basta con el permiso del hotel donde se realizará la ceremonia.
-¿El permiso del hotel es suficiente para instalar toda esa infraestructura o debo tramitar otra autorización?"""
-
-CASO_21_12_CAMPEONATO_FUTBOL_PLAYA = """Cada año organizamos un campeonato de fútbol playa en Cartagena y normalmente desmontamos toda la infraestructura al terminar. Este año queremos dejar instaladas las graderías y las carpas durante un mes porque tendremos varios torneos consecutivos.
-Algunos organizadores dicen que no hay problema porque todo fue autorizado al inicio del campeonato.
-¿Podemos dejar instalada la infraestructura hasta el siguiente torneo o existe alguna obligación cuando termine el permiso?"""
-
-CASO_21_13_HOTEL_BOCAGRANDE_ENTREGA_AREA = """Soy propietario de un hotel en Bocagrande (Cartagena). Hace unos meses obtuve un permiso para realizar un evento privado en la playa frente al hotel. El evento terminó sin inconvenientes, pero la Capitanía de Puerto me notificó que debía asistir a una diligencia de entrega del área.
-Considero que esa diligencia no es necesaria porque la playa quedó limpia y no hubo daños.
-¿Estoy obligado a hacer la entrega formal del área o basta con haber terminado el evento y retirar la infraestructura?"""
-
-# Nota: no es CASO_KAYAK (fase anterior) — el texto de esta ronda difiere en
-# un salto de línea entre "...todavía no ha llegado." y "Los patrocinadores
-# ...". Se transcribe aparte para respetar la fidelidad verbatim exigida en
-# esta revisión, sin duplicar innecesariamente el caso previo.
-CASO_21_14_COMPETENCIA_KAYAK = """Tengo una empresa que organiza competencias de kayak en El Rodadero (Santa Marta). Presenté la solicitud para realizar un campeonato internacional dentro de dos semanas, pero la respuesta de la autoridad todavía no ha llegado.
-Los patrocinadores ya hicieron publicidad y muchos deportistas vienen desde otras ciudades, por lo que estoy pensando en realizar el evento mientras recibo la respuesta.
-¿Puedo iniciar la actividad mientras deciden mi solicitud o debo esperar la autorización?"""
-
-CASO_21_15_RENOVACION_PERMISO_TEMPORAL = """Hace seis meses obtuve un permiso temporal para instalar una zona de descanso con carpas y mobiliario en una playa de Santa Marta durante la temporada turística. Como el negocio ha funcionado muy bien y quiero seguir operando allí el próximo año, pensé que el permiso se renovaba automáticamente mientras continuara pagando los impuestos y mantuviera el lugar en buen estado.
-¿El permiso temporal se renueva automáticamente o debo realizar algún trámite para seguir utilizando la playa?"""
-
-CASO_21_16_DUENO_DEL_LOTE_RESTAURANTE = """Quiero construir un restaurante sobre una zona de arena frente al mar porque compré el lote hace varios años. ¿Eso significa que también soy dueño de la playa?"""
-
-CASO_21_17_LANCHA_HUNDIDA_HERENCIA = """Mi papá era dueño de una lancha que se hundió hace varios años. Él falleció y nosotros no tenemos dinero para retirarla. Ahora nos dicen que podemos ser responsables por los daños ambientales. ¿La DIMAR puede retirarla primero?"""
-
-CASO_21_18_VENDEDOR_PLAYA_LOS_COCOS = """Trabajo vendiendo comidas y bebidas en la playa Los Cocos. Desde que comenzaron a realizar conciertos y eventos masivos, cada vez llegan más personas, pero también aumenta la basura y algunas autoridades dicen que quieren prohibir completamente las ventas durante esos eventos. Yo no tengo dinero para pagar un abogado y mi familia depende de lo que vendo. ¿Pueden simplemente sacarme de la playa o existe alguna forma de reclamar para que se proteja el ambiente sin que se elimine completamente mi fuente de trabajo?"""
-
-CASO_21_19_RESIDENTE_RUIDO_LOS_COCOS = """Vivo con mi hija pequeña en una casa cerca de la playa Los Cocos. En los conciertos ponen música a alto volumen durante horas, dejan basura en la arena y, en una ocasión, hubo tanta gente que me dio miedo salir de mi casa. No tengo dinero para contratar un abogado y ya presenté varias quejas, pero no me han dado una solución. ¿Qué puedo hacer para que se proteja mi derecho a vivir en un ambiente sano y para que los próximos eventos tengan medidas reales de seguridad?"""
-
-# CASO_21_20 es idéntico byte a byte a CASO_PESCADOR (definido arriba); se
-# reutiliza para no duplicar el mismo texto verbatim dos veces.
-CASO_21_20_PESCADOR_EMBARCACION_ABANDONADA = CASO_PESCADOR
-
-CASO_21_21_EROSION_POZOS_COLORADOS = """Vivo con mis hijos en una casa cerca de Pozos Colorados y cada año el mar se acerca más a mi vivienda. Ya se ha perdido parte de la playa y tengo miedo de que mi casa termine afectada. No tengo dinero para pagar un abogado ni para contratar un estudio técnico que demuestre la erosión. He acudido a varias entidades, pero cada una me dice que la responsabilidad es de otra. ¿Qué puedo hacer para que las autoridades actúen antes de que mi vivienda y la playa desaparezcan?"""
-
-BANCO_21_PREGUNTAS = [
-    ("21-01_motos_parasailing", CASO_21_01_MOTOS_PARASAILING),
-    ("21-02_club_nautico_muelle", CASO_21_02_CLUB_NAUTICO_MUELLE),
-    ("21-03_hotel_malla_guardia", CASO_21_03_HOTEL_MALLA_GUARDIA),
-    ("21-04_alquiler_carpas_tarima", CASO_21_04_ALQUILER_CARPAS_TARIMA),
-    ("21-05_festival_jac", CASO_21_05_FESTIVAL_JAC),
-    ("21-06_pescador_taganga", CASO_21_06_PESCADOR_TAGANGA),
-    ("21-07_vendedora_playa_cristal", CASO_21_07_VENDEDORA_PLAYA_CRISTAL),
-    ("21-08_residente_club_playa", CASO_21_08_RESIDENTE_CLUB_PLAYA),
-    ("21-09_comunidad_indigena_guajira", CASO_21_09_COMUNIDAD_INDIGENA_GUAJIRA),
-    ("21-10_proyecto_turistico_playa_blanca", CASO_21_10_PROYECTO_TURISTICO_PLAYA_BLANCA),
-    ("21-11_boda_en_la_playa", CASO_21_11_BODA_EN_LA_PLAYA),
-    ("21-12_campeonato_futbol_playa", CASO_21_12_CAMPEONATO_FUTBOL_PLAYA),
-    ("21-13_hotel_bocagrande_entrega_area", CASO_21_13_HOTEL_BOCAGRANDE_ENTREGA_AREA),
-    ("21-14_competencia_kayak", CASO_21_14_COMPETENCIA_KAYAK),
-    ("21-15_renovacion_permiso_temporal", CASO_21_15_RENOVACION_PERMISO_TEMPORAL),
-    ("21-16_dueno_del_lote_restaurante", CASO_21_16_DUENO_DEL_LOTE_RESTAURANTE),
-    ("21-17_lancha_hundida_herencia", CASO_21_17_LANCHA_HUNDIDA_HERENCIA),
-    ("21-18_vendedor_playa_los_cocos", CASO_21_18_VENDEDOR_PLAYA_LOS_COCOS),
-    ("21-19_residente_ruido_los_cocos", CASO_21_19_RESIDENTE_RUIDO_LOS_COCOS),
-    ("21-20_pescador_embarcacion_abandonada", CASO_21_20_PESCADOR_EMBARCACION_ABANDONADA),
-    ("21-21_erosion_pozos_colorados", CASO_21_21_EROSION_POZOS_COLORADOS),
-]
+BANCO_21_PREGUNTAS = [(case["id"], case["pregunta"]) for case in load_ground_truth_cases()]
 
 
 @pytest.mark.parametrize(
@@ -751,29 +670,13 @@ def test_long_legal_question_starting_like_how_do_you_help_is_not_conversation()
 
 
 def test_cooking_and_selling_on_a_beach_without_permit_stays_in_scope() -> None:
-    """Control de regresión explícito exigido por esta ronda: 'cocinar y
-    vender en una playa sin permiso' debe seguir in_scope — 'cocinar' es una
-    señal ajena blanda que cede ante la combinación costera+jurídica, a
-    diferencia de las intenciones inequívocamente ajenas del defecto #1."""
+    """Regresión: 'cocinar y vender en una playa sin permiso' debe seguir
+    in_scope — 'cocinar' es una señal ajena blanda que cede ante la
+    combinación costera+jurídica, a diferencia de las intenciones
+    inequívocamente ajenas del defecto #1."""
     result = _fallback("¿Se puede cocinar y vender pescado en una playa sin permiso?")
     assert result.route == "in_scope"
     assert result.doc_types
-
-
-@pytest.mark.parametrize(
-    ("caso_id", "question"),
-    BANCO_21_PREGUNTAS,
-    ids=[caso_id for caso_id, _ in BANCO_21_PREGUNTAS],
-)
-def test_banco_21_preguntas_siguen_in_scope_tras_la_correccion_posterior(
-    caso_id: str, question: str
-) -> None:
-    """Control de no regresión exigido por esta ronda: las 21 preguntas
-    jurídicas deben seguir in_scope después de los cinco ajustes mínimos de
-    esta corrección posterior."""
-    result = _fallback(question)
-    assert result.route == "in_scope", f"{caso_id}: {question!r}"
-    assert result.doc_types, f"{caso_id}: sin doc_types"
 
 
 # ── Corrección general del clasificador de alcance ──────────────────────────

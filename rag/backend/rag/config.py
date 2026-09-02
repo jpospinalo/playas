@@ -191,10 +191,12 @@ CONTEXT_LIMIT_TOKENS: int = int(os.getenv("CONTEXT_LIMIT_TOKENS", "200000"))
 # del prompt de generación ya formateado — ver
 # `core.observability.log_full_context_size`) por encima del cual se emite un
 # warning estructurado. Es un punto de partida deliberadamente conservador
-# para empezar a recolectar datos reales, no un límite calibrado: esta ola
-# NO trunca chunks ni respuestas, y no fija `max_tokens` de generación (eso
-# podría cortar respuestas jurídicas actualmente válidas). La calibración
-# queda sujeta a las mediciones de la Ola C.
+# para empezar a recolectar datos reales, no un límite calibrado: hoy no se
+# truncan chunks ni respuestas, y no se fija `max_tokens` de generación (eso
+# podría cortar respuestas jurídicas actualmente válidas). Calibrar este
+# umbral (o introducir un `max_tokens`) es un paso deliberadamente
+# posterior, condicionado a datos reales de `log_context_budget_warning`,
+# no una decisión tomada hoy sin evidencia.
 CONTEXT_BUDGET_WARNING_CHARS: int = int(os.getenv("RAG_CONTEXT_BUDGET_WARNING_CHARS", "80000"))
 
 # ── Protección de consultas RAG ─────────────────────────────────────────────

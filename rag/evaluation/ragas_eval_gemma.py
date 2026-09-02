@@ -1,97 +1,61 @@
 # evaluation/ragas_eval_gemma.py
+"""Adaptador RAGAS: juez Gemini + embeddings de producción, sobre
+``legal-ground-truth-v0.1``.
+
+La infraestructura compartida (carga y validación del dataset, generación
+sin truncar, construcción del dataset RAGAS, ejecución de métricas, resumen
+y reporte reproducible) vive en ``ragas_common.py`` — este módulo solo
+aporta su juez (Gemini con limpieza de JSON y control de rate limit), sus
+embeddings y su lista de métricas.
+
+Uso:
+    uv run python -m evaluation.ragas_eval_gemma                 # evaluación real
+    uv run python -m evaluation.ragas_eval_gemma --validate-only # solo valida config, sin red
+"""
 
 from __future__ import annotations
 
 import asyncio
 import json
 import os
+import sys
 import time
 import warnings
+from pathlib import Path
 from typing import Any, ClassVar
 
-from datasets import Dataset
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_ollama import OllamaEmbeddings
-from ragas import evaluate
-from ragas.metrics import (
-    answer_relevancy,
-    context_precision,
-    context_recall,
-    faithfulness,
-)
-from ragas.run_config import RunConfig
+from pydantic import SecretStr
 
-from rag.core.generator import generate_answer
+from evaluation.ground_truth import load_ground_truth_cases
+from evaluation.ragas_common import (
+    build_ragas_dataset,
+    case_ids_evaluated,
+    generate_case_rows,
+    normalize_required_env,
+    run_metrics,
+    validate_only,
+    wants_validate_only,
+    write_report,
+)
+from rag.config import OLLAMA_BASE_URL, OLLAMA_EMBEDDING_MODEL
 
 warnings.filterwarnings("ignore", category=FutureWarning)
 
-# ============================================================
-#  1. Ítems de prueba
-# ============================================================
-"""
-TEST_ITEMS: List[Dict[str, str]] = [
-    {
-        "question": "¿Cómo se llamaba el gato del cuento 'El gato negro'?",
-        "ground_truth": "El gato del narrador se llamaba Plutón.",
-    },
-]
-"""
+REPORT_PATH = Path("evaluation/results/legal-ground-truth-v0.1-gemma.json")
 
-TEST_ITEMS: list[dict[str, str]] = [
-    {
-        "question": "¿Cómo se llamaba el gato del cuento 'El gato negro'?",
-        "ground_truth": "El gato del narrador se llamaba Plutón.",
-    },
-    {
-        "question": "¿Dónde se posó el cuervo en el cuento 'El cuervo'?",
-        "ground_truth": "El cuervo se posó sobre un busto de Minerva o Palas, sobre la puerta.",
-    },
-    {
-        "question": "¿Qué relación tenía Leonora con el narrador en 'El cuervo'?",
-        "ground_truth": "Leonora era la amada del narrador, cuya muerte le causó profunda desventura.",
-    },
-    {
-        "question": "¿Qué órgano del cuerpo es central en el cuento 'El corazón delator'?",
-        "ground_truth": "El órgano central del cuento es el corazón del anciano.",
-    },
-]
+# Nota: el valor por defecto de GEMINI_MODEL en este adaptador
+# ("gemma-3-27b-it") difiere del default de producción en
+# rag.config.GEMINI_MODEL ("gemini-3.1-flash-lite") porque este juez es un
+# modelo distinto, elegido para evaluación offline, no el modelo que sirve
+# las respuestas del RAG. Esta discrepancia es intencional y preexistente;
+# no se reconcilia aquí (sería una decisión de calibración fuera de este
+# plan) — solo se documenta.
 
 
 # ============================================================
-#  2. Construir dataset a partir de tu RAG
-# ============================================================
-
-MAX_CONTEXT_DOCS = 3  # solo 2 chunks por pregunta para ahorrar tokens
-
-
-def build_eval_dataset() -> tuple[Dataset, list[dict[str, Any]]]:
-    rows: list[dict[str, Any]] = []
-
-    for item in TEST_ITEMS:
-        question = item["question"]
-        gt = item["ground_truth"]
-
-        answer, docs = generate_answer(question)
-        answer = answer or ""
-
-        docs = (docs or [])[:MAX_CONTEXT_DOCS]
-        contexts = [d.page_content for d in docs]
-
-        rows.append(
-            {
-                "question": question,
-                "answer": answer,
-                "contexts": contexts,
-                "ground_truth": gt,
-            }
-        )
-
-    dataset = Dataset.from_list(rows)
-    return dataset, rows
-
-
-# ============================================================
-#  3. LLM evaluador: Gemini con rate limit y limpieza JSON
+#  1. LLM evaluador: Gemini con rate limit y limpieza JSON
 # ============================================================
 
 
@@ -203,121 +167,90 @@ class RateLimitedGemini(ChatGoogleGenerativeAI):
         return self._postprocess_result(res)
 
 
-def get_ragas_models():
+def get_ragas_models(
+    google_api_key: str, gemini_model: str
+) -> tuple[RateLimitedGemini, OllamaEmbeddings]:
     """
-    - LLM evaluador: Gemini (solo para RAGAS).
-    - Embeddings: Ollama (ya configurados en tus variables de entorno).
+    - LLM evaluador: Gemini (solo para RAGAS, ver nota de módulo sobre
+      GEMINI_MODEL). Recibe ``google_api_key`` ya normalizada (no vacía,
+      sin espacios) por el llamador -- no vuelve a leer la variable de
+      entorno aquí. ``max_tokens`` es el nombre de parámetro público que
+      reconoce la firma instalada de ``ChatGoogleGenerativeAI`` (alias del
+      campo ``max_output_tokens``); conserva exactamente el mismo límite
+      de antes (4098).
+    - Embeddings: los mismos que usa producción (``rag.config``), para que
+      RAGAS evalúe contra el contexto real que ve el sistema.
     """
-    gemini_model = os.getenv("GEMINI_MODEL", "gemma-3-27b-it")
-    google_api_key = os.getenv("GOOGLE_API_KEY2")
-
     llm_judge = RateLimitedGemini(
         model=gemini_model,
-        api_key=google_api_key,
+        api_key=SecretStr(google_api_key),
         temperature=0.0,
-        max_output_tokens=4098,
+        max_tokens=4098,
     )
 
-    embed_base_url = os.getenv("OLLAMA_EMBED_BASE_URL", "http://localhost:11434")
-    embed_model_name = os.getenv("OLLAMA_EMBED_MODEL", "embeddinggemma:latest")
-
     embeddings = OllamaEmbeddings(
-        model=embed_model_name,
-        base_url=embed_base_url,
+        model=OLLAMA_EMBEDDING_MODEL,
+        base_url=OLLAMA_BASE_URL,
     )
 
     return llm_judge, embeddings
 
 
 # ============================================================
-#  4. Ejecutar evaluación RAGAS (4 métricas)
+#  2. Punto de entrada
 # ============================================================
 
 
-def run_ragas_evaluation(dataset: Dataset) -> dict[str, Any]:
-    llm_judge, embeddings = get_ragas_models()
+def main() -> int:
+    if wants_validate_only():
+        return validate_only(["GOOGLE_API_KEY2"])
 
-    metrics = [
+    # 1) Cargar y validar el dataset una sola vez.
+    cases = load_ground_truth_cases()
+
+    # 2)-3) Validar la configuración obligatoria ANTES de tocar RAGAS, red
+    # o cualquier cliente -- un valor ausente o compuesto solo por espacios
+    # nunca debe llegar a un constructor.
+    env_values, missing = normalize_required_env(["GOOGLE_API_KEY2"])
+    if missing:
+        print(f"variables de entorno obligatorias faltantes: {', '.join(missing)}")
+        return 1
+
+    # 4) Solo después de validar: importar RAGAS y construir juez/embeddings.
+    from ragas.metrics import (
+        answer_relevancy,
         context_precision,
         context_recall,
         faithfulness,
-        answer_relevancy,
-    ]
-
-    for m in metrics:
-        m.llm = llm_judge
-        m.embeddings = embeddings
-
-    run_config = RunConfig(
-        timeout=600,
-        max_workers=1,  # secuencial para cuidar el rate limit
     )
 
-    print("\n=== Ejecutando métricas RAGAS ===")
-
-    res = evaluate(
-        dataset=dataset,
-        metrics=metrics,
-        llm=llm_judge,
-        embeddings=embeddings,
-        raise_exceptions=True,
-        run_config=run_config,
+    gemini_model = os.getenv("GEMINI_MODEL", "gemma-3-27b-it")
+    llm_judge, embeddings = get_ragas_models(
+        google_api_key=env_values["GOOGLE_API_KEY2"], gemini_model=gemini_model
     )
+    metrics = [context_precision, context_recall, faithfulness, answer_relevancy]
 
-    df = res.to_pandas()
-    all_results: dict[str, Any] = {}
+    # 5) Generar usando los casos ya cargados en el paso 1.
+    rows = generate_case_rows(cases)
+    dataset = build_ragas_dataset(rows)
+    case_ids = case_ids_evaluated(rows)
+    metric_results = run_metrics(dataset, metrics, llm_judge, embeddings, case_ids)
 
-    for m in metrics:
-        name = m.name
-        if name not in df.columns:
-            continue
-        series = df[name]
-        valid_values = [float(v) for v in series.tolist() if v == v]  # filtra NaN
-        all_results[name] = {
-            "per_sample": valid_values,
-            "mean": float(sum(valid_values) / len(valid_values)) if valid_values else float("nan"),
-        }
-
-    return all_results
-
-
-# ============================================================
-#  5. Guardar JSONs y punto de entrada
-# ============================================================
-
-
-def _ensure_parent_dir(path: str) -> None:
-    parent = os.path.dirname(path)
-    if parent:
-        os.makedirs(parent, exist_ok=True)
-
-
-def main(
-    dataset_json_path: str = "evaluation/ragas_eval_dataset.json",
-    summary_json_path: str = "evaluation/ragas_eval_summary.json",
-) -> None:
-    dataset, rows = build_eval_dataset()
-
-    _ensure_parent_dir(dataset_json_path)
-    _ensure_parent_dir(summary_json_path)
-
-    with open(dataset_json_path, "w", encoding="utf-8") as f:
-        json.dump(rows, f, ensure_ascii=False, indent=2)
-
-    results = run_ragas_evaluation(dataset)
-
-    metrics_summary: dict[str, Any] = {
-        "n_samples": len(rows),
-        "metrics": {name: vals["mean"] for name, vals in results.items()},
-    }
-
-    with open(summary_json_path, "w", encoding="utf-8") as f:
-        json.dump(metrics_summary, f, ensure_ascii=False, indent=2)
-
-    print(f"\nDataset de evaluación guardado en: {dataset_json_path}")
-    print(f"Resumen de métricas guardado en:  {summary_json_path}")
-    print("Resumen:", metrics_summary)
+    write_report(
+        provider="gemini",
+        model=gemini_model,
+        metrics_executed=[m.name for m in metrics],
+        rows=rows,
+        metric_results=metric_results,
+        extra_config={
+            "embeddings_model": OLLAMA_EMBEDDING_MODEL,
+            "embeddings_base_url": OLLAMA_BASE_URL,
+        },
+        output_path=REPORT_PATH,
+    )
+    print(f"Reporte escrito en: {REPORT_PATH}")
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())
