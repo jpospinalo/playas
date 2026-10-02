@@ -1,0 +1,44 @@
+{
+  "playa": [
+    "playa",
+    "playas"
+  ],
+  "bahia": [
+    "bahía",
+    "bahías"
+  ],
+  "espacio_publico": [
+    "espacio público"
+  ],
+  "dimar": [
+    "dimar",
+    "direccion general maritima",
+    "dirección general marítima"
+  ],
+  "bienes_uso_publico": [
+    "bienes de uso público"
+  ],
+  "puerto": [
+    "muelle",
+    "puerto"
+  ],
+  "vertimiento": [
+    "vertimiento",
+    "vertimientos"
+  ],
+  "arrecife": [
+    "arrecife",
+    "arrecifes",
+    "coral"
+  ],
+  "contaminacion_marina": [
+    "contaminación marina"
+  ],
+  "pradera_marina": [
+    "pastos marinos"
+  ],
+  "capitania": [
+    "capitanía",
+    "capitanía de puerto"
+  ]
+}

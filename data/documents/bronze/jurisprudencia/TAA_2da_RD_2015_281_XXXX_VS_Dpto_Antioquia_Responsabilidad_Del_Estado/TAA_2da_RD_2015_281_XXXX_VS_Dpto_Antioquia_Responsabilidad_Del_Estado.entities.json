@@ -1,0 +1,38 @@
+{
+  "playa": [
+    "playa",
+    "playas"
+  ],
+  "bahia": [
+    "bahía"
+  ],
+  "bajamar": [
+    "bajamar",
+    "terrenos de bajamar"
+  ],
+  "litoral": [
+    "litoral"
+  ],
+  "erosion": [
+    "erosión"
+  ],
+  "ocupacion": [
+    "ocupación"
+  ],
+  "espacio_publico": [
+    "espacio público"
+  ],
+  "dimar": [
+    "dimar",
+    "dirección general marítima"
+  ],
+  "bienes_uso_publico": [
+    "bienes de uso público"
+  ],
+  "puerto": [
+    "puerto"
+  ],
+  "capitania": [
+    "capitanía"
+  ]
+}

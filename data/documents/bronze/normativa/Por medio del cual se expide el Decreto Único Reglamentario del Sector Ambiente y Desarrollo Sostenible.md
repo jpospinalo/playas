@@ -1,0 +1,75 @@
+# DECRETO 1076 DE 2015
+
+> Por medio del cual se expide el Decreto Único Reglamentario del Sector Ambiente y Desarrollo Sostenible
+
+Artículo 2.2.3.3.3.2. Competencia para definir los criterios de calidad del recurso hídrico. El Ministerio de Ambiente y Desarrollo Sostenible definirá los criterios de calidad para el uso de las aguas superficiales, subterráneas y marinas.
+
+(Decreto 3930 de 2010, art. 20).
+
+Artículo 2.2.3.3.4.4. Actividades no permitidas. No se permite el desarrollo de las siguientes actividades.
+
+1. El lavado de vehículos de transporte aéreo y terrestre en las orillas y en los cuerpos de agua, así como el de aplicadores manuales y aéreos de agroquímicos y otras sustancias tóxicas y sus envases, recipientes o empaques.
+
+2. La utilización del recurso hídrico, de las aguas lluvias, de las provenientes de acueductos públicos o privados, de enfriamiento, del sistema de aire acondicionado, de condensación y/o de síntesis química, con el propósito de diluir los vertimientos, con anterioridad al punto de control del vertimiento.
+
+3. Disponer en cuerpos de aguas superficiales, subterráneas, marinas, y sistemas de alcantarillado, los sedimentos, lodos, y sustancias sólidas provenientes de sistemas de tratamiento de agua o equipos de control ambiental y otras tales como cenizas, cachaza y bagazo. Para su disposición deberá cumplirse con las normas legales en materia de residuos sólidos.
+
+(Decreto 3930 de 2010, art. 25).
+
+Artículo 2.2.3.3.5.1. Requerimiento de permiso de vertimiento. Toda persona natural o jurídica cuya actividad o servicio genere vertimientos a las aguas superficiales, marinas, o al suelo, deberá solicitar y tramitar ante la autoridad ambiental competente, el respectivo permiso de vertimientos.
+
+(Decreto 3930 de 2010, art. 41).
+
+Artículo 2.2.3.3.5.3. Evaluación ambiental del vertimiento. La evaluación ambiental del vertimiento deberá ser presentada por los generadores de vertimientos a cuerpos de aguas o al suelo que desarrollen actividades industriales, comerciales y/o de servicio, así como los provenientes de conjuntos residenciales y deberá contener como mínimo:
+
+1. Localización georreferenciada de proyecto, obra o actividad.
+
+2. Memoria detallada del proyecto, obra o actividad que se pretenda realizar, con especificaciones de procesos y tecnologías que serán empleados en la gestión del vertimiento.
+
+3. Información detallada sobre la naturaleza de los insumos, productos químicos, formas de energía empleados y los procesos químicos y físicos utilizados en el desarrollo del proyecto, obra o actividad que genera vertimientos.
+
+4. Predicción y valoración de los impactos que puedan derivarse de los vertimientos puntuales generados por el proyecto, obra o actividad al cuerpo de agua. Para tal efecto, se deberá tener en cuenta el Plan de Ordenamiento del Recurso Hídrico, el modelo regional de calidad del agua, los instrumentos de administración y los usos actuales y potenciales del recurso hídrico. La predicción y valoración se realizará a través de modelos de simulación de los impactos que cause el vertimiento en el cuerpo de agua, en función de su capacidad de asimilación y de los usos y criterios de calidad establecidos por la Autoridad Ambiental competente.
+
+Cuando exista un Plan de Ordenamiento del Recurso Hídrico adoptado o la Autoridad Ambiental competente cuente con un modelo regional de calidad del agua, la predicción del impacto del vertimiento la realizará dicha Autoridad.
+
+5. Predicción y valoración de los impactos que puedan derivarse de los vertimientos generados por el proyecto, obra o actividad al suelo, considerando su vocación conforme a lo dispuesto en los instrumentos de ordenamiento territorial y los Planes de Manejo Ambiental de Acuíferos. Cuando estos últimos no existan, la autoridad ambiental competente definirá los términos y condiciones bajo los cuales se debe realizar la identificación de los impactos y la gestión ambiental de los mismos.
+
+6. Manejo de residuos asociados a la gestión del vertimiento.
+
+7. Descripción y valoración de los impactos generados por el vertimiento y las medidas para prevenir, mitigar, corregir y compensar dichos impactos al cuerpo de agua o al suelo.
+
+8. Posible incidencia del proyecto, obra o actividad en la calidad de la vida o en las condiciones económicas, sociales y culturales de los habitantes del sector o de la región en donde pretende desarrollarse y medidas que se adoptarán para evitar o minimizar efectos negativos de orden sociocultural que puedan derivarse de la misma.
+
+9. Estudios técnicos y diseños de la estructura de descarga de los vertimientos, que sustenten su localización y características, de forma que se minimice la extensión de la zona de mezcla.
+
+PARÁGRAFO 1. La modelación de que trata el presente artículo deberá realizarse conforme a la Guía Nacional de Modelación del Recurso Hídrico. Mientras se expide la guía, la autoridad ambiental competente y los usuarios continuarán aplicando los modelos de simulación existentes.
+
+PARÁGRAFO 2. Para efectos de la aplicación de lo dispuesto en este artículo en relación con los conjuntos residenciales, la autoridad ambiental definirá los casos en los cuales no estarán obligados a presentar la evaluación ambiental del vertimiento en función de la capacidad de carga del cuerpo receptor, densidad de ocupación del suelo y densidad poblacional.
+
+PARÁGRAFO 3. En los estudios ambientales de los proyectos, obras o actividades sujetos a licencia ambiental, se incluirá la evaluación ambiental del vertimiento prevista en el presente artículo.
+
+(Decreto 050 de 2018, art. 9).
+
+Artículo 2.2.3.3.5.7. Otorgamiento del permiso de vertimiento. La autoridad ambiental competente, con fundamento en la clasificación de aguas, en la evaluación de la información aportada por el solicitante, en los hechos y circunstancias deducidos de las visitas técnicas practicadas y en el informe técnico, otorgará o negará el permiso de vertimiento mediante resolución.
+
+El permiso de vertimiento se otorgará por un término no mayor a diez (10) años.
+
+(Decreto 3930 de 2010, art. 47).
+
+Artículo 2.2.3.3.6.1. De la procedencia del Plan de Reconversión a Tecnologías Limpias en Gestión de Vertimientos. Los generadores de vertimientos que a la entrada en vigencia de las normas de vertimiento a que hace referencia el artículo 2.2.3.3.4.7 del presente decreto, sean titulares de un permiso de vertimiento expedido con base en la norma vigente antes del 25 de octubre de 2010, podrán optar por la ejecución de un Plan de Reconversión a Tecnologías Limpias en Gestión de Vertimientos.
+
+En este evento, el Plan de Reconversión a Tecnologías Limpias en Gestión de Vertimientos deberá ser presentado ante la autoridad ambiental competente dentro del primer año del plazo previsto en el artículo 2.2.3.3.11.1 de este decreto.
+
+(Modificado por el Decreto 1956 de 2015, art. 8).
+
+Artículo 2.2.3.3.6.4. Fijación de plazos para la presentación y aprobación de los Planes de Reconversión a Tecnologías Limpias en Gestión de Vertimientos. Los generadores de vertimientos que desarrollen actividades industriales, comerciales o de servicios previstos en el artículo 2.2.3.3.6.1 del presente decreto, tendrán un plazo de un (1) año para presentar ante la autoridad ambiental competente el Plan de Reconversión a Tecnologías Limpias en Gestión de Vertimientos. Este plazo se contará a partir de la fecha de publicación del acto administrativo mediante el cual se fijan las respectivas normas de vertimiento por parte del Ministerio de Ambiente y Desarrollo Sostenible.
+
+La autoridad ambiental competente tendrá un plazo de tres (3) meses, contados a partir de la radicación del Plan de Reconversión a Tecnologías Limpias en Gestión de Vertimientos, para pronunciarse sobre la aprobación del mismo.
+
+La resolución mediante la cual se aprueba el Plan de Reconversión a Tecnologías Limpias en Gestión de Vertimientos deberá relacionar la definición precisa de los cambios parciales o totales en los procesos de producción; definición de los indicadores con los cuales se determinará el cumplimiento de los objetivos del plan; estimativo de la reducción o minimización de las cargas contaminantes por unidad de producto, antes de ser tratados por los equipos de control y antes de ser mezclados con aguas residuales domésticas; descripción técnica de los procesos de optimización, recirculación y reúso del agua, así como de las cantidades de los subproductos o materias primas reciclados o reutilizados, por unidad de producción y plazo y cronograma de actividades.
+
+Cuando la autoridad ambiental competente no apruebe el Plan de Reconversión a Tecnologías Limpias en Gestión de Vertimientos, se indicarán las razones para ello y se fijará al interesado un plazo de un (1) mes para que presente los ajustes requeridos. En caso de no presentarse dentro del término señalado para ello, se entenderá que el interesado desiste de la implementación de dicho plan y deberá dar cumplimiento a la norma de vertimiento aplicable en los plazos correspondientes.
+
+PARÁGRAFO. El Plan de Reconversión a Tecnologías Limpias en Gestión de Vertimientos se presentará por una (1) sola vez y no podrá ser prorrogado por la autoridad ambiental competente. Sin embargo, en caso de fuerza mayor o caso fortuito definidos en los términos de la Ley 95 de 1890 en concordancia con el artículo 8 de la Ley 1333 de 2009, su cumplimiento podrá ser suspendido hasta tanto se restablezcan las condiciones normales. Para tal efecto, el interesado deberá presentar la justificación ante la autoridad ambiental competente.
+
+(Decreto 3930 de 2010, art. 64).

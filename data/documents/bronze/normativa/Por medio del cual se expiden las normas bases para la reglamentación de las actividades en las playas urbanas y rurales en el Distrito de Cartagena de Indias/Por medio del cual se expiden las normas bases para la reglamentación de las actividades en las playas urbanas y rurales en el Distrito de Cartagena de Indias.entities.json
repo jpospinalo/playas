@@ -1,0 +1,52 @@
+{
+  "playa": [
+    "playa",
+    "playas"
+  ],
+  "bahia": [
+    "bahía",
+    "bahías"
+  ],
+  "bajamar": [
+    "terrenos de bajamar"
+  ],
+  "litoral": [
+    "litoral"
+  ],
+  "erosion": [
+    "erosión"
+  ],
+  "ocupacion": [
+    "ocupacion",
+    "ocupación"
+  ],
+  "espacio_publico": [
+    "espacio publico",
+    "espacio público"
+  ],
+  "dimar": [
+    "dimar",
+    "dirección general marítima"
+  ],
+  "bienes_uso_publico": [
+    "bienes de uso publico",
+    "bienes de uso público"
+  ],
+  "proteccion_litoral": [
+    "protección costera"
+  ],
+  "manglar": [
+    "manglares"
+  ],
+  "acantilado": [
+    "acantilados"
+  ],
+  "vertimiento": [
+    "vertimiento",
+    "vertimientos"
+  ],
+  "arrecife": [
+    "arrecifes",
+    "corales"
+  ]
+}

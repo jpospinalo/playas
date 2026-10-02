@@ -1,0 +1,34 @@
+{
+  "playa": [
+    "playas"
+  ],
+  "bahia": [
+    "bahía",
+    "bahías"
+  ],
+  "litoral": [
+    "zona costera"
+  ],
+  "ocupacion": [
+    "ocupación"
+  ],
+  "espacio_publico": [
+    "espacio público"
+  ],
+  "dimar": [
+    "dirección general marítima"
+  ],
+  "bienes_uso_publico": [
+    "bienes de uso público"
+  ],
+  "puerto": [
+    "muelle"
+  ],
+  "estuario": [
+    "desembocadura"
+  ],
+  "vertimiento": [
+    "vertimiento",
+    "vertimientos"
+  ]
+}

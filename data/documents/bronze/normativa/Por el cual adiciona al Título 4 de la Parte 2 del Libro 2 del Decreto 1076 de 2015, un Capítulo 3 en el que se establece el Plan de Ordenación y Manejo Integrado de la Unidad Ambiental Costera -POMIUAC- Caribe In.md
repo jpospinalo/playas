@@ -1,0 +1,135 @@
+## DECRETO 415 DE 2017
+
+## (Marzo)
+
+'Por el cual adiciona al Título de la Parte del Libro del Decreto 1076 de 2015, Decreto Único Reglamentario del Sector Ambiente y Desarrollo Sostenible, un Capítulo en el que se establece el Plan de Ordenación y Manejo Integrado de la Unidad Ambiental Costera -POMIUACCaribe Insular, en el Departamento Archipiélago de San Andrés, Providencia y Santa Catalina'
+
+## EL PRESIDENTE DE LA REPÚBLICA DE
+
+En ejercicio de sus facultades constitucionales y legales, en especial las que le confiere el numeral 11 del artículo 189 de la Constitución Política, el artículo 2°, los numerales y 24 del artículo 5° y parágrafo 3° del artículo 33 de la Ley 99 de 1993 y en desarrollo del parágrafo 3 del artículo 207 de la Ley 1450 de 2011 modificado por el artículo 17 del Decreto número 3570 de 2011 y,
+
+## CONSIDERANDO
+
+Que la Constitución Política de Colombia en su artículo 8 establece que 'Es obligación del Estado y de las personas proteger las riquezas culturales y naturales de la Nación' y el inciso segundo del artículo 79 señala, que 'Es deber del Estado proteger la diversidad e integridad del ambiente, conservar las áreas de especial importancia ecológica y fomentar la educación para el logro de estos fines'.
+
+Que el inciso primero del artículo 80 de la Constitución Política también dispone que 'El Estado planificará el manejo y aprovechamiento de los recursos naturales, para garantizar su desarrollo sostenible, su conservación, restauración o sustitución.'
+
+Que el artículo 164 del Decreto-ley 2811 de 1974 -Código Nacional de los Recursos Naturales Renovables y de Protección al Medio Ambienteestablece que 'Corresponde al Estado la protección del ambiente marino, constituido por las aguas, por el suelo, el subsuelo y el espacio aéreo del mar territorial y el de la zona económica, y por las playas y recursos naturales renovables de la zona.
+
+Esta protección se realizará con las medidas necesarias para impedir o prevenir la contaminación de la zona con sustancias que puedan poner en peligro la salud humana, perjudicar los recursos hidrobiológicos y menoscabar las posibilidades de esparcimiento o entorpecer los demás usos legítimos del mar…'
+
+Que según el artículo 5° de la Ley 99 de 1993, en concordancia con el artículo 2° del Decreto número 3570 de 2011, el Ministerio de Ambiente y Desarrollo Sostenible tiene entre sus funciones, la de diseñar y formular la política nacional en relación con el medio ambiente y los recursos naturales renovables, establecer las reglas y criterios de ordenamiento ambiental de uso del territorio y de los mares adyacentes; regular la conservación, preservación, uso y manejo del medio ambiente y de los recursos naturales renovables en las zonas marinas y costeras y regular las condiciones de conservación y manejo de ciénagas, pantanos, lagos, lagunas y demás ecosistemas hídricos continentales.
+
+Que el parágrafo 3° del artículo 33 de la Ley 99 de 1993 consagra que cuando dos o más Corporaciones Autónomas Regionales tengan jurisdicción   sobre   un   ecosistema   o   sobre   una   cuenca   hidrográfica   común,   constituirán   una   comisión   conjunta   de   conformidad   con reglamentación   que   expida   el   Gobierno   Nacional.
+
+Que el de Noviembre de 2000. el Archipiélago de San Andrés. Providencia y Santa Catalina fue declarado Reserva de Biosfera por el Program of Man and the Biosphere MAB) de UNESCO, denominada con el nombre de SEAFLOWER, la cual cuenta con Plan de gestión para dicha estrategia complementaria de conservación.
+
+Que por su parte, el artículo 212 de la Ley 1450 de 2011 estableció que el Ministerio de Ambiente y Desarrollo Sostenible le corresponde integrar y presidir las comisiones conjuntas de que trata el parágrafo 3° del artículo 33 de la Ley 99 de 1993.
+
+Que el artículo 207 de la Ley 1450 de 2011 señaló en el parágrafo 2 que 'En pastos marinos, se podrá restringir parcial o totalmente el desarrollo de actividades mineras, de exploración y explotación de hidrocarburos, acuicultura y pesca industrial de arrastre con base en estudios técnicos, económicos, sociales y ambientales adoptados por el Ministerio de Ambiente, Vivienda y Desarrollo Territorial o quien haga sus veces. El Gobierno Nacional, dentro de los noventa (90) días calendario siguientes a la expedición de esta ley reglamentará los criterios y procedimientos para el efecto'.
+
+Que el numeral 10 del artículo 17 del Decreto número 3570 de 2011 modificó la parte final del parágrafo 3° del artículo 207 de la Ley 1450 de 2011, en el sentido que la Dirección de Asuntos Marinos, Costeros y Recursos Acuáticos del Ministerio de Ambiente y Desarrollo Sostenible le corresponde 'Emitir concepto previo a la aprobación de los planes de manejo integrado de las unidades ambientales costeras que deben ser adoptados por las corporaciones autónomas regionales'.
+
+Que la Política de Gestión Integral de Recurso Hídrico (2010) estableció que 'en relación con la planificación de las cuencas con zonas marinocosteras, se deberá considerar como unidad de análisis la unidad ambiental costera y los lineamientos definidos para su manejo, asimismo, se deberán articular a las acciones del POMCA las medidas adoptadas en las cuencas adyacentes incluidas en la unidad ambiental costera'.
+
+Que la Política Nacional Ambiental para el Desarrollo Sostenible de los Espacios Oceánicos y las Zonas Costeras e Insulares de Colombia (PNAOCI), adoptada por el consejo Nacional Ambiental en diciembre del año 2000 tiene por objeto propender por el desarrollo sostenible de los espacios oceánicos y las zonas costeras, que permita mediante su manejo integrado, contribuir al mejoramiento de la calidad de vida de la población colombiana, al desarrollo armónico de las actividades productivas y a la conservación y preservación de los ecosistemas y recursos marinos y costeros.
+
+Que el Programa de la Conferencia de las Naciones Unidas sobre el Medio Ambiente y Desarrollo, Río 92, recomienda en la Sección.17, entre otros:
+
+- '17.5. Los Estados ribereños se comprometen a proceder a una ordenación integrada y a un desarrollo sostenible de las zonas costeras y del medio marino sujetos a su jurisdicción nacional. Para tal fin es necesario, entre otras cosas:
+- a) Crear un proceso integrado de formulación de políticas y adopción de decisiones, en que participen todos los sectores interesados, para fomentar la compatibilidad y el equilibrio entre los distintos usos.'
+
+Que en la segunda conferencia de los países signatarios del Convenio sobre Diversidad Biológica realizada en Yakarta, 1995, la decisión ii/10 sobre la Conservación y uso sostenible de la diversidad biológica marina y costera, 'insta a los países signatarios a establecer y/o fortalecer arreglos institucionales, administrativos y legislativos para el desarrollo del manejo integrado de las áreas costeras y marinas, y su integración dentro de los planes nacionales de desarrollo.'
+
+Que el Departamento Archipiélago de San Andrés, Providencia y Santa Catalina cuenta con diversas áreas protegidas de carácter nacional y regional su jurisdicción, los cuales establecen diversos Planes de Manejo para sus áreas, las cuales procedemos a relacionar:
+
+1. El Área Marina Protegida de la Reserva de Biosfera Seaflower fue creada mediante la Resolución N° 107 del de enero de 2005 del entonces Ministerio de Ministerio de Ambiente, Vivienda y Desarrollo Territorial y asignada categoría de Distrito de Manejo Integrado 'Área Marina Protegida de la Reserva de Biosfera Seaflower' a través de Resolución 977 de 2014, del hoy Ministerio de Ambiente y Desarrollo Sostenible.
+2. El Parque Regional 'OId Point Regional Mangrove Park' fue Declarado, Reservado y Alinderado mediante los Acuerdos del consejo Directivo de CORALINA No. 041 y 042 de de septiembre de 2001.
+3. El Parque Regional Johnny Cay fue creado a través de Acuerdo del consejo Directivo de CORALINA No. 027 de de agosto de 2001, reservado y alinderado a través del Acuerdo No. 041 de 2001, establecido Plan de manejo por medio de la Resolución No. 161 de de marzo de 2002 y homologado mediante el Acuerdo del consejo Directivo de CORALINA No.024 de de agosto de 2011.
+4. El Parque Regional "The Peak", fue Declarado, reservado y Alinderado por intermedio del Acuerdo del consejo Directivo de CORALINA No. 024 de de noviembre de 2007 y Homologado por el Acuerdo del consejo Directivo de CORALINA No.025 de 2011.
+
+Que con base en lo expuesto, se puede observar como el Departamento Archipiélago de San Andrés, Providencia y Santa Catalina cuenta con múltiples instrumentos de ordenamiento ambiental, requeridos por la normatividad vigente. Así mismo, se destaca la designación del Archipiélago de San Andrés, Providencia y Santa Catalina como Reserva de Biosfera en el marco del Programa MAB de la UNESCO denominada Reserva de Biosfera -Seaflower, la cual constituye una estrategia complementaria para la conservación de la diversidad biológica cuyo fin es promover un desarrollo sostenible. Todo lo anterior, termina coexistiendo y generando importantes cargas administrativas en los procesos de formulación y adopción de los instrumentos de ordenamiento ambiental del territorio propiciando un sin número de dificultades tanto para la autoridad ambiental como para las autoridades territoriales en torno a la implementación y cumplimiento de las mismas.
+
+Que así las cosas, dadas las particularidades del Departamento Archipiélago, se ha vislumbrado la necesidad de reglamentar y compilar de manera especial y con enfoque diferencial, en cuanto a los alcances de las fases de formulación, adopción y otros aspectos en el Plan de Ordenación y Manejo integrado de la Unidad Ambiental Costera Caribe Insular -POMIUAC Insular-, de tal manera que responda adecuadamente a las especialidades y necesidades ambientales de esta jurisdicción, como un único instrumento articulador de las regulaciones y ordenaciones del territorio del Departamento Archipiélago de San Andrés, Providencia y Santa Catalina.
+
+En mérito de lo expuesto,
+
+## DECRETA:
+
+ARTÍCULO 1°.- El Título de la Parte del Libro del Decreto 1076 de 2015, Decreto Único Reglamentario del Sector Ambiente y Desarrollo Sostenible, tendrá un Capítulo con el siguiente texto:
+
+## CAPÍTULO
+
+## Aguas marítimas
+
+## SECCIÓN
+
+## Manejo integrado insular
+
+ARTÍCULO 2.2.4.2.3.1. Ámbito de aplicación. - El presente capítulo aplicará de manera exclusiva para el Departamento Archipiélago de San Andrés, Providencia y Santa Catalina.
+
+ARTÍCULO 2.2.4.2.3.2. Unificación   de   instrumentos. -   Para   todos   los   efectos   del   ordenamiento   ambiental,   el   POMIUAC   INSULAR,   será   el   único instrumento para el manejo, ordenamiento y planificación ambiental de la Unidad Ambiental Costera -UAC-Caribe Insular, el cual no incorporara' las áreas del Sistema de Parques Nacionales Naturales de Colombia, las cuales continuarán su gestión a través de los instrumentos de manejo establecidos para dichas áreas.
+
+El POMIUAC INSULAR, incorporará y subsumirá los siguientes instrumentos actualmente vigentes o exigibles para el Departamento Archipiélago de San Andrés, Providencia y Santa Catalina en su territorio emergido y sumergido:
+
+1. Plan de Manejo de la Reserva de Biosfera Seaflower.
+2. Plan o planes de Ordenación y Manejo de Cuencas Hidrográficas - POMCA. Plan o planes de Zonificación de los Manglares. Plan de Manejo de Acuíferos y Aguas Subterráneas. Planes de Manejo de Áreas Protegidas: (Área Marina Protegida de la Reserva de Biosfera Seaflower, el Parque Regional 'Old Point Regional Mangrove Park', el Parque Regional Johnny Cay, El Parque Regional 'The Peak').
+
+PARÁGRAFO 1°.- El POMIUAC INSULAR se constituye en norma de superior jerarquía y determinante ambiental para la elaboración y adopción de los planes o esquemas de ordenamiento territorial o plan de ordenamiento departamental, en el Departamento Archipiélago de San Andrés, Providencia y Santa Catalina.
+
+PARÁGRAFO 2°.- El POMIUAC INSULAR tendrá en consideración, como estrategia complementaria para la conservación de la diversidad biológica, a la Reserva de Biosfera Seaflower.
+
+PARÁGRAFO 3°.- Las nuevas declaratorias de áreas protegidas de carácter regional realizadas por la Corporación para el Desarrollo Sostenible del Archipiélago de San Andrés, Providencia y Santa Catalina - CORALINA, posteriores a la expedición del presente acto administrativo, deberán ser incorporadas por dicha autoridad ambiental en el POMIUAC INSULAR.
+
+ARTÍCULO 2.2.4.2.3.3. Formulación y adopción del POMIUAC INSULAR. - La formulación del POMIUAC INSULAR, estará a cargo de la Dirección General de la Corporación para el Desarrollo Sostenible del Archipiélago de San Andrés, Providencia y Santa Catalina - CORALINA y su adopción estará en cabeza del consejo Directivo de dicha entidad.
+
+El Director General y el consejo Directivo contarán con un tiempo máximo de cuatro (4) años para la formulación y adopción que se contarán a partir de la expedición de la Guía Técnica para la Ordenación, Ordenamiento y Planificación Ambiental.
+
+ARTÍCULO 2.2.4.2.3.4. Fases para la formulación, adopción e implementación del POMIUAC INSULAR. El proceso de formulación, adopción e implementación del POMIUAC INSULAR, comprende las siguientes fases:
+
+- 1 .   Preparación   o   aprestamiento: Corresponde   a   la   fase   inicial   del   proceso   a   través   de   su   planeación   previa,   identificación   de   necesidades, conformación del equipo de trabajo, organización de los aspectos financieros, identificación del área objetivo, estructuración de la estrategia de socialización y participación de actores, y demás asuntos necesarios para garantizar un adecuado desarrollo del proceso.
+
+En esta etapa, CORALINA, publicará un aviso en medios de comunicación masiva, informando sobre el inicio del proceso de formulación del POMIUAC INSULAR.
+
+- 2 Caracterización y Diagnóstico: Consiste en la descripción del área, la evaluación de su situación actual y condiciones futuras, bajo un enfoque ecosistémico. La caracterización y diagnóstico deberá incluir, entre otros, los siguientes elementos:
+
+- a) Los recursos naturales renovables presentes
+- b) Las obras de infraestructura física existentes
+- c) Centros poblados y asentamientos humanos
+- d) Las actividades económicas o de servicios.
+- e) Amenazas y de vulnerabilidad de acuerdo con la información disponible suministrada por las entidades científicas competentes.
+- f) Conflictos de uso de los ecosistemas y recursos naturales renovables y potencialidades.
+- g) Instrumentos de planificación ambiental, territorial, sectorial y cultural, que concurren en el área.
+3. Prospectiva y zonificación ambiental: Fase   en   la   cual   se   diseñan   los   escenarios   futuros   del   uso   sostenible   del   territorio   y   de   los   recursos naturales renovables presentes, definiendo en un horizonte no menor a veinte (20) años el modelo de ordenación.
+
+Como resultado de la prospectiva se elaborará la zonificación ambiental.
+
+Las categorías de uso y manejo, así como los criterios técnicos para la elaboración de la zonificación ambiental se desarrollarán con base en los parámetros que se definan en la Guía Técnica para la Ordenación, Ordenamiento y Planificación Ambiental de la Unidad Ambiental Costera Caribe Insular,
+
+4. Formulación y Adopción: Con base en los resultados de las fases anteriores, se establecerán los objetivos, metas, programas, proyectos, estrategias y las medidas para la administración y manejo sostenible de los recursos naturales renovables y se procederá a su adopción.
+5. Implementación o Ejecución: Corresponde a CORALINA coordinar la ejecución del POMIUAC INSULAR; sin perjuicio de las competencias concurrentes de las demás autoridades con jurisdicción y competencia en el Departamento Archipiélago.
+6. Seguimiento y Evaluación: CORALINA realizará el seguimiento y la evaluación del POMIUAC INSULAR, con base en lo definido en el dicho plan en concordancia con la Guía Técnica para la Ordenación, Ordenamiento y Planificación Ambiental de la Unidad Ambiental Costera Caribe Insular.
+
+PARÁGRAFO. Cada una de las fases de que trata el presente artículo se desarrollará de acuerdo con lo que establezca la Guía Técnica para la Ordenación, Ordenamiento y Planificación Ambiental de la Unidad Ambiental Costera Caribe Insular en su territorio emergido y sumergido; que adoptará el Ministerio de Ambiente y Desarrollo Sostenible-
+
+ARTÍCULO 2.2.4.2.3.5. Guía técnica para la ordenación, ordenamiento y planificación ambiental de la Unidad Ambiental Costera Caribe Insular. La Guía Técnica para la Ordenación, Ordenamiento y Planificación Ambiental de la Unidad Ambiental Costera Caribe Insular en su territorio emergido y sumergido* será expedida por el Ministerio de Ambiente y Desarrollo Sostenible, dentro de los tres (3) meses siguientes a la expedición del presente decreto, la cual determinará los aspectos técnicos y metodológicos necesarios para la adecuada formulación del POMIUAC   INSULAR,   garantizando   que   este   nuevo   y   único   instrumento,   recoja   y   responda   integralmente   a   la   filosofía,   principios,   bases, fundamentos,   políticas   y   finalidad   de   los   instrumentos   que   incorpora   o   subsume.
+
+ARTÍCULO   2.2.4.2.3.6. De   la   consulta   previa. CORALINA   deberá   verificar   si   la   adopción   del   POMIUAC   INSULAR,   afecta   directamente   a comunidades   étnicas.
+
+En el evento que la medida administrativa incida de manera directa y específica sobre dicha población, se impondrá por parte de CORALINA la realización del mecanismo de consulta previa exigida por el bloque de constitucionalidad, de conformidad con las pautas trazadas para ello por la jurisprudencia.
+
+ARTÍCULO 2.2.4.2.3.7. Apoyo técnico y científico. Los   Institutos   de   Investigación   de   Hidrología,   Meteorología   y   Estudios   Ambientales   -IDEAM, Marinas y Costeras 'José Benito Vives de Andreis' - C INVEMAR y de Recursos Biológicos 'Alexander von Humboldt, a que se refiere el artículo 16 de la Ley 99 de 1993 y el artículo 3 del Decreto 3570 de 2011 prestarán el apoyo técnico y científico que requiera Dirección General de la Corporación para el Desarrollo Sostenible del Archipiélago de San Andrés, Providencia y Santa Catalina - CORALINA para la formulación del instrumento que en el presente decreto se establece.
+
+ARTÍCULO 2.2.4.2.3.8. Régimen de transición. Continuaran vigentes las regulaciones correspondientes y los instrumentos de ordenación y manejo ambiental listados en el artículo 2.2.4.2.7.1, hasta tanto no se adopte el POMIUAC INSULAR, de que trata el presente decreto.
+
+ARTÍCULO 2°. Vigencia y derogatorias. El presente decreto debe entenderse incorporado en el Decreto 1076 de 2015 y rige a partir de la fecha de su publicación en el Diario Oficial.
+
+PUBLÍQUESE y CÚMPLASE.
+
+Dado en Bogotá, D.C., a los días del mes de marzo del año 2017.
+
+LUIS GILBERTO MURILLO URRUTIA
+
+EL MINISTRO DE AMBIENTE Y DESARROLLO SOSTENIBLE
+
+NOTA: Publicado en el Diario Oficial No.***** de de marzo de 2017.

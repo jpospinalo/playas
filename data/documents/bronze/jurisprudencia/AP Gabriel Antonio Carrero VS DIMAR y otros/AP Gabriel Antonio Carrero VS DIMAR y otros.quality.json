@@ -1,0 +1,22 @@
+{
+  "paragraph_score": 99.07834101382488,
+  "heading_score": 100.0,
+  "citation_cleanup_score": 100.0,
+  "footer_removal_score": 100.0,
+  "ocr_cleanup_score": 20.0,
+  "section_segmentation_score": 74.92165898617512,
+  "coastal_entity_score": 100.0,
+  "final_quality": 82.80000000000001,
+  "processing_time_seconds": 23.019585132598877,
+  "section_counts": {
+    "claims": 15,
+    "analysis": 117,
+    "legal_basis": 59,
+    "metadata": 2,
+    "facts": 4,
+    "evidence": 12,
+    "citations": 5,
+    "decision": 3
+  },
+  "entity_count": 22
+}

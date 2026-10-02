@@ -1,0 +1,15 @@
+{
+  "paragraph_score": 85.0,
+  "heading_score": 50.0,
+  "citation_cleanup_score": 100.0,
+  "footer_removal_score": 100.0,
+  "ocr_cleanup_score": 20.0,
+  "section_segmentation_score": 6.25,
+  "coastal_entity_score": 0.0,
+  "final_quality": 46.25,
+  "processing_time_seconds": 1.2473959922790527,
+  "section_counts": {
+    "analysis": 1
+  },
+  "entity_count": 0
+}

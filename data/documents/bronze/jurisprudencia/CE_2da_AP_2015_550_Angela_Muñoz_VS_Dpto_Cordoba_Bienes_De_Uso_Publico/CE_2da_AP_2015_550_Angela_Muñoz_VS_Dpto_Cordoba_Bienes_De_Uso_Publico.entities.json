@@ -1,0 +1,35 @@
+{
+  "playa": [
+    "playa",
+    "playas"
+  ],
+  "litoral": [
+    "litoral",
+    "línea de costa",
+    "zona costera"
+  ],
+  "erosion": [
+    "erosión"
+  ],
+  "espacio_publico": [
+    "espacio público"
+  ],
+  "bienes_uso_publico": [
+    "bienes de uso público"
+  ],
+  "manglar": [
+    "manglar"
+  ],
+  "puerto": [
+    "puerto"
+  ],
+  "arrecife": [
+    "corales"
+  ],
+  "contaminacion_marina": [
+    "contaminación marina"
+  ],
+  "pradera_marina": [
+    "pastos marinos"
+  ]
+}

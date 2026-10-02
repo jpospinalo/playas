@@ -1,0 +1,66 @@
+{
+  "playa": [
+    "playa",
+    "playas"
+  ],
+  "bahia": [
+    "bahía"
+  ],
+  "bajamar": [
+    "bajamar"
+  ],
+  "litoral": [
+    "línea de costa",
+    "zona costera"
+  ],
+  "erosion": [
+    "erosión"
+  ],
+  "ocupacion": [
+    "ocupación"
+  ],
+  "dimar": [
+    "dimar",
+    "dirección general marítima"
+  ],
+  "manglar": [
+    "manglares"
+  ],
+  "puerto": [
+    "muelle",
+    "puerto"
+  ],
+  "estuario": [
+    "desembocadura"
+  ],
+  "vertimiento": [
+    "aguas residuales",
+    "aguas servidas",
+    "vertimiento",
+    "vertimientos"
+  ],
+  "emisario": [
+    "emisario",
+    "emisario submarino",
+    "emisarios"
+  ],
+  "arrecife": [
+    "arrecifes",
+    "corales"
+  ],
+  "colector_pluvial": [
+    "colector",
+    "colectores"
+  ],
+  "contaminacion_marina": [
+    "contaminación marina"
+  ],
+  "capitania": [
+    "capitanía",
+    "capitanía de puerto"
+  ],
+  "corpamag": [
+    "corpamag",
+    "corporación autónoma regional del magdalena"
+  ]
+}

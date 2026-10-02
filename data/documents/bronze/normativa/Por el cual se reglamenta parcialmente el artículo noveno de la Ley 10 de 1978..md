@@ -1,0 +1,64 @@
+# DECRETO 1436 DE 1984
+
+> Por el cual se reglamenta parcialmente el artículo noveno de la Ley 10 de 1978
+
+(junio 13)
+
+El Presidente de la República de Colombia, en ejercicio de sus facultades constitucionales y en especial de las que le confiere el numeral 3º del artículo 120 de la Constitución Nacional, y
+
+## CONSIDERANDO:
+
+Que es necesario establecer las líneas de base a partir de las cuales se mida la anchura del mar territorial y la zona económica exclusiva de la Nación.
+
+Que la costa colombiana, tanto en el Océano Pacífico como en el Mar Caribe, posee profundas aberturas o escotaduras y franjas de islas que permiten el establecimiento de líneas de base recta, tal como lo dispone el artículo cuarto de la Ley 10 de 1978.
+
+Que el Gobierno ha decidido establecer algunas líneas de base recta, conforme al derecho internacional y a lo dispuesto por el artículo noveno de la Ley 10, de 1978,
+
+## DECRETA:
+
+**Artículo 1º.** La anchura del mar territorial será medida a partir de la línea de base normal, en la forma establecida por el artículo cuarto de la Ley 10 de 1978 y de las lineal de base recta que se establecen a continuación, cuyos puntos geográficos extremos han sido tomados de las cartas náuticas del "Defense Mapping Agency Hidrographic-Topographic Center", de los Estados Unidos de América, números 21033 escala 1: 1.000.000 y 24036 escala 1: 956.170, para las costas colombianas en el Océano Pacífico y el Mar Caribe, respectivamente:
+
+### COSTA PACÍFICA
+
+| Punto (desde) | Latitud Norte / Referencia | Longitud Oeste | Punto (hasta) | Latitud Norte / Referencia | Longitud Oeste |
+|---|---|---|---|---|---|
+| 1 | 07º12'39".3 (Límite Colombia-Panamá) | 77º53'20".9 | 2 | 06º47'07" (Rocas Octavia) | 77º41'30" |
+| 2 | 06º47'07" (Rocas Octavia) | 77º41'30" | 3 | 06º11'35" | 77º29'37" |
+| 3 | 06º11'35" | 77º29'37" | 4 | 05º29'15" (Cabo Corrientes) | 77º32'53" |
+| 4 | 05º29'15" (Cabo Corrientes) | 77º32'53" | 5 | 04º12'30" (Isla Cacahual-Ext. SW) | 77º31'45" |
+| 5 | 04º12'30" (Isla Cacahual-Ext. SW) | 77º31'45" | 6 | 03º00'23" (Punta Coll-Górgona) | 78º10'00" |
+| 7 | 02º56'23" (Isla Gorgonilla) | 78º13'17" | 8 | 02º35'33" | 78º26'04" |
+| 9 | 02º11'00" (Bahía San Ignacio-Delta R. Patía) | 78º41'07" | 10 | 01º37'18" (Cabo Manglares) | 79º02'36" |
+
+### COSTA ATLÁNTICA
+
+| Punto (desde) | Latitud Norte / Referencia | Longitud Oeste | Punto (hasta) | Latitud Norte / Referencia | Longitud Oeste |
+|---|---|---|---|---|---|
+| 1 | 11º51'07".41 (Castilletes) | 71º19'23" | 2 | 12º00'25" | 71º08'20" |
+| 3 | 12º26'10" | 71º43'45" | 4 | 12º14'50" (Pilón de Azúcar) | 72º08'00" |
+| 5 | 12º13'08" (Isla Farallón) | 72º10'50" | 6 | 11º20'18" (Cabo de la Aguja) | 74º12'47" |
+| 6 | 11º20'18" (Cabo de la Aguja) | 74º12'47" | 7 | 11º06'53" (Tajamar Bocas de Ceniza) | 74º50'38" |
+| 8 | 11º06'50" (Tajamar Bocas de Ceniza) | 74º51'05" | 9 | 10º48'12" (Punta de la Garita) | 75º15'42" |
+| 9 | 10º48'12" (Punta de La Garita) | 75º15'42" | 10 | 10º44'45" (Isla Arena) | 75º21'10" |
+| 10 | 10º44'45" (Isla Arena) | 75º21'10" | 11 | 10º34'35" (Punta Canoas-Norte) | 75º30'28" |
+| 12 | 10º33'30" (Punta Canoas-Sur) | 75º30'52" | 13 | 10º10'10" (Islas del Rosario-Roca Occidental) | 75º48'10" |
+| 13 | 10º10'10" (Islas del Rosario-Roca Occidental) | 75º48'10" | 14 | 09º23'42" (Isla Fuerte) | 76º11'23" |
+| 14 | 09º23'42" (Isla Fuerte) | 76º11'23" | 15 | 08º41'07".3 (Cabo Tiburón) | 77º21'50".9 |
+
+**Artículo 2º.** Las aguas encerradas por las líneas de base recta establecidas en el artículo anterior, se consideran aguas interiores y por lo tanto el Estado ejercerá en ellas los derechos de soberanía absoluta, de conformidad con normas aceptadas por el Derecho Internacional.
+
+**Artículo 3º.** El presente Decreto rige a partir de su expedición.
+
+Comuníquese, publíquese y cúmplase.
+
+Dado en Bogotá, D. E., a 13 de junio de 1984.
+
+**BELISARIO BETANCUR**
+
+El Ministro de Relaciones Exteriores,
+
+**Rodrigo Lloreda Caicedo,**
+
+El Ministro de Defensa Nacional,
+
+**General Gustavo Matamoros D'Costa.**

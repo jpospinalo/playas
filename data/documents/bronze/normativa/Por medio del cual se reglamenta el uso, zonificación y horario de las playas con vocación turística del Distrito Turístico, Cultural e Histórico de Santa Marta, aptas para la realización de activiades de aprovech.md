@@ -1,0 +1,289 @@
+## DESPACHO DEL ALCALDE
+
+## DECRETO N° 376
+
+(DICIEMBRE DE 2015)
+
+"Por medio del cual se reglamenta el uso, zonificación y horario de las playas con vocación turística del Distrito Turistico, Cultural e Histórico de Santa Marta, aptas para la realización de actividades de aprovechamiento del tiempo libre".
+
+## EL ALCALDE DEL DISTRITO TURÍSTICO, CULTURAL E HISTÓRICO DE SANTA MARTA
+
+En ejercicio de sus funciones constitucionales y legales en especial las establecidas en los artículos 1° °, 2º, 3º, 80º, y 82° de la Constitución Política de Colombia, el Decreto 1355 de 1970, el artículo 29 de la ley 1551 de 2012, los artículos 78°, 79°, 128°, y 129° de la Ley 1617 de 2013 por la cual se expide el Régimen para los Distritos Especiales, y el estatuto Distrital de Policía de Santa Marta.
+
+## CONSIDERANDO:
+
+Que las playas, aguas marítimas y bajamares son Bienes de Uso Público de la Nación por su naturaleza, que se rigen por normas legales y jurídicas encaminadas a asegurar una cumplida satisfacción en el uso público, en las actividades recreativas, deportivas, sociales y de explotación comercial.
+
+Que prevalece el interés general en el espacio público que está igualmente consagrado en la Constitución Nacional, pues los bienes de uso público figuran entre otros, en una categoría de tratamiento especial, ya que son inalienables, inembargables e imprescriptibles (art. 63, C.N.) y tienen destacada connotación de acuerdo con el artículo 82 ibídem que la Corte quiere resaltar, así: "Es deber del Estado velar por la protección de la integridad del espacio público y por su destinación al uso común, el cual prevalece sobre el interés particular" y que termina ordenando que "las entidades públicas regularán la utilización del suelo en defensa del interés común".
+
+Que el Artículo 80 de la Constitución Política de Colombia establece: el Estado debe planificar el manejo y el aprovechamiento de los recursos naturales para garantizar su desarrollo sostenible, su conservación, restauración o sustitución, y la obligación de imponer las sanciones legales correspondientes, junto con la exigencia de la reparación de los daños que se causen.
+
+Que el Decreto 1617 del febrero de 2013 por la cual se expide el Régimen para los Distritos Especiales establece:
+
+- Artículo 78. Atribuciones especiales. (...) a los distritos corresponderán las atribuciones de carácter especial y diferenciado en lo relacionado con el manejo, uso, preservación, recuperación, control y aprovechamiento de tales recursos y de los bienes de uso público o que forman parte del espacio público o estén afectados al uso público dentro del territorio de su respectiva jurisdicción, conforme a la Constitución y a la ley. (negrita y cursiva fuera del texto).
+
+- Artículo 79. De los bienes de uso público. El manejo y administración de los bienes de uso público que existan en jurisdicción del distrito, susceptibles de explotación turística, ecoturistica, industrial, histórica, recreativa y cultural, corresponde a las autoridades del orden distrital, el cual se ejercerá conforme a las disposiciones legales vigentes.
+- Artículo 128. Competencias en materia de playas. La atribución para otorgar permisos en relación con la ocupación de playas con fines turísticos, culturales, artísticos o recreativos, estará en cabeza del alcalde distrital. Estas atribuciones se ejercerán conforme a la normatividad ambiental y las demás normas vigentes que regulen la materia y teniendo previo concepto técnico favorable emanado por la Dimar, la Corporación Autónoma Regional y el Ministerio de Ambiente, Vivienda, Ciudad y Territorio.
+- Artículo 129. Atribuciones para su reglamentación, control y vigilancia. De acuerdo con las políticas y regulaciones de orden superior, las autoridades distritales tendrán atribuciones para reglamentar, dirigir y establecer los usos y actividades que podrán adelantarse en los caños, lagunas interiores, playas turísticas existentes dentro de la jurisdicción territorial.
+
+Que el Artículo 12 de la Ley 1558 de 2012 le da autoridad a los Comités locales para la Organización de las Playas, integrados por el funcionario designado por cada una de las siguientes entidades: el Ministerio de Comercio, Industria y Turismo, Dirección General Marítima - Dimar y la respectiva autoridad distrital o municipal, quienes tendrán como función la de establecer franjas en las zonas de playas destinadas al baño, al descanso, a la recreación, a las ventas de bienes de consumo por parte de los turistas y a la prestación de otros servicios relacionados con las actividades de aprovechamiento del tiempo libre que desarrollen los usuarios de las playas.
+
+Que el Decreto 1766 del de agosto de 2013 Por el cual se reglamenta el funcionamiento de los Comités Locales para la Organización de las Playas de que trata el artículo 12 de la Ley 1558 de 2012. Establece: ARTÍCULO 2°. IDENTIFICACIÓN DE LAS ZONAS DE PLAYAS. Para la organización de las playas, el Comité deberá identificar y delimitar previamente las siguientes zonas, de acuerdo con las características de cada playa:(...) (cursiva fuera de texto).
+
+Que es evidente el impacto ambiental que tiene la actividad nocturna de las playas turísticas de Santa Marta no sólo en las playas sino también en las poblaciones aledañas.
+
+Que es deber de esta administración preservar el patrimonio natural de las playas turísticas de la ciudad para futuras generaciones regulando la actividad turística y comercial en las playas para que estas se realicen de acuerdo a la normatividad vigente y propendiendo por el desarrollo sostenible turístico del Distrito Turístico, Cultural e Histórico de Santa Marta.
+
+En mérito de lo anterior este Despacho
+
+## DECRETA:
+
+CAPITULO I. Objeto, Finalidad, Principios, y ámbito de aplicación.
+
+ARTICULO 1. Objeto. Este Decreto tiene como objeto regular el uso turístico y comercial de las playas con vocación turística del Distrito de Santa Marta, implementando medidas
+
+vigente, la seguridad de la vida humana en el mar, la protección y preservación de los litorales, y la prevención de la contaminación del medio ambiente marino costero.
+
+ARTÍCULO 2. Finalidad. La finalidad de este decreto es organizar las actividades relacionadas con la recreación y aprovechamiento del tiempo libre y de esparcimiento, así como la protección de la integridad del espacio público y por su destinación al uso común, el cual prevalece sobre el interés particular en las playas turísticas del Distrito de Santa Marta, regulando la utilización del suelo en defensa del interés común, implementado medidas que garanticen especialmente la protección, preservación y la prevención de la contaminación de los litorales.
+
+## ARTÍCULO 3.
+Principios Rectores.
+
+- a) PRINCIPIO DE INTEGRACIÓN: Los gremios turísticos, marítimos y las personas naturales y jurídicas que tengan relación con actividades de explotación turistica, ecoturística, y recreativa propiciarán espacios de coordinación y apoyo entre sí y con las autoridades, así mismo, con los usuarios de las playas, las comunidades costeras relacionadas con dichas actividades, y con las comunidades de pesca artesanal, para generar estandarización de procedimientos y sinergia operativa con la activación de mecanismos y acciones conjuntas en materia de calidad en la prestación y venta de bienes y servicios en las playas turísticas.
+- b) PRINCIPIO DE ALINEACIÓN: Todos los actores vinculados o conexos a la realización de actividades de aprovechamiento del tiempo libre en las playas con vocación turística del Distrito de Santa Marta, propenderán por el logro de los objetivos propuestos en el Artículo 1 del presente Decreto; la integración y la sinergia operativa se convertirá entonces en una sinergia estratégica donde las autoridades competentes en cabeza de la Administración Distrital, el sector privado, la academia y las comunidades mismas, propenderán por potencializar el desarrollo sostenible de las playas turísticas, la conservación, preservación y protección del medio ambiente marino, y los estándares de seguridad integral marítima.
+- c) PRINCIPIO DE SINERGIA: Una vez lograda la integración y la alineación, la acción conjunta de cada uno de los actores desde sus propias responsabilidades y roles, generará un resultado superior al que cada uno por separado puede lograr, apuntando con ello a lograr una sincronización organizacional que fomenta el cumplimiento de altos estándares de calidad desde el autocontrol y autorregulación. Esto conllevará a que poder aspirar a la certificación de las playas turísticas del Distrito Turístico, Cultural e Histórico de Santa Marta.
+
+ARTÍCULO 4. Ámbito de aplicación. Este Decreto se aplicará a todas las playas con vocación turísticas del Distrito Turístico, Cultural e Histórico de Santa Marta. Con el fin de realizar proyectos pilotos, se priorizarán las siguientes playas: Rodadero, Playa Blanca, Bello Horizonte, Playa Salguero, Don Jaca, Aeropuerto, Bahía de Santa Marta y Los Cocos.
+
+## CAPITULO II.
+Requisitos de sostenibilidad.
+
+ARTÍCULO 5. Requisitos legales. El Comité Local para la Organización de las Playas del Distrito Turístico, Cultural e Histórico de Santa Marta diseñará, implementará y mantendrá un procedimiento documentado de cada playa turística para identificar, tener acceso y evaluar periódicamente el cumplimiento de la legislación que le sea aplicable, en los aspectos ambientales, socioculturales, económicos y de seguridad.
+
+ARTÍCULO 6. Sistema de Gestión para la Sostenibilidad. El Comité Local para la Organización de las Playas del Distrito Turístico, Cultural e Histórico de Santa Marta gestionará el diseño, e implementación de un sistema de gestión para la sostenibilidad de cada una de las playas turísticas, que cumpla los siguientes requisitos mínimos establecidos por la ley manteniendo evidencia para demostrar el cumplimiento de los mismos:
+
+- a) Política de sostenibilidad. Se contará con una política de sostenibilidad, la cual estará diseñada de manera participativa y sin restricciones de disponibilidad al público en general la cual será divulgada a las organizaciones públicas, privadas y la comunidad
+- b) Programas de gestión para la sostenibilidad. Se diseñarán, implementarán y mantendrán programas que definan como mínimo objetivos, actividades, metas, recursos, responsables, plazos e indicadores para su logro y seguimiento, teniendo en cuenta lo siguiente:
+1. Identificar cuáles de sus actividades y servicios pueden generar impactos ambientales, socioculturales o económicos significativos y realizar una evaluación que permita determinar las prioridades de actuación, en el diseño de los programas.
+2. Basado en esta información, diseñar, implementar y mantener objetivos y metas cuantificables, alcanzables y coherentes con la política de sostenibilidad.
+3. Prevenir impactos negativos y maximizar los positivos.
+4. Diseñar un sistema de monitoreo y seguimiento para los programas, objetivos y metas.
+- c) Información y sensibilización. Se diseñará, implementará y mantendrá un programa de información y sensibilización para visitantes y turistas, orientado a ejecutar, promover y difundir en ellos prácticas adecuadas que contribuyan con el logro de la política de sostenibilidad, los objetivos y las metas. Esta información debe estar disponible, al menos español e inglés y desplegada en señalización y a través de un medio electrónico ya sea página web o aplicativo móvil.
+- d) Documentación. La documentación incluirá la política, los objetivos, las metas y los programas de sostenibilidad, asi como los procedimientos y registros requeridos en esta norma. Esta información debe estar codificada e incluir como mínimo: fecha, tipo, programa y criterio de la norma al que corresponde, puede estar en cualquier formato o tipo de medio.
+- e) Mejora continua. El programa de sostenibilidad evaluará el sistema de gestión de sostenibilidad semestralmente, para planear, ejecutar, implementar y mantener y estrategias encaminadas a su mantenimiento y mejoramiento, identificando los factores que han impedido la consecución de sus objetivos, metas y acciones.
+- f) Capacitación y entrenamiento. Basados en un plan de capacitación, las personas, organizaciones y entidades involucradas en la formulación, funcionamiento y seguimiento del sistema de gestión para la sostenibilidad recibirán la capacitación y el entrenamiento necesarios para garantizar el buen desempeño de este sistema. Se deben mantener registros de las actividades de capacitación.
+
+ARTÍCULO 7. Identificación y delimitación de Playas de uso turístico. Las playas con vocación turística a las que hace referencia el presente Decreto son las identificadas y adoptadas por consenso en las reuniones celebradas por el Comité Local para la Organización de las Playas del Distrito Turístico, Cultural e Histórico de Santa Marta de acuerdo a lo consignado en las actas correspondientes.
+
+PARAGRÁFO: Así mismo, se entenderá como playas de uso turístico, aquellas que sean identificadas y adoptadas por consenso en las reuniones que celebre el Comité Local para la Organización de las Playas del Distrito Turístico, Cultural e Histórico de Santa Marta con posterioridad a la entrada en vigencia del presente Decreto, decisión que deberá quedar consignada y soportada en la respectiva acta, de acuerdo a lo establecido en el artículo 7º del Decreto 1766 del de agosto de 2013. Estas se adoptarán luego de estudios técnicos que den muestra de dicha vocación.
+
+PARAGRÁFO: Las playas del Distrito Turístico, Cultural e Histórico de Santa Marta que han sido adoptadas e identificadas inicialmente como prioritarias por dicho comité para la implementación a corto plazo del ordenamiento requerido para la realización de actividades de aprovechamiento del tiempo libre son: Rodadero, Playa Blanca, Bello Horizonte, Playa Salguero, Don Jaca, Aeropuerto, Bahía de Santa Marta y Los Cocos. Las otras playas de uso turístico serán incluidas para la implementación del ordenamiento de manera gradual.
+
+ARTÍCULO 8. Zonificación de playas. Para establecer y delimitar las franjas a las que hace referencia el artículo 2º del Decreto 1766 del de agosto de 2013 en las zonas de playa destinadas al baño, al descanso, a la recreación, a las ventas de bienes de consumo por parte de los turistas, y a la prestación de otros servicios relacionados con las actividades de aprovechamiento del tiempo libre que desarrollen los usuarios en cada una de las playas con vocación turística del Distrito Turístico, Cultural e Histórico de Santa Marta, se dara cumplimiento a las medidas particulares que sean adoptadas por consenso por el Comité Local para la Organización de las Playas del Distrito Turístico, Cultural e Histórico de Santa Marta consignadas en las actas correspondientes, y además se observaran las siguientes medidas para su ordenamiento:
+
+- a) Dimensiones. El tamaño de las zonas dependerá en cada caso a las dimensiones de la playa por lo cual el Comité Local para la Organización de las Playas del Distrito Turístico, Cultural e Histórico de Santa Marta se encargara de delimitar el área geográfica de cada playa, así como el ancho y dimensiones de cada franja de playa, utilizando la cartografía básica oficial y la cartografía náutica oficial a una escala que permita un detalle apropiado para efectos de la aplicación del artículo 2º del Decreto 1766 del de agosto de 2013.
+- b) Norma técnica. Las zonas de playa se ajustarán a los requisitos contenidos en las normas técnicas expedidas por el Instituto Colombiano de Normas Técnicas y Certificación (ICONTEC), organismo nacional de normalización según Decreto 2269 de 1993 del Ministerio de Desarrollo Económico (hoy Ministerio de Comercio, Industria y
+- c) Ajustes para cumplimiento normativo. El Comité Local para la Organización de las Playas del Distrito Turístico, Cultural e Histórico de Santa Marta se encargara de realizar los ajustes pertinentes a las zonificaciones de las playas turísticas para dar cumplimiento a la norma técnica, tendientes a la certificación de calidad, o a renovación en caso de que ya se cuente con dicho reconocimiento.
+- d) Zonas de deportes náuticos. Para las playas turísticas del Distrito Turístico, Cultural e Histórico de Santa Marta en las que se considere conveniente se podrá subdividir la zona de deportes náuticos en dos zonas tomando como consideración el tipo de equipos utilizados náuticos (con motor y sin motor), de la siguiente manera:
+1. Zona de operación deportes náuticos sin motor. Franja inmediata y paralela a la zona de bañistas, destinada para la utilización de los deportes nauticos sin motor, como es el caso de las bicicletas marinas, y kayak, para la cual se deberá definir su ancho y la distancia a la línea de más baja marea.
+
+Esta zona puede ser utilizada para realizar actividades subacuáticas de tipo snorkel, sin embargo por ser una actividad riesgosa no se permite la realización de esta actividad por menores de edad sin la presencia de un adulto que responda por el; siempre que se realice esta actividad es menester señalizar el sitio con la colocación de una boya con las características y especificaciones correspondientes que indique que se encuentra la persona en el área, a fin que se tomen las medidas de precaución para evitar un accidente.
+
+2. Zona de operación deportes náuticos con motor. Franja inmediata y paralela a la zona para deportes náuticos sin motor, para la cual se deberá definir su ancho y la distancia de la línea de más baja marea donde se permita una mayor navegabilidad con todas garantías de una profundidad mayor. Esta zona se destina
+
+para la operación de deportes náuticos con motor, como es el caso de las motos marinas, lanchas gusaneras, ski náutico, Flyboard, etc.
+
+En esta zona se prohibe la práctica de actividades subacuáticas, en cualquiera de sus modalidades incluyendo el buceo a pulmón, careteo y buceo autónomo.
+
+Se puede prescindir de esta zona en los sectores que se restrinja el uso para deportes náuticos sin motor, o en su defecto sean declaradas como zonas parciales de no estelas.
+
+- e) Áreas de acceso para naves. Las áreas de acceso para naves en cada una de las playas turísticas serán las habilitadas y autorizadas por la Capitanía de Puerto de Santa Marta previo a la entrada en vigencia del presente Decreto.
+
+Se podrán suprimir los canales públicos de ingreso y salida de embarcaciones en las playas turísticas que cuenten con embarcaderos turísticos habilitados por la Autoridad Marítima Nacional.
+
+ARTÍCULO 9. Horarios, Usos, y actividades. El Comité Local para la Organización de las Playas del Distrito Turístico, Cultural e Histórico de Santa Marta definira en cada playa turística según su zonificación unos usos y actividades para cada zona, de acuerdo con la normatividad vigente, y deberá obedecer a criterios que contribuyan a minimizar impactos ambientales, socioculturales o económicos negativos, derivados de las actividades turisticas, entre los cuales observaran los siguientes:
+
+- a) Horarios. A partir de la entrada en vigencia del presente Decreto se establecerá el siguiente horario para el uso de las zonas de playa destinadas al baño, al descanso, a la recreación, a las ventas de bienes de consumo y a la prestación de otros servicios relacionados con las actividades de aprovechamiento del tiempo libre que desarrollen los usuarios en todas las playas del Distrito Turistico, Cultural e Histórico de Santa
+
+1. De:00 a.m. a 06:00 p.m. Se habilitarán para su uso las siguientes zonas:
+- Zona de bañistas
+- Zona de reposo
+- Zona activa. De:30 a.m. a 05:30 p.m. Se habilitarán para su uso las siguientes zonas:
+- Zonas de deportes náuticos con motor y sin motor.
+3. De:00 a.m. a 8:00 p.m. Se habilitarán para su uso las siguientes zonas:
+- Zona de transición
+- Zona de Servicios. Las zonas del sistema de enlace y articulación del espacio público, como es el caso de los camellones, se encontraran habilitadas las horas para garantizar el libre tránsito de las personas, a excepción de los casos en que las autoridades determinen lo contrario, cuando exista afectación del orden público, o cuando el plan de seguridad para turistas y el plan de emergencias y contingencias de la playa turística se encuentre en ejecución, para salvaguardar la integridad de las personas.
+5. El horario de la zona de tránsito de embarcaciones será regulado por la Autoridad Marítima y el Cuerpo de Guardacostas de la Armada Nacional en concordancia a la normatividad vigente.
+- b) Usos reglamentarios y prohibiciones. Los siguientes criterios de uso de las playas turísticas del Distrito Turístico, Cultural e Histórico de Santa Marta serán de obligatorio y estricto cumplimiento con el fin de garantizar la protección de la integridad del espacio público, por su destinación al uso común, el cual prevalece sobre el interés particular:
+1. Usos Zona Activa. la franja de arena próxima a la orilla de la playa, en suelo no consolidado, permanecer libre de amoblamiento e infraestructura en la totalidad de su longitud, es de carácter exclusiva para el uso de los bañistas, por lo tanto se encuentra prohibido la colocación de cualquier tipo de elemento, independiente de sus características o cual fuere la finalidad de su colocación. También queda prohibido el consumo de alimentos y bebidas en esta zona. De igual forma, se encuentra prohibido la venta de productos o servicios en esta zona de la playa. Los vendedores ambulantes que se encuentren en esta zona, serán removidos y su mercancía decomisada.
+2. Usos zonas de bañistas. Dedicada exclusivamente para nado y permanencia de los bañistas dentro del mar. El destino debe delimitar y sustentar las extensiones asignadas a esta zona de manera que se garantice la seguridad de los bañistas, teniendo en cuenta las condiciones propias de cada playa tales como profundidad longitud, ecosistemas, corrientes, obras de ingeniería oceánica y artefactos hundidos, entre otros. Debe estar delimitada por boyas. (Norma técnica Sectorial Colombiana NTS-TS-001-2)
+
+Está prohibido el tránsito y permanencia en las zonas de bañistas, de cualquier tipo de embarcaciones como bicicletas marinas, Motos marinas, lanchas, gusanos, kayaks, deslizadores, y/o artefactos como trampolines, estructuras inflables con fines de explotación comercial. Ninguna embarcación y/o artefacto de cualquier clase o tonelaje, podrá ser botado o sacado del agua en la zona de bañistas; igualmente está prohibido las reparaciones de embarcaciones en la misma.
+
+3. Usos zonas de Reposo. Franja inmediata y paralela a la zona activa, que para cada sector de playa se deberá verificar el ancho recomendado Dedicada al reposo de los bañistas exclusivamente. Dentro de ella se permite mobiliario apto para la comodidad, la seguridad y el descanso de los bañistas (Norma técnica Sectorial Colombiana NTS-TS-
+
+En esta zona se permite la colocación de sillas (plásticas tipo playeras), esteras, toldos, carpas, parasoles asoleadoras, pufs y otros elementos portátiles de fácil remoción para hacer cómoda la permanencia de los bañistas y turistas en el área de playa.
+
+La playa debe estar amoblada con elementos de bajo impacto visual y ambiental e infraestructura sanitaria, de acuerdo con sus usos y capacidad de carga (Norma técnica Sectorial Colombiana NTS-TS-001-2).
+
+Todo mobiliario o infraestructura colocada en la zona de reposo sin importar su finalidad, bien sea con fines recreativos, deportivos, de beneficencia, con o sin ánimo de lucro, comerciales, culturales o artísticos, deberá contar el permiso de la Autoridad Competente. De no contar con la debida documentación, será removido de la playa turística.
+
+4. Medida preventiva zonas de Reposo. A partir de la entrada en vigencia del presente Decreto, no serán otorgados permisos temporales para la colocación de elementos de fácil remoción en las zonas de reposo de las playas turísticas del Distrito, hasta tanto no se hayan implementado los estudios de capacidad de carga que determinen cuál es el grado de aprovechamiento turístico (número de personas y elementos) que pueden soportar estas zonas, asegurando una máxima satisfacción a visitantes y turistas, así como una mínima repercusión sobre los recursos naturales y culturales, en vista que dicha zona fue identificada como la de mayor saturación por el comité local para la organización de playas del Distrito Turístico, Histórico y Cultural de Santa Marta.
+
+El mobiliario utilizado con fines de explotación comercial por las asociaciones y cooperativas legalmente constituidas que se encuentre colocado en las zonas de las playas turísticas a la entrada en vigencia del presente Decreto, serán sujetos de revisión y remoción. Sólo se aceptara el mobiliario que cuente con los permisos necesarios y cumpla con:
+
+- Que el sustento del beneficiario del permiso dependa directamente de dicha actividad comercial y no cuente con ingresos adicionales superiores a un SMMLV.
+- Que solo sea titular de módulo de carpas o elementos por grupo familiar en la jurisdicción del Distrito de Santa Marta.
+- Que se encuentre relacionado dentro de la base de datos histórica la cual será aportada por la Capitanía de Puerto de Santa Marta y verificada por la Secretaria de Gobierno Distrital.
+- Que atienda de manera personal e intransferible el puesto de carpas o módulo de elementos, a excepción de los casos en que por quebrantos de salud o enfermedad comprobada no pueda ejercer directamente la actividad.
+- Que no tenga antecedentes penales.
+
+La Secretaria de Gobierno Distrital, creará los canales necesarios con los organismos y entidades que estime pertinentes para establecer los mecanismos de verificación de los requisitos mencionados, y constituirá una mesa de trabajo a la cual deberán asistir los representantes de las asociaciones y cooperativas legalmente constituidas los cuales recolectarán por cada uno de los titulares de sus cooperativas y asociaciones la siguiente documentación:
+
+- Copia del documento de identidad.
+- Certificado de ingresos y retenciones.
+- Declaración juramentada donde manifieste que su subsistencia depende únicamente de la actividad comercial sobre el Bien de Uso Público.
+- Certificado de consulta de puntaje del sisben.
+- Excusa médica en caso de que se encuentre impedido físicamente para ejercer la actividad personalmente. En tal caso deberá presentar soporte médico.
+
+En dicha mesa se revisarán la lista de precios que se cobrará por la prestación del servicio, tanto en temporada baja como en temporada alta y puentes festivos.
+
+La Secretaría de Gobierno Distrital tendrá hará la revisión de los requisitos y la presentación oficial del censo resultante con los candidatos que apliquen para este beneficio los cuales se aceptarán los compromisos que se concierten y que resulten de las mesas de trabajo con los representantes del gremio.
+
+5. Uso zona de deportes náuticos con motor. Las empresas de transporte turístico que utilizan las motos marinas para su explotación comercial en la modalidad de alquiler por horas o fracción, habilitadas para prestar sus servicios en las playas turísticas del Distrito, implementarán en un plazo no mayor a 06 (seis) meses contados a partir de la entrada en vigencia del Presente Decreto las siguientes medidas de obligatorio cumplimiento:
+- Realizarán su actividad en circuitos de utilización dentro de las zonas de deportes náuticos con motor delimitados por al menos cuatro balizas o boyarines.
+3. Las características técnicas de las balizas o boyarines, así como su posición y distancia a tierra deberán ser establecidas por el Comité Local para la Organización De Playas del Distrito Turístico, Histórico y Cultural de Santa. requiere para su operación la implementación de una base flotante, embarcación, o plataforma, en la zona del circuito de alquiler que permita a los usuarios estar en espera de su turno de la utilización de la moto náutica, así como poder recibir instrucciones de su manejo.
+- La base flotante, embarcación, o plataforma, podrá estar situada en la parte exterior de dicho circuito de forma que desde la misma se pueda supervisar y controlar la adecuada utilización del circuito por parte de los operarios.
+6. Saturación. Para la habilitación de nuevas empresas de trasporte turístico que utilizan embarcaciones menores y artefactos recreativos con y sin motor, en especial las motos marinas para su explotación comercial en la modalidad de alquiler por horas o fracción, la Capitanía de Puerto de Santa Marta deberá tener en cuenta que dichas embarcaciones no deberán saturar las zonas marítimas habilitadas para su operación.
+
+Las empresas de trasporte turístico que utilizan embarcaciones menores y artefactos recreativos con y sin motor, acataran en todo momento las medidas y controles que establezca la Autoridad Marítima Nacional y el Cuerpo de Guardacostas de la Armada Nacional con respecto al número de embarcaciones que puedan operar en un determinado momento y lugar, para controlar la saturación de las zonas maritimas habilitadas para su operación, garantizando la vida humana en el mar y la seguridad marítima integral.
+
+7. Usos compartidos. En las playas turísticas donde existe la presencia de comunidades pesqueras las cuales realizan sus faenas con fines de subsistencia, y para la comercialización artesanal del producto, las cuales vienen siendo utilizadas por estas comunidades de pesca de manera "ancestral", resulta necesario contribuir con los procesos de ordenamiento pesquero que la Autoridad Nacional de Acuicultura y Pesca desarrolla para el beneficio de las comunidades de pesca y del recurso pesquero estableciendo mecanismos que permitan la realización de las faenas de pesca en los sectores de playa que desde hace muchos años es reconocido ampliamente por la comunidad en general como "playas de pescadores".
+
+Por lo anterior se imparten las siguientes instrucciones para garantizar su uso compartido:
+
+- El Comité Local para la Organización de las Playas del Distrito Turístico, Cultural e Histórico de Santa Marta solicitara a la Autoridad Nacional de Acuicultura y Pesca la información necesaria que permita identificar previamente a las zonificaciones de cada playa turística cuales son las playas del Distrito de Santa Marta donde exista presencia de comunidades pesqueras.
+- Así mismo, se verificará el uso compartido de las zonas de aguas marítimas para el disfrute de los bañistas y las actividades susceptibles de ser realizadas de acuerdo a las aptitudes de cada playa, y los horarios que se puedan implementar en cada una de ellas.
+- En las zonificaciones que realice el Comité Local para la Organización de las Playas del Distrito Turístico, Cultural e Histórico de Santa Marta de las playas donde exista presencia de comunidades pesqueras, se deberá demarcar las zonas de playa marítima habilitadas para la colocación de las artes de pesca o en lo posible cuando exista el espacio suficiente, las áreas susceptibles para la habilitación de los denominados "Estar de los Pescadores".
+
+## ARTÍCULO 10.
+Organización de carpas, sillas y vendedores.
+
+- a. Número de sillas: Determinese el número de sillas permitidas por las personas que prestan el servicio de alquiler de estos elementos en la playa del Balneario El Rodadero en cuarenta (40) sillas como máximo per cápita autorizada para dichos fines. No se admitirá el arrume o acumulación de sillas sobre la playa o el camellón del Rodadero. Los propietarios de estas sillas deberán buscar un lugar adecuado donde sean almacenadas cuando no se encuentren en uso. Además no se permitirá que personas que no tengan carné sean utilizadas para la prestación de servicios de sillas.
+- C. Tipo de carpas: Las carpas seguirán las especificaciones determinadas por la Alcaldía Distrital. Éstas serán de lona, con unas dimensiones de dos metros de largo por dos de ancho y una altura uniforme por módulos de elementos. No se podrán instalar carpas que no sean previamente aprobadas por la Alcaldía Distrital. Las carpas deberán ser cambiadas cada meses o cuando se encuentren en estado de deterioro. Cualquier mobiliario que se encuentre en estado de deterioro, o no cumpla con estas especificaciones será decomisado y desechado.
+- b. ·Tipo de sillas: Con ocasión de los continuos siniestros y/o accidentes a turistas que se presentan por la utilización de las sillas de madera, La Alcaldía Distrital de Santa Marta únicamente permitirá el alquiler de sillas en material plástico de color blanco. Se deben tener disponibles sillas para el uso de adultos mayores y personas con situación de discapacidad
+- d. Póliza de seguros: Toda Persona autorizada para prestar el servicios de alquiler de sillas y/o carpas, deberá, ya sea de manera autónoma o asociativa, estar cobijada por una póliza de seguros, exigibles al momento de ocurrir un siniestro y/o accidente, que amerite un proceso de responsabilidad civil.
+- f. Identificación: Todos los operarios que trabajen en las playas turísticas deberán estar identificados por un uniforme distintivo, y portar en lugar visible el permiso o carné
+- e. Programación de uso: Los días de uso del área asignada sean de un (1) día por medio para propiciar iguales oportunidades para los oferentes de sillas autorizados. La programación organizaciones turnos existirá un operario por parte de los oferentes de sillas para cumplir con la función de recoger y controlar los residuos del consumo de bebidas y comestibles por las personas establecidas en el área.
+- g. Actividades lucrativas: Queda terminantemente prohibido establecerse en las áreas de playa o los camellones para realizar tatuajes permanentes o temporales, pinturas, esculturas, masajes, peinados o cualquier tipo de presentación musical o actividad que genere lucro sin la debida autorización expedida por parte de la Secretaría de Gobierno Distrital.
+- h. Remoción de Personas no autorizadas: Que el artículo 4. Del Decreto 182 consagra: Podrá ordenarse la remoción de una persona autorizada , cuando se considere o compruebe que se afecta gravemente el tránsito peatonal o vehicular, por razones de estética urbana, convivencia ciudadana o cualquiera de las causales contempladas en el Estatuto Distrital de Policía o en el presente Decreto.
+- j. Uso derivados de petróleo: Queda prohibido el uso de cilindros o pipetas de gas, cocinol, leña, carbón o cualquier combustible derivado del petróleo, para ser utilizado como medio de combustión en el camellón y la zona de playa.
+1. Suspensión de permisos: De conformidad con el estatuto Distrital de Policía o en su Artículo 225: "Ningún puesto de venta ambulante o estacionaria podrá colocar mesas, sillas, asadores, enfriadores, botelleros, catres, carretas, cajones y similares, lo mismo que objetos colgantes que causen estorbo o den mala presentación, so pena de ordenar el retiro de los elementos y suspensión provisional del permiso o licencia, y su reincidencia con la revocatoria del permiso".
+- K. Causales de suspensión y revocatoria: Los trabajadores que se encuentren en estado de embriaguez o bajo el efecto de sustancias alucinógenas serán retirados y suspendidos. De igual forma serán suspendidas las personas que promuevan o sean parte de riñas y discusiones en el lugar de trabajo o incumplan alguna de las normas estipuladas en este decreto.
+- I. Revocatoria de permisos: Se revocarán de manera definitiva los permisos a las personas que incumplan las normas establecidas, luego de un previo aviso y una previa suspensión del prestador.
+
+## ARTÍCULO 11.
+Requisitos ambientales.
+
+- a) Se contemplará para cada playa turística un plan de manejo y monitoreo, para evaluar la calidad de agua de mar. Dicho plan debe responder a lo establecido en la norma VTC-ISO 5667-9. Con base en este seguimiento, en la playa turística se deben diseñar a implementar acciones de prevención y mitigación.
+- b) Toda fuente de vertimientos generados por la infraestructura, medios de transporte y, en general, todas las actividades que puedan afectar la zona costera, deben cumplir la reglamentación vigente sobre este tema.
+- c) Se implementarán acciones para el mantenimiento de la calidad de material constitutivo de la playa, que incluya mediciones puntuales antes y después de las temporadas, para cuantificar los posibles contaminantes.
+- d) Se realizará la limpieza de la misma diariamente, para que permanezca libre de residuos o de cualquier material que pueda afectar la seguridad de los usuarios o la estética propia del lugar.
+- e) El sistema de limpieza de la arena considerará el mantenimiento adecuado (aireación, remoción, etc.) de la arena de la playa, hasta el borde del cuerpo de agua de mar.
+- f) Se diseñarán acciones para el manejo integral de residuos sólidos para la zona costera, el cual debe incluir minimización, separación en la fuente, almacenamiento, transporte, aprovechamiento, tratamiento y disposición final.
+- g) Las playas contarán con recipientes de almacenamiento temporal de residuos sólidos, en proporción a la cantidad de usuarios de la misma; se deben tomar las medidas de seguridad necesarias, para evitar la proximidad de las canecas de almacenamient temporal con el mar. Las canecas de almacenamiento temporal de residuos sólidos deben contar con tapa y no deben tener contacto con el suelo.
+- h) Los establecimientos que prestan servicios en la playa deberán tener a disposición del público recipientes de almacenamiento temporal de residuos sólidos, que faciliten su separación claramente identificados en lugar visible.
+- i) Se contará con una frecuencia del servicio de recolección de residuos en la zona emergida según su ocupación y adelantar jornadas de limpieza submarina en la zona de bañistas de manera que garantice su limpieza permanente. Se recomienda consultar la GTC sobre separación en la fuente y recolección selectiva y la GTC 86 Gestión
+- ambiental. Guía para la implementación de la gestión integral de los residuos sólidos -
+- j) Se diseñarán e implementarán acciones para la prevención y mitigación de impactos ambientales sobre los ecosistemas marino-costeros.
+- k) Se contará, con un punto de provisión de agua para baño en condiciones de uso permanente.
+- 1) Se contará con provisión de agua potable para el consumo humano.
+- m) Se diseñarán e implementar campañas orientadas al uso eficiente del agua.
+- n) Se diseñarán e implementarán acciones orientadas al uso eficiente de energía en el destino, si la playa cuenta con puntos de energía.
+- o) Ante la presencia de fuentes puntuales de contaminación que puedan generar impactos en las áreas adyacentes a la playa, identificarán la ubicación y el tipo de contaminante y promoverán ante los responsables las acciones para su control.
+- p) Se diseñarán e implementarán acciones para la prevención y el control de los impactos atmosféricos, visuales y auditivos dentro de la playa turística.
+- 9) Se promoverán acciones encaminadas a evitar el uso de equipos de enfriamiento con sustancia agotadores de la capa de ozono (SAO), y su adecuado manejo y disposición.
+- r) El abastecimiento de combustible, mantenimiento y limpieza para los equipos motorizados acuáticos se debe realizar en las zonas autorizadas por la Direcciór General Marítima (DIMAR), cumpliendo las medidas de seguridad establecidas para el manejo de estas sustancias.
+- s) Se debe evitar al máximo la instalación de redes de transmisión de alta, media y baja tensión y no se debe permitir la ubicación de subestaciones de energía o transformadores.
+
+## ARTÍCULO 12.
+Requisitos Socioculturales.
+
+- a) Organización de vendedores informales. Se implementarán programas para la organización y formalización de los vendedores informales, de acuerdo a la zonificación establecida por el artículo 2° del Decreto 1766 del de agosto de 2013.
+- b) Prevención de riesgos sociales. Se debe liderar y promover con las organizaciones у su cordura o megativos omo: menidada are depende era la exo de impactos comercial de niños niñas y adolescentes (ESCNNA).
+- c) Manejo y uso responsable del patrimonio cultural local. Se deben adelantar acciones para el manejo responsable de las prácticas culturales y del patrimonio cultural local y liderar y promover con las organizaciones y entidades competentes, campañas enfocadas a la prevención del tráfico ilícito de bienes culturales, teniendo en cuenta la legislación vigente aplicable.
+- d) Comunidades étnicas. Se debe diseñar medidas para el respeto y cumplimiento de la legislación de comunidades étnicas existentes cuando sea aplicable, de acuerdo con la normativa vigente.
+- e) Número de turistas. En cada playa turística se debe determinar la capacidad de carga turística y adelantar acciones para su cumplimiento.
+
+## ARTÍCULO 13.
+Requisitos económicos.
+
+- a) Gestión de recursos para amoblamiento. La Gerencia de Proyectos Turísticos del Distrito en coordinación Comité Local de Playas, podrá gestionar con el sector privado la dotación de elementos para el amoblamiento, equipamento e infraestructura de acuerdo con sus usos y capacidad de carga de las playas turísticas incluyendo los necesarios para la señalización de la zona de bañistas, la infraestructura adecuada junto con el personal capacitado en salvamento acuático y primeros auxilios destinado a la observación y seguridad de los usuarios.
+- b) Permisos temporales para eventos: La Secretaría de Gobierno expedirá las licencias de ocupación temporal para la realización de eventos en la playa de acuerdo a lo estipulado por el artículo 128 del decreto 1617 de 2013. Las personas que quieran realizar eventos en las playas, deberán contribuir a la dotación de la playa con recursos que se necesiten para su amoblamiento, los cuales serán reglamentados por la Secretaría de Gobierno.
+- c) Imagen y promoción. Cada playa turística deberá contar con una imagen de marca o emplear la del Distrito Turístico, Histórico y Cultural de Santa Marta, llevará a cabo acciones de promoción turística acordes con la imagen de marca, y se identificaran los productos turísticos acordes con la imagen y la vocación de cada playa, además se deberán observar las siguientes consideraciones:
+1. El mobiliario de playa o cualquier otro elemento utilizado con fines de explotación comercial por las asociaciones y cooperativas que se encuentren colocados en las zonas de reposo y de transición de las playas turísticas, deberán ser del color que el Comité Local de Playas determine, y llevará la imagen o marca oficial de la playa turística estampada en las características y dimensiones que sean estipuladas por dicho comité.
+2. Los elementos de fácil remoción utilizados para la protección de la exposición directa a la radiación solar por los diferentes usuarios de playa como lo son los edificios, condominios, clubes, hoteles, etc., los cuales se encuentren colocados en la zona de reposo y de transición de las playas turísticas, podrán ser de un color diferente al de las carpas, paraguas, parasoles, sombrillas, etc., utilizadas con fines de explotación comercial por las asociaciones y cooperativas, y deberán llevar el logo de dicho hotel o edificio y la imagen o marca oficial de la playa turística, previa aprobación del Comité Local de Playas del Distrito, y la cancelación de impuestos por publicidad a los que corresponda de acuerdo a la normatividad vigente.
+6. publicidad a los que corresponda a cargo del patrocinador, de acuerdo a la normatividad vigente.
+- c) Manipulación y manejo higiénico de alimentos. En cada playa turística se realizarán vigilancia y control en la aplicación de medidas preventivas necesarias para garantizar la inocuidad y la calidad de los alimentos que se ofrecen en el área objeto de certificación.
+
+- d) Satisfacción del turista. Se realizarán encuestas bimensuales para medir la satisfacción de los turistas. El análisis de los resultados debe ser base para futuras formulaciones de acciones y políticas en el ámbito local.
+- e) Capacitación. En la playa turística se adelantarán la capacitación necesaria dirigida a los actores y prestadores de servicios turísticos, en cuanto a la calidad y la sostenibilidad de las playas.
+
+## ARTÍCULO 14.
+Seguridad turística.
+
+- a) Información disponible al público. Toda la información disponible al público en la playa turística, será al menos en español e inglés.
+1. Se informarán al público sobre las condiciones meteomarinas. Esto incluye, según sea aplicable a cada playa turística, información sobre corrientes, oleaje, calidad del agua de mar, calidad del material constitutivo, de fauna, entre otros aspectos relevantes.
+2. Así mismo, se informará sobre el horario de apertura y cierre de la playa y debe dar a conocer un mapa de la playa turística, con la zonificación y usos permitidos.
+- b) Accesibilidad e infraestructura. La playa turística contará con accesos y servicios adecuados para personas en condición de discapacidad mínimo en los siguientes aspectos: rampas de acceso, baño adecuado, y señalética Braille o contar con protocolos de servicios que garanticen el cumplimiento del requisito.
+- c) Amoblamiento. La playa estará amoblada con elementos de bajo impacto visual y ambiental e infraestructura sanitaria de acuerdo con sus usos y capacidad de carga y debe aplicar el Manual de Señalización Turística del Ministerio de Comercio, Industria y Turismo y la señalización internacional que sea aplicable.
+- d) Plan de seguridad turística. Se diseñará e implementará un plan de seguridad turística, que considere como mínimo los siguientes aspectos:
+1. Señalización de la playa. Cada playa turística contará con señalización, de manera tal que se informe al usuario sobre:
+8. las instalaciones ubicadas en la playa turística;
+9. las restricciones existentes;
+10. los servicios prestados;
+11. las actividades permitidas y prohibidas para los usuarios, en las playas;
+12. ubicación de la estación de servicios de emergencia más cercana, y
+13. áreas de riesgo, rutas de evacuación y puntos de encuentro;
+14. prevención de actos delictivos.
+2. Servicios de salvamento. Se contará con:
+16. la presencia de personal capacitado, en salvamento acuático y primeros auxilios;
+17. -los elementos y procedimientos necesarios para la coordinación con las entidades de socorro de la zona.
+18. : los recursos indispensables para llevar a cabo los procedimientos especializados para la atención de este tipo de emergencias, y
+3. Plan de emergencias y contingencias Se implementarán y mantendrán los procedimientos generales y específicos basados en el análisis de amenazas vulnerabilidad, y riesgos del destino turístico, a fin de implementar acciones que permiten gestionar adecuadamente los riesgos. Este plan debe considerar los siguientes aspectos:
+
+- programas de prevención, mitigación y gestión de accidentes y emergencias;
+- responsables para la coordinación de los procedimientos o manejo de accidentes o emergencias, o ambos;
+- procedimientos de actuación para cada una de las amenazas identificadas (planes de contingencia);
+- seguridad náutica;
+- entrenamiento para los encargados de la prevención y manejo de emergencias del destino turístico;
+- -recursos necesarios para desarrollar procedimientos de actuación;
+- divulgación del plan de emergencias y contingencias, con los actores locales y el público, en general, y
+- simulaciones y simulacros frente a los incidentes más comunes o que puedan generar mayores consecuencias.
+4. Prevención y atención de desastres. Se debe articular el plan de seguridad para turistas y el plan de emergencias y contingencias de la playa turística, con los planes de prevención y atención de desastres del Distrito y diseñar los procedimientos de actuación cumpliendo con las políticas de gestión de riesgos a nivel nacional.
+- CAPITULO III. Disposiciones generales y medidas de protección ecosistemas marino-costeros
+
+ARTÍCULO 15. Áreas Protegidas. La habilitación de actividades ecoturísticas y deportes náuticos en las playas del Distrito Turístico, Histórico y Cultural de Santa Marta ubicadas dentro de las áreas protegidas de Parques Nacionales Naturales de Colombia, estarán sujetas a las disposiciones de los Planes de manejo de dichas áreas. Es potestad de esa entidad, considerar la Favorabilidad de la realización de estas actividades de acuerdo a los parámetros establecidos especialmente los de preservación ambiental y desarrollo sostenible para la definición y utilización de las zonas destinadas para el desarrollo del ecoturismo.
+
+ARTÍCULO 16. Especies protegidas. Se prohíbe la elaboración comercialización, y/o consumo de especies o productos derivados de flora y fauna vedados por la ley, así como ejecutar o apoyar actividades encaminadas a la colección y tráfico de especies animales o vegetales que no cuenten con los permisos y licencias respectivas otorgadas por las autoridades ambientales competentes.
+
+ARTÍCULO 17. Captación ilegal de recursos naturales. Se prohíbe la extracción de arena y/o de material constitutivo de las playas, fuera del ecosistema marino costero, sin importar su destinación, y/o uso. Para la captación de agua de mar se deberá contar con el permiso y/o licencia de la Autoridad ambiental competente.
+
+ARTÍCULO 18. Parqueo de vehículos. Se prohíbe la circulación o estacionamiento de cualquier tipo de vehiculo sobre la playa, a excepción de aquellos que prestan servicio úblicos de limpieza, vehículos de seguridad, vehículos para personas en condiciones de discapacidad y aquellos de remolque de embarcaciones en las zonas designadas para este USo.
+
+ARTÍCULO 19. Siembra de especies vegetales Se prohibe la siembra de especies vegetales ajenas a las que típicamente predominan en estas unidades geomorfológicas sociadas a olava, que puedan incidir negativamente con la morfodinámica y ecosistem le playa, y que no cuenten con un plan de arborización aprobado por la Autoridad Ambienta competente, que tenga en cuenta entre otras, las variables que intervienen y que garantizan el sostén de especies vegetales para mitigación de impactos asociados a fenómenos de erosión costera y mejoramiento del microclima y su aspecto estético.
+
+ARTÍCULO 20. Cuando se presenten eventos que impacten al medio ambiente marino como derrames o vertimientos de hidrocarburos y sus derivados, sustancias químicas у potencialmente peligrosas, carga rotulada como contaminantes del mar, escapes de gases naturales (carácter geológico) o antrópicos, se restringirá la navegación en las áreas afectadas, y el tránsito de embarcaciones a la distancia que las autoridades competentes
+
+determinen, exceptuando las embarcaciones de Guardacostas, salvamento, asistencia médica y control a emergencias; igualmente se restringirá el acceso a las playas que sean denominadas de sacrificio o utilizadas para dirigir y recoger el derrame generado de cualquier sustancia o producto potencialmente contaminante.
+
+ARTÍCULO 21. Los usuarios de las playas serán responsables por cualquier elemento que ingresen a la playa para su uso recreativo personal, dejando en claro que dichos elementos deben reducirse al espacio que cada persona requiera para su confort el cual no sobrepasará un área de dos metros cuadrados (2 m?), así mismo, se depositaran aquellos residuos que se generen durante la visita en las diferentes cestas o canecas para basuras ubicadas en el sector. Queda prohibido el arrojar basuras y/o cualquier tipo de desechos orgánicos e inorgánicos sobre áreas de Aguas y Playas Marítimas.
+
+ARTÍCULO 22: Sanciones. Aquellas personas que le den mal uso a los espacios de playas turísticas tendrán las siguientes sanciones:
+
+- a. Aplíquese el comparendo ambiental frente al mal manejo de los residuos sólidos.
+- b. Cúmplase taxativamente con lo dispuesto el artículo 44 del decreto 948 de 1995: Altoparlantes y Amplificadores: Se prohíbe el uso de estos instrumentos en zonas de uso público y de aquellos que instalados en zonas privadas, generen ruido que trascienda al medio ambiente, salvo para la prevención de desastres, la atención de emergencias y la difusión de campañas de salud. La utilización de los anteriores instrumentos o equipos en la realización de actos culturales, deportivos, religiosos o políticos requieren permiso previo de la autoridad componente.
+
+ARTÍCULO 23. La modificación o actualización del presente Decreto estará sujeto a las para la Gestión de Riesgo, y que le resulten contradictorias, en cumplimiento a lo establecido en el Decreto 1766 de agosto de 2013, posterior a la revisión de las condiciones ambientales у capacidad de carga de las playas y de recomendar las acciones que deban adoptar las entidades competentes respecto de las mismas, en procura de su organización, de la seguridad y bienestar de los usuarios ajustándose en todo momento a la normatividad vigente.
+
+ARTÍCULO 24. El presente Decreto rige a partir de la fecha de su expedición derogando todas las normas que le resulten contrarias, y su cumplimiento será observado por toda persona natural o jurídica, con el fin de prevenir la contaminación marino-costera, garantizar la seguridad marítima integral, la seguridad de la vida humana en el mar, y el correcto uso y goce de las zonas de playa destinadas al baño, al descanso, a la recreación y a la prestación de otros servicios relacionados con las actividades de aprovechamiento del tiempo libre que desarrollen los usuarios en cada una de las playas con vocación turística del Distrito Turístico, Cultural e Histórico de Santa Marta.
