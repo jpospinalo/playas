@@ -134,6 +134,11 @@ no tiene ese costo ni ese riesgo.
 
 ### Dataset (`evaluation/data/legal-ground-truth-v0.1.json`)
 
+El banco activo conserva la anotación **Esperando validación final**. El Excel
+`evaluation/data/legal-ground-truth-v0.2.xlsx` es una fuente versionada
+adicional, no una sustitución automática del JSON ni una validación final del
+banco. Ver [datos del proyecto](../../data/README.md#ground-truth).
+
 21 preguntas jurídicas reales sobre playas/dominio público
 marítimo-terrestre, cada una con sus 5 campos obligatorios diligenciados:
 `doc_principal`, `doc_secundario`, `pregunta`, `respuesta`,

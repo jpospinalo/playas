@@ -60,7 +60,7 @@ Con aprobación automática (sin confirmación interactiva de Terraform):
 2. terraform output         — lee las IPs estáticas resultantes
 3. Actualiza rag/.env       — CHROMA_HOST y OLLAMA_BASE_URL
 4. Actualiza rag/infrastructure/terraform.tfvars — chroma_host y ollama_base_url
-5. Espera que ChromaDB responda (máx. 7 min)
+5. Espera que ChromaDB responda (máx. 15 min)
 6. Importa data/*.jsonl.gz  — carga los documentos en ChromaDB
 ```
 

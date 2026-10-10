@@ -1,152 +1,113 @@
 # Scripts operacionales — Ingesta
 
-Referencia de scripts de pipeline, infraestructura EC2 y utilidades S3 del subsistema de ingesta.
+Los comandos de esta página se ejecutan desde `ingesta/`, salvo donde se
+indica otro directorio. Leer [el contrato y límites del pipeline](../README.md)
+antes de procesar documentos. No ejecutar estos scripts para validar una
+limpieza de código: pueden escribir datos y consumir servicios externos.
 
----
+## Pipelines
 
-## Pipeline de ingesta
+`scripts/run_pipeline.sh` ejecuta cinco pasos y termina con una API de
+desarrollo (`--reload`, puerto 8080); no sustituye el despliegue ECS:
 
-### `scripts/run_pipeline.sh`
+| Paso | Entorno | Módulo | Efecto |
+| --- | --- | --- | --- |
+| 1/5 | ingesta | `ingest.pdf_to_md` | Lee PDFs de S3 y escribe Markdown Bronze |
+| 2/5 | ingesta | `ingest.loaders` | Secciona Bronze por tipo y escribe Silver en S3 |
+| 3/5 | ingesta | `ingest.splitter_and_enrich` | Divide texto por caracteres, enriquece con LLM y escribe Gold en S3 |
+| 4/5 | rag | `rag.core.vectorstore` | Genera embeddings e indexa Gold en ChromaDB |
+| 5/5 | rag | `uvicorn rag.api.main:app` | Inicia la API local |
 
-Ejecuta el **pipeline completo de ingesta + arranca la API**. Es el script principal para levantar el sistema desde cero.
+El splitter utiliza por defecto 1000 **caracteres**, con solapamiento de 200;
+no son límites de tokens. Cada entorno tiene su propio lock y dependencias.
 
 ```bash
+# Desde ingesta/, solo si el procesamiento/indexación está autorizado:
 make pipeline
-bash ingesta/scripts/run_pipeline.sh
+
+# Solo pasos 1–3; también escribe S3 y utiliza OCR/LLM:
+bash scripts/run_data_pipeline.sh
 ```
 
-| Paso | Comando | Descripción |
-|------|---------|-------------|
-| 1/5 | `ingest.pdf_to_md` | Convierte PDFs de `data/raw/` a Markdown limpio en `data/bronze/` (Docling OCR + 12 pasos de limpieza) |
-| 2/5 | `ingest.loaders` | Normaliza, secciona y guarda como JSONL en `data/silver/` |
-| 3/5 | `ingest.splitter_and_enrich` | Chunking (~1000 tokens, 200 overlap) + enriquecimiento LLM → `data/gold/` |
-| 4/5 | `rag.core.vectorstore` | Genera embeddings (Ollama) e indexa en ChromaDB |
-| 5/5 | `uvicorn rag.api.main:app` | Levanta la API FastAPI en puerto 8080 |
+Ambos wrappers resuelven sus directorios a partir de la ubicación del script.
+Desde la raíz del repositorio, las rutas equivalentes son
+`bash ingesta/scripts/run_pipeline.sh` y
+`bash ingesta/scripts/run_data_pipeline.sh`.
 
-**Cuándo usarlo:** Primera vez que se despliega el sistema, o cuando se agregan nuevos documentos al corpus.
+**Límite actual:** PDF → Markdown escribe en `data/bronze/`, pero loaders
+lee `data/bronze/<doc_type>/`. No asumir que un corpus nuevo recorre las
+cinco etapas correctamente; esta transición requiere una corrección funcional
+separada. Tampoco asumir que un Gold existente garantiza enriquecimiento
+completo: los errores de LLM y la política de omitir existentes deben revisarse.
 
----
+## Infraestructura: responsabilidades
 
-### `scripts/run_data_pipeline.sh`
+- `ingesta/infrastructure/`: bucket S3, no instancias ChromaDB/Ollama.
+- [vector-infraestructura](../../vector-infraestructura/README.md):
+  Terraform y scripts de las EC2 de ChromaDB y Ollama.
+- [RAG](../../rag/README.md): servicio/API/frontend.
+- [Guía operacional de la raíz](../../README.md): despliegue y arranque/apagado.
 
-Ejecuta solo los **pasos de datos** (1-3) sin indexar en ChromaDB ni levantar la API.
+Los antiguos nombres `ingesta/scripts/ec2_chroma_db.sh` y
+`ingesta/scripts/ec2_ollama_embeddings.sh` no existen en este checkout.
+No son comandos de aprovisionamiento disponibles. No aplicar Terraform ni
+operar AWS como parte de pruebas offline o mantenimiento documental.
 
-```bash
-bash ingesta/scripts/run_data_pipeline.sh
-```
+## Utilidades de mantenimiento
 
-**Cuándo usarlo:** Cuando se quiere regenerar las capas bronze/silver/gold sin tocar ChromaDB.
+No son etapas habituales del pipeline. Antes de escribir o mover datos:
+confirmar colección/bucket, respaldo y clasificación con su responsable.
+Un dry-run puede consultar servicios reales y necesita permisos de lectura.
 
----
-
-## Infraestructura EC2
-
-### `scripts/ec2_chroma_db.sh`
-
-Script de **provisioning para una instancia EC2** que corre ChromaDB. Diseñado para ejecutarse como `user-data` de AWS o manualmente via SSH.
-
-```bash
-bash ingesta/scripts/ec2_chroma_db.sh
-```
-
-**Qué hace:**
-1. Actualiza paquetes del sistema
-2. Instala Docker
-3. Crea directorio persistente `/opt/chroma-data`
-4. Ejecuta ChromaDB en Docker (`chromadb/chroma:1.3.5`), puerto 8000, reinicio automático
-
-**Resultado:** ChromaDB accesible en `http://<ip-ec2>:8000`.
-
----
-
-### `scripts/ec2_ollama_embeddings.sh`
-
-Script de **provisioning para una instancia EC2** que corre Ollama con el modelo de embeddings.
-
-```bash
-bash ingesta/scripts/ec2_ollama_embeddings.sh
-```
-
-**Qué hace:**
-1. Instala Docker
-2. Ejecuta Ollama en Docker, puerto 11434, volumen persistente
-3. Descarga el modelo `embeddinggemma:latest`
-
-**Resultado:** Ollama accesible en `http://<ip-ec2>:11434`.
-
----
-
-## Infraestructura Terraform
-
-El directorio `ingesta/infrastructure/` contiene los recursos Terraform para el entorno de datos compartido:
-
-- **S3 bucket** — almacenamiento del pipeline (bronze/silver/gold)
-- **EC2 ChromaDB** — instancia con IP elástica, usa `ec2_chroma_db.sh` como user-data
-- **EC2 Ollama** — instancia con IP elástica, usa `ec2_ollama_embeddings.sh` como user-data
-
-```bash
-cd ingesta/infrastructure
-terraform init
-terraform plan
-terraform apply
-```
-
----
-
-## Utilidades S3 (`utils/`)
-
-### `utils/bucket_backup.py`
-
-Descarga todos los objetos del bucket S3 a una carpeta local con timestamp.
+### Backup S3
 
 ```bash
 make bucket-backup
-uv run python -m utils.bucket_backup
 ```
 
-**Resultado:** Carpeta `bucket-backup-YYYYMMDD-HHMMSS/` con la estructura completa del bucket.
+`utils/bucket_backup.py` descarga el bucket a una carpeta local con timestamp.
+No incorpora automáticamente el backup al corpus versionado.
 
----
-
-### `utils/migrate_doc_type.py`
-
-Migra objetos S3 de la raíz de cada capa hacia subcarpetas por `doc_type`.
+### Migración de prefijos heredados
 
 ```bash
-uv run python -m utils.migrate_doc_type              # dry-run
-uv run python -m utils.migrate_doc_type --apply      # aplica
+uv run python -m utils.migrate_doc_type
 ```
 
----
+Dry-run por defecto. Propone mover objetos sin subcarpeta de tipo a
+`data/<capa>/jurisprudencia/`; no determina jurídicamente su tipo.
+Con `--apply` realiza copia y borrado en S3. No aplicarlo a un corpus mixto
+ni utilizarlo para resolver automáticamente el límite Bronze descrito arriba.
 
-### `utils/backfill_doc_type.py`
-
-Añade el metadato `doc_type` a chunks ya indexados en ChromaDB que no lo tienen.
+### Backfill de metadata en S3
 
 ```bash
-uv run python -m utils.backfill_doc_type              # dry-run
-uv run python -m utils.backfill_doc_type --apply
+uv run python -m utils.backfill_doc_type_s3
 ```
 
----
+Dry-run por defecto sobre Silver y Gold de jurisprudencia. Permite
+`--doc-type normativa` y `--layers silver` o `--layers gold`.
+Con `--apply` reescribe los JSONL en S3, conservando los demás metadatos.
 
-### `utils/backfill_doc_type_s3.py`
+### Backfill de metadata en ChromaDB
 
-Añade `doc_type` a los chunks en los JSONL de S3 (silver/gold).
+`utils/backfill_doc_type.py` necesita `chromadb`, que pertenece al entorno
+`rag/`, no al lock de ingesta. Desde `rag/`, ejecutar el archivo con ese
+entorno, proporcionando host, puerto y colección reales explícitamente:
 
 ```bash
-uv run python -m utils.backfill_doc_type_s3              # dry-run
-uv run python -m utils.backfill_doc_type_s3 --apply
+# Plantilla de dry-run; reemplazar host y colección antes de ejecutar.
+CHROMA_HOST=host-real CHROMA_PORT=8000 uv run python ../ingesta/utils/backfill_doc_type.py --collection coleccion-real
 ```
 
----
+No suponer que este script carga `rag/.env`: utiliza `load_dotenv()`
+según la ubicación del archivo. Las variables explícitas del entorno evitan
+esa ambigüedad. Por defecto asigna jurisprudencia a chunks sin `doc_type`;
+`--doc-type` permite indicar el tipo. Con `--apply` actualiza metadata
+en ChromaDB, sin recalcular embeddings, solo con autorización.
 
-## Resumen de uso frecuente
+## Validación sin efectos externos
 
-| Tarea | Comando |
-|-------|---------|
-| Pipeline completo | `make pipeline` |
-| Solo procesar datos (sin indexar) | `bash ingesta/scripts/run_data_pipeline.sh` |
-| Backup del bucket S3 | `make bucket-backup` |
-| Provisionar EC2 para ChromaDB | `bash ingesta/scripts/ec2_chroma_db.sh` |
-| Provisionar EC2 para Ollama | `bash ingesta/scripts/ec2_ollama_embeddings.sh` |
+`make test-integration` ejecuta contratos offline entre seccionado y
+chunking con textos sintéticos. No prueba OCR, S3, enriquecimiento LLM,
+indexación ni despliegue. Ver [controles de desarrollo](../../CONTRIBUTING.md).

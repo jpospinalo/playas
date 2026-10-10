@@ -29,15 +29,14 @@ data/gold/
 !data/import_to_chromadb.py
 !data/seed_users.sql
 !data/documents/
+!data/README.md
 
 # 5) Resultados de evaluación (pueden contener datos sensibles)
 evaluation/ragas_eval_dataset.json
 evaluation/ragas_eval_summary.json
-# C6/8.3 — evidencia generada por los diagnósticos offline de Ola C
-# (rrf_diagnostic.py, citation_coverage.py): reproducible a partir de los
-# scripts versionados, no se versiona el JSON de salida en sí. Patrón
-# acotado a propósito a *_report.json dentro de evaluation/ — no un patrón
-# más amplio que pudiera ocultar datasets o fuentes también versionados ahí.
+# Reportes generados por rrf_diagnostic.py y citation_coverage.py.
+# No ignorar datasets ni fuentes versionadas. Los resultados RAGAS actuales
+# se excluyen en rag/evaluation/.gitignore.
 rag/evaluation/*_report.json
 
 # 6) Configuración sensible / secretos
@@ -86,7 +85,7 @@ bucket-backup-*/
 archivos-normativa/
 
 # 14) Documentos Word del ground-truth (binarios generados; solo se versiona el Markdown)
-docs/ground-truth/*.docx
+rag/docs/ground-truth/*.docx
 ARCHITECTURE_ANALYSIS.md
 
 # 15) Carpeta temporal de sincronización usada por Claude para revisiones — no debe versionarse

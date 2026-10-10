@@ -1,6 +1,9 @@
-# Archivos indexados
+# Catálogo de sentencias
 
-Lista de documentos que ya fueron procesados y se encuentran en la capa **Gold** (chunks enriquecidos listos para ser indexados en ChromaDB).
+Esta tabla conserva los metadatos descriptivos de nueve sentencias. No es un
+inventario exhaustivo del corpus ni una comprobación de la capa Gold, S3 o
+ChromaDB actualmente desplegados. Para las capas versionadas, ver
+[datos del proyecto](../../data/README.md).
 
 | N°    | Corporación                                               | Radicado                      | Instancia | Magistrado ponente             | Partes procesales                                                                                                                                                                                                                    | Tema principal                                                                                                                   | RELACIÓN PLAYAS | CATEGORIA ANALISIS | TEMÁTICA           |
 | ----- | --------------------------------------------------------- | ----------------------------- | --------- | ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------- | --------------- | ------------------ | ------------------ |
@@ -14,7 +17,9 @@ Lista de documentos que ya fueron procesados y se encuentran en la capa **Gold**
 | SM-08 | Tribunal Administrativo del Magdalena                     | 47-001-3333-001-2016-03261    |           | Maribel Mendoza Jiménez        | Accionante: Miguel Ángel Enciso Pava. Demandados: CORPAMAG, Distrito de Santa Marta, DADMA y Nación – DIMAR.                                                                                                                         | Alteración del cauce del río Gaira y su desembocadura al mar Caribe, con impacto ambiental y urbano.                             | Indirecta       |                    | Ambiental          |
 | SM-09 | Tribunal Administrativo del Magdalena                     | 47-001-2331-003-2011-08425-00 |           | Edgar Alexi Vásquez Contreras  | Accionante: Gabriel Antonio Carrero Torres. Demandados: Departamento del Magdalena, DIMAR, Distrito de Santa Marta, Ministerio de Ambiente.                                                                                          | Acción popular por erosión costera en el sector Pozos Colorados y amenaza a derechos colectivos.                                 | Directa         |                    | Gestión del riesgo |
 
-**Total: 9 sentencias indexadas.**
-**Fecha de actualización: 16 de abril de 2026**
+**Total de registros de esta tabla: 9 sentencias.**
+**Fecha de los metadatos de esta tabla: 16 de abril de 2026.**
 
-Para actualizar esta lista después de agregar nuevos documentos al pipeline, vuelve a correr la etapa de ingestión completa y actualiza esta tabla manualmente.
+Actualizar la tabla únicamente con metadatos confirmados por el responsable
+del corpus. No volver a ejecutar ingesta o reindexación para actualizar esta
+documentación; la presencia de un registro aquí no demuestra que esté indexado.

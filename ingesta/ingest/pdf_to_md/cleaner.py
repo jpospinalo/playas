@@ -1,5 +1,5 @@
 """
-Adaptive cleanup pipeline orchestrator.
+Fixed-sequence cleanup pipeline orchestrator.
 
 Applies a fixed sequence of cleanup steps to legal-document markdown,
 delegating each step to the appropriate sub-module.
@@ -30,6 +30,9 @@ def adaptive_cleanup(
     md_path: Path | None = None,
 ) -> str:
     """Apply the full cleanup pipeline to legal-document markdown.
+
+    ``profile`` remains part of the public API for compatibility; it does not
+    select or reorder steps in the current implementation.
 
     Pipeline steps (always executed in order):
 

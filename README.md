@@ -1,8 +1,28 @@
-# ATLAS — Guía de despliegue
+# ATLAS — Orientación normativa y jurisprudencial sobre playas
 
 Sistema agéntico de orientación normativa y jurisprudencial sobre playas en Colombia.
 
-Esta guía cubre el despliegue completo en AWS: servicios de vectores en EC2 y la aplicación RAG en ECS Fargate.
+## Organización y documentación
+
+| Directorio | Responsabilidad | Documentación |
+|---|---|---|
+| `rag/` | API, agente, frontend y evaluación | [RAG](rag/README.md) |
+| `ingesta/` | Conversión, seccionado y enriquecimiento de documentos | [Ingesta](ingesta/README.md) |
+| `vector-infraestructura/` | EC2 de ChromaDB y Ollama | [Infraestructura vectorial](vector-infraestructura/README.md) |
+| `rag/infrastructure/` | ECS, ALB, ECR y EFS de la aplicación | [Infraestructura RAG](rag/infrastructure/README.md) |
+| `ingesta/infrastructure/` | Bucket S3 de las capas del pipeline | [Scripts de ingesta](ingesta/docs/SCRIPTS.md#infraestructura-responsabilidades) |
+| `data/` | Corpus versionado, respaldo de ChromaDB y datos semilla | [Datos](data/README.md) |
+| `scripts/` | Herramientas que coordinan varios componentes | Despliegue desde bastion, descrito abajo |
+
+`rag/` e `ingesta/` son proyectos Python independientes, con sus propios
+entornos y locks. El frontend utiliza Bun dentro del workspace de `rag/`.
+No se necesita mover carpetas ni compartir un entorno para trabajar en ellos.
+Para desarrollo local, empezar por el README del componente. Ver
+[CONTRIBUTING.md](CONTRIBUTING.md) para ramas, alcance y controles de cambios.
+
+La guía siguiente describe el despliegue AWS con HTTP. Provisionar o importar
+datos no es lo mismo que encender una aplicación ya desplegada: para uso diario
+consultar [encendido y apagado](#apagarencender-el-cómputo-ahorro-de-costos).
 
 ---
 
@@ -82,14 +102,14 @@ Despliega la infraestructura ECS, construye las imágenes y las sube a ECR:
 
 ```bash
 # URL pública
-terraform output alb_url
+terraform -chdir=rag/infrastructure output -raw alb_url
 
 # Logs en tiempo real
 aws logs tail /ecs/rag-playas-prod-app      --region us-east-1 --follow
 aws logs tail /ecs/rag-playas-prod-frontend --region us-east-1 --follow
 ```
 
-La aplicación queda disponible en `http://<alb_url>`:
+La salida `alb_url` ya incluye `http://`; no agregar otro prefijo:
 
 - `/` → Frontend Next.js
 - `/api/` → Backend FastAPI
@@ -138,6 +158,12 @@ BOOTSTRAP_ONLY=1 KEY_FILE=/ruta/a/vockey.pem ./scripts/deploy_bastion_ec2.sh
 
 Si ya existe una instancia bastion (`rag-playas-bastion`) corriendo, el script la reutiliza en
 vez de crear una nueva.
+
+> Antes de repetir este despliegue, el responsable de infraestructura debe
+> resguardar los estados Terraform y las configuraciones locales del bastion.
+> El script actual elimina su checkout `~/playas` antes de clonar, también si
+> reutiliza la instancia. No usarlo para encendido/apagado diario ni asumir que
+> conserva esos archivos. `BOOTSTRAP_ONLY=1` tampoco evita esa eliminación.
 
 ---
 
@@ -220,41 +246,48 @@ Ollama EC2   ←→ backend  (embeddings)
 |---|---|---|
 | Backend (FastAPI) | ECS Fargate 1024 CPU / 2048 MB | 8080 |
 | Frontend (Next.js) | ECS Fargate 256 CPU / 512 MB | 3000 |
-| ChromaDB | EC2 `t3.medium` 12 GB | 8000 |
+| ChromaDB | EC2 `t3.large` 30 GB | 8000 |
 | Ollama | EC2 `t3.large` 20 GB | 11434 |
 
 ---
 
-## Apagar/encender los servicios ECS (ahorro de costos)
+## Apagar/encender el cómputo (ahorro de costos)
 
-Fargate cobra por cómputo mientras las tareas están `RUNNING`. Si no vas a usar la app por un
-tiempo, apaga los servicios `app` y `frontend` sin perder datos — Postgres vive en el volumen EFS,
-no en el contenedor, así que la información persiste:
+`stop.sh` apaga primero ambos servicios ECS (`app` y `frontend`) y confirma
+que quedaron en cero; después detiene las EC2 de ChromaDB y Ollama. No elimina
+EFS, EBS, índices ni conversaciones:
 
 ```bash
 ./rag/infrastructure/scripts/stop.sh
 ```
 
-Para volver a encenderlos (el script espera a que el servicio `app` quede estable, incluyendo el
-healthcheck de Postgres antes de que arranque el backend):
+`start.sh` verifica primero las EC2 y sus servicios HTTP, enciende ECS y solo
+declara éxito cuando el backend (`/api/ready`) y el frontend responden a través
+del ALB:
 
 ```bash
 ./rag/infrastructure/scripts/start.sh
 ```
 
-> El ALB sigue generando costo mientras los servicios están apagados — solo se detiene el cómputo
-> Fargate (backend + postgres + frontend).
+> Apagar no deja el costo en cero: ALB, EFS, EBS, CloudWatch y Elastic IP siguen
+> existiendo. No ejecutar ambos scripts simultáneamente ni apagar mientras
+> ingesta, evaluación o mantenimiento estén usando ChromaDB/Ollama. Requieren
+> credenciales AWS vigentes; iniciar primero el lab si se utiliza AWS Academy.
+> Ver [requisitos y comprobaciones](rag/infrastructure/README.md#encendido-y-apagado-seguro-startsh--stopsh).
 
 ---
 
 ## Destruir la infraestructura
 
 ```bash
-# ECS Fargate
-cd rag/infrastructure && terraform destroy
+# ECS Fargate — revisar el plan y exportar PostgreSQL antes de destruir
+terraform -chdir=rag/infrastructure destroy
 
 # EC2 vectorial
-cd vector-infraestructura && terraform destroy
+terraform -chdir=vector-infraestructura destroy
 ```
 
-> Los datos en EFS (PostgreSQL) no se eliminan automáticamente — destruye el sistema de archivos manualmente si es necesario.
+> `terraform destroy` elimina también el EFS administrado por este stack,
+> salvo protección configurada explícitamente. Exportar PostgreSQL antes de
+> destruir. Destruir las EC2 elimina sus discos e índice: conservar también un
+> respaldo de ChromaDB. Para ahorrar cómputo sin destruir datos, usar `stop.sh`.

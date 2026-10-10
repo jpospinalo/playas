@@ -2,7 +2,7 @@
 
 Estado actual del sistema, confirmado contra el código (`backend/rag/`,
 `frontend/`). Para el mapa de directorios completo del repo ver el
-`CLAUDE.md` de la raíz; este documento se enfoca en cómo encajan las piezas.
+[README de la raíz](../../README.md); este documento se enfoca en cómo encajan las piezas.
 
 ---
 
