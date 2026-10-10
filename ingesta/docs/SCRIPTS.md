@@ -34,11 +34,18 @@ Desde la raíz del repositorio, las rutas equivalentes son
 `bash ingesta/scripts/run_pipeline.sh` y
 `bash ingesta/scripts/run_data_pipeline.sh`.
 
-**Límite actual:** PDF → Markdown escribe en `data/bronze/`, pero loaders
-lee `data/bronze/<doc_type>/`. No asumir que un corpus nuevo recorre las
-cinco etapas correctamente; esta transición requiere una corrección funcional
-separada. Tampoco asumir que un Gold existente garantiza enriquecimiento
-completo: los errores de LLM y la política de omitir existentes deben revisarse.
+La conversión por lote escribe en `data/bronze/<doc_type>/` cuando el primer
+directorio bajo `data/raw/` es exactamente `jurisprudencia` o `normativa`.
+Markdown y sidecars conservan el nombre del PDF; subcarpetas adicionales no
+cambian ese nombre. Los destinos coincidentes de fuentes distintas se rechazan
+antes de procesar el lote, y los temporales de cada PDF están aislados.
+
+**Límite heredado:** las entradas sin tipo reconocido siguen escribiéndose en
+`data/bronze/`, con advertencia; loaders no las recoge. `process_single_pdf()`
+también conserva ese default, salvo que se pase un prefijo explícito.
+No asumir que estas comprobaciones validan los IDs Gold ni el corpus existente.
+Tampoco asumir que un Gold existente garantiza enriquecimiento completo:
+los errores de LLM y la política de omitir existentes deben revisarse.
 
 ## Infraestructura: responsabilidades
 

@@ -36,7 +36,10 @@ def parse_args():
         action="store_true",
         help="Delete and recreate the collection before importing",
     )
-    return parser.parse_args()
+    args = parser.parse_args()
+    if args.batch_size <= 0:
+        parser.error("--batch-size must be greater than zero")
+    return args
 
 
 def load_records(path: Path):
@@ -137,6 +140,8 @@ def main():
 
     print(f"\n\nDone. {imported} imported, {errors} errors in {time.time() - start:.1f}s")
     print(f"Collection '{collection_name}' now has {collection.count()} documents.")
+    if errors:
+        sys.exit(1)
 
 
 if __name__ == "__main__":

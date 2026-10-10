@@ -43,12 +43,21 @@ con bucket, credenciales AWS y proveedor LLM. No versionar secretos. Ver
 `data/silver/<doc_type>/`; el enriquecedor escribe `data/gold/<doc_type>/`.
 Los tipos admitidos son `jurisprudencia` y `normativa`.
 
-La conversión PDF actual escribe en la raíz `data/bronze/`, sin conservar el
-subprefijo de tipo. Esos archivos no son recogidos automáticamente por
-`loaders`. No ejecutar el pipeline completo suponiendo que esta transición ya
-está resuelta; requiere una corrección funcional y pruebas antes de procesar
-nuevos documentos. No usar la migración heredada para clasificar indiscriminadamente
-todos los archivos nuevos como jurisprudencia.
+La conversión por lote conserva el tipo explícito del primer directorio bajo
+`data/raw/`: por ejemplo, `data/raw/normativa/decreto.pdf` produce
+`data/bronze/normativa/decreto.md`, junto con sus assets y sidecars bajo
+`data/bronze/normativa/decreto/`. Las subcarpetas adicionales no cambian el
+nombre de salida. Cada PDF usa temporales aislados y el conversor se reutiliza.
+Si dos keys fuente distintas tienen el mismo destino, el lote se rechaza
+antes de descargar, convertir o subir archivos.
+
+Las entradas sin tipo reconocido conservan su salida heredada en la raíz
+`data/bronze/`, con advertencia: `loaders` no las recoge automáticamente.
+No inferir su tipo ni aplicar la migración heredada indiscriminadamente.
+`process_single_pdf()` conserva su default en esa raíz; para una salida
+tipificada, pasar `layer_prefix("bronze", doc_type)` como `output_prefix`.
+Estas reglas no comprueban objetos ya existentes ni garantizan IDs Gold únicos
+entre documentos: verificar el corpus con su responsable antes de indexarlo.
 
 Si falla un enriquecimiento, el chunk se guarda sin metadata de IA. Con
 `skip_existing=True` no se vuelve a procesar el archivo Gold existente. Revisar

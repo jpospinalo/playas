@@ -220,7 +220,7 @@ def _build_splitter(chunk_size: int, chunk_overlap: int) -> RecursiveCharacterTe
     )
 
 
-def _sanitize_articulo(articulo: str) -> str:
+def _sanitize_articulo(articulo: object) -> str:
     """Normaliza el identificador de artículo para que sea estable y legible en un chunk_id."""
     # Reemplaza cualquier secuencia de caracteres no alfanuméricos por un guion
     # y recorta guiones sobrantes en los extremos.

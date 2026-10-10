@@ -20,6 +20,7 @@ from docling.datamodel.pipeline_options import PdfPipelineOptions
 from docling.document_converter import DocumentConverter, PdfFormatOption
 from docling_core.types.doc import ImageRefMode
 
+from ..config import DOC_TYPES, layer_prefix
 from ..s3_client import download_file, list_keys, upload_directory, upload_file
 from .cleaner import adaptive_cleanup
 from .config import BRONZE_PREFIX, IMAGE_RESOLUTION_SCALE, RAW_PREFIX
@@ -107,14 +108,29 @@ def _run_pipeline(
     return md_path, quality
 
 
+def _bronze_output_prefix(pdf_key: str) -> str:
+    """Conserva únicamente el tipo explícito inmediatamente bajo RAW_PREFIX."""
+    if pdf_key.startswith(RAW_PREFIX):
+        doc_type = pdf_key[len(RAW_PREFIX) :].partition("/")[0]
+        if doc_type in DOC_TYPES:
+            return layer_prefix("bronze", doc_type)
+    logger.warning(
+        "PDF sin tipo explícito: %s; se conserva %s, que loaders no incorpora automáticamente.",
+        pdf_key,
+        BRONZE_PREFIX,
+    )
+    return BRONZE_PREFIX
+
+
 def convert_pdfs_to_markdown() -> list[str]:
     """Convierte todos los PDFs de S3 raw/ a Markdown limpio en S3 bronze/.
 
     Estrategia:
     1. Lista los PDFs en S3 raw/.
-    2. Descarga cada PDF a un directorio temporal.
+    2. Valida destinos y descarga cada PDF a su propio directorio temporal.
     3. Procesa con Docling (_run_pipeline) localmente.
-    4. Sube el .md y los sidecars (assets/, quality.json, entities.json) a S3 bronze/.
+    4. Sube Markdown y sidecars a bronze/<tipo>/ si raw/ tiene tipo explícito;
+       conserva bronze/ para entradas heredadas sin tipo, con advertencia.
 
     Devuelve la lista de S3 keys de los archivos .md generados.
     """
@@ -123,17 +139,32 @@ def convert_pdfs_to_markdown() -> list[str]:
         print(f"No PDFs found in s3://{RAW_PREFIX}")
         return []
 
+    # Validar todo el lote antes de convertir o escribir: no escoger un ganador.
+    output_prefixes: dict[str, str] = {}
+    destinations: dict[str, str] = {}
+    for pdf_key in pdf_keys:
+        output_prefix = _bronze_output_prefix(pdf_key)
+        output_prefixes[pdf_key] = output_prefix
+        stem = Path(pdf_key.split("/")[-1]).stem
+        for destination in (f"{output_prefix}{stem}.md", f"{output_prefix}{stem}/"):
+            previous = destinations.get(destination)
+            if previous is not None and previous != pdf_key:
+                raise ValueError(
+                    f"Destino Bronze duplicado {destination!r}: {previous!r} y {pdf_key!r}"
+                )
+            destinations[destination] = pdf_key
+
     print(f"Found {len(pdf_keys)} PDF(s) in s3://{RAW_PREFIX}")
     print("=" * 60)
 
     converter = _build_converter()
     generated: list[str] = []
 
-    with tempfile.TemporaryDirectory() as raw_tmp, tempfile.TemporaryDirectory() as bronze_tmp:
-        raw_tmp_path = Path(raw_tmp)
-        bronze_tmp_path = Path(bronze_tmp)
-
-        for pdf_key in pdf_keys:
+    for pdf_key in pdf_keys:
+        with tempfile.TemporaryDirectory() as raw_tmp, tempfile.TemporaryDirectory() as bronze_tmp:
+            raw_tmp_path = Path(raw_tmp)
+            bronze_tmp_path = Path(bronze_tmp)
+            output_prefix = output_prefixes[pdf_key]
             pdf_name = pdf_key.split("/")[-1]
             local_pdf = raw_tmp_path / pdf_name
 
@@ -148,12 +179,12 @@ def convert_pdfs_to_markdown() -> list[str]:
                 print(f"   Sections: {dict(quality.section_counts)}")
                 print(f"   Coastal entities: {quality.entity_count}")
 
-                md_s3_key = f"{BRONZE_PREFIX}{md_path.name}"
+                md_s3_key = f"{output_prefix}{md_path.name}"
                 upload_file(str(md_path), md_s3_key)
 
                 doc_dir = bronze_tmp_path / local_pdf.stem
                 if doc_dir.exists():
-                    upload_directory(str(doc_dir), f"{BRONZE_PREFIX}{local_pdf.stem}/")
+                    upload_directory(str(doc_dir), f"{output_prefix}{local_pdf.stem}/")
 
                 print(f"   Uploaded: {md_s3_key}")
                 generated.append(md_s3_key)

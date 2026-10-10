@@ -14,6 +14,7 @@ import statistics
 import unicodedata
 from collections import Counter
 from pathlib import Path
+from typing import cast
 from urllib.parse import unquote
 
 from PIL import Image
@@ -157,8 +158,8 @@ def filter_images(
         and all(item["remove_reason"] is not None for item in analyzed)
     ):
         fallback_candidates = sorted(
-            [item for item in analyzed if int(item["area"]) >= IMAGE_FALLBACK_MIN_AREA],
-            key=lambda item: int(item["area"]),
+            [item for item in analyzed if int(cast(int, item["area"])) >= IMAGE_FALLBACK_MIN_AREA],
+            key=lambda item: int(cast(int, item["area"])),
             reverse=True,
         )
         for item in fallback_candidates[: max(1, IMAGE_FALLBACK_MAX_KEEP)]:

@@ -27,10 +27,11 @@ no con `data/documents/` local.
   actualización del índice ChromaDB.
 - No ejecutar importaciones, migraciones ni reindexaciones para validar cambios
   documentales. Requieren autorización y revisión del destino.
-- El importador actual informa errores por lote, pero no devuelve una salida
-  fallida al terminar con importación parcial. Revisar el resumen, no solo el
-  mensaje de éxito del script que lo llama; esta limitación requiere corrección
-  funcional antes de confiar en una importación automatizada.
+- El importador exige `--batch-size > 0`; un tamaño inválido termina con código
+  `2` antes de conectar. Si falla un lote, continúa con los siguientes, muestra
+  el resumen y termina con código `1`. Sin errores termina con código `0`,
+  también con un export vacío. Los registros ya escritos no se revierten:
+  revisar el resumen y el destino antes de autorizar una recuperación.
 - Los backups PostgreSQL se generan en `data/backups/`, fuera de Git. No subir
   dumps, credenciales ni respuestas de usuarios al repositorio.
 
