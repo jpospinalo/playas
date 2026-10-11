@@ -102,10 +102,9 @@ jobs:
       - name: Ruff format check
         run: uv run ruff format --check backend/rag/ tests/ evaluation/ scripts/ utils/
 
-      # Mypy corre solo para rag/ (backend/rag/ está limpio — 0 errores).
-      # ingesta/ queda fuera: tiene errores de tipos preexistentes (stubs de
-      # boto3, dos problemas en pdf_to_md/ y splitter_and_enrich.py) ajenos
-      # al módulo RAG.
+      # Mypy de este job comprueba backend/rag/.
+      # Mypy global de ingesta se verifica por separado; sus imports de
+      # boto3/botocore carecen de stubs en el entorno de ingesta.
       - name: Mypy
         run: uv run mypy backend/rag/
 
