@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import re
 from collections import Counter
+from collections.abc import Callable
 
 from .config import (
     FOOTNOTE_LEGAL_CONTEXT,
@@ -89,7 +90,11 @@ def strip_frontmatter_noise(text: str) -> str:
     The first pages of Colombian tribunal PDFs often contain institutional
     banners, seals, phone numbers, and social-media handles.  Everything
     before the first ``## `` heading that does NOT look like meaningful
-    legal prose is discarded.
+    legal prose is discarded. Lines containing only complete inline images
+    are kept verbatim for the later relevance filter, regardless of encoding.
+    Mixed lines can also be rescued by alphabetic exterior text, including
+    short labels, unless explicit noise or ambiguous image syntax prevents
+    rescue. Other lines retain the original full-line noise checks.
     """
     lines = text.splitlines()
     first_heading_idx = next(
@@ -99,6 +104,13 @@ def strip_frontmatter_noise(text: str) -> str:
 
     if first_heading_idx is None or first_heading_idx < 2:
         return text
+
+    image_token = (
+        r"!\[[^\]\r\n]*\]\("
+        r"(?:<(?![ \t]*>)[^<>\r\n]+>|(?![ \t]*\))[^()<>\"'\r\n]+)\)"
+    )
+    image_only_line = re.compile(rf"{image_token}(?:[ \t]+{image_token})*")
+    mixed_image_tokens = re.compile(image_token)
 
     _junk_re = re.compile(
         r"^("
@@ -116,6 +128,22 @@ def strip_frontmatter_noise(text: str) -> str:
         if not stripped:
             kept_preamble.append(line)
             continue
+        if image_only_line.fullmatch(stripped):
+            kept_preamble.append(line)
+            continue
+        if "`" not in stripped and "\\![" not in stripped:
+            exterior, image_count = mixed_image_tokens.subn(" ", stripped)
+            exterior = exterior.strip()
+            if (
+                image_count
+                and "![" not in exterior
+                and any(c.isalpha() for c in exterior)
+                and "@" not in exterior
+                and "#" not in exterior
+                and not re.match(r"^\d{7,}", exterior)
+            ):
+                kept_preamble.append(line)
+                continue
         if _junk_re.match(stripped):
             continue
         alpha = sum(1 for c in stripped if c.isalpha())
@@ -180,8 +208,30 @@ def remove_footnote_numbers(text: str) -> str:
     5. Year + spaced marker: ``2021 32 ,`` → ``2021,``
     6. Hyphenated code + marker: ``CPT-CAM-012-21 34`` → ``CPT-CAM-012-21``
 
-    Legal context (ley, artículo, etc.) prevents stripping.
+    Legal context (ley, artículo, etc.) prevents stripping. Inline image tokens
+    are preserved verbatim. Matches crossing a token boundary are kept whole.
     """
+    image_token = re.compile(r"!\[[^\]\r\n]*\]\((?:<[^<>\r\n]+>|[^()<>\r\n]+)\)")
+
+    def _sub_protecting_images(
+        pattern: re.Pattern[str],
+        replacement: str | Callable[[re.Match[str]], str],
+    ) -> str:
+        spans = [match.span() for match in image_token.finditer(text)]
+        if not spans:
+            return pattern.sub(replacement, text)
+        cursor = 0
+
+        def _replace(match: re.Match[str]) -> str:
+            nonlocal cursor
+            while cursor < len(spans) and spans[cursor][1] <= match.start():
+                cursor += 1
+            if cursor < len(spans) and spans[cursor][0] < match.end():
+                return match.group(0)
+            return replacement(match) if callable(replacement) else match.expand(replacement)
+
+        return pattern.sub(_replace, text)
+
     _CITATION_WORD = re.compile(
         r"(?i)^(ley|artículo|articulo|decreto|numeral|inciso|parágrafo"
         r"|paragrafo|literal|ordinal|resolución|resolucion)$"
@@ -200,7 +250,7 @@ def remove_footnote_numbers(text: str) -> str:
             return m.group(0)
         return word_part
 
-    text = word_digit_glued.sub(_replace_glued, text)
+    text = _sub_protecting_images(word_digit_glued, _replace_glued)
 
     # Pass 2: spaced
     word_space_digit = re.compile(
@@ -220,7 +270,7 @@ def remove_footnote_numbers(text: str) -> str:
             return m.group(0)
         return word_part
 
-    text = word_space_digit.sub(_replace_spaced, text)
+    text = _sub_protecting_images(word_space_digit, _replace_spaced)
 
     # Pass 3: closing-paren/quote + spaced footnote
     paren_space_fn = re.compile(
@@ -229,11 +279,11 @@ def remove_footnote_numbers(text: str) -> str:
         r"(\d{1,2})"
         r"(?=\s|[.,;:!?\)\]]|$)"
     )
-    text = paren_space_fn.sub(r"\1", text)
+    text = _sub_protecting_images(paren_space_fn, r"\1")
 
     # Pass 4: year + trailing digit
     year_digit = re.compile(r"\b((?:1[89]\d\d|20\d\d))(\d)\b(?!\d)")
-    text = year_digit.sub(r"\1", text)
+    text = _sub_protecting_images(year_digit, r"\1")
 
     # Pass 5: year + spaced footnote
     year_space_fn = re.compile(
@@ -242,7 +292,7 @@ def remove_footnote_numbers(text: str) -> str:
         r"(\d{1,2})"
         r"(?=\s*[.,;:!?\)\]]|\s+[a-záéíóúüñ]|\s*$)"
     )
-    text = year_space_fn.sub(r"\1", text)
+    text = _sub_protecting_images(year_space_fn, r"\1")
 
     # Pass 6: hyphenated code + spaced footnote
     code_space_fn = re.compile(
@@ -251,7 +301,7 @@ def remove_footnote_numbers(text: str) -> str:
         r"(\d{1,2})"
         r"(?=\s|[.,;:!?\)\]]|$)"
     )
-    text = code_space_fn.sub(r"\1", text)
+    text = _sub_protecting_images(code_space_fn, r"\1")
 
     return text
 

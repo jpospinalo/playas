@@ -339,3 +339,242 @@ def test_conversion_feeds_real_loader_with_metadata_and_silver_output(
         .splitlines()
     ]
     assert rows == [{"page_content": s.page_content, "metadata": s.metadata} for s in sections]
+
+
+@pytest.fixture
+def g3_local_pipeline(tmp_path, monkeypatch):
+    import socket
+
+    import boto3
+    from PIL import Image
+
+    forbidden = Mock(side_effect=AssertionError("External access or real converter prohibited"))
+    monkeypatch.setattr(boto3, "client", forbidden)
+    monkeypatch.setattr(boto3.session.Session, "client", forbidden)
+    monkeypatch.setattr(socket, "create_connection", forbidden)
+    monkeypatch.setattr(socket.socket, "connect", forbidden)
+    monkeypatch.setattr(socket.socket, "connect_ex", forbidden)
+
+    from ingest import s3_client
+    from ingest.pdf_to_md import pipeline
+
+    monkeypatch.setattr(s3_client, "_get_client", forbidden)
+    for name in (
+        "list_keys",
+        "download_file",
+        "upload_file",
+        "upload_directory",
+        "DocumentConverter",
+        "_build_converter",
+    ):
+        monkeypatch.setattr(pipeline, name, forbidden)
+
+    root = tmp_path.resolve()
+    state = SimpleNamespace(
+        pipeline=pipeline,
+        root=root,
+        output_dir=root / "salida",
+        pdf_path=root / "entrada" / "documento.pdf",
+        image_name="figura.png",
+        alt="a",
+        caption="Mapa",
+        preamble=False,
+        angled=False,
+        size=500,
+        tail="\n\n## Consideraciones\nFigura de prueba para el expediente. DIMAR regula playas.\n",
+        spies={},
+    )
+    for name in (
+        "relativize_image_refs",
+        "profile_legal_document",
+        "adaptive_cleanup",
+        "evaluate_document_quality",
+    ):
+        spy = Mock(wraps=getattr(pipeline, name))
+        state.spies[name] = spy
+        monkeypatch.setattr(pipeline, name, spy)
+    monkeypatch.setattr(pipeline, "time", SimpleNamespace(time=Mock(side_effect=[10.0, 12.0])))
+
+    def export(md_path, *, artifacts_dir, image_mode):
+        assert md_path == (state.output_dir / f"{state.pdf_path.stem}.md").resolve()
+        assert (
+            artifacts_dir.resolve() == (state.output_dir / state.pdf_path.stem / "assets").resolve()
+        )
+        assert image_mode == pipeline.ImageRefMode.REFERENCED
+        assert md_path.is_relative_to(root)
+        assert artifacts_dir.resolve().is_relative_to(root)
+        line = ""
+        if state.image_name is not None:
+            assert len(state.pdf_path.stem.encode("utf-8")) < 200
+            assert len(state.image_name.encode("utf-8")) < 200
+            artifacts_dir.mkdir(parents=True, exist_ok=True)
+            state.asset = (artifacts_dir / state.image_name).resolve()
+            assert state.asset.is_relative_to(root)
+            area = state.size * state.size
+            pixels = (bytes(range(256)) * ((area + 255) // 256))[:area]
+            with Image.frombytes("L", (state.size, state.size), pixels) as image:
+                image.save(state.asset)
+            state.image_bytes = state.asset.read_bytes()
+            raw = f"<{state.asset}>" if state.angled else str(state.asset)
+            state.raw_token = f"![{state.alt}]({raw})"
+            line = f"{state.caption} {state.raw_token}".strip()
+        state.exported = ("" if state.preamble else "## Inicio\n\n") + line + state.tail
+        md_path.write_text(state.exported, encoding="utf-8")
+
+    state.exporter = Mock(side_effect=export)
+    state.converter = SimpleNamespace(
+        convert=Mock(
+            return_value=SimpleNamespace(document=SimpleNamespace(save_as_markdown=state.exporter))
+        )
+    )
+    yield state
+    forbidden.assert_not_called()
+
+
+@pytest.mark.parametrize(
+    ("stem", "image_name", "alt", "caption", "preamble", "angled"),
+    [
+        ("documento_ascii", "figura.png", "Image14", "Figura del expediente", False, False),
+        ("Documento legal", "a b.png", "", "Mapa", True, False),
+        ("Sentencia costera", "á é.png", "a", "Fig. 1", False, True),
+        ("documento_nfd", "Cafe\u0301.png", "a", "", True, False),
+        ("documento_parentesis", "foto((anexo)).png", "Image14", "Mapa", False, False),
+        ("documento_porcentaje", "a%20b.png", "a", "Mapa", True, False),
+        ("documento_raw", "a%literal b.png", "a", "Fig. 1", False, False),
+        (
+            "Documento" + "a" * 39 + " de (anexo)",
+            "image_" + "1234567890" * 6 + "ab87.png",
+            "",
+            "Mapa",
+            True,
+            False,
+        ),
+    ],
+    ids=[
+        "ascii",
+        "space",
+        "unicode-delimited",
+        "nfd-standalone",
+        "nested-parentheses",
+        "literal-escape",
+        "raw-percent",
+        "long-mixed",
+    ],
+)
+def test_g3_real_pipeline_persists_images_and_sidecars(
+    g3_local_pipeline, stem, image_name, alt, caption, preamble, angled
+):
+    import math
+    from dataclasses import asdict
+    from urllib.parse import quote, unquote
+
+    from ingest.pdf_to_md.images import _resolve_image_path, relativize_image_refs
+    from ingest.pdf_to_md.models import DocumentQualityReport
+
+    state = g3_local_pipeline
+    state.pdf_path = state.root / "entrada" / f"{stem}.pdf"
+    state.image_name, state.alt, state.caption = image_name, alt, caption
+    state.preamble, state.angled = preamble, angled
+    md_path, report = state.pipeline._run_pipeline(
+        state.pdf_path, state.output_dir, state.converter
+    )
+
+    destination = quote(f"./{stem}/assets/{image_name}", safe="/._-~")
+    token = f"![{alt}]({destination})"
+    serialized = state.exported.replace(state.raw_token, token)
+    state.converter.convert.assert_called_once_with(state.pdf_path)
+    state.exporter.assert_called_once_with(
+        md_path,
+        artifacts_dir=state.output_dir / stem / "assets",
+        image_mode=state.pipeline.ImageRefMode.REFERENCED,
+    )
+    for spy in state.spies.values():
+        assert spy.call_count == 1
+    state.spies["relativize_image_refs"].assert_called_once_with(state.exported, md_path)
+    state.spies["profile_legal_document"].assert_called_once_with(serialized)
+    cleanup_args = state.spies["adaptive_cleanup"].call_args.args
+    quality_args = state.spies["evaluate_document_quality"].call_args.args
+    assert cleanup_args[0] == quality_args[0] == serialized
+    assert cleanup_args[2] == md_path
+    assert cleanup_args[1] is quality_args[4]
+
+    persisted = md_path.read_text(encoding="utf-8")
+    assert persisted == quality_args[1]
+    assert token in persisted
+    assert caption in persisted
+    assert "Figura de prueba para el expediente." in persisted
+    assert str(state.asset) not in persisted
+    assert unquote(destination) == f"./{stem}/assets/{image_name}"
+    assert _resolve_image_path(destination, md_path.parent) == state.asset
+    assert state.asset.read_bytes() == state.image_bytes
+    assert relativize_image_refs(persisted, md_path) == persisted
+    assert isinstance(report, DocumentQualityReport)
+    assert report.processing_time_seconds == 2.0
+    report_dict = asdict(report)
+    assert all(math.isfinite(v) for v in report_dict.values() if isinstance(v, (int, float)))
+    doc_dir = state.output_dir / stem
+    assert json.loads((doc_dir / f"{stem}.quality.json").read_text()) == report_dict
+    assert quality_args[3]
+    assert json.loads((doc_dir / f"{stem}.entities.json").read_text()) == quality_args[3]
+    assert md_path.is_relative_to(state.root)
+    assert all(path.resolve().is_relative_to(state.root) for path in state.output_dir.rglob("*"))
+
+
+def test_g3_text_without_images_or_entities_has_no_entity_sidecar(g3_local_pipeline):
+    from dataclasses import asdict
+
+    state = g3_local_pipeline
+    state.image_name = None
+    state.tail = "\n\n## Consideraciones\nTexto de prueba para el expediente.\n"
+    md_path, report = state.pipeline._run_pipeline(
+        state.pdf_path, state.output_dir, state.converter
+    )
+    quality_args = state.spies["evaluate_document_quality"].call_args.args
+    assert quality_args[3] == {}
+    assert md_path.read_text(encoding="utf-8") == quality_args[1]
+    assert "Texto de prueba para el expediente." in quality_args[1]
+    doc_dir = state.output_dir / state.pdf_path.stem
+    assert json.loads((doc_dir / f"{state.pdf_path.stem}.quality.json").read_text()) == asdict(
+        report
+    )
+    assert not (doc_dir / f"{state.pdf_path.stem}.entities.json").exists()
+    assert len(list(state.output_dir.rglob("*.json"))) == 1
+    state.converter.convert.assert_called_once_with(state.pdf_path)
+    assert state.exporter.call_count == 1
+
+
+def test_g3_real_filter_removes_only_the_small_temporary_image(g3_local_pipeline):
+    from dataclasses import asdict
+    from urllib.parse import quote
+
+    state = g3_local_pipeline
+    state.size = 32
+    md_path, report = state.pipeline._run_pipeline(
+        state.pdf_path, state.output_dir, state.converter
+    )
+    destination = quote(f"./{state.pdf_path.stem}/assets/{state.image_name}", safe="/._-~")
+    token = f"![{state.alt}]({destination})"
+    assert token in state.spies["adaptive_cleanup"].call_args.args[0]
+    assert not state.asset.exists()
+    persisted = md_path.read_text(encoding="utf-8")
+    assert token not in persisted
+    assert "Figura de prueba para el expediente." in persisted
+    assert persisted == state.spies["evaluate_document_quality"].call_args.args[1]
+    doc_dir = state.output_dir / state.pdf_path.stem
+    assert json.loads((doc_dir / f"{state.pdf_path.stem}.quality.json").read_text()) == asdict(
+        report
+    )
+    state.converter.convert.assert_called_once_with(state.pdf_path)
+    assert state.exporter.call_count == 1
+
+
+def test_g3_conversion_error_propagates_without_outputs(g3_local_pipeline):
+    state = g3_local_pipeline
+    state.converter.convert.side_effect = RuntimeError("synthetic conversion failure")
+    with pytest.raises(RuntimeError, match="synthetic conversion failure"):
+        state.pipeline._run_pipeline(state.pdf_path, state.output_dir, state.converter)
+    state.converter.convert.assert_called_once_with(state.pdf_path)
+    state.exporter.assert_not_called()
+    for spy in state.spies.values():
+        spy.assert_not_called()
+    assert not state.output_dir.exists()
