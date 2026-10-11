@@ -4,7 +4,7 @@
 
 En el petitum reformado de la demanda inicial (fl. 47) se pretende lo que a continuación se trascribe:
 
-![Image](./AP Miguel Ángel Enciso VS Distrito y otros/assets/image_000000_ff38aa8f63e8dd731980d873f883b31b7b7cc278ac1411704fcfd53ff9cbae.png)
+![Image](<./AP Miguel Ángel Enciso VS Distrito y otros/assets/image_000000_ff38aa8f63e8dd731980d873f883b31b7b7cc278ac1411704fcfd53ff9cbae58.png>)
 
 ## TRIBUNAL ADMINISTRATIVO DEL MAGDALENA Magistrada sustanciadora: MARIBEL MENDOZA JIMÉNEZ
 

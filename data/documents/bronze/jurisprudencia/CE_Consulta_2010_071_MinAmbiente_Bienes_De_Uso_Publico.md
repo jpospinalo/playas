@@ -436,9 +436,9 @@ En todo caso, si de la delimitación así adoptada surgiera conflicto con decisi
 
 Transcribase a los Ministros de Defensa Nacional, del Medio Ambiente y Desarrollo Sostenible y de Vivienda, Ciudad y Territorio. Igualmente envíese copia a la Secretaría Jurídica de la Presidencia de la República.
 
-![Image](./CE_Consulta_2010_071_MinAmbiente_Bienes_De_Uso_Publico/assets/image_000002_ab3fab167b9b97377b5a346820a88fff466b0af82136196fb44965ee858e9df.png)
+![Image](./CE_Consulta_2010_071_MinAmbiente_Bienes_De_Uso_Publico/assets/image_000002_ab3fab167b9b97377b5a346820a88fff466b0af82136196fb44965ee858e9df3.png)
 
-![Image](./CE_Consulta_2010_071_MinAmbiente_Bienes_De_Uso_Publico/assets/image_000004_c3d65a2a2a7505f841181b4b896e172289a460f3a207b634f5d5da942f691ca.png)
+![Image](./CE_Consulta_2010_071_MinAmbiente_Bienes_De_Uso_Publico/assets/image_000004_c3d65a2a2a7505f841181b4b896e172289a460f3a207b634f5d5da942f691ca4.png)
 
 AUGUSTO HERNÁNDEZ BECERRA Presidente de la Sala
 

@@ -164,7 +164,7 @@ El Ministerio Público solicitó que se confirmara la decisión adoptada por el 
 
 '¿Cuáles  son  las  entidades  que  están  llamadas  a  restablecer  los  derechos colectivos derechos e intereses colectivos de los demandantes a i) un ambiente sano; ii) la existencia de un equilibrio ecológico y el manejo y aprovechamiento racional de los recursos naturales para garantizar su desarrollo sostenible, su conservación  restauración o sustitución; iii) la prevención de desastres previsibles técnicamente y iv) la seguridad y salubridad públicas, los cuales se hallan vulnerados a raíz de la proliferación de construcciones tipo invasión en las  riberas  del  Caño  Luisa,  en  jurisdicción  del  Distrito  Turístico  y  Cultural  de Cartagena de Indias?' .
 
-![Image](./CE_2da_AP_2017_103_Personeria_VS_Distrito_Cartagena_Desembocadura/assets/image_000012_55a4c77536b6e4ba8a143539dfe43975e20d864b1f3f317038438758ad713cf.png)
+![Image](./CE_2da_AP_2017_103_Personeria_VS_Distrito_Cartagena_Desembocadura/assets/image_000012_55a4c77536b6e4ba8a143539dfe43975e20d864b1f3f317038438758ad713cf6.png)
 
 Para responder a tal interrogante y tras exponer las normas sobre las competencias de las entidades recurrentes, indicó que el Distrito no solo tiene la responsabilidad principal de restituir el espacio público como autoridad de policía en su área, sino que también tiene la capacidad directa de colaborar con el EPA y CORVIVIENDA en los planes y programas necesarios para cumplir con la sentencia apelada, ya que el alcalde es parte y preside los Consejos Directivos de estas entidades. Por lo tanto, entendió que las órdenes impartidas en la sentencia de primera instancia eran adecuadas al ordenar a la Alcaldía del Distrito que recupere el espacio público en las riberas del Caño Luisa, coordine el censo poblacional correspondiente y realice las acciones ambientales en conjunto con el EPA y CARDIQUE.
 
@@ -221,7 +221,7 @@ Cartagena y los municipios de Clemencia, Santa Catalina, Santa Rosa, Turbaco y V
 
 El siguiente mapa permite ilustrar de mejor manera lo anterior:
 
-![Image](./CE_2da_AP_2017_103_Personeria_VS_Distrito_Cartagena_Desembocadura/assets/image_000017_f52c963f4dfde2bd0f1d643c7250f7b6ace141a543bc1ff36db7b493c20e6cc.png)
+![Image](./CE_2da_AP_2017_103_Personeria_VS_Distrito_Cartagena_Desembocadura/assets/image_000017_f52c963f4dfde2bd0f1d643c7250f7b6ace141a543bc1ff36db7b493c20e6cc7.png)
 
 De  lo  hasta  aquí  expuesto,  queda  con  total  claridad  que  CARDIQUE  tiene jurisdicción en el área rural del Distrito de Cartagena, zona en la que, como se vio, se encuentra la Ciénaga de La Virgen.
 
@@ -509,7 +509,7 @@ Cópiese, notifíquese, comuníquese y cúmplase,
 
 La anterior providencia fue leída, discutida y aprobada por la Sala en su sesión del de agosto de 2024.
 
-![Image](./CE_2da_AP_2017_103_Personeria_VS_Distrito_Cartagena_Desembocadura/assets/image_000033_ee6a4d39be39eaadd75ddff3ef02bf3456322509fce870e2f7bced9a947edda.png)
+![Image](./CE_2da_AP_2017_103_Personeria_VS_Distrito_Cartagena_Desembocadura/assets/image_000033_ee6a4d39be39eaadd75ddff3ef02bf3456322509fce870e2f7bced9a947edda0.png)
 
 Radicado: 13001-23-33-000- 2017-01038 -01
 

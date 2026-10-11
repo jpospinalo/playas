@@ -180,7 +180,7 @@ Avenida del 64. Para la fecha del mayo y 27 de julio de 2022 se recolectaron mue
 65. Se indicó en el concepto técnico que está evidenciado el ingreso de aguas residuales a través del colector pluvial de Taganga durante el mes de julio de 2022,  sin  embargo,  de  la  comparación  de  esos  resultados  con  los  reportes históricos en el área de influencia del Emisario Submarino, sector cercano a la estación  del  estudio  realizado,  los  valores  de  amonio  fueron  inferiores  a  la máxima concentración reportada en esa zona.
 66. En  todo  caso,  sobre  la  presencia  de  microrganismos  indicadores  de contaminación fecal, señaló el concepto:
 
-![Image](./AP  Carlos Alberto Zúñiga Mejía y otros VS DIMAR y otros/assets/image_000002_56ee765c48786feb3b9df927df77012a031449c959f84e562c9d80e97551b8b2.png)
+![Image](<./AP  Carlos Alberto Zúñiga Mejía y otros VS DIMAR y otros/assets/image_000002_56ee765c48786feb3b9df927df77012a031449c959f84e562c9d80e97551b8b2.png>)
 
 Taganga
 

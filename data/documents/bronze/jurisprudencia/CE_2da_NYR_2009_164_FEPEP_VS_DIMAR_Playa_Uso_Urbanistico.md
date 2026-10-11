@@ -48,7 +48,7 @@ En caso de no acceder a la (sic) pretensiones principales, 2.1, 2.2. y 2.3, que 
 
 3 Folios a 6 C pp.
 
-![Image](./CE_2da_NYR_2009_164_FEPEP_VS_DIMAR_Playa_Uso_Urbanistico/assets/image_000002_95381532c7007237cc1bd4cd5c75df78ab3e70d8de9ff250c220dc637f8feaa.png)
+![Image](./CE_2da_NYR_2009_164_FEPEP_VS_DIMAR_Playa_Uso_Urbanistico/assets/image_000002_95381532c7007237cc1bd4cd5c75df78ab3e70d8de9ff250c220dc637f8feaa1.png)
 
 Demandada: Ministerio de Defensa Nacional - Dirección General Marítima - DIMAR. Sostuvo que, luego de cumplir con todos los requisitos, trámites y permisos de las autoridades locales y nacionales, la demandante construyó un complejo como sede vacacional  denominado '[…] Condominio  Palmacaoba […]' que  consta  de cabañas  las  cuales  fueron  vendidas  a  24  copropietarios  en  el  sistema  tiempo compartido, para un total de 768 copropietarios, quienes están sometidos al régimen de propiedad horizontal según las escrituras públicas 3034 de de octubre de 1999 y 834 de de mayo de 2000.
 5. Indicó  que,  mediante  auto  de  de  mayo  de  2000,  la  capitanía  de  puerto  de Coveñas de la Dirección General Marítima -DIMAR dio apertura a una investigación en contra del FEPEP sin haber citado, notificado y vinculado a los copropietarios del mencionado condominio.
@@ -63,7 +63,7 @@ Demandada: Ministerio de Defensa Nacional - Dirección General Marítima - DIMAR
 
 ## I.1.2.2.1.  Desconocimiento de las normas en que debían fundarse los actos administrativos demandados por violación al derecho de audiencia y defensa. El  apoderado  de  la  parte  demandante  aseguró  que  los  actos  administrativos acusados se encuentran viciados de nulidad, toda vez que la DIMAR decidió una investigación administrativa contra el FEPEP sin citar, notificar y realizar publicidad a terceros interesados y afectados con la decisión, desconociéndose los principios Folio a 27 C pp.
 
-![Image](./CE_2da_NYR_2009_164_FEPEP_VS_DIMAR_Playa_Uso_Urbanistico/assets/image_000003_95381532c7007237cc1bd4cd5c75df78ab3e70d8de9ff250c220dc637f8feaa.png)
+![Image](./CE_2da_NYR_2009_164_FEPEP_VS_DIMAR_Playa_Uso_Urbanistico/assets/image_000003_95381532c7007237cc1bd4cd5c75df78ab3e70d8de9ff250c220dc637f8feaa1.png)
 
 Demandada: Ministerio de Defensa Nacional - Dirección General Marítima - DIMAR de la función administrativa consagrados en el  CCA, aplicables por remisión del artículo 82 del Decreto Ley 2324 de 1984.
 
@@ -77,7 +77,7 @@ Demandada: Ministerio de Defensa Nacional - Dirección General Marítima - DIMAR
 
 ## I.1.2.2.3. Falta de competencia y desviación de poder. Afirmó que la DIMAR expidió los actos administrativos demandados con falta de competencia por desconocer el término para el ejercicio de la facultad sancionatorio
 
-![Image](./CE_2da_NYR_2009_164_FEPEP_VS_DIMAR_Playa_Uso_Urbanistico/assets/image_000004_95381532c7007237cc1bd4cd5c75df78ab3e70d8de9ff250c220dc637f8feaa.png)
+![Image](./CE_2da_NYR_2009_164_FEPEP_VS_DIMAR_Playa_Uso_Urbanistico/assets/image_000004_95381532c7007237cc1bd4cd5c75df78ab3e70d8de9ff250c220dc637f8feaa1.png)
 
 Demandada: Ministerio de Defensa Nacional -Dirección General Marítima - DIMAR consagrado  en  el  artículo  38  del  CCA,  asimismo,  por  cuanto  dentro  de  sus competencias  no  se  encuentra  la  de  determinar  cuándo  un  bien  puede  ser considerado de uso público, además no tiene facultades para realizar investigaciones sobre bienes de propiedad privada.
 
@@ -90,7 +90,7 @@ Demandada: Ministerio de Defensa Nacional -Dirección General Marítima - DIMAR 
 21. Recordó que, de acuerdo con las escrituras públicas 1282 de de junio de 1996, 2240 de de junio de 1996 y 5988 de de noviembre de 1997, el FEPEP adquirió tres lotes ubicados en el kilómetro de la vía que conduce de Tolú a Coveñas, en el departamento de Sucre, los cuales fueron englobados mediante escritura pública 046 de de enero de 1998.
 22. Finalmente, precisó que, luego de cumplir con todos los requisitos, trámites y permisos  de  las  autoridades  locales  y  nacionales,  la  demandante  construyó  un complejo  sede  vacacional  denominado '[…]  Condominio  Palmacaoba  […]' que consta de cabañas las cuales fueron vendidas a 24 copropietarios en el sistema tiempo compartido, quienes están sometidos al régimen de propiedad horizontal según las escrituras públicas 3034 de de octubre de 1999 y 834 de de mayo de 2000.
 
-![Image](./CE_2da_NYR_2009_164_FEPEP_VS_DIMAR_Playa_Uso_Urbanistico/assets/image_000005_95381532c7007237cc1bd4cd5c75df78ab3e70d8de9ff250c220dc637f8feaa.png)
+![Image](./CE_2da_NYR_2009_164_FEPEP_VS_DIMAR_Playa_Uso_Urbanistico/assets/image_000005_95381532c7007237cc1bd4cd5c75df78ab3e70d8de9ff250c220dc637f8feaa1.png)
 
 ## II. CONTESTACIÓN DE LA DEMANDA.
 24. El  Ministerio  de  Defensa  Nacional -Dirección  General  Marítima -DIMAR contestó  la  demanda   en  la  que  se  opuso  a  las  pretensiones  de  la  parte demandante, para lo cual señaló que las decisiones demandadas están ajustadas a derecho por cuanto los terrenos son de uso público, por lo tanto, inalienables, imprescriptibles e inembargables. Se refirió a cada uno de los cargos de nulidad formulados de la siguiente forma:
@@ -107,7 +107,7 @@ Demandada: Ministerio de Defensa Nacional -Dirección General Marítima - DIMAR 
 
 5 Folios 284 a 295 C 2.
 
-![Image](./CE_2da_NYR_2009_164_FEPEP_VS_DIMAR_Playa_Uso_Urbanistico/assets/image_000006_95381532c7007237cc1bd4cd5c75df78ab3e70d8de9ff250c220dc637f8feaa.png)
+![Image](./CE_2da_NYR_2009_164_FEPEP_VS_DIMAR_Playa_Uso_Urbanistico/assets/image_000006_95381532c7007237cc1bd4cd5c75df78ab3e70d8de9ff250c220dc637f8feaa1.png)
 
 Demandada: Ministerio de Defensa Nacional - Dirección General Marítima - DIMAR. Frente a la falta de competencia de la DIMAR para determinar cuándo un bien se considera  bien  de  uso  público,  así  como  de  adelantar  una  investigación  sobre propiedad privada, aseguró que se trataba de una apreciación subjetiva, toda vez que son los artículos 63 y 101 de la Constitución Política, el artículo 679 del Código Civil, la Ley 23 de 1982, artículo 83 del Decreto 2811 de 1974 y los artículos 2°, 3° y 5° (numeral 21) y 178 del Decreto 2324 de 1984, los que definen la condición de bien de uso público de las zonas de playa y bajamar.
 
@@ -130,7 +130,7 @@ QUINTO: En firme esta decisión, ARCHÍVESE el expediente […]' (mayúscula y n
 
 32. El a quo desagregó los cargos de nulidad, para lo cual mencionó que el problema jurídico a resolver era determinar si la Resolución 134 de de octubre de 2006 y el acto administrativo sin número de de enero de 2009 que resolvió el recurso de apelación  confirmándola,  debían  ser  declarados  nulos  por  considerar  que:  (i)  la DIMAR no  tiene  competencia  para  determinar  cuándo  un  bien  es  o  no  de  uso público, ni para adelantar y fallar investigaciones relativas a la propiedad privada; (ii) así mismo, por haber operado la caducidad de las decisiones adoptadas por la autoridad administrativa; (iii) por la falta de citación, notificación y publicidad de la actuación a terceros interesados, afectados con la decisión y, por último, (iv) por la presunta irregularidad en que se incurrió al emitirse los informes técnicos por parte Folios 398 a 409 C 3.
 
-![Image](./CE_2da_NYR_2009_164_FEPEP_VS_DIMAR_Playa_Uso_Urbanistico/assets/image_000007_95381532c7007237cc1bd4cd5c75df78ab3e70d8de9ff250c220dc637f8feaa.png)
+![Image](./CE_2da_NYR_2009_164_FEPEP_VS_DIMAR_Playa_Uso_Urbanistico/assets/image_000007_95381532c7007237cc1bd4cd5c75df78ab3e70d8de9ff250c220dc637f8feaa1.png)
 
 Demandada: Ministerio de Defensa Nacional - Dirección General Marítima - DIMAR del  área  de  litorales,  documentos  en  los  cuales  la  DIMAR  fundamentó  sus decisiones.
 
@@ -142,7 +142,7 @@ Demandada: Ministerio de Defensa Nacional - Dirección General Marítima - DIMAR
 36. Aclaró que, por su parte, el artículo 5° ejusdem ,  le  otorgó competencia a ésta autoridad  para  regular,  autorizar  y  controlar  las  concesiones  y  permisos  en  las aguas, terrenos de bajamar, playas '[…] y demás bienes de uso público […]' en las áreas  de  su  jurisdicción,  así  como  lo  facultó  para  fallar  las  investigaciones  por construcciones indebidas o no autorizadas en los bienes de uso público y terrenos sometidos a su jurisdicción.
 
 37. Por  lo  anterior,  estimó  que  la  DIMAR  estaba  facultada  para  iniciar  una investigación  de  carácter  administrativo  por  la '[…] presunta  construcción  no autorizada en terrenos no sometidos bajo la jurisdicción de la Dirección General Marítima contra el "FEPEP", por tratarse de la construcción - ocupación de un bien que consideró de uso público, sometido a su jurisdicción […]'.
-38. Aseguró que revisado el contenido de la Resolución 134 del de octubre de 2006, se puedo concluir que, más allá de la declaratoria de bien de uso público del terreno donde fue construido el Condominio Palmacaoba, la finalidad de la entidad era procurar la restitución del dominio del Estado frente al mismo, pues, '[…] en ella se dejó claro que el FEPEP no solicitó permiso de ninguna clase a la Capitanía de ![Image](./CE_2da_NYR_2009_164_FEPEP_VS_DIMAR_Playa_Uso_Urbanistico/assets/image_000008_95381532c7007237cc1bd4cd5c75df78ab3e70d8de9ff250c220dc637f8feaa.png)
+38. Aseguró que revisado el contenido de la Resolución 134 del de octubre de 2006, se puedo concluir que, más allá de la declaratoria de bien de uso público del terreno donde fue construido el Condominio Palmacaoba, la finalidad de la entidad era procurar la restitución del dominio del Estado frente al mismo, pues, '[…] en ella se dejó claro que el FEPEP no solicitó permiso de ninguna clase a la Capitanía de ![Image](./CE_2da_NYR_2009_164_FEPEP_VS_DIMAR_Playa_Uso_Urbanistico/assets/image_000008_95381532c7007237cc1bd4cd5c75df78ab3e70d8de9ff250c220dc637f8feaa1.png)
 
 Puerto para gozar de dicho bien ni legalizó su situación, a pesar de conocer que en su contra cursaba una investigación por presunta construcción no autorizada […]'.
 
@@ -166,7 +166,7 @@ Demandada: Ministerio de Defensa Nacional - Dirección General Marítima - DIMAR
 
 51. En ese contexto, arguyó que la DIMAR debió vincular al representante legal de la  propiedad  horizontal,  en  virtud  de  lo  normado  en  el  artículo  14  citado,  a  los copropietarios  de  las  cabañas  y/o  al  representante  legal  del  establecimiento  del sistema de tiempo compartido turístico, para garantizar los principios de defensa y contradicción de las actuaciones administrativas, por lo que la resolución demandada '[…] nació viciada de nulidad por atentar contra el debido proceso, en particular contra el derecho de defensa y audiencia. En virtud de lo anterior el cargo prospera […]'.
 
-![Image](./CE_2da_NYR_2009_164_FEPEP_VS_DIMAR_Playa_Uso_Urbanistico/assets/image_000010_95381532c7007237cc1bd4cd5c75df78ab3e70d8de9ff250c220dc637f8feaa.png)
+![Image](./CE_2da_NYR_2009_164_FEPEP_VS_DIMAR_Playa_Uso_Urbanistico/assets/image_000010_95381532c7007237cc1bd4cd5c75df78ab3e70d8de9ff250c220dc637f8feaa1.png)
 
 Dirección General Marítima - DIMAR
 
@@ -187,7 +187,7 @@ Dirección General Marítima - DIMAR
 
 57. Mencionó que la parte demandante solicitó declarar la nulidad de las decisiones que  resuelven  el  proceso  administrativo  sancionatorio  en  que  se  declaró  la responsabilidad administrativa por la construcción indebida o no autorizada sobre bienes de uso público de propiedad de la Nación del FEPEP, argumentando que no Folios 511 a 525 C 3.
 
-![Image](./CE_2da_NYR_2009_164_FEPEP_VS_DIMAR_Playa_Uso_Urbanistico/assets/image_000011_95381532c7007237cc1bd4cd5c75df78ab3e70d8de9ff250c220dc637f8feaa.png)
+![Image](./CE_2da_NYR_2009_164_FEPEP_VS_DIMAR_Playa_Uso_Urbanistico/assets/image_000011_95381532c7007237cc1bd4cd5c75df78ab3e70d8de9ff250c220dc637f8feaa1.png)
 
 Demandada: Ministerio de Defensa Nacional -Dirección General Marítima - DIMAR fueron vinculados a la actuación los terceros que pudieran ser perjudicados con la actuación.
 
@@ -215,7 +215,7 @@ Palmacaoba  de  propiedad  del  FEPEP,  por  el  hecho  de  no  notificar  a  po
 
 65. Por  lo  anterior,  concluyó  que  no  es  de  recibo  que  el  investigado  alegue  en instancias  judiciales  la  falta  de  notificación  a  posibles  terceros  o  particulares
 
-![Image](./CE_2da_NYR_2009_164_FEPEP_VS_DIMAR_Playa_Uso_Urbanistico/assets/image_000012_95381532c7007237cc1bd4cd5c75df78ab3e70d8de9ff250c220dc637f8feaa.png)
+![Image](./CE_2da_NYR_2009_164_FEPEP_VS_DIMAR_Playa_Uso_Urbanistico/assets/image_000012_95381532c7007237cc1bd4cd5c75df78ab3e70d8de9ff250c220dc637f8feaa1.png)
 
 Demandada: Ministerio de Defensa Nacional -Dirección General Marítima - DIMAR afectados  con  la  decisión  administrativa  o  investigación  administrativa,  toda  vez que,  al  momento  de  tener  conocimiento  de  tal  circunstancia  debió  suspender  la construcción  de  dicho  condominio  y no  constituir  propiedad  horizontal  y,  en  ese sentido, no podía alegar dicha culpa a su favor.
 
@@ -238,7 +238,7 @@ Demandada: Ministerio de Defensa Nacional -Dirección General Marítima - DIMAR 
 
 9 Folio y 8 C 4.
 
-![Image](./CE_2da_NYR_2009_164_FEPEP_VS_DIMAR_Playa_Uso_Urbanistico/assets/image_000013_95381532c7007237cc1bd4cd5c75df78ab3e70d8de9ff250c220dc637f8feaa.png)
+![Image](./CE_2da_NYR_2009_164_FEPEP_VS_DIMAR_Playa_Uso_Urbanistico/assets/image_000013_95381532c7007237cc1bd4cd5c75df78ab3e70d8de9ff250c220dc637f8feaa1.png)
 
 ## VI.1. Competencia
 
@@ -487,7 +487,7 @@ ARTICULO 4°. - Una vez ejecutoriado el presente fallo, envíese copia del mismo
 
 77. Para resolver, la Sala pone de presente que el FEPEP fue destinatario de las resoluciones emitidas por la DIMAR, razón por la cual le otorga plena legitimación para demandarlas. De acuerdo con la jurisprudencia de esta Sección, el destinatario de un acto administrativo es la persona cuyo interés ha sido directa y expresamente afectado,  lo  que  le  otorga  la  calidad  de  parte  interesada  con  capacidad  para presentar una demanda de nulidad y restablecimiento del derecho.
 
-![Image](./CE_2da_NYR_2009_164_FEPEP_VS_DIMAR_Playa_Uso_Urbanistico/assets/image_000024_95381532c7007237cc1bd4cd5c75df78ab3e70d8de9ff250c220dc637f8feaa.png)
+![Image](./CE_2da_NYR_2009_164_FEPEP_VS_DIMAR_Playa_Uso_Urbanistico/assets/image_000024_95381532c7007237cc1bd4cd5c75df78ab3e70d8de9ff250c220dc637f8feaa1.png)
 
 78. El artículo 85 del CCA establece que cualquier persona que considere que sus derechos han sido vulnerados por un acto administrativo tiene la legitimación para solicitar su nulidad. En este caso, el FEPEP ha sido directamente afectado por las resoluciones que declararon los terrenos del Condominio Palmacaoba como bienes de  uso  público,  por  lo  cual  se  encuentra  habilitado  para  cuestionar  dichas decisiones.
 
@@ -501,7 +501,7 @@ ARTICULO 4°. - Una vez ejecutoriado el presente fallo, envíese copia del mismo
 
 83. Finalmente, se estima que si bien es cierto que la DIMAR cuando contestó la demanda no argumentó la falta de legitimación del FEPEP para alegar en sede judicial la nulidad de los actos acusados por la falta de notificación y vinculación de los terceros en la actuación administraba, también lo es que la Sala  considera que el FEPEP sí podía invocar dicha circunstancia en su condición de propietaria de los terrenos analizados por la autoridad marítima, además tal irregularidad, como se considerará en el numeral siguiente de esta providencia, afecta de manera directa la legalidad de los actos administrativos acusados cuyo destinatario también fue la parte demandante.
 
-![Image](./CE_2da_NYR_2009_164_FEPEP_VS_DIMAR_Playa_Uso_Urbanistico/assets/image_000025_95381532c7007237cc1bd4cd5c75df78ab3e70d8de9ff250c220dc637f8feaa.png)
+![Image](./CE_2da_NYR_2009_164_FEPEP_VS_DIMAR_Playa_Uso_Urbanistico/assets/image_000025_95381532c7007237cc1bd4cd5c75df78ab3e70d8de9ff250c220dc637f8feaa1.png)
 
 84. La omisión de notificar y vincular a los terceros interesados no es un simple vicio formal, sino una afectación sustancial al debido proceso que desvirtúa la legalidad de los actos administrativos impugnados y cuyo destinario es precisamente la parte demandante.
 
@@ -542,7 +542,7 @@ Las notificaciones se harán conforme lo dispone el capítulo X de este título 
 
 92. Significa lo anterior que la DIMAR, en el trámite administrativo, estaba en la obligación  de  acatar,  entre  otros,  los  siguientes  deberes:  (i)  comunicar  la existencia de la actuación administrativa (artículo 28); (ii) brindar respeto a las Página: 1
 
-![Image](./CE_2da_NYR_2009_164_FEPEP_VS_DIMAR_Playa_Uso_Urbanistico/assets/image_000027_95381532c7007237cc1bd4cd5c75df78ab3e70d8de9ff250c220dc637f8feaa.png)
+![Image](./CE_2da_NYR_2009_164_FEPEP_VS_DIMAR_Playa_Uso_Urbanistico/assets/image_000027_95381532c7007237cc1bd4cd5c75df78ab3e70d8de9ff250c220dc637f8feaa1.png)
 
 CIRCULO REGISTRAL: 340 SINCELEJO
 
@@ -774,7 +774,7 @@ El registrador REGISTRADOR PRINCIPAL (E) ENILDA ALVAREZ TIRADO
 
 97. Se  tiene,  igualmente,  que  el  de  noviembre  de  1999,  mediante  la  misma escritura  pública  3034,  se  constituyó  un  sistema  de  tiempo  compartido  sobre  el inmueble, permitiendo que los copropietarios o interesados adquirieran derechos de uso sobre las unidades indivisas del inmueble durante determinados períodos del año.
 
-![Image](./CE_2da_NYR_2009_164_FEPEP_VS_DIMAR_Playa_Uso_Urbanistico/assets/image_000034_95381532c7007237cc1bd4cd5c75df78ab3e70d8de9ff250c220dc637f8feaa.png)
+![Image](./CE_2da_NYR_2009_164_FEPEP_VS_DIMAR_Playa_Uso_Urbanistico/assets/image_000034_95381532c7007237cc1bd4cd5c75df78ab3e70d8de9ff250c220dc637f8feaa1.png)
 
 98. El de junio de 2000, mediante escritura pública 315 de la Notaría 2ª del Círculo de Medellín, se realizó una aclaración sobre los linderos de las cabañas, así como una reforma del reglamento de propiedad horizontal del inmueble, precisando las áreas comunes y privadas y garantizando que el régimen de propiedad horizontal fuera adecuado a la realidad del inmueble.
 
@@ -802,7 +802,7 @@ El registrador REGISTRADOR PRINCIPAL (E) ENILDA ALVAREZ TIRADO
 
 110. Igualmente, la recurrente sostiene que la apertura de la investigación de carácter administrativo por construcción no autorizada en predios de la Nación se efectuó mediante auto de de mayo del año 2000, fecha en la cual los predios ocupados de manera ilegal se registraban a nombre del FEPEP. Puntualmente, indicó que el señor Jorge Iván Clavijo Franco en su condición de representante legal del FEPEP conocía de la apertura de la investigación tal y como lo manifestó en versión libre rendida dentro del proceso.
 
-![Image](./CE_2da_NYR_2009_164_FEPEP_VS_DIMAR_Playa_Uso_Urbanistico/assets/image_000036_95381532c7007237cc1bd4cd5c75df78ab3e70d8de9ff250c220dc637f8feaa.png)
+![Image](./CE_2da_NYR_2009_164_FEPEP_VS_DIMAR_Playa_Uso_Urbanistico/assets/image_000036_95381532c7007237cc1bd4cd5c75df78ab3e70d8de9ff250c220dc637f8feaa1.png)
 
 111. Sobre el particular, la Sala reitera que para el momento de la apertura de la investigación  administrativa  el  de  mayo  de  2000,  ya  existía  un  régimen  de propiedad horizontal debidamente constituido desde noviembre de 1999, por lo que la  Capitanía  de  Puerto  de  Coveñas  tenía  la  obligación  legal  de  notificarla  como tercero determinado afectado.
 
@@ -908,7 +908,7 @@ Medellín.
 
 150,
 
-![Image](./CE_2da_NYR_2009_164_FEPEP_VS_DIMAR_Playa_Uso_Urbanistico/assets/image_000043_95381532c7007237cc1bd4cd5c75df78ab3e70d8de9ff250c220dc637f8feaa.png)
+![Image](./CE_2da_NYR_2009_164_FEPEP_VS_DIMAR_Playa_Uso_Urbanistico/assets/image_000043_95381532c7007237cc1bd4cd5c75df78ab3e70d8de9ff250c220dc637f8feaa1.png)
 
 Demandada: Ministerio de Defensa Nacional - Dirección General Marítima - DIMAR ecosistema.
 
@@ -918,7 +918,7 @@ Demandada: Ministerio de Defensa Nacional - Dirección General Marítima - DIMAR
 
 126. Al respecto y de la lectura del concepto técnico, la Sala encuentra que, como bien lo consideró el a quo , el mismo no precisa los fundamentos técnicos y, mucho menos, las conclusiones de la inspección. En efecto, si bien es cierto que se realizó una  visita  al  predio  y  se  aportó  información  sobre  su  ubicación,  linderos  y ocupantes, también lo es que no menciona si se recibió y valoró información de los terceros  interesados  y  si  se  permitió  la  participación  del  FEPEP  durante  la inspección,  por  lo  que  no  cumple  totalmente  con  las  exigencias  legales,  lo  que afecta su valor probatorio y la posibilidad de ser considerado una prueba detallada, clara y precisa dentro del proceso administrativo.
 
-![Image](./CE_2da_NYR_2009_164_FEPEP_VS_DIMAR_Playa_Uso_Urbanistico/assets/image_000045_95381532c7007237cc1bd4cd5c75df78ab3e70d8de9ff250c220dc637f8feaa.png)
+![Image](./CE_2da_NYR_2009_164_FEPEP_VS_DIMAR_Playa_Uso_Urbanistico/assets/image_000045_95381532c7007237cc1bd4cd5c75df78ab3e70d8de9ff250c220dc637f8feaa1.png)
 
 127. Sobre el particular, la Sala recuerda que el artículo 34 del CCA dispone que durante la actuación administrativa se podrán pedir y decretar pruebas y allegar informaciones,  sin  requisitos  ni  términos  especiales,  de  oficio  o  a  petición  del interesado. Por su parte, de conformidad con el artículo 57 ibidem , los medios de prueba en las actuaciones administrativas se regirán por lo dispuesto en el CPC.
 

@@ -506,7 +506,7 @@ En virtud de lo anterior, el Procurador Ambiental y Agrario del Magdalena, alleg
 
 El área de análisis será playa Salguero la cual se encuentra en la desembocadura del río Gaira, el cual se encuentra en jurisdicción de Santa Marta, departamento del Magdalena.
 
-![Image](./AP Rodrigo Martínez Silva VS Minambiente y otros/assets/image_000004_d7bc31af91955764f0cdd959ba4b3d128fd23969385e1f377182be9068dcfe0d.png)
+![Image](<./AP Rodrigo Martínez Silva VS Minambiente y otros/assets/image_000004_d7bc31af91955764f0cdd959ba4b3d128fd23969385e1f377182be9068dcfe0d.png>)
 
 ## OBJETIVO GENERAL
 
@@ -1306,7 +1306,7 @@ Magistrada
 
 ## REPÚBLICA DE COLOMBIA RAMA JUDICIAL DEL PODER PÚBLICO
 
-![Image](./AP Rodrigo Martínez Silva VS Minambiente y otros/assets/image_000009_32138fba6128a0cf7ad1114b6fcc4fd13de6947c15882ef28384b9880a692fb.png)
+![Image](<./AP Rodrigo Martínez Silva VS Minambiente y otros/assets/image_000009_32138fba6128a0cf7ad1114b6fcc4fd13de6947c15882ef28384b9880a692fb1.png>)
 
 ## TRIBUNAL ADMINISTRATIVO DEL MAGDALENA
 

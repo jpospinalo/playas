@@ -228,7 +228,7 @@ Por otra parte , en cuanto a la posición del recurrente, según la cual, no se 
 
 Entre  sus  finalidades  e  innovaciones  buscó  fortalecer  los  instrumentos  de coordinación con los entes territoriales para que fueran quienes en primer lugar gestionaran  y  reaccionaran  ante  situaciones  de  riesgo  de  desastre;  y  también,
 
-![Image](./CE_2da_AP_2015_550_Angela_Muñoz_VS_Dpto_Cordoba_Bienes_De_Uso_Publico/assets/image_000018_73f1716ee8af8a68be45fb4dc11f837149a8343f66d670e746fd209fc4341fc.png)
+![Image](./CE_2da_AP_2015_550_Angela_Muñoz_VS_Dpto_Cordoba_Bienes_De_Uso_Publico/assets/image_000018_73f1716ee8af8a68be45fb4dc11f837149a8343f66d670e746fd209fc4341fc5.png)
 
 Radicación núm:  23001233300020150005501 Demandante: Angela María Muñoz Vargas y otro planteó un cambio de paradigma en el nuevo SNPAD (Sistema Nacional para la Atención  y  Prevención  de  Desastres),  que  ya  no  fuera  la  respuesta  a  las calamidades ocurridas como resultado de la desatención sino que fuera el resultado del fortalecimiento de la reducción del riesgo (prevención y mitigación), aseguramiento y protección financiera.
 

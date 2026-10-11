@@ -7,7 +7,7 @@ La  Sociedad  GIESEKEN CUELLO &amp; CIA. S en C., mediante apoderado judicial pr
 - '. Se amparen los derechos e intereses colectivos de goce del espacio público y  la  utilización  y  defensa  de  los  bienes  de  uso  público  y  la  realización  de  las construcciones, edificaciones y desarrollos urbanos respetando las disposiciones jurídicas, de manera ordenada, y dando prevalencia al beneficio de la calidad de vida de los habitantes, consagrados en el artículo 3° de la Ley 472 de 1998.
 2. Se  declare  la  nulidad  de  la  Resolución  N°.  135  del  de  mayo  de  2011, expedida por la Curaduría Segunda Urbana de Santa Marta y la Resolución 043
 
-![Image](./AP Gieseken Cuello & Cía. S. en C. VS DIMAR y otros/assets/image_000000_29912999ff2391eaa3ed59525ad3ff615136be2db2cb545f684c0e7be8e58db.png)
+![Image](<./AP Gieseken Cuello & Cía. S. en C. VS DIMAR y otros/assets/image_000000_29912999ff2391eaa3ed59525ad3ff615136be2db2cb545f684c0e7be8e58db8.png>)
 
 ## TRIBUNAL ADMINISTRATIVO DEL MAGDALENA Magistrada sustanciadora: MARIBEL MENDOZA JIMÉNEZ
 

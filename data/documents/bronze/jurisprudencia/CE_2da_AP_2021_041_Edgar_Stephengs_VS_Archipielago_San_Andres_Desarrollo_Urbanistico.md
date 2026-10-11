@@ -547,7 +547,7 @@ Tercera carpa
 
 Distancia borde Gully.0 mts,5 mts mts.0 mts.0 mts
 
-![Image](./CE_2da_AP_2021_041_Edgar_Stephengs_VS_Archipielago_San_Andres_Desarrollo_Urbanistico/assets/image_000040_fb176b7ed835d63203f16c56866ead98a24faa4206f4770a02231e33e966ec.png)
+![Image](./CE_2da_AP_2021_041_Edgar_Stephengs_VS_Archipielago_San_Andres_Desarrollo_Urbanistico/assets/image_000040_fb176b7ed835d63203f16c56866ead98a24faa4206f4770a02231e33e966ec99.png)
 
 108.  Consecutivamente,  mediante  informe  técnico  de  seguimiento  481  de  de septiembre  de  2021 ,  Coralina  concluyó  que  ' persisten  las  condiciones  por  las Ibidem , documento denominado ' 18ContestacionCoralina ', folio y ss.
 

@@ -14,7 +14,7 @@ Segundo: A la Alcaldía del Distrito Turístico,  Cultural e Histórico de Santa
 
 - A
 
-![Image](./AP Gabriel Antonio Carrero VS DIMAR y otros/assets/image_000001_9fe17a578f7815fe4b2d1c74a29d342313159255895c08094ccd31ffe8a0ef.png)
+![Image](<./AP Gabriel Antonio Carrero VS DIMAR y otros/assets/image_000001_9fe17a578f7815fe4b2d1c74a29d342313159255895c08094ccd31ffe8a0ef87.png>)
 
 ## REPUBLICA DE COLOMBIA
 
