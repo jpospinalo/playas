@@ -40,6 +40,7 @@ al menos un proveedor LLM (OpenAI/OpenRouter/Gemini), `JWT_SECRET_KEY` y
 | [`docs/PRODUCT.md`](docs/PRODUCT.md) | Producto: usuarios, propósito, personalidad de marca |
 | [`docs/DESIGN.md`](docs/DESIGN.md) | Especificación prescriptiva del sistema de diseño ("Bioluminiscencia"): color, tipografía, componentes — el objetivo a implementar |
 | [`docs/SCRIPTS.md`](docs/SCRIPTS.md) | Scripts operacionales: despliegue, SageMaker, utilidades ChromaDB, [evaluación del RAG con RAGAS](docs/SCRIPTS.md#evaluación-del-rag) |
+| [`docs/EVALUACION_LINEA_BASE.md`](docs/EVALUACION_LINEA_BASE.md) | Línea base de calidad con RAGAS sobre el ground truth jurídico v0.2: resultados por tipo de pregunta, hallazgos y propuestas de calibración |
 | [`docs/SMOKE_TESTS.md`](docs/SMOKE_TESTS.md) | Pruebas de humo contra un despliegue real |
 | [`frontend/README.md`](frontend/README.md) | Inventario del frontend tal como está implementado: stack, rutas, componentes, hooks |
 | [`infrastructure/README.md`](infrastructure/README.md) | Infraestructura ECS Fargate (Terraform) |

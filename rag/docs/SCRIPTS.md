@@ -199,6 +199,47 @@ Cada corrida real escribe un JSON reproducible con, entre otros campos:
   del dataset y la metadata real del corpus indexado en ChromaDB).
 - `summary`, `errors` — agregados derivados de `cases`/`metric_results`.
 
+### Línea base sobre `legal-ground-truth-v0.2`
+
+Evaluación por fases sobre los 66 casos del ground truth v0.2. Resultados,
+cómo leer las métricas y hallazgos en
+[`docs/EVALUACION_LINEA_BASE.md`](EVALUACION_LINEA_BASE.md). La v0.1 y sus
+adaptadores no cambian.
+
+```bash
+# Fase 0 — regenera el JSON versionado desde el Excel (sin red, sin costo)
+uv run python -m evaluation.ground_truth_v02
+
+# Las fases 1, 2 y 4 usan el ChromaDB y el Ollama del proyecto:
+export CHROMA_HOST=<ip-chromadb> OLLAMA_BASE_URL=http://<ip-ollama>:11434
+
+# Fase 1 — recuperación por documento esperado, sin LLM (sin costo)
+uv run python -m evaluation.retrieval_baseline
+
+# Fase 2 — grafo real una vez por caso, en caché y reanudable (OPENAI_API_KEY)
+uv run python -m evaluation.generation_cache --limit 2      # piloto
+uv run python -m evaluation.generation_cache                # resto
+
+# Fase 4 — RAGAS con juez gpt-5-nano sobre la caché (OPENAI_API_KEY)
+uv run python -m evaluation.ragas_v02 --limit 3             # piloto
+uv run python -m evaluation.ragas_v02                       # resto
+
+# Fase 5 — tablas consolidadas
+uv run python -m evaluation.baseline_report
+```
+
+| Módulo | Escribe (en `evaluation/results/`, no versionado) | Costo LLM |
+|---|---|---|
+| `ground_truth_v02.py` | `evaluation/data/legal-ground-truth-v0.2.json` (sí versionado) | ninguno |
+| `retrieval_baseline.py` | `retrieval-baseline-v0.2.json` | ninguno |
+| `generation_cache.py` | `generation-cache-v0.2.jsonl` | ~0,0035 USD por caso |
+| `ragas_v02.py` | `ragas-v0.2.jsonl` | ~0,008 USD por caso |
+| `baseline_report.py` | `linea-base-v0.2.md` | ninguno |
+
+`generation_cache.py` y `ragas_v02.py` escriben caso a caso y, al
+relanzarse, solo procesan lo pendiente. Ambos imprimen los tokens y el
+costo estimado de cada corrida.
+
 ### RAGAS y `langchain-community`
 
 `ragas==0.4.3` (última versión publicada) importa
