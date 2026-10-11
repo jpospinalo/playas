@@ -4,6 +4,22 @@ Sistema agéntico de orientación normativa y jurisprudencial sobre playas en Co
 
 Esta guía cubre el despliegue completo en AWS: servicios de vectores en EC2 y la aplicación RAG en ECS Fargate.
 
+## Evaluación de calidad
+
+La calidad de ATLAS se mide con [RAGAS](https://docs.ragas.io/) contra el ground truth validado por el equipo jurídico (66 casos, v0.2), evaluando por separado la recuperación de documentos y la generación de respuestas.
+
+**📊 Resultados de la línea base (2026-10-08): [`rag/docs/EVALUACION_LINEA_BASE.md`](rag/docs/EVALUACION_LINEA_BASE.md)**
+
+| Indicador | Resultado |
+|---|---|
+| Fidelidad a las fuentes (*faithfulness*) | **0,87**: sin casos de alucinación |
+| Coincidencia con la respuesta jurídica (Factual F1 / Answer Accuracy) | **0,70 / 0,72** |
+| Respuestas correctas según el juez | **51 de 65** |
+| Documento esperado entre los fragmentos recuperados (hit@4) | **0,57**: normativa nacional 2 de 18 |
+| Tipo de pregunta más débil | Secuencia, trámite u orden jurídico (F1 0,54) |
+
+El documento explica cómo leer cada métrica, el diagnóstico por caso, ejemplos, hipótesis de calibración y las decisiones pendientes. Los comandos para reproducir la evaluación están en [`rag/docs/SCRIPTS.md`](rag/docs/SCRIPTS.md#línea-base-sobre-legal-ground-truth-v02).
+
 ---
 
 ## Requisitos previos
