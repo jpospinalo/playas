@@ -74,4 +74,6 @@ No cambiar las reglas de texto o chunking como parte de una limpieza de código.
 - [Secciones documentales](docs/DOCUMENT_SECTIONS.md)
 - [Catálogo de sentencias](docs/archivos-indexados.md), no inventario vivo de ChromaDB
 - [Datos versionados](../data/README.md)
+- [Inventario técnico local y controles](../data/README.md#inventario-técnico-reproducible),
+  independiente del pipeline S3; no modifica fuentes ni verifica el índice vivo
 - [Desarrollo y controles](../CONTRIBUTING.md)

@@ -30,6 +30,8 @@ data/gold/
 !data/seed_users.sql
 !data/documents/
 !data/README.md
+!data/corpus-catalog.json
+!data/CORPUS_CATALOG.md
 
 # 5) Resultados de evaluación (pueden contener datos sensibles)
 evaluation/ragas_eval_dataset.json
