@@ -105,14 +105,18 @@ ARTÍCULO 9. Horarios, Usos, y actividades. El Comité Local para la Organizaci�
 
 - a) Horarios. A partir de la entrada en vigencia del presente Decreto se establecerá el siguiente horario para el uso de las zonas de playa destinadas al baño, al descanso, a la recreación, a las ventas de bienes de consumo y a la prestación de otros servicios relacionados con las actividades de aprovechamiento del tiempo libre que desarrollen los usuarios en todas las playas del Distrito Turistico, Cultural e Histórico de Santa
 
-1. De:00 a.m. a 06:00 p.m. Se habilitarán para su uso las siguientes zonas:
+1. De 05:00 a.m. a 06:00 p.m. Se habilitarán para su uso las siguientes zonas:
 - Zona de bañistas
 - Zona de reposo
-- Zona activa. De:30 a.m. a 05:30 p.m. Se habilitarán para su uso las siguientes zonas:
+- Zona activa.
+
+2. De 06:30 a.m. a 05:30 p.m. Se habilitarán para su uso las siguientes zonas:
 - Zonas de deportes náuticos con motor y sin motor.
-3. De:00 a.m. a 8:00 p.m. Se habilitarán para su uso las siguientes zonas:
+3. De 05:00 a.m. a 8:00 p.m. Se habilitarán para su uso las siguientes zonas:
 - Zona de transición
-- Zona de Servicios. Las zonas del sistema de enlace y articulación del espacio público, como es el caso de los camellones, se encontraran habilitadas las horas para garantizar el libre tránsito de las personas, a excepción de los casos en que las autoridades determinen lo contrario, cuando exista afectación del orden público, o cuando el plan de seguridad para turistas y el plan de emergencias y contingencias de la playa turística se encuentre en ejecución, para salvaguardar la integridad de las personas.
+- Zona de Servicios.
+
+4. Las zonas del sistema de enlace y articulación del espacio público, como es el caso de los camellones, se encontraran habilitadas las 24 horas para garantizar el libre tránsito de las personas, a excepción de los casos en que las autoridades determinen lo contrario, cuando exista afectación del orden público, o cuando el plan de seguridad para turistas y el plan de emergencias y contingencias de la playa turística se encuentre en ejecución, para salvaguardar la integridad de las personas.
 5. El horario de la zona de tránsito de embarcaciones será regulado por la Autoridad Marítima y el Cuerpo de Guardacostas de la Armada Nacional en concordancia a la normatividad vigente.
 - b) Usos reglamentarios y prohibiciones. Los siguientes criterios de uso de las playas turísticas del Distrito Turístico, Cultural e Histórico de Santa Marta serán de obligatorio y estricto cumplimiento con el fin de garantizar la protección de la integridad del espacio público, por su destinación al uso común, el cual prevalece sobre el interés particular:
 1. Usos Zona Activa. la franja de arena próxima a la orilla de la playa, en suelo no consolidado, permanecer libre de amoblamiento e infraestructura en la totalidad de su longitud, es de carácter exclusiva para el uso de los bañistas, por lo tanto se encuentra prohibido la colocación de cualquier tipo de elemento, independiente de sus características o cual fuere la finalidad de su colocación. También queda prohibido el consumo de alimentos y bebidas en esta zona. De igual forma, se encuentra prohibido la venta de productos o servicios en esta zona de la playa. Los vendedores ambulantes que se encuentren en esta zona, serán removidos y su mercancía decomisada.
@@ -133,7 +137,7 @@ Todo mobiliario o infraestructura colocada en la zona de reposo sin importar su 
 El mobiliario utilizado con fines de explotación comercial por las asociaciones y cooperativas legalmente constituidas que se encuentre colocado en las zonas de las playas turísticas a la entrada en vigencia del presente Decreto, serán sujetos de revisión y remoción. Sólo se aceptara el mobiliario que cuente con los permisos necesarios y cumpla con:
 
 - Que el sustento del beneficiario del permiso dependa directamente de dicha actividad comercial y no cuente con ingresos adicionales superiores a un SMMLV.
-- Que solo sea titular de módulo de carpas o elementos por grupo familiar en la jurisdicción del Distrito de Santa Marta.
+- Que solo sea titular de 01 módulo de carpas o elementos por grupo familiar en la jurisdicción del Distrito de Santa Marta.
 - Que se encuentre relacionado dentro de la base de datos histórica la cual será aportada por la Capitanía de Puerto de Santa Marta y verificada por la Secretaria de Gobierno Distrital.
 - Que atienda de manera personal e intransferible el puesto de carpas o módulo de elementos, a excepción de los casos en que por quebrantos de salud o enfermedad comprobada no pueda ejercer directamente la actividad.
 - Que no tenga antecedentes penales.
@@ -170,7 +174,7 @@ Por lo anterior se imparten las siguientes instrucciones para garantizar su uso 
 Organización de carpas, sillas y vendedores.
 
 - a. Número de sillas: Determinese el número de sillas permitidas por las personas que prestan el servicio de alquiler de estos elementos en la playa del Balneario El Rodadero en cuarenta (40) sillas como máximo per cápita autorizada para dichos fines. No se admitirá el arrume o acumulación de sillas sobre la playa o el camellón del Rodadero. Los propietarios de estas sillas deberán buscar un lugar adecuado donde sean almacenadas cuando no se encuentren en uso. Además no se permitirá que personas que no tengan carné sean utilizadas para la prestación de servicios de sillas.
-- C. Tipo de carpas: Las carpas seguirán las especificaciones determinadas por la Alcaldía Distrital. Éstas serán de lona, con unas dimensiones de dos metros de largo por dos de ancho y una altura uniforme por módulos de elementos. No se podrán instalar carpas que no sean previamente aprobadas por la Alcaldía Distrital. Las carpas deberán ser cambiadas cada meses o cuando se encuentren en estado de deterioro. Cualquier mobiliario que se encuentre en estado de deterioro, o no cumpla con estas especificaciones será decomisado y desechado.
+- C. Tipo de carpas: Las carpas seguirán las especificaciones determinadas por la Alcaldía Distrital. Éstas serán de lona, con unas dimensiones de dos metros de largo por dos de ancho y una altura uniforme por módulos de elementos. No se podrán instalar carpas que no sean previamente aprobadas por la Alcaldía Distrital. Las carpas deberán ser cambiadas cada 15 meses o cuando se encuentren en estado de deterioro. Cualquier mobiliario que se encuentre en estado de deterioro, o no cumpla con estas especificaciones será decomisado y desechado.
 - b. ·Tipo de sillas: Con ocasión de los continuos siniestros y/o accidentes a turistas que se presentan por la utilización de las sillas de madera, La Alcaldía Distrital de Santa Marta únicamente permitirá el alquiler de sillas en material plástico de color blanco. Se deben tener disponibles sillas para el uso de adultos mayores y personas con situación de discapacidad
 - d. Póliza de seguros: Toda Persona autorizada para prestar el servicios de alquiler de sillas y/o carpas, deberá, ya sea de manera autónoma o asociativa, estar cobijada por una póliza de seguros, exigibles al momento de ocurrir un siniestro y/o accidente, que amerite un proceso de responsabilidad civil.
 - f. Identificación: Todos los operarios que trabajen en las playas turísticas deberán estar identificados por un uniforme distintivo, y portar en lugar visible el permiso o carné

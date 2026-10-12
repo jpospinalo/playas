@@ -209,21 +209,21 @@ Parágrafo 1 °: La inclusión de nuevas playas se hará de manera gradual confo
 
 Artículo 12. Nombre y ubicación de las playas del Distrito Portuario, Logístico, Industrial, Turístico y Comercial de Turbo- Antioquia: Con el fin de facilitar la gestión de las playas del Distrito, y las actividades de índole público y privado que allí se adelanten, se clasificarán las playas de acuerdo a sus condiciones geomorfológicas naturales y antropogénicas existentes, las cuales serán sectorizadas conforme al siguiente cuadro:
 
-| Tipo de Playa   | Playa           | Ubicación de Referencia   | Ubicación de Referencia   | Ubicación de Referencia   | Ubicación de Referencia   |
-|-----------------|-----------------|---------------------------|---------------------------|---------------------------|---------------------------|
-|                 |                 | Punto Inicial             | Punto Inicial             | Punto Final               | Punto Final               |
-|                 |                 | oeste                     | norte                     |                           |                           |
-| Urbana          | Playa Dulce     | 76° 44'28,04" W           | 8° 05'56,38" N            | 76044'31,91               | 8° 05'07,78" N            |
-| Rural           | Punta Yarumal   | 76 445,9                  | 8° 08'05,37" N            | 76°45'5,44'W              | 8° 07'14,68" N            |
-| Rural           | Piedrecitas     | 76°4480W                  | 8° 09'50,31" N            | 76°44'3,131W              | 8° 09'37,47" N            |
-| Rural           | Camerún         | 76° 4420,46               | 8° 10'05,70" N            | 76° 44'26,41" W           | 8° 09'12,64" N            |
-| Rural           | La Martina      | 760441,55'W               | 8° 09'51,60" N            | T6° 44'23,05" W           | 8° 10'11,62" N            |
-| Rural           | Punta de Piedra | 76° 44'45,06" W           | 8° 11'29,32" W            | 76° 44'39,36" W           | 8° 11'01,52" W            |
-| Rural           | Tie             | 76° 45'18,97" W           | 8° 14'21,09" N            | 76° 45'14,98" W           | 8° 14'00,18" N            |
-| Rural           | Puerto Cesar    | 76° 44'04,23 W            | 8° 02'06,73" N            | 76° 44'09,24" W           | 8° 01'13,09" N            |
-| Rural           | Puerto voy      |                           |                           |                           | 7° 59'58,61' N            |
+Ubicación de Referencia
 
-76°44143,16%W 8° 00'29,69" N 76° 44'09,06" W Clasificación de las playas del Distrito de Turbo
+| Tipo de Playa | Playa | Punto Inicial - oeste | Punto Inicial - norte | Punto Final - primera coordenada | Punto Final - segunda coordenada |
+| --- | --- | --- | --- | --- | --- |
+| Urbana | Playa Dulce | 76° 44'28,04" W | 8° 05'56,38" N | 76° 44'31,91" W | 8° 05'07,78" N |
+| Rural | Punta Yarumal | 76° 44'50,98" W | 8° 08'05,37" N | 76° 45'35,44" W | 8° 07'14,68" N |
+| Rural | Piedrecitas | 76° 44'21,80" W | 8° 09'50,31" N | 76° 44'23,13" W | 8° 09'37,47" N |
+| Rural | Camerún | 76° 44'20,46" W | 8° 10'05,70" N | 76° 44'26,41" W | 8° 09'12,64" N |
+| Rural | La Martina | 76° 44'21,55" W | 8° 09'51,60" N | 76° 44'23,05" W | 8° 10'11,62" N |
+| Rural | Punta de Piedra | 76° 44'45,06" W | 8° 11'29,32" W | 76° 44'39,36" W | 8° 11'01,52" W |
+| Rural | Tie | 76° 45'18,97" W | 8° 14'21,09" N | 76° 45'14,98" W | 8° 14'00,18" N |
+| Rural | Puerto Cesar | 76° 44'04,23" W | 8° 02'06,73" N | 76° 44'09,24" W | 8° 01'13,09" N |
+| Rural | Puerto voy | 76° 44'43,16" W | 8° 00'29,69" N | 76° 44'09,06" W | 7° 59'58,61" N |
+
+Clasificación de las playas del Distrito de Turbo
 
 Parágrafo 1º: El área correspondiente a las playas urbanas y rurales del Distrito de Turbo - Antioquia, se destinarán acuerdo a la vocación que se logre identificar y que se acoja a las condiciones del terreno, accesibilidad e infraestructura disponible.
 
@@ -250,23 +250,21 @@ Artículo 15. Horario de uso para las piayas: Para el caso de los sectores de la
 
 Parágrafo 1- horario de bañistas, uso recreativo y deportivo, los horarios quedaran de la siguiente manera:
 
-| Tipo de Playa   | Playa       | Horario de apertura   | Horario cierre   |
-|-----------------|-------------|-----------------------|------------------|
-| Urbana          | Playa Dulce | 06:00 am              | 06:00 PM         |
-
-| Punta Yarumal   | 06:00   | 18:00   |
-|-----------------|---------|---------|
-| Piedrecitas     | 06:00   | 18:00   |
-| Camerún         | 06:00   | 18:00   |
-| La Martina      | 06:00   | 18:00   |
-| Punta de Piedra | 06:00   | 18:00   |
-| Tie             | 06:00   | 18:00   |
-| Puerto Cesar    | 06:00   | 18:00   |
-| Puerto voy      | 06:00   | 18:00   |
+| Tipo de Playa | Playa | Horario de apertura | Horario cierre |
+| --- | --- | --- | --- |
+| Urbana | Playa Dulce | 06:00 am | 06:00 PM |
+| Rural | Punta Yarumal | 06:00 | 18:00 |
+| Rural | Piedrecitas | 06:00 | 18:00 |
+| Rural | Camerún | 06:00 | 18:00 |
+| Rural | La Martina | 06:00 | 18:00 |
+| Rural | Punta de Piedra | 06:00 | 18:00 |
+| Rural | Tie | 06:00 | 18:00 |
+| Rural | Puerto Cesar | 06:00 | 18:00 |
+| Rural | Puerto voy | 06:00 | 18:00 |
 
 Parágrafo 2°- horario: en las zonas de playa: Activas, Reposo y Transición para el ejercicio de todo tipo de actividades económicas que involucren el expendio o consumo de bebidas alcohólicas y embriagantes, los horarios quedaran de la siguiente manera:
 
-De:00 a 22:00 horas.
+De 10:00 a 22:00 horas.
 
 Parágrafo 3° para los establecimientos de comercio que no estén inmersos dentro de las zonas de playa: Activas, Reposo y Transición se regirá por el decreto 009 del de enero de 2024.
 
@@ -316,12 +314,14 @@ procesamiento, preparación y comercialización de pescados y cualquier tipo de 
 - h. Zona para el tránsito de embarcaciones: Cualquier actividad distinta al tránsito de embarcaciones, tales como el uso por parte de bañistas y práctica de deportes náuticos.
 
 ## CAPÍTULO VI.
-REQUISITOS PARA LA ORGANIZACIÓN DE LAS PLAYAS. Requisitos para la organización de las playas: Para efecto de la organización de las playas del Distrito Portuario, Logístico, Industrial, Turístico y Comercial de Turbo- Antioquia., se tendrán en cuenta los siguientes requisitos:
+REQUISITOS PARA LA ORGANIZACIÓN DE LAS PLAYAS.
+
+Artículo 17. Requisitos para la organización de las playas: Para efecto de la organización de las playas del Distrito Portuario, Logístico, Industrial, Turístico y Comercial de Turbo- Antioquia., se tendrán en cuenta los siguientes requisitos:
 
 ## 17.1. Requisitos ambientales:
 
 - a. Mantenimiento y limpieza de las playas que se efectuará diariamente por el Operador del servicio de aseo designado por la Alcaldia Distrital de Turbo-Antioquia, atendiendo a las recomendaciones de las autoridades Ambientales y Marítimas correspondientes. En caso de que la playa aplique a una certificación que exija unos requisitos específicos de limpieza, se deberá cumplir con estas exigencias, siempre y cuando no se afecte lo dispuesto por las autoridades locales competentes
-- b. El sistema de limpieza considerará el mantenimiento adecuado (oxigenación, remoción, etc.) de la arena de la playa, hasta el borde del cuerpo de agua de mar. Además, el Operador del servicio de aseo de las playas deberá realizar las actividades en horarios donde la afluencia de bañistas sea baja, finalizando sus trabajos, en la medida de lo posible, antes de las:00 am.
+- b. El sistema de limpieza considerará el mantenimiento adecuado (oxigenación, remoción, etc.) de la arena de la playa, hasta el borde del cuerpo de agua de mar. Además, el Operador del servicio de aseo de las playas deberá realizar las actividades en horarios donde la afluencia de bañistas sea baja, finalizando sus trabajos, en la medida de lo posible, antes de las 08:00 am.
 - c. La Aicaldía Distrital de Turbo-Antioquia en articulación con el Operador del servicio de aseo de las playas diseñará acciones para el manejo integral de residuos sólidos para la zona costera, el cual debe incluir minimización, separación en la fuente, almacenamiento, transporte, aprovechamiento, tratamiento y disposición final.
 - d. La Alcaldía de Turbo en articulación con el Operador del servicio de aseo de las playas instalarán recipientes de almacenamiento temporal de residuos sólidos, que permitan promover la separación de los residuos en al menos tres materiales, los cuales estarán ubicados en cada acceso principal a la playa y que permitan atender la cantidad de usuarios de esta. Los recipientes no deben estar ubicados en las zonas de reposo, zona activa, ni deben tener contacto con el suelo, además deben contar con tapas o un diseño adecuado para evitar la dispersión de los residuos. El número de recipientes dependerá de la cantidad de usuarios máximos de la playa.
 
@@ -365,7 +365,7 @@ vigilancia y control en la aplicación de medidas preventivas necesarias para ga
 - e. Suspensión de permisos: En caso de que se presenten situaciones en las cuales se incumpla lo establecido en este Reglamento o normativas legales vigentes, a nivel local, departamental o nacional, como la Ley 1801 de 2016, se podrá realizar la suspensión de los permisos obtenidos. Así mismo, los vendedores autorizados por la Alcaldía Distrital de Turbo-Antioquia que se encuentren en estado de embriaguez o bajo el efecto de sustancias alucinógenas serán retirados y se le suspenderá el respectivo permiso temporal. De igual forma serán suspendidas las personas que promuevan o sean parte de riñas o discusiones en el lugar de trabajo o incumplan lo establecido en este Reglamento. En caso de persistencia, se podrá realizar la revocatoria definitiva del permiso.
 6. Organización de carpas y sillas: el número de carpas será determinado en consenso con la Capitanía de Puerto de Urabá y del Darién - CP y la Secretaría de Desarrollo Económico, de acuerdo con la zonificación y la capacidad de carga que presenten cada una de las playas del Distrito. El número de carpas se presenta en el Anexo y es parte integral del presente Decreto.
 
-Tipo de carpas: las carpas seguirán las especificaciones determinadas por la Alcaldía Distrital de Turbo-Antioquia, dependiendo la necesidad del área a ocupar para los eventos. En el caso de las carpas estáticas de los vendedores o carperos, estas contarán con dimensiones de máximo m de largo por m de ancho, y una altura uniforme de,8 m por modulo; el color de las carpas estipulado será los colores de la bandera del Distrito de Turbo. Se sugiere marcarlas con el nombre de establecimiento comercial en las partes laterales de la carpa, las letras deben ser estéticas, de tamaño medio y en color negro preferiblemente.
+Tipo de carpas: las carpas seguirán las especificaciones determinadas por la Alcaldía Distrital de Turbo-Antioquia, dependiendo la necesidad del área a ocupar para los eventos. En el caso de las carpas estáticas de los vendedores o carperos, estas contarán con dimensiones de máximo 4 m de largo por 2 m de ancho, y una altura uniforme de 1,8 m por modulo; el color de las carpas estipulado será los colores de la bandera del Distrito de Turbo. Se sugiere marcarlas con el nombre de establecimiento comercial en las partes laterales de la carpa, las letras deben ser estéticas, de tamaño medio y en color negro preferiblemente.
 
 No se podrán instalar carpas que no sean previamente aprobadas por las autoridades carpas por playas dependerá de las características de esta y se buscará en lo posible, siempre que las dimensiones de la playa lo permitan.
 
@@ -392,7 +392,7 @@ Parágrafo 1°: en los casos en que agremiaciones pretendan desarrollar diversas
 - Relación de cada una de las actividades económicas desarrolladas por grupos pertenecientes a la agremiación.
 - Firma del presidente de la agremiación o su delegado.
 
-Parágrafo 2°: El termino para resolver los trámites de permiso temporal en playas urbanas para realizar actividades económicas en el Distrito de Turbo - Antioquia, será de días contados a partir del día siguiente de la presentación de la solicitud ante la Alcaldía Distrital de Turbo - Antioquia (Secretaria de Planeación).
+Parágrafo 2°: El termino para resolver los trámites de permiso temporal en playas urbanas para realizar actividades económicas en el Distrito de Turbo - Antioquia, será de 20 días contados a partir del día siguiente de la presentación de la solicitud ante la Alcaldía Distrital de Turbo - Antioquia (Secretaria de Planeación).
 
 ## PLAYA RURAL
 
@@ -416,7 +416,7 @@ Parágrafo 1°: Requisitos para la obtención de permisos temporales y desarroll
 8. En caso de que el permiso solicitado contemple la emisión de sonidos, deberá presentar el permiso correspondiente otorgado por la autoridad competente en la jurisdicción, donde se autorice el sonido (decibeles permitidos).
 9. Autorización para hacer uso de la música (Derechos de Autor) emitido por la Organización Sayco &amp; ACINPRO
 
-Parágrafo 2°. Una vez allegados la totalidad de los requisitos, la Capitanía de Puerto de Urabá y del Darién - CP, tendrá días hábiles para resolver las solicitudes de permisos temporales en aguas marítimas, playas marítimas y/o terrenos de bajamar bajo jurisdicción de Dimar.
+Parágrafo 2°. Una vez allegados la totalidad de los requisitos, la Capitanía de Puerto de Urabá y del Darién - CP, tendrá 15 días hábiles para resolver las solicitudes de permisos temporales en aguas marítimas, playas marítimas y/o terrenos de bajamar bajo jurisdicción de Dimar.
 
 Artículo 20. Concesiones marítimas: El trámite de concesiones marítimas de terrenos de bajamar, playas y aguas marítimas, estará a cargo en la jurisdicción del Distrito de Turbo - Antioquia, la Capitanía de Puerto de Urabá y del Darién - CP, unidad regional de la General Marítima - Dimar; el cual se dispuesto Decreto 2106 de 2019 "Por el cual se dictan normas para simplificar, suprimir y reformar trámites, procesos y procedimientos innecesarios existentes en la administración pública"; TITULO III Disposiciones Especiales, Capitulo IV Defensa Nacional, Artículo 65. Requisitos para otorgar las concesiones marítimas.
 
