@@ -31,6 +31,7 @@ data/gold/
 !data/documents/
 !data/README.md
 !data/corpus-catalog.json
+!data/corpus-curation.json
 !data/CORPUS_CATALOG.md
 
 # 5) Resultados de evaluación (pueden contener datos sensibles)

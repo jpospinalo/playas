@@ -105,6 +105,20 @@ quedan sin validar. El JSON contiene observaciones de Gold, no una nueva
 aprobación jurídica. Los hallazgos no autorizan renombrados, borrados,
 reprocesamientos ni reindexaciones: esas reparaciones requieren un plan separado.
 
+## Registro descriptivo de curación
+
+[corpus-curation.json](corpus-curation.json) es un registro de edición humana
+revisable, separado del catálogo técnico generado. Relaciona las rutas y hashes
+de las fuentes con rótulos propuestos, identidad, selección declarada y
+evidencias. Las identidades pueden seguir provisionales; los conflictos no se
+resuelven automáticamente ni la selección declarada equivale a aprobación.
+
+Ni la ingesta ni el RAG consumen este registro. Editarlo no renombra documentos,
+no cambia los títulos o metadatos de las capas y no actualiza el índice. El
+respaldo local no certifica vigencia, fidelidad ni cobertura completa. Los
+contratos offline comprueban estructura y asociación con el catálogo, no la
+verdad jurídica de las evidencias.
+
 ## Conservación y actualización
 
 - No borrar fuentes, exports o datos semilla por su extensión o antigüedad.
