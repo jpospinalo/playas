@@ -41,7 +41,7 @@ _RAGAS = [
 ]
 _META = {
     "fecha": "2026-10-15",
-    "commit": "abc1234",
+    "version_sistema": "abc1234",
     "etiqueta": "gemma4-e2b",
     "modelo_generador": "gemma4:e2b (local)",
     "juez": "gpt-5-nano",
@@ -79,3 +79,20 @@ def test_tabla_markdown_del_registro() -> None:
     md = render_markdown([summarize_run(_GEN, _RAGAS, _META)])
     assert "| 2026-10-15 |" in md
     assert "gemma4:e2b (local)" in md
+
+
+def test_la_version_del_sistema_es_el_ultimo_commit_del_backend() -> None:
+    import re
+    import subprocess
+
+    from evaluation.registro import system_version
+
+    esperado = subprocess.run(
+        ["git", "log", "-1", "--format=%h", "--abbrev=7", "--", "backend"],
+        capture_output=True,
+        text=True,
+        check=True,
+    ).stdout.strip()
+    version = system_version()
+    assert re.fullmatch(r"[0-9a-f]{7}", version)
+    assert version == esperado

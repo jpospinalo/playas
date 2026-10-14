@@ -15,12 +15,12 @@ from __future__ import annotations
 import argparse
 import csv
 import json
+import subprocess
 from datetime import date
 from pathlib import Path
 from typing import Any
 
 from evaluation.generation_cache import CACHE_PATH, load_cache
-from evaluation.ragas_common import git_state
 from evaluation.ragas_v02 import JUDGE_MODEL, RESULTS_PATH, aggregate_scores
 from evaluation.retrieval_baseline import first_relevant_rank
 from evaluation.run_paths import tagged
@@ -30,7 +30,7 @@ MD_PATH = Path("docs/REGISTRO_EVALUACIONES.md")
 
 FIELDS = [
     "fecha",
-    "commit",
+    "version_sistema",
     "etiqueta",
     "modelo_generador",
     "juez",
@@ -47,6 +47,19 @@ FIELDS = [
     "costo_generacion_usd",
 ]
 _METRICS = ["context_recall", "faithfulness", "factual_f1", "answer_accuracy"]
+
+
+def system_version() -> str:
+    """Último commit que tocó ``backend/``: la versión del sistema evaluado.
+    No es el HEAD de la rama, que cambia con el código de evaluación."""
+    backend = Path(__file__).resolve().parents[1] / "backend"
+    return subprocess.run(  # noqa: S603, S607
+        ["git", "log", "-1", "--format=%h", "--abbrev=7", "--", str(backend)],
+        cwd=backend,
+        capture_output=True,
+        text=True,
+        check=True,
+    ).stdout.strip()
 
 
 def _fmt(value: float | None) -> str:
@@ -69,7 +82,9 @@ def summarize_run(
     means = aggregate_scores(rows_all, "todos", _METRICS).get("todos", {})
     n = len(generation_rows)
     return {
-        **{k: meta[k] for k in ("fecha", "commit", "etiqueta", "modelo_generador", "juez")},
+        **{
+            k: meta[k] for k in ("fecha", "version_sistema", "etiqueta", "modelo_generador", "juez")
+        },
         "casos": str(n),
         "respondidas": str(sum(1 for r in generation_rows if r["outcome"] == "respondida")),
         "correctas": str(sum(1 for r in ragas_rows if r["diagnostico"] == "correcta")),
@@ -118,7 +133,7 @@ def main() -> int:
         ragas_rows = [json.loads(line) for line in f if line.strip()]
     meta = {
         "fecha": date.today().isoformat(),
-        "commit": str(git_state()["commit"])[:7],
+        "version_sistema": system_version(),
         "etiqueta": args.tag or "linea-base",
         "modelo_generador": args.modelo,
         "juez": JUDGE_MODEL,
