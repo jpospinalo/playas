@@ -24,6 +24,7 @@ Uso (requiere ChromaDB y Ollama accesibles; ver ``docs/SCRIPTS.md``):
 
 from __future__ import annotations
 
+import argparse
 import json
 import time
 import unicodedata
@@ -117,12 +118,19 @@ def run(cases: list[dict[str, Any]]) -> list[dict[str, Any]]:
 def main() -> int:
     from evaluation.ground_truth_v02 import load_ground_truth_v02
     from evaluation.ragas_common import git_state
+    from evaluation.run_paths import tagged
+
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--tag", default=None, help="etiqueta de la corrida (p. ej. local-infra)")
+    args = parser.parse_args()
+    report_path = tagged(REPORT_PATH, args.tag)
 
     rows = run(load_ground_truth_v02())
     report = {
         "dataset": "legal-ground-truth-v0.2",
         "fecha": datetime.now(UTC).isoformat(),
         "git": git_state(),
+        "tag": args.tag,
         "config": {
             "consulta": "pregunta original (sin reescritura ni filtro doc_type)",
             "prod_k": PROD_K,
@@ -134,9 +142,9 @@ def main() -> int:
         "por_revision": summarize_retrieval(rows, "revisado"),
         "cases": rows,
     }
-    REPORT_PATH.parent.mkdir(parents=True, exist_ok=True)
-    REPORT_PATH.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
-    print(f"Reporte: {REPORT_PATH}")
+    report_path.parent.mkdir(parents=True, exist_ok=True)
+    report_path.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
+    print(f"Reporte: {report_path}")
     return 0
 
 

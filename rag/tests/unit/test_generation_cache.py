@@ -73,3 +73,29 @@ def test_reanudacion_omite_casos_ya_en_cache() -> None:
         {"id": "registro-002"},
         {"id": "registro-004"},
     ]
+
+
+def test_un_servidor_local_se_reconoce_como_modelo_local() -> None:
+    from evaluation.generation_cache import is_local_llm
+
+    assert is_local_llm("http://localhost:11434/v1")
+    assert is_local_llm("http://127.0.0.1:11434/v1")
+    assert not is_local_llm(None)
+    assert not is_local_llm("https://api.openai.com/v1")
+
+
+def test_el_contador_cuenta_solo_los_respaldos_del_enricher() -> None:
+    import logging
+
+    from evaluation.generation_cache import EnrichmentFallbackCounter
+
+    counter = EnrichmentFallbackCounter()
+    log = logging.getLogger("rag.core.query_enricher")
+    log.addHandler(counter)
+    try:
+        log.warning("Query enrichment failed; falling back to original query.")
+        log.warning("otro aviso cualquiera")
+        logging.getLogger("rag.otro").warning("Query enrichment failed; falling back")
+    finally:
+        log.removeHandler(counter)
+    assert counter.count == 1

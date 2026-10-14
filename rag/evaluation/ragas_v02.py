@@ -42,6 +42,7 @@ from pathlib import Path
 from typing import Any
 
 from evaluation.generation_cache import CACHE_PATH, estimate_cost_usd, load_cache
+from evaluation.run_paths import tagged
 
 RESULTS_PATH = Path("evaluation/results/ragas-v0.2.jsonl")
 JUDGE_MODEL = "gpt-5-nano"
@@ -275,13 +276,15 @@ def _load_done(path: Path) -> set[str]:
         return {json.loads(line)["case_id"] for line in f if line.strip()}
 
 
-async def _run(rows: list[dict[str, Any]], concurrency: int, reasoning_effort: str) -> None:
+async def _run(
+    rows: list[dict[str, Any]], concurrency: int, reasoning_effort: str, results_path: Path
+) -> None:
     counter = UsageCounter()
     metrics = _build_metrics(_build_judge(counter, reasoning_effort), _build_embeddings())
     semaphore = asyncio.Semaphore(concurrency)
-    RESULTS_PATH.parent.mkdir(parents=True, exist_ok=True)
+    results_path.parent.mkdir(parents=True, exist_ok=True)
 
-    with RESULTS_PATH.open("a", encoding="utf-8") as f:
+    with results_path.open("a", encoding="utf-8") as f:
 
         async def one(row: dict[str, Any]) -> None:
             start = time.monotonic()
@@ -319,6 +322,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--limit", type=int, default=None, help="solo los primeros N pendientes")
     parser.add_argument("--concurrency", type=int, default=3, help="casos en paralelo")
+    parser.add_argument("--tag", default=None, help="etiqueta de la corrida (p. ej. gemma4-e2b)")
     parser.add_argument(
         "--reasoning-effort",
         default="low",
@@ -327,13 +331,14 @@ def main() -> int:
     )
     args = parser.parse_args()
 
-    done = _load_done(RESULTS_PATH)
-    cached = load_cache(CACHE_PATH)
+    results_path = tagged(RESULTS_PATH, args.tag)
+    done = _load_done(results_path)
+    cached = load_cache(tagged(CACHE_PATH, args.tag))
     todo = [r for r in cached if r["outcome"] == "respondida" and r["case_id"] not in done]
     if args.limit is not None:
         todo = todo[: args.limit]
     print(f"Caché: {len(cached)} · ya evaluados: {len(done)} · por evaluar: {len(todo)}")
-    asyncio.run(_run(todo, args.concurrency, args.reasoning_effort))
+    asyncio.run(_run(todo, args.concurrency, args.reasoning_effort, results_path))
     return 0
 
 

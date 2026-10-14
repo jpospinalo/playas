@@ -19,7 +19,7 @@ La caché es un JSONL que se escribe caso a caso: si la corrida se
 interrumpe, al relanzarla solo procesa los casos pendientes.
 
 Uso:
-    CHROMA_HOST=… OLLAMA_BASE_URL=… uv run python -m evaluation.generation_cache [--limit N] [--concurrency 4]
+    CHROMA_HOST=… OLLAMA_BASE_URL=… uv run python -m evaluation.generation_cache [--limit N] [--concurrency 4] [--tag T]
 """
 
 from __future__ import annotations
@@ -27,14 +27,18 @@ from __future__ import annotations
 import argparse
 import asyncio
 import json
+import logging
+import os
 import time
 import uuid
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlparse
 
 from langchain_core.callbacks import BaseCallbackHandler
 from langchain_core.outputs import LLMResult
 
+from evaluation.run_paths import tagged
 from rag.core.agent import (
     _INVALID_CITATIONS_RESPONSE,
     _NO_EVIDENCE_RESPONSE,
@@ -87,6 +91,28 @@ def estimate_cost_usd(
     )
 
 
+def is_local_llm(base_url: str | None) -> bool:
+    """``True`` si el LLM se sirve desde este equipo (costo 0)."""
+    if not base_url:
+        return False
+    return urlparse(base_url).hostname in {"localhost", "127.0.0.1", "::1"}
+
+
+class EnrichmentFallbackCounter(logging.Handler):
+    """Cuenta las veces que el enricher cae al clasificador de reglas porque el
+    LLM no devolvió el formato esperado. Exacto con ``--concurrency 1``."""
+
+    _MESSAGE = "Query enrichment failed"
+
+    def __init__(self) -> None:
+        super().__init__(level=logging.WARNING)
+        self.count = 0
+
+    def emit(self, record: logging.LogRecord) -> None:
+        if record.name == "rag.core.query_enricher" and self._MESSAGE in record.getMessage():
+            self.count += 1
+
+
 def pending_cases(cases: list[dict[str, Any]], done_ids: set[str]) -> list[dict[str, Any]]:
     return [case for case in cases if case["id"] not in done_ids]
 
@@ -120,10 +146,15 @@ async def _run_case(graph: Any, case: dict[str, Any]) -> dict[str, Any]:
     start = time.monotonic()
     error: str | None = None
     final_state: dict[str, Any] = {}
+    fallback = EnrichmentFallbackCounter()
+    enricher_log = logging.getLogger("rag.core.query_enricher")
+    enricher_log.addHandler(fallback)
     try:
         final_state = await graph.ainvoke(state_input, config=config)
     except Exception as exc:  # aislamiento por caso: un fallo no tumba el resto
         error = f"{type(exc).__name__}: {exc}"
+    finally:
+        enricher_log.removeHandler(fallback)
     answer = extract_answer_from_state(final_state) if final_state else ""
     sources = final_state.get("sources") or []
     route = final_state.get("query_route")
@@ -134,6 +165,9 @@ async def _run_case(graph: Any, case: dict[str, Any]) -> dict[str, Any]:
         "documentos_esperados": case["documentos_esperados"],
         "pregunta": case["pregunta"],
         "respuesta_esperada": case["respuesta"],
+        "llm_model": os.getenv("OPENAI_MODEL", ""),
+        "llm_base_url": os.getenv("OPENAI_BASE_URL") or "https://api.openai.com/v1",
+        "enrichment_fallback": fallback.count > 0,
         "route": route,
         "enriched_query": final_state.get("enriched_query"),
         "answer": answer,
@@ -145,7 +179,9 @@ async def _run_case(graph: Any, case: dict[str, Any]) -> dict[str, Any]:
         "llm_calls": tracker.calls,
         "input_tokens": tracker.input_tokens,
         "output_tokens": tracker.output_tokens,
-        "cost_usd_est": estimate_cost_usd(tracker.input_tokens, tracker.output_tokens),
+        "cost_usd_est": 0.0
+        if is_local_llm(os.getenv("OPENAI_BASE_URL"))
+        else estimate_cost_usd(tracker.input_tokens, tracker.output_tokens),
     }
 
 
@@ -185,14 +221,16 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--limit", type=int, default=None, help="solo los primeros N pendientes")
     parser.add_argument("--concurrency", type=int, default=4, help="casos en paralelo")
+    parser.add_argument("--tag", default=None, help="etiqueta de la corrida (p. ej. gemma4-e2b)")
     args = parser.parse_args()
 
-    done = {row["case_id"] for row in load_cache()}
+    cache_path = tagged(CACHE_PATH, args.tag)
+    done = {row["case_id"] for row in load_cache(cache_path)}
     todo = pending_cases(load_ground_truth_v02(), done)
     if args.limit is not None:
         todo = todo[: args.limit]
     print(f"En caché: {len(done)} · por generar: {len(todo)}")
-    asyncio.run(_run(todo, CACHE_PATH, args.concurrency))
+    asyncio.run(_run(todo, cache_path, args.concurrency))
     return 0
 
 
