@@ -37,6 +37,21 @@ def markdown_table(summary: dict[str, dict[str, Any]], label: str, columns: list
     return "\n".join(lines)
 
 
+def comparison_table(runs: dict[str, list[dict[str, Any]]], metric: str) -> str:
+    """Promedio de ``metric`` por tipo de pregunta, una columna por corrida."""
+    names = list(runs)
+    by_run = {name: aggregate_scores(rows, "tipo", [metric]) for name, rows in runs.items()}
+    tipos = sorted({tipo for summary in by_run.values() for tipo in summary})
+    lines = ["| Tipo | " + " | ".join(names) + " |", "|---|" + "---:|" * len(names)]
+    for tipo in tipos:
+        cells = []
+        for name in names:
+            value = by_run[name].get(tipo, {}).get(metric)
+            cells.append(f"{value:.2f}" if value is not None else "—")
+        lines.append(f"| {tipo} | " + " | ".join(cells) + " |")
+    return "\n".join(lines)
+
+
 def count_by(rows: list[dict[str, Any]], key: str) -> list[tuple[str, int]]:
     return Counter(str(row[key]) for row in rows).most_common()
 

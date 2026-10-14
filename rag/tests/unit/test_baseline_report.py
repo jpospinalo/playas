@@ -37,3 +37,21 @@ def test_costo_del_juez_sin_casos_sin_medir() -> None:
     assert judge_cost_line([{"cost_usd_est": 0.5}]) == (
         "- costo estimado del juez: $0.5000 en 1 casos medidos"
     )
+
+
+def test_comparativa_por_tipo_entre_corridas() -> None:
+    from evaluation.baseline_report import comparison_table
+
+    runs = {
+        "gpt-5-nano": [{"tipo": "1. A", "scores": {"factual_f1": 0.8}}],
+        "gemma4:e2b": [
+            {"tipo": "1. A", "scores": {"factual_f1": 0.4}},
+            {"tipo": "2. B", "scores": {"factual_f1": None}},
+        ],
+    }
+    assert comparison_table(runs, "factual_f1").splitlines() == [
+        "| Tipo | gpt-5-nano | gemma4:e2b |",
+        "|---|---:|---:|",
+        "| 1. A | 0.80 | 0.40 |",
+        "| 2. B | — | — |",
+    ]
