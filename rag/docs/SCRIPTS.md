@@ -240,6 +240,46 @@ uv run python -m evaluation.baseline_report
 relanzarse, solo procesan lo pendiente. Ambos imprimen los tokens y el
 costo estimado de cada corrida.
 
+### Comparar con un modelo local (sin AWS ni costo de generación)
+
+Misma evaluación cambiando solo el modelo que responde. Todo corre en el
+equipo local; el juez sigue siendo gpt-5-nano. Requiere `podman` u otro motor
+de contenedores, `ollama` y una GPU de ~4 GB para `gemma4:e2b`.
+
+```bash
+# 1. ChromaDB 1.3.5 (misma versión que en AWS) con la colección exacta del repo
+podman run -d --name atlas-chroma -p 127.0.0.1:8000:8000 \
+  -v ~/.local/share/atlas-chroma:/chroma/chroma:Z -e IS_PERSISTENT=TRUE \
+  docker.io/chromadb/chroma:1.3.5
+uv run python ../data/import_to_chromadb.py \
+  ../data/chroma-rag_playas_magdalena-20260731-135720.jsonl.gz \
+  --host 127.0.0.1 --port 8000 --collection rag_playas
+
+# 2. Ollama: embeddings en CPU (:11435) y modelo generador en GPU (:11434)
+CUDA_VISIBLE_DEVICES= OLLAMA_HOST=127.0.0.1:11435 ollama serve &
+OLLAMA_HOST=127.0.0.1:11435 ollama pull embeddinggemma:latest
+OLLAMA_HOST=127.0.0.1:11434 OLLAMA_CONTEXT_LENGTH=8192 OLLAMA_NUM_PARALLEL=1 ollama serve &
+OLLAMA_HOST=127.0.0.1:11434 ollama pull gemma4:e2b
+
+# 3. Verificar que la búsqueda local es idéntica a la de producción
+CHROMA_HOST=127.0.0.1 OLLAMA_BASE_URL=http://127.0.0.1:11435 \
+  uv run python -m evaluation.retrieval_baseline --tag local-infra
+
+# 4. Generar con el modelo local (ATLAS lo usa vía la API compatible con OpenAI)
+CHROMA_HOST=127.0.0.1 OLLAMA_BASE_URL=http://127.0.0.1:11435 \
+OPENAI_BASE_URL=http://127.0.0.1:11434/v1 OPENAI_MODEL=gemma4:e2b OPENAI_API_KEY=ollama \
+  uv run python -m evaluation.generation_cache --tag gemma4-e2b --concurrency 1
+
+# 5. Juez (gpt-5-nano, sin OPENAI_BASE_URL) y registro
+OLLAMA_BASE_URL=http://127.0.0.1:11435 uv run python -m evaluation.ragas_v02 --tag gemma4-e2b
+uv run python -m evaluation.registro --tag gemma4-e2b --modelo "gemma4:e2b (local)"
+```
+
+Con `--concurrency 1`, `generation_cache` registra por caso si el clasificador
+de consultas tuvo que usar su respaldo de reglas (`enrichment_fallback`) porque
+el modelo no devolvió el formato esperado. El costo de generación de un modelo
+servido en `localhost` se registra como 0.
+
 ### RAGAS y `langchain-community`
 
 `ragas==0.4.3` (última versión publicada) importa

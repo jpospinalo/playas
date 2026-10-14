@@ -12,6 +12,9 @@ Infraestructura offline para medir la calidad de ATLAS. Nunca forma parte de la 
 | `generation_cache.py` | Línea base, fase 2: grafo real una vez por caso, con ruta, consulta reescrita, tokens y costo, en caché reanudable |
 | `ragas_v02.py` | Línea base, fase 4: métricas RAGAS (`collections`) con juez gpt-5-nano sobre la caché |
 | `baseline_report.py` | Línea base, fase 5: tablas consolidadas |
+| `run_paths.py` | Rutas de resultados por corrida (`--tag`), para comparar modelos sin sobrescribir la línea base |
+| `registro.py` | Registro versionado de evaluaciones (`registro/evaluaciones.csv` → `docs/REGISTRO_EVALUACIONES.md`) |
+| `registro/evaluaciones.csv` | Registro de cada evaluación: fecha, versión del sistema, modelo, métricas, latencia y costo (versionado) |
 | `ragas_common.py` | Lógica compartida: generación con el grafo real, dataset RAGAS, métricas y reporte reproducible |
 | `ragas_eval_gemma.py` | Adaptador con juez Gemini/Gemma: `context_precision`, `context_recall`, `faithfulness`, `answer_relevancy` |
 | `ragas_eval_ollama.py` | Adaptador con juez Ollama: `answer_relevancy` |
@@ -26,5 +29,7 @@ Comandos, variables de entorno y forma del reporte: [`docs/SCRIPTS.md` § Evalua
 
 ## Línea base sobre el ground truth v0.2
 
+- Informe para el equipo jurídico, con la comparación frente a un modelo local: **[`docs/INFORME_EVALUACION_ATLAS.md`](../docs/INFORME_EVALUACION_ATLAS.md)**.
 - Resultados, cómo leer las métricas, hallazgos y propuestas: **[`docs/EVALUACION_LINEA_BASE.md`](../docs/EVALUACION_LINEA_BASE.md)**.
+- Registro de evaluaciones: [`docs/REGISTRO_EVALUACIONES.md`](../docs/REGISTRO_EVALUACIONES.md).
 - Comandos: [`docs/SCRIPTS.md` § Línea base](../docs/SCRIPTS.md#línea-base-sobre-legal-ground-truth-v02).
