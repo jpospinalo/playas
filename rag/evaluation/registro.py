@@ -6,7 +6,7 @@ tabla de ``docs/REGISTRO_EVALUACIONES.md``. Así queda trazable cómo cambia la
 calidad del sistema entre versiones y modelos.
 
 Uso:
-    uv run python -m evaluation.registro --modelo "gpt-5-nano (OpenAI)"            # línea base
+    uv run python -m evaluation.registro --modelo "gpt-5-nano (OpenAI)" --fecha 2026-10-08  # línea base
     uv run python -m evaluation.registro --tag gemma4-e2b --modelo "gemma4:e2b (local)"
 """
 
@@ -128,11 +128,16 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--tag", default=None, help="etiqueta de la corrida")
     parser.add_argument("--modelo", required=True, help="nombre legible del modelo generador")
+    parser.add_argument(
+        "--fecha", default=None, help="fecha de la corrida (AAAA-MM-DD); hoy si se omite"
+    )
     args = parser.parse_args()
     with tagged(RESULTS_PATH, args.tag).open(encoding="utf-8") as f:
         ragas_rows = [json.loads(line) for line in f if line.strip()]
     meta = {
-        "fecha": date.today().isoformat(),
+        "fecha": date.fromisoformat(args.fecha).isoformat()
+        if args.fecha
+        else date.today().isoformat(),
         "version_sistema": system_version(),
         "etiqueta": args.tag or "linea-base",
         "modelo_generador": args.modelo,
