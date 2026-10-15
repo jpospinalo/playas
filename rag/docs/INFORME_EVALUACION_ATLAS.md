@@ -9,11 +9,11 @@
 
 ## 1. Resumen
 
-1. **ATLAS es fiel a sus fuentes.** En 87 de cada 100 afirmaciones, lo que dice está respaldado por los documentos que consultó. No se encontraron casos en los que inventara información.
+1. **ATLAS es fiel a sus fuentes.** Ninguna respuesta se clasificó como inventada; en promedio, el 87% de lo que afirma cada respuesta está respaldado por los documentos que consultó.
 2. **Sus respuestas coinciden en un 70% con las del equipo jurídico.** De 65 respuestas evaluadas, **51 se consideran correctas**, 8 fallaron porque el sistema no encontró el documento adecuado y 6 fueron incompletas o demasiado generales.
 3. **Su mayor debilidad es encontrar la normativa nacional.** Cuando la respuesta depende del **REMAC 5** o del **Decreto 2324 de 1984**, el sistema los encontró en solo **2 de 18** preguntas. En su lugar suele usar reglamentos locales o sentencias, lo que a veces basta y a veces deja la respuesta incompleta.
 4. **Las preguntas sobre trámites y procedimientos son las más débiles.** En "secuencia, trámite u orden jurídico" las respuestas omiten o mezclan pasos con más frecuencia que en cualquier otro tipo de pregunta.
-5. **Un modelo pequeño y gratuito que corre en un computador local encuentra la misma información, pero responde peor.** Con exactamente la misma búsqueda, el modelo local (`gemma4:e2b`) acertó en **32 de 65** preguntas, frente a **51** del sistema actual. Es fiel a sus fuentes y **3 veces más rápido** (19 frente a 61 segundos), pero sus respuestas son más incompletas e imprecisas. Hoy no es un reemplazo adecuado, aunque sí una alternativa a considerar si se mejora la búsqueda.
+5. **Un modelo pequeño y gratuito que corre en un computador local encuentra información equivalente, pero responde peor.** Con el mismo buscador y los mismos documentos, el modelo local (`gemma4:e2b`) acertó en **32 de 65** preguntas, frente a **51** del sistema actual. Es fiel a sus fuentes y en nuestras pruebas respondió más rápido (19 frente a 61 segundos en promedio), pero sus respuestas son más incompletas e imprecisas. Hoy no es un reemplazo adecuado.
 
 ---
 
@@ -25,7 +25,7 @@
   - si ATLAS **encuentra** los documentos correctos;
   - si **usa bien** lo que encuentra, sin inventar;
   - si su respuesta **se parece** a la del equipo jurídico.
-- **Comparación adicional:** se repitió la misma prueba cambiando únicamente el modelo que redacta las respuestas por un **modelo pequeño que corre localmente**, sin costo por consulta. Las preguntas, los documentos, el buscador y el evaluador fueron los mismos, de modo que las diferencias se deben solo al modelo.
+- **Comparación adicional:** se repitió la misma prueba cambiando el modelo de lenguaje de ATLAS por un **modelo pequeño que corre localmente**, sin costo por consulta. Las preguntas, los documentos, el buscador y el evaluador fueron los mismos. Como el modelo también reformula la pregunta antes de buscar y decide si es del tema, los fragmentos consultados pueden variar entre un modelo y otro (ver §5).
 
 ## 3. Cómo leer las cifras
 
@@ -59,7 +59,7 @@ Cada respuesta se clasifica además en una de estas categorías:
 | 5. Aplicación normativa o jurisprudencial | 36 | 0,48 | 0,87 | 0,75 | 0,83 |
 | 6. Secuencia, trámite u orden jurídico | 8 | 0,50 | 0,89 | **0,54** | 0,56 |
 
-*"Documento correcto encontrado" se calcula sobre las 58 preguntas que tienen documento esperado; una pregunta rechazada cuenta como no encontrado. Los tipos 1, 3 y 4 tienen pocas preguntas (2 a 7), así que sus cifras son orientativas.*
+*"Documento correcto encontrado" se calcula sobre las 58 preguntas que tienen documento esperado; una pregunta rechazada cuenta como no encontrado. Se usan los fragmentos que el sistema consultó de verdad; el anexo técnico reporta 0,57 porque allí la búsqueda se mide con la pregunta original, sin reformular. Los tipos 1 a 4 tienen entre 2 y 7 preguntas, así que sus cifras son orientativas.*
 
 ### 4.2 Clasificación de las respuestas
 
@@ -77,7 +77,13 @@ Cada respuesta se clasifica además en una de estas categorías:
 
 ## 5. Comparación con un modelo local
 
-Se repitió la evaluación completa cambiando **solo** el modelo que redacta las respuestas: en lugar de gpt-5-nano (servicio de OpenAI, con costo por consulta) se usó **gemma4:e2b**, un modelo pequeño y abierto que corre en un computador portátil, **sin costo por consulta y sin enviar datos a terceros**. Las preguntas, los documentos, el buscador y el evaluador fueron los mismos.
+Se repitió la evaluación completa cambiando el modelo de lenguaje de ATLAS: en lugar de gpt-5-nano (servicio de OpenAI, con costo por consulta) se usó **gemma4:e2b**, un modelo pequeño y abierto que corre en un computador portátil, **sin costo por consulta y sin enviar datos a terceros**. Las preguntas, los documentos, el buscador y el evaluador fueron los mismos.
+
+En ATLAS el modelo interviene en tres pasos: reformula la pregunta antes de buscar, decide si la pregunta es del tema y redacta la respuesta. Por eso, con cada modelo los fragmentos consultados pueden variar: solo en 13 de las 66 preguntas los dos modelos consultaron exactamente los mismos fragmentos, aunque en 60 compartieron al menos uno.
+
+*Dos advertencias para leer la comparación:*
+- *El evaluador es gpt-5-nano, el mismo modelo del sistema actual, lo que podría favorecerlo ligeramente.*
+- *Los tiempos no se midieron en las mismas condiciones: el sistema actual consultaba servicios en la nube y procesaba varias preguntas a la vez, mientras que el modelo local corrió en un portátil, una pregunta a la vez. Indican una tendencia, no una medición exacta.*
 
 ### 5.1 Resultado general
 
@@ -111,14 +117,13 @@ Se repitió la evaluación completa cambiando **solo** el modelo que redacta las
 
 ### 5.3 Qué significa
 
-- **Ambos modelos encuentran prácticamente la misma información** (evidencia necesaria encontrada: 0,80 frente a 0,82). La diferencia no está en la búsqueda.
+- **Ambos modelos encuentran información equivalente** (evidencia necesaria encontrada: 0,80 frente a 0,82), aunque no siempre los mismos fragmentos. La diferencia principal no está en la búsqueda.
 - **Ambos son fieles a sus fuentes** y ninguno inventó información.
 - **La diferencia está en cómo redacta la respuesta.** El modelo local escribe respuestas de la mitad de largo y con frecuencia **no llega a la conclusión**: dice que "el contexto no especifica" cuando la información sí estaba (ver el ejemplo de la §6.5). Por eso coincide mucho menos con la respuesta jurídica.
-- **A favor del modelo local:** es 3 veces más rápido, no tiene costo por consulta y no envía las preguntas de los usuarios a un tercero.
-- **Conclusión:** hoy el modelo local **no es un reemplazo adecuado** del sistema actual para orientar a usuarios. Podría reconsiderarse si se mejora la búsqueda (propuestas 1 y 2 de la §7) y se le dan instrucciones más precisas, porque su punto débil es aprovechar la información, no encontrarla.
-- **Dos hallazgos comunes a ambos modelos**, que por eso apuntan a la búsqueda y no al modelo:
-  - **El radicado equivocado** de la pregunta 062 lo dan los dos (§6.2).
-  - **Ambos rechazaron una pregunta pertinente**, aunque distinta: el sistema actual la 046 y el modelo local la 063.
+- **A favor del modelo local:** en nuestras pruebas fue más rápido, no tiene costo por consulta y no envía las preguntas de los usuarios a un tercero.
+- **Conclusión:** hoy el modelo local **no es un reemplazo adecuado** del sistema actual para orientar a usuarios. Su punto débil es aprovechar la información que encuentra, no encontrarla: mejorar la búsqueda (propuestas 1 y 2 de la §7) beneficia a ambos modelos, pero para el modelo local lo decisivo sería darle instrucciones más precisas (propuesta 3) y volver a medir.
+- **El radicado equivocado** de la pregunta 062 lo dan los dos modelos, porque ambos recibieron el fragmento del otro proceso: es un problema de la búsqueda, no del modelo (§6.2).
+- **Cada modelo rechazó una pregunta pertinente distinta** (el sistema actual la 046 y el modelo local la 063). El filtro de temas depende del modelo, así que conviene revisarlo (propuesta 5 de la §7).
 
 
 ## 6. Ejemplos concretos
