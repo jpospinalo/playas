@@ -31,6 +31,9 @@ import logging
 import os
 import time
 import uuid
+from collections.abc import Iterator
+from contextlib import contextmanager
+from contextvars import ContextVar
 from pathlib import Path
 from typing import Any
 from urllib.parse import urlparse
@@ -100,7 +103,8 @@ def is_local_llm(base_url: str | None) -> bool:
 
 class EnrichmentFallbackCounter(logging.Handler):
     """Cuenta las veces que el enricher cae al clasificador de reglas porque el
-    LLM no devolvió el formato esperado. Exacto con ``--concurrency 1``."""
+    LLM no devolvió el formato esperado. Dentro de ``case_fallback_counter``
+    solo cuenta los avisos del caso en curso, aunque haya casos en paralelo."""
 
     _MESSAGE = "Query enrichment failed"
 
@@ -109,8 +113,32 @@ class EnrichmentFallbackCounter(logging.Handler):
         self.count = 0
 
     def emit(self, record: logging.LogRecord) -> None:
+        # Fuera de un caso (``None``) cuenta todo; dentro, solo su propio caso.
+        current = _CURRENT_FALLBACK.get()
+        if current is not None and current is not self:
+            return
         if record.name == "rag.core.query_enricher" and self._MESSAGE in record.getMessage():
             self.count += 1
+
+
+# Contador del caso en curso: el aviso se emite dentro de la tarea de asyncio
+# del caso, así que cada contador ignora los avisos de los demás casos.
+_CURRENT_FALLBACK: ContextVar[EnrichmentFallbackCounter | None] = ContextVar(
+    "current_fallback", default=None
+)
+
+
+@contextmanager
+def case_fallback_counter() -> Iterator[EnrichmentFallbackCounter]:
+    counter = EnrichmentFallbackCounter()
+    logger = logging.getLogger("rag.core.query_enricher")
+    token = _CURRENT_FALLBACK.set(counter)
+    logger.addHandler(counter)
+    try:
+        yield counter
+    finally:
+        logger.removeHandler(counter)
+        _CURRENT_FALLBACK.reset(token)
 
 
 def pending_cases(cases: list[dict[str, Any]], done_ids: set[str]) -> list[dict[str, Any]]:
@@ -146,15 +174,11 @@ async def _run_case(graph: Any, case: dict[str, Any]) -> dict[str, Any]:
     start = time.monotonic()
     error: str | None = None
     final_state: dict[str, Any] = {}
-    fallback = EnrichmentFallbackCounter()
-    enricher_log = logging.getLogger("rag.core.query_enricher")
-    enricher_log.addHandler(fallback)
-    try:
-        final_state = await graph.ainvoke(state_input, config=config)
-    except Exception as exc:  # aislamiento por caso: un fallo no tumba el resto
-        error = f"{type(exc).__name__}: {exc}"
-    finally:
-        enricher_log.removeHandler(fallback)
+    with case_fallback_counter() as fallback:
+        try:
+            final_state = await graph.ainvoke(state_input, config=config)
+        except Exception as exc:  # aislamiento por caso: un fallo no tumba el resto
+            error = f"{type(exc).__name__}: {exc}"
     answer = extract_answer_from_state(final_state) if final_state else ""
     sources = final_state.get("sources") or []
     route = final_state.get("query_route")

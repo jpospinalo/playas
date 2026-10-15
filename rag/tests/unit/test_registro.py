@@ -60,11 +60,6 @@ def test_resumen_de_una_corrida() -> None:
     assert row["costo_generacion_usd"] == "0.0000"
 
 
-def test_la_linea_base_sin_campo_de_respaldo_cuenta_cero() -> None:
-    sin_campo = [{k: v for k, v in r.items() if k != "enrichment_fallback"} for r in _GEN]
-    assert summarize_run(sin_campo, _RAGAS, _META)["respaldo_enricher"] == "0"
-
-
 def test_agregar_corrida_crea_el_csv_con_encabezado(tmp_path: Path) -> None:
     path = tmp_path / "evaluaciones.csv"
     append_run(summarize_run(_GEN, _RAGAS, _META), path)
@@ -96,3 +91,8 @@ def test_la_version_del_sistema_es_el_ultimo_commit_del_backend() -> None:
     version = system_version()
     assert re.fullmatch(r"[0-9a-f]{7}", version)
     assert version == esperado
+
+
+def test_la_linea_base_sin_medicion_de_respaldo_dice_no_disponible() -> None:
+    sin_campo = [{k: v for k, v in r.items() if k != "enrichment_fallback"} for r in _GEN]
+    assert summarize_run(sin_campo, _RAGAS, _META)["respaldo_enricher"] == "n/d"

@@ -88,7 +88,10 @@ def summarize_run(
         "casos": str(n),
         "respondidas": str(sum(1 for r in generation_rows if r["outcome"] == "respondida")),
         "correctas": str(sum(1 for r in ragas_rows if r["diagnostico"] == "correcta")),
-        "respaldo_enricher": str(sum(1 for r in generation_rows if r.get("enrichment_fallback"))),
+        # Corridas anteriores a esta medición no tienen el campo: no se mide, no es 0.
+        "respaldo_enricher": str(sum(1 for r in generation_rows if r["enrichment_fallback"]))
+        if any("enrichment_fallback" in r for r in generation_rows)
+        else "n/d",
         "hit_at_4": _fmt(sum(hits) / len(hits) if hits else None),
         **{m: _fmt(means.get(m)) for m in _METRICS},
         "latencia_media_s": f"{sum(r['duration_seconds'] for r in generation_rows) / n:.1f}",

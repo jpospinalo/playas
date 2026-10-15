@@ -99,3 +99,25 @@ def test_el_contador_cuenta_solo_los_respaldos_del_enricher() -> None:
     finally:
         log.removeHandler(counter)
     assert counter.count == 1
+
+
+def test_el_contador_atribuye_el_respaldo_solo_al_caso_que_lo_produjo() -> None:
+    import asyncio
+    import logging
+
+    from evaluation.generation_cache import case_fallback_counter
+
+    log = logging.getLogger("rag.core.query_enricher")
+
+    async def caso(falla: bool) -> int:
+        with case_fallback_counter() as counter:
+            await asyncio.sleep(0)  # los casos se intercalan
+            if falla:
+                log.warning("Query enrichment failed; falling back to original query.")
+            await asyncio.sleep(0)
+            return counter.count
+
+    async def ambos() -> list[int]:
+        return await asyncio.gather(caso(True), caso(False))
+
+    assert asyncio.run(ambos()) == [1, 0]

@@ -275,9 +275,9 @@ OLLAMA_BASE_URL=http://127.0.0.1:11435 uv run python -m evaluation.ragas_v02 --t
 uv run python -m evaluation.registro --tag gemma4-e2b --modelo "gemma4:e2b (local)"
 ```
 
-Con `--concurrency 1`, `generation_cache` registra por caso si el clasificador
-de consultas tuvo que usar su respaldo de reglas (`enrichment_fallback`) porque
-el modelo no devolvió el formato esperado. El costo de generación de un modelo
+`generation_cache` registra por caso si el clasificador de consultas tuvo que
+usar su respaldo de reglas (`enrichment_fallback`) porque el modelo no devolvió
+el formato esperado; el conteo es por caso aunque corran varios en paralelo. El costo de generación de un modelo
 servido en `localhost` se registra como 0.
 
 ### RAGAS y `langchain-community`
