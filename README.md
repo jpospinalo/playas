@@ -6,22 +6,7 @@ Esta guía cubre el despliegue completo en AWS: servicios de vectores en EC2 y l
 
 ## Evaluación de calidad
 
-La calidad de ATLAS se mide con [RAGAS](https://docs.ragas.io/) contra el ground truth validado por el equipo jurídico (66 casos, v0.2), evaluando por separado la recuperación de documentos y la generación de respuestas.
-
-- **📄 Informe para el equipo jurídico (incluye la comparación con un modelo local): [`rag/docs/INFORME_EVALUACION_ATLAS.md`](rag/docs/INFORME_EVALUACION_ATLAS.md)**
-- **📊 Anexo técnico de la línea base: [`rag/docs/EVALUACION_LINEA_BASE.md`](rag/docs/EVALUACION_LINEA_BASE.md)**
-- **🗂️ Registro de evaluaciones: [`rag/docs/REGISTRO_EVALUACIONES.md`](rag/docs/REGISTRO_EVALUACIONES.md)**
-
-| Indicador | Resultado |
-|---|---|
-| Fidelidad a las fuentes (*faithfulness*) | **0,87**: sin casos de alucinación |
-| Coincidencia con la respuesta jurídica (Factual F1 / Answer Accuracy) | **0,70 / 0,72** |
-| Respuestas correctas según el juez | **51 de 65** |
-| Documento esperado entre los fragmentos que consulta el sistema (hit@4) | **0,55**: normativa nacional 2 de 18 |
-| Tipo de pregunta más débil | Secuencia, trámite u orden jurídico (F1 0,54) |
-| Modelo local gratuito (gemma4:e2b) frente al actual | 32 frente a 51 respuestas correctas · más rápido en nuestras pruebas · sin costo |
-
-El documento explica cómo leer cada métrica, el diagnóstico por caso, ejemplos, hipótesis de calibración y las decisiones pendientes. Los comandos para reproducir la evaluación están en [`rag/docs/SCRIPTS.md`](rag/docs/SCRIPTS.md#línea-base-sobre-legal-ground-truth-v02).
+La calidad de ATLAS se mide con [RAGAS](https://docs.ragas.io/) contra el ground truth del equipo jurídico. Resultados, informe para el equipo jurídico y registro de evaluaciones: [`rag/evaluation/README.md`](rag/evaluation/README.md#resultados-sobre-el-ground-truth-v02).
 
 ---
 

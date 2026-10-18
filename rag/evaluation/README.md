@@ -27,9 +27,18 @@ Infraestructura offline para medir la calidad de ATLAS. Nunca forma parte de la 
 
 Comandos, variables de entorno y forma del reporte: [`docs/SCRIPTS.md` § Evaluación del RAG](../docs/SCRIPTS.md#evaluación-del-rag).
 
-## Línea base sobre el ground truth v0.2
+## Resultados sobre el ground truth v0.2
 
-- Informe para el equipo jurídico, con la comparación frente a un modelo local: **[`docs/INFORME_EVALUACION_ATLAS.md`](../docs/INFORME_EVALUACION_ATLAS.md)**.
-- Resultados, cómo leer las métricas, hallazgos y propuestas: **[`docs/EVALUACION_LINEA_BASE.md`](../docs/EVALUACION_LINEA_BASE.md)**.
-- Registro de evaluaciones: [`docs/REGISTRO_EVALUACIONES.md`](../docs/REGISTRO_EVALUACIONES.md).
+66 casos construidos por el equipo jurídico; 27 marcados como revisados. Detalle de cada corrida en el [registro de evaluaciones](../docs/REGISTRO_EVALUACIONES.md).
+
+| Indicador | Sistema actual (gpt-5-nano) | Modelo local (gemma4:e2b) |
+|---|---|---|
+| Respuestas correctas según el juez | **51 de 65** | 32 de 65 |
+| Fidelidad a las fuentes (*faithfulness*) | **0,87** | 0,83 |
+| Coincidencia con la respuesta jurídica (Factual F1 / Answer Accuracy) | **0,70 / 0,72** | 0,41 / 0,59 |
+| Documento esperado entre los fragmentos consultados (hit@4) | 0,55 (normativa nacional 2 de 18) | 0,57 |
+| Tipo de pregunta más débil | Secuencia, trámite u orden jurídico (F1 0,54) | — |
+
+- Informe para el equipo jurídico, con la comparación frente al modelo local: **[`docs/INFORME_EVALUACION_ATLAS.md`](../docs/INFORME_EVALUACION_ATLAS.md)**.
+- Anexo técnico de la línea base (cómo leer las métricas, hallazgos y propuestas): **[`docs/EVALUACION_LINEA_BASE.md`](../docs/EVALUACION_LINEA_BASE.md)**.
 - Comandos: [`docs/SCRIPTS.md` § Línea base](../docs/SCRIPTS.md#línea-base-sobre-legal-ground-truth-v02).
