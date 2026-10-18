@@ -102,3 +102,23 @@ def test_la_version_del_sistema_es_el_ultimo_commit_del_backend() -> None:
 def test_la_linea_base_sin_medicion_de_respaldo_dice_no_disponible() -> None:
     sin_campo = [{k: v for k, v in r.items() if k != "enrichment_fallback"} for r in _GEN]
     assert summarize_run(sin_campo, _RAGAS, _META)["respaldo_enricher"] == "n/d"
+
+
+def test_registrar_dos_veces_la_misma_corrida_no_duplica_la_fila(tmp_path: Path) -> None:
+    path = tmp_path / "evaluaciones.csv"
+    append_run(summarize_run(_GEN, _RAGAS, _META), path)
+    append_run(summarize_run(_GEN, _RAGAS, {**_META, "etiqueta": "otra"}), path)
+    append_run(summarize_run(_GEN, _RAGAS, {**_META, "juez": "otro-juez"}), path)
+    with path.open(encoding="utf-8") as f:
+        rows = list(csv.DictReader(f))
+    assert [(r["etiqueta"], r["juez"]) for r in rows] == [
+        ("gemma4-e2b", "otro-juez"),
+        ("otra", _META["juez"]),
+    ]
+
+
+def test_una_cache_vacia_no_se_registra() -> None:
+    import pytest
+
+    with pytest.raises(ValueError, match="sin casos"):
+        summarize_run([], _RAGAS, _META)

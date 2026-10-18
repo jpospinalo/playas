@@ -73,6 +73,8 @@ def summarize_run(
 ) -> dict[str, str]:
     """Una fila del registro: conteos, hit@4 sobre los fragmentos que de verdad
     recibió el modelo, promedios RAGAS, latencia y costo de generación."""
+    if not generation_rows:
+        raise ValueError("La caché de generación está vacía: corrida sin casos, no se registra.")
     with_doc = [r for r in generation_rows if r["documentos_esperados"]]
     hits = [
         first_relevant_rank(r["context_titles"], r["documentos_esperados"]) is not None
@@ -100,13 +102,24 @@ def summarize_run(
 
 
 def append_run(row: dict[str, str], path: Path = CSV_PATH) -> None:
+    """Agrega la corrida al registro. Si ya hay una con la misma fecha y
+    etiqueta (se volvió a registrar), la reemplaza en su lugar."""
     path.parent.mkdir(parents=True, exist_ok=True)
-    new = not path.exists()
-    with path.open("a", encoding="utf-8", newline="") as f:
+    rows: list[dict[str, str]] = []
+    if path.exists():
+        with path.open(encoding="utf-8", newline="") as f:
+            rows = list(csv.DictReader(f))
+    key = (row["fecha"], row["etiqueta"])
+    same = [i for i, r in enumerate(rows) if (r["fecha"], r["etiqueta"]) == key]
+    if same:
+        rows[same[0]] = row
+        rows = [r for i, r in enumerate(rows) if i not in same[1:]]
+    else:
+        rows.append(row)
+    with path.open("w", encoding="utf-8", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=FIELDS, lineterminator="\n")
-        if new:
-            writer.writeheader()
-        writer.writerow(row)
+        writer.writeheader()
+        writer.writerows(rows)
 
 
 def render_markdown(rows: list[dict[str, str]]) -> str:
