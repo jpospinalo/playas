@@ -103,7 +103,7 @@ def append_run(row: dict[str, str], path: Path = CSV_PATH) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     new = not path.exists()
     with path.open("a", encoding="utf-8", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=FIELDS)
+        writer = csv.DictWriter(f, fieldnames=FIELDS, lineterminator="\n")
         if new:
             writer.writeheader()
         writer.writerow(row)

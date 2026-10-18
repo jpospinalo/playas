@@ -1,8 +1,8 @@
 # Informe de evaluación de ATLAS
 
-**Para:** equipo jurídico del proyecto ATLAS  
-**Preparado por:** Julian Esteban Rincón Rodríguez  
-**Fecha:** 2026-10-15  
+**Para:** equipo jurídico del proyecto ATLAS\
+**Preparado por:** Julian Esteban Rincón Rodríguez\
+**Fecha:** 2026-10-15\
 **Base de la evaluación:** 66 preguntas con respuesta de referencia construidas y validadas por el equipo jurídico (ground truth v0.2)
 
 ---

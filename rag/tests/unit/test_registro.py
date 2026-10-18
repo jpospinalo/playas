@@ -70,6 +70,12 @@ def test_agregar_corrida_crea_el_csv_con_encabezado(tmp_path: Path) -> None:
     assert list(rows[0].keys()) == FIELDS
 
 
+def test_el_csv_usa_saltos_de_linea_unix(tmp_path: Path) -> None:
+    path = tmp_path / "evaluaciones.csv"
+    append_run(summarize_run(_GEN, _RAGAS, _META), path)
+    assert b"\r" not in path.read_bytes()
+
+
 def test_tabla_markdown_del_registro() -> None:
     md = render_markdown([summarize_run(_GEN, _RAGAS, _META)])
     assert "| 2026-10-15 |" in md
