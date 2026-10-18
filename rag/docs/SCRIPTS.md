@@ -132,6 +132,13 @@ llama a un LLM/juez externo (Gemini u Ollama) por cada métrica — no es un
 comando inocuo para ejecutar "para probar". `--validate-only` (más abajo)
 no tiene ese costo ni ese riesgo.
 
+Hay dos flujos independientes:
+
+- **Banco v0.1** (21 casos) con los adaptadores `ragas_eval_gemma.py` y
+  `ragas_eval_ollama.py`: secciones *Dataset* y *Reporte* a continuación.
+- **Línea base v0.2** (66 casos, por fases, juez gpt-5-nano): sección
+  [Línea base sobre `legal-ground-truth-v0.2`](#línea-base-sobre-legal-ground-truth-v02).
+
 ### Dataset (`evaluation/data/legal-ground-truth-v0.1.json`)
 
 21 preguntas jurídicas reales sobre playas/dominio público

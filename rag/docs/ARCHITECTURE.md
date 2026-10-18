@@ -213,3 +213,13 @@ Gemini u Ollama) sobre el dataset jurídico versionado y firmado
 `evaluation/ground_truth.py`); ver
 [`docs/SCRIPTS.md`](SCRIPTS.md#evaluación-del-rag) para los comandos, las
 variables de entorno obligatorias y la forma exacta del reporte.
+
+La línea base sobre `evaluation/data/legal-ground-truth-v0.2.json` (66 casos
+generados desde el Excel del equipo jurídico por `ground_truth_v02.py`; 27
+marcados como revisados, sin sustituir la validación final del banco) sigue
+la misma regla y corre en fases independientes y reanudables:
+`retrieval_baseline.py` (recuperación sin LLM) → `generation_cache.py` (grafo
+real una vez por caso, en caché) → `ragas_v02.py` (métricas RAGAS sobre la
+caché) → `baseline_report.py` (tablas) → `registro.py` (registro versionado
+de cada corrida). Ver
+[`docs/SCRIPTS.md`](SCRIPTS.md#línea-base-sobre-legal-ground-truth-v02).

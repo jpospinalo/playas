@@ -20,7 +20,7 @@ Infraestructura offline para medir la calidad de ATLAS. Nunca forma parte de la 
 | `ragas_eval_ollama.py` | Adaptador con juez Ollama: `answer_relevancy` |
 | `citation_coverage.py` | Diagnóstico offline de cobertura de citas en las respuestas |
 | `rrf_diagnostic.py` | Diagnóstico offline de la fusión RRF del retriever híbrido |
-| `data/legal-ground-truth-v0.1.json` | Dataset jurídico v0.1 (21 casos, histórico) |
+| `data/legal-ground-truth-v0.1.json` | Dataset jurídico v0.1 (21 casos) |
 | `data/legal-ground-truth-v0.2.xlsx` | Dataset jurídico v0.2 construido por el equipo jurídico (fuente) |
 | `data/legal-ground-truth-v0.2.json` | Dataset v0.2 versionado, generado por `ground_truth_v02.py` (66 casos) |
 | `results/` | Reportes de cada corrida (no versionados, ver `.gitignore`) |

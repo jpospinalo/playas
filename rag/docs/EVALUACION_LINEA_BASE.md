@@ -225,6 +225,7 @@ Encontrados al preparar la medición. **Ninguno se ha corregido**; se presentan 
 - Las fases 0, 1 y 5 no usan LLM, y los embeddings los calcula el Ollama del proyecto.
 - Los comandos están en [`SCRIPTS.md` § Línea base](SCRIPTS.md#línea-base-sobre-legal-ground-truth-v02). La generación y el juez escriben caso a caso y se pueden reanudar.
 - Los resultados crudos (`evaluation/results/`) no se versionan, porque se regeneran con los comandos. Cada reporte registra el commit, el hash del dataset y el modelo.
+- Las corridas posteriores a esta línea base, como la comparación con un modelo local, quedan en el [registro de evaluaciones](REGISTRO_EVALUACIONES.md) y en el [informe para el equipo jurídico](INFORME_EVALUACION_ATLAS.md#5-comparación-con-un-modelo-local).
 - El código nuevo tiene 54 pruebas unitarias. La suite de `rag/` queda en 815 pruebas en verde, sin cambios en el backend, el frontend ni las dependencias.
 
 ## 12. Decisiones que necesitamos
