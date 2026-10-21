@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ATLAS — D2 Carta náutica (maqueta)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
+<style>
+/* D2 · Carta náutica. Maqueta estática; contenido de ejemplo.
+   Código de color de las cartas: blanco = agua profunda, azul = bajo (atención),
+   tierra solo en tierra, magenta = lo importante. Lugares en itálica, como el
+   rotulado de hidrografía. */
+:root {
+  --agua: #ffffff;
+  --bajo: #cfe6f3;
+  --bajo-2: #e6f2f9;
+  --sonda: #5e9cc2;
+  --tierra: #ead9a8;
+  --tierra-borde: #b89b54;
+  --magenta: #b0177a;
+  --tinta: #14212b;
+  --tinta-2: #475663;
+}
+* { box-sizing: border-box; margin: 0; }
+html { -webkit-text-size-adjust: 100%; }
+body { background: var(--agua); color: var(--tinta); font: 19px/1.5 "Source Sans 3", system-ui, sans-serif; }
+a { color: #10558a; text-underline-offset: 3px; }
+:focus-visible { outline: 3px solid var(--magenta); outline-offset: 3px; }
+.lugar { font-style: italic; }
+
+header { border-bottom: 2px solid var(--tinta); }
+.barra { max-width: 980px; margin: 0 auto; padding: 0 20px; height: 62px; display: flex; align-items: center; gap: 12px; }
+.barra img { width: 34px; height: 34px; }
+.barra strong { font-size: 24px; font-weight: 700; }
+.barra .zona { color: var(--tinta-2); font-size: 18px; }
+.barra nav { margin-left: auto; }
+
+main { max-width: 980px; margin: 0 auto; padding: 28px 20px 48px; }
+h1 { font-size: 36px; line-height: 1.15; font-weight: 700; }
+.intro { color: var(--tinta-2); margin-top: 6px; max-width: 36em; }
+
+.entrada { display: grid; grid-template-columns: 1.15fr 1fr; gap: 28px; margin-top: 22px; align-items: start; }
+.carta { position: relative; border: 2px solid var(--tinta); background: var(--agua); }
+.carta svg { display: block; width: 100%; height: auto; }
+.carta .nota { position: absolute; left: 10px; bottom: 8px; font-size: 14px; font-style: italic; color: var(--tinta-2); background: rgba(255,255,255,.85); padding: 0 4px; }
+.punto { cursor: pointer; }
+.punto circle.toque { fill: transparent; }
+.punto circle.marca { fill: var(--agua); stroke: var(--tinta); stroke-width: 3; }
+.punto.activo circle.marca { fill: var(--magenta); stroke: var(--magenta); }
+.punto text { font: italic 600 19px "Source Sans 3"; fill: var(--tinta); }
+.punto.activo text { fill: var(--magenta); }
+
+.lista-playas { display: none; }
+.lista-playas a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 14px; border: 2px solid var(--tinta); border-radius: 2px; color: var(--tinta); text-decoration: none; font-style: italic; font-weight: 600; }
+.lista-playas a[aria-current] { background: var(--magenta); border-color: var(--magenta); color: #fff; }
+.temas h2 { font-size: 24px; font-weight: 700; }
+.temas p { color: var(--tinta-2); font-size: 17px; margin-top: 2px; }
+.temas ul { list-style: none; padding: 0; margin-top: 12px; border-top: 1px solid var(--sonda); }
+.temas li a { display: flex; justify-content: space-between; gap: 12px; padding: 14px 4px; border-bottom: 1px solid var(--sonda); color: var(--tinta); text-decoration: none; font-weight: 600; font-size: 20px; }
+.temas li a:hover { background: var(--bajo-2); }
+.temas li a span { font-weight: 400; color: var(--tinta-2); font-size: 17px; text-align: right; }
+.escribir { margin-top: 22px; }
+.escribir label { font-weight: 700; display: block; }
+.campo { display: flex; gap: 10px; margin-top: 8px; }
+.campo input { flex: 1; min-width: 0; height: 54px; border: 2px solid var(--tinta); border-radius: 2px; padding: 0 14px; font: inherit; }
+.btn { height: 54px; padding: 0 22px; border: 0; border-radius: 2px; background: var(--tinta); color: #fff; font: 700 19px "Source Sans 3"; cursor: pointer; }
+
+/* Respuesta */
+.migas { font-size: 17px; color: var(--tinta-2); }
+.migas .lugar { color: var(--magenta); font-weight: 600; }
+.resp { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 36px; margin-top: 14px; align-items: start; }
+.resp h1 { font-size: 30px; font-weight: 600; }
+.corta { margin-top: 16px; background: var(--bajo); padding: 18px 20px; border-left: 6px solid var(--sonda); }
+.corta strong { display: block; font-size: 30px; line-height: 1.15; }
+.corta p { margin-top: 6px; font-size: 20px; }
+.resp h2 { font-size: 24px; margin-top: 28px; }
+.pasos { list-style: none; padding: 0; margin-top: 12px; counter-reset: p; }
+.pasos li { counter-increment: p; position: relative; padding: 0 0 20px 54px; }
+.pasos li::before { content: counter(p); position: absolute; left: 0; top: -2px; width: 36px; height: 36px; border: 3px solid var(--sonda); border-radius: 50%; background: var(--agua); display: grid; place-items: center; font-weight: 700; }
+.pasos li::after { content: ""; position: absolute; left: 17px; top: 36px; bottom: 0; border-left: 3px dotted var(--sonda); }
+.pasos li:last-child::after { display: none; }
+.lateral { border: 2px solid var(--magenta); padding: 16px 18px; }
+.lateral h2 { margin-top: 0; color: var(--magenta); font-size: 22px; }
+.lateral dl { margin-top: 10px; }
+.lateral dt { font-weight: 700; margin-top: 12px; }
+.lateral dd { color: var(--tinta-2); font-size: 17px; }
+.fuentes { margin-top: 28px; border-top: 1px solid var(--sonda); padding-top: 14px; font-size: 17px; }
+.fuentes h2 { font-size: 20px; margin: 0; }
+.fuentes ol { margin-top: 8px; padding-left: 22px; color: var(--tinta-2); }
+sup a { font-weight: 700; color: var(--magenta); text-decoration: none; padding: 0 2px; }
+.despues { margin-top: 24px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.despues b { margin-right: 6px; }
+.btn-sec { height: 46px; padding: 0 18px; border: 2px solid var(--tinta); background: var(--agua); border-radius: 2px; font: 600 18px "Source Sans 3"; cursor: pointer; }
+
+[data-estado="inicio"] .solo-respuesta, [data-estado="respuesta"] .solo-inicio { display: none; }
+
+@media (max-width: 760px) {
+  .barra { padding: 0 14px; height: 56px; }
+  .barra .zona { display: none; }
+  main { padding: 20px 14px 36px; }
+  h1 { font-size: 29px; }
+  .entrada { grid-template-columns: 1fr; gap: 18px; }
+  /* En el celular el esquema se achica y sus rótulos no se leen: la elección
+     se hace en esta lista; el esquema queda como referencia visual. */
+  .lista-playas { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+  .campo { flex-direction: column; }
+  .campo input { flex: none; }
+  .btn { width: 100%; }
+  .resp { grid-template-columns: 1fr; gap: 0; }
+  .lateral { margin-top: 24px; }
+  .corta strong { font-size: 26px; }
+}
+</style>
+</head>
+<body data-estado="inicio">
+<header>
+  <div class="barra">
+    <img src="../../public/brand/atlas-icon.png" alt="">
+    <strong>ATLAS</strong>
+    <span class="zona">Playas de <span class="lugar">Santa Marta</span></span>
+    <nav><a href="#">Mis preguntas</a></nav>
+  </div>
+</header>
+
+<main>
+  <section class="solo-inicio" aria-labelledby="t1">
+    <h1 id="t1">¿En qué playa está?</h1>
+    <p class="intro">Toque su playa en el mapa y elija un tema. También puede escribir su pregunta.</p>
+
+    <div class="entrada">
+      <div class="carta">
+        <!-- Esquema de la costa de Santa Marta: mar al oeste (izquierda), tierra al este. No está a escala. -->
+        <svg viewBox="0 0 520 560" role="img" aria-label="Esquema de la costa de Santa Marta con 5 playas">
+          <!-- curvas de profundidad: siguen la costa mar adentro -->
+          <g fill="none" stroke="#5e9cc2" stroke-width="1.6">
+            <path d="M300 0 C270 60 250 90 268 130 C285 165 235 190 230 230 C226 270 268 300 262 340 C256 380 226 410 232 460 C236 500 252 530 250 560" stroke-dasharray="2 5"/>
+            <path d="M262 0 C232 60 212 92 230 132 C246 168 196 192 190 232 C186 272 228 302 222 342 C216 382 186 414 192 462 C196 502 212 532 210 560"/>
+            <path d="M200 0 C172 64 150 96 168 136 C184 172 134 196 128 236 C124 276 166 306 160 346 C154 386 124 418 130 466 C134 506 150 536 148 560" stroke-width="1.2"/>
+          </g>
+          <!-- zona de bajo (agua poco profunda) -->
+          <path d="M330 0 C300 60 280 90 298 130 C315 165 265 190 260 230 C256 270 298 300 292 340 C286 380 256 410 262 460 C266 500 282 530 280 560 L340 560 C342 530 326 500 322 460 C316 410 346 380 352 340 C358 300 316 270 320 230 C325 190 375 165 358 130 C340 90 360 60 390 0 Z" fill="#cfe6f3"/>
+          <!-- tierra -->
+          <path d="M360 0 C330 60 310 90 328 130 C345 165 295 190 290 230 C286 270 328 300 322 340 C316 380 286 410 292 460 C296 500 312 530 310 560 L520 560 L520 0 Z" fill="#ead9a8" stroke="#b89b54" stroke-width="2"/>
+          <!-- sondas (profundidades en metros, en itálica como en las cartas) -->
+          <g font-family="Source Sans 3" font-style="italic" font-size="15" fill="#475663">
+            <text x="215" y="92">8</text><text x="150" y="70">22</text><text x="96" y="210">35</text>
+            <text x="196" y="300">12</text><text x="120" y="400">30</text><text x="210" y="510">9</text>
+          </g>
+          <text x="388" y="300" font-family="Source Sans 3" font-size="22" font-weight="600" fill="#7a6631">Santa Marta</text>
+          <text x="40" y="500" font-family="Source Sans 3" font-style="italic" font-size="20" fill="#5e9cc2">Mar Caribe</text>
+          <!-- playas: el círculo transparente amplía la zona de toque -->
+          <g class="punto" transform="translate(330 70)"><circle class="toque" r="26"/><circle class="marca" r="11"/><text x="-104" y="7">Taganga</text></g>
+          <g class="punto" transform="translate(330 150)"><circle class="toque" r="26"/><circle class="marca" r="11"/><text x="-190" y="7">Bahía de Santa Marta</text></g>
+          <g class="punto" transform="translate(293 238)"><circle class="toque" r="26"/><circle class="marca" r="11"/><text x="-122" y="7">Playa Blanca</text></g>
+          <g class="punto activo" transform="translate(316 350)"><circle class="toque" r="26"/><circle class="marca" r="11"/><text x="-118" y="7">El Rodadero</text></g>
+          <g class="punto" transform="translate(294 470)"><circle class="toque" r="26"/><circle class="marca" r="11"/><text x="-156" y="7">Pozos Colorados</text></g>
+        </svg>
+        <span class="nota">Esquema, no está a escala</span>
+      </div>
+      <nav class="lista-playas" aria-label="Playas">
+        <a href="#">Taganga</a><a href="#">Bahía de Santa Marta</a><a href="#">Playa Blanca</a><a href="#" aria-current="true">El Rodadero</a><a href="#">Pozos Colorados</a>
+      </nav>
+
+      <div class="temas">
+        <h2>En <span class="lugar">El Rodadero</span>, ¿sobre qué es su pregunta?</h2>
+        <p>Toque un tema</p>
+        <ul>
+          <li><a href="?estado=respuesta">Entrar a la playa <span>paso cerrado, cobros</span></a></li>
+          <li><a href="#">Pescar <span>zonas y horarios</span></a></li>
+          <li><a href="#">Vender en la arena <span>permisos</span></a></li>
+          <li><a href="#">Hoteles y negocios <span>qué pueden usar</span></a></li>
+          <li><a href="#">Lanchas y bañistas <span>zonas y canales</span></a></li>
+        </ul>
+        <form class="escribir" action="#">
+          <label for="q">O escriba su pregunta</label>
+          <div class="campo"><input id="q" placeholder="¿Me pueden cobrar por entrar?"><button class="btn" type="submit">Preguntar</button></div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <section class="solo-respuesta">
+    <p class="migas"><a href="?estado=inicio">Cambiar de playa</a> <span aria-hidden="true">/</span> <span class="lugar">El Rodadero</span> <span aria-hidden="true">/</span> Entrar a la playa</p>
+    <div class="resp">
+      <div>
+        <h1>¿Puedo entrar a la playa aunque haya un hotel al frente?</h1>
+        <div class="corta">
+          <strong>Sí, puede entrar.</strong>
+          <p>Las playas son de todos. Un hotel no puede cerrarlas ni impedirle el paso.<sup><a href="#n1">1</a></sup></p>
+        </div>
+        <h2>Si le cierran el paso</h2>
+        <ol class="pasos">
+          <li>Pida que le muestren el permiso de uso de la playa.<sup><a href="#n2">2</a></sup></li>
+          <li>Si no lo tienen, avise a la Capitanía de Puerto o a la alcaldía.</li>
+          <li>Si el cierre sigue, puede presentar un derecho de petición o una acción popular.<sup><a href="#n3">3</a></sup></li>
+        </ol>
+        <div class="fuentes">
+          <h2>De dónde sale</h2>
+          <ol>
+            <li id="n1">Decreto 2324 de 1984, artículo 166.</li>
+            <li id="n2">Decreto 2324 de 1984, artículo 2.</li>
+            <li id="n3">Consejo de Estado, acción popular por cierre de una playa.</li>
+          </ol>
+        </div>
+        <div class="despues"><b>¿Le sirvió?</b><button class="btn-sec">Sí</button><button class="btn-sec">No</button></div>
+      </div>
+      <aside class="lateral" aria-labelledby="t-acudir">
+        <h2 id="t-acudir">A quién acudir en <span class="lugar">El Rodadero</span></h2>
+        <dl>
+          <dt>Le cierran el paso</dt><dd>Capitanía de Puerto de Santa Marta</dd>
+          <dt>Ventas o ruido</dt><dd>Alcaldía, comité local de playas</dd>
+          <dt>Construyen en la arena</dt><dd>Capitanía de Puerto y Procuraduría</dd>
+        </dl>
+      </aside>
+    </div>
+  </section>
+</main>
+<script>document.body.dataset.estado = new URLSearchParams(location.search).get('estado') || 'inicio';</script>
+</body>
+</html>

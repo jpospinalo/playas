@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ATLAS — D1 Valla de playa (maqueta)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Barlow+Semi+Condensed:wght@600;700&display=swap" rel="stylesheet">
+<style>
+/* D1 · Valla de playa. Maqueta estática; contenido de ejemplo.
+   Lenguaje visual de señalización de seguridad (ISO 7010): verde = puede,
+   rojo = no puede, azul = debe. La respuesta es una "valla". */
+:root {
+  --lamina: #ffffff;
+  --tinta: #17202a;
+  --tinta-2: #46505b;
+  --azul: #1f4e9c;
+  --verde: #0b7a3e;
+  --rojo: #c4122f;
+  --amarillo: #f6b800;
+  --linea: #c9ced4;
+  --gris: #f1f3f5;
+}
+* { box-sizing: border-box; margin: 0; }
+html { -webkit-text-size-adjust: 100%; }
+body { background: var(--lamina); color: var(--tinta); font: 19px/1.5 "Atkinson Hyperlegible", system-ui, sans-serif; }
+a { color: var(--azul); }
+:focus-visible { outline: 3px solid var(--amarillo); outline-offset: 2px; box-shadow: 0 0 0 6px var(--tinta); }
+.rotulo { font-family: "Barlow Semi Condensed", sans-serif; font-weight: 700; letter-spacing: .005em; }
+
+header { background: var(--azul); color: #fff; }
+.barra { max-width: 760px; margin: 0 auto; padding: 0 20px; height: 60px; display: flex; align-items: center; gap: 12px; }
+.barra img { width: 34px; height: 34px; border-radius: 50%; background: #fff; }
+.barra .rotulo { font-size: 26px; }
+.barra nav { margin-left: auto; display: flex; gap: 22px; }
+.barra nav a { color: #fff; font-size: 17px; text-underline-offset: 4px; }
+
+main { max-width: 760px; margin: 0 auto; padding: 32px 20px 48px; }
+h1 { font: 700 40px/1.1 "Barlow Semi Condensed", sans-serif; }
+.intro { color: var(--tinta-2); margin-top: 8px; max-width: 34em; }
+
+/* Tablero de temas: cada cuadro es una señal de información (azul, cuadrada).
+   El verde (condición segura) se reserva para "puede" y el rojo para "no puede". */
+.tablero { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 28px; }
+.senal { display: flex; flex-direction: column; align-items: flex-start; gap: 14px; padding: 16px; min-height: 148px; border: 2px solid var(--tinta); border-radius: 4px; background: var(--lamina); color: var(--tinta); text-decoration: none; font: inherit; text-align: left; cursor: pointer; }
+.senal:hover { background: var(--gris); }
+.picto { width: 56px; height: 56px; display: grid; place-items: center; }
+.picto.cuadro { background: var(--verde); border-radius: 4px; }
+.picto.info { background: var(--azul); border-radius: 4px; }
+.picto svg { width: 38px; height: 38px; fill: #fff; }
+.senal .rotulo { font-size: 24px; line-height: 1.1; }
+.senal small { font-size: 16px; color: var(--tinta-2); line-height: 1.35; }
+
+.escribir { margin-top: 30px; }
+.escribir label { display: block; font-weight: 700; }
+.campo { display: flex; gap: 10px; margin-top: 8px; }
+.campo input { flex: 1; min-width: 0; height: 56px; border: 2px solid var(--tinta); border-radius: 4px; padding: 0 14px; font: inherit; }
+.btn { height: 56px; padding: 0 24px; border: 0; border-radius: 4px; background: var(--azul); color: #fff; font: 700 21px "Barlow Semi Condensed", sans-serif; cursor: pointer; }
+.btn-sec { height: 48px; padding: 0 18px; border: 2px solid var(--tinta); border-radius: 4px; background: var(--lamina); color: var(--tinta); font: 700 18px "Atkinson Hyperlegible"; cursor: pointer; }
+.aviso-pie { margin-top: 30px; padding-top: 16px; border-top: 1px solid var(--linea); color: var(--tinta-2); font-size: 16px; }
+
+/* Respuesta */
+.pregunta { font-size: 19px; color: var(--tinta-2); }
+.pregunta strong { display: block; color: var(--tinta); font-size: 24px; line-height: 1.3; margin-top: 2px; }
+.valla { margin-top: 22px; border: 6px solid var(--azul); border-radius: 6px; }
+.veredicto { display: flex; gap: 18px; align-items: center; padding: 20px; background: var(--lamina); }
+.veredicto .picto { width: 84px; height: 84px; flex: none; }
+.veredicto .picto svg { width: 58px; height: 58px; }
+.veredicto h2 { font: 700 38px/1.05 "Barlow Semi Condensed", sans-serif; color: var(--verde); }
+.veredicto p { margin-top: 6px; font-size: 20px; }
+.bloque { padding: 20px; border-top: 2px solid var(--azul); }
+.bloque h3 { font: 700 26px/1.2 "Barlow Semi Condensed", sans-serif; }
+.pasos { list-style: none; padding: 0; margin-top: 14px; display: grid; gap: 14px; counter-reset: paso; }
+.pasos li { counter-increment: paso; display: grid; grid-template-columns: 40px 1fr; gap: 12px; align-items: start; }
+.pasos li::before { content: counter(paso); width: 40px; height: 40px; border-radius: 50%; background: var(--azul); color: #fff; display: grid; place-items: center; font: 700 22px "Barlow Semi Condensed"; }
+.placas { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 14px; }
+.placa { border: 2px solid var(--tinta); border-radius: 4px; padding: 12px 14px; }
+.placa b { display: block; font-size: 18px; }
+.placa span { font-size: 16px; color: var(--tinta-2); }
+.cuidado { display: flex; gap: 14px; align-items: flex-start; padding: 16px 20px; background: #fff6d6; border-top: 2px solid var(--azul); }
+.cuidado .tri { flex: none; width: 40px; height: 36px; }
+.fuente { font-size: 17px; }
+.fuente summary { cursor: pointer; font-weight: 700; color: var(--azul); }
+.fuente ul { margin-top: 10px; padding-left: 20px; color: var(--tinta-2); }
+.cita { color: var(--azul); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
+.despues { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin-top: 22px; }
+.despues p { font-weight: 700; margin-right: 4px; }
+
+[data-estado="inicio"] .solo-respuesta, [data-estado="respuesta"] .solo-inicio { display: none; }
+
+@media (max-width: 720px) {
+  .barra { height: 56px; padding: 0 14px; }
+  .barra nav a.ayuda { display: none; }
+  main { padding: 22px 14px 36px; }
+  h1 { font-size: 32px; }
+  .tablero { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .senal { min-height: 132px; padding: 14px; }
+  .senal small { display: none; }
+  .campo { flex-direction: column; }
+  .campo input { flex: none; }
+  .btn { width: 100%; }
+  .veredicto { padding: 16px; gap: 14px; align-items: flex-start; }
+  .veredicto .picto { width: 64px; height: 64px; }
+  .veredicto .picto svg { width: 44px; height: 44px; }
+  .veredicto h2 { font-size: 31px; }
+  .placas { grid-template-columns: 1fr; }
+  .bloque, .cuidado { padding: 16px; }
+}
+</style>
+</head>
+<body data-estado="inicio">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <!-- Pictogramas sólidos, estilo señal de seguridad -->
+    <symbol id="p-persona" viewBox="0 0 48 48"><circle cx="26" cy="8" r="5"/><path d="M22 15h8l5 12-4 2-4-8-2 9 6 7v11h-5v-9l-6-6-3 15h-5l4-22-4 3-3 6-4-2 4-8 13-9z"/></symbol>
+    <symbol id="p-pez" viewBox="0 0 48 48"><path d="M4 24c6-9 17-12 27-7l9-7v28l-9-7c-10 5-21 2-27-7z"/><circle cx="28" cy="22" r="2.4" fill="#1f4e9c"/></symbol>
+    <symbol id="p-venta" viewBox="0 0 48 48"><path d="M24 4 44 18H4z"/><rect x="22" y="18" width="4" height="22"/><path d="M8 40h32v4H8z"/><path d="M12 28h10v8H12zM26 28h10v8H26z"/></symbol>
+    <symbol id="p-hotel" viewBox="0 0 48 48"><path d="M8 44V10l16-6 16 6v34H28V34h-8v10z"/></symbol>
+    <symbol id="p-bote" viewBox="0 0 48 48"><path d="M24 4v26h16zM21 10 8 30h13z"/><path d="M4 34h40l-6 8H10z"/></symbol>
+    <symbol id="p-obra" viewBox="0 0 48 48"><path d="M6 44h36v-4H6zM10 38V22l14-10 14 10v16H30V28H18v10z"/><path d="M36 6h6v10h-6z"/></symbol>
+  </defs>
+</svg>
+
+<header>
+  <div class="barra">
+    <img src="../../public/brand/atlas-icon.png" alt="">
+    <span class="rotulo">ATLAS</span>
+    <nav><a href="#">Mis preguntas</a><a class="ayuda" href="#">Cómo funciona</a></nav>
+  </div>
+</header>
+
+<main>
+  <section class="solo-inicio" aria-labelledby="t-inicio">
+    <h1 id="t-inicio" class="rotulo">¿Qué necesita saber de la playa?</h1>
+    <p class="intro">Toque un tema o escriba su pregunta. Le respondemos con lo que dicen las normas y los jueces de Colombia.</p>
+
+    <div class="tablero">
+      <a class="senal" href="?estado=respuesta"><span class="picto info"><svg><use href="#p-persona"/></svg></span><span class="rotulo">Entrar a la playa</span><small>Paso cerrado, cobros, horarios</small></a>
+      <a class="senal" href="#"><span class="picto info"><svg><use href="#p-pez"/></svg></span><span class="rotulo">Pescar</span><small>Dónde y cómo se puede pescar</small></a>
+      <a class="senal" href="#"><span class="picto info"><svg><use href="#p-venta"/></svg></span><span class="rotulo">Vender en la playa</span><small>Permisos y zonas de venta</small></a>
+      <a class="senal" href="#"><span class="picto info"><svg><use href="#p-hotel"/></svg></span><span class="rotulo">Hoteles y negocios</span><small>Qué puede usar un hotel frente al mar</small></a>
+      <a class="senal" href="#"><span class="picto info"><svg><use href="#p-bote"/></svg></span><span class="rotulo">Lanchas y botes</span><small>Zonas de bañistas y canales</small></a>
+      <a class="senal" href="#"><span class="picto info"><svg><use href="#p-obra"/></svg></span><span class="rotulo">Construcciones</span><small>Qué se puede construir cerca del mar</small></a>
+    </div>
+
+    <form class="escribir" action="#">
+      <label for="q">O escriba su pregunta</label>
+      <div class="campo"><input id="q" placeholder="¿Me pueden cobrar por entrar?"><button class="btn" type="submit">Preguntar</button></div>
+    </form>
+    <p class="aviso-pie">ATLAS da orientación general y no reemplaza a un abogado. Cada respuesta dice de qué norma o sentencia sale.</p>
+  </section>
+
+  <section class="solo-respuesta" aria-labelledby="t-resp">
+    <p class="pregunta">Usted preguntó <strong>¿Puedo entrar a cualquier playa aunque haya un hotel al frente?</strong></p>
+
+    <article class="valla">
+      <div class="veredicto">
+        <span class="picto cuadro"><svg><use href="#p-persona"/></svg></span>
+        <div>
+          <h2 id="t-resp">Sí, puede entrar.</h2>
+          <p>Las playas son de todos los colombianos. Un hotel no puede cerrarlas ni impedirle el paso. <a class="cita" href="#f1">Ver norma</a></p>
+        </div>
+      </div>
+
+      <div class="bloque">
+        <h3>Si le cierran el paso</h3>
+        <ol class="pasos">
+          <li><span>Pida que le muestren el permiso de uso de la playa que da la Capitanía de Puerto.</span></li>
+          <li><span>Si no lo tienen, avise a la Capitanía de Puerto o a la alcaldía.</span></li>
+          <li><span>Si el cierre sigue, puede presentar un derecho de petición o una acción popular.</span></li>
+        </ol>
+      </div>
+
+      <div class="cuidado">
+        <svg class="tri" viewBox="0 0 40 36" aria-hidden="true"><path d="M20 2 38 34H2z" fill="#f6b800" stroke="#17202a" stroke-width="2.5" stroke-linejoin="round"/><path d="M18.5 12h3v11h-3zM18.5 26h3v3h-3z" fill="#17202a"/></svg>
+        <p><strong>Ojo:</strong> un hotel sí puede tener un permiso para usar una parte de la arena (sillas, carpas), pero no para impedirle caminar por la playa.</p>
+      </div>
+
+      <div class="bloque">
+        <h3>A quién acudir</h3>
+        <div class="placas">
+          <div class="placa"><b>Le cierran el paso</b><span>Capitanía de Puerto</span></div>
+          <div class="placa"><b>Ventas o ruido</b><span>Alcaldía, comité de playas</span></div>
+          <div class="placa"><b>Construyen en la arena</b><span>Capitanía y Procuraduría</span></div>
+        </div>
+      </div>
+
+      <div class="bloque fuente" id="f1">
+        <details>
+          <summary>De dónde sale esta respuesta (3 documentos)</summary>
+          <ul>
+            <li>Decreto 2324 de 1984, artículo 166: las playas son bienes de uso público.</li>
+            <li>Decreto 1766 de 2013: comités locales de playas.</li>
+            <li>Consejo de Estado, acción popular por cierre de una playa.</li>
+          </ul>
+        </details>
+      </div>
+    </article>
+
+    <div class="despues">
+      <p>¿Le sirvió?</p>
+      <button class="btn-sec">Sí</button><button class="btn-sec">No</button>
+      <a href="?estado=inicio" style="margin-left:auto">Hacer otra pregunta</a>
+    </div>
+  </section>
+</main>
+<script>document.body.dataset.estado = new URLSearchParams(location.search).get('estado') || 'inicio';</script>
+</body>
+</html>

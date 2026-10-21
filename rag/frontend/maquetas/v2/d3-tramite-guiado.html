@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ATLAS — D3 Trámite guiado (maqueta)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+/* D3 · Trámite guiado. Maqueta estática; contenido de ejemplo.
+   Patrón de servicio público (GOV.CO / GOV.UK): una pregunta por pantalla,
+   opciones grandes, veredicto gigante, un solo aviso, pasos con línea. */
+:root {
+  --papel: #ffffff;
+  --tinta: #0b0c0c;
+  --tinta-2: #484949;
+  --enlace: #1a55a6;
+  --panel: #f2f2f2;
+  --borde: #505a5f;
+  --foco: #ffdd00;
+  --exito: #00703c;
+}
+* { box-sizing: border-box; margin: 0; }
+html { -webkit-text-size-adjust: 100%; }
+body { background: var(--papel); color: var(--tinta); font: 19px/1.45 "Work Sans", system-ui, sans-serif; font-variant-numeric: tabular-nums; }
+a { color: var(--enlace); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+a:focus-visible, button:focus-visible, input:focus-visible { outline: 3px solid transparent; background: var(--foco); color: var(--tinta); box-shadow: 0 -2px var(--foco), 0 4px var(--tinta); text-decoration: none; }
+input[type=text]:focus-visible { background: var(--papel); box-shadow: inset 0 0 0 2px var(--tinta); outline: 3px solid var(--foco); outline-offset: 0; }
+
+header { background: var(--tinta); color: #fff; }
+.barra { max-width: 820px; margin: 0 auto; padding: 0 20px; height: 58px; display: flex; align-items: center; gap: 12px; }
+.barra img { width: 30px; height: 30px; border-radius: 50%; background: #fff; }
+.barra strong { font-size: 22px; letter-spacing: .01em; }
+.barra a { margin-left: auto; color: #fff; font-size: 17px; }
+.franja { height: 6px; background: linear-gradient(90deg, #c4122f 0 50%, #f6b800 50% 100%); }
+
+main { max-width: 820px; margin: 0 auto; padding: 30px 20px 56px; }
+.atras { font-size: 17px; display: inline-flex; gap: 6px; align-items: center; }
+.atras::before { content: ""; width: 8px; height: 8px; border-left: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(45deg); }
+.columna { max-width: 640px; }
+fieldset { border: 0; padding: 0; margin-top: 16px; }
+legend h1 { font-size: 40px; line-height: 1.15; font-weight: 700; }
+.pista { color: var(--tinta-2); margin-top: 10px; }
+.opciones { margin-top: 20px; display: grid; gap: 12px; }
+.opcion { display: flex; gap: 14px; align-items: flex-start; cursor: pointer; }
+.opcion input { appearance: none; flex: none; width: 40px; height: 40px; border: 2px solid var(--tinta); border-radius: 50%; margin: 0; background: var(--papel); display: grid; place-items: center; cursor: pointer; }
+.opcion input:checked::after { content: ""; width: 20px; height: 20px; border-radius: 50%; background: var(--tinta); }
+.opcion span { padding-top: 6px; }
+.opcion span b { display: block; font-weight: 600; }
+.opcion span small { font-size: 17px; color: var(--tinta-2); }
+.o-separa { margin: 4px 0 0 54px; color: var(--tinta-2); }
+.btn { margin-top: 28px; height: 54px; padding: 0 26px; border: 0; border-bottom: 3px solid #002d18; background: var(--exito); color: #fff; font: 600 20px "Work Sans"; cursor: pointer; border-radius: 0; }
+.ayuda { margin-top: 36px; padding-top: 18px; border-top: 1px solid #b1b4b6; font-size: 17px; color: var(--tinta-2); max-width: 640px; }
+
+/* Respuesta */
+.pregunta-u { margin-top: 18px; color: var(--tinta-2); }
+.veredicto { font-size: 56px; line-height: 1.05; font-weight: 700; margin-top: 10px; letter-spacing: -.01em; }
+.sub { font-size: 24px; line-height: 1.35; margin-top: 12px; max-width: 30em; }
+.inset { margin-top: 26px; padding: 14px 18px; border-left: 10px solid #b1b4b6; }
+.aviso { display: flex; gap: 16px; align-items: flex-start; margin-top: 26px; }
+.aviso .bandera { flex: none; width: 36px; height: 40px; }
+.aviso strong { font-weight: 700; }
+h2 { font-size: 28px; line-height: 1.2; margin-top: 40px; }
+.pasos { list-style: none; padding: 0; margin-top: 16px; counter-reset: p; }
+.pasos li { counter-increment: p; position: relative; padding: 2px 0 26px 60px; }
+.pasos li::before { content: counter(p); position: absolute; left: 0; top: 0; width: 40px; height: 40px; border-radius: 50%; background: var(--tinta); color: #fff; display: grid; place-items: center; font-weight: 700; }
+.pasos li::after { content: ""; position: absolute; left: 19px; top: 40px; bottom: 0; border-left: 2px solid var(--tinta); }
+.pasos li:last-child::after { display: none; }
+.pasos b { display: block; font-size: 21px; }
+.entidades { margin-top: 14px; border-top: 1px solid #b1b4b6; }
+.entidades div { display: grid; grid-template-columns: 1fr 1.2fr; gap: 16px; padding: 14px 0; border-bottom: 1px solid #b1b4b6; }
+.entidades dt { font-weight: 600; }
+details { margin-top: 30px; }
+details summary { cursor: pointer; color: var(--enlace); text-decoration: underline; text-underline-offset: 3px; display: inline-block; }
+details summary::marker { color: var(--tinta); }
+details div { margin-top: 10px; padding: 12px 0 12px 18px; border-left: 5px solid #b1b4b6; }
+details ul { padding-left: 20px; }
+.sirvio { margin-top: 40px; padding: 18px 20px; background: var(--panel); display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.sirvio p { font-weight: 600; margin-right: 6px; }
+.btn-sec { height: 48px; padding: 0 22px; border: 0; border-bottom: 3px solid #858686; background: #e2e3e4; color: var(--tinta); font: 600 19px "Work Sans"; cursor: pointer; }
+.otra { margin-top: 24px; }
+
+[data-estado="inicio"] .solo-respuesta, [data-estado="respuesta"] .solo-inicio { display: none; }
+
+@media (max-width: 720px) {
+  .barra { padding: 0 14px; height: 54px; }
+  main { padding: 20px 14px 40px; }
+  legend h1 { font-size: 30px; }
+  .veredicto { font-size: 42px; }
+  .sub { font-size: 21px; }
+  h2 { font-size: 24px; margin-top: 32px; }
+  .btn { width: 100%; }
+  .entidades div { grid-template-columns: 1fr; gap: 2px; }
+}
+</style>
+</head>
+<body data-estado="inicio">
+<header>
+  <div class="barra">
+    <img src="../../public/brand/atlas-icon.png" alt="">
+    <strong>ATLAS</strong>
+    <a href="#">Mis preguntas</a>
+  </div>
+</header>
+<div class="franja" aria-hidden="true"></div>
+
+<main>
+  <section class="solo-inicio columna">
+    <form action="#">
+      <fieldset>
+        <legend><h1>¿Sobre qué es su pregunta?</h1></legend>
+        <p class="pista">Elija la opción que más se parezca a su caso.</p>
+        <div class="opciones">
+          <label class="opcion"><input type="radio" name="tema" checked><span><b>Entrar o caminar por la playa</b><small>Le cerraron el paso, le cobran o le piden salir</small></span></label>
+          <label class="opcion"><input type="radio" name="tema"><span><b>Pescar</b><small>Dónde, cuándo y con qué artes se puede pescar</small></span></label>
+          <label class="opcion"><input type="radio" name="tema"><span><b>Vender en la playa</b><small>Permisos, carnés y zonas de venta</small></span></label>
+          <label class="opcion"><input type="radio" name="tema"><span><b>Un hotel o negocio frente al mar</b><small>Qué puede usar y qué no</small></span></label>
+          <label class="opcion"><input type="radio" name="tema"><span><b>Lanchas, motos de agua y bañistas</b><small>Zonas, canales y distancias</small></span></label>
+          <p class="o-separa">o</p>
+          <label class="opcion"><input type="radio" name="tema"><span><b>Otra cosa: quiero escribir mi pregunta</b></span></label>
+        </div>
+      </fieldset>
+      <button class="btn" type="button" onclick="location.search='?estado=respuesta'">Continuar</button>
+    </form>
+    <p class="ayuda">ATLAS da orientación general con base en normas y sentencias de Colombia. No reemplaza a un abogado ni al consultorio jurídico.</p>
+  </section>
+
+  <section class="solo-respuesta">
+    <a class="atras" href="?estado=inicio">Cambiar la pregunta</a>
+    <div class="columna">
+      <p class="pregunta-u">Su pregunta: ¿puedo entrar a cualquier playa aunque haya un hotel al frente?</p>
+      <h1 class="veredicto">Sí, puede entrar.</h1>
+      <p class="sub">Las playas son de todos los colombianos. Un hotel no puede cerrarlas ni impedirle el paso.</p>
+
+      <div class="inset">Así lo dice el Decreto 2324 de 1984: las playas son bienes de uso público y no se pueden vender ni cerrar a particulares.</div>
+
+      <div class="aviso">
+        <svg class="bandera" viewBox="0 0 36 40" aria-hidden="true"><rect x="3" y="2" width="3" height="37" fill="#0b0c0c"/><path d="M6 4h27v18H6z" fill="#f6b800" stroke="#0b0c0c" stroke-width="1.5"/></svg>
+        <p><strong>Tenga en cuenta: un hotel sí puede tener permiso para usar una parte de la arena (sillas, carpas), pero no para impedirle caminar por la playa.</strong></p>
+      </div>
+
+      <h2>Qué hacer si le cierran el paso</h2>
+      <ol class="pasos">
+        <li><b>Pida ver el permiso</b>Pregunte si tienen permiso de uso de esa parte de la playa.</li>
+        <li><b>Avise a la autoridad</b>Si no lo tienen, informe a la Capitanía de Puerto o a la alcaldía.</li>
+        <li><b>Presente una solicitud formal</b>Si el cierre sigue, puede presentar un derecho de petición o una acción popular.</li>
+      </ol>
+
+      <h2>A quién acudir</h2>
+      <dl class="entidades">
+        <div><dt>Le cierran el paso</dt><dd>Capitanía de Puerto</dd></div>
+        <div><dt>Ventas o ruido en la playa</dt><dd>Alcaldía y comité local de playas</dd></div>
+        <div><dt>Construyen sobre la arena</dt><dd>Capitanía de Puerto y Procuraduría</dd></div>
+      </dl>
+
+      <details>
+        <summary>Ver de dónde sale esta respuesta</summary>
+        <div>
+          <ul>
+            <li>Decreto 2324 de 1984, artículo 166.</li>
+            <li>Decreto 1766 de 2013, comités locales de playas.</li>
+            <li>Consejo de Estado, acción popular por cierre de una playa.</li>
+          </ul>
+        </div>
+      </details>
+
+      <div class="sirvio"><p>¿Esta respuesta le sirvió?</p><button class="btn-sec">Sí</button><button class="btn-sec">No</button></div>
+      <p class="otra"><a href="?estado=inicio">Hacer otra pregunta</a></p>
+    </div>
+  </section>
+</main>
+<script>document.body.dataset.estado = new URLSearchParams(location.search).get('estado') || 'inicio';</script>
+</body>
+</html>
