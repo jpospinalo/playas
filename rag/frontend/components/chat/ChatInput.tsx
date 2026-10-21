@@ -214,7 +214,9 @@ export function ChatInput({
 				)}
 			</div>
 			<p className="mt-2 text-center text-[11px] text-subtle">
-				ATLAS puede equivocarse. Verifica las fuentes y no reemplaza un abogado · Shift + Enter para nueva línea
+				ATLAS puede equivocarse. Verifica las fuentes y no reemplaza un abogado
+				{/* El atajo de teclado solo tiene sentido con teclado físico. */}
+				<span className="hidden pointer-fine:inline"> · Shift + Enter para nueva línea</span>
 			</p>
 		</div>
 	);

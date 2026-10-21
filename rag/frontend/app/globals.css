@@ -324,6 +324,19 @@ h3[id] {
   background: color-mix(in srgb, var(--citation) 20%, transparent);
 }
 
+/* En pantallas táctiles el chip mide ~17×15 px: se amplía solo la zona que
+   recibe el toque (sin cambiar cómo se ve) para que sea fácil de tocar. */
+@media (pointer: coarse) {
+  .doc-badge {
+    position: relative;
+  }
+  .doc-badge::after {
+    content: "";
+    position: absolute;
+    inset: -12px -8px;
+  }
+}
+
 .doc-badge:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;

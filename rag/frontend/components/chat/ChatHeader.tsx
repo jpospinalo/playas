@@ -15,12 +15,12 @@ export function ChatHeader({ onToggleSidebar, sidebarOpen }: ChatHeaderProps) {
               onClick={onToggleSidebar}
               aria-label={sidebarOpen ? "Cerrar historial" : "Ver historial"}
               aria-expanded={sidebarOpen}
-              className="flex w-fit items-center rounded-md px-2 py-1 text-muted transition-colors duration-150 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 md:hidden"
+              className="-ml-2 flex h-11 w-11 items-center justify-center rounded-md text-muted transition-colors duration-150 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 md:hidden"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                width="15"
-                height="15"
+                width="20"
+                height="20"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
