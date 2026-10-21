@@ -51,7 +51,7 @@ export function MessageList({
 			{messages
 				.filter((msg) => msg.text.length > 0)
 				.map((msg) => (
-					<li key={msg.id}>
+					<li key={msg.id} data-message-role={msg.role}>
 						{msg.role === "user" ? (
 							<UserBubble text={msg.text} />
 						) : (
