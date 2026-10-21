@@ -123,8 +123,10 @@ if [[ -f "${SEED_SQL}" ]]; then
     warn "No se encontró una tarea RUNNING del servicio app; se omite la importación de usuarios."
   else
     log "Importando usuarios semilla vía ECS Exec..."
-    # base64 evita problemas de escapado al pasar SQL multilínea por --command
-    SEED_B64=$(base64 -w0 "${SEED_SQL}")
+    # base64 evita problemas de escapado al pasar SQL multilínea por --command.
+    # `base64 -w0` solo existe en GNU (Linux); en macOS falla. Se quitan los
+    # saltos de línea con tr, que funciona igual en ambos.
+    SEED_B64=$(base64 < "${SEED_SQL}" | tr -d '\n')
 
     # El agente de ECS Exec puede tardar unos segundos en estar listo tras el deploy
     for intento in 1 2 3 4 5; do

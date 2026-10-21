@@ -5,6 +5,11 @@
 set -euo pipefail
 
 TAG="${1:-latest}"
+# Fargate corre x86_64 (la task definition no fija runtime_platform). En un
+# Mac con Apple Silicon, `docker build` sin --platform produce imágenes ARM y
+# la tarea falla con "exec format error". Se puede sobrescribir si algún día
+# la task definition pasa a ARM64.
+PLATFORM="${DOCKER_PLATFORM:-linux/amd64}"
 REGION="${AWS_DEFAULT_REGION:-us-east-1}"
 ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
 ECR_BASE="${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com"
@@ -23,6 +28,7 @@ RAG_DIR="$(dirname "$0")/../.."
 
 echo "▶ Construyendo backend → ${BACKEND_REPO}:${TAG}"
 docker build \
+  --platform "${PLATFORM}" \
   -f "${RAG_DIR}/docker/Dockerfile.backend" \
   -t "${BACKEND_REPO}:${TAG}" \
   "${RAG_DIR}"
@@ -32,6 +38,7 @@ echo "▶ Construyendo frontend → ${FRONTEND_REPO}:${TAG}"
 # del cliente) — sin esto el frontend queda apuntando al valor por defecto
 # (http://localhost:8080) y el navegador del usuario no puede alcanzarlo.
 docker build \
+  --platform "${PLATFORM}" \
   --build-arg NEXT_PUBLIC_API_URL="${ALB_URL}" \
   -f "${RAG_DIR}/docker/Dockerfile.frontend" \
   -t "${FRONTEND_REPO}:${TAG}" \

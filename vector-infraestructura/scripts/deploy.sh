@@ -57,11 +57,22 @@ CHROMA_HOST_VAL="${CHROMA_IP}"
 OLLAMA_URL_VAL="http://${OLLAMA_IP}:11434"
 
 # ── 3. Helper: actualiza o agrega una variable ────────────────────────────────
+# sed_inplace <expresión> <archivo>
+# `sed -i` no es portable: GNU (Linux) acepta `sed -i expr`, pero BSD (macOS)
+# exige un sufijo (`sed -i '' expr`) y sin él toma la expresión como sufijo y
+# falla. Se escribe a un temporal y se copia encima (conserva los permisos).
+sed_inplace() {
+  local expr="$1" file="$2" tmp
+  tmp="$(mktemp)"
+  sed "${expr}" "${file}" > "${tmp}" && cat "${tmp}" > "${file}"
+  rm -f "${tmp}"
+}
+
 # update_env <archivo> <clave> <valor>
 update_env() {
   local file="$1" key="$2" value="$3"
   if grep -qE "^${key}=" "${file}" 2>/dev/null; then
-    sed -i "s|^${key}=.*|${key}=${value}|" "${file}"
+    sed_inplace "s|^${key}=.*|${key}=${value}|" "${file}"
   else
     echo "${key}=${value}" >> "${file}"
   fi
@@ -71,7 +82,7 @@ update_env() {
 update_tfvars() {
   local file="$1" key="$2" value="$3"
   if grep -qE "^[[:space:]]*${key}[[:space:]]*=" "${file}" 2>/dev/null; then
-    sed -i "s|^[[:space:]]*${key}[[:space:]]*=.*|${key} = \"${value}\"|" "${file}"
+    sed_inplace "s|^[[:space:]]*${key}[[:space:]]*=.*|${key} = \"${value}\"|" "${file}"
   else
     echo "${key} = \"${value}\"" >> "${file}"
   fi
@@ -193,8 +204,10 @@ echo -e "${bold}Despliegue completado${reset}"
 echo ""
 echo -e "  CHROMA_HOST       = ${CHROMA_HOST_VAL}"
 echo -e "  OLLAMA_BASE_URL   = ${OLLAMA_URL_VAL}"
-echo -e "  postgres_password = ${PG_PASSWORD}"
-echo -e "  jwt_secret_key    = ${JWT_SECRET}"
+# Los secretos no se imprimen (quedarían en el historial de la terminal y en
+# logs); solo se confirma que existen y dónde quedaron.
+echo -e "  postgres_password = $([[ -n "${PG_PASSWORD}" ]] && echo "configurada (ver terraform.tfvars)" || echo "FALTA")"
+echo -e "  jwt_secret_key    = $([[ -n "${JWT_SECRET}" ]] && echo "configurada (ver terraform.tfvars)" || echo "FALTA")"
 echo ""
 echo -e "  Archivos actualizados:"
 [[ -f "${RAG_ENV}"     ]] && echo -e "    • rag/.env"
