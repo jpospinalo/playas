@@ -1326,7 +1326,18 @@
       "bytes": 8516132,
       "coverage": "not_verified",
       "doc_type": "normativa",
-      "export_metadata_differences": {},
+      "export_metadata_differences": {
+        "articulo": 49,
+        "articulo_titulo": 49,
+        "chunk_index": 49,
+        "entities": 6,
+        "keywords": 13,
+        "keywords_str": 13,
+        "section_index": 49,
+        "section_name": 49,
+        "summary": 14,
+        "total_chunks_in_section": 50
+      },
       "export_records_matched_by_id": 151,
       "export_text_mismatches": 6,
       "format": ".pdf",
@@ -1488,7 +1499,7 @@
   "findings": [
     {
       "code": "records_with_metadata_differences",
-      "detail": "425 registros; diferencia de snapshots, no autorización para reemplazar datos",
+      "detail": "475 registros; diferencia de snapshots, no autorización para reemplazar datos",
       "path": "data/chroma-rag_playas_magdalena-20260731-135720.jsonl.gz",
       "severity": "warning"
     },
@@ -1929,21 +1940,21 @@
       "ids_missing_gold": 0,
       "manifest_count": 5888,
       "metadata_field_differences": {
-        "articulo": 47,
-        "articulo_titulo": 27,
+        "articulo": 96,
+        "articulo_titulo": 76,
         "capitulo": 66,
-        "chunk_index": 47,
-        "entities": 310,
-        "keywords": 314,
-        "keywords_str": 315,
-        "section_index": 84,
-        "section_name": 47,
-        "summary": 313,
-        "total_chunks_in_section": 74
+        "chunk_index": 96,
+        "entities": 316,
+        "keywords": 327,
+        "keywords_str": 328,
+        "section_index": 133,
+        "section_name": 96,
+        "summary": 327,
+        "total_chunks_in_section": 124
       },
       "path": "data/chroma-rag_playas_magdalena-20260731-135720.jsonl.gz",
       "records": 5888,
-      "records_with_metadata_differences": 425,
+      "records_with_metadata_differences": 475,
       "sha256": "28b7a3076d1c7ad0aa3ef2a4394e31423cdd5358f691fdc6a6104f7e15712d2d",
       "sources": [
         {
@@ -3756,9 +3767,9 @@
         "sha256": "3d13f22310b7ef5503a47bf8825de7f84489f17162157829ca428ef8e5f24204"
       },
       {
-        "bytes": 351612,
+        "bytes": 349533,
         "path": "data/documents/gold/normativa/Por medio del cual se expiden las normas bases para la reglamentación de las actividades en las playas urbanas y rurales en el Distrito de Cartagena de Indias.jsonl",
-        "sha256": "e554cfaf75a486df042bb644ee1adff8900b40f7d30dbfe6c912cb6f016e1be8"
+        "sha256": "04ff533c4052e28269822f7f7ac5e01651966f19a6e5ba3032489ccd4c63a6d1"
       },
       {
         "bytes": 297195,
@@ -4321,9 +4332,9 @@
         "sha256": "6c2ae3316fc23517d07729abe764fd2e38a5c02eba8f944368b9de531081b55a"
       },
       {
-        "bytes": 118772,
+        "bytes": 119321,
         "path": "data/documents/silver/normativa/Por medio del cual se expiden las normas bases para la reglamentación de las actividades en las playas urbanas y rurales en el Distrito de Cartagena de Indias.jsonl",
-        "sha256": "23253a9ee352851451337aded45d46e8dd9d9ec7de5638240b32182415f1d5e3"
+        "sha256": "2be1e566201557122e5787e8573ee05cd8b651e224f5412d4699135ede1c69eb"
       },
       {
         "bytes": 100453,
