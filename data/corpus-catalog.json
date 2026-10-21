@@ -1350,7 +1350,12 @@
       "bytes": 14243115,
       "coverage": "not_verified",
       "doc_type": "normativa",
-      "export_metadata_differences": {},
+      "export_metadata_differences": {
+        "entities": 1,
+        "keywords": 1,
+        "keywords_str": 1,
+        "summary": 1
+      },
       "export_records_matched_by_id": 125,
       "export_text_mismatches": 5,
       "format": ".pdf",
@@ -1477,7 +1482,7 @@
   "findings": [
     {
       "code": "records_with_metadata_differences",
-      "detail": "369 registros; diferencia de snapshots, no autorización para reemplazar datos",
+      "detail": "371 registros; diferencia de snapshots, no autorización para reemplazar datos",
       "path": "data/chroma-rag_playas_magdalena-20260731-135720.jsonl.gz",
       "severity": "warning"
     },
@@ -1922,17 +1927,17 @@
         "articulo_titulo": 27,
         "capitulo": 46,
         "chunk_index": 27,
-        "entities": 307,
-        "keywords": 313,
-        "keywords_str": 314,
+        "entities": 308,
+        "keywords": 314,
+        "keywords_str": 315,
         "section_index": 37,
         "section_name": 27,
-        "summary": 312,
+        "summary": 313,
         "total_chunks_in_section": 46
       },
       "path": "data/chroma-rag_playas_magdalena-20260731-135720.jsonl.gz",
       "records": 5888,
-      "records_with_metadata_differences": 369,
+      "records_with_metadata_differences": 371,
       "sha256": "28b7a3076d1c7ad0aa3ef2a4394e31423cdd5358f691fdc6a6104f7e15712d2d",
       "sources": [
         {
@@ -3750,9 +3755,9 @@
         "sha256": "e554cfaf75a486df042bb644ee1adff8900b40f7d30dbfe6c912cb6f016e1be8"
       },
       {
-        "bytes": 296925,
+        "bytes": 296934,
         "path": "data/documents/gold/normativa/Por medio del cual se implementa el Reglamento de Playas del Distrito Portuario, Logístico, Industrial, Turístico y Comercial de Turbo – Antioquia.jsonl",
-        "sha256": "5eee1f044f82cb8d15ccf5e92bc191bcbe17cecb7830a3414cf382af3da854f5"
+        "sha256": "393253894a65afdca036e38fa4ef2f2a8527a8c9eae72b911fbce05f6ba00625"
       },
       {
         "bytes": 16661,
