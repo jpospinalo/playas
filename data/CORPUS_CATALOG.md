@@ -6,11 +6,11 @@ Generado desde los archivos locales. No editar manualmente: regenerar ambos arte
 **No confirma el índice desplegado, vigencia jurídica, calidad OCR ni cobertura completa.**
 La presencia de capas y la firma PDF no certifican fidelidad del procesamiento.
 
-Archivos fuente: 56. Entradas: 56. Chunks Gold leídos: 5888.
-Errores técnicos: 0. Advertencias: 67.
+Archivos fuente: 56. Entradas: 56. Chunks Gold leídos: 5876.
+Errores técnicos: 0. Advertencias: 68.
 
 Backup: data/chroma-rag\_playas\_magdalena-20260731-135720.jsonl.gz. Colección: rag\_playas\_magdalena. Fecha declarada: 2026-07-31T13:57:20.520769+00:00.
-Registros: 5888; IDs coincidentes: 5888; textos diferentes: 21; registros con diferencias de metadata: 475.
+Registros: 5888; IDs coincidentes: 5876; textos diferentes: 58; registros con diferencias de metadata: 463.
 
 ## Fuentes y capas
 
@@ -68,7 +68,7 @@ Los títulos y metadatos observados, hashes y evidencias detalladas están en [c
 | [Por medio del cual se expide el Decreto Único Reglamentario del Sector Comercio, Industria y Turismo.pdf](documents/raw/normativa/Por%20medio%20del%20cual%20se%20expide%20el%20Decreto%20U%CC%81nico%20Reglamentario%20del%20Sector%20Comercio%2C%20Industria%20y%20Turismo.pdf) | normativa | Sí | Sí | Sí | 20 | 20 |
 | [Por medio del cual se expide el Decreto Único Reglamentario del Sector Transporte.pdf](documents/raw/normativa/Por%20medio%20del%20cual%20se%20expide%20el%20Decreto%20U%CC%81nico%20Reglamentario%20del%20Sector%20Transporte.pdf) | normativa | Sí | Sí | Sí | 14 | 14 |
 | [Por medio del cual se expide el Decreto Único Reglamentario del Sector Vivienda, Ciudad y Territorio.pdf](documents/raw/normativa/Por%20medio%20del%20cual%20se%20expide%20el%20Decreto%20U%CC%81nico%20Reglamentario%20del%20Sector%20Vivienda%2C%20Ciudad%20y%20Territorio.pdf) | normativa | Sí | Sí | Sí | 13 | 13 |
-| [Por medio del cual se expiden las normas bases para la reglamentación de las actividades en las playas urbanas y rurales en el Distrito de Cartagena de Indias.pdf](documents/raw/normativa/Por%20medio%20del%20cual%20se%20expiden%20las%20normas%20bases%20para%20la%20reglamentacio%CC%81n%20de%20las%20actividades%20en%20las%20playas%20urbanas%20y%20rurales%20en%20el%20Distrito%20de%20Cartagena%20de%20Indias.pdf) | normativa | Sí | Sí | Sí | 151 | 151 |
+| [Por medio del cual se expiden las normas bases para la reglamentación de las actividades en las playas urbanas y rurales en el Distrito de Cartagena de Indias.pdf](documents/raw/normativa/Por%20medio%20del%20cual%20se%20expiden%20las%20normas%20bases%20para%20la%20reglamentacio%CC%81n%20de%20las%20actividades%20en%20las%20playas%20urbanas%20y%20rurales%20en%20el%20Distrito%20de%20Cartagena%20de%20Indias.pdf) | normativa | Sí | Sí | Sí | 139 | 139 |
 | [Por medio del cual se implementa el Reglamento de Playas del Distrito Portuario, Logístico, Industrial, Turístico y Comercial de Turbo – Antioquia.pdf](documents/raw/normativa/Por%20medio%20del%20cual%20se%20implementa%20el%20Reglamento%20de%20Playas%20del%20Distrito%20Portuario%2C%20Logi%CC%81stico%2C%20Industrial%2C%20Turi%CC%81stico%20y%20Comercial%20de%20Turbo%20%E2%80%93%20Antioquia.pdf) | normativa | Sí | Sí | Sí | 125 | 125 |
 | [Por medio del cual se reglamenta el trámite de solicitud de concesiones para el desarrollo de actividades portuarias previstas en las Leyes 1ª de 1991 y 1242 de 2008.pdf](documents/raw/normativa/Por%20medio%20del%20cual%20se%20reglamenta%20el%20tra%CC%81mite%20de%20solicitud%20de%20concesiones%20para%20el%20desarrollo%20de%20actividades%20portuarias%20previstas%20en%20las%20Leyes%201%C2%AA%20de%201991%20y%201242%20de%202008.pdf) | normativa | Sí | Sí | Sí | 7 | 7 |
 | [Por medio del cual se reglamenta el uso, zonificación y horario de las playas con vocación turística del Distrito Turístico, Cultural e Histórico de Santa Marta, aptas para la realización de activiades de aprovech.pdf](documents/raw/normativa/Por%20medio%20del%20cual%20se%20reglamenta%20el%20uso%2C%20zonificacio%CC%81n%20y%20horario%20de%20las%20playas%20con%20vocacio%CC%81n%20turi%CC%81stica%20del%20Distrito%20Turi%CC%81stico%2C%20Cultural%20e%20Histo%CC%81rico%20de%20Santa%20Marta%2C%20aptas%20para%20la%20realizacio%CC%81n%20de%20activiades%20de%20aprovech.pdf) | normativa | Sí | Sí | Sí | 83 | 83 |
@@ -79,8 +79,9 @@ Los títulos y metadatos observados, hashes y evidencias detalladas están en [c
 
 Las advertencias no autorizan renombrados, borrados, reparaciones ni reindexaciones.
 
-- warning / records\_with\_metadata\_differences: data/chroma-rag\_playas\_magdalena-20260731-135720.jsonl.gz — 475 registros; diferencia de snapshots, no autorización para reemplazar datos
-- warning / text\_mismatches: data/chroma-rag\_playas\_magdalena-20260731-135720.jsonl.gz — 21 registros; diferencia de snapshots, no autorización para reemplazar datos
+- warning / ids\_missing\_gold: data/chroma-rag\_playas\_magdalena-20260731-135720.jsonl.gz — 12 registros; diferencia de snapshots, no autorización para reemplazar datos
+- warning / records\_with\_metadata\_differences: data/chroma-rag\_playas\_magdalena-20260731-135720.jsonl.gz — 463 registros; diferencia de snapshots, no autorización para reemplazar datos
+- warning / text\_mismatches: data/chroma-rag\_playas\_magdalena-20260731-135720.jsonl.gz — 58 registros; diferencia de snapshots, no autorización para reemplazar datos
 - warning / double\_spaces: data/documents/raw/jurisprudencia/AP  Carlos Alberto Zúñiga Mejía y otros VS DIMAR y otros.pdf — Nombre con espacios consecutivos
 - warning / unicode\_non\_nfc: data/documents/raw/jurisprudencia/AP  Carlos Alberto Zúñiga Mejía y otros VS DIMAR y otros.pdf — Unicode descompuesto; no implica corrupción
 - warning / unicode\_non\_nfc: data/documents/raw/jurisprudencia/AP Felipe José Campo Fernández VS Corpamag y otros.pdf — Unicode descompuesto; no implica corrupción
