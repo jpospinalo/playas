@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
 	isRestTimeoutError,
+	NETWORK_ERROR_MESSAGE,
 	restErrorMessage,
 	REST_TIMEOUT_MS,
 	withRestTimeout,
@@ -60,6 +61,21 @@ describe("restErrorMessage — mensaje controlado en los límites de presentaci�
 	it("un `Error` que no es timeout conserva su propio mensaje", () => {
 		expect(restErrorMessage(new Error("Error 404"), "fallback")).toBe(
 			"Error 404",
+		);
+	});
+
+	it("un fallo de red del navegador (en inglés, distinto por navegador) se traduce a un mensaje claro en español", () => {
+		for (const raw of [
+			"Failed to fetch",
+			"NetworkError when attempting to fetch resource.",
+			"Load failed",
+			"network error",
+		]) {
+			expect(restErrorMessage(new TypeError(raw), "fallback")).toBe(NETWORK_ERROR_MESSAGE);
+		}
+		// Un TypeError de programación no se disfraza de fallo de red.
+		expect(restErrorMessage(new TypeError("x is not a function"), "fallback")).toBe(
+			"x is not a function",
 		);
 	});
 

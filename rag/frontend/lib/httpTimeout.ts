@@ -75,5 +75,27 @@ export function restErrorMessage(error: unknown, fallback: string): string {
 	if (isRestTimeoutError(error)) {
 		return "La solicitud tardó demasiado. Intenta nuevamente.";
 	}
+	if (isNetworkError(error)) {
+		return NETWORK_ERROR_MESSAGE;
+	}
 	return error instanceof Error ? error.message : fallback;
+}
+
+/** Mensaje para cuando el navegador no logra comunicarse con el servidor. */
+export const NETWORK_ERROR_MESSAGE =
+	"No pudimos conectar con ATLAS. Revisa tu conexión a internet e inténtalo de nuevo.";
+
+/**
+ * `true` si `error` es el `TypeError` que lanza `fetch` (o la lectura del
+ * cuerpo) cuando no hay conexión o el servidor no responde. Cada navegador
+ * usa su propio texto en inglés —"Failed to fetch" (Chrome), "NetworkError
+ * when attempting to fetch resource." (Firefox), "Load failed" (Safari),
+ * "network error" (lectura de un stream cortado)—, que no debe llegar tal
+ * cual a la pantalla.
+ */
+export function isNetworkError(error: unknown): boolean {
+	return (
+		error instanceof TypeError &&
+		/failed to fetch|networkerror|load failed|network error/i.test(error.message)
+	);
 }

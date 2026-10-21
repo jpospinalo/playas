@@ -485,9 +485,7 @@ export function useChat({ onConversationChanged }: UseChatOptions = {}): UseChat
 					if (cancelRequestedRef.current) setGenerationStopped(true);
 				} else {
 					setError(
-						err instanceof Error
-							? err.message
-							: "Error de conexión. Compruebe que el servidor está activo.",
+						restErrorMessage(err, "Error de conexión. Compruebe que el servidor está activo."),
 					);
 				}
 			}
