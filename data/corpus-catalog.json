@@ -1351,13 +1351,19 @@
       "coverage": "not_verified",
       "doc_type": "normativa",
       "export_metadata_differences": {
-        "entities": 1,
+        "articulo": 20,
+        "capitulo": 20,
+        "chunk_index": 20,
+        "entities": 3,
         "keywords": 1,
         "keywords_str": 1,
-        "summary": 1
+        "section_index": 47,
+        "section_name": 20,
+        "summary": 1,
+        "total_chunks_in_section": 28
       },
       "export_records_matched_by_id": 125,
-      "export_text_mismatches": 5,
+      "export_text_mismatches": 6,
       "format": ".pdf",
       "gold_chunks": 125,
       "gold_ids_missing_export": 0,
@@ -1482,13 +1488,13 @@
   "findings": [
     {
       "code": "records_with_metadata_differences",
-      "detail": "371 registros; diferencia de snapshots, no autorización para reemplazar datos",
+      "detail": "425 registros; diferencia de snapshots, no autorización para reemplazar datos",
       "path": "data/chroma-rag_playas_magdalena-20260731-135720.jsonl.gz",
       "severity": "warning"
     },
     {
       "code": "text_mismatches",
-      "detail": "20 registros; diferencia de snapshots, no autorización para reemplazar datos",
+      "detail": "21 registros; diferencia de snapshots, no autorización para reemplazar datos",
       "path": "data/chroma-rag_playas_magdalena-20260731-135720.jsonl.gz",
       "severity": "warning"
     },
@@ -1923,21 +1929,21 @@
       "ids_missing_gold": 0,
       "manifest_count": 5888,
       "metadata_field_differences": {
-        "articulo": 27,
+        "articulo": 47,
         "articulo_titulo": 27,
-        "capitulo": 46,
-        "chunk_index": 27,
-        "entities": 308,
+        "capitulo": 66,
+        "chunk_index": 47,
+        "entities": 310,
         "keywords": 314,
         "keywords_str": 315,
-        "section_index": 37,
-        "section_name": 27,
+        "section_index": 84,
+        "section_name": 47,
         "summary": 313,
-        "total_chunks_in_section": 46
+        "total_chunks_in_section": 74
       },
       "path": "data/chroma-rag_playas_magdalena-20260731-135720.jsonl.gz",
       "records": 5888,
-      "records_with_metadata_differences": 371,
+      "records_with_metadata_differences": 425,
       "sha256": "28b7a3076d1c7ad0aa3ef2a4394e31423cdd5358f691fdc6a6104f7e15712d2d",
       "sources": [
         {
@@ -2221,7 +2227,7 @@
           "source": "decreto-2324-de-1984.md"
         }
       ],
-      "text_mismatches": 20
+      "text_mismatches": 21
     },
     "files": [
       {
@@ -3755,9 +3761,9 @@
         "sha256": "e554cfaf75a486df042bb644ee1adff8900b40f7d30dbfe6c912cb6f016e1be8"
       },
       {
-        "bytes": 296934,
+        "bytes": 297195,
         "path": "data/documents/gold/normativa/Por medio del cual se implementa el Reglamento de Playas del Distrito Portuario, Logístico, Industrial, Turístico y Comercial de Turbo – Antioquia.jsonl",
-        "sha256": "393253894a65afdca036e38fa4ef2f2a8527a8c9eae72b911fbce05f6ba00625"
+        "sha256": "ebb1a70519f7fe7577e0ea26c837f61ccc8839264e2b1948fa2117e4725149c3"
       },
       {
         "bytes": 16661,
@@ -4320,9 +4326,9 @@
         "sha256": "23253a9ee352851451337aded45d46e8dd9d9ec7de5638240b32182415f1d5e3"
       },
       {
-        "bytes": 99909,
+        "bytes": 100453,
         "path": "data/documents/silver/normativa/Por medio del cual se implementa el Reglamento de Playas del Distrito Portuario, Logístico, Industrial, Turístico y Comercial de Turbo – Antioquia.jsonl",
-        "sha256": "1a8182074aa3d72194118de6638fb911a8548760485afc485742f2aa215df7da"
+        "sha256": "e60042985b8d56d6bad352fcc265e0c9678dd7dc06ec15f1d6db50d14a99f4cb"
       },
       {
         "bytes": 7284,
