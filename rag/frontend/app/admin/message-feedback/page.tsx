@@ -209,6 +209,7 @@ export default function MessageFeedbackPage() {
 	);
 
 	useEffect(() => {
+		// eslint-disable-next-line react-hooks/set-state-in-effect -- carga desde el servidor (sistema externo) al montar o al cambiar página/filtros; regla más estricta desde eslint-config-next 16.4
 		load(page);
 		// G2.1 — aborta la solicitud activa al desmontar o antes de que el
 		// efecto se vuelva a ejecutar (cambio de página/filtros), para que

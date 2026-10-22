@@ -120,6 +120,7 @@ export function useConversations(): {
 	}, [user]);
 
 	useEffect(() => {
+		// eslint-disable-next-line react-hooks/set-state-in-effect -- carga desde el servidor (sistema externo) al montar o al cambiar página/filtros; regla más estricta desde eslint-config-next 16.4
 		void refresh();
 	}, [refresh]);
 

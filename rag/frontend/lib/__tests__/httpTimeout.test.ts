@@ -102,11 +102,22 @@ describe("restErrorMessage — mensaje controlado en los límites de presentaci�
 describe("withRestTimeout — comportamiento extremo a extremo con fetch (temporizadores simulados)", () => {
 	beforeEach(() => {
 		vi.useFakeTimers();
+		// Desde vitest 4 el entorno expone el AbortSignal nativo de Node, cuyo
+		// timeout() usa temporizadores internos que los fake timers no
+		// controlan. Se reemplaza por una implementación equivalente (aborta
+		// con DOMException "TimeoutError", igual que la nativa) montada sobre el
+		// setTimeout simulado, para seguir probando withRestTimeout de punta a punta.
+		vi.spyOn(AbortSignal, "timeout").mockImplementation((ms: number) => {
+			const controller = new AbortController();
+			setTimeout(() => controller.abort(new DOMException("signal timed out", "TimeoutError")), ms);
+			return controller.signal;
+		});
 	});
 
 	afterEach(() => {
 		vi.useRealTimers();
 		vi.unstubAllGlobals();
+		vi.restoreAllMocks();
 	});
 
 	it("una respuesta que llega antes del límite se resuelve con normalidad, y avanzar el tiempo después no tiene ningún efecto observable", async () => {
