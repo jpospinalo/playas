@@ -104,6 +104,19 @@ describe("Respuesta (diseño v3)", () => {
 		expect(props.onOtraPregunta).not.toHaveBeenCalled();
 	});
 
+	it("no muestra HTML del backend ni enlaces que no sean web (QA-21)", () => {
+		pintar(
+			"Sí. Texto <script>window.x=1</script> normal <iframe src=x></iframe> [Toque aquí](javascript:alert(1)) y [ley](https://www.suin-juriscol.gov.co).",
+		);
+		expect(document.querySelector("script, iframe")).toBeNull();
+		expect(screen.queryByText(/<script>|<iframe/)).not.toBeInTheDocument();
+		expect(screen.queryByRole("link", { name: "Toque aquí" })).not.toBeInTheDocument();
+		expect(screen.getByText(/Toque aquí/)).toBeInTheDocument();
+		const ley = screen.getByRole("link", { name: "ley" });
+		expect(ley).toHaveAttribute("href", "https://www.suin-juriscol.gov.co");
+		expect(ley).not.toHaveAttribute("target");
+	});
+
 	it("no ofrece calificar mientras la respuesta no está guardada", () => {
 		pintar("Sí. Texto.", { puedeCalificar: false });
 		expect(screen.queryByText("¿Esta respuesta le sirvió?")).not.toBeInTheDocument();

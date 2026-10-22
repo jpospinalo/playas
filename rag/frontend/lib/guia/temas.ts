@@ -63,7 +63,7 @@ export const TEMAS: Tema[] = [
 		id: "pescar",
 		icono: "pez",
 		titulo: "Pescar",
-		detalle: "Dónde, cuándo y con qué se puede pescar",
+		detalle: "Dónde se puede pescar y qué permiso necesita",
 		pantalla: "¿Qué quiere saber?",
 		opciones: [
 			{

@@ -53,8 +53,13 @@ function Encabezado() {
 	// Un toque sin querer en "Salir" no debe sacar a nadie: se pide confirmar.
 	const [confirmar, setConfirmar] = useState(false);
 	const noRef = useRef<HTMLButtonElement>(null);
+	const salirRef = useRef<HTMLButtonElement>(null);
+	const abierta = useRef(false);
 	useEffect(() => {
 		if (confirmar) noRef.current?.focus();
+		// Al cancelar, el foco vuelve a "Salir" (no se pierde en la página).
+		else if (abierta.current) salirRef.current?.focus();
+		abierta.current = confirmar;
 	}, [confirmar]);
 	return (
 		<header className="guia-encabezado">
@@ -70,13 +75,21 @@ function Encabezado() {
 					</span>
 				</div>
 				{user && !confirmar ? (
-					<button type="button" className="salir" onClick={() => setConfirmar(true)}>
+					<button type="button" className="salir" ref={salirRef} onClick={() => setConfirmar(true)}>
 						Salir
 					</button>
 				) : null}
 			</div>
 			{user && confirmar ? (
-				<div className="guia-confirmar" role="group" aria-labelledby="confirmar-salir">
+				<div
+					className="guia-confirmar"
+					role="group"
+					aria-labelledby="confirmar-salir"
+					// Escape = "No, seguir aquí".
+					onKeyDown={(e) => {
+						if (e.key === "Escape") setConfirmar(false);
+					}}
+				>
 					<p id="confirmar-salir">¿Seguro que quiere salir de ATLAS?</p>
 					<div className="guia-acciones">
 						<button type="button" className="guia-btn-sec" ref={noRef} onClick={() => setConfirmar(false)}>

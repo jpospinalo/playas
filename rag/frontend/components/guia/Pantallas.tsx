@@ -29,6 +29,15 @@ export function Volver({ onClick, children = "Volver" }: { onClick: () => void; 
 	);
 }
 
+/** "Volver" repetido al final de listas largas, cerca del pulgar. */
+function VolverAbajo({ onClick }: { onClick: () => void }) {
+	return (
+		<div className="guia-volver-abajo">
+			<Volver onClick={onClick} />
+		</div>
+	);
+}
+
 function Cabeza({
 	titulo,
 	tituloRef,
@@ -132,6 +141,7 @@ export function PantallaTema({
 					</button>
 				</li>
 			</ul>
+			<VolverAbajo onClick={onVolver} />
 		</>
 	);
 }
@@ -174,6 +184,7 @@ export function PantallaPlaya({
 					</button>
 				</li>
 			</ul>
+			<VolverAbajo onClick={onVolver} />
 		</>
 	);
 }
@@ -261,11 +272,15 @@ export function PantallaEspera({
 		<>
 			<Volver onClick={onVolver}>Cancelar y volver</Volver>
 			<Cabeza titulo={TXT.esperaTitulo} tituloRef={tituloRef} lectura={lecturaEspera} />
-			<div className="guia-espera" role="status">
+			<div className="guia-espera">
 				<Boya />
 				<p>
 					{TXT.esperaTexto}
-					{etapa && ETAPAS[etapa] ? <span className="etapa">{ETAPAS[etapa]}</span> : null}
+					{/* Solo la etapa es región viva: el lector anuncia "Buscando…"
+					    sin repetir la frase fija en cada cambio. */}
+					<span className="etapa" role="status">
+						{etapa && ETAPAS[etapa] ? ETAPAS[etapa] : ""}
+					</span>
 				</p>
 			</div>
 		</>

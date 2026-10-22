@@ -16,6 +16,9 @@ const inter = localFont({
 	variable: "--font-sans",
 	weight: "100 900",
 	display: "swap",
+	// Sin precarga: la portada (flujo guiado) usa la fuente del sistema y no
+	// debe descargar esta fuente; /chat, /admin y /about la piden al usarla.
+	preload: false,
 });
 
 const geistMono = localFont({
@@ -23,6 +26,7 @@ const geistMono = localFont({
 	variable: "--font-mono",
 	weight: "100 900",
 	display: "swap",
+	preload: false,
 });
 
 export const metadata: Metadata = {

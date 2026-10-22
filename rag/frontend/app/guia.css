@@ -55,6 +55,13 @@
 	font-style: italic;
 }
 
+/* En la portada nada usa las fuentes web del resto de la app (Inter y
+   Geist Mono, que se cargan sin precarga): el body también va con la del
+   sistema para que el navegador no las descargue. */
+body:has(.guia) {
+	font-family: "Source Sans 3", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
 /* Encabezado: blanco, como el papel de la carta. Una sola línea de tinta. */
 .guia-encabezado {
 	border-bottom: 3px solid var(--tinta);
@@ -64,6 +71,8 @@
 	margin: 0 auto;
 	padding: 10px 18px;
 	display: flex;
+	/* Con letra muy grande, "Salir" baja a otra línea en vez de salirse. */
+	flex-wrap: wrap;
 	align-items: center;
 	gap: 12px;
 	min-height: 64px;
@@ -158,6 +167,9 @@
 	padding: 0;
 	margin: 22px 0 0;
 	display: grid;
+	/* minmax(0, …): la columna puede encoger con letra grande del sistema;
+	   sin esto una palabra larga ("Construcciones") ensancha la tarjeta. */
+	grid-template-columns: minmax(0, 1fr);
 	gap: 12px;
 }
 .guia-opcion {
@@ -196,6 +208,9 @@
 }
 .guia-opcion .txt {
 	flex: 1;
+	min-width: 0;
+	overflow-wrap: break-word;
+	hyphens: auto;
 }
 .guia-opcion b {
 	display: block;
@@ -220,7 +235,7 @@
 	stroke-linejoin: round;
 }
 .guia-playas {
-	grid-template-columns: 1fr 1fr;
+	grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
 }
 .guia-playas .guia-opcion {
 	min-height: 64px;
@@ -709,7 +724,7 @@
 		font-size: 21px;
 	}
 	.guia-playas {
-		grid-template-columns: 1fr;
+		grid-template-columns: minmax(0, 1fr);
 	}
 	.guia-veredicto {
 		padding: 18px 16px 18px 18px;
@@ -759,4 +774,11 @@
 .guia .aviso-intento {
 	margin: 12px 0 0;
 	font-weight: 600;
+}
+
+/* Repetición de "Volver" al final de Tema y Playa: cerca del pulgar en
+   teléfonos grandes. */
+.guia-volver-abajo {
+	margin-top: 26px;
+	margin-bottom: 0;
 }

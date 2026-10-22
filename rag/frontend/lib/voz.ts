@@ -173,13 +173,16 @@ export async function hablar(texto: string): Promise<void> {
 	const ya = window.speechSynthesis.getVoices();
 	const voz = elegirVoz(ya.length > 0 ? ya : await vocesDisponibles());
 	if (miTurno !== turno) return;
+	// Sin voz en español, el navegador leería con su voz por defecto (por
+	// ejemplo, en inglés): mejor avisar que leer mal.
+	if (!voz) throw new Error("sin-espanol");
 	const s = window.speechSynthesis;
 	for (const frase of dividirEnFrases(texto)) {
 		if (miTurno !== turno) return;
 		await new Promise<void>((resolve) => {
 			const u = new SpeechSynthesisUtterance(frase);
-			u.lang = voz?.lang ?? "es-CO";
-			if (voz) u.voice = voz;
+			u.lang = voz.lang;
+			u.voice = voz;
 			u.rate = VELOCIDAD;
 			u.onend = () => resolve();
 			u.onerror = () => resolve();

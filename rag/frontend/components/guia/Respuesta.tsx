@@ -98,11 +98,11 @@ export function Respuesta({
 						</a>
 					);
 				}
-				return (
-					<a href={href} target="_blank" rel="noopener noreferrer">
-						{children}
-					</a>
-				);
+				// Solo enlaces web de verdad, en la misma pestaña (abrir pestañas
+				// nuevas pierde a la persona; "atrás" vuelve a la respuesta
+				// guardada). Cualquier otro (javascript:, vacío…) queda como texto.
+				if (!href || !/^https?:\/\//i.test(href)) return <>{children}</>;
+				return <a href={href}>{children}</a>;
 			},
 			table({ children }) {
 				return (
@@ -121,7 +121,9 @@ export function Respuesta({
 
 	const md = (contenido: string, extra?: string): ReactNode => (
 		<div className={`guia-md${extra ? ` ${extra}` : ""}`}>
-			<ReactMarkdown remarkPlugins={[remarkGfm]} components={componentes}>
+			{/* skipHtml: si el backend manda HTML (<script>, <iframe>…) no se
+			    muestra ni como código ni como elemento. */}
+			<ReactMarkdown remarkPlugins={[remarkGfm]} components={componentes} skipHtml>
 				{prepararCitas(contenido)}
 			</ReactMarkdown>
 		</div>
@@ -159,7 +161,7 @@ export function Respuesta({
 			<section className="guia-veredicto" aria-labelledby="titulo">
 				<Curvas />
 				<h1 id="titulo" ref={tituloRef} tabIndex={-1} className={tituloLargo ? "largo" : undefined}>
-					<ReactMarkdown remarkPlugins={[remarkGfm]} components={tituloEnLinea}>
+					<ReactMarkdown remarkPlugins={[remarkGfm]} components={tituloEnLinea} skipHtml>
 						{prepararCitas(ordenada.titulo)}
 					</ReactMarkdown>
 				</h1>
