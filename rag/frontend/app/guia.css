@@ -80,7 +80,7 @@
 }
 .guia-barra .zona {
 	display: block;
-	font-size: 17px;
+	font-size: 18px;
 	color: var(--tinta-2);
 	line-height: 1.2;
 }
@@ -547,13 +547,13 @@
 	display: none;
 }
 .guia-cita {
-	font-size: 17px;
+	font-size: 18px;
 	font-weight: 400;
 	color: var(--enlace);
 	white-space: nowrap;
-	background: none;
-	border: 0;
-	padding: 0 2px;
+	/* Enlace en línea: el relleno vertical agranda el área de toque a ~48 px
+	   sin cambiar el alto del renglón. */
+	padding: 14px 3px;
 	cursor: pointer;
 	text-decoration: underline;
 	text-underline-offset: 3px;
@@ -731,7 +731,32 @@
 		font-size: 24px;
 	}
 	.guia-btn,
-	.guia-final .guia-btn {
+	.guia-final .guia-btn,
+	.guia-btn-sec {
 		width: 100%;
 	}
+	/* "Sí" y "No" van lado a lado, mitad y mitad. */
+	.guia-sirvio .guia-btn-sec {
+		width: auto;
+		flex: 1;
+	}
+}
+
+/* Confirmación de "Salir" (debajo del encabezado). */
+.guia-confirmar {
+	max-width: 760px;
+	margin: 0 auto;
+	padding: 14px 18px;
+	border-bottom: 2px solid var(--bajo);
+}
+.guia-confirmar p {
+	margin: 0;
+	font-weight: 700;
+}
+.guia-confirmar .guia-acciones {
+	margin-top: 10px;
+}
+.guia .aviso-intento {
+	margin: 12px 0 0;
+	font-weight: 600;
 }

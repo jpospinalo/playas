@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } fro
 import ReactMarkdown, { type Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
 import type { SourceFragment, SourceGroup } from "@/lib/types";
-import { markdownATexto, ordenarRespuesta, type RespuestaOrdenada } from "@/lib/guia/respuesta";
+import { lecturaRespuesta, markdownATexto, ordenarRespuesta, type RespuestaOrdenada } from "@/lib/guia/respuesta";
 import { Atencion, Curvas, FlechaVolver } from "@/components/guia/iconos";
 import { Escuchar } from "@/components/guia/Escuchar";
 
@@ -18,6 +18,7 @@ interface RespuestaProps {
 	/** La respuesta aún no quedó guardada: no se puede calificar todavía. */
 	puedeCalificar: boolean;
 	onCalificar: (c: Calificacion) => Promise<void>;
+	onVolver: () => void;
 	onOtraPregunta: () => void;
 	onEscribirDeNuevo: () => void;
 	tituloRef: React.RefObject<HTMLHeadingElement | null>;
@@ -47,6 +48,7 @@ export function Respuesta({
 	fuentes,
 	puedeCalificar,
 	onCalificar,
+	onVolver,
 	onOtraPregunta,
 	onEscribirDeNuevo,
 	tituloRef,
@@ -81,10 +83,19 @@ export function Respuesta({
 					const n = Number(m[1]);
 					// Una cita a un fragmento que no llegó no se muestra como enlace.
 					if (!indices.has(n)) return null;
+					// Enlace en línea (no botón) para poder darle un área de toque
+					// alta con relleno sin mover el renglón (ver .guia-cita).
 					return (
-						<button type="button" className="guia-cita" onClick={() => abrirFuente(n)}>
+						<a
+							href={`#fuente-${n}`}
+							className="guia-cita"
+							onClick={(e) => {
+								e.preventDefault();
+								abrirFuente(n);
+							}}
+						>
 							{children}
-						</button>
+						</a>
 					);
 				}
 				return (
@@ -124,20 +135,15 @@ export function Respuesta({
 	// Los títulos fijos de la interfaz (no salen de la respuesta) van un
 	// poco más chicos que un "Sí." o "No." del backend.
 	const tituloLargo = !/[.!?]$/.test(ordenada.titulo) || markdownATexto(ordenada.titulo).length > 40;
-	// En "sin evidencia" el título ya dice lo mismo que la línea "Situación".
-	const resumen = ordenada.tipo === "sin-evidencia" ? "" : ordenada.resumen;
+	const resumen = ordenada.resumen;
 
-	function textoParaLeer(): string {
-		const partes = [ordenada.titulo, ordenada.resumen];
-		for (const s of ordenada.secciones) partes.push(s.titulo, s.cuerpo);
-		return partes.map((p) => markdownATexto(p)).filter(Boolean).join("\n");
-	}
+	const textoParaLeer = () => lecturaRespuesta(ordenada);
 
 	const sinRespuestaFirme = ordenada.tipo !== "normal";
 
 	return (
 		<>
-			<button type="button" className="guia-volver" onClick={onOtraPregunta}>
+			<button type="button" className="guia-volver" onClick={onVolver}>
 				<FlechaVolver />
 				Volver
 			</button>
@@ -164,18 +170,21 @@ export function Respuesta({
 
 			{ordenada.secciones.map((s, i) =>
 				s.clase === "ojo" ? (
-					<section key={i} className="guia-ojo" aria-labelledby={`sec-${i}`}>
+					// <div> y no <section> con nombre: el backend puede repetir
+					// títulos y dos regiones con el mismo nombre confunden al
+					// lector de pantalla (axe landmark-unique).
+					<div key={i} className="guia-ojo">
 						<Atencion />
 						<div>
-							<h2 id={`sec-${i}`}>{s.titulo}</h2>
+							<h2>{s.titulo}</h2>
 							{md(s.cuerpo)}
 						</div>
-					</section>
+					</div>
 				) : (
-					<section key={i} aria-labelledby={`sec-${i}`}>
-						<h2 id={`sec-${i}`}>{s.titulo}</h2>
+					<div key={i}>
+						<h2>{s.titulo}</h2>
 						{s.cuerpo ? md(s.cuerpo, s.clase === "acudir" ? "acudir" : undefined) : null}
-					</section>
+					</div>
 				),
 			)}
 
@@ -232,12 +241,22 @@ function Sirvio({
 	// Al cambiar el contenido del recuadro, el foco pasa al mensaje nuevo
 	// (si no, se perdería en el <body> al desaparecer el botón tocado).
 	const mensajeRef = useRef<HTMLParagraphElement>(null);
+	// Alto mínimo del recuadro: al cambiar a "Gracias" no se encoge, así lo
+	// que está debajo ("Hacer otra pregunta") no sube hasta el dedo de quien
+	// tocó dos veces seguidas.
+	const cajaRef = useRef<HTMLDivElement>(null);
+	const [altoMinimo, setAltoMinimo] = useState<number | undefined>(undefined);
+	function fijarAlto() {
+		const alto = cajaRef.current?.offsetHeight;
+		if (alto) setAltoMinimo((a) => Math.max(a ?? 0, alto));
+	}
 	useEffect(() => {
 		if (paso === "gracias" || paso === "error") mensajeRef.current?.focus();
 		if (paso === "que-falto") document.getElementById("que-falto")?.focus();
 	}, [paso]);
 
 	async function enviar(c: Calificacion) {
+		fijarAlto();
 		setPaso("enviando");
 		try {
 			await onCalificar(c);
@@ -250,7 +269,7 @@ function Sirvio({
 	if (!puedeCalificar) return null;
 
 	return (
-		<div className="guia-sirvio">
+		<div className="guia-sirvio" ref={cajaRef} style={altoMinimo ? { minHeight: altoMinimo } : undefined}>
 			{paso === "preguntar" || paso === "enviando" ? (
 				<>
 					<p id="sirvio-pregunta">¿Esta respuesta le sirvió?</p>
@@ -267,7 +286,10 @@ function Sirvio({
 							type="button"
 							className="guia-btn-sec"
 							disabled={paso === "enviando"}
-							onClick={() => setPaso("que-falto")}
+							onClick={() => {
+								fijarAlto();
+								setPaso("que-falto");
+							}}
 						>
 							No
 						</button>

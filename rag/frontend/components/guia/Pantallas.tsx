@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { MAX_QUESTION_CHARS } from "@/lib/contracts";
 import { PLAYAS, TEMAS, type Tema } from "@/lib/guia/temas";
 import {
@@ -181,11 +181,14 @@ export function PantallaPlaya({
 export function PantallaEscribir({
 	tituloRef,
 	inicial,
+	onCambio,
 	onVolver,
 	onPreguntar,
 }: {
 	tituloRef: TituloRef;
 	inicial: string;
+	/** Guarda lo escrito fuera de la pantalla, para no perderlo al volver. */
+	onCambio: (texto: string) => void;
 	onVolver: () => void;
 	onPreguntar: (texto: string) => void;
 }) {
@@ -222,7 +225,10 @@ export function PantallaEscribir({
 					maxLength={MAX_QUESTION_CHARS}
 					aria-describedby={error ? "texto-error texto-ejemplo" : "texto-ejemplo"}
 					aria-invalid={error ? true : undefined}
-					onChange={(e) => setTexto(e.target.value)}
+					onChange={(e) => {
+						setTexto(e.target.value);
+						onCambio(e.target.value);
+					}}
 				/>
 				<p className="ejemplo" id="texto-ejemplo">
 					Por ejemplo: <i>{TXT.escribirEjemplo}</i>
@@ -270,15 +276,23 @@ export function PantallaError({
 	tituloRef,
 	tipo,
 	detalle,
+	intentos,
 	onReintentar,
 	onVolver,
 }: {
 	tituloRef: TituloRef;
 	tipo: TipoError;
+	/** Detalle técnico: solo va a la consola, nunca a la pantalla del público. */
 	detalle: string | null;
+	/** Reintentos sin señal (0 = ninguno todavía). */
+	intentos: number;
 	onReintentar: () => void;
 	onVolver: () => void;
 }) {
+	useEffect(() => {
+		// Para el equipo (consola del navegador); el público no lo necesita.
+		if (detalle) console.warn("[ATLAS] error al traer la respuesta:", detalle);
+	}, [detalle]);
 	return (
 		<>
 			<Volver onClick={onVolver} />
@@ -286,7 +300,11 @@ export function PantallaError({
 			<p className="guia-error" role="alert">
 				{mensajeError(tipo)}
 			</p>
-			{detalle && tipo === "otro" ? <p className="pista">Detalle para el equipo: {detalle}</p> : null}
+			{intentos > 0 ? (
+				<p className="aviso-intento" role="status">
+					Todavía no hay señal (intento {intentos + 1}).
+				</p>
+			) : null}
 			<div className="guia-acciones">
 				<button type="button" className="guia-btn" onClick={onReintentar}>
 					Intentar otra vez

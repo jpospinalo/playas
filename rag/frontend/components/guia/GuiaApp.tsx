@@ -18,6 +18,7 @@ import {
 } from "@/components/guia/Pantallas";
 import { Respuesta, type Calificacion } from "@/components/guia/Respuesta";
 import { detenerVoz } from "@/lib/voz";
+import type { SourceGroup } from "@/lib/types";
 
 /**
  * ATLAS para el público (diseño v3): flujo guiado de una pregunta por
@@ -49,6 +50,12 @@ export function GuiaApp() {
 
 function Encabezado() {
 	const { user, signOut } = useAuth();
+	// Un toque sin querer en "Salir" no debe sacar a nadie: se pide confirmar.
+	const [confirmar, setConfirmar] = useState(false);
+	const noRef = useRef<HTMLButtonElement>(null);
+	useEffect(() => {
+		if (confirmar) noRef.current?.focus();
+	}, [confirmar]);
 	return (
 		<header className="guia-encabezado">
 			<div className="guia-barra">
@@ -62,12 +69,32 @@ function Encabezado() {
 						<span className="lugar">Santa Marta</span>
 					</span>
 				</div>
-				{user ? (
-					<button type="button" className="salir" onClick={() => void signOut()}>
+				{user && !confirmar ? (
+					<button type="button" className="salir" onClick={() => setConfirmar(true)}>
 						Salir
 					</button>
 				) : null}
 			</div>
+			{user && confirmar ? (
+				<div className="guia-confirmar" role="group" aria-labelledby="confirmar-salir">
+					<p id="confirmar-salir">¿Seguro que quiere salir de ATLAS?</p>
+					<div className="guia-acciones">
+						<button type="button" className="guia-btn-sec" ref={noRef} onClick={() => setConfirmar(false)}>
+							No, seguir aquí
+						</button>
+						<button
+							type="button"
+							className="guia-btn-sec"
+							onClick={() => {
+								setConfirmar(false);
+								void signOut();
+							}}
+						>
+							Sí, salir
+						</button>
+					</div>
+				</div>
+			) : null}
 		</header>
 	);
 }
@@ -85,8 +112,35 @@ function tipoDeError(error: string | null): TipoError {
 	return "otro";
 }
 
+const CLAVE_GUARDADA = "atlas:ultima-respuesta";
+
+interface RespuestaGuardada {
+	pregunta: PreguntaActual;
+	texto: string;
+	fuentes: SourceGroup[];
+}
+
+/** Última respuesta de esta pestaña, para no perderla si se recarga la página. */
+function leerGuardada(): RespuestaGuardada | null {
+	try {
+		const crudo = window.sessionStorage.getItem(CLAVE_GUARDADA);
+		return crudo ? (JSON.parse(crudo) as RespuestaGuardada) : null;
+	} catch {
+		return null;
+	}
+}
+
+function guardar(r: RespuestaGuardada | null): void {
+	try {
+		if (r) window.sessionStorage.setItem(CLAVE_GUARDADA, JSON.stringify(r));
+		else window.sessionStorage.removeItem(CLAVE_GUARDADA);
+	} catch {
+		// Sin almacenamiento (modo privado, etc.): solo se pierde esta comodidad.
+	}
+}
+
 function Flujo() {
-	const { ruta, ir } = useRutaGuia();
+	const { ruta, ir, volver } = useRutaGuia();
 	const tituloRef = useRef<HTMLHeadingElement>(null);
 	const chat = useChat();
 	const { messages, loading, error, stage, generationFinished, persistingMessageIds } = chat;
@@ -98,6 +152,11 @@ function Flujo() {
 	const [turnoEnvio, setTurnoEnvio] = useState(0);
 	const [sinSenal, setSinSenal] = useState(false);
 	const [borrador, setBorrador] = useState("");
+	// Veces que se tocó "Intentar otra vez" sin señal (para que se note que intentó).
+	const [intentos, setIntentos] = useState(0);
+	const [guardada, setGuardada] = useState<RespuestaGuardada | null>(() =>
+		typeof window === "undefined" ? null : leerGuardada(),
+	);
 
 	const pantalla = ruta[0] ?? "inicio";
 	const respuesta = [...messages].reverse().find((m) => m.role === "assistant" && m.text);
@@ -122,6 +181,14 @@ function Flujo() {
 		}
 	}, [pantalla, respuesta, generationFinished, loading, error, ir]);
 
+	// La respuesta completa se guarda en la pestaña (sessionStorage): si la
+	// persona recarga sin querer (jalar hacia abajo en el celular), la vuelve a ver.
+	const respuestaLista = respuesta && !loading && !error ? respuesta : null;
+	useEffect(() => {
+		if (pantalla !== "respuesta" || !respuestaLista || !pregunta) return;
+		guardar({ pregunta, texto: respuestaLista.text, fuentes: respuestaLista.sources ?? [] });
+	}, [pantalla, respuestaLista, pregunta]);
+
 	// Al cambiar de pantalla: arriba del todo, foco en el título (los
 	// lectores de pantalla lo anuncian) y título de la pestaña.
 	const clave = ruta.join("/");
@@ -134,13 +201,13 @@ function Flujo() {
 		} else {
 			tituloRef.current?.focus();
 		}
-		const t = tituloRef.current?.textContent;
+		const t = clave === "respuesta" ? "Respuesta a su pregunta" : tituloRef.current?.textContent;
 		document.title = t ? `ATLAS: ${t}` : "ATLAS";
 	}, [clave, sinSenal, error]);
 
 	function preguntar(texto: string, envio: string, playa: string | null) {
 		setPregunta({ texto, envio, playa });
-		setBorrador("");
+		setIntentos(0);
 		chat.resetChat();
 		if (typeof navigator !== "undefined" && navigator.onLine === false) {
 			setSinSenal(true);
@@ -161,9 +228,11 @@ function Flujo() {
 		chat.resetChat();
 		if (navigator.onLine === false) {
 			setSinSenal(true);
+			setIntentos((n) => n + 1);
 			return;
 		}
 		setSinSenal(false);
+		setIntentos(0);
 		pendienteRef.current = pregunta.envio;
 		setTurnoEnvio((n) => n + 1);
 	}
@@ -178,7 +247,10 @@ function Flujo() {
 	function otraPregunta() {
 		chat.resetChat();
 		setPregunta(null);
+		setBorrador("");
 		setSinSenal(false);
+		setGuardada(null);
+		guardar(null);
 		ir("inicio");
 	}
 
@@ -195,7 +267,7 @@ function Flujo() {
 			<PantallaTema
 				tema={tema}
 				tituloRef={tituloRef}
-				onVolver={() => ir("inicio")}
+				onVolver={() => volver("inicio")}
 				onEscribir={() => ir("escribir")}
 				onOpcion={(i) => {
 					const o = tema.opciones[i];
@@ -212,7 +284,7 @@ function Flujo() {
 			<PantallaPlaya
 				tema={tema}
 				tituloRef={tituloRef}
-				onVolver={() => ir(`tema/${tema.id}`)}
+				onVolver={() => volver(`tema/${tema.id}`)}
 				onPlaya={(playa) => preguntar(o.texto, preguntaConPlaya(o.pregunta, playa), playa)}
 			/>
 		);
@@ -223,7 +295,8 @@ function Flujo() {
 			<PantallaEscribir
 				tituloRef={tituloRef}
 				inicial={borrador}
-				onVolver={() => window.history.back()}
+				onCambio={setBorrador}
+				onVolver={() => volver("inicio")}
 				onPreguntar={(texto) => {
 					setBorrador(texto);
 					preguntar(texto, texto, null);
@@ -239,12 +312,35 @@ function Flujo() {
 					tituloRef={tituloRef}
 					tipo={sinSenal ? "sin-senal" : tipoDeError(error)}
 					detalle={error}
+					intentos={sinSenal ? intentos : 0}
 					onReintentar={reintentar}
 					onVolver={cancelarYVolver}
 				/>
 			);
 		}
 		return <PantallaEspera tituloRef={tituloRef} etapa={stage} onVolver={cancelarYVolver} />;
+	}
+
+	// Respuesta guardada (tras recargar la página): se muestra igual, pero sin
+	// "¿Le sirvió?", porque la conversación ya no está abierta en el chat.
+	if (pantalla === "respuesta" && !(pregunta && respuesta) && guardada) {
+		return (
+			<Respuesta
+				pregunta={guardada.pregunta.texto}
+				playa={guardada.pregunta.playa}
+				texto={guardada.texto}
+				fuentes={guardada.fuentes}
+				puedeCalificar={false}
+				onCalificar={calificar}
+				onVolver={() => volver("inicio")}
+				onOtraPregunta={otraPregunta}
+				onEscribirDeNuevo={() => {
+					setBorrador(guardada.pregunta.texto);
+					ir("escribir");
+				}}
+				tituloRef={tituloRef}
+			/>
+		);
 	}
 
 	if (pantalla === "respuesta" && pregunta && respuesta) {
@@ -254,6 +350,7 @@ function Flujo() {
 				playa={pregunta.playa}
 				texto={respuesta.text}
 				fuentes={respuesta.sources ?? []}
+				onVolver={() => volver("inicio")}
 				puedeCalificar={
 					!loading &&
 					!!chat.conversationId &&
