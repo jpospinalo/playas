@@ -48,6 +48,72 @@ const MAX_TITULO = 90;
 const INICIO_FUERA_DE_TEMA = "La consulta está fuera del ámbito";
 const INICIO_ACLARACION = "La consulta podría estar dentro del ámbito";
 const INICIO_CONVERSACION = "Puedo responder consultas";
+// Saludo fijo de agent.py (_conversation_response).
+const SALUDO_BACKEND = "Hola. ¿Cuál es tu consulta?";
+
+/**
+ * Versión en palabras sencillas y de usted de los mensajes FIJOS del
+ * backend (no son contenido legal: son avisos del sistema, siempre iguales).
+ * El backend los escribe con "consulta", "corpus" y de tú; aquí se dicen
+ * como en el resto de ATLAS.
+ */
+export const TEXTO_FUERA_DE_TEMA =
+	"ATLAS solo responde preguntas sobre las playas, el mar y la costa de Colombia: entrar, pescar, vender, hoteles, lanchas y construcciones. Si su pregunta sí tiene que ver con la playa, escríbala otra vez diciendo en qué playa pasó.";
+export const TEXTO_ACLARACION =
+	"Cuéntenos un poco más: en qué playa pasó, qué estaba haciendo y quién se lo impidió o se lo pidió.";
+export const TEXTO_CONVERSACION =
+	"Puede preguntar sobre entrar a la playa, pescar, vender, hoteles, lanchas y construcciones cerca del mar.";
+export const TEXTO_SIN_EVIDENCIA =
+	"No encontramos normas o sentencias que respondan su pregunta con seguridad. Preferimos no adivinar.";
+export const TITULO_OTRA_FORMA = "Cómo preguntar de otra forma";
+export const TEXTO_OTRA_FORMA =
+	"Diga qué estaba haciendo, en qué playa pasó y quién se lo impidió o se lo pidió. Por ejemplo: «Vendo cocadas en El Rodadero y la Policía me quiere quitar el puesto».";
+
+/** Respuesta ya ordenada para cada mensaje fijo del backend. */
+export function respuestaFija(tipo: Exclude<TipoRespuesta, "normal">): RespuestaOrdenada {
+	switch (tipo) {
+		case "fuera-de-tema":
+			return { tipo, titulo: TITULO_FUERA_DE_TEMA, resumen: TEXTO_FUERA_DE_TEMA, secciones: [] };
+		case "aclaracion":
+			return { tipo, titulo: TITULO_ACLARACION, resumen: TEXTO_ACLARACION, secciones: [] };
+		case "conversacion":
+			return { tipo, titulo: TITULO_CONVERSACION, resumen: TEXTO_CONVERSACION, secciones: [] };
+		case "sin-evidencia":
+			return {
+				tipo,
+				titulo: TITULO_SIN_EVIDENCIA,
+				resumen: TEXTO_SIN_EVIDENCIA,
+				secciones: [{ titulo: TITULO_OTRA_FORMA, cuerpo: TEXTO_OTRA_FORMA, clase: "normal" }],
+			};
+	}
+}
+
+/**
+ * Títulos técnicos que pone el backend → títulos en palabras sencillas.
+ * Solo cambia el título; el contenido de la sección queda igual.
+ */
+const TITULOS_SENCILLOS: Array<[RegExp, string]> = [
+	[/^(desarrollo jurídico|qué dice la norma|que dice la norma|marco normativo|fundamento normativo)$/i, "Lo que dice la ley"],
+	[/^(límites de evidencia|limites de evidencia)$/i, "Tenga en cuenta"],
+	[/^síntesis jurisprudencial$/i, "Lo que han dicho los jueces"],
+	[/^lo que sí puede afirmarse$/i, "Lo que sí se puede decir"],
+	[/^(autoridad(es)? competente(s)?)$/i, "A quién acudir"],
+];
+
+function tituloSencillo(titulo: string): string {
+	for (const [re, nuevo] of TITULOS_SENCILLOS) if (re.test(titulo)) return nuevo;
+	return titulo;
+}
+
+/** Texto que se lee en voz alta para una respuesta ordenada. */
+export function lecturaRespuesta(r: RespuestaOrdenada): string {
+	const partes = [r.titulo, r.resumen];
+	for (const s of r.secciones) partes.push(s.titulo, s.cuerpo);
+	return partes
+		.map((p) => markdownATexto(p))
+		.filter(Boolean)
+		.join("\n");
+}
 
 const RE_OJO = /^(tenga en cuenta|ten en cuenta|importante|límites de evidencia|limites de evidencia|advertencia|ojo)\b/i;
 const RE_ACUDIR = /(a quién acudir|a quien acudir|autoridad(es)? competente|ante quién|dónde acudir)/i;
@@ -120,15 +186,9 @@ function primeraFrase(md: string): { frase: string; resto: string } | null {
 export function ordenarRespuesta(texto: string): RespuestaOrdenada {
 	const limpio = texto.replace(/\r\n?/g, "\n").trim();
 
-	if (limpio.startsWith(INICIO_FUERA_DE_TEMA)) {
-		return { tipo: "fuera-de-tema", titulo: TITULO_FUERA_DE_TEMA, resumen: limpio, secciones: [] };
-	}
-	if (limpio.startsWith(INICIO_ACLARACION)) {
-		return { tipo: "aclaracion", titulo: TITULO_ACLARACION, resumen: limpio, secciones: [] };
-	}
-	if (limpio.startsWith(INICIO_CONVERSACION)) {
-		return { tipo: "conversacion", titulo: TITULO_CONVERSACION, resumen: limpio, secciones: [] };
-	}
+	if (limpio.startsWith(INICIO_FUERA_DE_TEMA)) return respuestaFija("fuera-de-tema");
+	if (limpio.startsWith(INICIO_ACLARACION)) return respuestaFija("aclaracion");
+	if (limpio.startsWith(INICIO_CONVERSACION) || limpio === SALUDO_BACKEND) return respuestaFija("conversacion");
 
 	// Corta el texto en: preámbulo (antes de la primera sección) + secciones.
 	const lineas = limpio.split("\n");
@@ -149,14 +209,15 @@ export function ordenarRespuesta(texto: string): RespuestaOrdenada {
 
 	// Respuesta fija de "evidencia insuficiente" (o la que generó el LLM con
 	// el mismo formato): empieza con **Situación:**.
+	// Se reemplazan "Situación", "Motivo" y "Cómo reformular" (avisos del
+	// sistema) por el texto sencillo; se conserva lo demás (p. ej. "Lo que sí
+	// puede afirmarse", que sí es contenido con citas).
 	if (secciones[0] && /^situación$/i.test(secciones[0].titulo) && preambulo.join("").trim() === "") {
-		const [situacion, ...resto] = secciones;
-		return {
-			tipo: "sin-evidencia",
-			titulo: TITULO_SIN_EVIDENCIA,
-			resumen: situacion.cuerpo,
-			secciones: resto,
-		};
+		const base = respuestaFija("sin-evidencia");
+		const contenido = secciones
+			.slice(1)
+			.filter((s) => !/^(motivo|cómo reformular|como reformular)$/i.test(s.titulo) && s.cuerpo.trim());
+		return { ...base, secciones: [...contenido, ...base.secciones] };
 	}
 
 	// El resumen sale del preámbulo o, si no hay, de una primera sección tipo
@@ -175,5 +236,6 @@ export function ordenarRespuesta(texto: string): RespuestaOrdenada {
 }
 
 function cerrar(s: { titulo: string; lineas: string[] }): SeccionRespuesta {
-	return { titulo: s.titulo, cuerpo: s.lineas.join("\n").trim(), clase: clasificar(s.titulo) };
+	// La clase sale del título original; el título que se ve, del sencillo.
+	return { titulo: tituloSencillo(s.titulo), cuerpo: s.lineas.join("\n").trim(), clase: clasificar(s.titulo) };
 }

@@ -4,9 +4,12 @@ import {
 	TITULO_FUERA_DE_TEMA,
 	TITULO_GENERICO,
 	TITULO_SIN_EVIDENCIA,
+	TEXTO_SIN_EVIDENCIA,
+	TITULO_OTRA_FORMA,
 	markdownATexto,
 	ordenarRespuesta,
 	quitarCitas,
+	respuestaFija,
 } from "@/lib/guia/respuesta";
 
 // Textos con el formato real del backend (rag/backend/rag/core/prompts.py y agent.py).
@@ -39,27 +42,40 @@ describe("ordenarRespuesta", () => {
 		expect(r.titulo).toBe(TITULO_GENERICO);
 		expect(r.resumen).toContain("vulnera el derecho colectivo");
 		expect(r.resumen).toContain("[doc2][doc4]");
+		// Títulos técnicos → sencillos; la clase sale del título original.
 		expect(r.secciones.map((s) => [s.titulo, s.clase])).toEqual([
-			["Desarrollo jurídico", "normal"],
-			["Límites de evidencia", "ojo"],
+			["Lo que dice la ley", "normal"],
+			["Tenga en cuenta", "ojo"],
 		]);
 	});
 
-	it("reconoce la respuesta fija de evidencia insuficiente", () => {
+	it("evidencia insuficiente: cambia los avisos del sistema por texto sencillo y de usted", () => {
 		const r = ordenarRespuesta(SIN_EVIDENCIA);
 		expect(r.tipo).toBe("sin-evidencia");
 		expect(r.titulo).toBe(TITULO_SIN_EVIDENCIA);
-		expect(r.resumen).toBe("evidencia insuficiente.");
-		expect(r.secciones.map((s) => s.titulo)).toEqual(["Motivo", "Cómo reformular"]);
-		expect(r.secciones[0].cuerpo).toBe("no se recuperaron fragmentos del corpus.");
+		expect(r.resumen).toBe(TEXTO_SIN_EVIDENCIA);
+		expect(r.secciones.map((s) => s.titulo)).toEqual([TITULO_OTRA_FORMA]);
+		expect(JSON.stringify(r)).not.toMatch(/corpus|fragmentos|precisa/i);
 	});
 
-	it("reconoce las respuestas fijas sin recuperación y no las reescribe", () => {
+	it("evidencia insuficiente generada con contenido citado: conserva ese contenido", () => {
+		const r = ordenarRespuesta(
+			"**Situación:** evidencia insuficiente.\n**Motivo:** faltó la sentencia.\n**Lo que sí puede afirmarse:**\n- Las playas son de uso público [doc1].\n**Cómo reformular:**\n- Delimita jurisdicción.",
+		);
+		expect(r.secciones.map((s) => s.titulo)).toEqual(["Lo que sí se puede decir", TITULO_OTRA_FORMA]);
+		expect(r.secciones[0].cuerpo).toContain("[doc1]");
+	});
+
+	it("los mensajes fijos sin recuperación se muestran en palabras sencillas y de usted", () => {
 		const fuera =
 			"La consulta está fuera del ámbito jurídico y normativo relacionado con playas. Puedo responder sobre pesca.";
-		const r = ordenarRespuesta(fuera);
-		expect(r).toEqual({ tipo: "fuera-de-tema", titulo: TITULO_FUERA_DE_TEMA, resumen: fuera, secciones: [] });
+		expect(ordenarRespuesta(fuera)).toEqual(respuestaFija("fuera-de-tema"));
+		expect(ordenarRespuesta(fuera).titulo).toBe(TITULO_FUERA_DE_TEMA);
 		expect(ordenarRespuesta("La consulta podría estar dentro del ámbito, pero…").titulo).toBe(TITULO_ACLARACION);
+		expect(ordenarRespuesta("Hola. ¿Cuál es tu consulta?").tipo).toBe("conversacion");
+		for (const t of ["fuera-de-tema", "aclaracion", "conversacion", "sin-evidencia"] as const) {
+			expect(JSON.stringify(respuestaFija(t))).not.toMatch(/consulta|corpus|ámbito|indiques|puedes|precisa/i);
+		}
 	});
 
 	it("muestra un texto corrido sin secciones completo", () => {
@@ -74,7 +90,7 @@ describe("ordenarRespuesta", () => {
 	it("reconoce la sección de autoridades como 'acudir' y títulos con ##", () => {
 		const r = ordenarRespuesta("No. Nadie puede cerrarla.\n\n## Autoridad competente\n\nCapitanía de Puerto.");
 		expect(r.titulo).toBe("No.");
-		expect(r.secciones[0]).toEqual({ titulo: "Autoridad competente", cuerpo: "Capitanía de Puerto.", clase: "acudir" });
+		expect(r.secciones[0]).toEqual({ titulo: "A quién acudir", cuerpo: "Capitanía de Puerto.", clase: "acudir" });
 	});
 
 	it("no toma como título una lista ni una tabla", () => {

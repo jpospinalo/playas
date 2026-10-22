@@ -6,6 +6,7 @@
  * usa la voz del dispositivo.
  */
 import { PLAYAS, TEMAS, type Tema } from "@/lib/guia/temas";
+import { lecturaRespuesta, respuestaFija } from "@/lib/guia/respuesta";
 
 export const TXT = {
 	inicioTitulo: "¿Sobre qué es su pregunta?",
@@ -84,5 +85,9 @@ export function textosConAudio(): string[] {
 		lecturaError("sin-senal"),
 		lecturaError("red"),
 		lecturaError("otro"),
+		// Mensajes fijos del backend, ya en palabras sencillas (ver respuesta.ts).
+		...(["fuera-de-tema", "aclaracion", "conversacion", "sin-evidencia"] as const).map((t) =>
+			lecturaRespuesta(respuestaFija(t)),
+		),
 	];
 }
