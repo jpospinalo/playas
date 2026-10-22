@@ -1456,11 +1456,14 @@
       "coverage": "not_verified",
       "doc_type": "normativa",
       "export_metadata_differences": {
-        "articulo": 12,
-        "articulo_titulo": 12,
+        "articulo": 16,
+        "articulo_titulo": 16,
+        "chunk_index": 4,
         "entities": 1,
         "keywords_str": 1,
-        "section_name": 12
+        "section_index": 4,
+        "section_name": 16,
+        "total_chunks_in_section": 13
       },
       "export_records_matched_by_id": 572,
       "export_text_mismatches": 0,
@@ -1509,7 +1512,7 @@
     },
     {
       "code": "records_with_metadata_differences",
-      "detail": "475 registros; diferencia de snapshots, no autorización para reemplazar datos",
+      "detail": "488 registros; diferencia de snapshots, no autorización para reemplazar datos",
       "path": "data/chroma-rag_playas_magdalena-20260731-135720.jsonl.gz",
       "severity": "warning"
     },
@@ -1950,21 +1953,21 @@
       "ids_missing_gold": 12,
       "manifest_count": 5888,
       "metadata_field_differences": {
-        "articulo": 96,
-        "articulo_titulo": 76,
+        "articulo": 100,
+        "articulo_titulo": 80,
         "capitulo": 66,
-        "chunk_index": 84,
+        "chunk_index": 88,
         "entities": 318,
         "keywords": 318,
         "keywords_str": 319,
-        "section_index": 121,
-        "section_name": 96,
+        "section_index": 125,
+        "section_name": 100,
         "summary": 327,
-        "total_chunks_in_section": 112
+        "total_chunks_in_section": 125
       },
       "path": "data/chroma-rag_playas_magdalena-20260731-135720.jsonl.gz",
       "records": 5888,
-      "records_with_metadata_differences": 475,
+      "records_with_metadata_differences": 488,
       "sha256": "28b7a3076d1c7ad0aa3ef2a4394e31423cdd5358f691fdc6a6104f7e15712d2d",
       "sources": [
         {
@@ -3797,9 +3800,9 @@
         "sha256": "41dc7e4ac148167da7fb49c4356f90971572aba8a8a7d9ad83fc28e2761df67a"
       },
       {
-        "bytes": 1183341,
+        "bytes": 1183348,
         "path": "data/documents/gold/normativa/Reglamento Maritimo Colombiano REMAC 5-DIMAR (202103).jsonl",
-        "sha256": "7b0307f2a0dda2749ee501a9bc5e3080a7e0d653f1ee55d48473e0e9b1b8d6f9"
+        "sha256": "9e00586e7ebd976e948d02e2180a90dbcf32876cd4b6faaf59ef9186b7ada065"
       },
       {
         "bytes": 426021,
@@ -4362,9 +4365,9 @@
         "sha256": "f0e1e81b66b5e63f4d474be09d82692a4dbee2eba9801cc775c10a93d43addce"
       },
       {
-        "bytes": 459291,
+        "bytes": 457825,
         "path": "data/documents/silver/normativa/Reglamento Maritimo Colombiano REMAC 5-DIMAR (202103).jsonl",
-        "sha256": "13caa46c8c5f57c96c2b05e8131579d771848c9ec1e7a1db9d49b3529dfb3508"
+        "sha256": "d6123f12ee524c33d1b396f4cc59b0f55abb412f81e55d4fc9048a24237a7452"
       },
       {
         "bytes": 180695,

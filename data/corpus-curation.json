@@ -2677,8 +2677,8 @@
       "notes": [
         "Fuente adicional, no listada en el Excel normativo. El título y número aparecen en Raw; emisor y ámbito de la compilación no quedan confirmados como identidad documental.",
         "202103 es un rótulo de la copia, no un año de expedición ni prueba de edición vigente. No existe un PDF original asociado en esta familia local.",
-        "La selección histórica permanece unknown, aunque el corpus contenga 287 secciones y 572 chunks.",
-        "Identificadores alfanuméricos de nueve secciones Silver y doce chunks Gold corregidos por cotejo con la copia Raw/Bronze local, incluidos epígrafes y una entidad; se conservan los IDs históricos. La diferencia preexistente de keywords_str de un chunk respecto del backup queda aparte. No se certifican selección, edición vigente ni validación jurídica."
+        "La selección histórica permanece unknown; tras reintegrar cuatro remisiones, el corpus local contiene 283 secciones Silver y 572 chunks Gold. Los índices de sección conservan su valor histórico, con huecos en 166, 172, 185 y 248.",
+        "Identificadores alfanuméricos de nueve secciones Silver y doce chunks Gold corregidos por cotejo con la copia Raw/Bronze local, incluidos epígrafes y una entidad. Cuatro remisiones reintegradas en Silver y reatribuidas en Gold a sus artículos contenedores, con actualización de índices y totales de chunk, sin cambiar page_content de Gold ni IDs históricos. La diferencia preexistente de keywords_str de un chunk respecto del backup queda aparte. No se certifican selección, edición vigente ni validación jurídica."
       ]
     },
     {
