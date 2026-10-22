@@ -53,7 +53,16 @@ export function withRestTimeout(signal?: AbortSignal): AbortSignal {
  * mensaje.
  */
 export function isRestTimeoutError(error: unknown): boolean {
-	return error instanceof DOMException && error.name === "TimeoutError";
+	// Por `name` y no por `instanceof DOMException`: el DOMException puede
+	// venir de otro "realm" (p. ej. el AbortSignal nativo de Node bajo jsdom
+	// en vitest 4) y entonces `instanceof` falla aunque el error sea el
+	// TimeoutError de AbortSignal.timeout(). Un Error común nunca usa ese nombre.
+	return (
+		typeof error === "object" &&
+		error !== null &&
+		(error as { name?: unknown }).name === "TimeoutError" &&
+		typeof (error as { message?: unknown }).message === "string"
+	);
 }
 
 /**
