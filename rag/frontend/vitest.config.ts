@@ -13,6 +13,8 @@ export default defineConfig({
 			// Mismo alias que tsconfig.json ("@/*" -> "./*"), reproducido aquí
 			// sin depender de una biblioteca adicional (vite-tsconfig-paths).
 			"@": path.resolve(__dirname, "."),
+			// next/font solo existe dentro del compilador de Next.
+			"next/font/local": path.resolve(__dirname, "__mocks__/next-font-local.ts"),
 		},
 	},
 	test: {

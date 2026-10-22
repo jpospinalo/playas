@@ -1,4 +1,5 @@
 import type { Metadata} from "next";
+import { ConFuentes } from "@/components/common/ConFuentes";
 import { AboutNav } from "@/components/about/AboutNav";
 import { AboutHero } from "@/components/about/AboutHero";
 import { HowItWorks } from "@/components/about/HowItWorks";
@@ -13,7 +14,7 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
   return (
-    <>
+    <ConFuentes>
       <AboutNav />
       <main id="main-content" className="flex flex-1 flex-col">
         <AboutHero />
@@ -21,6 +22,6 @@ export default function AboutPage() {
         <WhyRag />
       </main>
       <AboutFooter />
-    </>
+    </ConFuentes>
   );
 }

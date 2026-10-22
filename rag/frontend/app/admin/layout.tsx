@@ -5,8 +5,17 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { ThemeToggle } from "@/components/common/ThemeToggle";
+import { ConFuentes } from "@/components/common/ConFuentes";
 
-export default function AdminLayout({
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
+	return (
+		<ConFuentes>
+			<AdminLayoutInterno>{children}</AdminLayoutInterno>
+		</ConFuentes>
+	);
+}
+
+function AdminLayoutInterno({
 	children,
 }: {
 	children: React.ReactNode;

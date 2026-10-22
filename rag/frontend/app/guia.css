@@ -58,6 +58,7 @@
 /* En la portada nada usa las fuentes web del resto de la app (Inter y
    Geist Mono, que se cargan sin precarga): el body también va con la del
    sistema para que el navegador no las descargue. */
+html:has(.guia),
 body:has(.guia) {
 	font-family: "Source Sans 3", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }

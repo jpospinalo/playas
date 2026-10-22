@@ -1,33 +1,10 @@
 import type { Metadata, Viewport } from "next";
-import localFont from "next/font/local";
 import { AuthProvider } from "@/components/providers/AuthProvider";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import "./globals.css";
 
-// Fuentes auto-hospedadas (sin llamadas de red en build/runtime).
-// Mismos archivos que sirven next/font/google para Inter/Geist Mono con
-// subset "latin" — Inter-Variable.woff2 extraído del paquete npm oficial
-// @fontsource-variable/inter (Fontsource, licencia OFL — ver
-// ./fonts/Inter-OFL-LICENSE.txt); GeistMono-Variable.woff2 extraído del
-// paquete npm oficial "geist" (Vercel), ya una dependencia del proyecto
-// (licencia OFL — ver ./fonts/Geist-OFL-LICENSE.txt).
-const inter = localFont({
-	src: "./fonts/Inter-Variable.woff2",
-	variable: "--font-sans",
-	weight: "100 900",
-	display: "swap",
-	// Sin precarga: la portada (flujo guiado) usa la fuente del sistema y no
-	// debe descargar esta fuente; /chat, /admin y /about la piden al usarla.
-	preload: false,
-});
-
-const geistMono = localFont({
-	src: "./fonts/GeistMono-Variable.woff2",
-	variable: "--font-mono",
-	weight: "100 900",
-	display: "swap",
-	preload: false,
-});
+// Las fuentes web (Inter y Geist Mono) no van aquí: las carga
+// <ConFuentes> solo en /chat, /admin y /about. La portada usa la del sistema.
 
 export const metadata: Metadata = {
 	title: {
@@ -67,7 +44,7 @@ export default function RootLayout({
 	return (
 		<html
 			lang="es"
-			className={`${inter.variable} ${geistMono.variable} h-full antialiased`}
+			className="h-full antialiased"
 			suppressHydrationWarning
 		>
 			<body className="min-h-full flex flex-col bg-background text-foreground">
