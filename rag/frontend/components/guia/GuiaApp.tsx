@@ -28,11 +28,13 @@ import {
 	transcurrido,
 } from "@/lib/medicion";
 import { borrarPendiente, guardarPendiente, leerPendiente } from "@/lib/guia/pendiente";
+import { forgetLastEmail } from "@/lib/auth";
 
 /** Borra lo que el flujo guarda en la pestaña (última respuesta y pregunta pendiente). */
 function borrarDatosDeLaPestana(): void {
 	guardar(null);
 	borrarPendiente();
+	forgetLastEmail(); // E2-20: la siguiente persona no ve el correo anterior
 }
 import type { SourceGroup } from "@/lib/types";
 
@@ -55,7 +57,7 @@ export function GuiaApp() {
 						Cargando…
 					</p>
 				) : user ? (
-					<Flujo key={user.user_id} />
+					<Flujo key={user.user_id} usuario={user.user_id} />
 				) : (
 					<Entrar tituloRef={tituloRef} />
 				)}
@@ -171,7 +173,7 @@ function guardar(r: RespuestaGuardada | null): void {
 	}
 }
 
-function Flujo() {
+function Flujo({ usuario }: { usuario: string }) {
 	const { ruta, ir, volver } = useRutaGuia();
 	const tituloRef = useRef<HTMLHeadingElement>(null);
 	const chat = useChat();
@@ -192,7 +194,7 @@ function Flujo() {
 	// Pregunta que quedó sin respuesta (se cerró la sesión o se recargó la
 	// página mientras se esperaba): al volver se ofrece seguir con ella.
 	const [retomar, setRetomar] = useState<PreguntaActual | null>(() =>
-		typeof window === "undefined" ? null : leerPendiente(),
+		typeof window === "undefined" ? null : leerPendiente(usuario),
 	);
 	const [segundos, setSegundos] = useState(0);
 
@@ -215,6 +217,9 @@ function Flujo() {
 	// (reemplazando "espera", para que "atrás" no vuelva a la espera).
 	useEffect(() => {
 		if (pantalla === "espera" && respuesta && (generationFinished || !loading) && !error) {
+			// El texto llega entero de una vez: si el efecto de "primer texto" no
+			// alcanzó a correr, se marca aquí, antes de cerrar la medición (E2-22).
+			marcarPrimerTexto();
 			terminarMedicion("ok");
 			borrarPendiente();
 			ir("respuesta", { reemplazar: true });
@@ -279,7 +284,7 @@ function Flujo() {
 		setIntentos(0);
 		setSegundos(0);
 		setRetomar(null);
-		guardarPendiente({ texto, envio, playa });
+		guardarPendiente({ texto, envio, playa }, usuario);
 		chat.resetChat();
 		if (typeof navigator !== "undefined" && navigator.onLine === false) {
 			setSinSenal(true);

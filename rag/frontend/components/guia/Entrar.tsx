@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { getLastEmail } from "@/lib/auth";
 import { restErrorMessage } from "@/lib/httpTimeout";
 import { TXT } from "@/lib/guia/textos";
-import { leerPendiente } from "@/lib/guia/pendiente";
+import { hayPendiente as hayPreguntaPendiente } from "@/lib/guia/pendiente";
 
 /** Pantalla de entrada del flujo guiado. Usa el mismo inicio de sesión de siempre. */
 export function Entrar({ tituloRef }: { tituloRef: React.RefObject<HTMLHeadingElement | null> }) {
@@ -33,11 +33,16 @@ export function Entrar({ tituloRef }: { tituloRef: React.RefObject<HTMLHeadingEl
 	}
 
 	// Si la sesión se cerró a mitad de una pregunta, se avisa que no se perdió.
-	const [hayPendiente] = useState(() => (typeof window === "undefined" ? false : leerPendiente() !== null));
+	// No se muestra de quién es ni qué dice: solo se ofrece de nuevo si entra la misma persona (E2-19).
+	const [hayPendiente] = useState(() => (typeof window === "undefined" ? false : hayPreguntaPendiente()));
+	// La pestaña dice la pantalla que se ve (E2-24).
+	useEffect(() => {
+		document.title = `ATLAS: ${TXT.entrarTitulo}`;
+	}, []);
 	const aviso =
 		error ??
 		(sessionExpiredMessage
-			? `Por seguridad, vuelva a entrar.${hayPendiente ? " Su pregunta quedó guardada." : ""}`
+			? `Por seguridad, vuelva a entrar.${hayPendiente ? " Si es la misma persona, su pregunta quedó guardada." : ""}`
 			: null);
 
 	return (

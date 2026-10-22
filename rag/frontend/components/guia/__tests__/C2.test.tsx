@@ -32,7 +32,7 @@ describe("UX-01: fuentes completas en el flujo guiado", () => {
 		);
 		const cita = screen.getByText(/^Artículo 166\./);
 		expect(cita.textContent!.length).toBeLessThanOrEqual(LARGO_VISIBLE + 1);
-		await userEvent.click(screen.getByRole("button", { name: "Ver el texto completo" }));
+		await userEvent.click(screen.getByRole("button", { name: "Ver todo el fragmento" }));
 		expect(cita.textContent).toBe(LARGO.replace(/\s+/g, " ").trim());
 		expect(screen.getByRole("button", { name: "Ver menos" })).toHaveAttribute("aria-expanded", "true");
 
@@ -47,7 +47,7 @@ describe("UX-01: acordeón de fuentes del chat del equipo", () => {
 		render(<SourcesAccordion sources={[grupo]} />);
 		await userEvent.click(screen.getByRole("button", { name: /fuente consultada/ }));
 		expect(screen.getByText("Decreto 2324 de 1984").className).not.toContain("truncate");
-		await userEvent.click(screen.getByRole("button", { name: "Ver texto completo" }));
+		await userEvent.click(screen.getByRole("button", { name: "Ver todo el fragmento" }));
 		expect(screen.getByRole("button", { name: "Ver menos" })).toBeInTheDocument();
 		expect(screen.getByRole("button", { name: "Copiar referencia" })).toBeInTheDocument();
 	});

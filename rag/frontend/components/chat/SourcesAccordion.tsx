@@ -4,7 +4,7 @@ import { useId, useState } from "react";
 import type { DocType, SourceFragment, SourceGroup, SourceMetadata } from "@/lib/types";
 import { copiarTexto, referenciaTexto } from "@/lib/referencia";
 
-/** Fragmentos más largos que esto se muestran recortados con "Ver texto completo". */
+/** Fragmentos más largos que esto se muestran recortados con "Ver todo el fragmento". */
 const LARGO_FRAGMENTO = 280;
 
 interface SourcesAccordionProps {
@@ -252,7 +252,7 @@ function FragmentoTexto({ fragment }: { fragment: SourceFragment }) {
           onClick={() => setCompleto((v) => !v)}
           className="mt-1 rounded-full text-[11px] font-medium text-accent underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
         >
-          {completo ? "Ver menos" : "Ver texto completo"}
+          {completo ? "Ver menos" : "Ver todo el fragmento"}
         </button>
       )}
     </>

@@ -16,7 +16,7 @@ interface FuenteProps {
 /**
  * Una fuente de la respuesta (UX-01 con los datos que ya llegan): nombre
  * completo, datos de identificación sin cortar, el fragmento entero (con
- * "Ver el texto completo" si es largo) y "Copiar la referencia".
+ * "Ver todo el fragmento" si es largo) y "Copiar la referencia".
  */
 export function Fuente({ grupo, fragmento, marcada }: FuenteProps) {
 	const [completo, setCompleto] = useState(false);
@@ -65,7 +65,7 @@ export function Fuente({ grupo, fragmento, marcada }: FuenteProps) {
 						aria-controls={idTexto}
 						onClick={() => setCompleto((c) => !c)}
 					>
-						{completo ? "Ver menos" : "Ver el texto completo"}
+						{completo ? "Ver menos" : "Ver todo el fragmento"}
 					</button>
 				) : null}
 				<button type="button" className="guia-btn-sec" onClick={() => void copiar()}>
