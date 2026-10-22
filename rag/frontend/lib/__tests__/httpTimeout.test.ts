@@ -184,3 +184,18 @@ describe("withRestTimeout — comportamiento extremo a extremo con fetch (tempor
 		expect(isRestTimeoutError(caught)).toBe(false);
 	});
 });
+
+describe("AbortSignal.timeout real (sin temporizadores simulados)", () => {
+	// Complemento del bloque anterior, que usa un sustituto de AbortSignal.timeout
+	// para los fake timers de vitest 4: aquí se comprueba con el AbortSignal real
+	// del entorno que el aborto por tiempo llega como DOMException "TimeoutError",
+	// que es lo que reconoce isRestTimeoutError.
+	it("aborta con un DOMException TimeoutError reconocible", async () => {
+		const signal = AbortSignal.timeout(20);
+		await new Promise<void>((resolve) => signal.addEventListener("abort", () => resolve(), { once: true }));
+		// No se usa toBeInstanceOf(DOMException): bajo jsdom en vitest 4 el
+		// DOMException del AbortSignal nativo es de otro "realm".
+		expect((signal.reason as DOMException).name).toBe("TimeoutError");
+		expect(isRestTimeoutError(signal.reason)).toBe(true);
+	});
+});
