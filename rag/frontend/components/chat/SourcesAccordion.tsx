@@ -1,7 +1,11 @@
 "use client";
 
 import { useId, useState } from "react";
-import type { DocType, SourceGroup, SourceMetadata } from "@/lib/types";
+import type { DocType, SourceFragment, SourceGroup, SourceMetadata } from "@/lib/types";
+import { copiarTexto, referenciaTexto } from "@/lib/referencia";
+
+/** Fragmentos más largos que esto se muestran recortados con "Ver texto completo". */
+const LARGO_FRAGMENTO = 280;
 
 interface SourcesAccordionProps {
   sources: SourceGroup[];
@@ -111,6 +115,8 @@ export function SourcesAccordion({ sources }: SourcesAccordionProps) {
       <div
         id={contentId}
         aria-hidden={!open}
+        // inert: cerrado, sus botones (ver texto, copiar) no reciben foco.
+        inert={!open}
         className="grid overflow-hidden"
         style={{
           gridTemplateRows: open ? "1fr" : "0fr",
@@ -152,7 +158,7 @@ export function SourcesAccordion({ sources }: SourcesAccordionProps) {
                     </span>
                     {groupTitle && (
                       <p
-                        className="truncate text-sm font-semibold text-foreground"
+                        className="min-w-0 text-sm font-semibold break-words text-foreground"
                         translate="no"
                       >
                         {groupTitle}
@@ -164,8 +170,8 @@ export function SourcesAccordion({ sources }: SourcesAccordionProps) {
                     <dl className="mt-1 grid grid-cols-[auto_1fr] gap-x-2 gap-y-0.5 text-[11px] text-muted">
                       {docMeta.map(({ label, value }) => (
                         <div key={label} className="contents">
-                          <dt className="font-medium text-muted/70">{label}:</dt>
-                          <dd className="truncate" translate="no">
+                          <dt className="font-medium text-muted">{label}:</dt>
+                          <dd className="min-w-0 break-words" translate="no">
                             {value}
                           </dd>
                         </div>
@@ -189,15 +195,13 @@ export function SourcesAccordion({ sources }: SourcesAccordionProps) {
                           <div className="min-w-0 border-l border-border pl-3">
                             {section && (
                               <span
-                                className="mb-0.5 block truncate text-[10px] text-muted/80"
+                                className="mb-0.5 block break-words text-[10px] text-muted"
                                 translate="no"
                               >
                                 {section}
                               </span>
                             )}
-                            <p className="line-clamp-3 text-xs leading-relaxed text-muted">
-                              {frag.content}
-                            </p>
+                            <FragmentoTexto fragment={frag} />
                           </div>
                         </li>
                       );
@@ -206,18 +210,70 @@ export function SourcesAccordion({ sources }: SourcesAccordionProps) {
 
                   {group.source && (
                     <p
-                      className="mt-3 truncate font-(family-name:--font-mono,monospace) text-[10px] text-muted/60"
+                      className="mt-3 break-all font-(family-name:--font-mono,monospace) text-[10px] text-muted"
                       translate="no"
                     >
                       {group.source}
                     </p>
                   )}
+
+                  <CopiarReferencia group={group} />
                 </li>
               );
             })}
           </ul>
         </div>
       </div>
+    </div>
+  );
+}
+
+/**
+ * Texto completo del fragmento que ya llega del backend (UX-01): antes se
+ * cortaba a 3 líneas sin forma de leer el resto.
+ */
+function FragmentoTexto({ fragment }: { fragment: SourceFragment }) {
+  const [completo, setCompleto] = useState(false);
+  const id = useId();
+  const largo = fragment.content.length > LARGO_FRAGMENTO;
+  return (
+    <>
+      <p
+        id={id}
+        className={`whitespace-pre-line break-words text-xs leading-relaxed text-muted ${largo && !completo ? "line-clamp-3" : ""}`}
+      >
+        {fragment.content}
+      </p>
+      {largo && (
+        <button
+          type="button"
+          aria-expanded={completo}
+          aria-controls={id}
+          onClick={() => setCompleto((v) => !v)}
+          className="mt-1 rounded-full text-[11px] font-medium text-accent underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+        >
+          {completo ? "Ver menos" : "Ver texto completo"}
+        </button>
+      )}
+    </>
+  );
+}
+
+/** Copia una referencia legible del documento (norma y artículo, o corporación y radicado). */
+function CopiarReferencia({ group }: { group: SourceGroup }) {
+  const [estado, setEstado] = useState<"" | "ok" | "error">("");
+  return (
+    <div className="mt-2 flex flex-wrap items-center gap-2">
+      <button
+        type="button"
+        onClick={async () => setEstado((await copiarTexto(referenciaTexto(group))) ? "ok" : "error")}
+        className="rounded-full border border-border px-3 py-1 text-[11px] font-medium text-muted transition-colors hover:border-accent hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+      >
+        Copiar referencia
+      </button>
+      <span role="status" className="text-[11px] text-muted">
+        {estado === "ok" ? "Referencia copiada." : estado === "error" ? "No se pudo copiar." : ""}
+      </span>
     </div>
   );
 }
