@@ -129,6 +129,9 @@ export function quitarCitas(texto: string): string {
 /** Texto plano a partir de Markdown sencillo (para la voz). */
 export function markdownATexto(md: string): string {
 	return quitarCitas(md)
+		// HTML que mande el backend: no se lee (ni el contenido de <script>).
+		.replace(/<(script|style|iframe|object|embed|noscript)\b[\s\S]*?<\/\1\s*>/gi, "")
+		.replace(/<[^>]+>/g, "")
 		.replace(/^\s*\|?\s*:?-{3,}.*$/gm, "")
 		.replace(/\|/g, ", ")
 		.replace(/^\s*#+\s*/gm, "")

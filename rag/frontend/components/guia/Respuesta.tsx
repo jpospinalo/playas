@@ -28,7 +28,11 @@ const LARGO_CITA = 420;
 
 /** `[docN]` → enlace interno que el componente convierte en "(fuente N)". */
 function prepararCitas(md: string): string {
-	return md.replace(/\[doc(\d+)\]/gi, (_m, n) => `[(fuente ${n})](#fuente-${n})`);
+	return md
+		// Bloques de código o estilo que mande el backend: fuera con su
+		// contenido (skipHtml solo quita las etiquetas y dejaría el texto).
+		.replace(/<(script|style|iframe|object|embed|noscript)\b[\s\S]*?<\/\1\s*>/gi, "")
+		.replace(/\[doc(\d+)\]/gi, (_m, n) => `[(fuente ${n})](#fuente-${n})`);
 }
 
 function tipoDeFuente(grupo: SourceGroup): string {

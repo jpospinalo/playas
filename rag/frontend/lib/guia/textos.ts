@@ -22,6 +22,7 @@ export const TXT = {
 	escribirPista: "Escríbala como se la contaría a un vecino. No importa la ortografía.",
 	escribirEjemplo: "Vendo cocadas en El Rodadero y me quieren quitar el puesto. ¿Pueden hacerlo?",
 	escribirVacio: "Escriba su pregunta antes de tocar «Preguntar».",
+	escribirCorta: "Su pregunta es muy corta. Cuéntenos un poco más, por ejemplo qué pasó y en qué playa.",
 	esperaTitulo: "Buscando la respuesta",
 	esperaTexto: "Estamos leyendo las normas y las sentencias. Puede tardar hasta un minuto.",
 	sinSenal:

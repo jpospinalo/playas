@@ -110,6 +110,8 @@ describe("Respuesta (diseño v3)", () => {
 		);
 		expect(document.querySelector("script, iframe")).toBeNull();
 		expect(screen.queryByText(/<script>|<iframe/)).not.toBeInTheDocument();
+		// Tampoco queda a la vista el texto que había dentro de <script> (QA-32).
+		expect(screen.queryByText(/window\.x/)).not.toBeInTheDocument();
 		expect(screen.queryByRole("link", { name: "Toque aquí" })).not.toBeInTheDocument();
 		expect(screen.getByText(/Toque aquí/)).toBeInTheDocument();
 		const ley = screen.getByRole("link", { name: "ley" });

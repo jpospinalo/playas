@@ -217,7 +217,7 @@ export function PantallaEscribir({
 					e.preventDefault();
 					const limpio = texto.trim();
 					if (limpio.length < 5) {
-						setError(TXT.escribirVacio);
+						setError(limpio.length === 0 ? TXT.escribirVacio : TXT.escribirCorta);
 						document.getElementById("texto")?.focus();
 						return;
 					}
