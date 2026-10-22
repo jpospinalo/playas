@@ -7,6 +7,10 @@ import type { SourceFragment, SourceGroup } from "@/lib/types";
 import { lecturaRespuesta, markdownATexto, ordenarRespuesta, type RespuestaOrdenada } from "@/lib/guia/respuesta";
 import { Atencion, Curvas, FlechaVolver } from "@/components/guia/iconos";
 import { Escuchar } from "@/components/guia/Escuchar";
+import { Fuente } from "@/components/guia/Fuente";
+
+const TXT_NO_GUARDADA =
+	"Esta respuesta no se pudo guardar. Puede seguir leyéndola. Para que quede registrada, toque «Guardar otra vez».";
 
 export type Calificacion = { util: boolean; comentario?: string };
 
@@ -21,10 +25,11 @@ interface RespuestaProps {
 	onVolver: () => void;
 	onOtraPregunta: () => void;
 	onEscribirDeNuevo: () => void;
+	/** Estado del guardado de la respuesta (sin valor = no aplica, p. ej. respuesta recuperada). */
+	guardado?: "ok" | "guardando" | "fallo";
+	onGuardarOtraVez?: () => void;
 	tituloRef: React.RefObject<HTMLHeadingElement | null>;
 }
-
-const LARGO_CITA = 420;
 
 /** `[docN]` → enlace interno que el componente convierte en "(fuente N)". */
 function prepararCitas(md: string): string {
@@ -33,16 +38,6 @@ function prepararCitas(md: string): string {
 		// contenido (skipHtml solo quita las etiquetas y dejaría el texto).
 		.replace(/<(script|style|iframe|object|embed|noscript)\b[\s\S]*?<\/\1\s*>/gi, "")
 		.replace(/\[doc(\d+)\]/gi, (_m, n) => `[(fuente ${n})](#fuente-${n})`);
-}
-
-function tipoDeFuente(grupo: SourceGroup): string {
-	const tipo = grupo.doc_type ?? grupo.metadata?.doc_type;
-	return tipo === "normativa" ? "Norma" : "Sentencia";
-}
-
-function recortar(texto: string): string {
-	const t = texto.replace(/\s+/g, " ").trim();
-	return t.length > LARGO_CITA ? `${t.slice(0, LARGO_CITA).trimEnd()}…` : t;
 }
 
 export function Respuesta({
@@ -54,6 +49,8 @@ export function Respuesta({
 	onCalificar,
 	onVolver,
 	onOtraPregunta,
+	guardado,
+	onGuardarOtraVez,
 	onEscribirDeNuevo,
 	tituloRef,
 }: RespuestaProps) {
@@ -199,19 +196,26 @@ export function Respuesta({
 					<summary>Ver de dónde sale esta respuesta</summary>
 					<ol>
 						{fragmentos.map(({ grupo, fragmento }) => (
-							<li
+							<Fuente
 								key={fragmento.index}
-								id={`fuente-${fragmento.index}`}
-								tabIndex={-1}
-								className={`guia-fuente${marcada === fragmento.index ? " marcada" : ""}`}
-							>
-								<span className="num">Fuente {fragmento.index}.</span> {grupo.title || grupo.source}
-								<span className="tipo">{tipoDeFuente(grupo)}</span>
-								<blockquote>{recortar(fragmento.content)}</blockquote>
-							</li>
+								grupo={grupo}
+								fragmento={fragmento}
+								marcada={marcada === fragmento.index}
+							/>
 						))}
 					</ol>
 				</details>
+			) : null}
+
+			{guardado === "fallo" || guardado === "guardando" ? (
+				<div className="guia-aviso-guardado" role="status">
+					<p>{guardado === "guardando" ? "Guardando la respuesta…" : TXT_NO_GUARDADA}</p>
+					{guardado === "fallo" && onGuardarOtraVez ? (
+						<button type="button" className="guia-btn-sec" onClick={onGuardarOtraVez}>
+							Guardar otra vez
+						</button>
+					) : null}
+				</div>
 			) : null}
 
 			{sinRespuestaFirme ? (

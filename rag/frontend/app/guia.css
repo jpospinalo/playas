@@ -783,3 +783,113 @@ body:has(.guia) {
 	margin-top: 26px;
 	margin-bottom: 0;
 }
+
+/* Fuentes completas (UX-01): datos de identificación sin cortar y acciones. */
+.guia-fuente .datos {
+	margin: 6px 0 0;
+	font-size: 18px;
+	color: var(--tinta-2);
+}
+.guia-fuente .datos div {
+	overflow-wrap: anywhere;
+}
+.guia-fuente .datos dt {
+	display: inline;
+	font-weight: 600;
+	color: var(--tinta);
+}
+.guia-fuente .datos dd {
+	display: inline;
+	margin: 0;
+}
+.guia-fuente blockquote {
+	overflow-wrap: anywhere;
+}
+.guia-fuente-acciones {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px;
+	margin-top: 10px;
+}
+.guia-fuente-acciones .guia-btn-sec {
+	min-height: 48px;
+	font-size: 18px;
+	padding: 0 16px;
+}
+.guia-fuente .copiado {
+	margin: 6px 0 0;
+	font-size: 18px;
+	font-weight: 600;
+	overflow-wrap: anywhere;
+}
+.guia-fuente .copiado:empty {
+	display: none;
+}
+
+/* Espera por etapas (UX-02) */
+.guia-etapas {
+	list-style: none;
+	padding: 0;
+	margin: 22px 0 0;
+	display: grid;
+	gap: 10px;
+}
+.guia-etapas li {
+	display: flex;
+	align-items: center;
+	gap: 14px;
+	font-size: 20px;
+	color: var(--tinta-2);
+}
+.guia-etapas .marca {
+	flex: none;
+	width: 40px;
+	height: 40px;
+	border-radius: 50%;
+	display: grid;
+	place-items: center;
+	font-weight: 700;
+	border: 2px solid var(--sonda);
+	background: var(--agua);
+	color: var(--tinta);
+}
+.guia-etapas li.ahora {
+	color: var(--tinta);
+	font-weight: 700;
+}
+.guia-etapas li.ahora .marca {
+	background: var(--tinta);
+	border-color: var(--tinta);
+	color: #fff;
+}
+.guia-etapas li.hecho .marca {
+	background: var(--bajo);
+}
+.guia .guia-tiempo {
+	margin: 16px 0 0;
+	font-size: 18px;
+	color: var(--tinta-2);
+}
+.guia .guia-espera-estado {
+	margin: 10px 0 0;
+	font-size: 19px;
+	font-weight: 600;
+}
+.guia .guia-espera-estado:empty {
+	display: none;
+}
+
+/* Aviso de respuesta no guardada (flujo de reintento) */
+.guia-aviso-guardado {
+	margin-top: 26px;
+	padding: 16px;
+	border: 3px solid var(--magenta);
+	border-radius: 6px;
+}
+.guia-aviso-guardado p {
+	margin: 0 0 10px;
+	font-weight: 600;
+}
+.guia-aviso-guardado p:last-child {
+	margin-bottom: 0;
+}

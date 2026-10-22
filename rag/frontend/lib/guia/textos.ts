@@ -25,6 +25,7 @@ export const TXT = {
 	escribirCorta: "Su pregunta es muy corta. Cuéntenos un poco más, por ejemplo qué pasó y en qué playa.",
 	esperaTitulo: "Buscando la respuesta",
 	esperaTexto: "Estamos leyendo las normas y las sentencias. Puede tardar hasta un minuto.",
+	esperaLenta: "Está tardando más de lo normal. Puede seguir esperando o tocar «Cancelar y volver».",
 	sinSenal:
 		"No hay señal de internet. Cuando tenga señal, toque «Intentar otra vez».",
 	errorTitulo: "No pudimos traer la respuesta",
@@ -32,6 +33,8 @@ export const TXT = {
 		"No hay señal o el servidor no responde. Revise su internet y toque «Intentar otra vez».",
 	errorOtro:
 		"Hubo un problema al buscar la respuesta. Toque «Intentar otra vez». Si sigue pasando, avise a la persona que le ayuda con ATLAS.",
+	seguirTitulo: "Su pregunta quedó guardada",
+	seguirPista: "No alcanzamos a traer la respuesta. ¿Quiere que la busquemos ahora?",
 	entrarTitulo: "Entrar a ATLAS",
 	entrarPista: "Escriba el correo y la contraseña que le dieron.",
 } as const;

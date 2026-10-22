@@ -14,10 +14,20 @@ import {
 	PantallaEspera,
 	PantallaInicio,
 	PantallaPlaya,
+	PantallaSeguir,
 	PantallaTema,
 } from "@/components/guia/Pantallas";
 import { Respuesta, type Calificacion } from "@/components/guia/Respuesta";
 import { detenerVoz } from "@/lib/voz";
+import {
+	exponerEnConsola,
+	iniciarMedicion,
+	marcarEtapa,
+	marcarPrimerTexto,
+	terminarMedicion,
+	transcurrido,
+} from "@/lib/medicion";
+import { borrarPendiente, guardarPendiente, leerPendiente } from "@/lib/guia/pendiente";
 import type { SourceGroup } from "@/lib/types";
 
 /**
@@ -156,7 +166,7 @@ function Flujo() {
 	const { ruta, ir, volver } = useRutaGuia();
 	const tituloRef = useRef<HTMLHeadingElement>(null);
 	const chat = useChat();
-	const { messages, loading, error, stage, generationFinished, persistingMessageIds } = chat;
+	const { messages, loading, error, stage, isStreaming, generationFinished, persistingMessageIds } = chat;
 
 	const [pregunta, setPregunta] = useState<PreguntaActual | null>(null);
 	// Pregunta que espera a que el chat quede vacío para enviarse (ver efecto
@@ -170,6 +180,12 @@ function Flujo() {
 	const [guardada, setGuardada] = useState<RespuestaGuardada | null>(() =>
 		typeof window === "undefined" ? null : leerGuardada(),
 	);
+	// Pregunta que quedó sin respuesta (se cerró la sesión o se recargó la
+	// página mientras se esperaba): al volver se ofrece seguir con ella.
+	const [retomar, setRetomar] = useState<PreguntaActual | null>(() =>
+		typeof window === "undefined" ? null : leerPendiente(),
+	);
+	const [segundos, setSegundos] = useState(0);
 
 	const pantalla = ruta[0] ?? "inicio";
 	const respuesta = [...messages].reverse().find((m) => m.role === "assistant" && m.text);
@@ -190,9 +206,37 @@ function Flujo() {
 	// (reemplazando "espera", para que "atrás" no vuelva a la espera).
 	useEffect(() => {
 		if (pantalla === "espera" && respuesta && (generationFinished || !loading) && !error) {
+			terminarMedicion("ok");
+			borrarPendiente();
 			ir("respuesta", { reemplazar: true });
 		}
 	}, [pantalla, respuesta, generationFinished, loading, error, ir]);
+
+	// Medición del tiempo hasta la respuesta útil (UX-02): etapas del backend,
+	// primer texto y error. Solo tiempos; nunca el texto de la pregunta.
+	useEffect(() => exponerEnConsola(), []);
+	useEffect(() => {
+		if (stage) marcarEtapa(stage);
+	}, [stage]);
+	// El backend manda todo el texto de una vez (ya validado): "primer texto"
+	// se marca cuando aparece texto de la respuesta, aunque React agrupe los trozos.
+	const hayTexto = !!respuesta?.text;
+	useEffect(() => {
+		if (isStreaming || hayTexto) marcarPrimerTexto();
+	}, [isStreaming, hayTexto]);
+	useEffect(() => {
+		if (error) terminarMedicion("error");
+	}, [error]);
+
+	// Contador de segundos en la espera (se actualiza 1 vez por segundo).
+	const esperando = pantalla === "espera" && !!pregunta && !error && !sinSenal;
+	useEffect(() => {
+		if (!esperando) return;
+		const id = window.setInterval(() => {
+			setSegundos(Math.floor((transcurrido() ?? 0) / 1000));
+		}, 1000);
+		return () => window.clearInterval(id);
+	}, [esperando]);
 
 	// La respuesta completa se guarda en la pestaña (sessionStorage): si la
 	// persona recarga sin querer (jalar hacia abajo en el celular), la vuelve a ver.
@@ -224,12 +268,16 @@ function Flujo() {
 	function preguntar(texto: string, envio: string, playa: string | null) {
 		setPregunta({ texto, envio, playa });
 		setIntentos(0);
+		setSegundos(0);
+		setRetomar(null);
+		guardarPendiente({ texto, envio, playa });
 		chat.resetChat();
 		if (typeof navigator !== "undefined" && navigator.onLine === false) {
 			setSinSenal(true);
 			pendienteRef.current = null;
 		} else {
 			setSinSenal(false);
+			iniciarMedicion();
 			pendienteRef.current = envio;
 			setTurnoEnvio((n) => n + 1);
 		}
@@ -249,11 +297,15 @@ function Flujo() {
 		}
 		setSinSenal(false);
 		setIntentos(0);
+		setSegundos(0);
+		iniciarMedicion();
 		pendienteRef.current = pregunta.envio;
 		setTurnoEnvio((n) => n + 1);
 	}
 
 	function cancelarYVolver() {
+		terminarMedicion("cancelada");
+		borrarPendiente();
 		chat.resetChat();
 		pendienteRef.current = null;
 		setSinSenal(false);
@@ -267,6 +319,7 @@ function Flujo() {
 			setGuardada({ pregunta, texto: respuestaLista.text, fuentes: respuestaLista.sources ?? [] });
 		}
 		chat.resetChat();
+		borrarPendiente();
 		setPregunta(null);
 		setBorrador("");
 		setSinSenal(false);
@@ -280,6 +333,23 @@ function Flujo() {
 	}
 
 	const tema = buscarTema(ruta[1]);
+
+	// Al volver a entrar (o recargar) con una pregunta sin responder.
+	if (retomar && !pregunta) {
+		return (
+			<PantallaSeguir
+				tituloRef={tituloRef}
+				pregunta={retomar.texto}
+				playa={retomar.playa}
+				onSeguir={() => preguntar(retomar.texto, retomar.envio, retomar.playa)}
+				onEmpezar={() => {
+					borrarPendiente();
+					setRetomar(null);
+					ir("inicio", { reemplazar: true });
+				}}
+			/>
+		);
+	}
 
 	if (pantalla === "tema" && tema) {
 		return (
@@ -337,7 +407,9 @@ function Flujo() {
 				/>
 			);
 		}
-		return <PantallaEspera tituloRef={tituloRef} etapa={stage} onVolver={cancelarYVolver} />;
+		return (
+			<PantallaEspera tituloRef={tituloRef} etapa={stage} segundos={segundos} onVolver={cancelarYVolver} />
+		);
 	}
 
 	// Respuesta guardada (tras recargar la página): se muestra igual, pero sin
@@ -376,6 +448,14 @@ function Flujo() {
 					respuesta.persistenceStatus !== "failed" &&
 					!persistingMessageIds.has(respuesta.id)
 				}
+				guardado={
+					persistingMessageIds.has(respuesta.id)
+						? "guardando"
+						: respuesta.persistenceStatus === "failed"
+							? "fallo"
+							: "ok"
+				}
+				onGuardarOtraVez={() => void chat.retryPersistMessage(respuesta.id)}
 				onCalificar={calificar}
 				onOtraPregunta={otraPregunta}
 				onEscribirDeNuevo={() => {
