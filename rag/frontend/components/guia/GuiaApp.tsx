@@ -201,7 +201,10 @@ function Flujo() {
 		} else {
 			tituloRef.current?.focus();
 		}
-		const t = clave === "respuesta" ? "Respuesta a su pregunta" : tituloRef.current?.textContent;
+		// El nombre de la pestaña sale de la pantalla que de verdad se ve (una
+		// dirección sin datos muestra el inicio y debe decir eso).
+		const enRespuesta = !!tituloRef.current?.closest(".guia-veredicto");
+		const t = enRespuesta ? "Respuesta a su pregunta" : tituloRef.current?.textContent;
 		document.title = t ? `ATLAS: ${t}` : "ATLAS";
 	}, [clave, sinSenal, error]);
 
@@ -245,12 +248,15 @@ function Flujo() {
 	}
 
 	function otraPregunta() {
+		// La respuesta que se deja queda guardada: si la persona toca "atrás"
+		// desde el inicio, la vuelve a ver (QA-15) en vez de un inicio repetido.
+		if (pregunta && respuestaLista) {
+			setGuardada({ pregunta, texto: respuestaLista.text, fuentes: respuestaLista.sources ?? [] });
+		}
 		chat.resetChat();
 		setPregunta(null);
 		setBorrador("");
 		setSinSenal(false);
-		setGuardada(null);
-		guardar(null);
 		ir("inicio");
 	}
 
