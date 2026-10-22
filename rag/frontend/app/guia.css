@@ -893,3 +893,8 @@ body:has(.guia) {
 .guia-aviso-guardado p:last-child {
 	margin-bottom: 0;
 }
+.guia-fuente .datos-titulo {
+	margin: 8px 0 0;
+	font-size: 18px;
+	color: var(--tinta-2);
+}

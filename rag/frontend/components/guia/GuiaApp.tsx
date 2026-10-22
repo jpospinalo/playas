@@ -28,6 +28,12 @@ import {
 	transcurrido,
 } from "@/lib/medicion";
 import { borrarPendiente, guardarPendiente, leerPendiente } from "@/lib/guia/pendiente";
+
+/** Borra lo que el flujo guarda en la pestaña (última respuesta y pregunta pendiente). */
+function borrarDatosDeLaPestana(): void {
+	guardar(null);
+	borrarPendiente();
+}
 import type { SourceGroup } from "@/lib/types";
 
 /**
@@ -110,6 +116,9 @@ function Encabezado() {
 							className="guia-btn-sec"
 							onClick={() => {
 								setConfirmar(false);
+								// Celular compartido (E2-11): al salir no queda a la vista
+								// la pregunta ni la respuesta de la persona anterior.
+								borrarDatosDeLaPestana();
 								void signOut();
 							}}
 						>

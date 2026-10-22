@@ -105,3 +105,23 @@ describe("Flujos: pregunta guardada y respuesta no guardada", () => {
 		expect(onGuardarOtraVez).toHaveBeenCalled();
 	});
 });
+
+describe("E2-12: datos parciales de la fuente", () => {
+	it("aclara que son los datos disponibles y no muestra campos vacíos", () => {
+		const parcial: SourceGroup = {
+			source: "s.md",
+			title: "Acción popular de prueba",
+			doc_type: "jurisprudencia",
+			metadata: { doc_type: "jurisprudencia", Radicado: "123" },
+			fragments: [{ index: 3, content: "Texto corto.", metadata: {} }],
+		};
+		render(
+			<ol>
+				<Fuente grupo={parcial} fragmento={parcial.fragments[0]} marcada={false} />
+			</ol>,
+		);
+		expect(screen.getByText("Datos disponibles de esta fuente:")).toBeInTheDocument();
+		expect(screen.getByText("Radicado:")).toBeInTheDocument();
+		expect(screen.queryByText("Corporación:")).not.toBeInTheDocument();
+	});
+});

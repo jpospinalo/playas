@@ -42,13 +42,18 @@ export function Fuente({ grupo, fragmento, marcada }: FuenteProps) {
 			<span className="num">Fuente {fragmento.index}.</span> {nombreFuente(grupo)}
 			<span className="tipo">{tipoDe(grupo) === "normativa" ? "Norma" : "Sentencia"}</span>
 			{datos.length > 0 ? (
-				<dl className="datos">
-					{datos.map((d) => (
-						<div key={d.etiqueta}>
-							<dt>{d.etiqueta}:</dt> <dd>{d.valor}</dd>
-						</div>
-					))}
-				</dl>
+				// E2-12: solo los datos que trae la fuente; el título aclara que
+				// pueden faltar otros (no es una ficha oficial completa).
+				<>
+					<p className="datos-titulo">Datos disponibles de esta fuente:</p>
+					<dl className="datos">
+						{datos.map((d) => (
+							<div key={d.etiqueta}>
+								<dt>{d.etiqueta}:</dt> <dd>{d.valor}</dd>
+							</div>
+						))}
+					</dl>
+				</>
 			) : null}
 			<blockquote id={idTexto}>{visible}</blockquote>
 			<div className="guia-fuente-acciones">
