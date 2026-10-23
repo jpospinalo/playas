@@ -1456,20 +1456,21 @@
       "coverage": "not_verified",
       "doc_type": "normativa",
       "export_metadata_differences": {
-        "articulo": 16,
-        "articulo_titulo": 16,
+        "articulo": 48,
+        "articulo_titulo": 48,
         "chunk_index": 4,
         "entities": 1,
         "keywords_str": 1,
-        "section_index": 4,
-        "section_name": 16,
+        "section_index": 36,
+        "section_name": 48,
+        "titulo": 32,
         "total_chunks_in_section": 13
       },
-      "export_records_matched_by_id": 572,
+      "export_records_matched_by_id": 571,
       "export_text_mismatches": 0,
       "format": ".md",
-      "gold_chunks": 572,
-      "gold_ids_missing_export": 0,
+      "gold_chunks": 573,
+      "gold_ids_missing_export": 2,
       "observed_metadata": {
         "title": [
           "Reglamento Maritimo Colombiano REMAC 5-DIMAR (202103)"
@@ -1505,14 +1506,20 @@
   ],
   "findings": [
     {
+      "code": "gold_ids_missing_export",
+      "detail": "2 registros; diferencia de snapshots, no autorización para reemplazar datos",
+      "path": "data/chroma-rag_playas_magdalena-20260731-135720.jsonl.gz",
+      "severity": "warning"
+    },
+    {
       "code": "ids_missing_gold",
-      "detail": "12 registros; diferencia de snapshots, no autorización para reemplazar datos",
+      "detail": "13 registros; diferencia de snapshots, no autorización para reemplazar datos",
       "path": "data/chroma-rag_playas_magdalena-20260731-135720.jsonl.gz",
       "severity": "warning"
     },
     {
       "code": "records_with_metadata_differences",
-      "detail": "488 registros; diferencia de snapshots, no autorización para reemplazar datos",
+      "detail": "520 registros; diferencia de snapshots, no autorización para reemplazar datos",
       "path": "data/chroma-rag_playas_magdalena-20260731-135720.jsonl.gz",
       "severity": "warning"
     },
@@ -1947,27 +1954,28 @@
         "768": 5888
       },
       "format_version": 1,
-      "gold_ids_missing_export": 0,
+      "gold_ids_missing_export": 2,
       "ids_ambiguous_in_gold": 0,
-      "ids_matched": 5876,
-      "ids_missing_gold": 12,
+      "ids_matched": 5875,
+      "ids_missing_gold": 13,
       "manifest_count": 5888,
       "metadata_field_differences": {
-        "articulo": 100,
-        "articulo_titulo": 80,
+        "articulo": 132,
+        "articulo_titulo": 112,
         "capitulo": 66,
         "chunk_index": 88,
         "entities": 318,
         "keywords": 318,
         "keywords_str": 319,
-        "section_index": 125,
-        "section_name": 100,
+        "section_index": 157,
+        "section_name": 132,
         "summary": 327,
+        "titulo": 32,
         "total_chunks_in_section": 125
       },
       "path": "data/chroma-rag_playas_magdalena-20260731-135720.jsonl.gz",
       "records": 5888,
-      "records_with_metadata_differences": 488,
+      "records_with_metadata_differences": 520,
       "sha256": "28b7a3076d1c7ad0aa3ef2a4394e31423cdd5358f691fdc6a6104f7e15712d2d",
       "sources": [
         {
@@ -3800,9 +3808,9 @@
         "sha256": "41dc7e4ac148167da7fb49c4356f90971572aba8a8a7d9ad83fc28e2761df67a"
       },
       {
-        "bytes": 1183348,
+        "bytes": 1182981,
         "path": "data/documents/gold/normativa/Reglamento Maritimo Colombiano REMAC 5-DIMAR (202103).jsonl",
-        "sha256": "9e00586e7ebd976e948d02e2180a90dbcf32876cd4b6faaf59ef9186b7ada065"
+        "sha256": "075d7b6b0eba2a9bd019bf871ecc853acd59fca9709cf8c5488af7dce05ce1bd"
       },
       {
         "bytes": 426021,
@@ -4365,9 +4373,9 @@
         "sha256": "f0e1e81b66b5e63f4d474be09d82692a4dbee2eba9801cc775c10a93d43addce"
       },
       {
-        "bytes": 457825,
+        "bytes": 458150,
         "path": "data/documents/silver/normativa/Reglamento Maritimo Colombiano REMAC 5-DIMAR (202103).jsonl",
-        "sha256": "d6123f12ee524c33d1b396f4cc59b0f55abb412f81e55d4fc9048a24237a7452"
+        "sha256": "87eeaac692c86411bf4518cd06dabc16ef80f0ede500bad551388419912f22f9"
       },
       {
         "bytes": 180695,
@@ -4390,9 +4398,9 @@
     "catalog_entries": 56,
     "errors": 0,
     "exact_duplicate_source_groups": 1,
-    "gold_records": 5876,
-    "gold_unique_comparable_ids": 5876,
+    "gold_records": 5877,
+    "gold_unique_comparable_ids": 5877,
     "source_files": 56,
-    "warnings": 68
+    "warnings": 69
   }
 }
