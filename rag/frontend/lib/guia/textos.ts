@@ -31,7 +31,7 @@ export const TXT = {
 	errorRed:
 		"No hay señal o el servidor no responde. Revise su internet y toque «Intentar otra vez».",
 	errorOtro:
-		"Hubo un problema al buscar la respuesta. Toque «Intentar otra vez». Si sigue pasando, avise a la persona que le ayuda con ATLAS.",
+		"Hubo un problema al buscar la respuesta. Toque «Intentar otra vez». Si sigue pasando, vuelva a intentarlo en unos minutos.",
 	entrarTitulo: "Entrar a ATLAS",
 	entrarPista: "Escriba el correo y la contraseña que le dieron.",
 } as const;
