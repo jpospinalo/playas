@@ -512,12 +512,17 @@
       "bytes": 537066,
       "coverage": "not_verified",
       "doc_type": "jurisprudencia",
-      "export_metadata_differences": {},
-      "export_records_matched_by_id": 117,
+      "export_metadata_differences": {
+        "section_heading": 7,
+        "section_index": 7,
+        "section_name": 7,
+        "total_chunks_in_section": 67
+      },
+      "export_records_matched_by_id": 106,
       "export_text_mismatches": 0,
       "format": ".pdf",
-      "gold_chunks": 117,
-      "gold_ids_missing_export": 0,
+      "gold_chunks": 123,
+      "gold_ids_missing_export": 17,
       "observed_metadata": {
         "title": [
           "CE 2da AP 2017 103 Personeria VS Distrito Cartagena Desembocadura"
@@ -1512,19 +1517,19 @@
   "findings": [
     {
       "code": "gold_ids_missing_export",
-      "detail": "4 registros; diferencia de snapshots, no autorización para reemplazar datos",
+      "detail": "21 registros; diferencia de snapshots, no autorización para reemplazar datos",
       "path": "data/chroma-rag_playas_magdalena-20260731-135720.jsonl.gz",
       "severity": "warning"
     },
     {
       "code": "ids_missing_gold",
-      "detail": "14 registros; diferencia de snapshots, no autorización para reemplazar datos",
+      "detail": "25 registros; diferencia de snapshots, no autorización para reemplazar datos",
       "path": "data/chroma-rag_playas_magdalena-20260731-135720.jsonl.gz",
       "severity": "warning"
     },
     {
       "code": "records_with_metadata_differences",
-      "detail": "561 registros; diferencia de snapshots, no autorización para reemplazar datos",
+      "detail": "628 registros; diferencia de snapshots, no autorización para reemplazar datos",
       "path": "data/chroma-rag_playas_magdalena-20260731-135720.jsonl.gz",
       "severity": "warning"
     },
@@ -1840,13 +1845,6 @@
     {
       "code": "empty_silver_section",
       "detail": "Texto vacío; Silver se omite al fragmentar, Gold requiere contenido",
-      "line": 4,
-      "path": "data/documents/silver/jurisprudencia/CE_2da_AP_2017_103_Personeria_VS_Distrito_Cartagena_Desembocadura.jsonl",
-      "severity": "warning"
-    },
-    {
-      "code": "empty_silver_section",
-      "detail": "Texto vacío; Silver se omite al fragmentar, Gold requiere contenido",
       "line": 2,
       "path": "data/documents/silver/jurisprudencia/CE_2da_AP_2021_041_Edgar_Stephengs_VS_Archipielago_San_Andres_Desarrollo_Urbanistico.jsonl",
       "severity": "warning"
@@ -1952,10 +1950,10 @@
         "768": 5888
       },
       "format_version": 1,
-      "gold_ids_missing_export": 4,
+      "gold_ids_missing_export": 21,
       "ids_ambiguous_in_gold": 0,
-      "ids_matched": 5874,
-      "ids_missing_gold": 14,
+      "ids_matched": 5863,
+      "ids_missing_gold": 25,
       "manifest_count": 5888,
       "metadata_field_differences": {
         "articulo": 132,
@@ -1965,16 +1963,16 @@
         "entities": 318,
         "keywords": 318,
         "keywords_str": 319,
-        "section_heading": 1,
-        "section_index": 158,
-        "section_name": 133,
+        "section_heading": 8,
+        "section_index": 165,
+        "section_name": 140,
         "summary": 327,
         "titulo": 32,
-        "total_chunks_in_section": 166
+        "total_chunks_in_section": 233
       },
       "path": "data/chroma-rag_playas_magdalena-20260731-135720.jsonl.gz",
       "records": 5888,
-      "records_with_metadata_differences": 561,
+      "records_with_metadata_differences": 628,
       "sha256": "28b7a3076d1c7ad0aa3ef2a4394e31423cdd5358f691fdc6a6104f7e15712d2d",
       "sources": [
         {
@@ -2672,9 +2670,9 @@
         "sha256": "13fabccee986a3305bbedc64baad1f76cd042845d7c8e03cf1c7eeed51cf5ba8"
       },
       {
-        "bytes": 80901,
+        "bytes": 81934,
         "path": "data/documents/bronze/jurisprudencia/CE_2da_AP_2017_103_Personeria_VS_Distrito_Cartagena_Desembocadura.md",
-        "sha256": "6d8f9b1225a312a5ebfeed02a88cd041a1e31e86bbcc197e0466529c41f11d5e"
+        "sha256": "367f9f2fa406279b9085404cbc3f2d6be7c8015278d4e3ca933acf2cad95e80c"
       },
       {
         "bytes": 910,
@@ -3617,9 +3615,9 @@
         "sha256": "72b52c4ef2abb7cbd3cf04463d45d652a936596fbfe3131803546ef31ed2de72"
       },
       {
-        "bytes": 245918,
+        "bytes": 246318,
         "path": "data/documents/gold/jurisprudencia/CE_2da_AP_2017_103_Personeria_VS_Distrito_Cartagena_Desembocadura.jsonl",
-        "sha256": "b3828fb73051448228f7b204ae81cfe244216af80f00129d3829826c9539d937"
+        "sha256": "1ee4008f8dee55f9336656b3879065dc9712e1a5d33094b3e11b7ebf723599e2"
       },
       {
         "bytes": 452801,
@@ -4182,9 +4180,9 @@
         "sha256": "b7c06137a22bf2599cfd12a198a6cbd33d8f4d6efe1ea66561317be16d1ae634"
       },
       {
-        "bytes": 82868,
+        "bytes": 83929,
         "path": "data/documents/silver/jurisprudencia/CE_2da_AP_2017_103_Personeria_VS_Distrito_Cartagena_Desembocadura.jsonl",
-        "sha256": "2f208ad23f7f1bb2feb38d733c0769c69bd5a3b2090afeec61a028d85e6ab24a"
+        "sha256": "6bdab22ef48d08a248e3f9c82d4b5778041122cb98ed821d9531689b5a48733f"
       },
       {
         "bytes": 148913,
@@ -4397,9 +4395,9 @@
     "catalog_entries": 56,
     "errors": 0,
     "exact_duplicate_source_groups": 1,
-    "gold_records": 5878,
-    "gold_unique_comparable_ids": 5878,
+    "gold_records": 5884,
+    "gold_unique_comparable_ids": 5884,
     "source_files": 56,
-    "warnings": 68
+    "warnings": 67
   }
 }

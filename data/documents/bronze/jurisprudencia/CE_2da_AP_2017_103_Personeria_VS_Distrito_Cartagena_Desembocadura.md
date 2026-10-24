@@ -42,7 +42,7 @@ Concluyó  que  es  imperativa  la  recuperación  de  la  dinámica  hidrológi
 ## II.
 TRÁMITE DE LA ACCIÓN
 
-- 2.1. La  demanda  correspondió  al  Juzgado  Administrativo  del  Circuito  de Cartagena que, a través de auto del de febrero de 2017, dispuso su admisión. Particularmente, ordenó notificar al Distrito de Cartagena, a EPA y a CARDIQUE.
+- 2.1. La  demanda  correspondió  al  Juzgado 14 Administrativo  del  Circuito  de Cartagena que, a través de auto del 27 de febrero de 2017, dispuso su admisión. Particularmente, ordenó notificar al Distrito de Cartagena, a EPA y a CARDIQUE.
 
 2.2.
 
@@ -66,7 +66,7 @@ Anotó que la Administración Distrital ha venido delegando desde tiempo atrás 
 
 Asimismo, expresó que el Corregimiento de La Boquilla, lugar de ubicación de los Caños Luisa, Brazuelo, La Boquilla, Caño Limón y Juan Polo, no se encuentran dentro del perímetro urbano de su jurisdicción, sino que está a cargo del Distrito de Cartagena y de CARDIQUE.
 
-2.4. Mediante auto del de febrero de 2017, el Juzgado Administrativo de Cartagena ordenó vincular al proceso a EDURBE S.A., toda vez que su objeto social es la recuperación sanitaria de Cartagena, el cual comprende las obras de limpieza, canalización y angostamiento de los caños. 3
+2.4. Mediante auto del 27 de febrero de 2017, el Juzgado 14 Administrativo de Cartagena ordenó vincular al proceso a EDURBE S.A., toda vez que su objeto social es la recuperación sanitaria de Cartagena, el cual comprende las obras de limpieza, canalización y angostamiento de los caños. 3
 
 2.5. La sociedad EDURBE S.A. se opuso a las pretensiones de la demanda al considerar que no ha causado la vulneración de los derechos colectivos invocados por el actor popular .
 
@@ -356,6 +356,8 @@ CUARTO: ORDENAR a la Corporación Autónoma Regional del Canal del Dique -CARDIQ
 
 Posteriormente,  de  forma  coordinada  y  concurrente,  deberán  ejecutar dichas  actividades  en  su  totalidad  dentro  de  los  dieciocho  (18)  meses siguientes al vencimiento del término anterior.
 
+Las anotadas actividades son las siguientes:
+
 - A. Adelantar las limpiezas y recolección de basura respectivas, del caño Luisa.
 - B. Reforestación, recuperación y restauración de áreas mangláricas.
 - C.  Recuperación  de  los  suelos  en  áreas  de  procesos  erosivos  para  su conservación y estabilización, así como la remoción de escombros y materiales sólidos.
@@ -435,6 +437,8 @@ También comunicará a las entidades o autoridades administrativas para que, en 
 
 Además, conforme a la anterior disposición, esta Sección  definió que era menester no sólo que se incluyera, por mandato legal, al Tribunal que emitió sentencia de primera  instancia,  sino  que  además  precisó  que  quien  debía  presidirlo  es  el Magistrado que había adelantado la sustanciación y proyección de la decisión en la anotada instancia como Ponente de esta .
 
+23 Sentencia de 28 de junio de 2019, Consejero Ponente: Hernando Sánchez Sánchez. Radicación Número: 52001-23-33-000-2018-00361-01(AP), en la que se dijo:
+
 ' Comité de verificación.
 
 167. Para el cumplimiento de las órdenes proferidas en esta sentencia, se ordenará la conformación de un comité de verificación, según lo dispone el artículo 34 de la Ley 472:
@@ -451,15 +455,7 @@ Sobre el particular, la Corte Constitucional en sentencia T-254 de 2014, precis�
 
 '[…]  Como  punto  de  partida,  se  destaca  el  hecho  de  que  ambos  cuerpos  normativos  hayan considerado que dichas autoridades debían conservar su competencia, después de proferido el fallo, para adoptar las medidas que conduzcan a hacer efectivo el amparo. Eso explica que tanto el juez de tutela como el de la acción popular puedan convocar a las entidades encargadas de ejecutar las órdenes de protección, cuantas veces sea necesario; practicar pruebas para establecer los motivos de su negligencia y adelantar las diligencias que correspondan para corregir tales obstáculos. 24
 
-El juez de la acción popular cuenta con una herramienta adicional para esos efectos: la conformación del comité para la verificación del cumplimiento que, integrado de la manera en que se anunció previamente (Supra.5.) cumple la función de asesorar al funcionario judicial en la formulación de
-
-En consecuencia, a efectos de aplicar dicho criterio, debe modificarse el numeral sexto de la sentencia de primera instancia, con el fin de que el Magistrado Ponente del  Tribunal  Administrativo  de  Bolívar  haga  parte  del  mencionado  Comité  y  lo presida.
-
-En  mérito  de  lo  expuesto,  el  consejo  de  Estado,  Sala  de  lo  Contencioso Administrativo, Sección Primera,
-
-## R E S U E L V E
-
-PRIMERO: MODIFICAR los literales B y C del numeral tercero de la parte resolutiva de la sentencia de primera instancia, el cual quedará así:
+El juez de la acción popular cuenta con una herramienta adicional para esos efectos: la conformación del comité para la verificación del cumplimiento que, integrado de la manera en que se anunció previamente (Supra 4.5.) cumple la función de asesorar al funcionario judicial en la formulación de
 
 propuestas  que  conduzcan  a  realizar  la  protección  concedida  y,  además,  permite  hacer  un seguimiento de las gestiones que los responsables de restablecer el derecho colectivo vulnerado han adoptado con ese objeto. 24
 
@@ -473,10 +469,20 @@ El  papel  que  cumple  el  comité  de  verificación  en  la  asesoría  y  se
 
 Es por lo anterior que la Sala considera que el comité de verificación en el asunto sub-examine no debe ser revocado, pero sí modificado en el sentido de incluir al Tribunal, a través de su magistrado ponente, quien lo presidirá.'  (Negrillas del original) (Subrayas de la Sala)
 
+En consecuencia, a efectos de aplicar dicho criterio, debe modificarse el numeral sexto de la sentencia de primera instancia, con el fin de que el Magistrado Ponente del  Tribunal  Administrativo  de  Bolívar  haga  parte  del  mencionado  Comité  y  lo presida.
+
+En  mérito  de  lo  expuesto,  el  consejo  de  Estado,  Sala  de  lo  Contencioso Administrativo, Sección Primera,
+
+## R E S U E L V E
+
+PRIMERO: MODIFICAR los literales B y C del numeral tercero de la parte resolutiva de la sentencia de primera instancia, el cual quedará así:
+
 TERCERO: ORDENAR al alcalde del Distrito de Cartagena lo siguiente:
 
 - B. Que, en coordinación con CORVIVIENDA y ENDURBE y dentro del marco de  sus  funciones,  realicen  un  censo  de  las  personas  que  se  encuentran habitando  la  rivera  del  Caño  Luisa,  para  así,  determinar  si  éstas  deben  ser reubicadas  en  otro  lugar  y  ser  vinculadas  a  los  programas  de  entrega  de vivienda que maneja el Distrito de Cartagena.
 - C. Que, en coordinación con CORVIVIENDA y ENDURBE y en el ámbito de sus competencias,  a  más  tardar  dentro  de  los  tres  (3)  meses  siguientes  a  la ejecutoria de este fallo, presente ante el Tribunal Administrativo de Bolívar un Plan  de  Acción  técnicamente  elaborado,  que  tenga  en  cuenta  todos  los aspectos administrativos, jurídicos, técnicos y presupuestales del proyecto, con su respectivo cronograma de ejecución.
+
+Una vez presentado el Plan de Acción, el Tribunal convocará al Comité de Verificación para que se reúna dentro del mes siguiente para estudiarlo y formular las recomendaciones pertinentes que el Tribunal tendrá en cuenta para efectos de la aprobación del Plan, la cual se ha de realizar dentro de los seis (6) meses siguientes a su presentación.
 
 La ejecución total del Plan de Acción, incluida la reubicación y la restitución del espacio público, se hará en un plazo máximo de dos (2) años contados a partir de su aprobación, término dentro del cual el alcalde de Cartagena deberá rendir al  Comité  de  Verificación,  a  través  del  Tribunal  Administrativo  de  Bolívar, informes escritos trimestrales de gestión.
 
@@ -486,6 +492,8 @@ CUARTO: ORDENAR a la Corporación Autónoma Regional del Canal del Dique -  CARD
 
 Posteriormente, de forma coordinada y concurrente, deberán ejecutar dichas actividades  en  su totalidad  dentro  de  los  dieciocho  (18)  meses  siguientes  al vencimiento del término anterior.
 
+Las anotadas actividades son las siguientes:
+
 - A. Adelantar las limpiezas y recolección de basura respectivas, del caño Luisa.
 - B. Reforestación, recuperación y restauración de áreas mangláricas.
 - C.  Recuperación  de  los  suelos  en  áreas  de  procesos  erosivos  para  su conservación y estabilización, así como la remoción de escombros y materiales sólidos.
@@ -494,6 +502,8 @@ Posteriormente, de forma coordinada y concurrente, deberán ejecutar dichas acti
 - E. Recuperación y descontaminación de las áreas desagradadas de cuencas hidrográficas.
 - F. Conservación uso y manejo de la fauna silvestre.
 - G. Adelantar tareas de protección de la zona afectada para que no se realicen sobre ellas nuevas invasiones.
+
+Para el cumplimiento de la anterior orden, el Director de la Corporación Autónoma Regional del Canal del Dique - CARDIQUE y el Alcalde del Distrito de Cartagena, deberán incluir las actividades y actuaciones señaladas en precedencia y que sean de su cargo, dentro de los planes, programas y/o proyectos, así como en el presupuesto de dichas entidades, para los períodos o vigencias que fueren necesarias
 
 TERCERO: MODIFICAR el numeral sexo de la sentencia recurrida así:
 
@@ -507,7 +517,7 @@ SEXTO: Ejecutoriada esta providencia, DEVOLVER el  expediente al Tribunal de ori
 
 Cópiese, notifíquese, comuníquese y cúmplase,
 
-La anterior providencia fue leída, discutida y aprobada por la Sala en su sesión del de agosto de 2024.
+La anterior providencia fue leída, discutida y aprobada por la Sala en su sesión del 1 de agosto de 2024.
 
 ![Image](./CE_2da_AP_2017_103_Personeria_VS_Distrito_Cartagena_Desembocadura/assets/image_000033_ee6a4d39be39eaadd75ddff3ef02bf3456322509fce870e2f7bced9a947edda0.png)
 

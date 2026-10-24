@@ -630,7 +630,9 @@
           "role": "identity"
         }
       ],
-      "notes": []
+      "notes": [
+        "Personería Cartagena: reparación local acotada contra el PDF fuente; se restituyen los números 14 y 27 de los apartados 2.1 y 2.4, el día 1 de aprobación, los párrafos resolutivos de convocatoria y aprobación del Plan y de inclusión presupuestaria (incluida la expresión y que sean de su cargo), la referencia bibliográfica de la nota 23, Supra 4.5. y las dos introducciones de actividades verificadas. Se conservan las tres imágenes existentes y se propagan sus referencias reparadas de Bronze a Silver/Gold. La continuación de la nota 24 se reúne con el análisis, separada de RESUELVE, sin borrar texto documental. Gold contiene 123 fragmentos: se retiran 11 IDs y se crean 17; los otros 106 conservan su asociación al mismo texto y su enriquecimiento. Siete IDs de decisión conservan sufijos s3 e índices históricos; los grupos 2, 3 y 4 tienen índices no consecutivos y total_chunks_in_section expresa cardinalidad (31, 68 y 13). No se crea otro fragmento para el encabezado solapado de 67 caracteres, ya cubierto por el ID histórico terminado en _s3_c66. Diez fragmentos nuevos divididos o añadidos tienen summary, keywords y entities vacíos deliberados; siete sustituciones completas conservan el enriquecimiento existente. El fragmento de un punto se conserva. No se certifican fidelidad integral, validación jurídica ni sincronización del índice vivo; los otros marcadores y defectos no incluidos siguen fuera del alcance."
+      ]
     },
     {
       "source_path": "data/documents/raw/jurisprudencia/CE_2da_AP_2021_041_Edgar_Stephengs_VS_Archipielago_San_Andres_Desarrollo_Urbanistico.pdf",
