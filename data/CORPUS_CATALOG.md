@@ -6,11 +6,11 @@ Generado desde los archivos locales. No editar manualmente: regenerar ambos arte
 **No confirma el índice desplegado, vigencia jurídica, calidad OCR ni cobertura completa.**
 La presencia de capas y la firma PDF no certifican fidelidad del procesamiento.
 
-Archivos fuente: 56. Entradas: 56. Chunks Gold leídos: 5877.
-Errores técnicos: 0. Advertencias: 69.
+Archivos fuente: 56. Entradas: 56. Chunks Gold leídos: 5878.
+Errores técnicos: 0. Advertencias: 68.
 
 Backup: data/chroma-rag\_playas\_magdalena-20260731-135720.jsonl.gz. Colección: rag\_playas\_magdalena. Fecha declarada: 2026-07-31T13:57:20.520769+00:00.
-Registros: 5888; IDs coincidentes: 5875; textos diferentes: 58; registros con diferencias de metadata: 520.
+Registros: 5888; IDs coincidentes: 5874; textos diferentes: 58; registros con diferencias de metadata: 561.
 
 ## Fuentes y capas
 
@@ -29,7 +29,7 @@ Los títulos y metadatos observados, hashes y evidencias detalladas están en [c
 | [AP Rodrigo Martínez Silva VS Minambiente y otros.pdf](documents/raw/jurisprudencia/AP%20Rodrigo%20Marti%CC%81nez%20Silva%20VS%20Minambiente%20y%20otros.pdf) | jurisprudencia | Sí | Sí | Sí | 311 | 311 |
 | [CC\_TU\_039\_2024\_Modesto\_Manjarrez\_VS\_Autopistas\_Del\_Caribe\_Consulta\_Previa\_Via.pdf](documents/raw/jurisprudencia/CC_TU_039_2024_Modesto_Manjarrez_VS_Autopistas_Del_Caribe_Consulta_Previa_Via.pdf) | jurisprudencia | Sí | Sí | Sí | 537 | 537 |
 | [CE\_1era\_NS\_2009\_603\_Jose\_Palencia\_VS\_MinDefensa\_Resolución\_Pilotos\_Embargaciones.pdf](documents/raw/jurisprudencia/CE_1era_NS_2009_603_Jose_Palencia_VS_MinDefensa_Resolucio%CC%81n_Pilotos_Embargaciones.pdf) | jurisprudencia | Sí | Sí | Sí | 87 | 87 |
-| [CE\_2da\_AP\_2010\_028\_Radley\_Bent\_VS\_Dimar\_Daños\_Ambientales\_Embarcaciones.pdf](documents/raw/jurisprudencia/CE_2da_AP_2010_028_Radley_Bent_VS_Dimar_Dan%CC%83os_Ambientales_Embarcaciones.pdf) | jurisprudencia | Sí | Sí | Sí | 105 | 105 |
+| [CE\_2da\_AP\_2010\_028\_Radley\_Bent\_VS\_Dimar\_Daños\_Ambientales\_Embarcaciones.pdf](documents/raw/jurisprudencia/CE_2da_AP_2010_028_Radley_Bent_VS_Dimar_Dan%CC%83os_Ambientales_Embarcaciones.pdf) | jurisprudencia | Sí | Sí | Sí | 106 | 104 |
 | [CE\_2da\_AP\_2011\_178\_Jose\_Caballero\_VS\_Distrito\_Cartagena\_Venta\_Inmueble\_Valor\_Cultural.pdf](documents/raw/jurisprudencia/CE_2da_AP_2011_178_Jose_Caballero_VS_Distrito_Cartagena_Venta_Inmueble_Valor_Cultural.pdf) | jurisprudencia | Sí | Sí | Sí | 158 | 158 |
 | [CE\_2da\_AP\_2011\_842\_Gabriel\_Carrero\_VS\_Dimar\_Erosión\_Costera.pdf](documents/raw/jurisprudencia/CE_2da_AP_2011_842_Gabriel_Carrero_VS_Dimar_Erosio%CC%81n_Costera.pdf) | jurisprudencia | Sí | Sí | Sí | 286 | 286 |
 | [CE\_2da\_AP\_2015\_550\_Angela\_Muñoz\_VS\_Dpto\_Cordoba\_Bienes\_De\_Uso\_Publico.pdf](documents/raw/jurisprudencia/CE_2da_AP_2015_550_Angela_Mun%CC%83oz_VS_Dpto_Cordoba_Bienes_De_Uso_Publico.pdf) | jurisprudencia | Sí | Sí | Sí | 124 | 124 |
@@ -79,9 +79,9 @@ Los títulos y metadatos observados, hashes y evidencias detalladas están en [c
 
 Las advertencias no autorizan renombrados, borrados, reparaciones ni reindexaciones.
 
-- warning / gold\_ids\_missing\_export: data/chroma-rag\_playas\_magdalena-20260731-135720.jsonl.gz — 2 registros; diferencia de snapshots, no autorización para reemplazar datos
-- warning / ids\_missing\_gold: data/chroma-rag\_playas\_magdalena-20260731-135720.jsonl.gz — 13 registros; diferencia de snapshots, no autorización para reemplazar datos
-- warning / records\_with\_metadata\_differences: data/chroma-rag\_playas\_magdalena-20260731-135720.jsonl.gz — 520 registros; diferencia de snapshots, no autorización para reemplazar datos
+- warning / gold\_ids\_missing\_export: data/chroma-rag\_playas\_magdalena-20260731-135720.jsonl.gz — 4 registros; diferencia de snapshots, no autorización para reemplazar datos
+- warning / ids\_missing\_gold: data/chroma-rag\_playas\_magdalena-20260731-135720.jsonl.gz — 14 registros; diferencia de snapshots, no autorización para reemplazar datos
+- warning / records\_with\_metadata\_differences: data/chroma-rag\_playas\_magdalena-20260731-135720.jsonl.gz — 561 registros; diferencia de snapshots, no autorización para reemplazar datos
 - warning / text\_mismatches: data/chroma-rag\_playas\_magdalena-20260731-135720.jsonl.gz — 58 registros; diferencia de snapshots, no autorización para reemplazar datos
 - warning / double\_spaces: data/documents/raw/jurisprudencia/AP  Carlos Alberto Zúñiga Mejía y otros VS DIMAR y otros.pdf — Nombre con espacios consecutivos
 - warning / unicode\_non\_nfc: data/documents/raw/jurisprudencia/AP  Carlos Alberto Zúñiga Mejía y otros VS DIMAR y otros.pdf — Unicode descompuesto; no implica corrupción
@@ -132,7 +132,6 @@ Las advertencias no autorizan renombrados, borrados, reparaciones ni reindexacio
 - warning / unicode\_non\_nfc: data/documents/raw/normativa/Por medio del cual se reglamenta el uso, zonificación y horario de las playas con vocación turística del Distrito Turístico, Cultural e Histórico de Santa Marta, aptas para la realización de activiades de aprovech.pdf — Unicode descompuesto; no implica corrupción
 - warning / empty\_silver\_section: data/documents/silver/jurisprudencia/AP  Carlos Alberto Zúñiga Mejía y otros VS DIMAR y otros.jsonl:2 — Texto vacío; Silver se omite al fragmentar, Gold requiere contenido
 - warning / empty\_silver\_section: data/documents/silver/jurisprudencia/CC\_TU\_039\_2024\_Modesto\_Manjarrez\_VS\_Autopistas\_Del\_Caribe\_Consulta\_Previa\_Via.jsonl:3 — Texto vacío; Silver se omite al fragmentar, Gold requiere contenido
-- warning / empty\_silver\_section: data/documents/silver/jurisprudencia/CE\_2da\_AP\_2010\_028\_Radley\_Bent\_VS\_Dimar\_Daños\_Ambientales\_Embarcaciones.jsonl:4 — Texto vacío; Silver se omite al fragmentar, Gold requiere contenido
 - warning / empty\_silver\_section: data/documents/silver/jurisprudencia/CE\_2da\_AP\_2011\_178\_Jose\_Caballero\_VS\_Distrito\_Cartagena\_Venta\_Inmueble\_Valor\_Cultural.jsonl:2 — Texto vacío; Silver se omite al fragmentar, Gold requiere contenido
 - warning / empty\_silver\_section: data/documents/silver/jurisprudencia/CE\_2da\_AP\_2017\_103\_Personeria\_VS\_Distrito\_Cartagena\_Desembocadura.jsonl:4 — Texto vacío; Silver se omite al fragmentar, Gold requiere contenido
 - warning / empty\_silver\_section: data/documents/silver/jurisprudencia/CE\_2da\_AP\_2021\_041\_Edgar\_Stephengs\_VS\_Archipielago\_San\_Andres\_Desarrollo\_Urbanistico.jsonl:2 — Texto vacío; Silver se omite al fragmentar, Gold requiere contenido

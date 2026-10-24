@@ -456,7 +456,9 @@
           "role": "identity"
         }
       ],
-      "notes": []
+      "notes": [
+        "Radley Bent: representación local con cuatro secciones Silver; la decisión se separa del análisis por el rótulo literal F A L L A:, sin alterar el texto. Gold contiene 106 fragmentos: se retira el ID mixto terminado en _s3_c40 y se crean _s3_c42 (análisis) y _s4_c0 (decisión); los otros 104 IDs conservan su asociación al mismo texto. El ID _s3_c41 queda atribuido a la sección 4 conservando su sufijo y chunk_index históricos; los grupos 3 y 4 mantienen índices no consecutivos y total_chunks_in_section indica su cardinalidad (41 y 2). El fragmento nuevo de análisis se crea con summary vacío y keywords/entities vacíos deliberadamente; el nuevo de decisión conserva el enriquecimiento del mixto revisado para ese contenido. Siguen pendientes los días 27 y 23 omitidos en el texto y el fragmento de un punto. No se certifican fidelidad integral, validación jurídica o sincronización del índice vivo."
+      ]
     },
     {
       "source_path": "data/documents/raw/jurisprudencia/CE_2da_AP_2011_178_Jose_Caballero_VS_Distrito_Cartagena_Venta_Inmueble_Valor_Cultural.pdf",
