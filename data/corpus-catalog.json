@@ -590,11 +590,11 @@
       "coverage": "not_verified",
       "doc_type": "jurisprudencia",
       "export_metadata_differences": {},
-      "export_records_matched_by_id": 73,
+      "export_records_matched_by_id": 72,
       "export_text_mismatches": 0,
       "format": ".pdf",
-      "gold_chunks": 73,
-      "gold_ids_missing_export": 0,
+      "gold_chunks": 74,
+      "gold_ids_missing_export": 2,
       "observed_metadata": {
         "title": [
           "CE 2da NYR 1998 102 Flury Valencia VS MinDefensa Uso Urbanistico Playa"
@@ -1517,13 +1517,13 @@
   "findings": [
     {
       "code": "gold_ids_missing_export",
-      "detail": "21 registros; diferencia de snapshots, no autorización para reemplazar datos",
+      "detail": "23 registros; diferencia de snapshots, no autorización para reemplazar datos",
       "path": "data/chroma-rag_playas_magdalena-20260731-135720.jsonl.gz",
       "severity": "warning"
     },
     {
       "code": "ids_missing_gold",
-      "detail": "25 registros; diferencia de snapshots, no autorización para reemplazar datos",
+      "detail": "26 registros; diferencia de snapshots, no autorización para reemplazar datos",
       "path": "data/chroma-rag_playas_magdalena-20260731-135720.jsonl.gz",
       "severity": "warning"
     },
@@ -1859,13 +1859,6 @@
     {
       "code": "empty_silver_section",
       "detail": "Texto vacío; Silver se omite al fragmentar, Gold requiere contenido",
-      "line": 4,
-      "path": "data/documents/silver/jurisprudencia/CE_2da_NYR_1998_102_Flury_Valencia_VS_MinDefensa_Uso_Urbanistico_Playa.jsonl",
-      "severity": "warning"
-    },
-    {
-      "code": "empty_silver_section",
-      "detail": "Texto vacío; Silver se omite al fragmentar, Gold requiere contenido",
       "line": 2,
       "path": "data/documents/silver/jurisprudencia/CE_2da_NYR_1999_503_Inversiones_Mercedes_VS_Dimar_Concesiones_Uso_Playa.jsonl",
       "severity": "warning"
@@ -1950,10 +1943,10 @@
         "768": 5888
       },
       "format_version": 1,
-      "gold_ids_missing_export": 21,
+      "gold_ids_missing_export": 23,
       "ids_ambiguous_in_gold": 0,
-      "ids_matched": 5863,
-      "ids_missing_gold": 25,
+      "ids_matched": 5862,
+      "ids_missing_gold": 26,
       "manifest_count": 5888,
       "metadata_field_differences": {
         "articulo": 132,
@@ -2745,9 +2738,9 @@
         "sha256": "9983b4a2a63cfc923b20bf163795d129bce7fa526722a0690f177431270a0f11"
       },
       {
-        "bytes": 50203,
+        "bytes": 50204,
         "path": "data/documents/bronze/jurisprudencia/CE_2da_NYR_1998_102_Flury_Valencia_VS_MinDefensa_Uso_Urbanistico_Playa.md",
-        "sha256": "5291f2325625abcaf63f9c400e2c22d6b15fa5529014212f4e9d54ebfb2b10fd"
+        "sha256": "5364b181c3d03ccc263910197073197161aa6f64e0493d324a21618ef25c42db"
       },
       {
         "bytes": 372,
@@ -3630,9 +3623,9 @@
         "sha256": "9ae78212aac7f1069f1dc679d9eea165f806f47709d26b28820faf8186bd5982"
       },
       {
-        "bytes": 148180,
+        "bytes": 147677,
         "path": "data/documents/gold/jurisprudencia/CE_2da_NYR_1998_102_Flury_Valencia_VS_MinDefensa_Uso_Urbanistico_Playa.jsonl",
-        "sha256": "a22f057db1f333e9c553929b4eb741224c8880c60b42ef2c2acc340b8336ca25"
+        "sha256": "7cc600c22c8b5ab5fcd43843ec0c19428d37b5185b9cf2047e496bf6b3b34e61"
       },
       {
         "bytes": 73703,
@@ -4195,9 +4188,9 @@
         "sha256": "31cbc9609f3692522235b50484e0b2ec080a5743ab112953625d7a53f7aa599a"
       },
       {
-        "bytes": 51694,
+        "bytes": 51708,
         "path": "data/documents/silver/jurisprudencia/CE_2da_NYR_1998_102_Flury_Valencia_VS_MinDefensa_Uso_Urbanistico_Playa.jsonl",
-        "sha256": "eec0829076859ce835e3fa0111d47a46ef1baa7a119014bbba70d982eb95946a"
+        "sha256": "aa1e620aa9c7f69f25dd8bc654112fce3aed877e653bd40392e00d44c963be94"
       },
       {
         "bytes": 27046,
@@ -4395,9 +4388,9 @@
     "catalog_entries": 56,
     "errors": 0,
     "exact_duplicate_source_groups": 1,
-    "gold_records": 5884,
-    "gold_unique_comparable_ids": 5884,
+    "gold_records": 5885,
+    "gold_unique_comparable_ids": 5885,
     "source_files": 56,
-    "warnings": 67
+    "warnings": 66
   }
 }

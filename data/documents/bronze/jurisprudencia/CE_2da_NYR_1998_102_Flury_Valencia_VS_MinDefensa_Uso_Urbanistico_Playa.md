@@ -162,7 +162,7 @@ En  mérito  de  lo  expuesto,  el  consejo  de  Estado,  Sala  de  lo  Contenci
 
 ## F  A  L  L  A
 
-CONFÍRMASE la  sentencia    del  de  agosto  de  2003  proferida  por  el  Tribunal Administrativo de Córdoba, que negó las pretensiones de la demanda.
+CONFÍRMASE la  sentencia    del 8 de  agosto  de  2003  proferida  por  el  Tribunal Administrativo de Córdoba, que negó las pretensiones de la demanda.
 
 Ejecutoriada esta providencia, devuélvase el expediente al Tribunal de origen.
 

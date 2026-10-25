@@ -738,7 +738,9 @@
           "role": "identity"
         }
       ],
-      "notes": []
+      "notes": [
+        "Flury Valencia: corrección local acotada del día 8 en la fecha de la sentencia confirmada (8 de agosto de 2003), cotejada con Raw, página 20. La parte resolutiva se separa del análisis en el rótulo literal F  A  L  L  A, conservando todo el texto, separadores y el solapamiento heredado de 131 caracteres. Silver mantiene cuatro secciones; Gold contiene 74 fragmentos: se retira el ID mixto terminado en _s3_c32 y se crean _s3_c33 (análisis) y _s4_c0 (decisión). Los otros 72 registros conservan íntegramente texto, metadata y enriquecimiento. La sección 3 conserva índices históricos 0–31 y 33, con total_chunks_in_section=33; la sección 4 contiene un registro, índice 0. Ambos fragmentos nuevos tienen summary vacío y keywords/entities vacíos deliberadamente, sin enriquecimiento generado. Las demás fechas quedan fuera de este lote. Esto no certifica fidelidad integral o validez jurídica y no sincroniza el índice vivo."
+      ]
     },
     {
       "source_path": "data/documents/raw/jurisprudencia/CE_2da_NYR_1999_503_Inversiones_Mercedes_VS_Dimar_Concesiones_Uso_Playa.pdf",
