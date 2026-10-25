@@ -774,7 +774,9 @@
           "role": "identity"
         }
       ],
-      "notes": []
+      "notes": [
+        "Inversiones Las Mercedes: reparación local acotada de 17 omisiones numéricas verificadas en Raw, páginas 1–3, 6–8, 12, 14 y 17, incluida la concesión por 20 años y la fecha de la sentencia apelada, 22 de enero de 1998. Se recoloca el rótulo Código Civil antes del artículo 669, conforme a Raw, página 15. Silver se distribuye en contexto, desarrollo procesal, análisis y decisión; el análisis comienza en V. LA DECISION y el fallo en F A L L A :, sin convertir la resolución administrativa citada en fallo judicial. Gold contiene 38 registros, grupos 7/17/12/2: se retiran 15 IDs por cambio de texto o corte y se crean 16 con enriquecimiento vacío deliberado. Los otros 22 conservan ID, chunk_index, texto y enriquecimiento, con actualización exclusiva de los campos de sección y su contador; 20 mantienen sufijos s1 históricos al pasar a las secciones 2 y 3. Tres porciones solapadas de 167, 17 y 112 caracteres no generan registros adicionales porque están cubiertas literalmente por otros fragmentos de la misma sección. Se conserva el fragmento de un punto, así como las discrepancias del PDF y las fechas no completadas por la propia fuente. Se mantienen nombres y demás campos de identidad, sin validación jurídica, certificación de fidelidad integral ni sincronización del índice vivo."
+      ]
     },
     {
       "source_path": "data/documents/raw/jurisprudencia/CE_2da_NYR_2009_164_FEPEP_VS_DIMAR_Playa_Uso_Urbanistico.pdf",
