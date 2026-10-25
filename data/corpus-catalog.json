@@ -1345,16 +1345,16 @@
         "articulo": 37,
         "articulo_titulo": 37,
         "chunk_index": 37,
-        "entities": 7,
-        "keywords": 4,
-        "keywords_str": 4,
+        "entities": 12,
+        "keywords": 7,
+        "keywords_str": 7,
         "section_index": 37,
         "section_name": 37,
-        "summary": 14,
+        "summary": 15,
         "total_chunks_in_section": 38
       },
       "export_records_matched_by_id": 139,
-      "export_text_mismatches": 43,
+      "export_text_mismatches": 57,
       "format": ".pdf",
       "gold_chunks": 139,
       "gold_ids_missing_export": 0,
@@ -1534,13 +1534,13 @@
     },
     {
       "code": "records_with_metadata_differences",
-      "detail": "653 registros; diferencia de snapshots, no autorización para reemplazar datos",
+      "detail": "658 registros; diferencia de snapshots, no autorización para reemplazar datos",
       "path": "data/chroma-rag_playas_magdalena-20260731-135720.jsonl.gz",
       "severity": "warning"
     },
     {
       "code": "text_mismatches",
-      "detail": "63 registros; diferencia de snapshots, no autorización para reemplazar datos",
+      "detail": "77 registros; diferencia de snapshots, no autorización para reemplazar datos",
       "path": "data/chroma-rag_playas_magdalena-20260731-135720.jsonl.gz",
       "severity": "warning"
     },
@@ -1937,19 +1937,19 @@
         "articulo_titulo": 112,
         "capitulo": 66,
         "chunk_index": 88,
-        "entities": 321,
-        "keywords": 318,
-        "keywords_str": 319,
+        "entities": 326,
+        "keywords": 321,
+        "keywords_str": 322,
         "section_heading": 28,
         "section_index": 185,
         "section_name": 160,
-        "summary": 327,
+        "summary": 328,
         "titulo": 32,
         "total_chunks_in_section": 255
       },
       "path": "data/chroma-rag_playas_magdalena-20260731-135720.jsonl.gz",
       "records": 5888,
-      "records_with_metadata_differences": 653,
+      "records_with_metadata_differences": 658,
       "sha256": "28b7a3076d1c7ad0aa3ef2a4394e31423cdd5358f691fdc6a6104f7e15712d2d",
       "sources": [
         {
@@ -2233,7 +2233,7 @@
           "source": "decreto-2324-de-1984.md"
         }
       ],
-      "text_mismatches": 63
+      "text_mismatches": 77
     },
     "files": [
       {
@@ -3762,9 +3762,9 @@
         "sha256": "3d13f22310b7ef5503a47bf8825de7f84489f17162157829ca428ef8e5f24204"
       },
       {
-        "bytes": 323472,
+        "bytes": 320228,
         "path": "data/documents/gold/normativa/Por medio del cual se expiden las normas bases para la reglamentación de las actividades en las playas urbanas y rurales en el Distrito de Cartagena de Indias.jsonl",
-        "sha256": "ef91b18bf7137d279d01ddc27335211fb20aa2ad59d8994584ed415c258edf5d"
+        "sha256": "5a2c1413d1f0e719fe1411a092a1d2ec8692c34afc16f949b3bae0857ded7b9a"
       },
       {
         "bytes": 296449,
@@ -4327,9 +4327,9 @@
         "sha256": "6c2ae3316fc23517d07729abe764fd2e38a5c02eba8f944368b9de531081b55a"
       },
       {
-        "bytes": 95820,
+        "bytes": 91301,
         "path": "data/documents/silver/normativa/Por medio del cual se expiden las normas bases para la reglamentación de las actividades en las playas urbanas y rurales en el Distrito de Cartagena de Indias.jsonl",
-        "sha256": "27f00bd214bc5b06b79258c1d4e366cfa3bdeae254999a762017c7b6bcbea6e6"
+        "sha256": "df2970cc93b371cfb4b1f499623e03d5735c0538dada6d7f4bcc7a309e31d453"
       },
       {
         "bytes": 99372,

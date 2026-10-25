@@ -2476,7 +2476,7 @@
       ],
       "notes": [
         "La portada dice Proyecto de Decreto y conserva sello 1811/2015; la página 30 tiene fecha y firma del alcalde. No descartarlo como borrador por la portada ni certificar vigencia/publicación por la firma.",
-        "El encabezado propio 13º está presente en Bronze pero no reconocido por el parser; no modificar texto ni metadata."
+        "Representación local de 35 secciones Silver y 139 fragmentos Gold. Se conservan las restituciones numéricas verificadas, la separación del bloque de anexos y las cinco matrices anexas ya reparadas. Las tablas de ubicación del artículo 5 (T3, Raw páginas 11–12) y de tipología del artículo 16 (T4, Raw páginas 20–21) quedan propagadas desde Bronze: 17 filas y 68 celdas, y 12 filas y 60 celdas, respectivamente. Se preservan la celda de barrio vacía de T3, las categorías vacías de Protección y los NA de T4; no se infieren datos para completarlas. Gold conserva sus 139 IDs, orden, índices y contadores; catorce textos se reparan dentro de las mismas unidades semánticas, con encabezados de columnas de la fuente. La fila de Protección insular se reúne con las otras filas insulares en el fragmento terminado en _s16_art16_c3; su prosa posterior permanece en _s16_art16_c4, conservando el solapamiento heredado con el siguiente fragmento. Cinco registros reciben solo los ajustes literales y traslados de resumen, keywords o entities identificados; no se genera enriquecimiento. El artículo 13 y las demás atribuciones o problemas ajenos quedan pendientes. Se mantienen los sufijos históricos de los anexos y la advertencia sobre portada, fecha y firma; no se certifican fidelidad integral, vigencia ni validación jurídica y no se sincroniza el índice vivo."
       ]
     },
     {
