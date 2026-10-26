@@ -1436,19 +1436,19 @@
       "coverage": "not_verified",
       "doc_type": "normativa",
       "export_metadata_differences": {
-        "articulo": 27,
-        "articulo_titulo": 27,
+        "articulo": 30,
+        "articulo_titulo": 30,
         "capitulo": 46,
-        "chunk_index": 27,
-        "entities": 5,
+        "chunk_index": 30,
+        "entities": 6,
         "keywords": 2,
         "keywords_str": 2,
-        "section_index": 37,
-        "section_name": 27,
-        "total_chunks_in_section": 46
+        "section_index": 40,
+        "section_name": 30,
+        "total_chunks_in_section": 50
       },
       "export_records_matched_by_id": 83,
-      "export_text_mismatches": 5,
+      "export_text_mismatches": 7,
       "format": ".pdf",
       "gold_chunks": 83,
       "gold_ids_missing_export": 0,
@@ -1534,13 +1534,13 @@
     },
     {
       "code": "records_with_metadata_differences",
-      "detail": "663 registros; diferencia de snapshots, no autorización para reemplazar datos",
+      "detail": "667 registros; diferencia de snapshots, no autorización para reemplazar datos",
       "path": "data/chroma-rag_playas_magdalena-20260731-135720.jsonl.gz",
       "severity": "warning"
     },
     {
       "code": "text_mismatches",
-      "detail": "77 registros; diferencia de snapshots, no autorización para reemplazar datos",
+      "detail": "79 registros; diferencia de snapshots, no autorización para reemplazar datos",
       "path": "data/chroma-rag_playas_magdalena-20260731-135720.jsonl.gz",
       "severity": "warning"
     },
@@ -1933,23 +1933,23 @@
       "ids_missing_gold": 42,
       "manifest_count": 5888,
       "metadata_field_differences": {
-        "articulo": 137,
-        "articulo_titulo": 117,
+        "articulo": 140,
+        "articulo_titulo": 120,
         "capitulo": 66,
-        "chunk_index": 88,
-        "entities": 326,
+        "chunk_index": 91,
+        "entities": 327,
         "keywords": 321,
         "keywords_str": 322,
         "section_heading": 28,
-        "section_index": 190,
-        "section_name": 165,
+        "section_index": 193,
+        "section_name": 168,
         "summary": 328,
         "titulo": 32,
-        "total_chunks_in_section": 255
+        "total_chunks_in_section": 259
       },
       "path": "data/chroma-rag_playas_magdalena-20260731-135720.jsonl.gz",
       "records": 5888,
-      "records_with_metadata_differences": 663,
+      "records_with_metadata_differences": 667,
       "sha256": "28b7a3076d1c7ad0aa3ef2a4394e31423cdd5358f691fdc6a6104f7e15712d2d",
       "sources": [
         {
@@ -2233,7 +2233,7 @@
           "source": "decreto-2324-de-1984.md"
         }
       ],
-      "text_mismatches": 77
+      "text_mismatches": 79
     },
     "files": [
       {
@@ -3777,9 +3777,9 @@
         "sha256": "81a99babca9d278fc472936baa772c5ec46cd112f130ab1c446bc87c6f4d050b"
       },
       {
-        "bytes": 222333,
+        "bytes": 222392,
         "path": "data/documents/gold/normativa/Por medio del cual se reglamenta el uso, zonificación y horario de las playas con vocación turística del Distrito Turístico, Cultural e Histórico de Santa Marta, aptas para la realización de activiades de aprovech.jsonl",
-        "sha256": "41dc7e4ac148167da7fb49c4356f90971572aba8a8a7d9ad83fc28e2761df67a"
+        "sha256": "f4537e5bccf2eeac3596a3c2c8ac12d36817227ee40e9f2967b1652701fc64c9"
       },
       {
         "bytes": 1182981,
@@ -4342,9 +4342,9 @@
         "sha256": "c7bd03c876cd101e2df3ee622f86b3c9e4a0d5383ece68d836ad3cd597bdeb2a"
       },
       {
-        "bytes": 72415,
+        "bytes": 73168,
         "path": "data/documents/silver/normativa/Por medio del cual se reglamenta el uso, zonificación y horario de las playas con vocación turística del Distrito Turístico, Cultural e Histórico de Santa Marta, aptas para la realización de activiades de aprovech.jsonl",
-        "sha256": "f0e1e81b66b5e63f4d474be09d82692a4dbee2eba9801cc775c10a93d43addce"
+        "sha256": "ea49342c01b6361b720f900450f51d1703847c349585d70c0cb52a4e41c236f7"
       },
       {
         "bytes": 458150,
