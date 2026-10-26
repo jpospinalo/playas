@@ -93,7 +93,7 @@ function Detalle() {
 									)}
 									{esRespuesta ? (
 										<div className="pnl-msj-pie">
-											<span>
+											<span className="pnl-msj-estados">
 												{m.resultado ? <EstadoResultado resultado={m.resultado} fuentes={m.normas.length} /> : null}{" "}
 												<EstadoCalificacion calificacion={m.calificacion} />
 											</span>

@@ -438,7 +438,7 @@ async def sembrar(
 
             if tipo in ("saludo",) or rng.random() > 0.38:
                 continue
-            p_util = 0.82 if sources else 0.15
+            p_util = 0.82 if sources else 0.0  # sin norma nunca "le sirvió"
             if tipo in ("obras", "otros") and sources:
                 p_util = 0.6
             util = rng.random() < p_util

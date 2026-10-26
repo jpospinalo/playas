@@ -1176,3 +1176,8 @@
 	margin: 0 0 10px;
 	padding-left: 24px;
 }
+.pnl-msj-estados {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px 20px;
+}
