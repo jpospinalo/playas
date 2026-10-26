@@ -989,16 +989,33 @@ body:has(.guia) {
 .guia-temas {
 	margin-top: 18px;
 }
+/* Sin guiones a mitad de palabra en las tarjetas de temas ("fren-te"). */
+.guia-temas .guia-opcion .txt {
+	hyphens: manual;
+}
 @media (min-width: 760px) {
+	/* Tarjetas de una misma fila con la misma altura: la celda (li) se
+	   estira con la fila y el botón la llena; ícono y título arriba. */
 	.guia-temas {
-		grid-template-columns: repeat(3, minmax(0, 1fr));
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		align-items: stretch;
+	}
+	.guia-temas > li {
+		display: flex;
 	}
 	.guia-temas .guia-opcion {
+		height: 100%;
 		min-height: 96px;
 		align-items: flex-start;
 	}
 	.guia-temas .flecha {
 		display: none;
+	}
+}
+/* Tres columnas solo cuando caben sin partir palabras ("Construcciones"). */
+@media (min-width: 960px) {
+	.guia-temas {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
 	}
 }
 @media (max-width: 600px) {
