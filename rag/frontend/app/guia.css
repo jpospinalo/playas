@@ -850,3 +850,183 @@ body:has(.guia) {
 	margin-top: 26px;
 	margin-bottom: 0;
 }
+
+/* Solo para el lector de pantalla. */
+.guia .sr {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+	clip: rect(0 0 0 0);
+	white-space: nowrap;
+}
+
+/* Caja de pregunta (inicio y seguimiento): textarea de 2 renglones con
+   "Preguntar" pegado a la derecha (debajo en celular), dentro de un marco
+   marino. El foco se dibuja en el marco, no en el textarea. */
+.guia-buscador {
+	display: flex;
+	align-items: stretch;
+	border: 3px solid var(--marino);
+	border-radius: 6px;
+	background: var(--papel);
+	text-align: left;
+}
+.guia .guia-buscador textarea {
+	flex: 1;
+	width: auto;
+	min-width: 0;
+	margin: 0;
+	min-height: 84px;
+	padding: 18px;
+	border: 0;
+	border-radius: 3px 0 0 3px;
+	background: transparent;
+	font-size: 22px;
+	line-height: 1.4;
+	resize: none;
+}
+.guia .guia-buscador textarea::placeholder {
+	color: var(--placeholder);
+	opacity: 1;
+}
+.guia .guia-buscador textarea:focus-visible {
+	outline: none;
+}
+.guia-buscador:has(textarea:focus-visible) {
+	outline: 4px solid var(--marino);
+	outline-offset: 3px;
+}
+.guia-caja .guia-error {
+	text-align: left;
+}
+.guia-buscador .guia-btn {
+	flex: none;
+	min-height: 0;
+	padding: 0 34px;
+	border-radius: 0 3px 3px 0;
+	font-size: 22px;
+}
+/* El botón está pegado al marco: su foco va hacia adentro para verse. */
+.guia .guia-buscador .guia-btn:focus-visible {
+	outline: 4px solid #fff;
+	outline-offset: -8px;
+}
+
+/* Inicio: banda blanca con logo, título y caja; debajo, los temas. */
+.guia-main:has(> .guia-inicio) {
+	max-width: none;
+	padding: 0;
+}
+.guia:has(.guia-inicio) .guia-barra {
+	max-width: 960px;
+}
+.guia-hero {
+	background: var(--papel);
+	border-bottom: 1px solid var(--linea);
+}
+.guia-hero-in {
+	max-width: 820px;
+	margin: 0 auto;
+	padding: 28px 18px 32px;
+	text-align: center;
+}
+.guia-hero .logo {
+	display: block;
+	width: 132px;
+	height: auto;
+	margin: 0 auto 10px;
+}
+.guia .guia-hero h1 {
+	font-size: 38px;
+	line-height: 1.15;
+}
+.guia-hero-escuchar {
+	margin: 12px 0 18px;
+}
+.guia-hero-escuchar .guia-escuchar {
+	margin-top: 0;
+}
+.guia .guia-nota {
+	margin: 12px 0 0;
+	font-size: 18px;
+	color: var(--tinta-2);
+}
+.guia-ejemplos {
+	list-style: none;
+	margin: 14px 0 0;
+	padding: 0;
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 10px;
+}
+.guia-ejemplos button {
+	min-height: 48px;
+	padding: 6px 16px;
+	border: 2px solid var(--borde-ctl);
+	border-radius: 6px;
+	background: var(--fondo);
+	font-size: 18px;
+	cursor: pointer;
+}
+.guia-ejemplos button:active {
+	background: var(--bajo);
+}
+.guia-guiar {
+	max-width: 960px;
+	margin: 0 auto;
+	padding: 30px 18px 52px;
+}
+.guia .guia-guiar h2 {
+	margin: 0;
+	font-size: 30px;
+	line-height: 1.2;
+}
+.guia-guiar .pista {
+	margin: 6px 0 0;
+}
+.guia-temas {
+	margin-top: 18px;
+}
+@media (min-width: 760px) {
+	.guia-temas {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+	}
+	.guia-temas .guia-opcion {
+		min-height: 96px;
+		align-items: flex-start;
+	}
+	.guia-temas .flecha {
+		display: none;
+	}
+}
+@media (max-width: 600px) {
+	.guia-hero-in {
+		padding: 18px 14px 24px;
+	}
+	.guia-hero .logo {
+		width: 104px;
+	}
+	.guia .guia-hero h1 {
+		font-size: 30px;
+	}
+	.guia-buscador {
+		flex-direction: column;
+	}
+	.guia .guia-buscador textarea {
+		min-height: 104px;
+		border-radius: 3px 3px 0 0;
+	}
+	.guia-buscador .guia-btn {
+		width: 100%;
+		min-height: 60px;
+		border-radius: 0 0 3px 3px;
+	}
+	.guia-guiar {
+		padding: 24px 14px 44px;
+	}
+	.guia .guia-guiar h2 {
+		font-size: 26px;
+	}
+}

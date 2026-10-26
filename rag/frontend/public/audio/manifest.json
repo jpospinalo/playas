@@ -1,5 +1,4 @@
 {
- "¿Sobre qué es su pregunta?\nToque la opción que más se parezca a su caso.\nEntrar o caminar por la playa.\nPescar.\nVender en la playa.\nHoteles y negocios frente al mar.\nLanchas, motos de agua y bañistas.\nConstrucciones cerca del mar.\n¿Su caso no está aquí?\nEscribir mi pregunta.": "2063e0ec1403.mp3",
  "¿Qué le pasó?\nUn hotel o negocio no me deja pasar.\nMe quieren cobrar por entrar.\nMe piden que me vaya de la playa.\nOtra cosa: escribir mi pregunta.": "55f98f440bc9.mp3",
  "¿Qué quiere saber?\nSi puedo pescar frente a un hotel.\nQué permiso necesito para pescar.\nOtra cosa: escribir mi pregunta.": "9a1a1d14455f.mp3",
  "¿Qué quiere saber?\nQué permiso necesito para vender.\nEn qué parte de la playa puedo vender.\nOtra cosa: escribir mi pregunta.": "d9e52e77f617.mp3",
@@ -7,7 +6,6 @@
  "¿Qué quiere saber?\nPor dónde pueden andar las lanchas.\nHasta dónde se puede bañar la gente.\nOtra cosa: escribir mi pregunta.": "c2029b98c896.mp3",
  "¿Qué quiere saber?\nSi se puede construir sobre la arena.\nOtra cosa: escribir mi pregunta.": "9db94db18f74.mp3",
  "¿En qué playa?\nLas reglas para vender cambian de una playa a otra.\nTaganga.\nBahía de Santa Marta.\nPlaya Blanca.\nEl Rodadero.\nBello Horizonte.\nPozos Colorados.\nOtra playa o no sé.": "d46d216a86dd.mp3",
- "Escriba su pregunta\nEscríbala como se la contaría a un vecino. No importa la ortografía.": "70c749c3b87a.mp3",
  "Buscando la respuesta\nEstamos leyendo las normas y las sentencias. Puede tardar hasta un minuto.": "8d13772e4f77.mp3",
  "No pudimos traer la respuesta\nNo hay señal de internet. Cuando tenga señal, toque «Intentar otra vez».": "81882b052470.mp3",
  "No pudimos traer la respuesta\nNo hay señal o el servidor no responde. Revise su internet y toque «Intentar otra vez».": "704b6924b0b0.mp3",
@@ -15,5 +13,6 @@
  "Necesitamos un poco más de información\nCuéntenos un poco más: en qué playa pasó, qué estaba haciendo y quién se lo impidió o se lo pidió.": "1dc62ec4f121.mp3",
  "ATLAS responde preguntas sobre las playas\nPuede preguntar sobre entrar a la playa, pescar, vender, hoteles, lanchas y construcciones cerca del mar.": "cfbf25e9947a.mp3",
  "No encontramos una respuesta segura\nNo encontramos normas o sentencias que respondan su pregunta con seguridad. Preferimos no adivinar.\nCómo preguntar de otra forma\nDiga qué estaba haciendo, en qué playa pasó y quién se lo impidió o se lo pidió. Por ejemplo: «Vendo cocadas en El Rodadero y la Policía me quiere quitar el puesto».": "10dea4da27d3.mp3",
- "No pudimos traer la respuesta\nHubo un problema al buscar la respuesta. Toque «Intentar otra vez». Si sigue pasando, vuelva a intentarlo en unos minutos.": "64779a7a63a0.mp3"
+ "No pudimos traer la respuesta\nHubo un problema al buscar la respuesta. Toque «Intentar otra vez». Si sigue pasando, vuelva a intentarlo en unos minutos.": "64779a7a63a0.mp3",
+ "¿Qué quiere saber sobre las playas?\nEscriba su pregunta sobre las playas y toque «Preguntar».\n¿Prefiere que lo guiemos?\nElija el tema que más se parezca a su caso y le vamos preguntando paso a paso.\nEntrar o caminar por la playa.\nPescar.\nVender en la playa.\nHoteles y negocios frente al mar.\nLanchas, motos de agua y bañistas.\nConstrucciones cerca del mar.": "38e046d9158e.mp3"
 }

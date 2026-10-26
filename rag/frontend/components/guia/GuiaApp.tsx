@@ -10,11 +10,11 @@ import type { TipoError } from "@/lib/guia/textos";
 import { Entrar } from "@/components/guia/Entrar";
 import {
 	PantallaError,
-	PantallaEscribir,
 	PantallaEspera,
 	PantallaInicio,
 	PantallaPlaya,
 	PantallaTema,
+	esTactil,
 } from "@/components/guia/Pantallas";
 import { Respuesta, type Calificacion } from "@/components/guia/Respuesta";
 import { detenerVoz } from "@/lib/voz";
@@ -155,6 +155,10 @@ function guardar(r: RespuestaGuardada | null): void {
 function Flujo() {
 	const { ruta, ir, volver } = useRutaGuia();
 	const tituloRef = useRef<HTMLHeadingElement>(null);
+	// Caja de pregunta del inicio, y si al llegar al inicio el cursor va ahí
+	// ("Otra cosa: escribir mi pregunta") en vez de al título.
+	const cajaRef = useRef<HTMLTextAreaElement>(null);
+	const enfocarCaja = useRef(false);
 	const chat = useChat();
 	const { messages, loading, error, stage, generationFinished, persistingMessageIds } = chat;
 
@@ -205,15 +209,27 @@ function Flujo() {
 	// Al cambiar de pantalla: arriba del todo, foco en el título (los
 	// lectores de pantalla lo anuncian) y título de la pestaña.
 	const clave = ruta.join("/");
-	const primera = useRef(true);
+	// Estado de la pantalla ya atendido (null = recién abierta). En
+	// desarrollo React corre el efecto dos veces: la segunda no mueve el foco.
+	const atendida = useRef<string | null>(null);
 	useEffect(() => {
+		const estado = `${clave}|${sinSenal}|${error}`;
+		if (atendida.current === estado) return;
+		const primera = atendida.current === null;
+		atendida.current = estado;
 		detenerVoz();
 		window.scrollTo(0, 0);
-		if (primera.current) {
-			primera.current = false;
+		const caja = cajaRef.current;
+		if (primera) {
+			// Al abrir, en el computador el cursor queda listo en la caja. En
+			// el celular no: el teclado taparía los temas.
+			if (caja && !esTactil()) caja.focus();
+		} else if (enfocarCaja.current && caja) {
+			caja.focus();
 		} else {
 			tituloRef.current?.focus();
 		}
+		enfocarCaja.current = false;
 		// El nombre de la pestaña sale de la pantalla que de verdad se ve (una
 		// dirección sin datos muestra el inicio y debe decir eso).
 		const enRespuesta = !!tituloRef.current?.closest(".guia-veredicto");
@@ -273,6 +289,13 @@ function Flujo() {
 		ir("inicio");
 	}
 
+	/** Lleva a la caja del inicio con el cursor puesto. */
+	function irACaja(atras: boolean) {
+		enfocarCaja.current = true;
+		if (atras) volver("inicio");
+		else ir("inicio");
+	}
+
 	async function calificar(c: Calificacion) {
 		if (!respuesta) return;
 		const nota = c.util ? 5 : 1;
@@ -287,7 +310,7 @@ function Flujo() {
 				tema={tema}
 				tituloRef={tituloRef}
 				onVolver={() => volver("inicio")}
-				onEscribir={() => ir("escribir")}
+				onEscribir={() => irACaja(true)}
 				onOpcion={(i) => {
 					const o = tema.opciones[i];
 					if (o.pidePlaya) ir(`playa/${tema.id}/${i}`);
@@ -305,21 +328,6 @@ function Flujo() {
 				tituloRef={tituloRef}
 				onVolver={() => volver(`tema/${tema.id}`)}
 				onPlaya={(playa) => preguntar(o.texto, preguntaConPlaya(o.pregunta, playa), playa)}
-			/>
-		);
-	}
-
-	if (pantalla === "escribir") {
-		return (
-			<PantallaEscribir
-				tituloRef={tituloRef}
-				inicial={borrador}
-				onCambio={setBorrador}
-				onVolver={() => volver("inicio")}
-				onPreguntar={(texto) => {
-					setBorrador(texto);
-					preguntar(texto, texto, null);
-				}}
 			/>
 		);
 	}
@@ -355,7 +363,7 @@ function Flujo() {
 				onOtraPregunta={otraPregunta}
 				onEscribirDeNuevo={() => {
 					setBorrador(guardada.pregunta.texto);
-					ir("escribir");
+					irACaja(false);
 				}}
 				tituloRef={tituloRef}
 			/>
@@ -380,7 +388,7 @@ function Flujo() {
 				onOtraPregunta={otraPregunta}
 				onEscribirDeNuevo={() => {
 					setBorrador(pregunta.texto);
-					ir("escribir");
+					irACaja(false);
 				}}
 				tituloRef={tituloRef}
 			/>
@@ -388,12 +396,18 @@ function Flujo() {
 	}
 
 	// Inicio (y cualquier dirección que ya no tiene datos, p. ej. al recargar
-	// en la pantalla de respuesta).
+	// en la pantalla de respuesta, o el antiguo `#escribir`: la caja está aquí).
 	return (
 		<PantallaInicio
 			tituloRef={tituloRef}
+			cajaRef={cajaRef}
+			borrador={borrador}
+			onCambio={setBorrador}
+			onPreguntar={(texto) => {
+				setBorrador(texto);
+				preguntar(texto, texto, null);
+			}}
 			onTema={(t) => ir(`tema/${t.id}`)}
-			onEscribir={() => ir("escribir")}
 		/>
 	);
 }

@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { MAX_QUESTION_CHARS } from "@/lib/contracts";
 import { PLAYAS, TEMAS, type Tema } from "@/lib/guia/temas";
 import {
+	EJEMPLOS,
 	ETAPAS,
 	TXT,
-	lecturaEscribir,
 	lecturaEspera,
 	lecturaError,
 	lecturaInicio,
@@ -62,43 +62,108 @@ function Cabeza({
 	);
 }
 
-export function PantallaInicio({
-	tituloRef,
-	onTema,
-	onEscribir,
-}: {
-	tituloRef: TituloRef;
-	onTema: (t: Tema) => void;
-	onEscribir: () => void;
-}) {
+/** Muestra en itálica los nombres de playa dentro de un texto (p. ej. un ejemplo). */
+function conLugares(texto: string): React.ReactNode {
+	const playa = PLAYAS.find((p) => texto.includes(p));
+	if (!playa) return texto;
+	const [antes, despues] = texto.split(playa);
 	return (
 		<>
-			<Cabeza titulo={TXT.inicioTitulo} tituloRef={tituloRef} lectura={lecturaInicio} />
-			<p className="pista">{TXT.inicioPista}</p>
-			<ul className="guia-opciones">
-				{TEMAS.map((t) => (
-					<li key={t.id}>
-						<button type="button" className="guia-opcion" onClick={() => onTema(t)}>
-							<span className="ico">
-								<IconoDeTema icono={t.icono} />
-							</span>
-							<span className="txt">
-								<b>{t.titulo}</b>
-								<small>{t.detalle}</small>
-							</span>
-							<Flecha />
-						</button>
-					</li>
-				))}
-			</ul>
-			<div className="guia-otra">
-				<p>{TXT.otraCaso}</p>
-				<button type="button" className="guia-btn-sec" onClick={onEscribir}>
-					{TXT.escribirBoton}
-				</button>
-			</div>
-			<p className="pie">{TXT.pie}</p>
+			{antes}
+			<span className="lugar">{playa}</span>
+			{despues}
 		</>
+	);
+}
+
+export function PantallaInicio({
+	tituloRef,
+	cajaRef,
+	borrador,
+	onCambio,
+	onPreguntar,
+	onTema,
+}: {
+	tituloRef: TituloRef;
+	cajaRef: React.RefObject<HTMLTextAreaElement | null>;
+	/** Lo escrito en la caja: vive fuera de la pantalla para no perderlo al ir a un tema y volver. */
+	borrador: string;
+	onCambio: (texto: string) => void;
+	onPreguntar: (texto: string) => void;
+	onTema: (t: Tema) => void;
+}) {
+	return (
+		<div className="guia-inicio">
+			<section className="guia-hero" aria-labelledby="titulo">
+				<div className="guia-hero-in">
+					<picture>
+						<source srcSet="/brand/atlas-logo-inicio.webp" type="image/webp" />
+						{/* Logo de 26 KB (webp) o 72 KB (png), sin optimizador de imágenes. */}
+						<img className="logo" src="/brand/atlas-logo-inicio.png" alt="" width={132} height={135} />
+					</picture>
+					<h1 id="titulo" ref={tituloRef} tabIndex={-1}>
+						{TXT.inicioTitulo}
+					</h1>
+					<div className="guia-hero-escuchar">
+						<Escuchar texto={lecturaInicio} />
+					</div>
+					<CajaPregunta
+						id="texto"
+						cajaRef={cajaRef}
+						valor={borrador}
+						onCambio={onCambio}
+						onPreguntar={onPreguntar}
+						pista={TXT.cajaPista}
+						describe="inicio-nota"
+					/>
+					<p className="guia-nota" id="inicio-nota">
+						{TXT.inicioNota}
+					</p>
+					<ul className="guia-ejemplos" aria-labelledby="inicio-nota">
+						{EJEMPLOS.map((e) => (
+							<li key={e}>
+								<button
+									type="button"
+									onClick={() => {
+										onCambio(e);
+										// Llena la caja y deja el cursor al final; no envía.
+										requestAnimationFrame(() => {
+											const caja = cajaRef.current;
+											if (!caja) return;
+											caja.focus();
+											caja.setSelectionRange(e.length, e.length);
+										});
+									}}
+								>
+									{conLugares(e)}
+								</button>
+							</li>
+						))}
+					</ul>
+				</div>
+			</section>
+			<section className="guia-guiar" aria-labelledby="guiar-titulo">
+				<h2 id="guiar-titulo">{TXT.guiarTitulo}</h2>
+				<p className="pista">{TXT.guiarPista}</p>
+				<ul className="guia-opciones guia-temas">
+					{TEMAS.map((t) => (
+						<li key={t.id}>
+							<button type="button" className="guia-opcion" onClick={() => onTema(t)}>
+								<span className="ico">
+									<IconoDeTema icono={t.icono} />
+								</span>
+								<span className="txt">
+									<b>{t.titulo}</b>
+									<small>{t.detalle}</small>
+								</span>
+								<Flecha />
+							</button>
+						</li>
+					))}
+				</ul>
+				<p className="pie">{TXT.pie}</p>
+			</section>
+		</div>
 	);
 }
 
@@ -189,74 +254,93 @@ export function PantallaPlaya({
 	);
 }
 
-export function PantallaEscribir({
-	tituloRef,
-	inicial,
+/** En celular (pantalla táctil) Enter hace otro renglón; en el computador envía. */
+export function esTactil(): boolean {
+	return typeof window !== "undefined" && !!window.matchMedia?.("(pointer: coarse)").matches;
+}
+
+/**
+ * Caja de pregunta (inicio y seguimiento al final de la respuesta). Mínimo
+ * 5 letras; los errores dicen qué falta. Lo escrito vive afuera (`valor` /
+ * `onCambio`) para que sobreviva al cambiar de pantalla.
+ */
+export function CajaPregunta({
+	id,
+	cajaRef,
+	valor,
 	onCambio,
-	onVolver,
 	onPreguntar,
+	pista,
+	etiqueta = "Su pregunta",
+	describe,
+	clase,
 }: {
-	tituloRef: TituloRef;
-	inicial: string;
-	/** Guarda lo escrito fuera de la pantalla, para no perderlo al volver. */
+	id: string;
+	cajaRef?: React.RefObject<HTMLTextAreaElement | null>;
+	valor: string;
 	onCambio: (texto: string) => void;
-	onVolver: () => void;
 	onPreguntar: (texto: string) => void;
+	pista?: string;
+	/** Nombre de la caja para el lector de pantalla (no se ve). */
+	etiqueta?: string;
+	/** id de un texto que la describe (p. ej. la nota con ejemplos). */
+	describe?: string;
+	clase?: string;
 }) {
-	const [texto, setTexto] = useState(inicial);
 	const [error, setError] = useState<string | null>(null);
+	const formRef = useRef<HTMLFormElement>(null);
+	const idError = `${id}-error`;
+	const describeIds = [error ? idError : null, describe ?? null].filter(Boolean).join(" ") || undefined;
 
 	return (
-		<>
-			<Volver onClick={onVolver} />
-			<Cabeza titulo={TXT.escribirTitulo} tituloRef={tituloRef} lectura={lecturaEscribir} />
-			<p className="pista">{TXT.escribirPista}</p>
-			<form
-				noValidate
-				onSubmit={(e) => {
-					e.preventDefault();
-					const limpio = texto.trim();
-					if (limpio.length < 5) {
-						setError(limpio.length === 0 ? TXT.escribirVacio : TXT.escribirCorta);
-						document.getElementById("texto")?.focus();
-						return;
-					}
-					setError(null);
-					onPreguntar(limpio);
-				}}
-			>
-				<label className="grande" htmlFor="texto">
-					Su pregunta
-				</label>
+		<form
+			ref={formRef}
+			className={`guia-caja${clase ? ` ${clase}` : ""}`}
+			noValidate
+			onSubmit={(e) => {
+				e.preventDefault();
+				const limpio = valor.trim();
+				if (limpio.length < 5) {
+					setError(limpio.length === 0 ? TXT.escribirVacio : TXT.escribirCorta);
+					document.getElementById(id)?.focus();
+					return;
+				}
+				setError(null);
+				onPreguntar(limpio);
+			}}
+		>
+			<label className="sr" htmlFor={id}>
+				{etiqueta}
+			</label>
+			<div className="guia-buscador">
 				<textarea
-					id="texto"
+					id={id}
+					ref={cajaRef}
 					name="texto"
-					rows={5}
-					value={texto}
+					rows={2}
+					value={valor}
+					placeholder={pista}
 					maxLength={MAX_QUESTION_CHARS}
-					aria-describedby={error ? "texto-error texto-ejemplo" : "texto-ejemplo"}
+					aria-describedby={describeIds}
 					aria-invalid={error ? true : undefined}
-					onChange={(e) => {
-						setTexto(e.target.value);
-						onCambio(e.target.value);
+					onChange={(e) => onCambio(e.target.value)}
+					onKeyDown={(e) => {
+						if (e.key !== "Enter" || e.shiftKey || e.nativeEvent.isComposing || esTactil()) return;
+						e.preventDefault();
+						formRef.current?.requestSubmit();
 					}}
 				/>
-				<p className="ejemplo" id="texto-ejemplo">
-					Por ejemplo: <i>{TXT.escribirEjemplo}</i>
+				<button className="guia-btn" type="submit">
+					Preguntar
+				</button>
+			</div>
+			{error ? (
+				<p className="guia-error" role="alert" id={idError}>
+					<Aviso />
+					<span>{error}</span>
 				</p>
-				{error ? (
-					<p className="guia-error" role="alert" id="texto-error">
-						<Aviso />
-						<span>{error}</span>
-					</p>
-				) : null}
-				<div className="guia-acciones">
-					<button className="guia-btn" type="submit">
-						Preguntar
-					</button>
-				</div>
-			</form>
-		</>
+			) : null}
+		</form>
 	);
 }
 

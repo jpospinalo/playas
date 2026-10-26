@@ -9,18 +9,18 @@ import { PLAYAS, TEMAS, type Tema } from "@/lib/guia/temas";
 import { lecturaRespuesta, respuestaFija } from "@/lib/guia/respuesta";
 
 export const TXT = {
-	inicioTitulo: "¿Sobre qué es su pregunta?",
-	inicioPista: "Toque la opción que más se parezca a su caso.",
-	otraCaso: "¿Su caso no está aquí?",
-	escribirBoton: "Escribir mi pregunta",
+	inicioTitulo: "¿Qué quiere saber sobre las playas?",
+	cajaPista: "Escriba su pregunta sobre las playas…",
+	/** Cómo lee "Escuchar" la caja del inicio (la pista sin los puntos suspensivos). */
+	cajaLectura: "Escriba su pregunta sobre las playas y toque «Preguntar».",
+	inicioNota: "Escríbala como se la contaría a un vecino. Pruebe con:",
+	guiarTitulo: "¿Prefiere que lo guiemos?",
+	guiarPista: "Elija el tema que más se parezca a su caso y le vamos preguntando paso a paso.",
 	pie: "ATLAS le explica, con palabras sencillas, lo que dicen las normas y los jueces de Colombia sobre las playas. No reemplaza a un abogado.",
 	otraCosa: "Otra cosa: escribir mi pregunta",
 	playaTitulo: "¿En qué playa?",
 	playaPista: "Las reglas para vender cambian de una playa a otra.",
 	otraPlaya: "Otra playa o no sé",
-	escribirTitulo: "Escriba su pregunta",
-	escribirPista: "Escríbala como se la contaría a un vecino. No importa la ortografía.",
-	escribirEjemplo: "Vendo cocadas en El Rodadero y me quieren quitar el puesto. ¿Pueden hacerlo?",
 	escribirVacio: "Escriba su pregunta antes de tocar «Preguntar».",
 	escribirCorta: "Su pregunta es muy corta. Cuéntenos un poco más, por ejemplo qué pasó y en qué playa.",
 	esperaTitulo: "Buscando la respuesta",
@@ -43,10 +43,17 @@ export const ETAPAS: Record<string, string> = {
 	generating: "Escribiendo la respuesta…",
 };
 
+/** Ejemplos tocables del inicio: llenan la caja, no envían. */
+export const EJEMPLOS = ["¿Me pueden cobrar por entrar a la playa?", "¿Puedo vender en El Rodadero?"] as const;
+
 export function lecturaInicio(): string {
-	return [TXT.inicioTitulo, TXT.inicioPista, ...TEMAS.map((t) => `${t.titulo}.`), TXT.otraCaso, `${TXT.escribirBoton}.`].join(
-		"\n",
-	);
+	return [
+		TXT.inicioTitulo,
+		TXT.cajaLectura,
+		TXT.guiarTitulo,
+		TXT.guiarPista,
+		...TEMAS.map((t) => `${t.titulo}.`),
+	].join("\n");
 }
 
 export function lecturaTema(t: Tema): string {
@@ -55,10 +62,6 @@ export function lecturaTema(t: Tema): string {
 
 export function lecturaPlaya(): string {
 	return [TXT.playaTitulo, TXT.playaPista, ...PLAYAS.map((p) => `${p}.`), `${TXT.otraPlaya}.`].join("\n");
-}
-
-export function lecturaEscribir(): string {
-	return [TXT.escribirTitulo, TXT.escribirPista].join("\n");
 }
 
 export function lecturaEspera(): string {
@@ -81,7 +84,6 @@ export function textosConAudio(): string[] {
 		lecturaInicio(),
 		...TEMAS.map(lecturaTema),
 		lecturaPlaya(),
-		lecturaEscribir(),
 		lecturaEspera(),
 		lecturaError("sin-senal"),
 		lecturaError("red"),
