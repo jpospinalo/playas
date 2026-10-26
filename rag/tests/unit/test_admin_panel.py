@@ -224,6 +224,13 @@ def test_resumen_cifras(cliente) -> None:
     assert cif["con_fuente"] == 3
     assert cif["sin_respuesta_segura"] == 2
     assert cif["fuera_de_tema"] == 1
+    assert cif["pide_aclarar"] == 0 and cif["saludos"] == 1 and cif["sin_respuesta_guardada"] == 0
+    # Las partes suman el total (PQ-04).
+    assert (
+        cif["con_fuente"] + cif["sin_respuesta_segura"] + cif["fuera_de_tema"] + cif["pide_aclarar"]
+        == cif["respuestas"]
+    )
+    assert cif["respuestas"] + cif["saludos"] + cif["sin_respuesta_guardada"] == cif["preguntas"]
     assert cif["calificaciones"] == 3
     assert cif["le_sirvio"] == 1
     assert cif["no_le_sirvio"] == 2
@@ -233,6 +240,14 @@ def test_resumen_cifras(cliente) -> None:
     assert sum(p["preguntas"] for p in r["serie"]) == 7
     assert sum(p["sin_respuesta_segura"] for p in r["serie"]) == 2
     assert r["periodo"]["agrupacion"] == "semana"
+    # Semanas de lunes a domingo, recortadas al periodo (PQ-02/03).
+    from datetime import date as _date
+
+    for p in r["serie"]:
+        assert _date.fromisoformat(p["fecha"]).weekday() == 0
+        assert p["fecha"] <= p["desde"] <= p["hasta"]
+    assert r["serie"][0]["parcial"] or r["serie"][0]["desde"] == r["serie"][0]["fecha"]
+    assert r["serie"][-1]["hasta"] == pm.clave_dia(_AHORA)
 
     temas = {t["id"]: t for t in r["temas"]}
     assert sum(t["preguntas"] for t in r["temas"]) == 7
@@ -249,9 +264,12 @@ def test_resumen_cifras(cliente) -> None:
     assert r["playas"] == [{"nombre": "Taganga", "preguntas": 2}]
     assert r["sin_playa"] == 5
 
-    assert r["personas"]["activas"] == 3 and r["personas"]["recurrentes"] == 1
-    top = r["personas"]["top"][0]
-    assert top == {"nombre": "U1", "correo": "u1***@correo.co", "preguntas": 3}
+    assert r["personas"] == {
+        "activas": 3,
+        "nuevas": 2,
+        "recurrentes": 1,
+        "preguntas_por_persona": 2.3,
+    }
 
     # Brechas: 2 sin respuesta (misma pregunta, agrupadas) + 1 mal calificada.
     assert r["brechas_total"] == 3
@@ -262,10 +280,10 @@ def test_resumen_cifras(cliente) -> None:
     assert r["brechas"][1]["motivo"] == "no_le_sirvio"
 
 
-def test_resumen_sin_hash_ni_correos_completos(cliente) -> None:
+def test_resumen_sin_hash_ni_correos(cliente) -> None:
     c, _ = cliente
     texto = c.get("/api/admin/panel/resumen?dias=0", headers=_auth(**_ADMIN)).text
-    assert "persona@correo.co" not in texto.replace("***@correo.co", "")
+    assert "correo.co" not in texto and "@" not in texto
     assert "password" not in texto
 
 
@@ -278,6 +296,8 @@ def test_resumen_todo_y_filtro_de_tema(cliente) -> None:
     tema = c.get("/api/admin/panel/resumen?dias=30&tema=obras", headers=h).json()
     assert tema["cifras"]["preguntas"] == 2 and [t["id"] for t in tema["temas"]] == ["obras"]
     assert c.get("/api/admin/panel/resumen?tema=nada", headers=h).status_code == 422
+    for dias in ("-1", "abc", "99999", "1.5"):
+        assert c.get(f"/api/admin/panel/resumen?dias={dias}", headers=h).status_code == 422
 
 
 def test_resumen_periodo_vacio(cliente) -> None:
@@ -311,7 +331,7 @@ def test_preguntas_filtros_y_paginas(cliente) -> None:
     assert r["total"] == 7 and len(r["items"]) == 5
     fechas = [i["fecha"] for i in r["items"]]
     assert fechas == sorted(fechas, reverse=True)
-    assert r["items"][0]["persona"] == "u1***@correo.co"
+    assert r["items"][0]["persona"] == "U1"
     assert r["items"][0]["calificacion"] == "util"
     p2 = c.get("/api/admin/panel/preguntas?dias=30&page_size=5&page=2", headers=h).json()
     assert len(p2["items"]) == 2
@@ -338,14 +358,14 @@ def test_csv_bom_y_formulas_escapadas(cliente) -> None:
     assert filas[0][0] == "Fecha (hora de Colombia)"
     esperaba = [f[7] for f in filas[1:] if f[7]]
     assert "'=HYPERLINK(malo)" in esperaba
-    assert all("persona@correo.co" not in ",".join(f).replace("***@", "") for f in filas)
+    assert all("correo.co" not in ",".join(f) for f in filas)
 
 
 def test_conversacion_detalle(cliente) -> None:
     c, _ = cliente
     h = _auth(**_ADMIN)
     r = c.get("/api/admin/panel/conversaciones/c1", headers=h).json()
-    assert r["persona"] == "u1***@correo.co"
+    assert r["persona"] == "U1"
     assert [m["role"] for m in r["mensajes"]] == ["user", "assistant"]
     assert r["mensajes"][1]["resultado"] == "con_fuente"
     assert r["mensajes"][1]["normas"] == ["Decreto 2324 de 1984", "Gieseken Cuello vs. DIMAR"]

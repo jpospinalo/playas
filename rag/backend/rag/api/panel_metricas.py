@@ -336,7 +336,7 @@ def normas_citadas(sources: list | None) -> list[tuple[str, str | None]]:
     return list(vistas.items())
 
 
-# ── Calificaciones y privacidad ──────────────────────────────────────────────
+# ── Calificaciones ──────────────────────────────────────────────
 
 UTIL = "util"
 NO_UTIL = "no_util"
@@ -362,14 +362,6 @@ def calificacion(ratings: dict | None) -> str | None:
     if promedio <= 2:
         return NO_UTIL
     return NEUTRA
-
-
-def enmascarar_correo(correo: str | None) -> str:
-    """``juan@gmail.com`` → ``ju***@gmail.com``."""
-    if not correo or "@" not in correo:
-        return "—"
-    usuario, dominio = correo.split("@", 1)
-    return f"{usuario[:2]}***@{dominio}"
 
 
 # ── Periodo ──────────────────────────────────────────────────────────────────

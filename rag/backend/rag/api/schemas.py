@@ -317,6 +317,11 @@ class PanelCifras(BaseModel):
     con_fuente: int
     sin_respuesta_segura: int
     fuera_de_tema: int
+    pide_aclarar: int
+    saludos: int = Field(
+        ..., description="Saludos o preguntas sobre ATLAS (no cuentan en respuestas)"
+    )
+    sin_respuesta_guardada: int
     calificaciones: int
     le_sirvio: int
     no_le_sirvio: int
@@ -324,6 +329,9 @@ class PanelCifras(BaseModel):
 
 class PanelPunto(BaseModel):
     fecha: str = Field(..., description="Día o lunes de la semana (YYYY-MM-DD, hora de Colombia)")
+    desde: str = Field(..., description="Primer día del bloque dentro del periodo")
+    hasta: str = Field(..., description="Último día del bloque dentro del periodo")
+    parcial: bool = Field(..., description="Semana cortada por el inicio o el fin del periodo")
     preguntas: int
     sin_respuesta_segura: int
 
@@ -348,17 +356,11 @@ class PanelConteo(BaseModel):
     preguntas: int
 
 
-class PanelPersona(BaseModel):
-    nombre: str | None
-    correo: str = Field(..., description="Correo enmascarado (ju***@dominio)")
-    preguntas: int
-
-
 class PanelPersonas(BaseModel):
     activas: int
     nuevas: int
     recurrentes: int
-    top: list[PanelPersona]
+    preguntas_por_persona: float
 
 
 class PanelBrecha(BaseModel):
@@ -400,7 +402,7 @@ class PanelPreguntaItem(BaseModel):
     fuentes: int
     calificacion: str | None
     esperaba: str | None
-    persona: str
+    persona: str = Field(..., description="Nombre de registro (nunca el correo)")
     conversation_id: str
 
 

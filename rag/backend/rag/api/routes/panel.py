@@ -20,7 +20,7 @@ import csv
 import io
 from collections import Counter, defaultdict
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 from typing import Literal
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
@@ -40,7 +40,6 @@ from rag.api.schemas import (
     PanelMensaje,
     PanelNorma,
     PanelPeriodo,
-    PanelPersona,
     PanelPersonas,
     PanelPreguntaItem,
     PanelPreguntasResponse,
@@ -56,7 +55,6 @@ router = APIRouter(prefix="/api/admin/panel", tags=["admin-panel"])
 DEMO_EMAIL = "demo-seed@atlas.local"
 
 _TOP_NORMAS = 10
-_TOP_PERSONAS = 5
 _TOP_BRECHAS = 50
 
 DiasQuery = Query(default=30, ge=0, le=3660, description="Últimos N días (0 = todo)")
@@ -182,6 +180,9 @@ def _cifras(
         con_fuente=sum(f.resultado == pm.CON_FUENTE for f in respondidas),
         sin_respuesta_segura=sum(f.resultado in pm.BRECHAS for f in respondidas),
         fuera_de_tema=sum(f.resultado == pm.FUERA_DE_TEMA for f in respondidas),
+        pide_aclarar=sum(f.resultado == pm.PIDE_ACLARAR for f in respondidas),
+        saludos=sum(f.resultado == pm.SALUDO for f in filas),
+        sin_respuesta_guardada=sum(f.resultado == pm.SIN_RESPUESTA for f in filas),
         calificaciones=len(calificadas),
         le_sirvio=sum(f.calificacion == pm.UTIL for f in calificadas),
         no_le_sirvio=sum(f.calificacion == pm.NO_UTIL for f in calificadas),
@@ -189,6 +190,10 @@ def _cifras(
 
 
 def _serie(filas: list[_Fila], periodo: pm.Periodo) -> tuple[str, list[PanelPunto]]:
+    """Preguntas por día (periodos de hasta 14 días) o por semana de lunes a
+    domingo, en hora de Colombia. Solo cuenta preguntas del periodo; una
+    semana que el periodo corta por un lado queda marcada ``parcial`` con
+    los días que sí cubre (``desde``/``hasta``)."""
     agrupacion: Literal["dia", "semana"] = "dia" if 0 < periodo.dias <= 14 else "semana"
     clave = pm.clave_dia if agrupacion == "dia" else pm.clave_semana
     preguntas: Counter[str] = Counter()
@@ -198,17 +203,28 @@ def _serie(filas: list[_Fila], periodo: pm.Periodo) -> tuple[str, list[PanelPunt
         preguntas[k] += 1
         brechas[k] += f.resultado in pm.BRECHAS
     inicio = periodo.inicio or (min(f.fecha for f in filas) if filas else periodo.fin)
+    primer_dia = date.fromisoformat(pm.clave_dia(inicio))
+    ultimo_dia = date.fromisoformat(pm.clave_dia(periodo.fin))
+    largo = timedelta(days=1 if agrupacion == "dia" else 7)
     # Todos los días/semanas del periodo, también los que no tienen preguntas.
-    claves: list[str] = []
-    paso = timedelta(days=1 if agrupacion == "dia" else 7)
-    actual = datetime.fromisoformat(clave(inicio))
-    ultimo = datetime.fromisoformat(clave(periodo.fin))
-    while actual <= ultimo:
-        claves.append(actual.date().isoformat())
-        actual += paso
-    return agrupacion, [
-        PanelPunto(fecha=k, preguntas=preguntas[k], sin_respuesta_segura=brechas[k]) for k in claves
-    ]
+    puntos: list[PanelPunto] = []
+    actual = date.fromisoformat(clave(inicio))
+    while actual <= ultimo_dia:
+        fin_bloque = actual + largo - timedelta(days=1)
+        desde, hasta = max(actual, primer_dia), min(fin_bloque, ultimo_dia)
+        k = actual.isoformat()
+        puntos.append(
+            PanelPunto(
+                fecha=k,
+                desde=desde.isoformat(),
+                hasta=hasta.isoformat(),
+                parcial=agrupacion == "semana" and (desde != actual or hasta != fin_bloque),
+                preguntas=preguntas[k],
+                sin_respuesta_segura=brechas[k],
+            )
+        )
+        actual += largo
+    return agrupacion, puntos
 
 
 def _temas(filas: list[_Fila]) -> list[PanelTema]:
@@ -253,31 +269,16 @@ def _playas(filas: list[_Fila]) -> tuple[list[PanelConteo], int]:
     ], sin
 
 
-async def _personas(
-    session: AsyncSession, filas: list[_Fila], cifras: PanelCifras
-) -> PanelPersonas:
-    conteo = Counter(f.user_id for f in filas)
-    top_ids = [
-        uid for uid, _ in sorted(conteo.items(), key=lambda x: (-x[1], x[0]))[:_TOP_PERSONAS]
-    ]
-    usuarios: dict[str, tuple[str, str | None]] = {}
-    if top_ids:
-        stmt = select(User.id, User.email, User.display_name).where(User.id.in_(top_ids))
-        usuarios = {
-            uid: (email, nombre) for uid, email, nombre in (await session.execute(stmt)).all()
-        }
+def _personas(cifras: PanelCifras) -> PanelPersonas:
+    # Sin ranking de personas (Ley 1581, finalidad): el panel sirve para
+    # mejorar ATLAS, no para seguir a alguien. Ver PQ-05.
     return PanelPersonas(
         activas=cifras.personas,
         nuevas=cifras.personas_nuevas,
         recurrentes=cifras.personas - cifras.personas_nuevas,
-        top=[
-            PanelPersona(
-                nombre=usuarios.get(uid, ("", None))[1],
-                correo=pm.enmascarar_correo(usuarios.get(uid, ("", None))[0]),
-                preguntas=conteo[uid],
-            )
-            for uid in top_ids
-        ],
+        preguntas_por_persona=round(cifras.preguntas / cifras.personas, 1)
+        if cifras.personas
+        else 0,
     )
 
 
@@ -355,7 +356,7 @@ async def resumen(
         normas=_normas(filas),
         playas=playas,
         sin_playa=sin_playa,
-        personas=await _personas(session, filas, cifras),
+        personas=_personas(cifras),
         brechas_total=brechas_total,
         brechas=brechas,
     )
@@ -380,15 +381,20 @@ async def _preguntas_filtradas(
     return filas
 
 
-async def _correos(session: AsyncSession, filas: list[_Fila]) -> dict[str, str]:
+def _nombre(nombre: str | None) -> str:
+    return (nombre or "").strip() or "Sin nombre"
+
+
+async def _nombres(session: AsyncSession, filas: list[_Fila]) -> dict[str, str]:
+    """Solo el nombre que la persona dio al registrarse: nunca el correo."""
     ids = list({f.user_id for f in filas})
     if not ids:
         return {}
-    stmt = select(User.id, User.email).where(User.id.in_(ids))
-    return {uid: pm.enmascarar_correo(email) for uid, email in (await session.execute(stmt)).all()}
+    stmt = select(User.id, User.display_name).where(User.id.in_(ids))
+    return {uid: _nombre(nombre) for uid, nombre in (await session.execute(stmt)).all()}
 
 
-def _item(f: _Fila, correos: dict[str, str]) -> PanelPreguntaItem:
+def _item(f: _Fila, nombres: dict[str, str]) -> PanelPreguntaItem:
     return PanelPreguntaItem(
         id=f.id,
         fecha=f.fecha.isoformat(),
@@ -400,7 +406,7 @@ def _item(f: _Fila, correos: dict[str, str]) -> PanelPreguntaItem:
         fuentes=len(f.normas),
         calificacion=f.calificacion,
         esperaba=f.esperaba,
-        persona=correos.get(f.user_id, "—"),
+        persona=nombres.get(f.user_id, _nombre(None)),
         conversation_id=f.conversation_id,
     )
 
@@ -418,9 +424,9 @@ async def preguntas(
     """Preguntas del periodo, de la más reciente a la más antigua."""
     filas = await _preguntas_filtradas(session, dias, tema, resultado)
     pagina = filas[(page - 1) * page_size : page * page_size]
-    correos = await _correos(session, pagina)
+    nombres = await _nombres(session, pagina)
     return PanelPreguntasResponse(
-        items=[_item(f, correos) for f in pagina], total=len(filas), page=page, page_size=page_size
+        items=[_item(f, nombres) for f in pagina], total=len(filas), page=page, page_size=page_size
     )
 
 
@@ -453,7 +459,7 @@ async def preguntas_csv(
 ) -> Response:
     """Las preguntas del periodo con los mismos filtros, en CSV para Excel."""
     filas = await _preguntas_filtradas(session, dias, tema, resultado)
-    correos = await _correos(session, filas)
+    nombres = await _nombres(session, filas)
     salida = io.StringIO()
     escritor = csv.writer(salida)
     escritor.writerow(
@@ -483,7 +489,7 @@ async def preguntas_csv(
                     "; ".join(n for n, _ in f.normas),
                     _ETIQUETAS_CALIFICACION.get(f.calificacion or "", "Sin calificar"),
                     f.esperaba,
-                    correos.get(f.user_id, "—"),
+                    nombres.get(f.user_id, _nombre(None)),
                     f.conversation_id,
                 )
             ]
@@ -533,7 +539,7 @@ async def conversacion(
     return PanelConversacionResponse(
         id=conv.id,
         titulo=conv.title,
-        persona=pm.enmascarar_correo(usuario.email if usuario else None),
+        persona=_nombre(usuario.display_name if usuario else None),
         creada=pm.a_utc(conv.created_at).isoformat(),
         mensajes=[
             PanelMensaje(

@@ -141,12 +141,6 @@ def test_calificacion(ratings: dict | None, esperado: str | None) -> None:
     assert pm.calificacion(ratings) == esperado
 
 
-def test_enmascarar_correo() -> None:
-    assert pm.enmascarar_correo("juan@gmail.com") == "ju***@gmail.com"
-    assert pm.enmascarar_correo("a@b.co") == "a***@b.co"
-    assert pm.enmascarar_correo(None) == "—"
-
-
 def test_periodo_en_hora_de_colombia_incluye_hoy() -> None:
     # 26-oct 03:00 UTC = 25-oct 22:00 en Colombia: "hoy" es el 25.
     ahora = datetime(2026, 10, 26, 3, 0, tzinfo=UTC)
