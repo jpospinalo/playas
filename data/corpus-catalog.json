@@ -1389,7 +1389,7 @@
         "total_chunks_in_section": 28
       },
       "export_records_matched_by_id": 125,
-      "export_text_mismatches": 11,
+      "export_text_mismatches": 15,
       "format": ".pdf",
       "gold_chunks": 125,
       "gold_ids_missing_export": 0,
@@ -1540,7 +1540,7 @@
     },
     {
       "code": "text_mismatches",
-      "detail": "79 registros; diferencia de snapshots, no autorización para reemplazar datos",
+      "detail": "83 registros; diferencia de snapshots, no autorización para reemplazar datos",
       "path": "data/chroma-rag_playas_magdalena-20260731-135720.jsonl.gz",
       "severity": "warning"
     },
@@ -2233,7 +2233,7 @@
           "source": "decreto-2324-de-1984.md"
         }
       ],
-      "text_mismatches": 79
+      "text_mismatches": 83
     },
     "files": [
       {
@@ -3457,9 +3457,9 @@
         "sha256": "ce1462bed1f17931be3eb7b18a6a25c573888920c16038316ee6ead4dade9889"
       },
       {
-        "bytes": 76335,
+        "bytes": 76427,
         "path": "data/documents/bronze/normativa/Por medio del cual se implementa el Reglamento de Playas del Distrito Portuario, Logístico, Industrial, Turístico y Comercial de Turbo – Antioquia.md",
-        "sha256": "3d36571a37c7203a827e0dbd061557c6759c0293c8921738819ab0245788131b"
+        "sha256": "187517d3c1d2de8ee85cebfdd6decb94f35f73bbf71f759904740e28fb2a7b33"
       },
       {
         "bytes": 337,
@@ -3767,9 +3767,9 @@
         "sha256": "ffd8f3cfbf6ceb3c1f87d72ec643f6facb3af3a4a57c29023e6db7840a1ecfde"
       },
       {
-        "bytes": 296449,
+        "bytes": 296541,
         "path": "data/documents/gold/normativa/Por medio del cual se implementa el Reglamento de Playas del Distrito Portuario, Logístico, Industrial, Turístico y Comercial de Turbo – Antioquia.jsonl",
-        "sha256": "a4a2afa6fbb613b6d27eb33cd3457f3539d9a4e3071a95ddccd77fd860798019"
+        "sha256": "f2914beac0f09ab1be96949f9a621ec9e980c5726ac1003332dad5b4d82e7404"
       },
       {
         "bytes": 16661,
@@ -4332,9 +4332,9 @@
         "sha256": "8a159448662e72b237848e50029b2bf6334c9bc48582b56fbad01a357a4add67"
       },
       {
-        "bytes": 99372,
+        "bytes": 99464,
         "path": "data/documents/silver/normativa/Por medio del cual se implementa el Reglamento de Playas del Distrito Portuario, Logístico, Industrial, Turístico y Comercial de Turbo – Antioquia.jsonl",
-        "sha256": "5e852f154947b7f47098efa318a01c54d86c7290b27ba4b8530e16ca60e1a8c1"
+        "sha256": "77e21ffdf1bcacb91b18344708efd8e22de586c69af5d8d235854c0e44203d0c"
       },
       {
         "bytes": 7284,

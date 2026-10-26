@@ -10,7 +10,7 @@ Archivos fuente: 56. Entradas: 56. Chunks Gold leídos: 5887.
 Errores técnicos: 0. Advertencias: 63.
 
 Backup: data/chroma-rag\_playas\_magdalena-20260731-135720.jsonl.gz. Colección: rag\_playas\_magdalena. Fecha declarada: 2026-07-31T13:57:20.520769+00:00.
-Registros: 5888; IDs coincidentes: 5846; textos diferentes: 79; registros con diferencias de metadata: 667.
+Registros: 5888; IDs coincidentes: 5846; textos diferentes: 83; registros con diferencias de metadata: 667.
 
 ## Fuentes y capas
 
@@ -82,7 +82,7 @@ Las advertencias no autorizan renombrados, borrados, reparaciones ni reindexacio
 - warning / gold\_ids\_missing\_export: data/chroma-rag\_playas\_magdalena-20260731-135720.jsonl.gz — 41 registros; diferencia de snapshots, no autorización para reemplazar datos
 - warning / ids\_missing\_gold: data/chroma-rag\_playas\_magdalena-20260731-135720.jsonl.gz — 42 registros; diferencia de snapshots, no autorización para reemplazar datos
 - warning / records\_with\_metadata\_differences: data/chroma-rag\_playas\_magdalena-20260731-135720.jsonl.gz — 667 registros; diferencia de snapshots, no autorización para reemplazar datos
-- warning / text\_mismatches: data/chroma-rag\_playas\_magdalena-20260731-135720.jsonl.gz — 79 registros; diferencia de snapshots, no autorización para reemplazar datos
+- warning / text\_mismatches: data/chroma-rag\_playas\_magdalena-20260731-135720.jsonl.gz — 83 registros; diferencia de snapshots, no autorización para reemplazar datos
 - warning / double\_spaces: data/documents/raw/jurisprudencia/AP  Carlos Alberto Zúñiga Mejía y otros VS DIMAR y otros.pdf — Nombre con espacios consecutivos
 - warning / unicode\_non\_nfc: data/documents/raw/jurisprudencia/AP  Carlos Alberto Zúñiga Mejía y otros VS DIMAR y otros.pdf — Unicode descompuesto; no implica corrupción
 - warning / unicode\_non\_nfc: data/documents/raw/jurisprudencia/AP Felipe José Campo Fernández VS Corpamag y otros.pdf — Unicode descompuesto; no implica corrupción
