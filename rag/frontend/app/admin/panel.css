@@ -68,6 +68,13 @@
 }
 .pnl a {
 	color: var(--p-marino);
+	text-decoration: underline;
+	text-underline-offset: 3px;
+}
+.pnl a.pnl-btn-sec,
+.pnl a.pnl-marca,
+.pnl .pnl-nav a {
+	text-decoration: none;
 }
 .pnl button,
 .pnl select,
@@ -767,6 +774,8 @@
 }
 .pnl-tabla-datos {
 	margin-top: 14px;
+	/* Scroll propio de la tabla: la página nunca se desplaza de lado. */
+	overflow-x: auto;
 }
 .pnl-tabla-datos td,
 .pnl-tabla-datos th {

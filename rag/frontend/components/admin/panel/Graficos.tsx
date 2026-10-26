@@ -24,7 +24,15 @@ export function VerComoTabla({ children, titulo }: { children: ReactNode; titulo
 				{abierta ? "Ocultar tabla" : "Ver como tabla"}
 				<span className="sr"> de {titulo}</span>
 			</button>
-			<div id={id} hidden={!abierta} className="pnl-tabla-datos">
+			{/* Región con foco: si la tabla es más ancha que la pantalla, se desplaza con el teclado. */}
+			<div
+				id={id}
+				hidden={!abierta}
+				className="pnl-tabla-datos"
+				role="region"
+				aria-label={`Tabla de ${titulo}`}
+				tabIndex={abierta ? 0 : -1}
+			>
 				{abierta ? children : null}
 			</div>
 		</>

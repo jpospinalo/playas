@@ -127,6 +127,7 @@ export function EstadoSatisfaccion({
 	calificaciones: number;
 	minimo: number;
 }) {
+	if (calificaciones === 0) return <span className="pnl-estado neutro">Sin calificaciones</span>;
 	if (calificaciones < minimo) {
 		return (
 			<span className="pnl-estado neutro">
