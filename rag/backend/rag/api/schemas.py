@@ -297,3 +297,134 @@ class QueryResponse(BaseModel):
         default=200_000,
         description="Ventana de contexto máxima del modelo activo (tokens).",
     )
+
+
+# ── Panel de administración (solo lectura) ─────────────────────────────────────
+
+
+class PanelPeriodo(BaseModel):
+    dias: int = Field(..., description="Días del periodo (0 = todo)")
+    desde: str | None = Field(default=None, description="Inicio del periodo (ISO, UTC)")
+    hasta: str = Field(..., description="Fin del periodo (ISO, UTC)")
+    agrupacion: Literal["dia", "semana"]
+
+
+class PanelCifras(BaseModel):
+    preguntas: int
+    personas: int
+    personas_nuevas: int
+    respuestas: int = Field(..., description="Respuestas sin contar saludos")
+    con_fuente: int
+    sin_respuesta_segura: int
+    fuera_de_tema: int
+    calificaciones: int
+    le_sirvio: int
+    no_le_sirvio: int
+
+
+class PanelPunto(BaseModel):
+    fecha: str = Field(..., description="Día o lunes de la semana (YYYY-MM-DD, hora de Colombia)")
+    preguntas: int
+    sin_respuesta_segura: int
+
+
+class PanelTema(BaseModel):
+    id: str
+    titulo: str
+    preguntas: int
+    calificaciones: int
+    le_sirvio: int
+    brechas: int
+
+
+class PanelNorma(BaseModel):
+    nombre: str
+    doc_type: str | None
+    respuestas: int
+
+
+class PanelConteo(BaseModel):
+    nombre: str
+    preguntas: int
+
+
+class PanelPersona(BaseModel):
+    nombre: str | None
+    correo: str = Field(..., description="Correo enmascarado (ju***@dominio)")
+    preguntas: int
+
+
+class PanelPersonas(BaseModel):
+    activas: int
+    nuevas: int
+    recurrentes: int
+    top: list[PanelPersona]
+
+
+class PanelBrecha(BaseModel):
+    pregunta: str
+    veces: int
+    tema: str
+    tema_titulo: str
+    motivo: Literal["sin_respuesta_segura", "no_le_sirvio"]
+    esperaba: str | None
+    ultima: str
+    conversation_id: str
+
+
+class PanelResumenResponse(BaseModel):
+    demo: bool = Field(..., description="La base tiene la semilla de demostración")
+    periodo: PanelPeriodo
+    cifras: PanelCifras
+    anterior: PanelCifras | None = Field(
+        default=None, description="Mismas cifras en el periodo anterior de igual duración"
+    )
+    serie: list[PanelPunto]
+    temas: list[PanelTema]
+    normas: list[PanelNorma]
+    playas: list[PanelConteo]
+    sin_playa: int
+    personas: PanelPersonas
+    brechas_total: int
+    brechas: list[PanelBrecha]
+
+
+class PanelPreguntaItem(BaseModel):
+    id: str
+    fecha: str
+    pregunta: str
+    tema: str
+    tema_titulo: str
+    playa: str | None
+    resultado: str
+    fuentes: int
+    calificacion: str | None
+    esperaba: str | None
+    persona: str
+    conversation_id: str
+
+
+class PanelPreguntasResponse(BaseModel):
+    items: list[PanelPreguntaItem]
+    total: int
+    page: int
+    page_size: int
+
+
+class PanelMensaje(BaseModel):
+    id: str
+    role: str
+    text: str
+    fecha: str
+    resultado: str | None
+    normas: list[str]
+    calificacion: str | None
+    esperaba: str | None
+
+
+class PanelConversacionResponse(BaseModel):
+    id: str
+    titulo: str | None
+    persona: str
+    creada: str
+    mensajes: list[PanelMensaje]
