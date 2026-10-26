@@ -51,7 +51,9 @@
           "role": "identity"
         }
       ],
-      "notes": []
+      "notes": [
+        "Se propagaron las referencias canónicas de imágenes de Bronze a Silver (1 ocurrencia) y Gold (1 ocurrencia), correspondientes a 1 destino único. Se conservaron IDs, metadata, orden, contadores y el resto de los cuerpos; Raw, Bronze y activos quedaron intactos. Esta corrección no acredita resolución de rutas en el frontend."
+      ]
     },
     {
       "source_path": "data/documents/raw/jurisprudencia/AP Felipe José Campo Fernández VS Corpamag y otros.pdf",
@@ -85,7 +87,9 @@
           "role": "identity"
         }
       ],
-      "notes": []
+      "notes": [
+        "Se propagaron las referencias canónicas de imágenes de Bronze a Silver (6 ocurrencias) y Gold (7 ocurrencias), correspondientes a 6 destinos únicos. Se conservaron IDs, metadata, orden, contadores y el resto de los cuerpos; Raw, Bronze y activos quedaron intactos. Esta corrección no acredita resolución de rutas en el frontend."
+      ]
     },
     {
       "source_path": "data/documents/raw/jurisprudencia/AP Gabriel Antonio Carrero VS DIMAR y otros.pdf",
@@ -132,7 +136,8 @@
       "notes": [
         "SM!D10 declara Segunda instancia; el PDF, página 1, dice que falla en primera instancia. No se resuelve la discrepancia ni se incorpora un campo instance.",
         "Diferencia adicional de radicado: SM!C10 escribe 47-001-2331-003-2011-08425-00; el encabezado visual de Raw escribe 47 001 2331 003 2011 008425 00, con un cero adicional. case_reference permanece null; la fecha 2016-06-15 no está discutida.",
-        "Es una providencia diferente de la segunda instancia de Carrero; no fusionar sus fuentes."
+        "Es una providencia diferente de la segunda instancia de Carrero; no fusionar sus fuentes.",
+        "Se propagaron las referencias canónicas de imágenes de Bronze a Silver (1 ocurrencia) y Gold (1 ocurrencia), correspondientes a 1 destino único. Se conservaron IDs, metadata, orden, contadores y el resto de los cuerpos; Raw, Bronze y activos quedaron intactos. Esta corrección no acredita resolución de rutas en el frontend."
       ]
     },
     {
@@ -201,7 +206,9 @@
           "role": "identity"
         }
       ],
-      "notes": []
+      "notes": [
+        "Se propagaron las referencias canónicas de imágenes de Bronze a Silver (1 ocurrencia) y Gold (1 ocurrencia), correspondientes a 1 destino único. Se conservaron IDs, metadata, orden, contadores y el resto de los cuerpos; Raw, Bronze y activos quedaron intactos. Esta corrección no acredita resolución de rutas en el frontend."
+      ]
     },
     {
       "source_path": "data/documents/raw/jurisprudencia/AP Inversiones E y D S.A.S VS DIMAR y otros.pdf",
@@ -281,7 +288,8 @@
       ],
       "notes": [
         "SM!C9 y Gold consignan 47-001-3333-001-2016-03261; Raw, página 1, distingue radicado principal 47-001-3333-001-2011-00079-01 y número interno I.2016-0326. case_reference permanece null.",
-        "No se alinea la ficha anterior ni la metadata de ejecución."
+        "No se alinea la ficha anterior ni la metadata de ejecución.",
+        "Se propagaron las referencias canónicas de imágenes de Bronze a Silver (1 ocurrencia) y Gold (1 ocurrencia), correspondientes a 1 destino único. Se conservaron IDs, metadata, orden, contadores y el resto de los cuerpos; Raw, Bronze y activos quedaron intactos. Esta corrección no acredita resolución de rutas en el frontend."
       ]
     },
     {
@@ -316,7 +324,9 @@
           "role": "identity"
         }
       ],
-      "notes": []
+      "notes": [
+        "Se propagaron las referencias canónicas de imágenes de Bronze a Silver (1 ocurrencia) y Gold (1 ocurrencia), correspondientes a 1 destino único. Se conservaron IDs, metadata, orden, contadores y el resto de los cuerpos; Raw, Bronze y activos quedaron intactos. Esta corrección no acredita resolución de rutas en el frontend."
+      ]
     },
     {
       "source_path": "data/documents/raw/jurisprudencia/AP Rodrigo Martínez Silva VS Minambiente y otros.pdf",
@@ -351,7 +361,8 @@
         }
       ],
       "notes": [
-        "Los 311 registros con diferencias de metadata señalados en el diagnóstico quedan aparte; este registro no elige entre Gold y backup."
+        "Los 311 registros con diferencias de metadata señalados en el diagnóstico quedan aparte; este registro no elige entre Gold y backup.",
+        "Se propagaron las referencias canónicas de imágenes de Bronze a Silver (2 ocurrencias) y Gold (2 ocurrencias), correspondientes a 2 destinos únicos. Se conservaron IDs, metadata, orden, contadores y el resto de los cuerpos; Raw, Bronze y activos quedaron intactos. Esta corrección no acredita resolución de rutas en el frontend."
       ]
     },
     {
@@ -562,7 +573,9 @@
           "role": "identity"
         }
       ],
-      "notes": []
+      "notes": [
+        "Se propagaron las referencias canónicas de imágenes de Bronze a Silver (1 ocurrencia) y Gold (1 ocurrencia), correspondientes a 1 destino único. Se conservaron IDs, metadata, orden, contadores y el resto de los cuerpos; Raw, Bronze y activos quedaron intactos. Esta corrección no acredita resolución de rutas en el frontend."
+      ]
     },
     {
       "source_path": "data/documents/raw/jurisprudencia/CE_2da_AP_2016_328_Ricardo_Cabrales_VS_Mun_Coveñas_Playa_Uso_Publico.pdf",
@@ -667,7 +680,8 @@
         }
       ],
       "notes": [
-        "El encabezado escribe Edgar Jay Stephens; el filename tiene Stephengs. Se propone el rótulo descriptivo sin renombrar la fuente."
+        "El encabezado escribe Edgar Jay Stephens; el filename tiene Stephengs. Se propone el rótulo descriptivo sin renombrar la fuente.",
+        "Se propagaron las referencias canónicas de imágenes de Bronze a Silver (1 ocurrencia) y Gold (1 ocurrencia), correspondientes a 1 destino único. Se conservaron IDs, metadata, orden, contadores y el resto de los cuerpos; Raw, Bronze y activos quedaron intactos. Esta corrección no acredita resolución de rutas en el frontend."
       ]
     },
     {
@@ -927,7 +941,8 @@
         }
       ],
       "notes": [
-        "2010 en el filename y el radicado no es la fecha de decisión; el encabezado visual dice 29 de abril de 2014. El número interno documentado es 2014."
+        "2010 en el filename y el radicado no es la fecha de decisión; el encabezado visual dice 29 de abril de 2014. El número interno documentado es 2014.",
+        "Se propagaron las referencias canónicas de imágenes de Bronze a Silver (2 ocurrencias) y Gold (3 ocurrencias), correspondientes a 2 destinos únicos. Se conservaron IDs, metadata, orden, contadores y el resto de los cuerpos; Raw, Bronze y activos quedaron intactos. Esta corrección no acredita resolución de rutas en el frontend."
       ]
     },
     {
