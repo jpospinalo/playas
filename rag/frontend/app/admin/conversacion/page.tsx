@@ -10,9 +10,11 @@ import { EstadoCalificacion, EstadoResultado, IconoAviso } from "@/components/ad
 /** Una conversación completa, para leer el caso desde el panel (solo lectura). */
 export default function PaginaConversacion() {
 	return (
-		<Suspense fallback={<p className="pnl-cargando">Cargando conversación…</p>}>
-			<Detalle />
-		</Suspense>
+		<div className="pnl-pag">
+			<Suspense fallback={<p className="pnl-cargando">Cargando conversación…</p>}>
+				<Detalle />
+			</Suspense>
+		</div>
 	);
 }
 

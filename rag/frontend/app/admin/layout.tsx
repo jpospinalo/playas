@@ -57,7 +57,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 	if (loading) {
 		return (
 			<div className="pnl">
-				<main id="main-content" className="pnl-main">
+				<main id="main-content" className="pnl-main pnl-pag">
 					<p role="status" className="pnl-cargando">
 						Verificando acceso…
 					</p>
@@ -71,7 +71,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 	if (role !== "admin" && role !== "super-admin") {
 		return (
 			<div className="pnl">
-				<main id="main-content" className="pnl-main">
+				<main id="main-content" className="pnl-main pnl-pag">
 					<h1>Acceso restringido</h1>
 					<p className="pnl-sub">
 						Su cuenta no tiene permiso para ver el panel de administración. Si cree que

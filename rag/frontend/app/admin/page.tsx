@@ -91,7 +91,7 @@ export default function PanelResumen() {
 	}
 
 	return (
-		<>
+		<div className="pnl-pag">
 			<div className="pnl-cabeza">
 				<div>
 					<h1>Resumen</h1>
@@ -184,7 +184,7 @@ export default function PanelResumen() {
 					<Contenido datos={datos} dias={dias} tema={tema} />
 				</div>
 			) : null}
-		</>
+		</div>
 	);
 }
 

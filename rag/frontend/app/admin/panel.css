@@ -26,6 +26,26 @@
 	--p-riel: #e9eeef;
 	--p-gris: #6f7c80;
 
+	/* Las páginas viejas de /admin (Tailwind) usan estos tokens: aquí toman la
+	   paleta B, en claro y en oscuro (PQ-J3). */
+	--background: var(--p-fondo);
+	--surface: var(--p-papel);
+	--elevated: var(--p-papel);
+	--foreground: var(--p-tinta);
+	--muted: var(--p-tinta-2);
+	--subtle: var(--p-tinta-2);
+	--border: var(--p-linea);
+	--border-strong: var(--p-borde-ctl);
+	--accent: var(--p-marino);
+	--accent-hover: var(--p-marino-osc);
+	--accent-fg: var(--p-sobre-marino);
+	--accent-soft: var(--p-bajo);
+	--accent-bright: var(--p-marino-osc);
+	--accent-light: var(--p-bajo);
+	--danger: var(--p-peligro);
+	--danger-bg: var(--p-peligro-suave);
+	--success: var(--p-verde);
+
 	min-height: 100vh;
 	background: var(--p-fondo);
 	color: var(--p-tinta);
@@ -66,19 +86,18 @@
 	outline: 4px solid var(--p-marino);
 	outline-offset: 3px;
 }
-.pnl a {
+.pnl-pag a {
 	color: var(--p-marino);
 	text-decoration: underline;
 	text-underline-offset: 3px;
 }
-.pnl a.pnl-btn-sec,
-.pnl a.pnl-marca,
-.pnl .pnl-nav a {
+.pnl-pag a.pnl-btn-sec {
 	text-decoration: none;
 }
-.pnl button,
-.pnl select,
-.pnl input {
+.pnl-pag button,
+.pnl-pag select,
+.pnl-pag input,
+.pnl-cab button {
 	font: inherit;
 	color: inherit;
 }
@@ -247,19 +266,19 @@
 	margin: 0 auto;
 	padding: 28px 24px 64px;
 }
-.pnl h1 {
+.pnl-pag h1 {
 	font-size: 34px;
 	line-height: 1.2;
 	margin: 0;
 	font-weight: 700;
 }
-.pnl h2 {
+.pnl-pag h2 {
 	font-size: 24px;
 	line-height: 1.25;
 	margin: 0;
 	font-weight: 700;
 }
-.pnl h3 {
+.pnl-pag h3 {
 	font-size: 20px;
 	line-height: 1.3;
 	margin: 0;
@@ -727,16 +746,16 @@
 }
 
 /* ── Tablas ──────────────────────────────────────────────────────────────── */
-.pnl table {
+.pnl-pag table {
 	width: 100%;
 	border-collapse: collapse;
 }
-.pnl caption {
+.pnl-pag caption {
 	text-align: left;
 	font-weight: 600;
 	padding-bottom: 6px;
 }
-.pnl th {
+.pnl-pag th {
 	text-align: left;
 	font-weight: 600;
 	color: var(--p-tinta-2);
@@ -744,20 +763,20 @@
 	padding: 8px 10px;
 	vertical-align: bottom;
 }
-.pnl td {
+.pnl-pag td {
 	border-bottom: 1px solid var(--p-linea);
 	padding: 12px 10px;
 	vertical-align: top;
 }
-.pnl tbody tr:last-child td {
+.pnl-pag tbody tr:last-child td {
 	border-bottom: 0;
 }
-.pnl td.preg {
+.pnl-pag td.preg {
 	max-width: 560px;
 	overflow-wrap: anywhere;
 }
-.pnl td.num,
-.pnl th.num {
+.pnl-pag td.num,
+.pnl-pag th.num {
 	text-align: right;
 }
 .pnl-esperaba {
@@ -768,7 +787,7 @@
 	color: var(--p-tinta-2);
 	overflow-wrap: anywhere;
 }
-.pnl td .ver {
+.pnl-pag td .ver {
 	white-space: nowrap;
 	font-weight: 600;
 }
@@ -918,10 +937,10 @@
 	.pnl-main {
 		padding: 20px 14px 48px;
 	}
-	.pnl h1 {
+	.pnl-pag h1 {
 		font-size: 29px;
 	}
-	.pnl h2 {
+	.pnl-pag h2 {
 		font-size: 22px;
 	}
 	.pnl-controles,
