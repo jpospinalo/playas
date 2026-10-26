@@ -47,21 +47,34 @@ export function FlechaVolver() {
 }
 
 export function Boya() {
+	// Colores en guia.css (.boya .mastil/.cuerpo/.olas): marino y turquesa.
 	return (
 		<svg className="boya" viewBox="0 0 44 44" aria-hidden="true">
-			<path d="M22 4v8" stroke="#14212b" strokeWidth="3" />
-			<path d="M14 30l4-18h8l4 18z" fill="#a3166f" />
-			<path d="M8 34q7-4 14 0t14 0" fill="none" stroke="#2f6f99" strokeWidth="3" />
+			<path className="mastil" d="M22 4v8" strokeWidth="3" />
+			<path className="cuerpo" d="M14 30l4-18h8l4 18z" />
+			<path className="olas" d="M8 34q7-4 14 0t14 0" strokeWidth="3" />
 		</svg>
 	);
 }
 
+/** Ícono de "Tenga en cuenta": círculo ámbar con el signo en tinta. */
 export function Atencion() {
 	return (
-		<svg viewBox="0 0 34 34" aria-hidden="true">
-			<circle cx="17" cy="17" r="15" fill="#a3166f" />
-			<path d="M17 8v11" stroke="#fff" strokeWidth="3.5" strokeLinecap="round" />
-			<circle cx="17" cy="25" r="2.2" fill="#fff" />
+		<svg className="atencion" viewBox="0 0 34 34" aria-hidden="true">
+			<circle className="circulo" cx="17" cy="17" r="15" />
+			<path className="signo" d="M17 8v11" strokeWidth="3.5" strokeLinecap="round" />
+			<circle className="signo" cx="17" cy="25" r="2.2" strokeWidth="0" />
+		</svg>
+	);
+}
+
+/** Ícono de aviso de los errores (el mensaje siempre va escrito al lado). */
+export function Aviso() {
+	return (
+		<svg className="aviso" viewBox="0 0 34 34" aria-hidden="true">
+			<circle className="circulo" cx="17" cy="17" r="15" />
+			<path className="signo" d="M17 8v11" strokeWidth="3.5" strokeLinecap="round" />
+			<circle className="signo" cx="17" cy="25" r="2.2" strokeWidth="0" />
 		</svg>
 	);
 }
@@ -70,14 +83,10 @@ export function Atencion() {
 export function Curvas() {
 	return (
 		<svg className="curvas" viewBox="0 0 170 200" preserveAspectRatio="none" aria-hidden="true">
-			<g fill="none" stroke="#8db8d4" strokeWidth="2">
+			<g strokeWidth="2">
 				<path d="M60 0 C40 50 90 80 70 120 C55 150 80 175 75 200" />
 				<path d="M95 0 C75 50 125 80 105 120 C90 150 115 175 110 200" strokeDasharray="3 6" />
 				<path d="M130 0 C110 50 160 80 140 120 C125 150 150 175 145 200" />
-			</g>
-			<g fontFamily="Source Sans 3, Arial" fontStyle="italic" fontSize="13" fill="#5b7f99">
-				<text x="82" y="62">8</text>
-				<text x="118" y="150">15</text>
 			</g>
 		</svg>
 	);

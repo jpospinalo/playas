@@ -282,7 +282,7 @@ function Sirvio({
 					<div className="guia-acciones" role="group" aria-labelledby="sirvio-pregunta">
 						<button
 							type="button"
-							className="guia-btn-sec"
+							className="guia-btn-sec si"
 							disabled={paso === "enviando"}
 							onClick={() => enviar({ util: true })}
 						>

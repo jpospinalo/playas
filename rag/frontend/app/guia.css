@@ -1,26 +1,37 @@
-/* ATLAS — flujo guiado (diseño v3, aprobado el 22-oct-2026).
-   Colores de carta náutica: blanco = agua profunda, azul claro = bajo,
-   tierra solo como detalle, magenta = lo importante y el foco, nombres de
-   lugares en itálica. Todo va bajo `.guia` para no tocar los estilos del
-   chat (/chat) ni del panel de administración. Siempre en claro: al sol
-   importa el contraste, y el modo oscuro del resto de la app no aplica aquí.
+/* ATLAS — flujo guiado (diseño v3.1, aprobado el 26-oct-2026).
+   Colores originales del front (commit f16586f, app/globals.css): fondo
+   de agua, marino de la marca, turquesa, verde y arena del logo, con los
+   ajustes mínimos para pasar AA (turquesa, borde de controles, error y
+   ámbar para texto). Nombres de lugares en itálica. Todo va bajo `.guia`
+   para no tocar los estilos del chat (/chat) ni del panel de
+   administración. Siempre en claro: al sol importa el contraste, y el modo
+   oscuro del resto de la app no aplica aquí.
    Reglas completas: playas-notas/REGLAS-DISENO.md (local). */
 
 .guia {
-	--agua: #ffffff;
-	--bajo: #d6eaf5;
-	--sonda: #2f6f99; /* bordes de controles: 5,4:1 sobre blanco */
-	--sonda-clara: #8db8d4; /* solo líneas decorativas */
-	--tierra: #e6d39c;
-	--magenta: #a3166f; /* 7:1 sobre blanco */
-	--tinta: #14212b; /* 16:1 */
-	--tinta-2: #3e4c58; /* 9:1 */
-	--enlace: #0f4f80;
+	--fondo: #f6fbfb; /* original --background */
+	--papel: #ffffff; /* original --surface */
+	--tinta: #06131e; /* original --foreground: 18:1 */
+	--tinta-2: #485559; /* original --muted: 7,4:1 */
+	--placeholder: #687476; /* original --subtle: solo placeholder (4,8:1) */
+	--marino: #044174; /* original --accent: botón, enlaces, foco (10,4:1) */
+	--marino-osc: #003365; /* original --accent-hover */
+	--bajo: #e6f2f3; /* turquesa original al 12 % sobre el fondo */
+	--turquesa: #007c88; /* original #008591, bajado para 4,95:1 con blanco */
+	--verde: #025c3c; /* original --secondary-green: 8:1 */
+	--arena: #e8d8b8; /* arena del logo: solo decorativa */
+	--ambar: #bb9400; /* original --secondary-yellow: solo decorativo */
+	--ambar-txt: #6a5300; /* texto de "Tenga en cuenta": 7,4:1 */
+	--ambar-suave: #f6f2e0; /* fondo de "Tenga en cuenta" */
+	--peligro: #a51e24; /* original #cc272e, oscurecido: 7,5:1 */
+	--peligro-suave: #fbf0f0; /* fondo de errores */
+	--borde-ctl: #607d9d; /* borde de controles: el original #afbabc daba 2:1 */
+	--linea: #d8dfe1; /* original --border: solo divisores */
 
 	color-scheme: light;
 	min-height: 100dvh;
 	width: 100%;
-	background: var(--agua);
+	background: var(--fondo);
 	color: var(--tinta);
 	font-family: "Source Sans 3", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 	font-size: 20px;
@@ -33,7 +44,7 @@
 	box-sizing: border-box;
 }
 .guia a {
-	color: var(--enlace);
+	color: var(--marino);
 	text-decoration: underline;
 	text-underline-offset: 3px;
 }
@@ -44,7 +55,7 @@
 	color: inherit;
 }
 .guia :focus-visible {
-	outline: 4px solid var(--magenta);
+	outline: 4px solid var(--marino);
 	outline-offset: 3px;
 }
 .guia h1:focus,
@@ -63,9 +74,10 @@ body:has(.guia) {
 	font-family: "Source Sans 3", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
-/* Encabezado: blanco, como el papel de la carta. Una sola línea de tinta. */
+/* Encabezado: blanco, con una sola línea marino abajo (nunca negro). */
 .guia-encabezado {
-	border-bottom: 3px solid var(--tinta);
+	background: var(--papel);
+	border-bottom: 3px solid var(--marino);
 }
 .guia-barra {
 	max-width: 760px;
@@ -87,6 +99,7 @@ body:has(.guia) {
 	font-size: 26px;
 	font-weight: 700;
 	line-height: 1;
+	color: var(--marino);
 }
 .guia-barra .zona {
 	display: block;
@@ -101,9 +114,10 @@ body:has(.guia) {
 	margin-left: auto;
 	min-height: 48px;
 	padding: 0 14px;
-	border: 2px solid var(--sonda);
+	border: 2px solid var(--marino);
+	color: var(--marino);
 	border-radius: 6px;
-	background: var(--agua);
+	background: var(--papel);
 	font-size: 18px;
 	font-weight: 600;
 	cursor: pointer;
@@ -123,9 +137,10 @@ body:has(.guia) {
 	min-height: 52px;
 	padding: 0 18px 0 12px;
 	margin-bottom: 18px;
-	border: 2px solid var(--sonda);
+	border: 2px solid var(--borde-ctl);
 	border-radius: 6px;
-	background: var(--agua);
+	background: var(--papel);
+	color: var(--marino);
 	font-size: 20px;
 	font-weight: 600;
 	cursor: pointer;
@@ -180,9 +195,9 @@ body:has(.guia) {
 	gap: 16px;
 	min-height: 72px;
 	padding: 12px 16px;
-	border: 2px solid var(--sonda);
+	border: 2px solid var(--borde-ctl);
 	border-radius: 6px;
-	background: var(--agua);
+	background: var(--papel);
 	text-align: left;
 	cursor: pointer;
 }
@@ -202,7 +217,7 @@ body:has(.guia) {
 	width: 30px;
 	height: 30px;
 	fill: none;
-	stroke: var(--tinta);
+	stroke: var(--marino);
 	stroke-width: 2;
 	stroke-linecap: round;
 	stroke-linejoin: round;
@@ -216,6 +231,7 @@ body:has(.guia) {
 .guia-opcion b {
 	display: block;
 	font-size: 22px;
+	font-weight: 600;
 	line-height: 1.25;
 }
 .guia-opcion small {
@@ -230,7 +246,7 @@ body:has(.guia) {
 	width: 22px;
 	height: 22px;
 	fill: none;
-	stroke: var(--sonda);
+	stroke: var(--marino);
 	stroke-width: 3;
 	stroke-linecap: round;
 	stroke-linejoin: round;
@@ -251,7 +267,7 @@ body:has(.guia) {
 .guia-otra {
 	margin-top: 26px;
 	padding-top: 20px;
-	border-top: 2px solid var(--bajo);
+	border-top: 2px solid var(--linea);
 }
 .guia-otra p {
 	font-weight: 600;
@@ -263,14 +279,14 @@ body:has(.guia) {
 	justify-content: center;
 	min-height: 56px;
 	padding: 0 22px;
-	border: 2px solid var(--tinta);
+	border: 2px solid var(--marino);
 	border-radius: 6px;
-	background: var(--agua);
+	background: var(--papel);
 	font-size: 20px;
 	font-weight: 600;
 	cursor: pointer;
 	text-decoration: none;
-	color: var(--tinta);
+	color: var(--marino);
 }
 .guia-otra .guia-btn-sec {
 	margin-top: 10px;
@@ -283,11 +299,15 @@ body:has(.guia) {
 	padding: 0 28px;
 	border: 0;
 	border-radius: 6px;
-	background: var(--tinta);
+	background: var(--marino);
 	color: #fff;
 	font-size: 21px;
 	font-weight: 700;
 	cursor: pointer;
+}
+.guia-btn:hover,
+.guia-btn:active {
+	background: var(--marino-osc);
 }
 .guia-btn:disabled {
 	background: var(--tinta-2);
@@ -315,9 +335,9 @@ body:has(.guia) {
 	width: 100%;
 	margin-top: 8px;
 	padding: 14px;
-	border: 2px solid var(--tinta);
+	border: 2px solid var(--borde-ctl);
 	border-radius: 6px;
-	background: var(--agua);
+	background: var(--papel);
 	font-size: 21px;
 	line-height: 1.45;
 }
@@ -341,12 +361,24 @@ body:has(.guia) {
 	gap: 12px;
 	flex-wrap: wrap;
 }
+/* Errores: ícono de aviso y texto, nunca solo color. */
 .guia-error {
+	display: flex;
+	gap: 12px;
+	align-items: flex-start;
 	margin: 16px 0 0;
 	padding: 14px 16px;
-	border: 3px solid var(--magenta);
+	border: 2px solid var(--peligro);
 	border-radius: 6px;
+	background: var(--peligro-suave);
+	color: var(--peligro);
 	font-weight: 600;
+}
+.guia-error > svg {
+	flex: none;
+	width: 28px;
+	height: 28px;
+	margin-top: 1px;
 }
 .guia .contador {
 	font-size: 18px;
@@ -365,7 +397,7 @@ body:has(.guia) {
 .guia-casilla input {
 	width: 26px;
 	height: 26px;
-	accent-color: var(--tinta);
+	accent-color: var(--marino);
 }
 
 /* Esperando */
@@ -383,6 +415,16 @@ body:has(.guia) {
 	width: 44px;
 	height: 44px;
 	flex: none;
+}
+.guia .boya .mastil {
+	stroke: var(--tinta);
+}
+.guia .boya .cuerpo {
+	fill: var(--marino);
+}
+.guia .boya .olas {
+	fill: none;
+	stroke: var(--turquesa);
 }
 .guia-espera .etapa {
 	display: block;
@@ -423,7 +465,7 @@ body:has(.guia) {
 	margin-top: 14px;
 	padding: 22px 22px 22px 24px;
 	background: var(--bajo);
-	border-left: 8px solid var(--sonda);
+	border-left: 8px solid var(--marino);
 	border-radius: 0 6px 6px 0;
 }
 .guia-veredicto .curvas {
@@ -433,6 +475,12 @@ body:has(.guia) {
 	height: 100%;
 	width: 170px;
 	pointer-events: none;
+}
+/* Solo decoración: turquesa claro detrás del texto, sin competir con él. */
+.guia-veredicto .curvas g {
+	fill: none;
+	stroke: var(--turquesa);
+	opacity: 0.35;
 }
 .guia-veredicto h1 {
 	position: relative;
@@ -465,9 +513,9 @@ body:has(.guia) {
 	gap: 10px;
 	min-height: 52px;
 	padding: 0 18px;
-	border: 2px solid var(--sonda);
+	border: 2px solid var(--borde-ctl);
 	border-radius: 6px;
-	background: var(--agua);
+	background: var(--papel);
 	font-size: 19px;
 	font-weight: 600;
 	cursor: pointer;
@@ -480,7 +528,7 @@ body:has(.guia) {
 	height: 24px;
 	flex: none;
 	fill: none;
-	stroke: var(--tinta);
+	stroke: var(--marino);
 	stroke-width: 2;
 	stroke-linecap: round;
 	stroke-linejoin: round;
@@ -515,11 +563,11 @@ body:has(.guia) {
 	text-align: left;
 	vertical-align: top;
 	padding: 10px 8px;
-	border-bottom: 2px solid var(--bajo);
+	border-bottom: 2px solid var(--linea);
 }
 .guia-md th {
 	font-weight: 700;
-	border-bottom-color: var(--sonda);
+	border-bottom-color: var(--borde-ctl);
 }
 .guia-md .tabla {
 	overflow-x: auto;
@@ -544,7 +592,7 @@ body:has(.guia) {
 	width: 44px;
 	height: 44px;
 	border-radius: 50%;
-	background: var(--tinta);
+	background: var(--marino);
 	color: #fff;
 	display: grid;
 	place-items: center;
@@ -557,7 +605,7 @@ body:has(.guia) {
 	left: 21px;
 	top: 44px;
 	bottom: 0;
-	border-left: 3px solid var(--sonda);
+	border-left: 3px solid var(--turquesa);
 }
 .guia-md ol > li:last-child::after {
 	display: none;
@@ -565,7 +613,7 @@ body:has(.guia) {
 .guia-cita {
 	font-size: 18px;
 	font-weight: 400;
-	color: var(--enlace);
+	color: var(--marino);
 	white-space: nowrap;
 	/* Enlace en línea: el relleno vertical agranda el área de toque a ~48 px
 	   sin cambiar el alto del renglón. */
@@ -589,7 +637,7 @@ body:has(.guia) {
 .guia-ley {
 	margin-top: 22px;
 	padding: 4px 0 4px 18px;
-	border-left: 6px solid var(--tierra);
+	border-left: 6px solid var(--arena);
 }
 .guia-ojo {
 	margin-top: 26px;
@@ -597,18 +645,33 @@ body:has(.guia) {
 	gap: 14px;
 	align-items: flex-start;
 	padding: 16px;
-	border: 3px solid var(--magenta);
-	border-radius: 6px;
+	background: var(--ambar-suave);
+	border-left: 8px solid var(--ambar);
+	border-radius: 0 6px 6px 0;
 }
 .guia-ojo > svg {
 	flex: none;
 	width: 34px;
 	height: 34px;
 }
+.guia .atencion .circulo {
+	fill: var(--ambar);
+}
+.guia .atencion .signo {
+	fill: var(--tinta);
+	stroke: var(--tinta);
+}
+.guia .aviso .circulo {
+	fill: var(--peligro);
+}
+.guia .aviso .signo {
+	fill: #fff;
+	stroke: #fff;
+}
 .guia-ojo h2 {
 	margin: 0 0 6px;
 	font-size: 22px;
-	color: var(--magenta);
+	color: var(--ambar-txt);
 }
 .guia-ojo .guia-md p:last-child,
 .guia-ojo .guia-md ul:last-child {
@@ -623,7 +686,7 @@ body:has(.guia) {
 	align-items: center;
 	min-height: 52px;
 	padding: 0 18px;
-	border: 2px solid var(--sonda);
+	border: 2px solid var(--borde-ctl);
 	border-radius: 6px;
 	font-weight: 600;
 	cursor: pointer;
@@ -648,7 +711,7 @@ body:has(.guia) {
 }
 .guia-fuente {
 	padding: 14px 0;
-	border-bottom: 2px solid var(--bajo);
+	border-bottom: 2px solid var(--linea);
 	scroll-margin-top: 16px;
 }
 .guia-fuente:target,
@@ -668,7 +731,7 @@ body:has(.guia) {
 .guia-fuente blockquote {
 	margin: 8px 0 0;
 	padding-left: 14px;
-	border-left: 3px solid var(--sonda-clara);
+	border-left: 3px solid var(--borde-ctl);
 	color: var(--tinta-2);
 	font-size: 18px;
 }
@@ -690,6 +753,10 @@ body:has(.guia) {
 }
 .guia-sirvio .guia-btn-sec {
 	min-width: 120px;
+}
+.guia-sirvio .guia-btn-sec.si {
+	border-color: var(--verde);
+	color: var(--verde);
 }
 .guia-sirvio textarea {
 	min-height: 110px;
@@ -763,7 +830,7 @@ body:has(.guia) {
 	max-width: 760px;
 	margin: 0 auto;
 	padding: 14px 18px;
-	border-bottom: 2px solid var(--bajo);
+	border-bottom: 2px solid var(--linea);
 }
 .guia-confirmar p {
 	margin: 0;

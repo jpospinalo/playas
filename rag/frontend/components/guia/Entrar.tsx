@@ -5,6 +5,7 @@ import { useAuth } from "@/components/providers/AuthProvider";
 import { getLastEmail } from "@/lib/auth";
 import { restErrorMessage } from "@/lib/httpTimeout";
 import { TXT } from "@/lib/guia/textos";
+import { Aviso } from "@/components/guia/iconos";
 
 /** Pantalla de entrada del flujo guiado. Usa el mismo inicio de sesión de siempre. */
 export function Entrar({ tituloRef }: { tituloRef: React.RefObject<HTMLHeadingElement | null> }) {
@@ -69,7 +70,8 @@ export function Entrar({ tituloRef }: { tituloRef: React.RefObject<HTMLHeadingEl
 				</label>
 				{aviso ? (
 					<p className="guia-error" role="alert">
-						{aviso}
+						<Aviso />
+						<span>{aviso}</span>
 					</p>
 				) : null}
 				<div className="guia-acciones">

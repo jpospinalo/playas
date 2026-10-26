@@ -15,7 +15,7 @@ import {
 	mensajeError,
 	type TipoError,
 } from "@/lib/guia/textos";
-import { Boya, Flecha, FlechaVolver, IconoDeTema } from "@/components/guia/iconos";
+import { Aviso, Boya, Flecha, FlechaVolver, IconoDeTema } from "@/components/guia/iconos";
 import { Escuchar } from "@/components/guia/Escuchar";
 
 type TituloRef = React.RefObject<HTMLHeadingElement | null>;
@@ -246,7 +246,8 @@ export function PantallaEscribir({
 				</p>
 				{error ? (
 					<p className="guia-error" role="alert" id="texto-error">
-						{error}
+						<Aviso />
+						<span>{error}</span>
 					</p>
 				) : null}
 				<div className="guia-acciones">
@@ -313,7 +314,8 @@ export function PantallaError({
 			<Volver onClick={onVolver} />
 			<Cabeza titulo={TXT.errorTitulo} tituloRef={tituloRef} lectura={() => lecturaError(tipo)} />
 			<p className="guia-error" role="alert">
-				{mensajeError(tipo)}
+				<Aviso />
+				<span>{mensajeError(tipo)}</span>
 			</p>
 			{intentos > 0 ? (
 				<p className="aviso-intento" role="status">
