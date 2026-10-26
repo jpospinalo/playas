@@ -98,7 +98,7 @@ describe("app/admin/page — resumen del panel", () => {
 		// "Le sirvió" usa las respuestas como base (PQ-01): 141 / 385 = 37 %.
 		expect(screen.getByText(/Calificaron el 37/)).toBeInTheDocument();
 		// Desglose que suma (PQ-04).
-		expect(screen.getByText(/385 respuestas: 312 con norma, 35 sin respuesta segura, 30 fuera de tema y 8 en que pidió aclarar/)).toBeInTheDocument();
+		expect(screen.getByText(/385 respuestas: 312 con fuente citada, 35 sin respuesta segura, 30 fuera de tema y 8 en que pidió aclarar/)).toBeInTheDocument();
 	});
 
 	it("con menos de 5 calificaciones dice 'pocos datos' en vez de un %", async () => {

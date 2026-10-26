@@ -7,7 +7,7 @@
  */
 
 .pnl-legado {
-	max-width: 1100px;
+	max-width: none;
 	font-size: 18px;
 }
 .pnl-legado h1 {
@@ -135,4 +135,54 @@
 }
 .pnl-legado td[class*="max-w"] {
 	max-width: 320px;
+}
+
+/* Botones en una sola línea (PQ-36) */
+.pnl-legado button {
+	white-space: nowrap;
+}
+/* Celular: cada fila de la tabla es una tarjeta con sus rótulos (PQ-26). */
+@media (max-width: 600px) {
+	.pnl-legado table,
+	.pnl-legado tbody,
+	.pnl-legado tr,
+	.pnl-legado td {
+		display: block;
+		width: 100%;
+	}
+	.pnl-legado table {
+		min-width: 0 !important;
+	}
+	.pnl-legado thead {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		overflow: hidden;
+		clip: rect(0 0 0 0);
+	}
+	.pnl-legado tr {
+		padding: 12px 14px;
+		border-top: 1px solid var(--p-linea);
+	}
+	.pnl-legado tr:first-child {
+		border-top: 0;
+	}
+	.pnl-legado td {
+		padding: 2px 0 !important;
+		text-align: left !important;
+		white-space: normal !important;
+		border: 0 !important;
+	}
+	.pnl-legado td[data-l]::before {
+		content: attr(data-l) ": ";
+		color: var(--p-tinta-2);
+		font-weight: 400;
+	}
+	.pnl-legado td:first-child {
+		font-weight: 600;
+		overflow-wrap: anywhere;
+	}
+	.pnl-legado .flex.items-start.justify-between {
+		flex-wrap: wrap;
+	}
 }

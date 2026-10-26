@@ -10,6 +10,8 @@ loadEnv({ path: path.resolve(__dirname, "../.env") });
 const nextConfig: NextConfig = {
 	output: "standalone",
 	allowedDevOrigins: ["13.217.5.1"],
+	// Sin el botón flotante de desarrollo: tapaba contenido en las demos.
+	devIndicators: false,
 };
 
 export default nextConfig;

@@ -76,6 +76,10 @@ export default function UsuariosPage() {
     setTimeout(() => setBanner(null), 4000);
   }
 
+  // La cuenta marcador de la semilla de demostración no es una persona: no
+  // se lista (PQ-36).
+  const visibles = users.filter((u) => u.email !== "demo-seed@atlas.local");
+
   return (
     <div className="pnl-legado max-w-4xl space-y-6">
       <div className="flex items-start justify-between gap-4">
@@ -86,10 +90,7 @@ export default function UsuariosPage() {
           <p className="mt-1.5 text-sm text-muted">
             {loading
               ? "Cargando…"
-              : `${users.length} usuario${users.length !== 1 ? "s" : ""} registrado${users.length !== 1 ? "s" : ""}`}
-          </p>
-          <p className="mt-1 text-xs text-subtle">
-            Los roles se asignan manualmente desde la consola de administración.
+              : `${visibles.length} usuario${visibles.length !== 1 ? "s" : ""} registrado${visibles.length !== 1 ? "s" : ""}`}
           </p>
         </div>
         <button
@@ -129,7 +130,7 @@ export default function UsuariosPage() {
         <div className="flex items-center justify-center py-16">
           <span className="text-sm text-muted">Cargando usuarios…</span>
         </div>
-      ) : users.length === 0 ? (
+      ) : visibles.length === 0 ? (
         <div className="rounded-2xl border border-border bg-elevated/40 p-8 text-center text-sm text-muted">
           No hay usuarios registrados.
         </div>
@@ -140,7 +141,7 @@ export default function UsuariosPage() {
               <caption className="sr-only">Usuarios registrados</caption>
               <thead>
                 <tr className="bg-surface/50">
-                  <th scope="col" className="px-4 py-3 text-left text-[11px] font-medium text-subtle">Email</th>
+                  <th scope="col" className="px-4 py-3 text-left text-[11px] font-medium text-subtle">Correo</th>
                   <th scope="col" className="px-4 py-3 text-left text-[11px] font-medium text-subtle">Nombre</th>
                   <th scope="col" className="px-4 py-3 text-left text-[11px] font-medium text-subtle">Rol</th>
                   <th scope="col" className="px-4 py-3 text-left text-[11px] font-medium text-subtle">Registro</th>
@@ -148,18 +149,18 @@ export default function UsuariosPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
-                {users.map((u) => (
+                {visibles.map((u) => (
                   <tr key={u.uid} className="transition-colors hover:bg-surface/40">
-                    <td className="px-4 py-3 text-xs text-foreground">
+                    <td data-l="Correo" className="px-4 py-3 text-xs text-foreground">
                       <span className="font-mono">{u.email}</span>
                     </td>
-                    <td className="px-4 py-3 text-xs text-muted">
+                    <td data-l="Nombre" className="px-4 py-3 text-xs text-muted">
                       {u.displayName ?? <span className="italic text-subtle">—</span>}
                     </td>
-                    <td className="px-4 py-3">
+                    <td data-l="Rol" className="px-4 py-3">
                       <RoleBadge role={u.role} />
                     </td>
-                    <td className="whitespace-nowrap px-4 py-3 text-xs text-muted tabular-nums">
+                    <td data-l="Registro" className="whitespace-nowrap px-4 py-3 text-xs text-muted tabular-nums">
                       {formatDate(u.createdAt)}
                     </td>
                     <td className="whitespace-nowrap px-4 py-3 text-right">

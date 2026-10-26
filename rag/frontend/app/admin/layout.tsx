@@ -16,16 +16,14 @@ import { useTheme } from "@/components/providers/ThemeProvider";
 
 const ENLACES = [
 	{ href: "/admin", texto: "Resumen" },
-	{ href: "/admin/message-feedback", texto: "Calificaciones" },
-	{ href: "/admin/feedback", texto: "Conversaciones" },
+	{ href: "/admin/message-feedback", texto: "Opiniones" },
+	{ href: "/admin/feedback", texto: "Encuestas" },
 	{ href: "/admin/usuarios", texto: "Usuarios" },
 ];
 
 // Título de la pestaña de las páginas viejas (las nuevas ponen el suyo): cada
 // pantalla con su nombre, sin raya (PQ-21).
 const TITULOS: Record<string, string> = {
-	"/admin/message-feedback": "Calificaciones por respuesta: panel de ATLAS",
-	"/admin/feedback": "Calificaciones de conversación: panel de ATLAS",
 	"/admin/usuarios": "Usuarios: panel de ATLAS",
 };
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import {
 	enlaceConversacion,
@@ -14,16 +14,32 @@ import {
 } from "@/lib/admin/panel";
 import { EstadoCalificacion, EstadoResultado, IconoAviso } from "@/components/admin/panel/Estados";
 
-const OPCIONES: { valor: FiltroResultado; texto: string }[] = [
+export type OpcionFiltro = { valor: FiltroResultado; texto: string };
+
+export const OPCIONES_PREGUNTAS: OpcionFiltro[] = [
 	{ valor: "", texto: "Todas las preguntas" },
-	{ valor: "con_fuente", texto: "Respondió citando normas" },
+	{ valor: "con_fuente", texto: "Respondió citando fuentes" },
 	{ valor: "sin_respuesta_segura", texto: "Sin respuesta segura" },
 	{ valor: "no_le_sirvio", texto: "No le sirvió" },
 	{ valor: "fuera_de_tema", texto: "Fuera del tema de playas" },
 	{ valor: "pide_aclarar", texto: "Pidió aclarar la pregunta" },
 ];
 
-const POR_PAGINA = 20;
+/** 20 por página en PC y 10 en celular, para que la página no sea eterna (PQ-41). */
+const consultaCelular = "(max-width: 600px)";
+function suscribirCelular(avisar: () => void) {
+	if (typeof window === "undefined" || !window.matchMedia) return () => {};
+	const mq = window.matchMedia(consultaCelular);
+	mq.addEventListener("change", avisar);
+	return () => mq.removeEventListener("change", avisar);
+}
+function usePorPagina(): number {
+	return useSyncExternalStore(
+		suscribirCelular,
+		() => (window.matchMedia?.(consultaCelular).matches ? 10 : 20),
+		() => 20,
+	);
+}
 
 /**
  * Preguntas del periodo, de la más reciente a la más antigua. Cada fila se
@@ -36,13 +52,20 @@ export function Recientes({
 	resultado,
 	onResultado,
 	volver,
+	titulo = "Preguntas recientes",
+	descripcion = "Qué preguntó cada persona, cómo respondió ATLAS y si le sirvió.",
+	opciones = OPCIONES_PREGUNTAS,
 }: {
 	dias: number;
 	tema: string;
 	resultado: FiltroResultado;
 	onResultado: (r: FiltroResultado) => void;
 	volver: string;
+	titulo?: string;
+	descripcion?: string;
+	opciones?: OpcionFiltro[];
 }) {
+	const POR_PAGINA = usePorPagina();
 	const [pagina, setPagina] = useState(1);
 	const [datos, setDatos] = useState<Preguntas | null>(null);
 	const [error, setError] = useState<string | null>(null);
@@ -62,7 +85,7 @@ export function Recientes({
 		return () => {
 			vigente = false;
 		};
-	}, [dias, tema, resultado, pagina, intento]);
+	}, [dias, tema, resultado, pagina, intento, POR_PAGINA]);
 
 	const total = datos?.total ?? 0;
 	const desde = total ? (pagina - 1) * POR_PAGINA + 1 : 0;
@@ -73,8 +96,8 @@ export function Recientes({
 		<section className="pnl-bloque" aria-labelledby="t-recientes">
 			<div className="pnl-bloque-cab">
 				<div>
-					<h2 id="t-recientes">Preguntas recientes</h2>
-					<p>Qué preguntó cada persona, cómo respondió ATLAS y si le sirvió.</p>
+					<h2 id="t-recientes">{titulo}</h2>
+					<p>{descripcion}</p>
 				</div>
 				<div className="pnl-campo">
 					<label htmlFor="pnl-resultado">Mostrar</label>
@@ -86,7 +109,7 @@ export function Recientes({
 							setPagina(1);
 						}}
 					>
-						{OPCIONES.map((o) => (
+						{opciones.map((o) => (
 							<option key={o.valor} value={o.valor}>
 								{o.texto}
 							</option>
@@ -111,7 +134,7 @@ export function Recientes({
 			{datos && datos.items.length === 0 ? (
 				<p className="pnl-vacio">
 					<b>No hay preguntas con este filtro.</b>
-					Pruebe con “Todas las preguntas” o con un periodo más largo.
+					Pruebe con otra opción en “Mostrar” o con un periodo más largo.
 				</p>
 			) : null}
 
@@ -136,7 +159,11 @@ export function Recientes({
 								<div>
 									<dt>ATLAS</dt>
 									<dd>
-										<EstadoResultado resultado={p.resultado} fuentes={p.fuentes} />
+										<EstadoResultado
+											resultado={p.resultado}
+											fuentes={p.fuentes}
+											sentencias={p.fuentes_sentencias}
+										/>
 									</dd>
 								</div>
 								<div>

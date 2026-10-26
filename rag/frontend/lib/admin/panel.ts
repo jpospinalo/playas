@@ -100,6 +100,8 @@ export interface PreguntaItem {
 	playa: string | null;
 	resultado: Resultado;
 	fuentes: number;
+	/** Cuántas de las fuentes son sentencias (el resto, normas). */
+	fuentes_sentencias: number;
 	calificacion: Calificacion | null;
 	esperaba: string | null;
 	persona: string;
@@ -124,7 +126,7 @@ export interface Conversacion {
 		text: string;
 		fecha: string;
 		resultado: Resultado | null;
-		normas: string[];
+		fuentes: { nombre: string; doc_type: string | null }[];
 		calificacion: Calificacion | null;
 		esperaba: string | null;
 	}[];
@@ -136,7 +138,33 @@ export type FiltroResultado =
 	| "sin_respuesta_segura"
 	| "no_le_sirvio"
 	| "fuera_de_tema"
-	| "pide_aclarar";
+	| "pide_aclarar"
+	| "calificadas"
+	| "le_sirvio"
+	| "con_esperaba";
+
+export interface Encuesta {
+	id: string;
+	fecha: string;
+	persona: string;
+	titulo: string | null;
+	conversation_id: string | null;
+	general: number;
+	tono: number;
+	largo: number;
+	facilidad: number;
+	comentario: string | null;
+}
+
+export interface Encuestas {
+	items: Encuesta[];
+	total: number;
+	page: number;
+	page_size: number;
+	promedios: { general: number; tono: number; largo: number; facilidad: number };
+}
+
+export type FiltroEncuesta = "" | "buenas" | "malas" | "con_comentario";
 
 export const PERIODOS = [
 	{ dias: 7, texto: "7 días" },
@@ -208,6 +236,15 @@ export function pedirPreguntas(
 
 export function pedirConversacion(id: string): Promise<Conversacion> {
 	return pedir(`/conversaciones/${encodeURIComponent(id)}`);
+}
+
+export function pedirEncuestas(
+	dias: number,
+	filtro: FiltroEncuesta,
+	page: number,
+	pageSize = 20,
+): Promise<Encuestas> {
+	return pedir(`/encuestas?${consulta({ dias, filtro, page, page_size: pageSize })}`);
 }
 
 /** Descarga el CSV con la sesión actual (el enlace directo no lleva el token). */
@@ -336,12 +373,12 @@ export function mensajeError(error: unknown, otro: string): string {
 }
 
 export const ETIQUETA_RESULTADO: Record<Resultado, string> = {
-	con_fuente: "Respondió citando normas",
+	con_fuente: "Respondió citando fuentes",
 	// Un solo nombre para el grupo ("Sin respuesta segura") y el motivo como
 	// subtipo, igual que en las cifras y el filtro (PQ-19).
-	sin_evidencia: "Sin respuesta segura: no encontró norma",
+	sin_evidencia: "Sin respuesta segura: no encontró fuente",
 	sin_cita_valida: "Sin respuesta segura: cita no válida",
-	sin_fuente_otro: "Sin respuesta segura: no citó normas",
+	sin_fuente_otro: "Sin respuesta segura: no citó fuentes",
 	fuera_de_tema: "Fuera del tema de playas",
 	pide_aclarar: "Pidió aclarar la pregunta",
 	saludo: "Saludo, no era una pregunta",
@@ -354,12 +391,33 @@ export const ETIQUETA_CALIFICACION: Record<Calificacion, string> = {
 	neutra: "Le sirvió a medias",
 };
 
-/** Texto del resultado con el número de normas: "Respondió citando 3 normas". */
-export function textoResultado(resultado: Resultado, fuentes?: number): string {
+function contar(n: number, uno: string, varios: string): string {
+	return `${n} ${n === 1 ? uno : varios}`;
+}
+
+/**
+ * Texto del resultado con sus fuentes: "Respondió citando 2 fuentes: 1 norma
+ * y 1 sentencia". Una sentencia no es una norma (PQ-32).
+ */
+export function textoResultado(resultado: Resultado, fuentes?: number, sentencias = 0): string {
 	if (resultado === "con_fuente" && fuentes) {
-		return `Respondió citando ${fuentes} ${fuentes === 1 ? "norma" : "normas"}`;
+		const normas = fuentes - sentencias;
+		const base = `Respondió citando ${contar(fuentes, "fuente", "fuentes")}`;
+		if (!sentencias) return `${base}: ${contar(normas, "norma", "normas")}`;
+		if (!normas) return `${base}: ${contar(sentencias, "sentencia", "sentencias")}`;
+		return `${base}: ${contar(normas, "norma", "normas")} y ${contar(sentencias, "sentencia", "sentencias")}`;
 	}
 	return ETIQUETA_RESULTADO[resultado];
+}
+
+/** Quita las marcas internas de cita ("[doc1]") de una respuesta (PQ-33). */
+export function sinMarcasDeCita(texto: string): string {
+	return texto.replace(/\s?\[doc\d+\]/g, "");
+}
+
+/** "3.4" → "3,4 de 5" (PQ-37). */
+export function deCinco(n: number): string {
+	return `${decimal(n)} de 5`;
 }
 
 /** Enlace al detalle que recuerda los filtros para volver igual (PQ-22). */

@@ -332,7 +332,7 @@ function Contenido({
 					</dd>
 				</div>
 				<div className="pnl-cifra">
-					<dt>Respondidas con norma citada</dt>
+					<dt>Respondidas con fuente citada</dt>
 					<dd>
 						<span className="pnl-valor num">
 							{pFuente ?? "—"}
@@ -524,7 +524,7 @@ function Contenido({
 					)}
 					</div>
 					{datos.normas.length ? (
-						<VerComoTabla titulo="normas citadas">
+						<VerComoTabla titulo="normas y sentencias citadas">
 							<table>
 								<thead>
 									<tr>
@@ -592,7 +592,7 @@ function Contenido({
 }
 
 function desglose(c: Resumen["cifras"]): string {
-	const partes = [`${numero(c.con_fuente)} con norma`, `${numero(c.sin_respuesta_segura)} sin respuesta segura`];
+	const partes = [`${numero(c.con_fuente)} con fuente citada`, `${numero(c.sin_respuesta_segura)} sin respuesta segura`];
 	if (c.fuera_de_tema) partes.push(`${numero(c.fuera_de_tema)} fuera de tema`);
 	if (c.pide_aclarar) partes.push(`${numero(c.pide_aclarar)} en que pidió aclarar`);
 	const ultima = partes.pop();

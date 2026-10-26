@@ -1181,3 +1181,98 @@
 	flex-wrap: wrap;
 	gap: 6px 20px;
 }
+.pnl-fuentes {
+	list-style: none;
+	padding: 0 !important;
+	display: grid;
+	gap: 6px;
+	margin-top: 4px !important;
+}
+
+/* ── Ronda 3 de QA ───────────────────────────────────────────────────────── */
+/* PQ-30: las tarjetas de una fila no se estiran al alto de la más alta. */
+.pnl-grid {
+	align-items: start;
+}
+/* PQ-31: títulos de las cifras con alto de dos renglones: los números quedan
+   en la misma línea. */
+.pnl-cifra dt {
+	min-height: 2.6em;
+}
+/* PQ-34: la pregunta es un enlace sin subrayado permanente (no un muro de
+   subrayados); el subrayado aparece al pasar o al enfocar. */
+.pnl-fila-q > a {
+	color: var(--p-marino);
+	text-decoration: none;
+}
+.pnl-fila-q > a:hover,
+.pnl-fila-q > a:focus-visible {
+	text-decoration: underline;
+	text-decoration-thickness: 2px;
+}
+/* PQ-39: un botón deshabilitado se ve inactivo. */
+.pnl .pnl-btn-sec:disabled,
+.pnl-legado button:disabled {
+	border-color: var(--p-linea);
+	background: transparent;
+	color: var(--p-tinta-2);
+	cursor: default;
+}
+@media (max-width: 600px) {
+	/* PQ-35: encabezado del celular en dos filas alineadas a 14 px. */
+	.pnl .pnl-tema {
+		display: none;
+	}
+	.pnl-cab-acc {
+		margin-left: auto;
+	}
+	.pnl .pnl-nav a {
+		min-height: 44px;
+	}
+	.pnl-cifra dt {
+		min-height: 0;
+	}
+}
+
+/* Franjas de 3 y 4 cifras (Opiniones, Encuestas) */
+.pnl-cifras.pnl-cifras-3 {
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	margin-bottom: 22px;
+}
+.pnl-cifras.pnl-cifras-4 {
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+	margin-bottom: 22px;
+}
+.pnl-cifras-3 .pnl-cifra dt,
+.pnl-cifras-4 .pnl-cifra dt {
+	min-height: 0;
+}
+.pnl-cifras-3 .pnl-cifra,
+.pnl-cifras-4 .pnl-cifra {
+	border-top: 0;
+}
+.pnl-fila-titulo {
+	font-size: 19px;
+	font-weight: 600;
+}
+@media (max-width: 600px) {
+	.pnl-cifras.pnl-cifras-3 {
+		grid-template-columns: 1fr;
+	}
+	.pnl-cifras.pnl-cifras-4 {
+		grid-template-columns: 1fr 1fr;
+	}
+	.pnl-cifras.pnl-cifras-3 .pnl-cifra:nth-child(n),
+	.pnl-cifras.pnl-cifras-4 .pnl-cifra:nth-child(n) {
+		grid-column: auto;
+		border-left: 0;
+		border-top: 1px solid var(--p-linea);
+	}
+	.pnl-cifras.pnl-cifras-3 .pnl-cifra:first-child,
+	.pnl-cifras.pnl-cifras-4 .pnl-cifra:nth-child(-n + 2) {
+		border-top: 0;
+	}
+	.pnl-cifras.pnl-cifras-4 .pnl-cifra:nth-child(even) {
+		border-left: 1px solid var(--p-linea);
+	}
+}

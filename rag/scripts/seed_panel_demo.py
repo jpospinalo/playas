@@ -237,6 +237,14 @@ NOMBRES = (
 ).split(", ")
 
 
+def _titulo(texto: str, largo: int = 70) -> str:
+    """Título de conversación como el que generaría el chat: sin cortar palabras."""
+    base, _ = pm.separar_playa(texto)
+    if len(base) <= largo:
+        return base
+    return base[: base[:largo].rfind(" ")].rstrip(" ,;:¿?") + "…"
+
+
 def _fuentes(rng: random.Random, tema: str) -> list[dict]:
     titulos = rng.sample(
         FUENTES_POR_TEMA[tema], k=min(len(FUENTES_POR_TEMA[tema]), rng.choice((1, 2, 2, 3)))
@@ -393,7 +401,7 @@ async def sembrar(
                 id=uid(),
                 user_id=usuario,
                 thread_id=uid(),
-                title=texto[:60],
+                title=_titulo(texto),
                 created_at=cuando,
                 updated_at=cuando,
                 message_count=2,
@@ -516,7 +524,7 @@ async def sembrar(
                 id=uid(),
                 user_id=ids[i],
                 thread_id=uid(),
-                title=texto[:60],
+                title=_titulo(texto),
                 created_at=cuando,
                 updated_at=cuando,
                 message_count=2 if respuesta else 1,

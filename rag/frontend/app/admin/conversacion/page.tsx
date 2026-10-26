@@ -5,7 +5,15 @@ import Link from "next/link";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { useSearchParams } from "next/navigation";
-import { fechaHora, fechaLarga, mensajeError, pedirConversacion, type Conversacion } from "@/lib/admin/panel";
+import {
+	fechaHora,
+	fechaLarga,
+	mensajeError,
+	pedirConversacion,
+	sinMarcasDeCita,
+	tipoDocumento,
+	type Conversacion,
+} from "@/lib/admin/panel";
 import { EstadoCalificacion, EstadoResultado, IconoAviso } from "@/components/admin/panel/Estados";
 
 /** Una conversación completa, para leer el caso desde el panel (solo lectura). */
@@ -24,6 +32,9 @@ function Detalle() {
 	const id = sp.get("id") ?? "";
 	// Filtros con los que se llegó desde el resumen (PQ-22).
 	const volver = sp.get("volver") ?? "";
+	// "volver" es la página de origen (/admin/feedback…) o los filtros del resumen.
+	const desdeOtra = volver.startsWith("/admin/");
+	const destino = desdeOtra ? volver : volver ? `/admin?${volver}` : "/admin";
 	const [datos, setDatos] = useState<Conversacion | null>(null);
 	const [error, setError] = useState<string | null>(id ? null : "Falta indicar qué conversación abrir.");
 
@@ -45,11 +56,11 @@ function Detalle() {
 	return (
 		<>
 			<p className="pnl-volver">
-				<Link href={volver ? `/admin?${volver}` : "/admin"} className="pnl-btn-sec">
+				<Link href={destino} className="pnl-btn-sec">
 					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
 						<path d="M15 5l-7 7 7 7" />
 					</svg>
-					Volver al resumen
+					{desdeOtra ? "Volver" : "Volver al resumen"}
 				</Link>
 			</p>
 			<title>
@@ -85,7 +96,7 @@ function Detalle() {
 										// formato y sin HTML crudo (skipHtml), como en el chat (PQ-18).
 										<div className="pnl-msj-texto pnl-md">
 											<ReactMarkdown remarkPlugins={[remarkGfm]} skipHtml>
-												{m.text}
+												{sinMarcasDeCita(m.text)}
 											</ReactMarkdown>
 										</div>
 									) : (
@@ -94,16 +105,25 @@ function Detalle() {
 									{esRespuesta ? (
 										<div className="pnl-msj-pie">
 											<span className="pnl-msj-estados">
-												{m.resultado ? <EstadoResultado resultado={m.resultado} fuentes={m.normas.length} /> : null}{" "}
+												{m.resultado ? <EstadoResultado
+															resultado={m.resultado}
+															fuentes={m.fuentes.length}
+															sentencias={m.fuentes.filter((f) => f.doc_type === "jurisprudencia").length}
+														/> : null}{" "}
 												<EstadoCalificacion calificacion={m.calificacion} />
 											</span>
 											{m.esperaba ? <span className="pnl-esperaba">Esperaba: “{m.esperaba}”</span> : null}
-											{m.normas.length ? (
+											{m.fuentes.length ? (
 												<div>
 													<b>Fuentes citadas</b>
-													<ul>
-														{m.normas.map((n) => (
-															<li key={n}>{n}</li>
+													<ul className="pnl-fuentes">
+														{m.fuentes.map((f) => (
+															<li key={f.nombre}>
+																<span className={`pnl-etq${f.doc_type === "jurisprudencia" ? "" : " ley"}`}>
+																	{tipoDocumento(f.doc_type)}
+																</span>
+																{f.nombre}
+															</li>
 														))}
 													</ul>
 												</div>

@@ -67,12 +67,20 @@ export function IconoDescargar() {
 	);
 }
 
-export function EstadoResultado({ resultado, fuentes }: { resultado: Resultado; fuentes?: number }) {
+export function EstadoResultado({
+	resultado,
+	fuentes,
+	sentencias,
+}: {
+	resultado: Resultado;
+	fuentes?: number;
+	sentencias?: number;
+}) {
 	if (resultado === "con_fuente") {
 		return (
 			<span className="pnl-estado bien">
 				<IconoNorma />
-				{textoResultado(resultado, fuentes)}
+				{textoResultado(resultado, fuentes, sentencias)}
 			</span>
 		);
 	}

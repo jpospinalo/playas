@@ -26,7 +26,7 @@ export function Brechas({ datos, volver }: { datos: Resumen; volver: string }) {
 					<p>
 						{datos.brechas_total
 							? `${numero(datos.brechas_total)} ${datos.brechas_total === 1 ? "pregunta quedó" : "preguntas quedaron"} sin respuesta segura o la persona dijo que no le sirvió. Las más repetidas primero; no incluye preguntas fuera del tema de playas.`
-							: "Ninguna pregunta quedó sin norma ni fue calificada como “no me sirvió” en este periodo."}
+							: "Ninguna pregunta quedó sin respuesta segura ni fue calificada como “no me sirvió” en este periodo."}
 					</p>
 				</div>
 			</div>
