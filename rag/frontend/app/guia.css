@@ -79,8 +79,10 @@ body:has(.guia) {
 	background: var(--papel);
 	border-bottom: 3px solid var(--marino);
 }
+/* Mismo ancho en todas las pantallas (el de la columna ancha del inicio):
+   "ATLAS" y "Salir" no se mueven al cambiar de pantalla (QA-07). */
 .guia-barra {
-	max-width: 760px;
+	max-width: 960px;
 	margin: 0 auto;
 	padding: 10px 18px;
 	display: flex;
@@ -827,7 +829,7 @@ body:has(.guia) {
 
 /* Confirmación de "Salir" (debajo del encabezado). */
 .guia-confirmar {
-	max-width: 760px;
+	max-width: 960px;
 	margin: 0 auto;
 	padding: 14px 18px;
 	border-bottom: 2px solid var(--linea);
@@ -917,9 +919,6 @@ body:has(.guia) {
 .guia-main:has(> .guia-inicio) {
 	max-width: none;
 	padding: 0;
-}
-.guia:has(.guia-inicio) .guia-barra {
-	max-width: 960px;
 }
 .guia-hero {
 	background: var(--papel);
