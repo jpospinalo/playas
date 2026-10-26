@@ -340,6 +340,14 @@ export const ETIQUETA_CALIFICACION: Record<Calificacion, string> = {
 	neutra: "Regular",
 };
 
+/** Corta un texto largo en la última palabra completa y agrega "…". */
+export function recortar(texto: string, max = 280): string {
+	if (texto.length <= max) return texto;
+	const corte = texto.slice(0, max);
+	const espacio = corte.lastIndexOf(" ");
+	return `${(espacio > max * 0.6 ? corte.slice(0, espacio) : corte).trimEnd()}…`;
+}
+
 /** Tipo de documento citado → etiqueta corta. */
 export function tipoDocumento(docType: string | null): string {
 	return docType === "jurisprudencia" ? "Sentencia" : "Norma";

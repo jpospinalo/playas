@@ -113,6 +113,9 @@ describe("app/admin/page — resumen del panel", () => {
 		render(<PanelResumen />);
 		expect(await screen.findByText("Desde la primera pregunta guardada")).toBeInTheDocument();
 		expect(screen.queryByText(/Subió|Bajó/)).toBeNull();
+		// Con "Todo" toda persona es "nueva": no se muestra la división (PQ-11).
+		expect(screen.queryByText(/ya habían preguntado antes/)).toBeNull();
+		expect(screen.getByText(/En todo el tiempo preguntaron 64 personas/)).toBeInTheDocument();
 	});
 
 	it("periodo sin preguntas explica qué hacer", async () => {

@@ -7,6 +7,7 @@ import {
 	fechaHora,
 	numero,
 	porcentaje,
+	recortar,
 	textoPorcentaje,
 } from "@/lib/admin/panel";
 import { tope } from "@/components/admin/panel/Graficos";
@@ -53,5 +54,15 @@ describe("escala del eje de columnas", () => {
 			expect(t).toBeGreaterThan(max);
 			expect(Number.isInteger(t / 2)).toBe(true);
 		}
+	});
+});
+
+describe("recortar", () => {
+	it("corta en palabra completa y deja intacto lo corto", () => {
+		expect(recortar("corto")).toBe("corto");
+		const largo = "palabra ".repeat(300);
+		const r = recortar(largo, 280);
+		expect(r.length).toBeLessThanOrEqual(281);
+		expect(r.endsWith("palabra…")).toBe(true);
 	});
 });

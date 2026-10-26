@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { diaMes, numero, type Resumen } from "@/lib/admin/panel";
+import { diaMes, numero, recortar, type Resumen } from "@/lib/admin/panel";
 import { EstadoCalificacion, IconoAviso } from "@/components/admin/panel/Estados";
 
 const VISIBLES = 8;
@@ -25,7 +25,7 @@ export function Brechas({ datos }: { datos: Resumen }) {
 					<h2 id="t-brechas">Dónde falla ATLAS</h2>
 					<p>
 						{datos.brechas_total
-							? `${numero(datos.brechas_total)} ${datos.brechas_total === 1 ? "pregunta" : "preguntas"} sin norma que la respalde o que la persona calificó como “no me sirvió”. Las más repetidas primero.`
+							? `${numero(datos.brechas_total)} ${datos.brechas_total === 1 ? "pregunta" : "preguntas"} sin norma que la respalde o que la persona calificó como “no me sirvió”. Las más repetidas primero. No incluye preguntas fuera del tema de playas.`
 							: "Ninguna pregunta quedó sin norma ni fue calificada como “no me sirvió” en este periodo."}
 					</p>
 				</div>
@@ -60,7 +60,7 @@ export function Brechas({ datos }: { datos: Resumen }) {
 						{lista.map((b) => (
 							<tr key={`${b.conversation_id}-${b.pregunta}`}>
 								<td className="preg">
-									{b.pregunta}
+									{recortar(b.pregunta)}
 									{b.esperaba ? <span className="pnl-esperaba">Esperaba: “{b.esperaba}”</span> : null}
 								</td>
 								<td data-l="Veces" className="num">

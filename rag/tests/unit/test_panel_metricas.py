@@ -127,6 +127,9 @@ def test_normas_citadas_sin_repetidos() -> None:
         ("Decreto 2324 de 1984", None)
     ]
     assert pm.normas_citadas([{"title": "Ley 1617 de 2013"}]) == [("Ley 1617 de 2013", None)]
+    cortado = "Por medio del cual se reglamenta el uso " * 5 + "de aprovech"
+    nombre = pm.normas_citadas([{"title": cortado}])[0][0]
+    assert nombre.endswith(" de…") and "aprovech" not in nombre
 
 
 @pytest.mark.parametrize(

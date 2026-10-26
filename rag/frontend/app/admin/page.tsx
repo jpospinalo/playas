@@ -198,7 +198,10 @@ function subtituloPeriodo(d: Resumen): string {
 	return `Del ${fechaLarga(d.periodo.desde)} al ${hasta}`;
 }
 
-function Contenido({ datos, dias, tema }: { datos: Resumen; dias: number; tema: string }) {
+function Contenido({ datos, dias: diasFiltro, tema }: { datos: Resumen; dias: number; tema: string }) {
+	// El periodo que vale es el que respondió el servidor, no el del filtro
+	// mientras carga: así cifras y textos siempre describen lo mismo.
+	const dias = datos.periodo.dias;
 	const c = datos.cifras;
 	const a = datos.anterior;
 	const pFuente = porcentaje(c.con_fuente, c.respuestas);
@@ -492,7 +495,7 @@ function Contenido({ datos, dias, tema }: { datos: Resumen; dias: number; tema: 
 				</section>
 			</div>
 
-			<Recientes key={`${dias}-${tema}`} dias={dias} tema={tema} />
+			<Recientes key={`${diasFiltro}-${tema}`} dias={diasFiltro} tema={tema} />
 
 			<p className="pnl-pie">
 				Las cifras cuentan las preguntas hechas con sesión iniciada (flujo guiado y equipo), en

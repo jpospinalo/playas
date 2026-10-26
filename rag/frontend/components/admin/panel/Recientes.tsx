@@ -7,6 +7,7 @@ import {
 	fechaHora,
 	numero,
 	pedirPreguntas,
+	recortar,
 	type FiltroResultado,
 	type Preguntas,
 } from "@/lib/admin/panel";
@@ -118,7 +119,7 @@ export function Recientes({ dias, tema }: { dias: number; tema: string }) {
 								</td>
 								<td className="preg">
 									<Link href={`/admin/conversacion?id=${encodeURIComponent(p.conversation_id)}`}>
-										{p.pregunta}
+										{recortar(p.pregunta)}
 									</Link>
 									{p.esperaba ? <span className="pnl-esperaba">Esperaba: “{p.esperaba}”</span> : null}
 								</td>

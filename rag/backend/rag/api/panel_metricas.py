@@ -324,6 +324,7 @@ def clasificar_respuesta(texto: str | None, sources: list | None) -> str:
 _RE_EXTENSION = re.compile(r"\.(md|pdf|txt|json|jsonl)$", re.IGNORECASE)
 
 
+_LARGO_CORTADO = 195
 _RE_SLUG = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)+$")
 
 
@@ -333,6 +334,11 @@ def _legible(nombre: str) -> str:
     if _RE_SLUG.match(nombre):
         texto = nombre.replace("-", " ")
         return texto[:1].upper() + texto[1:]
+    if len(nombre) >= _LARGO_CORTADO:
+        # El corpus corta los títulos largos a ~200 caracteres, a veces a media
+        # palabra ("…de aprovech"): se corta en la última palabra completa y se
+        # marca con "…" para que no parezca el título real (PQ-12).
+        return nombre[: nombre.rstrip().rfind(" ")].rstrip(" ,;:-") + "…"
     return nombre
 
 

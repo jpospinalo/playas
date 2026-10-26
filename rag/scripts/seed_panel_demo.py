@@ -413,6 +413,52 @@ async def sembrar(db: Path, n: int, semilla: int, reset: bool, dias: int) -> dic
                 )
             )
             conteo["calificaciones"] += 1
+        # Casos límite para probar el front (PQ-14): texto muy largo, pregunta
+        # sin respuesta guardada y texto con HTML o fórmula que debe verse plano.
+        largo = (
+            "Tengo un kiosco en la playa desde hace muchos años y quiero saber qué tengo que hacer. "
+            * 24
+        ).strip()
+        especiales = [
+            (largo, _respuesta_con_fuente(_fuentes(rng, "obras")), True),
+            ("¿Qué pasa si me ponen un comparendo en la playa?", None, False),
+            (
+                "<b>x</b><script>alert(1)</script> ¿Se puede vender en la playa?",
+                agent._NO_EVIDENCE_RESPONSE,
+                False,
+            ),
+            ("@SUM(1+1) ¿Un hotel puede cerrar la playa?", agent._NO_EVIDENCE_RESPONSE, False),
+        ]
+        for i, (texto, respuesta, con_fuente) in enumerate(especiales):
+            cuando = ahora - timedelta(hours=3 + i)
+            conv = Conversation(
+                id=uid(),
+                user_id=ids[i],
+                thread_id=uid(),
+                title=texto[:60],
+                created_at=cuando,
+                updated_at=cuando,
+                message_count=2 if respuesta else 1,
+            )
+            s.add(conv)
+            s.add(
+                Message(
+                    id=uid(), conversation_id=conv.id, role="user", text=texto, created_at=cuando
+                )
+            )
+            if respuesta:
+                fuentes = _fuentes(rng, "obras") if con_fuente else None
+                s.add(
+                    Message(
+                        id=uid(),
+                        conversation_id=conv.id,
+                        role="assistant",
+                        text=respuesta,
+                        sources=fuentes,
+                        created_at=cuando + timedelta(seconds=20),
+                    )
+                )
+            conteo["preguntas"] += 1
         await s.commit()
     await engine.dispose()
     return conteo
