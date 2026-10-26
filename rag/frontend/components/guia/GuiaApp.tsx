@@ -227,6 +227,17 @@ function Flujo() {
 		}
 		return lista;
 	}, [messages, mostradas]);
+	// Lo escrito en la caja de seguimiento se borra solo cuando llega la
+	// respuesta a esa misma pregunta: si falla o se cancela, sigue escrito
+	// al volver. Se ajusta al pintar (sin efecto), como recomienda React.
+	const [turnosVistos, setTurnosVistos] = useState(turnos.length);
+	if (turnos.length !== turnosVistos) {
+		setTurnosVistos(turnos.length);
+		const llegada = turnos[turnos.length - 1];
+		if (turnos.length > turnosVistos && llegada && llegada.pregunta.envio === seguimiento.trim()) {
+			setSeguimiento("");
+		}
+	}
 	// La respuesta a la última pregunta enviada (si ya llegó).
 	const ultimo = messages[messages.length - 1];
 	const nueva = ultimo?.role === "assistant" && ultimo.text ? ultimo : null;
@@ -238,9 +249,6 @@ function Flujo() {
 	useEffect(() => {
 		if (pendienteRef.current) return;
 		if (pantalla === "espera" && nueva && (generationFinished || !loading) && !error) {
-			// Lo escrito en la caja de seguimiento se borra solo cuando llegó la
-			// respuesta: si falla o se cancela, sigue escrito al volver.
-			setSeguimiento("");
 			ir(`respuesta/${turnos.length}`, { reemplazar: true });
 		}
 	}, [pantalla, nueva, turnos.length, generationFinished, loading, error, ir]);
