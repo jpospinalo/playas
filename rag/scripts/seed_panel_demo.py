@@ -309,15 +309,19 @@ async def sembrar(db: Path, n: int, semilla: int, reset: bool, dias: int) -> dic
             )
         )
         personas: list[tuple[str, float]] = []
-        for i, nombre in enumerate(NOMBRES * 2):
-            sufijo = "" if i < len(NOMBRES) else " (2)"
+        # 80 nombres distintos: los 40 de la lista y 40 cruzando nombre y apellido.
+        cruzados = [
+            f"{n.rsplit(' ', 1)[0]} {NOMBRES[(i + 7) % len(NOMBRES)].rsplit(' ', 1)[1]}"
+            for i, n in enumerate(NOMBRES)
+        ]
+        for i, nombre in enumerate(NOMBRES + cruzados):
             correo = pm.normalizar(nombre).replace(" ", ".") + f"{i}@correo.example"
             creado = ahora - timedelta(days=rng.randint(0, dias + 20))
             usuario = User(
                 id=uid(),
                 email=correo,
                 password_hash="!",
-                display_name=nombre + sufijo if rng.random() < 0.9 else None,
+                display_name=nombre if rng.random() < 0.9 else None,
                 role="user",
                 created_at=creado,
             )

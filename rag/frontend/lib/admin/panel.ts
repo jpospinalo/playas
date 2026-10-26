@@ -1,0 +1,346 @@
+/**
+ * Panel de administración: tipos, llamadas al backend (solo lectura) y
+ * formato de cifras en español de Colombia.
+ *
+ * Las rutas viven en `rag/backend/rag/api/routes/panel.py`; las
+ * clasificaciones (tema, playa, resultado) se hacen allá, sin IA.
+ */
+
+import { API_URL } from "@/lib/config";
+import { withRestTimeout } from "@/lib/httpTimeout";
+import { throwIfSessionExpired } from "@/lib/api";
+import { expireAuthSession, getToken } from "@/lib/auth";
+
+export type Agrupacion = "dia" | "semana";
+
+export interface Cifras {
+	preguntas: number;
+	personas: number;
+	personas_nuevas: number;
+	respuestas: number;
+	con_fuente: number;
+	sin_respuesta_segura: number;
+	fuera_de_tema: number;
+	pide_aclarar: number;
+	saludos: number;
+	sin_respuesta_guardada: number;
+	calificaciones: number;
+	le_sirvio: number;
+	no_le_sirvio: number;
+}
+
+export interface Punto {
+	fecha: string;
+	desde: string;
+	hasta: string;
+	parcial: boolean;
+	preguntas: number;
+	sin_respuesta_segura: number;
+}
+
+export interface TemaResumen {
+	id: string;
+	titulo: string;
+	preguntas: number;
+	calificaciones: number;
+	le_sirvio: number;
+	brechas: number;
+}
+
+export interface Norma {
+	nombre: string;
+	doc_type: string | null;
+	respuestas: number;
+}
+
+export interface Brecha {
+	pregunta: string;
+	veces: number;
+	tema: string;
+	tema_titulo: string;
+	motivo: "sin_respuesta_segura" | "no_le_sirvio";
+	esperaba: string | null;
+	ultima: string;
+	conversation_id: string;
+}
+
+export interface Resumen {
+	demo: boolean;
+	periodo: { dias: number; desde: string | null; hasta: string; agrupacion: Agrupacion };
+	cifras: Cifras;
+	anterior: Cifras | null;
+	serie: Punto[];
+	temas: TemaResumen[];
+	normas: Norma[];
+	playas: { nombre: string; preguntas: number }[];
+	sin_playa: number;
+	personas: { activas: number; nuevas: number; recurrentes: number; preguntas_por_persona: number };
+	brechas_total: number;
+	brechas: Brecha[];
+}
+
+export type Resultado =
+	| "con_fuente"
+	| "sin_evidencia"
+	| "sin_cita_valida"
+	| "sin_fuente_otro"
+	| "fuera_de_tema"
+	| "pide_aclarar"
+	| "saludo"
+	| "sin_respuesta";
+
+export type Calificacion = "util" | "no_util" | "neutra";
+
+export interface PreguntaItem {
+	id: string;
+	fecha: string;
+	pregunta: string;
+	tema: string;
+	tema_titulo: string;
+	playa: string | null;
+	resultado: Resultado;
+	fuentes: number;
+	calificacion: Calificacion | null;
+	esperaba: string | null;
+	persona: string;
+	conversation_id: string;
+}
+
+export interface Preguntas {
+	items: PreguntaItem[];
+	total: number;
+	page: number;
+	page_size: number;
+}
+
+export interface Conversacion {
+	id: string;
+	titulo: string | null;
+	persona: string;
+	creada: string;
+	mensajes: {
+		id: string;
+		role: string;
+		text: string;
+		fecha: string;
+		resultado: Resultado | null;
+		normas: string[];
+		calificacion: Calificacion | null;
+		esperaba: string | null;
+	}[];
+}
+
+export type FiltroResultado =
+	| ""
+	| "con_fuente"
+	| "sin_respuesta_segura"
+	| "no_le_sirvio"
+	| "fuera_de_tema"
+	| "pide_aclarar";
+
+export const PERIODOS = [
+	{ dias: 7, texto: "7 días" },
+	{ dias: 30, texto: "30 días" },
+	{ dias: 90, texto: "90 días" },
+	{ dias: 0, texto: "Todo" },
+] as const;
+
+/** Temas del flujo guiado + "otros" (mismos ids que el backend). */
+export const TEMAS_PANEL = [
+	{ id: "entrar", titulo: "Entrar o caminar por la playa" },
+	{ id: "pescar", titulo: "Pescar" },
+	{ id: "vender", titulo: "Vender en la playa" },
+	{ id: "hoteles", titulo: "Hoteles y negocios frente al mar" },
+	{ id: "lanchas", titulo: "Lanchas, motos de agua y bañistas" },
+	{ id: "obras", titulo: "Construcciones cerca del mar" },
+	{ id: "otros", titulo: "Otros temas" },
+] as const;
+
+export const SIN_RESPUESTA_SEGURA: Resultado[] = ["sin_evidencia", "sin_cita_valida", "sin_fuente_otro"];
+
+/** Por debajo de este número de casos un % engaña: se dice "pocos datos". */
+export const MINIMO_PARA_PORCENTAJE = 5;
+
+// ── Llamadas ───────────────────────────────────────────────────────────────
+
+async function token(): Promise<string> {
+	const t = getToken();
+	if (!t) {
+		expireAuthSession(null);
+		throw new Error("Su sesión se cerró. Vuelva a entrar.");
+	}
+	return t;
+}
+
+function consulta(params: Record<string, string | number | null | undefined>): string {
+	const q = new URLSearchParams();
+	for (const [k, v] of Object.entries(params)) {
+		if (v !== null && v !== undefined && v !== "") q.set(k, String(v));
+	}
+	return q.toString();
+}
+
+async function pedir<T>(ruta: string): Promise<T> {
+	const t = await token();
+	const res = await fetch(`${API_URL}/api/admin/panel${ruta}`, {
+		headers: { Authorization: `Bearer ${t}` },
+		signal: withRestTimeout(),
+	});
+	await throwIfSessionExpired(res, t);
+	if (res.status === 403) throw new Error("Su cuenta no tiene permiso para ver el panel.");
+	if (!res.ok) throw new Error(`El servidor respondió con un error (${res.status}).`);
+	return (await res.json()) as T;
+}
+
+export function pedirResumen(dias: number, tema: string): Promise<Resumen> {
+	return pedir(`/resumen?${consulta({ dias, tema })}`);
+}
+
+export function pedirPreguntas(
+	dias: number,
+	tema: string,
+	resultado: FiltroResultado,
+	page: number,
+	pageSize = 20,
+): Promise<Preguntas> {
+	return pedir(`/preguntas?${consulta({ dias, tema, resultado, page, page_size: pageSize })}`);
+}
+
+export function pedirConversacion(id: string): Promise<Conversacion> {
+	return pedir(`/conversaciones/${encodeURIComponent(id)}`);
+}
+
+/** Descarga el CSV con la sesión actual (el enlace directo no lleva el token). */
+export async function descargarCsv(dias: number, tema: string, resultado: FiltroResultado): Promise<void> {
+	const t = await token();
+	const res = await fetch(`${API_URL}/api/admin/panel/preguntas.csv?${consulta({ dias, tema, resultado })}`, {
+		headers: { Authorization: `Bearer ${t}` },
+		signal: withRestTimeout(),
+	});
+	await throwIfSessionExpired(res, t);
+	if (!res.ok) throw new Error(`No se pudo descargar (${res.status}).`);
+	const blob = await res.blob();
+	const url = URL.createObjectURL(blob);
+	const a = document.createElement("a");
+	a.href = url;
+	a.download = `atlas-preguntas-${dias === 0 ? "todo" : `${dias}-dias`}.csv`;
+	document.body.appendChild(a);
+	a.click();
+	a.remove();
+	setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+// ── Formato ─────────────────────────────────────────────────────────────────
+
+const ZONA = "America/Bogota";
+const fmtNumero = new Intl.NumberFormat("es-CO");
+const fmtDecimal = new Intl.NumberFormat("es-CO", { maximumFractionDigits: 1 });
+const fmtDiaMes = new Intl.DateTimeFormat("es-CO", { day: "numeric", month: "short", timeZone: ZONA });
+const fmtDiaMesUTC = new Intl.DateTimeFormat("es-CO", { day: "numeric", month: "short", timeZone: "UTC" });
+const fmtLargo = new Intl.DateTimeFormat("es-CO", {
+	day: "numeric",
+	month: "long",
+	year: "numeric",
+	timeZone: ZONA,
+});
+const fmtHora = new Intl.DateTimeFormat("es-CO", {
+	hour: "numeric",
+	minute: "2-digit",
+	hour12: false,
+	timeZone: ZONA,
+});
+
+/** `1234` → `1.234`. */
+export function numero(n: number): string {
+	return fmtNumero.format(n);
+}
+
+/** `7.46` → `7,5`. */
+export function decimal(n: number): string {
+	return fmtDecimal.format(n);
+}
+
+/** Porcentaje entero, o `null` si no hay base. */
+export function porcentaje(parte: number, total: number): number | null {
+	if (!total) return null;
+	return Math.round((parte / total) * 100);
+}
+
+/** `"81 %"` con espacio duro, o `"—"` sin base. */
+export function textoPorcentaje(parte: number, total: number): string {
+	const p = porcentaje(parte, total);
+	return p === null ? "—" : `${p} %`;
+}
+
+/** "25 de oct." → "25 oct": día y mes abreviado, sin "de" ni punto. */
+function sinPunto(s: string): string {
+	return s.replace(/\./g, "").replace(/ de /, " ");
+}
+
+/** Fecha ISO (instante) → "26 oct" en hora de Colombia. */
+export function diaMes(iso: string): string {
+	return sinPunto(fmtDiaMes.format(new Date(iso)));
+}
+
+/** Fecha calendario "2026-10-26" (ya en hora de Colombia) → "26 oct". */
+export function diaMesCalendario(fecha: string): string {
+	return sinPunto(fmtDiaMesUTC.format(new Date(`${fecha}T00:00:00Z`)));
+}
+
+/** Fecha ISO → "26 de octubre de 2026" en hora de Colombia. */
+export function fechaLarga(iso: string): string {
+	return fmtLargo.format(new Date(iso));
+}
+
+/** Fecha ISO → "26 oct, 9:41". */
+export function fechaHora(iso: string): string {
+	const d = new Date(iso);
+	return `${sinPunto(fmtDiaMes.format(d))}, ${fmtHora.format(d)}`;
+}
+
+export interface Cambio {
+	direccion: "sube" | "baja" | "igual";
+	texto: string;
+}
+
+/**
+ * Cambio frente al periodo anterior. Para conteos: porcentaje ("12 %"); para
+ * tasas: puntos ("3 puntos"). Sin base anterior: `null` (se dice "sin datos
+ * antes", nunca "+100 %").
+ */
+export function cambioConteo(actual: number, anterior: number | null | undefined): Cambio | null {
+	if (anterior === null || anterior === undefined || anterior === 0) return null;
+	const p = Math.round(((actual - anterior) / anterior) * 100);
+	if (p === 0) return { direccion: "igual", texto: "igual" };
+	return { direccion: p > 0 ? "sube" : "baja", texto: `${Math.abs(p)} %` };
+}
+
+export function cambioTasa(actual: number | null, anterior: number | null): Cambio | null {
+	if (actual === null || anterior === null) return null;
+	const d = actual - anterior;
+	if (d === 0) return { direccion: "igual", texto: "igual" };
+	const n = Math.abs(d);
+	return { direccion: d > 0 ? "sube" : "baja", texto: `${n} ${n === 1 ? "punto" : "puntos"}` };
+}
+
+export const ETIQUETA_RESULTADO: Record<Resultado, string> = {
+	con_fuente: "Con norma",
+	sin_evidencia: "Sin norma que la respalde",
+	sin_cita_valida: "Sin cita válida",
+	sin_fuente_otro: "Sin norma que la respalde",
+	fuera_de_tema: "Fuera de tema",
+	pide_aclarar: "Pidió aclarar",
+	saludo: "Saludo",
+	sin_respuesta: "Sin respuesta guardada",
+};
+
+export const ETIQUETA_CALIFICACION: Record<Calificacion, string> = {
+	util: "Le sirvió",
+	no_util: "No le sirvió",
+	neutra: "Regular",
+};
+
+/** Tipo de documento citado → etiqueta corta. */
+export function tipoDocumento(docType: string | null): string {
+	return docType === "jurisprudencia" ? "Sentencia" : "Norma";
+}

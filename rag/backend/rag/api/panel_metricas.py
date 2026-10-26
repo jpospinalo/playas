@@ -77,6 +77,7 @@ TEMAS: tuple[Tema, ...] = (
             "cobran la entrada",
             "salir de la playa",
             "me sacan",
+            "sacar",
             "me echan",
             "servidumbre",
             "libre acceso",
@@ -113,6 +114,9 @@ TEMAS: tuple[Tema, ...] = (
         ),
         palabras=(
             "vender",
+            "vendo",
+            "vende",
+            "venden",
             "venta",
             "vendedor",
             "vendedores",

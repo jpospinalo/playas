@@ -29,6 +29,11 @@ def main() -> None:
     )
     p.add_argument("--db", default="data/panel-demo.db", help="Archivo SQLite de la semilla")
     p.add_argument("--port", type=int, default=8280)
+    p.add_argument(
+        "--front",
+        default="http://localhost:3280,http://127.0.0.1:3280",
+        help="Orígenes del front local permitidos por CORS (separados por coma)",
+    )
     a = p.parse_args()
     if not Path(a.db).exists():
         raise SystemExit(f"No existe {a.db}. Corra primero scripts/seed_panel_demo.py.")
@@ -36,12 +41,20 @@ def main() -> None:
     os.environ["DATABASE_URL"] = f"sqlite+aiosqlite:///{Path(a.db).resolve()}"
 
     import uvicorn
+    from fastapi.middleware.cors import CORSMiddleware
 
     import rag.api.main as api
     import rag.core.agent as agent
 
     api.init_retrievers = lambda: None
     agent.build_graph = lambda *args, **kwargs: None
+    # main.py solo permite http://localhost:3000; el front de la demo corre en otro puerto.
+    api.app.add_middleware(
+        CORSMiddleware,
+        allow_origins=[o.strip() for o in a.front.split(",") if o.strip()],
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
     uvicorn.run(api.app, host="127.0.0.1", port=a.port)
 
 
