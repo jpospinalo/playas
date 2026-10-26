@@ -23,6 +23,11 @@ export const TXT = {
 	otraPlaya: "Otra playa o no sé",
 	escribirVacio: "Escriba su pregunta antes de tocar «Preguntar».",
 	escribirCorta: "Su pregunta es muy corta. Cuéntenos un poco más, por ejemplo qué pasó y en qué playa.",
+	seguirTitulo: "¿Quiere preguntar algo más sobre esto?",
+	seguirPista: "Escriba aquí lo que le faltó saber…",
+	seguirTope:
+		"Ya hizo varias preguntas seguidas sobre este caso. Si ahora quiere preguntar por otra cosa, es mejor empezar de nuevo.",
+	empezarDeNuevo: "Empezar de nuevo con otro tema",
 	esperaTitulo: "Buscando la respuesta",
 	esperaTexto: "Estamos leyendo las normas y las sentencias. Puede tardar hasta un minuto.",
 	sinSenal:

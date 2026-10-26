@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { useChat } from "@/hooks/useChat";
 import { useRutaGuia } from "@/hooks/useRutaGuia";
@@ -18,7 +18,7 @@ import {
 } from "@/components/guia/Pantallas";
 import { Respuesta, type Calificacion } from "@/components/guia/Respuesta";
 import { detenerVoz } from "@/lib/voz";
-import type { SourceGroup } from "@/lib/types";
+import type { Message, SourceGroup } from "@/lib/types";
 
 /**
  * ATLAS para el público (diseño v3): flujo guiado de una pregunta por
@@ -152,6 +152,15 @@ function guardar(r: RespuestaGuardada | null): void {
 	}
 }
 
+/** Una pregunta con su respuesta ya completa, en el orden de la conversación. */
+interface Turno {
+	pregunta: PreguntaActual;
+	mensaje: Message;
+}
+
+/** Desde esta cantidad de respuestas seguidas se sugiere empezar de nuevo (3 seguimientos). */
+const TOPE_SEGUIMIENTO = 4;
+
 function Flujo() {
 	const { ruta, ir, volver } = useRutaGuia();
 	const tituloRef = useRef<HTMLHeadingElement>(null);
@@ -163,12 +172,17 @@ function Flujo() {
 	const { messages, loading, error, stage, generationFinished, persistingMessageIds } = chat;
 
 	const [pregunta, setPregunta] = useState<PreguntaActual | null>(null);
-	// Pregunta que espera a que el chat quede vacío para enviarse (ver efecto
-	// de abajo). Va en una ref; `turnoEnvio` solo dispara el efecto.
-	const pendienteRef = useRef<string | null>(null);
+	// Cómo se muestra cada pregunta enviada (lo que se envía puede llevar la
+	// playa al final). Clave: el texto enviado.
+	const [mostradas, setMostradas] = useState<Record<string, PreguntaActual>>({});
+	// Pregunta que espera para enviarse (ver efecto de abajo): una nueva
+	// espera a que el chat quede vacío; un seguimiento, a que termine lo que
+	// estuviera en curso. Va en una ref; `turnoEnvio` solo dispara el efecto.
+	const pendienteRef = useRef<{ envio: string; nueva: boolean } | null>(null);
 	const [turnoEnvio, setTurnoEnvio] = useState(0);
 	const [sinSenal, setSinSenal] = useState(false);
 	const [borrador, setBorrador] = useState("");
+	const [seguimiento, setSeguimiento] = useState("");
 	// Veces que se tocó "Intentar otra vez" sin señal (para que se note que intentó).
 	const [intentos, setIntentos] = useState(0);
 	const [guardada, setGuardada] = useState<RespuestaGuardada | null>(() =>
@@ -176,35 +190,57 @@ function Flujo() {
 	);
 
 	const pantalla = ruta[0] ?? "inicio";
-	const respuesta = [...messages].reverse().find((m) => m.role === "assistant" && m.text);
 
-	// Envía la pregunta pendiente una vez que el chat quedó vacío
-	// (`resetChat`): así `submit` ve un chat sin mensajes y crea una
-	// conversación nueva para esta pregunta.
-	const { submit } = chat;
-	useEffect(() => {
-		const q = pendienteRef.current;
-		if (q && messages.length === 0 && !loading) {
-			pendienteRef.current = null;
-			void submit(q);
+	// Respuestas completas de esta conversación, cada una con la pregunta
+	// que la antecede.
+	const turnos = useMemo(() => {
+		const lista: Turno[] = [];
+		let ultima: string | null = null;
+		for (const m of messages) {
+			if (m.role === "user") ultima = m.text;
+			else if (m.role === "assistant" && m.text && ultima !== null) {
+				lista.push({
+					pregunta: mostradas[ultima] ?? { texto: ultima, envio: ultima, playa: null },
+					mensaje: m,
+				});
+			}
 		}
-	}, [turnoEnvio, messages.length, loading, submit]);
+		return lista;
+	}, [messages, mostradas]);
+	// La respuesta a la última pregunta enviada (si ya llegó).
+	const ultimo = messages[messages.length - 1];
+	const nueva = ultimo?.role === "assistant" && ultimo.text ? ultimo : null;
 
 	// Cuando la respuesta terminó de llegar, se pasa a la pantalla de respuesta
-	// (reemplazando "espera", para que "atrás" no vuelva a la espera).
+	// (reemplazando "espera", para que "atrás" no vuelva a la espera). Cada
+	// respuesta tiene su número (`#respuesta/2`): "atrás" vuelve a la anterior.
+	// Va antes del efecto de envío: con una pregunta pendiente no se salta.
 	useEffect(() => {
-		if (pantalla === "espera" && respuesta && (generationFinished || !loading) && !error) {
-			ir("respuesta", { reemplazar: true });
+		if (pendienteRef.current) return;
+		if (pantalla === "espera" && nueva && (generationFinished || !loading) && !error) {
+			ir(`respuesta/${turnos.length}`, { reemplazar: true });
 		}
-	}, [pantalla, respuesta, generationFinished, loading, error, ir]);
+	}, [pantalla, nueva, turnos.length, generationFinished, loading, error, ir]);
+
+	const { submit } = chat;
+	useEffect(() => {
+		const p = pendienteRef.current;
+		if (!p || loading) return;
+		if (p.nueva && messages.length > 0) return;
+		pendienteRef.current = null;
+		void submit(p.envio);
+	}, [turnoEnvio, messages.length, loading, submit]);
+
+	// Respuesta que se ve: la del número en la dirección (sin número, la última).
+	const numero = Number(ruta[1]) || turnos.length;
+	const vista = pantalla === "respuesta" ? (turnos[numero - 1] ?? null) : null;
 
 	// La respuesta completa se guarda en la pestaña (sessionStorage): si la
 	// persona recarga sin querer (jalar hacia abajo en el celular), la vuelve a ver.
-	const respuestaLista = respuesta && !loading && !error ? respuesta : null;
 	useEffect(() => {
-		if (pantalla !== "respuesta" || !respuestaLista || !pregunta) return;
-		guardar({ pregunta, texto: respuestaLista.text, fuentes: respuestaLista.sources ?? [] });
-	}, [pantalla, respuestaLista, pregunta]);
+		if (!vista || loading || error) return;
+		guardar({ pregunta: vista.pregunta, texto: vista.mensaje.text, fuentes: vista.mensaje.sources ?? [] });
+	}, [vista, loading, error]);
 
 	// Al cambiar de pantalla: arriba del todo, foco en el título (los
 	// lectores de pantalla lo anuncian) y título de la pestaña.
@@ -237,27 +273,43 @@ function Flujo() {
 		document.title = t ? `ATLAS: ${t}` : "ATLAS";
 	}, [clave, sinSenal, error]);
 
-	function preguntar(texto: string, envio: string, playa: string | null) {
-		setPregunta({ texto, envio, playa });
+	/** Envía la pregunta (o la deja pendiente si no hay señal) y pasa a la espera. */
+	function enviar(p: PreguntaActual, esNueva: boolean) {
+		setPregunta(p);
+		setMostradas((m) => ({ ...(esNueva ? {} : m), [p.envio]: p }));
 		setIntentos(0);
-		chat.resetChat();
 		if (typeof navigator !== "undefined" && navigator.onLine === false) {
 			setSinSenal(true);
 			pendienteRef.current = null;
 		} else {
 			setSinSenal(false);
-			pendienteRef.current = envio;
+			pendienteRef.current = { envio: p.envio, nueva: esNueva };
 			setTurnoEnvio((n) => n + 1);
 		}
 		ir("espera");
 	}
+
+	/** Pregunta nueva: empieza una conversación propia. */
+	function preguntar(texto: string, envio: string, playa: string | null) {
+		chat.resetChat();
+		enviar({ texto, envio, playa }, true);
+	}
+
+	/** Pregunta de seguimiento: sigue la misma conversación (el backend recuerda lo anterior). */
+	function seguir(texto: string) {
+		setSeguimiento("");
+		enviar({ texto, envio: texto, playa: null }, false);
+	}
+
+	// ¿La pregunta en curso sigue una conversación que ya tiene respuestas?
+	const esSeguimiento = !!pregunta && turnos.length > 0 && !!chat.conversationId;
 
 	function reintentar() {
 		if (!pregunta) {
 			ir("inicio");
 			return;
 		}
-		chat.resetChat();
+		if (!esSeguimiento) chat.resetChat();
 		if (navigator.onLine === false) {
 			setSinSenal(true);
 			setIntentos((n) => n + 1);
@@ -265,26 +317,31 @@ function Flujo() {
 		}
 		setSinSenal(false);
 		setIntentos(0);
-		pendienteRef.current = pregunta.envio;
+		pendienteRef.current = { envio: pregunta.envio, nueva: !esSeguimiento };
 		setTurnoEnvio((n) => n + 1);
 	}
 
 	function cancelarYVolver() {
-		chat.resetChat();
 		pendienteRef.current = null;
 		setSinSenal(false);
+		// En un seguimiento solo se detiene esta pregunta: "atrás" vuelve a la
+		// respuesta anterior, que sigue abierta.
+		if (esSeguimiento) chat.cancel();
+		else chat.resetChat();
 		window.history.back();
 	}
 
 	function otraPregunta() {
 		// La respuesta que se deja queda guardada: si la persona toca "atrás"
 		// desde el inicio, la vuelve a ver (QA-15) en vez de un inicio repetido.
-		if (pregunta && respuestaLista) {
-			setGuardada({ pregunta, texto: respuestaLista.text, fuentes: respuestaLista.sources ?? [] });
+		if (vista) {
+			setGuardada({ pregunta: vista.pregunta, texto: vista.mensaje.text, fuentes: vista.mensaje.sources ?? [] });
 		}
 		chat.resetChat();
+		setMostradas({});
 		setPregunta(null);
 		setBorrador("");
+		setSeguimiento("");
 		setSinSenal(false);
 		ir("inicio");
 	}
@@ -296,10 +353,9 @@ function Flujo() {
 		else ir("inicio");
 	}
 
-	async function calificar(c: Calificacion) {
-		if (!respuesta) return;
+	async function calificar(id: string, c: Calificacion) {
 		const nota = c.util ? 5 : 1;
-		await chat.rateMessage(respuesta.id, { pertinence: nota, accuracy: nota }, c.comentario);
+		await chat.rateMessage(id, { pertinence: nota, accuracy: nota }, c.comentario);
 	}
 
 	const tema = buscarTema(ruta[1]);
@@ -348,48 +404,60 @@ function Flujo() {
 		return <PantallaEspera tituloRef={tituloRef} etapa={stage} onVolver={cancelarYVolver} />;
 	}
 
-	// Respuesta guardada (tras recargar la página): se muestra igual, pero sin
-	// "¿Le sirvió?", porque la conversación ya no está abierta en el chat.
-	if (pantalla === "respuesta" && !(pregunta && respuesta) && guardada) {
+	if (pantalla === "respuesta" && vista) {
+		const { mensaje } = vista;
 		return (
 			<Respuesta
+				// Cada respuesta es una pantalla nueva: "¿Le sirvió?" empieza de cero.
+				key={numero}
+				pregunta={vista.pregunta.texto}
+				playa={vista.pregunta.playa}
+				texto={mensaje.text}
+				fuentes={mensaje.sources ?? []}
+				onVolver={() => volver("inicio")}
+				puedeCalificar={
+					!loading &&
+					!!chat.conversationId &&
+					mensaje.persistenceStatus !== "failed" &&
+					!persistingMessageIds.has(mensaje.id)
+				}
+				onCalificar={(c) => calificar(mensaje.id, c)}
+				onOtraPregunta={otraPregunta}
+				onEscribirDeNuevo={() => {
+					setBorrador(vista.pregunta.texto);
+					irACaja(false);
+				}}
+				seguimiento={seguimiento}
+				onCambioSeguimiento={setSeguimiento}
+				onSeguir={seguir}
+				muchasSeguidas={turnos.length >= TOPE_SEGUIMIENTO}
+				tituloRef={tituloRef}
+			/>
+		);
+	}
+
+	// Respuesta guardada (tras recargar la página): se muestra igual, pero sin
+	// "¿Le sirvió?", porque la conversación ya no está abierta en el chat.
+	if (pantalla === "respuesta" && !loading && guardada) {
+		return (
+			<Respuesta
+				key="guardada"
 				pregunta={guardada.pregunta.texto}
 				playa={guardada.pregunta.playa}
 				texto={guardada.texto}
 				fuentes={guardada.fuentes}
 				puedeCalificar={false}
-				onCalificar={calificar}
+				onCalificar={async () => {}}
 				onVolver={() => volver("inicio")}
 				onOtraPregunta={otraPregunta}
 				onEscribirDeNuevo={() => {
 					setBorrador(guardada.pregunta.texto);
 					irACaja(false);
 				}}
-				tituloRef={tituloRef}
-			/>
-		);
-	}
-
-	if (pantalla === "respuesta" && pregunta && respuesta) {
-		return (
-			<Respuesta
-				pregunta={pregunta.texto}
-				playa={pregunta.playa}
-				texto={respuesta.text}
-				fuentes={respuesta.sources ?? []}
-				onVolver={() => volver("inicio")}
-				puedeCalificar={
-					!loading &&
-					!!chat.conversationId &&
-					respuesta.persistenceStatus !== "failed" &&
-					!persistingMessageIds.has(respuesta.id)
-				}
-				onCalificar={calificar}
-				onOtraPregunta={otraPregunta}
-				onEscribirDeNuevo={() => {
-					setBorrador(pregunta.texto);
-					irACaja(false);
-				}}
+				seguimiento={seguimiento}
+				onCambioSeguimiento={setSeguimiento}
+				onSeguir={seguir}
+				muchasSeguidas={false}
 				tituloRef={tituloRef}
 			/>
 		);

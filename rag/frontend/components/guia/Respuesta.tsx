@@ -7,6 +7,8 @@ import type { SourceFragment, SourceGroup } from "@/lib/types";
 import { lecturaRespuesta, markdownATexto, ordenarRespuesta, type RespuestaOrdenada } from "@/lib/guia/respuesta";
 import { Atencion, Curvas, FlechaVolver } from "@/components/guia/iconos";
 import { Escuchar } from "@/components/guia/Escuchar";
+import { CajaPregunta } from "@/components/guia/Pantallas";
+import { TXT } from "@/lib/guia/textos";
 
 export type Calificacion = { util: boolean; comentario?: string };
 
@@ -21,6 +23,13 @@ interface RespuestaProps {
 	onVolver: () => void;
 	onOtraPregunta: () => void;
 	onEscribirDeNuevo: () => void;
+	/** Lo escrito en la caja de seguimiento (vive afuera, como el borrador del inicio). */
+	seguimiento: string;
+	onCambioSeguimiento: (texto: string) => void;
+	/** Pregunta de seguimiento: sigue la misma conversación. */
+	onSeguir: (texto: string) => void;
+	/** Ya van varias respuestas seguidas: se sugiere empezar de nuevo. */
+	muchasSeguidas: boolean;
 	tituloRef: React.RefObject<HTMLHeadingElement | null>;
 }
 
@@ -55,6 +64,10 @@ export function Respuesta({
 	onVolver,
 	onOtraPregunta,
 	onEscribirDeNuevo,
+	seguimiento,
+	onCambioSeguimiento,
+	onSeguir,
+	muchasSeguidas,
 	tituloRef,
 }: RespuestaProps) {
 	const ordenada = useMemo<RespuestaOrdenada>(() => ordenarRespuesta(texto), [texto]);
@@ -224,9 +237,34 @@ export function Respuesta({
 				<Sirvio puedeCalificar={puedeCalificar} onCalificar={onCalificar} />
 			)}
 
+			{/* Seguimiento: misma conversación, sin burbujas; la respuesta nueva
+			    reemplaza esta pantalla. Sin respuesta firme no hay "sobre esto". */}
+			{sinRespuestaFirme ? null : (
+				<section className="guia-seguir" aria-labelledby="seguir-titulo">
+					<h2 id="seguir-titulo">{TXT.seguirTitulo}</h2>
+					{muchasSeguidas ? (
+						<p className="guia-tope" role="note">
+							{TXT.seguirTope}
+						</p>
+					) : null}
+					<CajaPregunta
+						id="seguimiento"
+						valor={seguimiento}
+						onCambio={onCambioSeguimiento}
+						onPreguntar={onSeguir}
+						pista={TXT.seguirPista}
+						etiqueta={TXT.seguirTitulo}
+					/>
+				</section>
+			)}
+
 			<div className="guia-final">
-				<button type="button" className="guia-btn" onClick={onOtraPregunta}>
-					Hacer otra pregunta
+				<button
+					type="button"
+					className={sinRespuestaFirme || muchasSeguidas ? "guia-btn" : "guia-btn-sec"}
+					onClick={onOtraPregunta}
+				>
+					{TXT.empezarDeNuevo}
 				</button>
 			</div>
 		</>

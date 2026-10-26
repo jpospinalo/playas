@@ -1,8 +1,9 @@
-import { createRef } from "react";
+import { createRef, useState } from "react";
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { Respuesta } from "@/components/guia/Respuesta";
+import { TXT } from "@/lib/guia/textos";
 import type { SourceGroup } from "@/lib/types";
 
 const FUENTES: SourceGroup[] = [
@@ -15,7 +16,15 @@ const FUENTES: SourceGroup[] = [
 	},
 ];
 
-function pintar(texto: string, extra: Partial<React.ComponentProps<typeof Respuesta>> = {}) {
+type Props = React.ComponentProps<typeof Respuesta>;
+
+/** La caja de seguimiento guarda lo escrito afuera, como en GuiaApp. */
+function ConSeguimiento(props: Props) {
+	const [texto, setTexto] = useState(props.seguimiento);
+	return <Respuesta {...props} seguimiento={texto} onCambioSeguimiento={setTexto} />;
+}
+
+function pintar(texto: string, extra: Partial<Props> = {}) {
 	const props = {
 		pregunta: "Un hotel no me deja pasar",
 		playa: null,
@@ -26,10 +35,14 @@ function pintar(texto: string, extra: Partial<React.ComponentProps<typeof Respue
 		onVolver: vi.fn(),
 		onOtraPregunta: vi.fn(),
 		onEscribirDeNuevo: vi.fn(),
+		seguimiento: "",
+		onCambioSeguimiento: vi.fn(),
+		onSeguir: vi.fn(),
+		muchasSeguidas: false,
 		tituloRef: createRef<HTMLHeadingElement>(),
 		...extra,
 	};
-	render(<Respuesta {...props} />);
+	render(<ConSeguimiento {...props} />);
 	return props;
 }
 
@@ -52,7 +65,7 @@ describe("Respuesta (diseño v3)", () => {
 	it("no agrega secciones que el backend no trajo (ni 'A quién acudir' ni pasos)", () => {
 		pintar("Según el artículo 166 del Decreto 2324 de 1984, las playas son bienes de uso público y nadie puede apropiarse de ellas [doc1].");
 		expect(screen.getByRole("heading", { level: 1, name: "Esto es lo que encontramos" })).toBeInTheDocument();
-		expect(screen.queryByRole("heading", { level: 2 })).not.toBeInTheDocument();
+		expect(screen.getAllByRole("heading", { level: 2 }).map((h) => h.textContent)).toEqual([TXT.seguirTitulo]);
 		expect(screen.queryByText(/A quién acudir/)).not.toBeInTheDocument();
 	});
 
@@ -87,7 +100,7 @@ describe("Respuesta (diseño v3)", () => {
 		expect(props.onEscribirDeNuevo).toHaveBeenCalled();
 	});
 
-	it("tras enviar '¿Qué le faltó?' el recuadro no se encoge (un doble toque no cae en 'Hacer otra pregunta')", async () => {
+	it("tras enviar '¿Qué le faltó?' el recuadro no se encoge (un doble toque no cae en 'Empezar de nuevo')", async () => {
 		pintar("Sí. Texto [doc1].");
 		await userEvent.click(screen.getByRole("button", { name: "No" }));
 		const caja = screen.getByLabelText(/Qué le faltó/).closest(".guia-sirvio") as HTMLElement;
@@ -122,5 +135,38 @@ describe("Respuesta (diseño v3)", () => {
 	it("no ofrece calificar mientras la respuesta no está guardada", () => {
 		pintar("Sí. Texto.", { puedeCalificar: false });
 		expect(screen.queryByText("¿Esta respuesta le sirvió?")).not.toBeInTheDocument();
+	});
+
+	it("al final ofrece preguntar algo más sobre esto y lo envía como seguimiento", async () => {
+		const props = pintar("Sí. Texto [doc1].");
+		expect(screen.getByRole("heading", { level: 2, name: TXT.seguirTitulo })).toBeInTheDocument();
+		const caja = screen.getByRole("textbox", { name: TXT.seguirTitulo });
+		await userEvent.type(caja, "pez");
+		await userEvent.click(screen.getByRole("button", { name: "Preguntar" }));
+		expect(screen.getByRole("alert")).toHaveTextContent(TXT.escribirCorta);
+		await userEvent.clear(caja);
+		await userEvent.type(caja, "¿Y si es de noche?");
+		await userEvent.click(screen.getByRole("button", { name: "Preguntar" }));
+		expect(props.onSeguir).toHaveBeenCalledWith("¿Y si es de noche?");
+		expect(props.onOtraPregunta).not.toHaveBeenCalled();
+	});
+
+	it("'Empezar de nuevo con otro tema' deja la conversación", async () => {
+		const props = pintar("Sí. Texto.");
+		await userEvent.click(screen.getByRole("button", { name: TXT.empezarDeNuevo }));
+		expect(props.onOtraPregunta).toHaveBeenCalled();
+		expect(props.onSeguir).not.toHaveBeenCalled();
+	});
+
+	it("sin respuesta firme no hay caja de seguimiento", () => {
+		pintar("**Situación:** evidencia insuficiente.\n\n**Motivo:** no hubo fragmentos.", { fuentes: [] });
+		expect(screen.queryByText(TXT.seguirTitulo)).not.toBeInTheDocument();
+		expect(screen.getByRole("button", { name: TXT.empezarDeNuevo })).toBeInTheDocument();
+	});
+
+	it("tras varias respuestas seguidas sugiere empezar de nuevo", () => {
+		pintar("Sí. Texto.", { muchasSeguidas: true });
+		expect(screen.getByText(TXT.seguirTope)).toBeInTheDocument();
+		expect(screen.getByRole("button", { name: TXT.empezarDeNuevo })).toHaveClass("guia-btn");
 	});
 });

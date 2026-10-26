@@ -1030,3 +1030,23 @@ body:has(.guia) {
 		font-size: 26px;
 	}
 }
+
+/* Seguimiento al final de la respuesta: la misma caja, más baja. */
+.guia-seguir {
+	margin-top: 32px;
+	padding-top: 24px;
+	border-top: 2px solid var(--linea);
+}
+.guia .guia-seguir h2 {
+	margin: 0 0 12px;
+}
+.guia .guia-tope {
+	margin: 0 0 12px;
+	padding: 12px 16px;
+	background: var(--bajo);
+	border-left: 6px solid var(--marino);
+	border-radius: 0 6px 6px 0;
+}
+.guia .guia-seguir .guia-buscador textarea {
+	min-height: 76px;
+}
