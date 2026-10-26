@@ -13,7 +13,8 @@ export const TXT = {
 	cajaPista: "Escriba su pregunta sobre las playas…",
 	/** Cómo lee "Escuchar" la caja del inicio (la pista sin los puntos suspensivos). */
 	cajaLectura: "Escriba su pregunta sobre las playas y toque «Preguntar».",
-	inicioNota: "Escríbala como se la contaría a un vecino. Pruebe con:",
+	inicioNota: "Escríbala como se la contaría a un vecino.",
+	inicioEjemplos: "Pruebe con:",
 	guiarTitulo: "¿Prefiere que lo guiemos?",
 	guiarPista: "Elija el tema que más se parezca a su caso y le vamos preguntando paso a paso.",
 	pie: "ATLAS le explica, con palabras sencillas, lo que dicen las normas y los jueces de Colombia sobre las playas. No reemplaza a un abogado.",

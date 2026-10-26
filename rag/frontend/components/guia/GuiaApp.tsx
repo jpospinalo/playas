@@ -126,6 +126,25 @@ function tipoDeError(error: string | null): TipoError {
 }
 
 const CLAVE_GUARDADA = "atlas:ultima-respuesta";
+const CLAVE_BORRADOR = "atlas:borrador";
+
+/** Lo escrito en la caja del inicio, para no perderlo si la pestaña se recarga. */
+function leerBorrador(): string {
+	try {
+		return window.sessionStorage.getItem(CLAVE_BORRADOR) ?? "";
+	} catch {
+		return "";
+	}
+}
+
+function guardarBorrador(texto: string): void {
+	try {
+		if (texto) window.sessionStorage.setItem(CLAVE_BORRADOR, texto);
+		else window.sessionStorage.removeItem(CLAVE_BORRADOR);
+	} catch {
+		// Sin almacenamiento: solo se pierde esta comodidad.
+	}
+}
 
 interface RespuestaGuardada {
 	pregunta: PreguntaActual;
@@ -181,7 +200,8 @@ function Flujo() {
 	const pendienteRef = useRef<{ envio: string; nueva: boolean } | null>(null);
 	const [turnoEnvio, setTurnoEnvio] = useState(0);
 	const [sinSenal, setSinSenal] = useState(false);
-	const [borrador, setBorrador] = useState("");
+	const [borrador, setBorrador] = useState(() => (typeof window === "undefined" ? "" : leerBorrador()));
+	useEffect(() => guardarBorrador(borrador), [borrador]);
 	const [seguimiento, setSeguimiento] = useState("");
 	// Veces que se tocó "Intentar otra vez" sin señal (para que se note que intentó).
 	const [intentos, setIntentos] = useState(0);

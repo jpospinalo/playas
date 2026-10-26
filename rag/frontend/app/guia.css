@@ -1015,8 +1015,24 @@ body:has(.guia) {
 		flex-direction: column;
 	}
 	.guia .guia-buscador textarea {
-		min-height: 104px;
+		min-height: 88px;
+		padding: 14px 16px;
 		border-radius: 3px 3px 0 0;
+	}
+	/* Celular: que "¿Prefiere que lo guiemos?" asome en la primera vista
+	   (360×640). La nota queda en "Pruebe con:". */
+	.guia-hero-escuchar {
+		margin: 10px 0 14px;
+	}
+	.guia .guia-nota {
+		margin-top: 10px;
+	}
+	.guia-nota .largo {
+		display: none;
+	}
+	.guia-ejemplos {
+		margin-top: 8px;
+		gap: 8px;
 	}
 	.guia-buscador .guia-btn {
 		width: 100%;
@@ -1049,4 +1065,18 @@ body:has(.guia) {
 }
 .guia .guia-seguir .guia-buscador textarea {
 	min-height: 76px;
+}
+
+/* Celular chico (p. ej. 360×640): sin el logo grande (el encabezado ya
+   lleva el pequeño), para que "¿Prefiere que lo guiemos?" quede a la vista. */
+@media (max-width: 600px) and (max-height: 720px) {
+	.guia-hero .logo {
+		display: none;
+	}
+	.guia-hero-in {
+		padding-bottom: 18px;
+	}
+	.guia-guiar {
+		padding-top: 18px;
+	}
 }

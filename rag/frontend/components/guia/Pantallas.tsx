@@ -98,8 +98,8 @@ export function PantallaInicio({
 				<div className="guia-hero-in">
 					<picture>
 						<source srcSet="/brand/atlas-logo-inicio.webp" type="image/webp" />
-						{/* Logo de 26 KB (webp) o 72 KB (png), sin optimizador de imágenes. */}
-						<img className="logo" src="/brand/atlas-logo-inicio.png" alt="" width={132} height={135} />
+						{/* Logo de 22 KB (webp) o 74 KB (png), sin optimizador de imágenes. */}
+						<img className="logo" src="/brand/atlas-logo-inicio.png" alt="" width={132} height={121} />
 					</picture>
 					<h1 id="titulo" ref={tituloRef} tabIndex={-1}>
 						{TXT.inicioTitulo}
@@ -117,7 +117,9 @@ export function PantallaInicio({
 						describe="inicio-nota"
 					/>
 					<p className="guia-nota" id="inicio-nota">
-						{TXT.inicioNota}
+						{/* En celular chico solo queda "Pruebe con:" para que los temas asomen. */}
+						<span className="largo">{TXT.inicioNota} </span>
+						{TXT.inicioEjemplos}
 					</p>
 					<ul className="guia-ejemplos" aria-labelledby="inicio-nota">
 						{EJEMPLOS.map((e) => (
