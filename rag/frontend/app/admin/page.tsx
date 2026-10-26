@@ -1,13 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
-import { restErrorMessage } from "@/lib/httpTimeout";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
 	MINIMO_PARA_PORCENTAJE,
 	PERIODOS,
 	TEMAS_PANEL,
 	cambioConteo,
+	mensajeError,
 	cambioTasa,
 	decimal,
 	descargarCsv,
@@ -18,6 +19,7 @@ import {
 	porcentaje,
 	textoPorcentaje,
 	tipoDocumento,
+	type FiltroResultado,
 	type Resumen,
 } from "@/lib/admin/panel";
 import {
@@ -42,8 +44,53 @@ import { Recientes } from "@/components/admin/panel/Recientes";
  * METRICAS-panel.md. Todo sale de `GET /api/admin/panel/*` (solo lectura).
  */
 export default function PanelResumen() {
-	const [dias, setDias] = useState<number>(30);
-	const [tema, setTema] = useState<string>("");
+	return (
+		<Suspense fallback={<p className="pnl-cargando">Cargando cifras…</p>}>
+			<ResumenConFiltros />
+		</Suspense>
+	);
+}
+
+const DIAS_VALIDOS: readonly number[] = PERIODOS.map((p) => p.dias);
+const RESULTADOS_VALIDOS: readonly string[] = [
+	"con_fuente",
+	"sin_respuesta_segura",
+	"no_le_sirvio",
+	"fuera_de_tema",
+	"pide_aclarar",
+];
+
+/** Filtros en la URL (?dias=0&tema=obras&ver=no_le_sirvio): sobreviven a
+ * recargar y a volver del detalle de una conversación (PQ-22). */
+function consultaFiltros(dias: number, tema: string, resultado: string): string {
+	const q = new URLSearchParams();
+	if (dias !== 30) q.set("dias", String(dias));
+	if (tema) q.set("tema", tema);
+	if (resultado) q.set("ver", resultado);
+	return q.toString();
+}
+
+function ResumenConFiltros() {
+	const sp = useSearchParams();
+	const router = useRouter();
+	const [dias, setDias] = useState<number>(() => {
+		const d = Number(sp.get("dias"));
+		return sp.has("dias") && DIAS_VALIDOS.includes(d) ? d : 30;
+	});
+	const [tema, setTema] = useState<string>(() => {
+		const t = sp.get("tema") ?? "";
+		return TEMAS_PANEL.some((x) => x.id === t) ? t : "";
+	});
+	const [resultado, setResultado] = useState<FiltroResultado>(() => {
+		const r = sp.get("ver") ?? "";
+		return (RESULTADOS_VALIDOS.includes(r) ? r : "") as FiltroResultado;
+	});
+	const consulta = consultaFiltros(dias, tema, resultado);
+
+	function escribirUrl(d: number, t: string, r: string) {
+		const q = consultaFiltros(d, t, r);
+		router.replace(q ? `/admin?${q}` : "/admin", { scroll: false });
+	}
 	const [datos, setDatos] = useState<Resumen | null>(null);
 	const [error, setError] = useState<string | null>(null);
 	const [cargando, setCargando] = useState(true);
@@ -61,7 +108,7 @@ export default function PanelResumen() {
 				setAnuncio(`${textoPeriodo(dias)}: ${numero(r.cifras.preguntas)} preguntas.`);
 			})
 			.catch((e) => {
-				if (vigente) setError(restErrorMessage(e, "No se pudieron cargar las cifras."));
+				if (vigente) setError(mensajeError(e, "No se pudieron cargar las cifras."));
 			})
 			.finally(() => {
 				if (vigente) setCargando(false);
@@ -74,11 +121,18 @@ export default function PanelResumen() {
 	function cambiarDias(d: number) {
 		setCargando(true);
 		setDias(d);
+		escribirUrl(d, tema, resultado);
 	}
 
 	function cambiarTema(t: string) {
 		setCargando(true);
 		setTema(t);
+		escribirUrl(dias, t, resultado);
+	}
+
+	function cambiarResultado(r: FiltroResultado) {
+		setResultado(r);
+		escribirUrl(dias, tema, r);
 	}
 
 	async function csv() {
@@ -86,12 +140,13 @@ export default function PanelResumen() {
 		try {
 			await descargarCsv(dias, tema, "");
 		} catch (e) {
-			setErrorCsv(restErrorMessage(e, "No se pudo descargar el archivo."));
+			setErrorCsv(mensajeError(e, "No se pudo descargar el archivo."));
 		}
 	}
 
 	return (
 		<div className="pnl-pag">
+			<title>Resumen del panel de ATLAS</title>
 			<div className="pnl-cabeza">
 				<div>
 					<h1>Resumen</h1>
@@ -181,7 +236,14 @@ export default function PanelResumen() {
 
 			{datos ? (
 				<div aria-busy={cargando} style={cargando ? { opacity: 0.6 } : undefined}>
-					<Contenido datos={datos} dias={dias} tema={tema} />
+					<Contenido
+						datos={datos}
+						dias={dias}
+						tema={tema}
+						resultado={resultado}
+						onResultado={cambiarResultado}
+						volver={consulta}
+					/>
 				</div>
 			) : null}
 		</div>
@@ -198,7 +260,21 @@ function subtituloPeriodo(d: Resumen): string {
 	return `Del ${fechaLarga(d.periodo.desde)} al ${hasta}`;
 }
 
-function Contenido({ datos, dias: diasFiltro, tema }: { datos: Resumen; dias: number; tema: string }) {
+function Contenido({
+	datos,
+	dias: diasFiltro,
+	tema,
+	resultado,
+	onResultado,
+	volver,
+}: {
+	datos: Resumen;
+	dias: number;
+	tema: string;
+	resultado: FiltroResultado;
+	onResultado: (r: FiltroResultado) => void;
+	volver: string;
+}) {
 	// El periodo que vale es el que respondió el servidor, no el del filtro
 	// mientras carga: así cifras y textos siempre describen lo mismo.
 	const dias = datos.periodo.dias;
@@ -325,7 +401,7 @@ function Contenido({ datos, dias: diasFiltro, tema }: { datos: Resumen; dias: nu
 				{desglose(c)}
 			</p>
 
-			<Brechas datos={datos} />
+			<Brechas datos={datos} volver={volver} />
 
 			<div className="pnl-grid">
 				<section className="pnl-bloque pnl-c7" aria-labelledby="t-serie">
@@ -341,7 +417,9 @@ function Contenido({ datos, dias: diasFiltro, tema }: { datos: Resumen; dias: nu
 					</div>
 					<Columnas serie={datos.serie} agrupacion={datos.periodo.agrupacion} />
 					<NotaSerie datos={datos} />
-					<VerComoTabla titulo="preguntas por semana">
+					<VerComoTabla
+						titulo={`preguntas por ${datos.periodo.agrupacion === "dia" ? "día" : "semana"}`}
+					>
 						<TablaSerie serie={datos.serie} agrupacion={datos.periodo.agrupacion} />
 					</VerComoTabla>
 				</section>
@@ -495,7 +573,14 @@ function Contenido({ datos, dias: diasFiltro, tema }: { datos: Resumen; dias: nu
 				</section>
 			</div>
 
-			<Recientes key={`${diasFiltro}-${tema}`} dias={diasFiltro} tema={tema} />
+			<Recientes
+				key={`${diasFiltro}-${tema}`}
+				dias={diasFiltro}
+				tema={tema}
+				resultado={resultado}
+				onResultado={onResultado}
+				volver={volver}
+			/>
 
 			<p className="pnl-pie">
 				Las cifras cuentan las preguntas hechas con sesión iniciada (flujo guiado y equipo), en

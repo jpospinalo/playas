@@ -169,19 +169,49 @@ FUERA = [
 ]
 ACLARAR = ["¿Y los permisos?", "¿Qué pasa con eso?", "Necesito saber de un permiso"]
 SALUDOS = ["hola", "buenos días", "¿qué puede hacer usted?", "gracias"]
-ESPERABA = [
-    "Saber si la DIMAR me tiene que dar permiso para reparar",
-    "El valor o cómo se calcula",
-    "Qué entidad lo hace y a dónde ir",
+# "Lo que esperaba" según el tema de la pregunta (PQ-17): tiene que leerse
+# como algo que esa persona pudo escribir.
+ESPERABA_POR_TEMA = {
+    "entrar": [
+        "Si el hotel puede cerrarme el paso y a quién me quejo",
+        "Que me dijera si es legal cobrar la entrada",
+        "A qué entidad acudir para que abran el acceso",
+    ],
+    "pescar": [
+        "Dónde se saca el permiso de pesca y cuánto cuesta",
+        "Si puedo pescar con red cerca de los bañistas",
+    ],
+    "vender": [
+        "Qué papeles necesito para vender sin que me quiten la mercancía",
+        "En qué oficina de Santa Marta se pide el permiso",
+        "Si la Policía puede decomisarme la nevera",
+    ],
+    "hoteles": [
+        "El valor de la concesión o cómo se calcula",
+        "Si el hotel puede reservar la arena solo para huéspedes",
+        "Qué norma dice hasta dónde puede poner sillas el hotel",
+    ],
+    "lanchas": [
+        "A qué distancia de la orilla pueden pasar las motos de agua",
+        "Quién está obligado a poner salvavidas",
+    ],
+    "obras": [
+        "Saber si la DIMAR me tiene que dar permiso para reparar",
+        "Qué licencia necesito y quién la da",
+        "Si pueden tumbar la construcción y qué puedo hacer",
+    ],
+}
+ESPERABA_GENERAL = [
     "Una respuesta más corta, con el paso a paso",
-    "Que me dijera si es legal o no",
     "El número de la norma exacta",
-    "Algo sobre Taganga en particular",
-    # Textos maliciosos a propósito: el panel debe mostrarlos como texto plano
-    # y el CSV debe escaparlos (PQ-06).
-    "<img src=x onerror=alert(1)>",
-    '=HYPERLINK("http://ejemplo.invalid","clic")',
+    "Que me dijera si es legal o no",
 ]
+
+
+def _esperaba(rng: random.Random, tema: str) -> str:
+    opciones = ESPERABA_POR_TEMA.get(tema, [])
+    return rng.choice(opciones if opciones and rng.random() < 0.8 else ESPERABA_GENERAL)
+
 
 COMENTARIOS_BUENOS = [
     "Clara y con la norma, gracias.",
@@ -279,7 +309,9 @@ def _pregunta(rng: random.Random) -> tuple[str, str]:
     return tema, texto
 
 
-async def sembrar(db: Path, n: int, semilla: int, reset: bool, dias: int) -> dict[str, int]:
+async def sembrar(
+    db: Path, n: int, semilla: int, reset: bool, dias: int, casos_limite: bool = False
+) -> dict[str, int]:
     if db.exists():
         if not reset:
             raise SystemExit(f"{db} ya existe. Use --reset para borrarlo y crearlo de nuevo.")
@@ -421,7 +453,7 @@ async def sembrar(db: Path, n: int, semilla: int, reset: bool, dias: int) -> dic
                     else (rng.randint(1, 3), rng.randint(1, 2))
                 )
                 ratings = {"pertinence": a, "accuracy": b}
-            esperaba = None if util or rng.random() < 0.35 else rng.choice(ESPERABA)
+            esperaba = None if util or rng.random() < 0.35 else _esperaba(rng, tipo)
             s.add(
                 MessageFeedback(
                     id=uid(),
@@ -457,8 +489,10 @@ async def sembrar(db: Path, n: int, semilla: int, reset: bool, dias: int) -> dic
                     )
                 )
                 conteo["conversaciones"] += 1
-        # Casos límite para probar el front (PQ-14): texto muy largo, pregunta
-        # sin respuesta guardada y texto con HTML o fórmula que debe verse plano.
+        # Casos límite para QA (PQ-14), solo con --casos-limite (PQ-16): texto
+        # muy largo, pregunta sin respuesta guardada, HTML y fórmulas que deben
+        # verse como texto plano y salir escapados en el CSV. Van fechados al
+        # principio de los datos para que la vista por defecto arranque limpia.
         largo = (
             "Tengo un kiosco en la playa desde hace muchos años y quiero saber qué tengo que hacer. "
             * 24
@@ -473,8 +507,11 @@ async def sembrar(db: Path, n: int, semilla: int, reset: bool, dias: int) -> dic
             ),
             ("@SUM(1+1) ¿Un hotel puede cerrar la playa?", agent._NO_EVIDENCE_RESPONSE, False),
         ]
+        if not casos_limite:
+            especiales = []
+        inicio_casos = ahora - timedelta(days=dias - 5)
         for i, (texto, respuesta, con_fuente) in enumerate(especiales):
-            cuando = ahora - timedelta(hours=3 + i)
+            cuando = inicio_casos + timedelta(hours=3 + i)
             conv = Conversation(
                 id=uid(),
                 user_id=ids[i],
@@ -492,9 +529,10 @@ async def sembrar(db: Path, n: int, semilla: int, reset: bool, dias: int) -> dic
             )
             if respuesta:
                 fuentes = _fuentes(rng, "obras") if con_fuente else None
+                id_respuesta = uid()
                 s.add(
                     Message(
-                        id=uid(),
+                        id=id_respuesta,
                         conversation_id=conv.id,
                         role="assistant",
                         text=respuesta,
@@ -502,6 +540,20 @@ async def sembrar(db: Path, n: int, semilla: int, reset: bool, dias: int) -> dic
                         created_at=cuando + timedelta(seconds=20),
                     )
                 )
+                if texto.startswith("@SUM"):
+                    # "Lo que esperaba" con HTML y fórmula (PQ-06).
+                    s.add(
+                        MessageFeedback(
+                            id=uid(),
+                            user_id=ids[i],
+                            user_email=correos.get(ids[i], ""),
+                            conversation_id=conv.id,
+                            message_id=id_respuesta,
+                            ratings={"pertinence": 1, "accuracy": 1},
+                            expected_answer='<img src=x onerror=alert(1)> =HYPERLINK("x","clic")',
+                            created_at=cuando + timedelta(minutes=2),
+                        )
+                    )
             conteo["preguntas"] += 1
         await s.commit()
     await engine.dispose()
@@ -519,10 +571,15 @@ def main() -> None:
     p.add_argument("--dias", type=int, default=120, help="Días hacia atrás que cubren los datos")
     p.add_argument("--semilla", type=int, default=42)
     p.add_argument("--reset", action="store_true", help="Borra el archivo si ya existe")
+    p.add_argument(
+        "--casos-limite",
+        action="store_true",
+        help="Agrega preguntas de prueba para QA (HTML, fórmulas, texto largo)",
+    )
     a = p.parse_args()
     if a.db.suffix not in (".db", ".sqlite", ".sqlite3"):
         raise SystemExit("--db debe ser un archivo SQLite (.db, .sqlite o .sqlite3)")
-    conteo = asyncio.run(sembrar(a.db, a.preguntas, a.semilla, a.reset, a.dias))
+    conteo = asyncio.run(sembrar(a.db, a.preguntas, a.semilla, a.reset, a.dias, a.casos_limite))
     print(
         f"Semilla lista en {a.db}: {conteo['usuarios']} personas, {conteo['preguntas']} preguntas, {conteo['calificaciones']} calificaciones por respuesta, {conteo['conversaciones']} de conversación."
     )

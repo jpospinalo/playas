@@ -21,6 +21,14 @@ const ENLACES = [
 	{ href: "/admin/usuarios", texto: "Usuarios" },
 ];
 
+// Título de la pestaña de las páginas viejas (las nuevas ponen el suyo): cada
+// pantalla con su nombre, sin raya (PQ-21).
+const TITULOS: Record<string, string> = {
+	"/admin/message-feedback": "Calificaciones por respuesta: panel de ATLAS",
+	"/admin/feedback": "Calificaciones de conversación: panel de ATLAS",
+	"/admin/usuarios": "Usuarios: panel de ATLAS",
+};
+
 const subscribeNoop = () => () => {};
 
 function BotonTema() {
@@ -73,6 +81,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 		return (
 			<div className="pnl">
 				<main id="main-content" className="pnl-main pnl-pag">
+					<title>Acceso restringido: panel de ATLAS</title>
 					<h1>Acceso restringido</h1>
 					<p className="pnl-sub">
 						Su cuenta no tiene permiso para ver el panel de administración. Si cree que
@@ -126,6 +135,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 				</div>
 			</header>
 			<main id="main-content" className="pnl-main">
+				{TITULOS[pathname] ? <title>{TITULOS[pathname]}</title> : null}
 				{children}
 			</main>
 		</div>

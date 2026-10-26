@@ -7,7 +7,7 @@
  */
 
 import { API_URL } from "@/lib/config";
-import { withRestTimeout } from "@/lib/httpTimeout";
+import { isNetworkError, isRestTimeoutError, withRestTimeout } from "@/lib/httpTimeout";
 import { throwIfSessionExpired } from "@/lib/api";
 import { expireAuthSession, getToken } from "@/lib/auth";
 
@@ -323,11 +323,25 @@ export function cambioTasa(actual: number | null, anterior: number | null): Camb
 	return { direccion: d > 0 ? "sube" : "baja", texto: `${n} ${n === 1 ? "punto" : "puntos"}` };
 }
 
+/**
+ * Mensaje de error para el panel, de usted (PQ-20). `restErrorMessage` de
+ * lib/httpTimeout habla de tú porque lo comparte el chat del equipo.
+ */
+export function mensajeError(error: unknown, otro: string): string {
+	if (isRestTimeoutError(error)) return "El servidor tardó demasiado en responder. Intente de nuevo.";
+	if (isNetworkError(error)) {
+		return "No hay conexión con ATLAS. Revise su conexión a internet e intente de nuevo.";
+	}
+	return error instanceof Error && error.message ? error.message : otro;
+}
+
 export const ETIQUETA_RESULTADO: Record<Resultado, string> = {
 	con_fuente: "Respondió citando normas",
-	sin_evidencia: "No encontró una norma que lo respalde",
-	sin_cita_valida: "Respondió sin una cita válida",
-	sin_fuente_otro: "Respondió sin citar normas",
+	// Un solo nombre para el grupo ("Sin respuesta segura") y el motivo como
+	// subtipo, igual que en las cifras y el filtro (PQ-19).
+	sin_evidencia: "Sin respuesta segura: no encontró norma",
+	sin_cita_valida: "Sin respuesta segura: cita no válida",
+	sin_fuente_otro: "Sin respuesta segura: no citó normas",
 	fuera_de_tema: "Fuera del tema de playas",
 	pide_aclarar: "Pidió aclarar la pregunta",
 	saludo: "Saludo, no era una pregunta",
@@ -346,6 +360,13 @@ export function textoResultado(resultado: Resultado, fuentes?: number): string {
 		return `Respondió citando ${fuentes} ${fuentes === 1 ? "norma" : "normas"}`;
 	}
 	return ETIQUETA_RESULTADO[resultado];
+}
+
+/** Enlace al detalle que recuerda los filtros para volver igual (PQ-22). */
+export function enlaceConversacion(id: string, volver: string): string {
+	const q = new URLSearchParams({ id });
+	if (volver) q.set("volver", volver);
+	return `/admin/conversacion?${q}`;
 }
 
 /** Corta un texto largo en la última palabra completa y agrega "…". */

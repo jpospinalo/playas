@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { diaMes, numero, recortar, type Resumen } from "@/lib/admin/panel";
+import { diaMes, enlaceConversacion, numero, recortar, type Resumen } from "@/lib/admin/panel";
 import { EstadoCalificacion, IconoAviso } from "@/components/admin/panel/Estados";
 
 const VISIBLES = 6;
@@ -13,7 +13,7 @@ const VISIBLES = 6;
  * ordenadas por las veces que se repitieron. Es la lista de trabajo de los
  * abogados: qué contenido falta en la base.
  */
-export function Brechas({ datos }: { datos: Resumen }) {
+export function Brechas({ datos, volver }: { datos: Resumen; volver: string }) {
 	const [todas, setTodas] = useState(false);
 	const lista = todas ? datos.brechas : datos.brechas.slice(0, VISIBLES);
 	const porTema = datos.temas.filter((t) => t.brechas > 0).sort((a, b) => b.brechas - a.brechas);
@@ -25,7 +25,7 @@ export function Brechas({ datos }: { datos: Resumen }) {
 					<h2 id="t-brechas">Dónde falla ATLAS</h2>
 					<p>
 						{datos.brechas_total
-							? `${numero(datos.brechas_total)} ${datos.brechas_total === 1 ? "pregunta quedó" : "preguntas quedaron"} sin norma que la respalde o la persona dijo que no le sirvió. Las más repetidas primero; no incluye preguntas fuera del tema de playas.`
+							? `${numero(datos.brechas_total)} ${datos.brechas_total === 1 ? "pregunta quedó" : "preguntas quedaron"} sin respuesta segura o la persona dijo que no le sirvió. Las más repetidas primero; no incluye preguntas fuera del tema de playas.`
 							: "Ninguna pregunta quedó sin norma ni fue calificada como “no me sirvió” en este periodo."}
 					</p>
 				</div>
@@ -50,7 +50,7 @@ export function Brechas({ datos }: { datos: Resumen }) {
 					{lista.map((b) => (
 						<li key={`${b.conversation_id}-${b.pregunta}`} className="pnl-fila">
 							<div className="pnl-fila-q">
-								<Link href={`/admin/conversacion?id=${encodeURIComponent(b.conversation_id)}`}>
+								<Link href={enlaceConversacion(b.conversation_id, volver)}>
 									{recortar(b.pregunta, 220)}
 								</Link>
 								<p className="pnl-fila-meta">
@@ -74,7 +74,7 @@ export function Brechas({ datos }: { datos: Resumen }) {
 										) : (
 											<span className="pnl-estado ojo">
 												<IconoAviso />
-												Sin norma que la respalde
+												Sin respuesta segura
 											</span>
 										)}
 									</dd>

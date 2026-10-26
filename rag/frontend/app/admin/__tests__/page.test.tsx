@@ -4,6 +4,13 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import PanelResumen from "@/app/admin/page";
 import type { Preguntas, Resumen } from "@/lib/admin/panel";
 
+const replaceMock = vi.fn();
+let parametros = new URLSearchParams();
+vi.mock("next/navigation", () => ({
+	useRouter: () => ({ replace: replaceMock, push: vi.fn() }),
+	useSearchParams: () => parametros,
+}));
+
 vi.mock("@/lib/auth", () => ({
 	getToken: vi.fn(() => "test-token"),
 	expireAuthSession: vi.fn(),
@@ -65,6 +72,8 @@ const PREGUNTAS: Preguntas = { items: [], total: 0, page: 1, page_size: 20 };
 let respuestaResumen: () => Response;
 
 beforeEach(() => {
+	parametros = new URLSearchParams();
+	replaceMock.mockClear();
 	respuestaResumen = () => new Response(JSON.stringify(resumen()), { status: 200 });
 	vi.stubGlobal(
 		"fetch",
@@ -142,5 +151,14 @@ describe("app/admin/page — resumen del panel", () => {
 		await waitFor(() =>
 			expect(vi.mocked(fetch).mock.calls.some(([u]) => String(u).includes("/resumen?dias=7"))).toBe(true),
 		);
+	});
+
+	it("los filtros van a la URL y se leen de ella (PQ-22)", async () => {
+		parametros = new URLSearchParams("dias=0&tema=obras");
+		render(<PanelResumen />);
+		await screen.findByText("482");
+		expect(vi.mocked(fetch).mock.calls.some(([u]) => String(u).includes("/resumen?dias=0&tema=obras"))).toBe(true);
+		await userEvent.click(screen.getByRole("radio", { name: "7 días" }));
+		expect(replaceMock).toHaveBeenCalledWith("/admin?dias=7&tema=obras", { scroll: false });
 	});
 });

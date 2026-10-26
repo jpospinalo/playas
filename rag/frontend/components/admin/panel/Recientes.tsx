@@ -2,9 +2,10 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { restErrorMessage } from "@/lib/httpTimeout";
 import {
+	enlaceConversacion,
 	fechaHora,
+	mensajeError,
 	numero,
 	pedirPreguntas,
 	recortar,
@@ -16,7 +17,7 @@ import { EstadoCalificacion, EstadoResultado, IconoAviso } from "@/components/ad
 const OPCIONES: { valor: FiltroResultado; texto: string }[] = [
 	{ valor: "", texto: "Todas las preguntas" },
 	{ valor: "con_fuente", texto: "Respondió citando normas" },
-	{ valor: "sin_respuesta_segura", texto: "Sin norma que la respalde" },
+	{ valor: "sin_respuesta_segura", texto: "Sin respuesta segura" },
 	{ valor: "no_le_sirvio", texto: "No le sirvió" },
 	{ valor: "fuera_de_tema", texto: "Fuera del tema de playas" },
 	{ valor: "pide_aclarar", texto: "Pidió aclarar la pregunta" },
@@ -29,8 +30,19 @@ const POR_PAGINA = 20;
  * lee de un vistazo: qué preguntó la persona, el tema, cómo respondió ATLAS
  * y si le sirvió (PQ-J2).
  */
-export function Recientes({ dias, tema }: { dias: number; tema: string }) {
-	const [resultado, setResultado] = useState<FiltroResultado>("");
+export function Recientes({
+	dias,
+	tema,
+	resultado,
+	onResultado,
+	volver,
+}: {
+	dias: number;
+	tema: string;
+	resultado: FiltroResultado;
+	onResultado: (r: FiltroResultado) => void;
+	volver: string;
+}) {
 	const [pagina, setPagina] = useState(1);
 	const [datos, setDatos] = useState<Preguntas | null>(null);
 	const [error, setError] = useState<string | null>(null);
@@ -45,7 +57,7 @@ export function Recientes({ dias, tema }: { dias: number; tema: string }) {
 				setError(null);
 			})
 			.catch((e) => {
-				if (vigente) setError(restErrorMessage(e, "No se pudieron cargar las preguntas."));
+				if (vigente) setError(mensajeError(e, "No se pudieron cargar las preguntas."));
 			});
 		return () => {
 			vigente = false;
@@ -70,7 +82,7 @@ export function Recientes({ dias, tema }: { dias: number; tema: string }) {
 						id="pnl-resultado"
 						value={resultado}
 						onChange={(e) => {
-							setResultado(e.target.value as FiltroResultado);
+							onResultado(e.target.value as FiltroResultado);
 							setPagina(1);
 						}}
 					>
@@ -108,7 +120,7 @@ export function Recientes({ dias, tema }: { dias: number; tema: string }) {
 					{datos.items.map((p) => (
 						<li key={p.id} className="pnl-fila">
 							<div className="pnl-fila-q">
-								<Link href={`/admin/conversacion?id=${encodeURIComponent(p.conversation_id)}`}>
+								<Link href={enlaceConversacion(p.conversation_id, volver)}>
 									{recortar(p.pregunta, 220)}
 								</Link>
 								<p className="pnl-fila-meta">

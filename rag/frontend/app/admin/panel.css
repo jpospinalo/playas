@@ -1160,3 +1160,19 @@
 		grid-template-columns: minmax(0, 1fr);
 	}
 }
+
+/* Respuesta en markdown dentro del detalle */
+.pnl-md {
+	white-space: normal;
+}
+.pnl-md p {
+	margin: 0 0 10px;
+}
+.pnl-md p:last-child {
+	margin-bottom: 0;
+}
+.pnl-md ul,
+.pnl-md ol {
+	margin: 0 0 10px;
+	padding-left: 24px;
+}

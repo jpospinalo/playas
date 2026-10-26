@@ -2,9 +2,10 @@
 
 import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { useSearchParams } from "next/navigation";
-import { restErrorMessage } from "@/lib/httpTimeout";
-import { fechaHora, fechaLarga, pedirConversacion, type Conversacion } from "@/lib/admin/panel";
+import { fechaHora, fechaLarga, mensajeError, pedirConversacion, type Conversacion } from "@/lib/admin/panel";
 import { EstadoCalificacion, EstadoResultado, IconoAviso } from "@/components/admin/panel/Estados";
 
 /** Una conversación completa, para leer el caso desde el panel (solo lectura). */
@@ -19,7 +20,10 @@ export default function PaginaConversacion() {
 }
 
 function Detalle() {
-	const id = useSearchParams().get("id") ?? "";
+	const sp = useSearchParams();
+	const id = sp.get("id") ?? "";
+	// Filtros con los que se llegó desde el resumen (PQ-22).
+	const volver = sp.get("volver") ?? "";
 	const [datos, setDatos] = useState<Conversacion | null>(null);
 	const [error, setError] = useState<string | null>(id ? null : "Falta indicar qué conversación abrir.");
 
@@ -31,7 +35,7 @@ function Detalle() {
 				if (vigente) setDatos(c);
 			})
 			.catch((e) => {
-				if (vigente) setError(restErrorMessage(e, "No se pudo abrir la conversación."));
+				if (vigente) setError(mensajeError(e, "No se pudo abrir la conversación."));
 			});
 		return () => {
 			vigente = false;
@@ -41,13 +45,16 @@ function Detalle() {
 	return (
 		<>
 			<p className="pnl-volver">
-				<Link href="/admin" className="pnl-btn-sec">
+				<Link href={volver ? `/admin?${volver}` : "/admin"} className="pnl-btn-sec">
 					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
 						<path d="M15 5l-7 7 7 7" />
 					</svg>
 					Volver al resumen
 				</Link>
 			</p>
+			<title>
+				{datos ? `Conversación de ${datos.persona}: panel de ATLAS` : "Conversación: panel de ATLAS"}
+			</title>
 			<h1>Conversación</h1>
 			{error ? (
 				<div className="pnl-error" role="alert" style={{ marginTop: 18 }}>
@@ -73,7 +80,17 @@ function Detalle() {
 										<b>{esRespuesta ? "Respuesta de ATLAS" : "Pregunta"}</b>
 										<span className="num">{fechaHora(m.fecha)}</span>
 									</div>
-									<p className="pnl-msj-texto">{m.text}</p>
+									{esRespuesta ? (
+										// Las respuestas de ATLAS vienen en markdown; se muestra con
+										// formato y sin HTML crudo (skipHtml), como en el chat (PQ-18).
+										<div className="pnl-msj-texto pnl-md">
+											<ReactMarkdown remarkPlugins={[remarkGfm]} skipHtml>
+												{m.text}
+											</ReactMarkdown>
+										</div>
+									) : (
+										<p className="pnl-msj-texto">{m.text}</p>
+									)}
 									{esRespuesta ? (
 										<div className="pnl-msj-pie">
 											<span>
