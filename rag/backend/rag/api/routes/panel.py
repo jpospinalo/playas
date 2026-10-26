@@ -7,6 +7,7 @@ Solo accesibles para usuarios con rol 'admin' o 'super-admin' (mismo
   GET /api/admin/panel/preguntas               — preguntas del periodo, paginadas y filtrables
   GET /api/admin/panel/preguntas.csv           — las mismas preguntas en CSV (UTF-8 con BOM)
   GET /api/admin/panel/conversaciones/{id}     — detalle de una conversación (lectura)
+  GET /api/admin/panel/encuestas               — encuestas de satisfacción al final de la conversación
 
 Las clasificaciones (tema, playa, resultado, normas) salen de
 ``rag/api/panel_metricas.py``: reglas sobre el texto guardado, sin IA.
@@ -31,12 +32,15 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from rag.api import panel_metricas as pm
 from rag.api.auth import require_admin
 from rag.api.database import get_session
-from rag.api.models import Conversation, Message, MessageFeedback, User
+from rag.api.models import Conversation, Feedback, Message, MessageFeedback, User
 from rag.api.schemas import (
     PanelBrecha,
     PanelCifras,
     PanelConteo,
     PanelConversacionResponse,
+    PanelEncuestaItem,
+    PanelEncuestasResponse,
+    PanelFuente,
     PanelMensaje,
     PanelNorma,
     PanelPeriodo,
@@ -60,7 +64,15 @@ _TOP_BRECHAS = 50
 DiasQuery = Query(default=30, ge=0, le=3660, description="Últimos N días (0 = todo)")
 TemaQuery = Query(default=None, description="Id de tema (entrar, pescar, …, otros)")
 ResultadoFiltro = Literal[
-    "con_fuente", "sin_respuesta_segura", "no_le_sirvio", "fuera_de_tema", "pide_aclarar"
+    "con_fuente",
+    "sin_respuesta_segura",
+    "no_le_sirvio",
+    "fuera_de_tema",
+    "pide_aclarar",
+    # Para la página de opiniones (PQ-38): solo las calificadas.
+    "calificadas",
+    "le_sirvio",
+    "con_esperaba",
 ]
 
 
@@ -382,6 +394,12 @@ async def _preguntas_filtradas(
         filas = [f for f in filas if f.resultado == pm.FUERA_DE_TEMA]
     elif resultado == "pide_aclarar":
         filas = [f for f in filas if f.resultado == pm.PIDE_ACLARAR]
+    elif resultado == "calificadas":
+        filas = [f for f in filas if f.calificacion]
+    elif resultado == "le_sirvio":
+        filas = [f for f in filas if f.calificacion == pm.UTIL]
+    elif resultado == "con_esperaba":
+        filas = [f for f in filas if f.esperaba]
     filas.sort(key=lambda f: (f.fecha, f.id), reverse=True)
     return filas
 
@@ -409,6 +427,7 @@ def _item(f: _Fila, nombres: dict[str, str]) -> PanelPreguntaItem:
         playa=None if f.playa == pm.SIN_PLAYA else f.playa,
         resultado=f.resultado,
         fuentes=len(f.normas),
+        fuentes_sentencias=sum(t == "jurisprudencia" for _, t in f.normas),
         calificacion=f.calificacion,
         esperaba=f.esperaba,
         persona=nombres.get(f.user_id, _nombre(None)),
@@ -555,7 +574,7 @@ async def conversacion(
                 resultado=pm.clasificar_respuesta(m.text, m.sources)
                 if m.role == "assistant"
                 else None,
-                normas=[n for n, _ in pm.normas_citadas(m.sources)]
+                fuentes=[PanelFuente(nombre=n, doc_type=t) for n, t in pm.normas_citadas(m.sources)]
                 if m.role == "assistant"
                 else [],
                 calificacion=feedback.get(m.id, (None, None))[0],
@@ -563,4 +582,58 @@ async def conversacion(
             )
             for m in mensajes
         ],
+    )
+
+
+_DIMENSIONES = {"general": "overall", "tono": "tone", "largo": "length", "facilidad": "usability"}
+
+
+@router.get("/encuestas", response_model=PanelEncuestasResponse)
+async def encuestas(
+    dias: int = DiasQuery,
+    filtro: Literal["buenas", "malas", "con_comentario"] | None = Query(default=None),
+    page: int = Query(default=1, ge=1),
+    page_size: int = Query(default=20, ge=1, le=100),
+    _admin: dict = Depends(require_admin),
+    session: AsyncSession = Depends(get_session),
+) -> PanelEncuestasResponse:
+    """Encuestas del final de la conversación (tabla `feedback`), con nombre
+    de registro en vez de correo y promedios del periodo (PQ-28, PQ-37)."""
+    periodo = pm.calcular_periodo(dias)
+    stmt = select(Feedback, User.display_name).join(User, User.id == Feedback.user_id, isouter=True)
+    if periodo.inicio is not None:
+        stmt = stmt.where(Feedback.created_at >= periodo.inicio)
+    filas = []
+    for fb, nombre in (await session.execute(stmt)).all():
+        notas = {k: int((fb.ratings or {}).get(v, 0) or 0) for k, v in _DIMENSIONES.items()}
+        filas.append((fb, nombre, notas))
+    promedios = {
+        k: round(sum(n[k] for _, _, n in filas) / len(filas), 1) if filas else 0.0
+        for k in _DIMENSIONES
+    }
+    if filtro == "buenas":
+        filas = [x for x in filas if x[2]["general"] >= 4]
+    elif filtro == "malas":
+        filas = [x for x in filas if x[2]["general"] <= 2]
+    elif filtro == "con_comentario":
+        filas = [x for x in filas if (x[0].comment or "").strip()]
+    filas.sort(key=lambda x: (pm.a_utc(x[0].created_at), x[0].id), reverse=True)
+    pagina = filas[(page - 1) * page_size : page * page_size]
+    return PanelEncuestasResponse(
+        items=[
+            PanelEncuestaItem(
+                id=fb.id,
+                fecha=pm.a_utc(fb.created_at).isoformat(),
+                persona=_nombre(nombre),
+                titulo=fb.conversation_title,
+                conversation_id=fb.conversation_id,
+                comentario=(fb.comment or "").strip() or None,
+                **notas,
+            )
+            for fb, nombre, notas in pagina
+        ],
+        total=len(filas),
+        page=page,
+        page_size=page_size,
+        promedios=promedios,
     )

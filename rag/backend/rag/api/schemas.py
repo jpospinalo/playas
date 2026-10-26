@@ -399,7 +399,8 @@ class PanelPreguntaItem(BaseModel):
     tema_titulo: str
     playa: str | None
     resultado: str
-    fuentes: int
+    fuentes: int = Field(..., description="Documentos citados (normas + sentencias)")
+    fuentes_sentencias: int = Field(..., description="Cuántos de ellos son sentencias")
     calificacion: str | None
     esperaba: str | None
     persona: str = Field(..., description="Nombre de registro (nunca el correo)")
@@ -413,15 +414,43 @@ class PanelPreguntasResponse(BaseModel):
     page_size: int
 
 
+class PanelFuente(BaseModel):
+    nombre: str
+    doc_type: str | None
+
+
 class PanelMensaje(BaseModel):
     id: str
     role: str
     text: str
     fecha: str
     resultado: str | None
-    normas: list[str]
+    fuentes: list[PanelFuente]
     calificacion: str | None
     esperaba: str | None
+
+
+class PanelEncuestaItem(BaseModel):
+    id: str
+    fecha: str
+    persona: str = Field(..., description="Nombre de registro (nunca el correo)")
+    titulo: str | None
+    conversation_id: str | None
+    general: int
+    tono: int
+    largo: int
+    facilidad: int
+    comentario: str | None
+
+
+class PanelEncuestasResponse(BaseModel):
+    items: list[PanelEncuestaItem]
+    total: int
+    page: int
+    page_size: int
+    promedios: dict[str, float] = Field(
+        ..., description="Promedio de 1 a 5 por dimensión (general, tono, largo, facilidad)"
+    )
 
 
 class PanelConversacionResponse(BaseModel):

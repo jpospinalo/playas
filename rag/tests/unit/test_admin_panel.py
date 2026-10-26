@@ -24,7 +24,7 @@ from sqlalchemy.pool import StaticPool
 from rag.api import panel_metricas as pm
 from rag.api.auth import create_access_token
 from rag.api.database import get_session
-from rag.api.models import Base, Conversation, Message, MessageFeedback, User
+from rag.api.models import Base, Conversation, Feedback, Message, MessageFeedback, User
 from rag.api.routes.panel import DEMO_EMAIL
 from rag.api.routes.panel import router as panel_router
 from rag.core import agent
@@ -121,6 +121,30 @@ async def _sembrar(factory: async_sessionmaker, demo: bool) -> None:
                 )
             )
         s.add(User(id="adm", email="admin@atlas.co", password_hash="x", role="admin"))
+        # Encuestas del final de la conversación: una buena con comentario, una mala sin él
+        # y una vieja (fuera de 30 días).
+        for fid, uid, dias_atras, general, comentario in [
+            ("e1", "u1", 1, 5, "Muy clara"),
+            ("e2", "u2", 3, 1, None),
+            ("e3", "u4", 40, 3, "Regular"),
+        ]:
+            s.add(
+                Feedback(
+                    id=fid,
+                    user_id=uid,
+                    user_email=f"{uid}persona@correo.co",
+                    ratings={
+                        "tone": general,
+                        "length": general,
+                        "usability": general,
+                        "overall": general,
+                    },
+                    comment=comentario,
+                    conversation_id="c0",
+                    conversation_title="Título",
+                    created_at=_hace(dias_atras),
+                )
+            )
         if demo:
             s.add(User(id="demo", email=DEMO_EMAIL, password_hash="x", role="user"))
         for i, (uid, dias, preg, resp, sources, ratings, esperaba) in enumerate(_CASOS):
@@ -199,7 +223,7 @@ _ADMIN = {"uid": "adm", "role": "admin"}
 
 @pytest.mark.parametrize(
     "ruta",
-    ["/resumen", "/preguntas", "/preguntas.csv", "/conversaciones/c0"],
+    ["/resumen", "/preguntas", "/preguntas.csv", "/conversaciones/c0", "/encuestas"],
 )
 def test_permisos_en_el_servidor(cliente, ruta: str) -> None:
     c, _ = cliente
@@ -368,7 +392,10 @@ def test_conversacion_detalle(cliente) -> None:
     assert r["persona"] == "U1"
     assert [m["role"] for m in r["mensajes"]] == ["user", "assistant"]
     assert r["mensajes"][1]["resultado"] == "con_fuente"
-    assert r["mensajes"][1]["normas"] == ["Decreto 2324 de 1984", "Gieseken Cuello vs. DIMAR"]
+    assert r["mensajes"][1]["fuentes"] == [
+        {"nombre": "Decreto 2324 de 1984", "doc_type": "normativa"},
+        {"nombre": "Gieseken Cuello vs. DIMAR", "doc_type": "jurisprudencia"},
+    ]
     malo = c.get("/api/admin/panel/conversaciones/c2", headers=h).json()["mensajes"][1]
     assert malo["calificacion"] == "no_util" and malo["esperaba"] == "si la DIMAR da permiso"
     assert c.get("/api/admin/panel/conversaciones/nada", headers=h).status_code == 404
@@ -388,6 +415,49 @@ def test_solo_lectura(cliente) -> None:
 
     antes = asyncio.run(_conteos())
     h = _auth(**_ADMIN)
-    for ruta in ("/resumen?dias=0", "/preguntas", "/preguntas.csv", "/conversaciones/c0"):
+    for ruta in (
+        "/resumen?dias=0",
+        "/preguntas",
+        "/preguntas.csv",
+        "/conversaciones/c0",
+        "/encuestas",
+    ):
         assert c.get("/api/admin/panel" + ruta, headers=h).status_code == 200
     assert asyncio.run(_conteos()) == antes
+
+
+def test_filtros_de_opiniones_y_fuentes_por_tipo(cliente) -> None:
+    c, _ = cliente
+    h = _auth(**_ADMIN)
+
+    def total(q: str) -> int:
+        return c.get(f"/api/admin/panel/preguntas?dias=30&{q}", headers=h).json()["total"]
+
+    assert total("resultado=calificadas") == 3
+    assert total("resultado=le_sirvio") == 1
+    assert total("resultado=con_esperaba") == 2
+    items = c.get("/api/admin/panel/preguntas?dias=30", headers=h).json()["items"]
+    dos_fuentes = next(i for i in items if i["fuentes"] == 2)
+    assert dos_fuentes["fuentes_sentencias"] == 1
+
+
+def test_encuestas(cliente) -> None:
+    c, _ = cliente
+    h = _auth(**_ADMIN)
+    r = c.get("/api/admin/panel/encuestas?dias=30", headers=h).json()
+    assert r["total"] == 2
+    assert r["promedios"] == {"general": 3.0, "tono": 3.0, "largo": 3.0, "facilidad": 3.0}
+    primera = r["items"][0]
+    assert (
+        primera["persona"] == "U1"
+        and primera["general"] == 5
+        and primera["comentario"] == "Muy clara"
+    )
+    assert "@" not in str(r)
+    assert c.get("/api/admin/panel/encuestas?dias=0", headers=h).json()["total"] == 3
+    assert c.get("/api/admin/panel/encuestas?dias=30&filtro=malas", headers=h).json()["total"] == 1
+    assert (
+        c.get("/api/admin/panel/encuestas?dias=0&filtro=con_comentario", headers=h).json()["total"]
+        == 2
+    )
+    assert c.get("/api/admin/panel/encuestas?filtro=otra", headers=h).status_code == 422

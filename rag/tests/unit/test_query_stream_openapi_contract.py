@@ -22,7 +22,7 @@ from rag.api.main import app
 
 # Conjunto de rutas confirmado en la línea base (capturada antes de tocar
 # código productivo): 17 rutas, 21 operaciones. El panel de administración
-# (routes/panel.py) agregó 4 rutas GET de solo lectura: 21 rutas, 25 operaciones.
+# (routes/panel.py) agregó 5 rutas GET de solo lectura: 22 rutas, 26 operaciones.
 _EXPECTED_ROUTES: dict[str, set[str]] = {
     "/api/admin/feedback": {"get"},
     "/api/admin/message-feedback": {"get"},
@@ -30,6 +30,7 @@ _EXPECTED_ROUTES: dict[str, set[str]] = {
     "/api/admin/panel/preguntas": {"get"},
     "/api/admin/panel/preguntas.csv": {"get"},
     "/api/admin/panel/resumen": {"get"},
+    "/api/admin/panel/encuestas": {"get"},
     "/api/admin/users": {"get", "post"},
     "/api/admin/users/{uid}/password": {"patch"},
     "/api/auth/login": {"post"},
@@ -60,7 +61,7 @@ def test_route_and_operation_count_matches_expected_contract() -> None:
     assert actual_routes == _EXPECTED_ROUTES
 
     operation_count = sum(len(methods) for methods in paths.values())
-    assert operation_count == 25
+    assert operation_count == 26
 
 
 def test_query_stream_declares_text_event_stream_and_not_json() -> None:
