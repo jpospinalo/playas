@@ -30,6 +30,8 @@ interface RespuestaProps {
 	onSeguir: (texto: string) => void;
 	/** Ya van varias respuestas seguidas: se sugiere empezar de nuevo. */
 	muchasSeguidas: boolean;
+	/** false si la conversación ya no está abierta (respuesta guardada tras recargar). */
+	puedeSeguir?: boolean;
 	tituloRef: React.RefObject<HTMLHeadingElement | null>;
 }
 
@@ -68,6 +70,7 @@ export function Respuesta({
 	onCambioSeguimiento,
 	onSeguir,
 	muchasSeguidas,
+	puedeSeguir = true,
 	tituloRef,
 }: RespuestaProps) {
 	const ordenada = useMemo<RespuestaOrdenada>(() => ordenarRespuesta(texto), [texto]);
@@ -239,7 +242,7 @@ export function Respuesta({
 
 			{/* Seguimiento: misma conversación, sin burbujas; la respuesta nueva
 			    reemplaza esta pantalla. Sin respuesta firme no hay "sobre esto". */}
-			{sinRespuestaFirme ? null : (
+			{sinRespuestaFirme || !puedeSeguir ? null : (
 				<section className="guia-seguir" aria-labelledby="seguir-titulo">
 					<h2 id="seguir-titulo">{TXT.seguirTitulo}</h2>
 					{muchasSeguidas ? (
@@ -261,7 +264,7 @@ export function Respuesta({
 			<div className="guia-final">
 				<button
 					type="button"
-					className={sinRespuestaFirme || muchasSeguidas ? "guia-btn" : "guia-btn-sec"}
+					className={sinRespuestaFirme || muchasSeguidas || !puedeSeguir ? "guia-btn" : "guia-btn-sec"}
 					onClick={onOtraPregunta}
 				>
 					{TXT.empezarDeNuevo}

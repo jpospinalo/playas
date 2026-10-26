@@ -164,6 +164,12 @@ describe("Respuesta (diseño v3)", () => {
 		expect(screen.getByRole("button", { name: TXT.empezarDeNuevo })).toBeInTheDocument();
 	});
 
+	it("respuesta guardada tras recargar: sin caja de seguimiento, solo empezar de nuevo", () => {
+		pintar("Sí. Texto.", { puedeSeguir: false });
+		expect(screen.queryByText(TXT.seguirTitulo)).not.toBeInTheDocument();
+		expect(screen.getByRole("button", { name: TXT.empezarDeNuevo })).toHaveClass("guia-btn");
+	});
+
 	it("tras varias respuestas seguidas sugiere empezar de nuevo", () => {
 		pintar("Sí. Texto.", { muchasSeguidas: true });
 		expect(screen.getByText(TXT.seguirTope)).toBeInTheDocument();

@@ -238,6 +238,9 @@ function Flujo() {
 	useEffect(() => {
 		if (pendienteRef.current) return;
 		if (pantalla === "espera" && nueva && (generationFinished || !loading) && !error) {
+			// Lo escrito en la caja de seguimiento se borra solo cuando llegó la
+			// respuesta: si falla o se cancela, sigue escrito al volver.
+			setSeguimiento("");
 			ir(`respuesta/${turnos.length}`, { reemplazar: true });
 		}
 	}, [pantalla, nueva, turnos.length, generationFinished, loading, error, ir]);
@@ -317,7 +320,6 @@ function Flujo() {
 
 	/** Pregunta de seguimiento: sigue la misma conversación (el backend recuerda lo anterior). */
 	function seguir(texto: string) {
-		setSeguimiento("");
 		enviar({ texto, envio: texto, playa: null }, false);
 	}
 
@@ -474,6 +476,9 @@ function Flujo() {
 					setBorrador(guardada.pregunta.texto);
 					irACaja(false);
 				}}
+				// La conversación ya no está abierta: un seguimiento iría sin
+				// contexto, así que solo se ofrece empezar de nuevo.
+				puedeSeguir={false}
 				seguimiento={seguimiento}
 				onCambioSeguimiento={setSeguimiento}
 				onSeguir={seguir}
