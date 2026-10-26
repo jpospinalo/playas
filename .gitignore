@@ -25,6 +25,8 @@ data/raw/
 data/bronze/
 data/silver/
 data/gold/
+# Base SQLite local del backend (atlas.db) y la semilla del panel (panel-demo.db)
+rag/data/
 !data/*.jsonl.gz
 !data/import_to_chromadb.py
 !data/seed_users.sql

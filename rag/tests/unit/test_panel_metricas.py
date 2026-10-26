@@ -123,6 +123,10 @@ def test_normas_citadas_sin_repetidos() -> None:
         ("AP Gieseken", "jurisprudencia"),
     ]
     assert pm.normas_citadas(None) == []
+    assert pm.normas_citadas([{"source": "x.md", "title": "decreto-2324-de-1984"}]) == [
+        ("Decreto 2324 de 1984", None)
+    ]
+    assert pm.normas_citadas([{"title": "Ley 1617 de 2013"}]) == [("Ley 1617 de 2013", None)]
 
 
 @pytest.mark.parametrize(

@@ -83,7 +83,12 @@ class _Fila:
 
     @property
     def es_brecha(self) -> bool:
-        return self.resultado in pm.BRECHAS or self.calificacion == pm.NO_UTIL
+        """Sin respuesta segura, o respondida con norma y calificada "no me
+        sirvió". Una pregunta fuera de tema mal calificada no es una brecha
+        de contenido."""
+        return self.resultado in pm.BRECHAS or (
+            self.resultado == pm.CON_FUENTE and self.calificacion == pm.NO_UTIL
+        )
 
 
 async def _cargar_filas(session: AsyncSession, desde: datetime | None) -> list[_Fila]:

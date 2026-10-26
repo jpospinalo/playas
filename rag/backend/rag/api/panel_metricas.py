@@ -320,17 +320,29 @@ def clasificar_respuesta(texto: str | None, sources: list | None) -> str:
 _RE_EXTENSION = re.compile(r"\.(md|pdf|txt|json|jsonl)$", re.IGNORECASE)
 
 
+_RE_SLUG = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)+$")
+
+
+def _legible(nombre: str) -> str:
+    """``decreto-2324-de-1984`` → ``Decreto 2324 de 1984`` (títulos que quedaron
+    como nombre de archivo en el corpus). Los demás se dejan igual."""
+    if _RE_SLUG.match(nombre):
+        texto = nombre.replace("-", " ")
+        return texto[:1].upper() + texto[1:]
+    return nombre
+
+
 def normas_citadas(sources: list | None) -> list[tuple[str, str | None]]:
     """``[(nombre, doc_type)]`` sin repetidos, en el orden en que se citan."""
     vistas: dict[str, str | None] = {}
     for grupo in sources or []:
         if not isinstance(grupo, dict):
             continue
-        nombre = (grupo.get("title") or "").strip()
+        nombre = _legible((grupo.get("title") or "").strip())
         if not nombre:
             # Sin título: nombre del archivo, sin carpeta ni extensión.
             archivo = (grupo.get("source") or "").strip().rsplit("/", 1)[-1]
-            nombre = _RE_EXTENSION.sub("", archivo)
+            nombre = _legible(_RE_EXTENSION.sub("", archivo))
         if nombre and nombre not in vistas:
             vistas[nombre] = grupo.get("doc_type")
     return list(vistas.items())
