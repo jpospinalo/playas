@@ -555,44 +555,49 @@
 /* ── Columnas por semana o día ───────────────────────────────────────────── */
 .pnl-columnas {
 	display: grid;
-	grid-template-columns: 44px 1fr;
-	column-gap: 8px;
+	grid-template-columns: 40px minmax(0, 1fr);
+	column-gap: 10px;
+	/* Aire arriba para la etiqueta de la columna más alta. */
+	padding-top: 26px;
 }
 .pnl-eje-y {
-	display: flex;
-	flex-direction: column;
-	justify-content: space-between;
-	align-items: flex-end;
+	position: relative;
 	height: 220px;
 	color: var(--p-tinta-2);
 	font-size: 16px;
-	transform: translateY(-0.6em);
+}
+.pnl-eje-y span {
+	position: absolute;
+	right: 0;
+	transform: translateY(-50%);
+	line-height: 1;
 }
 .pnl-plot {
 	position: relative;
 	height: 220px;
+	min-width: 0;
 	border-bottom: 2px solid var(--p-tinta-2);
 	display: flex;
 	align-items: flex-end;
-	gap: 2px;
+	gap: 4px;
 	background:
 		linear-gradient(var(--p-linea), var(--p-linea)) 0 0 / 100% 1px no-repeat,
 		linear-gradient(var(--p-linea), var(--p-linea)) 0 50% / 100% 1px no-repeat;
 }
 .pnl-col {
-	flex: 1;
-	display: flex;
-	flex-direction: column;
-	justify-content: flex-end;
-	align-items: center;
-	height: 100%;
-	position: relative;
+	flex: 1 1 0;
 	min-width: 0;
+	height: 100%;
+	display: flex;
+	align-items: flex-end;
+	justify-content: center;
 }
 .pnl-col i {
+	position: relative;
 	display: block;
-	width: 62%;
-	max-width: 46px;
+	width: 70%;
+	max-width: 44px;
+	min-height: 2px;
 	background: var(--p-marino);
 	border-radius: 4px 4px 0 0;
 }
@@ -605,25 +610,34 @@
 	);
 }
 .pnl-col b {
+	position: absolute;
+	bottom: 100%;
+	left: 50%;
+	transform: translateX(-50%);
+	padding-bottom: 4px;
 	font-size: 18px;
 	font-weight: 700;
-	padding-bottom: 4px;
+	font-style: normal;
+	color: var(--p-tinta);
+	white-space: nowrap;
 }
 .pnl-eje-x {
 	grid-column: 2;
 	display: flex;
-	gap: 2px;
+	gap: 4px;
+	min-width: 0;
 	color: var(--p-tinta-2);
 	font-size: 16px;
-	margin-top: 6px;
+	margin-top: 8px;
 }
 .pnl-eje-x span {
-	flex: 1;
-	text-align: center;
+	flex: 1 1 0;
 	min-width: 0;
+	display: flex;
+	justify-content: center;
 	white-space: nowrap;
 }
-.pnl-eje-x.denso span:not(:first-child):not(:last-child):nth-child(even) {
+.pnl-eje-x span.no-pc {
 	visibility: hidden;
 }
 
@@ -995,7 +1009,14 @@
 	.pnl-col b {
 		font-size: 16px;
 	}
-	.pnl-eje-x span:not(:first-child):not(:last-child):nth-child(even) {
+	.pnl-plot,
+	.pnl-eje-x {
+		gap: 2px;
+	}
+	.pnl-eje-x span.no-pc {
+		visibility: visible;
+	}
+	.pnl-eje-x span.no-cel {
 		visibility: hidden;
 	}
 	/* Tabla → lista */
@@ -1047,4 +1068,95 @@
 	flex-wrap: wrap;
 	gap: 4px 20px;
 	margin-top: 6px;
+}
+
+/* Fechas de los extremos: nunca se salen del gráfico. */
+.pnl-eje-x span:first-child {
+	justify-content: flex-start;
+}
+.pnl-eje-x span:last-child {
+	justify-content: flex-end;
+}
+
+/* ── Filas de preguntas (recientes y brechas) ────────────────────────────── */
+.pnl-bloque-alerta {
+	border-top: 4px solid var(--p-ambar);
+}
+.pnl-chips-w {
+	display: flex;
+	align-items: baseline;
+	gap: 6px 12px;
+	flex-wrap: wrap;
+	margin-bottom: 8px;
+}
+.pnl-chips-tit {
+	margin: 0;
+	font-weight: 600;
+	color: var(--p-tinta-2);
+}
+.pnl-filas {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	border-top: 1px solid var(--p-linea);
+}
+.pnl-fila {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) minmax(300px, 360px);
+	gap: 10px 28px;
+	padding: 16px 0;
+	border-bottom: 1px solid var(--p-linea);
+}
+.pnl-fila-q > a {
+	font-size: 19px;
+	font-weight: 600;
+	line-height: 1.4;
+	color: var(--p-tinta);
+	text-decoration-color: var(--p-borde-ctl);
+	overflow-wrap: anywhere;
+}
+.pnl-fila-q > a:hover {
+	color: var(--p-marino);
+	text-decoration-color: currentColor;
+}
+.pnl-fila-meta {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 4px 14px;
+	margin: 8px 0 0;
+	color: var(--p-tinta-2);
+}
+.pnl-fila-meta .pnl-etq {
+	margin-right: 0;
+}
+.pnl-fila .pnl-esperaba {
+	margin: 10px 0 0;
+}
+.pnl-fila-estado {
+	display: grid;
+	gap: 8px;
+	margin: 0;
+	align-content: start;
+}
+.pnl-fila-estado > div {
+	display: grid;
+	grid-template-columns: 84px minmax(0, 1fr);
+	gap: 10px;
+	align-items: baseline;
+}
+.pnl-fila-estado dt {
+	color: var(--p-tinta-2);
+	font-size: 16px;
+}
+.pnl-fila-estado dd {
+	margin: 0;
+}
+.pnl-veces {
+	font-weight: 700;
+}
+@media (max-width: 760px) {
+	.pnl-fila {
+		grid-template-columns: minmax(0, 1fr);
+	}
 }

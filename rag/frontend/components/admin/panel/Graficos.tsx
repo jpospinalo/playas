@@ -66,11 +66,19 @@ function descripcionPunto(p: Punto, agrupacion: Agrupacion): string {
 	return p.parcial ? `${rango} (semana incompleta)` : rango;
 }
 
+/** Cada cuántas columnas se escribe la fecha para que no se pisen. */
+export function pasoEtiquetas(n: number, maximo: number): number {
+	return Math.max(1, Math.ceil(n / maximo));
+}
+
 export function Columnas({ serie, agrupacion }: { serie: Punto[]; agrupacion: Agrupacion }) {
 	const max = Math.max(0, ...serie.map((p) => p.preguntas));
 	const t = tope(max);
 	const iMax = serie.findIndex((p) => p.preguntas === max);
 	const ultimo = serie.length - 1;
+	// Fechas visibles: hasta 8 en PC y 4 en celular, siempre la última.
+	const pasoPc = pasoEtiquetas(serie.length, 8);
+	const pasoCel = pasoEtiquetas(serie.length, 4);
 	const resumen = serie
 		.map((p) => `${descripcionPunto(p, agrupacion)}: ${numero(p.preguntas)}`)
 		.join("; ");
@@ -81,26 +89,35 @@ export function Columnas({ serie, agrupacion }: { serie: Punto[]; agrupacion: Ag
 			aria-label={`Preguntas por ${agrupacion === "dia" ? "día" : "semana"}. ${resumen}.`}
 		>
 			<div className="pnl-eje-y" aria-hidden="true">
-				<span>{numero(t)}</span>
-				<span>{numero(t / 2)}</span>
-				<span>0</span>
+				<span style={{ top: "0%" }}>{numero(t)}</span>
+				<span style={{ top: "50%" }}>{numero(t / 2)}</span>
+				<span style={{ top: "100%" }}>0</span>
 			</div>
 			<div className="pnl-plot" aria-hidden="true">
-				{serie.map((p, i) => (
-					<div className="pnl-col" key={p.fecha}>
-						{/* Etiqueta directa solo en la máxima y la última. */}
-						{max > 0 && (i === iMax || i === ultimo) ? <b className="num">{numero(p.preguntas)}</b> : null}
-						<i
-							className={p.parcial ? "parcial" : undefined}
-							style={{ height: `${(p.preguntas / t) * 100}%` }}
-						/>
-					</div>
-				))}
+				{serie.map((p, i) => {
+					const alto = (p.preguntas / t) * 100;
+					// Etiqueta directa solo en la máxima y la última.
+					const conEtiqueta = max > 0 && (i === iMax || i === ultimo);
+					return (
+						<div className="pnl-col" key={p.fecha}>
+							<i className={p.parcial ? "parcial" : undefined} style={{ height: `${alto}%` }}>
+								{conEtiqueta ? <b className="num">{numero(p.preguntas)}</b> : null}
+							</i>
+						</div>
+					);
+				})}
 			</div>
-			<div className={`pnl-eje-x${serie.length > 8 ? " denso" : ""}`} aria-hidden="true">
-				{serie.map((p) => (
-					<span key={p.fecha}>{etiquetaPunto(p, agrupacion)}</span>
-				))}
+			<div className="pnl-eje-x" aria-hidden="true">
+				{serie.map((p, i) => {
+					const desdeFin = ultimo - i;
+					const pc = desdeFin % pasoPc === 0;
+					const cel = desdeFin % pasoCel === 0;
+					return (
+						<span key={p.fecha} className={`${pc ? "" : "no-pc"} ${cel ? "" : "no-cel"}`.trim() || undefined}>
+							{pc || cel ? etiquetaPunto(p, agrupacion) : ""}
+						</span>
+					);
+				})}
 			</div>
 		</div>
 	);

@@ -324,21 +324,29 @@ export function cambioTasa(actual: number | null, anterior: number | null): Camb
 }
 
 export const ETIQUETA_RESULTADO: Record<Resultado, string> = {
-	con_fuente: "Con norma",
-	sin_evidencia: "Sin norma que la respalde",
-	sin_cita_valida: "Sin cita válida",
-	sin_fuente_otro: "Sin norma que la respalde",
-	fuera_de_tema: "Fuera de tema",
-	pide_aclarar: "Pidió aclarar",
-	saludo: "Saludo",
-	sin_respuesta: "Sin respuesta guardada",
+	con_fuente: "Respondió citando normas",
+	sin_evidencia: "No encontró una norma que lo respalde",
+	sin_cita_valida: "Respondió sin una cita válida",
+	sin_fuente_otro: "Respondió sin citar normas",
+	fuera_de_tema: "Fuera del tema de playas",
+	pide_aclarar: "Pidió aclarar la pregunta",
+	saludo: "Saludo, no era una pregunta",
+	sin_respuesta: "No quedó respuesta guardada",
 };
 
 export const ETIQUETA_CALIFICACION: Record<Calificacion, string> = {
 	util: "Le sirvió",
 	no_util: "No le sirvió",
-	neutra: "Regular",
+	neutra: "Le sirvió a medias",
 };
+
+/** Texto del resultado con el número de normas: "Respondió citando 3 normas". */
+export function textoResultado(resultado: Resultado, fuentes?: number): string {
+	if (resultado === "con_fuente" && fuentes) {
+		return `Respondió citando ${fuentes} ${fuentes === 1 ? "norma" : "normas"}`;
+	}
+	return ETIQUETA_RESULTADO[resultado];
+}
 
 /** Corta un texto largo en la última palabra completa y agrega "…". */
 export function recortar(texto: string, max = 280): string {

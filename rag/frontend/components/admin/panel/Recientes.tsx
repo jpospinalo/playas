@@ -14,17 +14,21 @@ import {
 import { EstadoCalificacion, EstadoResultado, IconoAviso } from "@/components/admin/panel/Estados";
 
 const OPCIONES: { valor: FiltroResultado; texto: string }[] = [
-	{ valor: "", texto: "Todos" },
-	{ valor: "con_fuente", texto: "Con norma citada" },
-	{ valor: "sin_respuesta_segura", texto: "Sin respuesta segura" },
+	{ valor: "", texto: "Todas las preguntas" },
+	{ valor: "con_fuente", texto: "Respondió citando normas" },
+	{ valor: "sin_respuesta_segura", texto: "Sin norma que la respalde" },
 	{ valor: "no_le_sirvio", texto: "No le sirvió" },
-	{ valor: "fuera_de_tema", texto: "Fuera de tema" },
-	{ valor: "pide_aclarar", texto: "Pidió aclarar" },
+	{ valor: "fuera_de_tema", texto: "Fuera del tema de playas" },
+	{ valor: "pide_aclarar", texto: "Pidió aclarar la pregunta" },
 ];
 
 const POR_PAGINA = 20;
 
-/** Preguntas del periodo, de la más reciente a la más antigua, paginadas. */
+/**
+ * Preguntas del periodo, de la más reciente a la más antigua. Cada fila se
+ * lee de un vistazo: qué preguntó la persona, el tema, cómo respondió ATLAS
+ * y si le sirvió (PQ-J2).
+ */
 export function Recientes({ dias, tema }: { dias: number; tema: string }) {
 	const [resultado, setResultado] = useState<FiltroResultado>("");
 	const [pagina, setPagina] = useState(1);
@@ -58,10 +62,10 @@ export function Recientes({ dias, tema }: { dias: number; tema: string }) {
 			<div className="pnl-bloque-cab">
 				<div>
 					<h2 id="t-recientes">Preguntas recientes</h2>
-					<p>{datos ? `${numero(total)} en el periodo con este filtro` : " "}</p>
+					<p>Qué preguntó cada persona, cómo respondió ATLAS y si le sirvió.</p>
 				</div>
 				<div className="pnl-campo">
-					<label htmlFor="pnl-resultado">Resultado</label>
+					<label htmlFor="pnl-resultado">Mostrar</label>
 					<select
 						id="pnl-resultado"
 						value={resultado}
@@ -95,71 +99,71 @@ export function Recientes({ dias, tema }: { dias: number; tema: string }) {
 			{datos && datos.items.length === 0 ? (
 				<p className="pnl-vacio">
 					<b>No hay preguntas con este filtro.</b>
-					Pruebe con “Todos” o con un periodo más largo.
+					Pruebe con “Todas las preguntas” o con un periodo más largo.
 				</p>
 			) : null}
 
 			{datos && datos.items.length ? (
-				<table className="pnl-lista">
-					<thead>
-						<tr>
-							<th scope="col">Fecha</th>
-							<th scope="col">Pregunta</th>
-							<th scope="col">Tema</th>
-							<th scope="col">Resultado</th>
-							<th scope="col">Calificación</th>
-							<th scope="col">Persona</th>
-						</tr>
-					</thead>
-					<tbody>
-						{datos.items.map((p) => (
-							<tr key={p.id}>
-								<td data-l="Fecha" className="num" style={{ whiteSpace: "nowrap" }}>
-									{fechaHora(p.fecha)}
-								</td>
-								<td className="preg">
-									<Link href={`/admin/conversacion?id=${encodeURIComponent(p.conversation_id)}`}>
-										{recortar(p.pregunta)}
-									</Link>
-									{p.esperaba ? <span className="pnl-esperaba">Esperaba: “{p.esperaba}”</span> : null}
-								</td>
-								<td data-l="Tema">{p.tema_titulo}</td>
-								<td data-l="Resultado">
-									<EstadoResultado resultado={p.resultado} fuentes={p.fuentes} />
-								</td>
-								<td data-l="Calificación">
-									<EstadoCalificacion calificacion={p.calificacion} />
-								</td>
-								<td data-l="Persona">{p.persona}</td>
-							</tr>
-						))}
-					</tbody>
-				</table>
+				<ol className="pnl-filas" aria-label={`Preguntas ${numero(desde)} a ${numero(hasta)} de ${numero(total)}`}>
+					{datos.items.map((p) => (
+						<li key={p.id} className="pnl-fila">
+							<div className="pnl-fila-q">
+								<Link href={`/admin/conversacion?id=${encodeURIComponent(p.conversation_id)}`}>
+									{recortar(p.pregunta, 220)}
+								</Link>
+								<p className="pnl-fila-meta">
+									<span className="pnl-etq">{p.tema_titulo}</span>
+									{p.playa ? <span className="lugar">{p.playa}</span> : null}
+									<span>
+										{p.persona}, {fechaHora(p.fecha)}
+									</span>
+								</p>
+								{p.esperaba ? <p className="pnl-esperaba">Esperaba: “{p.esperaba}”</p> : null}
+							</div>
+							<dl className="pnl-fila-estado">
+								<div>
+									<dt>ATLAS</dt>
+									<dd>
+										<EstadoResultado resultado={p.resultado} fuentes={p.fuentes} />
+									</dd>
+								</div>
+								<div>
+									<dt>La persona</dt>
+									<dd>
+										<EstadoCalificacion calificacion={p.calificacion} />
+									</dd>
+								</div>
+							</dl>
+						</li>
+					))}
+				</ol>
 			) : null}
 
-			{datos && total > POR_PAGINA ? (
+			{datos && total > 0 ? (
 				<nav className="pnl-pagin" aria-label="Páginas de preguntas">
 					<span>
-						Mostrando {numero(desde)} a {numero(hasta)} de {numero(total)}
+						{numero(desde)} a {numero(hasta)} de {numero(total)} preguntas
 					</span>
-					<div>
-						<button
-							type="button"
-							className="pnl-btn-sec"
-							disabled={pagina <= 1}
-							onClick={() => setPagina((p) => p - 1)}
-						>
-							Anteriores
-						</button>
-						<button
-							type="button"
-							className="pnl-btn-sec"
-							disabled={pagina >= ultimaPagina}
-							onClick={() => setPagina((p) => p + 1)}
-						>
-							Siguientes
-						</button>
-					</div>
+					{total > POR_PAGINA ? (
+						<div>
+							<button
+								type="button"
+								className="pnl-btn-sec"
+								disabled={pagina <= 1}
+								onClick={() => setPagina((p) => p - 1)}
+							>
+								Anteriores
+							</button>
+							<button
+								type="button"
+								className="pnl-btn-sec"
+								disabled={pagina >= ultimaPagina}
+								onClick={() => setPagina((p) => p + 1)}
+							>
+								Siguientes
+							</button>
+						</div>
+					) : null}
 				</nav>
 			) : null}
 		</section>

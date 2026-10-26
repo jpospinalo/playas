@@ -1,7 +1,7 @@
 import {
 	ETIQUETA_CALIFICACION,
-	ETIQUETA_RESULTADO,
 	SIN_RESPUESTA_SEGURA,
+	textoResultado,
 	type Calificacion,
 	type Cambio,
 	type Resultado,
@@ -72,8 +72,7 @@ export function EstadoResultado({ resultado, fuentes }: { resultado: Resultado; 
 		return (
 			<span className="pnl-estado bien">
 				<IconoNorma />
-				{ETIQUETA_RESULTADO.con_fuente}
-				{fuentes ? ` (${fuentes})` : ""}
+				{textoResultado(resultado, fuentes)}
 			</span>
 		);
 	}
@@ -81,14 +80,14 @@ export function EstadoResultado({ resultado, fuentes }: { resultado: Resultado; 
 		return (
 			<span className="pnl-estado ojo">
 				<IconoAviso />
-				{ETIQUETA_RESULTADO[resultado]}
+				{textoResultado(resultado)}
 			</span>
 		);
 	}
 	return (
 		<span className="pnl-estado neutro">
 			<IconoNeutro />
-			{ETIQUETA_RESULTADO[resultado]}
+			{textoResultado(resultado)}
 		</span>
 	);
 }
@@ -112,7 +111,8 @@ export function EstadoCalificacion({ calificacion }: { calificacion: Calificacio
 	}
 	return (
 		<span className="pnl-estado neutro">
-			{calificacion ? ETIQUETA_CALIFICACION[calificacion] : "Sin calificar"}
+			<IconoNeutro />
+			{calificacion ? ETIQUETA_CALIFICACION[calificacion] : "No calificó"}
 		</span>
 	);
 }

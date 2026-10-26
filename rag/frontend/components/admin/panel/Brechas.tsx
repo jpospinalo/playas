@@ -5,7 +5,7 @@ import Link from "next/link";
 import { diaMes, numero, recortar, type Resumen } from "@/lib/admin/panel";
 import { EstadoCalificacion, IconoAviso } from "@/components/admin/panel/Estados";
 
-const VISIBLES = 8;
+const VISIBLES = 6;
 
 /**
  * "Dónde falla ATLAS": preguntas sin norma que las respalde o respondidas
@@ -19,76 +19,70 @@ export function Brechas({ datos }: { datos: Resumen }) {
 	const porTema = datos.temas.filter((t) => t.brechas > 0).sort((a, b) => b.brechas - a.brechas);
 
 	return (
-		<section className="pnl-bloque" aria-labelledby="t-brechas">
+		<section className="pnl-bloque pnl-bloque-alerta" aria-labelledby="t-brechas">
 			<div className="pnl-bloque-cab">
 				<div>
 					<h2 id="t-brechas">Dónde falla ATLAS</h2>
 					<p>
 						{datos.brechas_total
-							? `${numero(datos.brechas_total)} ${datos.brechas_total === 1 ? "pregunta" : "preguntas"} sin norma que la respalde o que la persona calificó como “no me sirvió”. Las más repetidas primero. No incluye preguntas fuera del tema de playas.`
+							? `${numero(datos.brechas_total)} ${datos.brechas_total === 1 ? "pregunta quedó" : "preguntas quedaron"} sin norma que la respalde o la persona dijo que no le sirvió. Las más repetidas primero; no incluye preguntas fuera del tema de playas.`
 							: "Ninguna pregunta quedó sin norma ni fue calificada como “no me sirvió” en este periodo."}
 					</p>
 				</div>
 			</div>
 			{porTema.length ? (
-				<ul className="pnl-chips" aria-label="Brechas por tema">
-					{porTema.map((t) => (
-						<li key={t.id}>
-							{t.titulo}
-							<b className="num">{numero(t.brechas)}</b>
-						</li>
-					))}
-				</ul>
+				<div className="pnl-chips-w">
+					<p id="brechas-tema" className="pnl-chips-tit">
+						Por tema
+					</p>
+					<ul className="pnl-chips" aria-labelledby="brechas-tema">
+						{porTema.map((t) => (
+							<li key={t.id}>
+								{t.titulo}
+								<b className="num">{numero(t.brechas)}</b>
+							</li>
+						))}
+					</ul>
+				</div>
 			) : null}
 			{lista.length ? (
-				<table className="pnl-lista">
-					<thead>
-						<tr>
-							<th scope="col">Pregunta</th>
-							<th scope="col" className="num">
-								Veces
-							</th>
-							<th scope="col">Tema</th>
-							<th scope="col">Motivo</th>
-							<th scope="col">Última vez</th>
-							<th scope="col">
-								<span className="sr">Acción</span>
-							</th>
-						</tr>
-					</thead>
-					<tbody>
-						{lista.map((b) => (
-							<tr key={`${b.conversation_id}-${b.pregunta}`}>
-								<td className="preg">
-									{recortar(b.pregunta)}
-									{b.esperaba ? <span className="pnl-esperaba">Esperaba: “{b.esperaba}”</span> : null}
-								</td>
-								<td data-l="Veces" className="num">
-									{numero(b.veces)}
-								</td>
-								<td data-l="Tema">{b.tema_titulo}</td>
-								<td data-l="Motivo">
-									{b.motivo === "no_le_sirvio" ? (
-										<EstadoCalificacion calificacion="no_util" />
-									) : (
-										<span className="pnl-estado ojo">
-											<IconoAviso />
-											Sin norma que la respalde
-										</span>
-									)}
-								</td>
-								<td data-l="Última vez" className="num">
-									{diaMes(b.ultima)}
-								</td>
-								<td>
-									<Link className="ver" href={`/admin/conversacion?id=${encodeURIComponent(b.conversation_id)}`}>
-										Ver conversación
-									</Link>
-								</td>
-							</tr>
-						))}
-					</tbody>
-				</table>
+				<ol className="pnl-filas" aria-label="Preguntas donde falla ATLAS">
+					{lista.map((b) => (
+						<li key={`${b.conversation_id}-${b.pregunta}`} className="pnl-fila">
+							<div className="pnl-fila-q">
+								<Link href={`/admin/conversacion?id=${encodeURIComponent(b.conversation_id)}`}>
+									{recortar(b.pregunta, 220)}
+								</Link>
+								<p className="pnl-fila-meta">
+									<span className="pnl-etq">{b.tema_titulo}</span>
+									<span>Última vez: {diaMes(b.ultima)}</span>
+								</p>
+								{b.esperaba ? <p className="pnl-esperaba">Esperaba: “{b.esperaba}”</p> : null}
+							</div>
+							<dl className="pnl-fila-estado">
+								<div>
+									<dt>Se repitió</dt>
+									<dd className="pnl-veces">
+										{numero(b.veces)} {b.veces === 1 ? "vez" : "veces"}
+									</dd>
+								</div>
+								<div>
+									<dt>Problema</dt>
+									<dd>
+										{b.motivo === "no_le_sirvio" ? (
+											<EstadoCalificacion calificacion="no_util" />
+										) : (
+											<span className="pnl-estado ojo">
+												<IconoAviso />
+												Sin norma que la respalde
+											</span>
+										)}
+									</dd>
+								</div>
+							</dl>
+						</li>
+					))}
+				</ol>
 			) : null}
 			{datos.brechas.length > VISIBLES ? (
 				<button type="button" className="pnl-enlace" aria-expanded={todas} onClick={() => setTodas((t) => !t)}>
