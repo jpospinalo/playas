@@ -1,6 +1,7 @@
 "use client";
 
 import "./panel.css";
+import "./panel-legado.css";
 
 import { useEffect, useSyncExternalStore } from "react";
 import Link from "next/link";

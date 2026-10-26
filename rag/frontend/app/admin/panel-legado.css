@@ -1,0 +1,138 @@
+/*
+ * Páginas viejas de /admin (Calificaciones, Conversaciones, Usuarios), escritas
+ * con utilidades de Tailwind. Esta hoja les da el aspecto del resumen sin
+ * reescribir su lógica (PQ-J4): letra de al menos 16 px, radio de 6 px, sin
+ * vidrio ni píldoras, controles de 44-48 px y botones del diseño B.
+ * Va sin capa a propósito: así le gana a las utilidades de Tailwind.
+ */
+
+.pnl-legado {
+	max-width: 1100px;
+	font-size: 18px;
+}
+.pnl-legado h1 {
+	font-size: 34px;
+	line-height: 1.2;
+	font-weight: 700;
+	letter-spacing: 0 !important;
+}
+.pnl-legado h2 {
+	font-size: 24px;
+	font-weight: 700;
+}
+.pnl-legado .text-xs,
+.pnl-legado .text-sm,
+.pnl-legado [class*="text-[1"] {
+	font-size: 18px;
+	line-height: 1.45;
+}
+.pnl-legado .text-subtle {
+	color: var(--p-tinta-2);
+}
+.pnl-legado .font-mono,
+.pnl-legado code {
+	font-family: inherit;
+}
+.pnl-legado .rounded-2xl,
+.pnl-legado .rounded-xl,
+.pnl-legado .rounded-full,
+.pnl-legado .rounded-lg {
+	border-radius: 6px;
+}
+.pnl-legado [class*="backdrop-blur"] {
+	backdrop-filter: none;
+}
+.pnl-legado [class*="bg-elevated"],
+.pnl-legado [class*="bg-surface"] {
+	background: var(--p-papel);
+}
+.pnl-legado label {
+	font-size: 18px;
+	font-weight: 600;
+	color: var(--p-tinta);
+	margin-bottom: 4px;
+}
+.pnl-legado select,
+.pnl-legado input:not([type="checkbox"]):not([type="radio"]) {
+	min-height: 48px;
+	border: 2px solid var(--p-borde-ctl);
+	border-radius: 6px;
+	background: var(--p-papel);
+	color: var(--p-tinta);
+	font-size: 18px;
+	padding: 0 12px;
+}
+.pnl-legado button {
+	min-height: 44px;
+	padding: 0 18px;
+	border-radius: 6px;
+	font-size: 18px;
+	font-weight: 600;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+}
+.pnl-legado button:not([class*="bg-accent"]) {
+	border: 2px solid var(--p-marino);
+	background: var(--p-papel);
+	color: var(--p-marino);
+}
+.pnl-legado button:not([class*="bg-accent"]):hover {
+	background: var(--p-bajo);
+}
+.pnl-legado button:disabled {
+	border-color: var(--p-borde-ctl);
+	color: var(--p-tinta-2);
+	opacity: 1;
+}
+.pnl-legado button[class*="bg-accent"] {
+	background: var(--p-marino);
+	color: var(--p-sobre-marino);
+	border: 2px solid var(--p-marino);
+}
+.pnl-legado button[class*="bg-accent"]:hover {
+	background: var(--p-marino-osc);
+}
+/* Botones de texto dentro de una celda ("Ver más") */
+.pnl-legado td button:not([class*="bg-accent"]) {
+	min-height: 0;
+	padding: 0;
+	border: 0;
+	background: none;
+	text-decoration: underline;
+}
+.pnl-legado table {
+	font-size: 18px;
+}
+.pnl-legado th {
+	font-size: 16px !important;
+	font-weight: 600 !important;
+	color: var(--p-tinta-2) !important;
+	background: var(--p-papel);
+	border-bottom: 2px solid var(--p-linea);
+}
+.pnl-legado td {
+	vertical-align: top;
+}
+.pnl-legado td span[class*="rounded-full"],
+.pnl-legado td span[class*="border"] {
+	font-size: 16px;
+	border-radius: 4px;
+}
+/* Diálogos de Usuarios */
+.pnl-legado [role="dialog"] {
+	border-radius: 6px;
+	box-shadow: none;
+	border: 1px solid var(--p-linea);
+	border-top: 4px solid var(--p-marino);
+}
+
+/* Estrellas legibles y comentarios con más espacio */
+.pnl-legado td [role="img"] svg {
+	width: 18px;
+	height: 18px;
+}
+.pnl-legado td[class*="max-w"] {
+	max-width: 320px;
+}

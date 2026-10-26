@@ -77,7 +77,7 @@ export default function UsuariosPage() {
   }
 
   return (
-    <div className="max-w-4xl space-y-6">
+    <div className="pnl-legado max-w-4xl space-y-6">
       <div className="flex items-start justify-between gap-4">
         <div>
           <h1 className="text-3xl font-medium tracking-tight text-foreground" style={{ letterSpacing: "-0.02em" }}>

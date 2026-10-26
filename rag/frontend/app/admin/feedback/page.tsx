@@ -56,7 +56,8 @@ function Stars({ rating }: { rating: number }) {
 	return (
 		<span
 			className="flex items-center gap-0.5"
-			aria-label={`${rating} estrellas`}
+			role="img"
+			aria-label={`${rating} de 5 estrellas`}
 		>
 			{[1, 2, 3, 4, 5].map((i) => (
 				<svg
@@ -239,7 +240,7 @@ export default function FeedbackPage() {
 	}
 
 	return (
-		<div className="max-w-5xl space-y-6">
+		<div className="pnl-legado max-w-5xl space-y-6">
 			<div>
 				<h1 className="text-3xl font-medium tracking-tight text-foreground" style={{ letterSpacing: "-0.02em" }}>
 					Calificaciones de conversación
@@ -252,10 +253,10 @@ export default function FeedbackPage() {
 				</p>
 				{total > 0 && (
 					<div className="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-xs text-subtle">
-						<span>Tono · <span className="text-foreground tabular-nums">{avgRatings.tone.toFixed(1)}</span></span>
-						<span>Longitud · <span className="text-foreground tabular-nums">{avgRatings.length.toFixed(1)}</span></span>
-						<span>Usabilidad · <span className="text-foreground tabular-nums">{avgRatings.usability.toFixed(1)}</span></span>
-						<span>General · <span className="text-foreground tabular-nums">{avgRatings.overall.toFixed(1)}</span></span>
+						<span>Tono: <span className="text-foreground tabular-nums">{avgRatings.tone.toFixed(1)}</span></span>
+						<span>Longitud: <span className="text-foreground tabular-nums">{avgRatings.length.toFixed(1)}</span></span>
+						<span>Usabilidad: <span className="text-foreground tabular-nums">{avgRatings.usability.toFixed(1)}</span></span>
+						<span>General: <span className="text-foreground tabular-nums">{avgRatings.overall.toFixed(1)}</span></span>
 					</div>
 				)}
 			</div>
@@ -366,11 +367,11 @@ export default function FeedbackPage() {
 				</div>
 			) : items.length === 0 ? (
 				<div className="rounded-2xl border border-border bg-elevated/40 p-8 text-center text-sm text-muted">
-					No hay feedback con los filtros seleccionados.
+					No hay calificaciones de conversación con estos filtros. Pruebe a limpiar los filtros o a ampliar las fechas.
 				</div>
 			) : (
 				<div className="overflow-hidden rounded-2xl border border-border bg-elevated/40 backdrop-blur-sm">
-					<div className="overflow-x-auto">
+					<div className="overflow-x-auto" tabIndex={0} role="region" aria-label="Tabla de calificaciones de conversación">
 						<table className="min-w-full divide-y divide-border text-sm">
 							<caption className="sr-only">
 								Calificaciones de conversación registradas
@@ -441,7 +442,7 @@ export default function FeedbackPage() {
 			{totalPages > 1 && (
 				<div className="flex items-center justify-between text-xs text-muted">
 					<span>
-						Página {page} de {totalPages} · {total} total
+						Página {page} de {totalPages}, {total} en total
 					</span>
 					<div className="flex items-center gap-2">
 						<button
@@ -449,14 +450,14 @@ export default function FeedbackPage() {
 							disabled={page === 1}
 							className="rounded-full border border-border px-3 py-1 transition-colors hover:bg-elevated hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
 						>
-							← Anterior
+							Anteriores
 						</button>
 						<button
 							onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
 							disabled={page === totalPages}
 							className="rounded-full border border-border px-3 py-1 transition-colors hover:bg-elevated hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
 						>
-							Siguiente →
+							Siguientes
 						</button>
 					</div>
 				</div>

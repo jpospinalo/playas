@@ -34,7 +34,14 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "backend"))
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine  # noqa: E402
 
 from rag.api import panel_metricas as pm  # noqa: E402
-from rag.api.models import Base, Conversation, Message, MessageFeedback, User  # noqa: E402
+from rag.api.models import (  # noqa: E402
+    Base,
+    Conversation,
+    Feedback,
+    Message,
+    MessageFeedback,
+    User,
+)
 from rag.api.passwords import hash_password  # noqa: E402
 from rag.api.routes.panel import DEMO_EMAIL  # noqa: E402
 from rag.core import agent  # noqa: E402
@@ -176,6 +183,19 @@ ESPERABA = [
     '=HYPERLINK("http://ejemplo.invalid","clic")',
 ]
 
+COMENTARIOS_BUENOS = [
+    "Clara y con la norma, gracias.",
+    "Me sirvió para hablar con el hotel.",
+    "Muy fácil de usar desde el celular.",
+    "Me gustó que dijera a quién acudir.",
+]
+COMENTARIOS_MALOS = [
+    "No entendí la respuesta, muy técnica.",
+    "No me dijo qué hacer en mi caso.",
+    "Esperaba algo sobre Taganga.",
+    "La respuesta fue muy larga.",
+]
+
 NOMBRES = (
     "Laura Pérez, Pedro Ramírez, Ana Gómez, Carlos Rodríguez, María Fernanda Ruiz, Jorge Díaz, "
     "Sandra Ortiz, Luis Herrera, Diana Castro, Andrés Molina, Paola Vargas, Camilo Rojas, "
@@ -275,7 +295,8 @@ async def sembrar(db: Path, n: int, semilla: int, reset: bool, dias: int) -> dic
     def uid() -> str:
         return str(uuid.UUID(int=rng.getrandbits(128)))
 
-    conteo = {"usuarios": 0, "preguntas": 0, "calificaciones": 0}
+    conteo = {"usuarios": 0, "preguntas": 0, "calificaciones": 0, "conversaciones": 0}
+    correos: dict[str, str] = {}
     async with factory() as s:
         hash_demo = hash_password(ADMIN_PASSWORD)
         s.add(
@@ -328,6 +349,7 @@ async def sembrar(db: Path, n: int, semilla: int, reset: bool, dias: int) -> dic
             s.add(usuario)
             # Peso de actividad: pocos preguntan mucho, la mayoría poco.
             personas.append((usuario.id, rng.paretovariate(1.6)))
+            correos[usuario.id] = correo
         conteo["usuarios"] = len(personas)
         ids, pesos = zip(*personas, strict=True)
 
@@ -404,7 +426,7 @@ async def sembrar(db: Path, n: int, semilla: int, reset: bool, dias: int) -> dic
                 MessageFeedback(
                     id=uid(),
                     user_id=usuario,
-                    user_email="",
+                    user_email=correos.get(usuario, ""),
                     conversation_id=conv.id,
                     message_id=respuesta_id,
                     ratings=ratings,
@@ -413,6 +435,28 @@ async def sembrar(db: Path, n: int, semilla: int, reset: bool, dias: int) -> dic
                 )
             )
             conteo["calificaciones"] += 1
+            # Encuesta de la conversación (tono, largo, facilidad, general).
+            if rng.random() < 0.4:
+                base = rng.randint(4, 5) if util else rng.randint(1, 3)
+                notas = {
+                    k: max(1, min(5, base + rng.choice((-1, 0, 0, 1))))
+                    for k in ("tone", "length", "usability")
+                }
+                s.add(
+                    Feedback(
+                        id=uid(),
+                        user_id=usuario,
+                        user_email=correos.get(usuario, ""),
+                        ratings={**notas, "overall": base},
+                        comment=rng.choice(COMENTARIOS_BUENOS if util else COMENTARIOS_MALOS)
+                        if rng.random() < 0.6
+                        else None,
+                        conversation_id=conv.id,
+                        conversation_title=conv.title,
+                        created_at=cuando + timedelta(minutes=3),
+                    )
+                )
+                conteo["conversaciones"] += 1
         # Casos límite para probar el front (PQ-14): texto muy largo, pregunta
         # sin respuesta guardada y texto con HTML o fórmula que debe verse plano.
         largo = (
@@ -480,7 +524,7 @@ def main() -> None:
         raise SystemExit("--db debe ser un archivo SQLite (.db, .sqlite o .sqlite3)")
     conteo = asyncio.run(sembrar(a.db, a.preguntas, a.semilla, a.reset, a.dias))
     print(
-        f"Semilla lista en {a.db}: {conteo['usuarios']} personas, {conteo['preguntas']} preguntas, {conteo['calificaciones']} calificaciones."
+        f"Semilla lista en {a.db}: {conteo['usuarios']} personas, {conteo['preguntas']} preguntas, {conteo['calificaciones']} calificaciones por respuesta, {conteo['conversaciones']} de conversación."
     )
     print(
         f"Administrador de la demo: {ADMIN_EMAIL} / {ADMIN_PASSWORD}  (sin rol admin: {USUARIO_EMAIL}, misma clave)"
