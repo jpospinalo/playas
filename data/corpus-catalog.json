@@ -120,7 +120,7 @@
       "doc_type": "jurisprudencia",
       "export_metadata_differences": {},
       "export_records_matched_by_id": 142,
-      "export_text_mismatches": 0,
+      "export_text_mismatches": 10,
       "format": ".pdf",
       "gold_chunks": 142,
       "gold_ids_missing_export": 0,
@@ -644,7 +644,7 @@
       "doc_type": "jurisprudencia",
       "export_metadata_differences": {},
       "export_records_matched_by_id": 161,
-      "export_text_mismatches": 0,
+      "export_text_mismatches": 25,
       "format": ".pdf",
       "gold_chunks": 161,
       "gold_ids_missing_export": 0,
@@ -1540,7 +1540,7 @@
     },
     {
       "code": "text_mismatches",
-      "detail": "98 registros; diferencia de snapshots, no autorización para reemplazar datos",
+      "detail": "133 registros; diferencia de snapshots, no autorización para reemplazar datos",
       "path": "data/chroma-rag_playas_magdalena-20260731-135720.jsonl.gz",
       "severity": "warning"
     },
@@ -2233,7 +2233,7 @@
           "source": "decreto-2324-de-1984.md"
         }
       ],
-      "text_mismatches": 98
+      "text_mismatches": 133
     },
     "files": [
       {
@@ -3527,9 +3527,9 @@
         "sha256": "9f25bacaaff644d9794bc864a60c24becf83206001e1a01d61aed177005a7e86"
       },
       {
-        "bytes": 354230,
+        "bytes": 354274,
         "path": "data/documents/gold/jurisprudencia/AP Gerardo Antenor Lemus Orozco VS Distrito de Santa Mata y otros.jsonl",
-        "sha256": "6b61cfa83c305075564143da6e714c2e54e378059441af6d8f66fb55acb4372c"
+        "sha256": "54aabc5a2716db3ee1afeb9c66d4c9205c2b9803e26c02e3e49712ab04a72470"
       },
       {
         "bytes": 384514,
@@ -3617,9 +3617,9 @@
         "sha256": "c6c8a37701b946947740fa7a73bd4614cd87079d5a7cdb9da84a961ec33461a1"
       },
       {
-        "bytes": 334859,
+        "bytes": 334884,
         "path": "data/documents/gold/jurisprudencia/CE_2da_NYR_2009_164_FEPEP_VS_DIMAR_Playa_Uso_Urbanistico.jsonl",
-        "sha256": "f24b819fc519ac3990c7d1c392c36da10d0f29e027a97db71cb75b9b2b220877"
+        "sha256": "6002f1026692e79ff4198eefaf0d2af968b26adfd5a2ae79de9546e9adfb2a84"
       },
       {
         "bytes": 83075,
@@ -4092,9 +4092,9 @@
         "sha256": "b8ea7454cd01e2b228c16fdbd50481eafe75d22929ac33a2751e7d06a0609805"
       },
       {
-        "bytes": 102561,
+        "bytes": 102597,
         "path": "data/documents/silver/jurisprudencia/AP Gerardo Antenor Lemus Orozco VS Distrito de Santa Mata y otros.jsonl",
-        "sha256": "94e26ab985342e5376a9b6dc0104c8ca79411c8aba296b9eb44c3d2e2d4d8d03"
+        "sha256": "e421bfe7ee359ca4a6905ec59993152d2b29bb36a4953ff6de4f1022e861801a"
       },
       {
         "bytes": 117261,
@@ -4182,9 +4182,9 @@
         "sha256": "53bb4207cbe60e2e5dd97c2ea84ad8eced844a70be63a496b1a371d0e73666ea"
       },
       {
-        "bytes": 119274,
+        "bytes": 119292,
         "path": "data/documents/silver/jurisprudencia/CE_2da_NYR_2009_164_FEPEP_VS_DIMAR_Playa_Uso_Urbanistico.jsonl",
-        "sha256": "606541375dba7e64e02d80a79827c30fe22f609c399ebfbe071a1fa08cca1a90"
+        "sha256": "5de01f4e6c91d7d9a7b5692c496c9fb5e43a827313cea56a6c2440510a58800e"
       },
       {
         "bytes": 30198,

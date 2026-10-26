@@ -172,7 +172,9 @@
           "role": "identity"
         }
       ],
-      "notes": []
+      "notes": [
+        "Se propagaron las referencias canónicas de imágenes de Bronze a Silver (12 ocurrencias) y Gold (15 ocurrencias), correspondientes a 12 destinos únicos. Se conservaron IDs, metadata, orden, contadores y el resto de los cuerpos; Raw, Bronze y activos quedaron intactos. Esta corrección no acredita resolución de rutas en el frontend."
+      ]
     },
     {
       "source_path": "data/documents/raw/jurisprudencia/AP Gieseken Cuello & Cía. S. en C. VS DIMAR y otros.pdf",
@@ -824,7 +826,9 @@
           "role": "identity"
         }
       ],
-      "notes": []
+      "notes": [
+        "Se propagaron las referencias canónicas de imágenes de Bronze a Silver (18 ocurrencias) y Gold (25 ocurrencias), correspondientes a 18 destinos únicos. Se conservaron IDs, metadata, orden, contadores y el resto de los cuerpos; Raw, Bronze y activos quedaron intactos. Esta corrección no acredita resolución de rutas en el frontend."
+      ]
     },
     {
       "source_path": "data/documents/raw/jurisprudencia/CE_Consulta_1990_Horacio_Serpa_Uso_Publico_Playa.pdf",
