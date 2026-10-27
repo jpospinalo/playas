@@ -703,8 +703,8 @@ async def encuestas(
                 comentario=(fb.comment or "").strip() or None,
                 general=notas["general"] or 0,
                 claridad=notas["claridad"],
-                tono=notas["tono"] or 0,
-                largo=notas["largo"] or 0,
+                tono=notas["tono"],
+                largo=notas["largo"],
                 facilidad=notas["facilidad"] or 0,
             )
             for fb, nombre, notas in pagina

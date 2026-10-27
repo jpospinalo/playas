@@ -199,7 +199,7 @@ export default function PaginaEncuestas() {
 										<div key={d.clave}>
 											<dt>{d.texto}</dt>
 											<dd className={d.clave === "general" ? "pnl-veces" : undefined}>
-												{d.clave === "largo" ? textoLargo(e.largo) : deCinco(e[d.clave] ?? 0)}
+												{d.clave === "largo" ? textoLargo(e.largo ?? 0) : deCinco(e[d.clave] ?? 0)}
 											</dd>
 										</div>
 									))}

@@ -126,8 +126,10 @@ class SourceGroup(BaseModel):
 class RatingDimensions(BaseModel):
     """Calificación multidimensional de una conversación."""
 
-    tone: int = Field(..., ge=1, le=5, description="Tono de las respuestas")
-    length: int = Field(..., ge=1, le=5, description="Longitud de las respuestas")
+    # Tono y largo solo los pide la encuesta del chat; la del flujo guiado
+    # (ejercicio de validación) pide claridad, facilidad de uso y general.
+    tone: int | None = Field(default=None, ge=1, le=5, description="Tono de las respuestas")
+    length: int | None = Field(default=None, ge=1, le=5, description="Longitud de las respuestas")
     usability: int = Field(..., ge=1, le=5, description="Usabilidad del sistema")
     overall: int = Field(..., ge=1, le=5, description="Calificación general")
     # Encuesta de percepción del ejercicio de validación: claridad de las
@@ -443,8 +445,8 @@ class PanelEncuestaItem(BaseModel):
     conversation_id: str | None
     general: int
     claridad: int | None = Field(default=None, description="Solo en encuestas nuevas")
-    tono: int
-    largo: int = Field(..., description="1 muy corta, 3 adecuada, 5 muy larga")
+    tono: int | None = Field(default=None, description="Solo en la encuesta del chat")
+    largo: int | None = Field(default=None, description="1 muy corta, 3 adecuada, 5 muy larga")
     facilidad: int
     comentario: str | None
 

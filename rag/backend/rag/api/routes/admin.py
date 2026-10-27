@@ -143,8 +143,11 @@ async def list_feedback(
     distributions: dict[str, dict[str, int]] = {
         d: {str(v): (getattr(agg_row, f"{d}_{v}") or 0) for v in range(1, 6)} for d in dims
     }
+    # Promedio solo sobre las encuestas que traen esa nota (la del flujo
+    # guiado no pide tono ni largo).
+    con_nota = {d: sum(distributions[d].values()) for d in dims}
     avg_ratings = RatingDimensionsFloat(
-        **{d: round(sums[d] / total, 2) if total > 0 else 0.0 for d in dims}
+        **{d: round(sums[d] / con_nota[d], 2) if con_nota[d] > 0 else 0.0 for d in dims}
     )
 
     # C5 — desempate estable por `id` cuando varias filas comparten el mismo
@@ -167,8 +170,8 @@ async def list_feedback(
             userId=doc.user_id,
             userEmail=doc.user_email,
             ratings=RatingDimensions(
-                tone=(doc.ratings or {}).get("tone", 0),
-                length=(doc.ratings or {}).get("length", 0),
+                tone=(doc.ratings or {}).get("tone") or None,
+                length=(doc.ratings or {}).get("length") or None,
                 usability=(doc.ratings or {}).get("usability", 0),
                 overall=(doc.ratings or {}).get("overall", 0),
             ),

@@ -22,6 +22,8 @@ interface RespuestaProps {
 	onCalificar: (c: Calificacion) => Promise<void>;
 	onVolver: () => void;
 	onOtraPregunta: () => void;
+	/** Encuesta de percepción al terminar (momento 3 del ejercicio). */
+	onTerminar?: () => void;
 	onEscribirDeNuevo: () => void;
 	/** Lo escrito en la caja de seguimiento (vive afuera, como el borrador del inicio). */
 	seguimiento: string;
@@ -65,6 +67,7 @@ export function Respuesta({
 	onCalificar,
 	onVolver,
 	onOtraPregunta,
+	onTerminar,
 	onEscribirDeNuevo,
 	seguimiento,
 	onCambioSeguimiento,
@@ -269,6 +272,11 @@ export function Respuesta({
 				>
 					{TXT.empezarDeNuevo}
 				</button>
+				{onTerminar ? (
+					<button type="button" className="guia-btn-sec" onClick={onTerminar}>
+						Terminar y dar mi opinión
+					</button>
+				) : null}
 			</div>
 		</>
 	);

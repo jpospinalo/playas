@@ -155,9 +155,9 @@ export interface Encuesta {
 	general: number;
 	/** Claridad de las respuestas: solo en las encuestas nuevas. */
 	claridad: number | null;
-	tono: number;
+	tono: number | null;
 	/** 1 muy corta, 3 adecuada, 5 muy larga (no es una escala de calidad). */
-	largo: number;
+	largo: number | null;
 	facilidad: number;
 	comentario: string | null;
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { useChat } from "@/hooks/useChat";
 import { useRutaGuia } from "@/hooks/useRutaGuia";
@@ -17,6 +18,7 @@ import {
 	esTactil,
 } from "@/components/guia/Pantallas";
 import { Respuesta, type Calificacion } from "@/components/guia/Respuesta";
+import { PantallaOpinion } from "@/components/guia/Opinion";
 import { detenerVoz } from "@/lib/voz";
 import type { Message, SourceGroup } from "@/lib/types";
 
@@ -29,6 +31,12 @@ import type { Message, SourceGroup } from "@/lib/types";
 export function GuiaApp() {
 	const { user, loading } = useAuth();
 	const tituloRef = useRef<HTMLHeadingElement>(null);
+	const router = useRouter();
+	// Semilleristas y comité solo evalúan: al entrar van directo a Evaluación (PQ-62).
+	const evalua = user?.role === "evaluador" || user?.role === "comite";
+	useEffect(() => {
+		if (evalua) router.replace("/admin/evaluacion");
+	}, [evalua, router]);
 
 	return (
 		<div className="guia">
@@ -37,6 +45,10 @@ export function GuiaApp() {
 				{loading ? (
 					<p role="status" className="pista">
 						Cargando…
+					</p>
+				) : user && evalua ? (
+					<p role="status" className="pista">
+						Abriendo Evaluación…
 					</p>
 				) : user ? (
 					<Flujo key={user.user_id} />
@@ -188,6 +200,7 @@ function Flujo() {
 	const cajaRef = useRef<HTMLTextAreaElement>(null);
 	const enfocarCaja = useRef(false);
 	const chat = useChat();
+	const { signOut } = useAuth();
 	const { messages, loading, error, stage, generationFinished, persistingMessageIds } = chat;
 
 	const [pregunta, setPregunta] = useState<PreguntaActual | null>(null);
@@ -453,6 +466,7 @@ function Flujo() {
 				}
 				onCalificar={(c) => calificar(mensaje.id, c)}
 				onOtraPregunta={otraPregunta}
+				onTerminar={() => ir(`opinion/${numero}`)}
 				onEscribirDeNuevo={() => {
 					setBorrador(vista.pregunta.texto);
 					irACaja(false);
@@ -462,6 +476,19 @@ function Flujo() {
 				onSeguir={seguir}
 				muchasSeguidas={turnos.length >= TOPE_SEGUIMIENTO}
 				tituloRef={tituloRef}
+			/>
+		);
+	}
+
+	// Encuesta de percepción (al terminar): queda ligada a la última conversación.
+	if (pantalla === "opinion") {
+		return (
+			<PantallaOpinion
+				tituloRef={tituloRef}
+				conversationId={chat.conversationId ?? null}
+				onVolver={() => window.history.back()}
+				onOtraPregunta={otraPregunta}
+				onSalir={() => void signOut()}
 			/>
 		);
 	}

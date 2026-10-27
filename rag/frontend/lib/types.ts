@@ -82,10 +82,11 @@ export interface FeedbackRequest {
 export interface ConversationRatings {
 	/** Claridad de las respuestas (encuesta del ejercicio; las viejas no la traen). */
 	clarity?: number;
-	tone: number;
-	length: number;
-	usability: number;
-	overall: number;
+	/** Tono y largo: solo la encuesta del chat; la del flujo guiado no los pide. */
+	tone?: number;
+	length?: number;
+	usability?: number;
+	overall?: number;
 }
 
 // ── Message-level rating dimensions ──
