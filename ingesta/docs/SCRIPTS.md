@@ -6,6 +6,11 @@ Referencia de scripts de pipeline, infraestructura EC2 y utilidades S3 del subsi
 
 ## Pipeline de ingesta
 
+El pipeline offline actual permite capas persistentes v2, reanudación por etapa e
+informes objetivos de calidad. Véanse formatos, comandos y diferencias con las
+capas históricas en [MEDALLION.md](MEDALLION.md). Los ejemplos históricos de esta
+página describen el flujo anterior.
+
 ### `scripts/run_pipeline.sh`
 
 Ejecuta el **pipeline completo de ingesta + arranca la API**. Es el script principal para levantar el sistema desde cero.
