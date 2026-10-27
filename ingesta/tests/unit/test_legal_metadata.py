@@ -60,6 +60,27 @@ def test_manual_csv_values_are_nfc_without_nul():
     assert result["campos"]["magistrado_ponente"]["valor"] == "JUAN PÉREZ"
 
 
+@pytest.mark.parametrize(
+    "text",
+    [
+        "La competencia de la Dirección.",
+        "La limpieza de casco a flote.",
+        "Que cumplieran con sus funciones de custodia.",
+    ],
+)
+def test_ponente_abbreviation_does_not_match_inside_words(text):
+    result = extract_legal_metadata(text)
+    assert result["campos"]["magistrado_ponente"]["valor"] is None
+
+
+@pytest.mark.parametrize(
+    "label", ["M.P.", "M. P.", "MP", "Consejero ponente", "Magistrada ponente"]
+)
+def test_ponente_labels_with_word_boundaries(label):
+    result = extract_legal_metadata(label + ": ANA PÉREZ\nCONSIDERACIONES")
+    assert result["campos"]["magistrado_ponente"]["valor"] == "ANA PÉREZ"
+
+
 @pytest.mark.parametrize("value", [None, "  \t "])
 def test_blank_manual_csv_value_clears_field(value):
     metadata = extract_legal_metadata(TEXT)

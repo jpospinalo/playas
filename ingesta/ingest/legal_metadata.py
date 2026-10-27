@@ -6,7 +6,7 @@ import datetime as dt
 import re
 import unicodedata
 
-SCHEMA_VERSION = "legal-metadata-1"
+SCHEMA_VERSION = "legal-metadata-2"
 FIELDS = (
     "tipo_documento",
     "corporacion",
@@ -62,7 +62,7 @@ def extract_legal_metadata(original):
     patterns = {
         "sala": r"(?:SALA\s+(?:DE\s+LO\s+)?[A-ZÁÉÍÓÚÑ ]{4,70}|SECCI[ÓO]N\s+(?:PRIMERA|SEGUNDA|TERCERA|CUARTA|QUINTA))",
         "radicado": r"(?:Radicaci[oó]n|Radicado|Expediente)\s*(?:n[úu]mero|no\.?|n[º°])?\s*[:.\-]?\s*([0-9][0-9 .\-()]{8,70})",
-        "magistrado_ponente": r"(?:Magistrad[oa](?:\s+sustanciador[ae]?)?\s+ponente|Consejer[oa]\s+ponente|M\.?\s*P\.?)\s*[:\-]?\s*([^\n\f:]{5,100})",
+        "magistrado_ponente": r"(?<!\w)(?:Magistrad[oa](?:\s+sustanciador[ae]?)?\s+ponente\b|Consejer[oa]\s+ponente\b|M\.?[ \t]*P\.?(?!\w))\s*[:\-]?\s*([^\n\f:]{5,100})",
     }
     for name, pattern in patterns.items():
         matches = list(re.finditer(pattern, head, re.I))
