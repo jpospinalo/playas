@@ -725,3 +725,64 @@ async def encuestas(
         page_size=page_size,
         promedios=promedios,
     )
+
+
+@router.get("/encuestas.csv")
+async def encuestas_csv(
+    dias: int = DiasQuery,
+    _admin: dict = Depends(require_admin),
+    session: AsyncSession = Depends(get_session),
+) -> Response:
+    """Encuestas de percepción con sus comentarios, en CSV (evidencia del
+    informe final: "observaciones y comentarios de los participantes", PDF p. 9)."""
+    periodo = pm.calcular_periodo(dias)
+    stmt = select(Feedback, User.display_name).join(User, User.id == Feedback.user_id, isouter=True)
+    if periodo.inicio is not None:
+        stmt = stmt.where(Feedback.created_at >= periodo.inicio)
+    filas = sorted(
+        (await session.execute(stmt)).all(),
+        key=lambda x: (pm.a_utc(x[0].created_at), x[0].id),
+    )
+    perfiles = await _perfiles(session)
+    salida = io.StringIO()
+    escritor = csv.writer(salida)
+    escritor.writerow(
+        [
+            "Fecha (hora de Colombia)",
+            "Participante",
+            "Tipo de usuario de playa",
+            "Persona",
+            "Claridad de las respuestas",
+            "Facilidad de uso",
+            "Calificación general",
+            "Tono",
+            "Largo",
+            "Comentario",
+        ]
+    )
+    for fb, nombre in filas:
+        r = fb.ratings or {}
+        codigo, tipo = perfiles.get(fb.user_id, (None, None))
+        escritor.writerow(
+            [
+                _celda(v)
+                for v in (
+                    pm.a_utc(fb.created_at).astimezone(pm.HORA_COLOMBIA).strftime("%Y-%m-%d %H:%M"),
+                    codigo or "",
+                    _tipo_texto(tipo),
+                    _nombre(nombre),
+                    r.get("clarity") or "",
+                    r.get("usability") or "",
+                    r.get("overall") or "",
+                    r.get("tone") or "",
+                    r.get("length") or "",
+                    fb.comment or "",
+                )
+            ]
+        )
+    nombre_archivo = f"atlas-encuestas-{'todo' if dias == 0 else f'{dias}-dias'}.csv"
+    return Response(
+        content="\ufeff" + salida.getvalue(),
+        media_type="text/csv; charset=utf-8",
+        headers={"Content-Disposition": f'attachment; filename="{nombre_archivo}"'},
+    )

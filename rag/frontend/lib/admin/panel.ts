@@ -292,6 +292,25 @@ export async function descargarCsv(
 	setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
+/** CSV de encuestas con sus comentarios (evidencia del informe final, PDF p. 9). */
+export async function descargarEncuestasCsv(dias: number): Promise<void> {
+	const t = await token();
+	const res = await fetch(`${API_URL}/api/admin/panel/encuestas.csv?${consulta({ dias })}`, {
+		headers: { Authorization: `Bearer ${t}` },
+		signal: withRestTimeout(),
+	});
+	await throwIfSessionExpired(res, t);
+	if (!res.ok) throw new Error(`No se pudo descargar (${res.status}).`);
+	const url = URL.createObjectURL(await res.blob());
+	const a = document.createElement("a");
+	a.href = url;
+	a.download = `atlas-encuestas-${dias === 0 ? "todo" : `${dias}-dias`}.csv`;
+	document.body.appendChild(a);
+	a.click();
+	a.remove();
+	setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
 // ── Formato ─────────────────────────────────────────────────────────────────
 
 const ZONA = "America/Bogota";

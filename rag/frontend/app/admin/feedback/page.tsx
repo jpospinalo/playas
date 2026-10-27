@@ -5,6 +5,7 @@ import Link from "next/link";
 import {
 	deCinco,
 	decimal,
+	descargarEncuestasCsv,
 	enlaceConversacion,
 	fechaHora,
 	mensajeError,
@@ -14,7 +15,7 @@ import {
 	type Encuestas,
 	type FiltroEncuesta,
 } from "@/lib/admin/panel";
-import { IconoAviso } from "@/components/admin/panel/Estados";
+import { IconoAviso, IconoDescargar } from "@/components/admin/panel/Estados";
 import { Periodo } from "@/components/admin/panel/Periodo";
 
 const OPCIONES: { valor: FiltroEncuesta; texto: string }[] = [
@@ -48,6 +49,16 @@ export default function PaginaEncuestas() {
 	const [datos, setDatos] = useState<Encuestas | null>(null);
 	const [error, setError] = useState<string | null>(null);
 	const [intento, setIntento] = useState(0);
+	const [errorCsv, setErrorCsv] = useState<string | null>(null);
+
+	async function csv() {
+		setErrorCsv(null);
+		try {
+			await descargarEncuestasCsv(dias);
+		} catch (e) {
+			setErrorCsv(mensajeError(e, "No se pudo descargar el archivo."));
+		}
+	}
 
 	useEffect(() => {
 		let vigente = true;
@@ -90,8 +101,22 @@ export default function PaginaEncuestas() {
 							setPagina(1);
 						}}
 					/>
+					<button type="button" className="pnl-btn-sec" onClick={csv}>
+						<IconoDescargar />
+						Descargar CSV con comentarios
+					</button>
 				</div>
 			</div>
+
+			{errorCsv ? (
+				<div className="pnl-error" role="alert">
+					<IconoAviso />
+					<div>
+						<b>No se pudo descargar el CSV.</b>
+						<p>{errorCsv} Intente de nuevo en un momento.</p>
+					</div>
+				</div>
+			) : null}
 
 			{error ? (
 				<div className="pnl-error" role="alert">

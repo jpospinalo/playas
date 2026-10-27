@@ -223,7 +223,14 @@ _ADMIN = {"uid": "adm", "role": "admin"}
 
 @pytest.mark.parametrize(
     "ruta",
-    ["/resumen", "/preguntas", "/preguntas.csv", "/conversaciones/c0", "/encuestas"],
+    [
+        "/resumen",
+        "/preguntas",
+        "/preguntas.csv",
+        "/conversaciones/c0",
+        "/encuestas",
+        "/encuestas.csv",
+    ],
 )
 def test_permisos_en_el_servidor(cliente, ruta: str) -> None:
     c, _ = cliente
@@ -471,3 +478,19 @@ def test_encuestas(cliente) -> None:
         == 2
     )
     assert c.get("/api/admin/panel/encuestas?filtro=otra", headers=h).status_code == 422
+
+
+def test_encuestas_csv_con_comentarios(cliente) -> None:
+    # A9: los comentarios de la encuesta son evidencia del informe (PDF p. 9).
+    c, _ = cliente
+    r = c.get("/api/admin/panel/encuestas.csv?dias=0", headers=_auth(**_ADMIN))
+    assert r.headers["content-type"].startswith("text/csv")
+    filas = list(csv.reader(io.StringIO(r.content.decode("utf-8-sig"))))
+    assert len(filas) == 1 + 3
+    assert filas[0][4:7] == [
+        "Claridad de las respuestas",
+        "Facilidad de uso",
+        "Calificación general",
+    ]
+    assert "Muy clara" in [f[-1] for f in filas[1:]]
+    assert "@" not in r.content.decode("utf-8-sig")
