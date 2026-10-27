@@ -485,3 +485,61 @@ def test_asignacion_automatica_balanceada(cliente) -> None:
     assert c.get(f"/api/evaluacion/preguntas/{ajena}", headers=SM).status_code == 403
     # La asignación es estable: otra lectura da lo mismo.
     assert numeros(SM) == sm1
+
+
+def test_asignacion_simultanea_no_duplica(tmp_path) -> None:
+    """Revisor (plan v2, punto 2): dos lecturas a la vez no asignan dos veces
+    la misma pregunta (clave única pregunta+sede y reintento)."""
+    from sqlalchemy import func, select
+
+    from rag.api.models import QuestionAssignment
+    from rag.api.routes.evaluacion import _cargar
+
+    engine = create_async_engine(f"sqlite+aiosqlite:///{tmp_path / 'a.db'}")
+    factory = async_sessionmaker(engine, expire_on_commit=False)
+
+    async def _correr() -> tuple[int, int]:
+        async with engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
+        async with factory() as s:
+            s.add(User(id="u1", email="u1@x.co", password_hash="x", role="user"))
+            for uid, sede in [("e1", "Santa Marta"), ("e2", "Santa Marta"), ("e3", "Barranquilla")]:
+                s.add(User(id=uid, email=f"{uid}@x.co", password_hash="x", role="evaluador"))
+                s.add(ExerciseProfile(user_id=uid, sede=sede))
+            s.add(ExerciseProfile(user_id="u1", codigo="P001", tipo_playa=1))
+            for i in range(30):
+                s.add(Conversation(id=f"c{i}", user_id="u1", thread_id=f"c{i}", created_at=_AHORA))
+                s.add(
+                    Message(
+                        id=f"m{i}",
+                        conversation_id=f"c{i}",
+                        role="user",
+                        text=f"Pregunta {i}",
+                        created_at=_AHORA + timedelta(seconds=i),
+                    )
+                )
+            await s.commit()
+
+        async def leer() -> None:
+            async with factory() as s:
+                await _cargar(s)
+
+        await asyncio.gather(leer(), leer(), leer())
+        async with factory() as s:
+            filas = (
+                await s.execute(select(func.count()).select_from(QuestionAssignment))
+            ).scalar_one()
+            distintas = (
+                await s.execute(
+                    select(func.count()).select_from(
+                        select(QuestionAssignment.message_id, QuestionAssignment.sede)
+                        .distinct()
+                        .subquery()
+                    )
+                )
+            ).scalar_one()
+        await engine.dispose()
+        return filas, distintas
+
+    filas, distintas = asyncio.run(_correr())
+    assert filas == distintas == 60  # 30 preguntas x 2 sedes, sin duplicados

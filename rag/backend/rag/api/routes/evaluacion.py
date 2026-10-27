@@ -30,6 +30,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from fastapi.responses import Response
 from pydantic import BaseModel, Field
 from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from rag.api import auditoria
@@ -103,21 +104,7 @@ async def _cargar(session: AsyncSession) -> list[_Pregunta]:
             .order_by(Message.created_at, Message.id)
         )
     ).all()
-    # ID fijo por pregunta (PQ-56): los que no tienen número lo reciben ahora,
-    # siguiendo el orden de llegada, después del último asignado.
-    numeros = dict(
-        (await session.execute(select(QuestionNumber.message_id, QuestionNumber.numero))).all()
-    )
-    siguiente = max(numeros.values(), default=0) + 1
-    nuevos = False
-    for mid, *_ in filas:
-        if mid not in numeros:
-            numeros[mid] = siguiente
-            session.add(QuestionNumber(message_id=mid, numero=siguiente))
-            siguiente += 1
-            nuevos = True
-    if nuevos:
-        await session.commit()
+    numeros = await _numerar(session, [mid for mid, *_ in filas])
     asignados = await _asignar(session, [mid for mid, *_ in filas])
     preguntas = [
         _Pregunta(
@@ -168,7 +155,37 @@ async def _cargar(session: AsyncSession) -> list[_Pregunta]:
     return preguntas
 
 
-async def _asignar(session: AsyncSession, message_ids: list[str]) -> dict[str, dict[str, str]]:
+async def _numerar(
+    session: AsyncSession, message_ids: list[str], _reintento: bool = False
+) -> dict[str, int]:
+    """ID fijo por pregunta (PQ-56): las que no tienen número lo reciben ahora,
+    en orden de llegada, después del último asignado. Si otra solicitud
+    numeró al mismo tiempo (número único), se usa lo que quedó guardado."""
+    numeros = dict(
+        (await session.execute(select(QuestionNumber.message_id, QuestionNumber.numero))).all()
+    )
+    siguiente = max(numeros.values(), default=0) + 1
+    nuevos = False
+    for mid in message_ids:
+        if mid not in numeros:
+            numeros[mid] = siguiente
+            session.add(QuestionNumber(message_id=mid, numero=siguiente))
+            siguiente += 1
+            nuevos = True
+    if nuevos:
+        try:
+            await session.commit()
+        except IntegrityError:
+            await session.rollback()
+            if _reintento:
+                raise
+            return await _numerar(session, message_ids, _reintento=True)
+    return numeros
+
+
+async def _asignar(
+    session: AsyncSession, message_ids: list[str], _reintento: bool = False
+) -> dict[str, dict[str, str]]:
     """Asigna las preguntas que aún no tienen semillerista en cada sede (T1).
 
     En orden de llegada, a quien menos asignadas tenga en su sede; si empatan,
@@ -258,7 +275,16 @@ async def _asignar(session: AsyncSession, message_ids: list[str]) -> dict[str, d
             )
             nuevos = True
     if nuevos:
-        await session.commit()
+        try:
+            await session.commit()
+        except IntegrityError:
+            # Otra solicitud asignó las mismas preguntas al mismo tiempo (la
+            # clave pregunta+sede es única): se descarta lo propio y se usa
+            # lo que quedó guardado.
+            await session.rollback()
+            if _reintento:
+                raise
+            return await _asignar(session, message_ids, _reintento=True)
     return actuales
 
 
