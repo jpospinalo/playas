@@ -54,6 +54,13 @@ CT_PLANILLA = {"S": "S - Sencillo", "I": "I - Intermedio", "A": "A - Avanzado"}
 # nivel se consideran distintas (configurable sin tocar código).
 UMBRAL_DIFERENCIA = int(os.getenv("EVAL_UMBRAL_DIFERENCIA", "2"))
 
+# El documento dice que el comité valida todas las evaluaciones. Con dos
+# calificaciones concordantes, la planilla ya tiene un valor (el promedio),
+# pero queda "pendiente de revisión del comité". Si esta variable es "true",
+# solo cuentan para resumen y premios las que el comité revisó (decisión de
+# Juan, PQ-55); por defecto cuentan también las concordantes.
+PREMIOS_SOLO_REVISADAS = os.getenv("EVAL_PREMIOS_SOLO_REVISADAS", "false").lower() == "true"
+
 # Rúbrica de la hoja "Instructivo", para mostrarla en la ficha de evaluación.
 RUBRICA_FORMA = {
     "f1": {
@@ -293,6 +300,12 @@ def ranking_participantes(preguntas: list[PreguntaOficial]) -> list[dict]:
         for codigo, ps in por_codigo.items()
     ]
     filas.sort(key=lambda f: (-f["dias"], -f["preguntas_validas"], -f["puntaje"], f["codigo"]))
+    # Si los primeros empatan en los tres criterios, decide el comité (PQ-57).
+    if filas:
+        clave = (filas[0]["dias"], filas[0]["preguntas_validas"], filas[0]["puntaje"])
+        empatados = [f for f in filas if (f["dias"], f["preguntas_validas"], f["puntaje"]) == clave]
+        for f in filas:
+            f["empate"] = len(empatados) > 1 and f in empatados
     return filas
 
 

@@ -57,6 +57,7 @@ export default function PaginaBandeja() {
 	const pestanas: { valor: FiltroBandeja; texto: string }[] = comite
 		? [
 				{ valor: "con_diferencias", texto: "Con diferencias: por resolver" },
+				{ valor: "por_validar", texto: "Concordantes: por validar" },
 				{ valor: "finalizadas", texto: "Con calificación oficial" },
 				{ valor: "todas", texto: "Todas" },
 			]

@@ -12,7 +12,7 @@ import { expireAuthSession, getToken } from "@/lib/auth";
 
 export type Ct = "S" | "I" | "A";
 export type EstadoPregunta = "sin_evaluar" | "una_evaluacion" | "concordante" | "con_diferencias" | "final";
-export type FiltroBandeja = "pendientes" | "mias" | "con_diferencias" | "finalizadas" | "todas";
+export type FiltroBandeja = "pendientes" | "mias" | "con_diferencias" | "por_validar" | "finalizadas" | "todas";
 
 export const NIVELES: Record<Ct, string> = { S: "Sencillo", I: "Intermedio", A: "Avanzado" };
 export const RANGOS: Record<Ct, [number, number]> = { S: [3, 6], I: [7, 9], A: [10, 12] };
@@ -20,7 +20,7 @@ export const RANGOS: Record<Ct, [number, number]> = { S: [3, 6], I: [7, 9], A: [
 export const TEXTO_ESTADO: Record<EstadoPregunta, string> = {
 	sin_evaluar: "Sin calificar",
 	una_evaluacion: "Falta una calificación",
-	concordante: "Calificaciones concordantes",
+	concordante: "Concordantes (promedio): pendiente de revisión del comité",
 	con_diferencias: "Con diferencias: va al comité",
 	final: "Revisada por el comité",
 };

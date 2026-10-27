@@ -381,3 +381,39 @@ def test_resumen_premios_y_excel(cliente) -> None:
     assert '<c r="A2"><v>1</v></c>' in hoja  # ID de pregunta numérico
     assert "Tipo 3. Comerciantes" in hoja and "S - Sencillo" in hoja
     assert "Ana" not in hoja
+
+
+def test_constancia_empate_total_lo_decide_el_comite() -> None:
+    ps = [
+        _of("a1", "P002", "S", 3, 1),
+        _of("b1", "P001", "S", 3, 1),
+        _of("c1", "P003", "S", 3, 2, total=1),
+    ]
+    filas = ej.ranking_participantes(ps)
+    assert [f["empate"] for f in filas] == [True, True, False]
+    assert not any(f["empate"] for f in ej.ranking_participantes(ps[:1]))
+
+
+def test_concordantes_por_validar_del_comite(cliente) -> None:
+    c = cliente
+    SM, SM2, BQ, SIN, COM, USER = _hs()  # noqa: N806
+    c.put("/api/evaluacion/preguntas/q1/mia", headers=SM, json=_cal_json("S", 4))
+    r = c.put("/api/evaluacion/preguntas/q1/mia", headers=BQ, json=_cal_json("S", 5))
+    assert r.json()["estado"] == "concordante"
+    b = c.get("/api/evaluacion/bandeja?estado=por_validar", headers=COM).json()
+    assert [i["message_id"] for i in b["items"]] == ["q1"] and b["conteos"]["por_validar"] == 1
+    # El comité la valida guardando la final: sale de "por validar".
+    c.put("/api/evaluacion/preguntas/q1/final", headers=COM, json=_cal_json("S", 5))
+    assert c.get("/api/evaluacion/bandeja?estado=por_validar", headers=COM).json()["total"] == 0
+
+
+def test_id_de_pregunta_persistente(cliente) -> None:
+    c = cliente
+    SM, SM2, BQ, SIN, COM, USER = _hs()  # noqa: N806
+    antes = {
+        i["message_id"]: i["numero"]
+        for i in c.get("/api/evaluacion/bandeja?estado=todas", headers=SM).json()["items"]
+    }
+    assert sorted(antes.values()) == list(range(1, len(antes) + 1))
+    otra = c.get("/api/evaluacion/bandeja?estado=todas", headers=COM).json()["items"]
+    assert {i["message_id"]: i["numero"] for i in otra} == antes

@@ -116,7 +116,7 @@ export default function PaginaResumenEjercicio() {
 							<dt>Con calificación oficial</dt>
 							<dd>
 								<span className="pnl-valor num">{numero(resumen.evaluadas)}</span>
-								<span className="pnl-det">Final del comité o dos concordantes</span>
+								<span className="pnl-det">Final del comité, o dos concordantes aún por validar</span>
 							</dd>
 						</div>
 						<div className="pnl-cifra">
@@ -357,11 +357,19 @@ function TablaRanking({
 	filas,
 	destacar,
 }: {
-	filas: { codigo: string; dias: number; preguntas_validas: number; puntaje: number }[];
+	filas: { codigo: string; dias: number; preguntas_validas: number; puntaje: number; empate?: boolean }[];
 	destacar?: boolean;
 }) {
 	if (!filas.length) return <p className="pnl-vacio">Todavía no hay preguntas válidas con calificación oficial.</p>;
+	const empatados = destacar ? filas.filter((f) => f.empate) : [];
 	return (
+		<>
+		{empatados.length > 1 ? (
+			<p className="pnl-aviso" role="note">
+				<b>Empate: decide el comité.</b> {empatados.map((f) => f.codigo).join(", ")} tienen los mismos días,
+				preguntas válidas y puntaje; la app no desempata.
+			</p>
+		) : null}
 		<div className="pnl-tabla-datos" role="region" aria-label="Tabla de participantes" tabIndex={0}>
 			<table>
 				<thead>
@@ -387,7 +395,8 @@ function TablaRanking({
 							<td className="num">{i + 1}</td>
 							<td>
 								{f.codigo}
-								{destacar && i === 0 ? <b> (primer puesto)</b> : null}
+								{destacar && f.empate ? <b> (empatado en el primer puesto)</b> : null}
+								{destacar && i === 0 && !f.empate ? <b> (primer puesto)</b> : null}
 							</td>
 							<td className="num">{numero(f.dias)}</td>
 							<td className="num">{numero(f.preguntas_validas)}</td>
@@ -397,5 +406,6 @@ function TablaRanking({
 				</tbody>
 			</table>
 		</div>
+		</>
 	);
 }

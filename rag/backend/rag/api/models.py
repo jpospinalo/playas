@@ -163,3 +163,15 @@ class AwardDecision(Base):
     message_id: Mapped[str] = mapped_column(String, ForeignKey("messages.id"), nullable=False)
     decidido_por: Mapped[str] = mapped_column(String, ForeignKey("users.id"), nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)
+
+
+class QuestionNumber(Base):
+    """ "ID pregunta" de la planilla: número fijo por pregunta, asignado en
+    orden de llegada la primera vez que se ve. No cambia aunque después se
+    agreguen o quiten participantes (PQ-56)."""
+
+    __tablename__ = "question_number"
+
+    message_id: Mapped[str] = mapped_column(String, ForeignKey("messages.id"), primary_key=True)
+    numero: Mapped[int] = mapped_column(Integer, unique=True, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)

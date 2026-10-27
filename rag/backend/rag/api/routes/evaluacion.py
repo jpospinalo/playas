@@ -41,6 +41,7 @@ from rag.api.models import (
     ExerciseProfile,
     Message,
     QuestionEvaluation,
+    QuestionNumber,
     User,
 )
 
@@ -96,9 +97,24 @@ async def _cargar(session: AsyncSession) -> list[_Pregunta]:
             .order_by(Message.created_at, Message.id)
         )
     ).all()
+    # ID fijo por pregunta (PQ-56): los que no tienen número lo reciben ahora,
+    # siguiendo el orden de llegada, después del último asignado.
+    numeros = dict(
+        (await session.execute(select(QuestionNumber.message_id, QuestionNumber.numero))).all()
+    )
+    siguiente = max(numeros.values(), default=0) + 1
+    nuevos = False
+    for mid, *_ in filas:
+        if mid not in numeros:
+            numeros[mid] = siguiente
+            session.add(QuestionNumber(message_id=mid, numero=siguiente))
+            siguiente += 1
+            nuevos = True
+    if nuevos:
+        await session.commit()
     preguntas = [
         _Pregunta(
-            numero=i,
+            numero=numeros[mid],
             message_id=mid,
             conversation_id=cid,
             codigo=codigo,
@@ -106,7 +122,7 @@ async def _cargar(session: AsyncSession) -> list[_Pregunta]:
             fecha=pm.a_utc(creado).astimezone(pm.HORA_COLOMBIA),
             texto=texto,
         )
-        for i, (mid, cid, texto, creado, codigo, tipo) in enumerate(filas, 1)
+        for mid, cid, texto, creado, codigo, tipo in filas
     ]
     por_id = {p.message_id: p for p in preguntas}
     evals = (
@@ -271,7 +287,9 @@ def _puede_evaluar(p: _Pregunta, user_id: str, rol: str, sede: str | None) -> st
     return None
 
 
-ESTADOS_FILTRO = Literal["pendientes", "mias", "con_diferencias", "finalizadas", "todas"]
+ESTADOS_FILTRO = Literal[
+    "pendientes", "mias", "con_diferencias", "por_validar", "finalizadas", "todas"
+]
 
 
 @router.get("/catalogo")
@@ -296,6 +314,8 @@ def _estado_para_mi(p: _Pregunta, user_id: str, rol: str, sede: str | None) -> d
         "pendientes": pendiente,
         "mias": mia,
         "con_diferencias": oficial.estado == "con_diferencias",
+        # Concordantes: tienen valor (promedio) pero falta que el comité las revise.
+        "por_validar": oficial.estado == "concordante",
         "finalizadas": oficial.estado in ("final", "concordante"),
         "todas": True,
     }
@@ -505,7 +525,8 @@ def _oficiales(preguntas: list[_Pregunta]) -> list[ej.PreguntaOficial]:
     return [
         ej.PreguntaOficial(p.message_id, p.codigo, p.fecha, p.texto, p.oficial)
         for p in preguntas
-        if p.oficial.estado in ("final", "concordante")
+        if p.oficial.estado == "final"
+        or (p.oficial.estado == "concordante" and not ej.PREMIOS_SOLO_REVISADAS)
     ]
 
 
@@ -549,6 +570,7 @@ async def resumen(
             avance.values(), key=lambda f: (f["sede"] or "", -f["evaluadas"], f["evaluador"])
         ),
         "umbral_diferencia": ej.UMBRAL_DIFERENCIA,
+        "solo_revisadas": ej.PREMIOS_SOLO_REVISADAS,
     }
 
 
@@ -654,7 +676,7 @@ async def exportar(
             "sin_evaluar": "Sin evaluar",
             "una_evaluacion": "Falta una calificación",
             "con_diferencias": "Con diferencias: pendiente del comité",
-            "concordante": "Calificaciones concordantes",
+            "concordante": "Concordantes (promedio): pendiente de revisión del comité",
             "final": "Revisada por el comité",
         }[o.estado]
         obs = "; ".join(
