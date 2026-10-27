@@ -215,7 +215,18 @@ def calificacion_oficial(cals: list[Calificacion]) -> Oficial:
     lo, hi = RANGOS_CV[a.ct]
     cv = min(hi, max(lo, _media(a.cv, b.cv)))
     return Oficial(
-        "concordante", f1, f2, f3, a.ct, cv, puntaje_total(f1, f2, f3, cv), True, evaluo, "", obs
+        # Concordantes: misma validez por definición (si no, habría diferencia).
+        "concordante",
+        f1,
+        f2,
+        f3,
+        a.ct,
+        cv,
+        puntaje_total(f1, f2, f3, cv),
+        a.valida,
+        evaluo,
+        "",
+        obs,
     )
 
 

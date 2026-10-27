@@ -89,6 +89,13 @@ def test_calificacion_oficial() -> None:
     assert ej.calificacion_oficial(lejos).estado == "con_diferencias"
     final = ej.calificacion_oficial(distinto_nivel + [_cal("c", "", "I", 9, final=True)])
     assert final.estado == "final" and final.cv == 9 and final.reviso == "c"
+    # PQ-59: dos "no válida" concordantes siguen siendo no válidas.
+    no_validas = [
+        _cal("a", "Santa Marta", "S", 4, valida=False),
+        _cal("b", "Barranquilla", "S", 4, valida=False),
+    ]
+    of = ej.calificacion_oficial(no_validas)
+    assert of.estado == "concordante" and of.valida is False
 
 
 def _of(
