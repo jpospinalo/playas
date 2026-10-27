@@ -1,0 +1,1032 @@
+{
+  "utc": "2026-10-22T04:23:37.256493+00:00",
+  "configuration": {
+    "pipeline": "offline-1",
+    "normalizer": "nfc-mapped-1",
+    "extractor": "pymupdf-tesseract-spa-1",
+    "schema": "legal-metadata-1",
+    "chunker": "legacy",
+    "chunker_version": "legal-spans-1",
+    "token_budget": 512,
+    "legacy_size": 1000,
+    "legacy_overlap": 200,
+    "model": "embeddinggemma:latest",
+    "digest": "85462619ee721b466c5927d109d4cb765861907d5417b9109caebc4e614679f1",
+    "dimension": 768
+  },
+  "config_hash": "77a10337669650ae8fd135c45f805f161571dcc0060fc96509a24d6a07cadf21",
+  "files": 56,
+  "documents": 55,
+  "processed": 55,
+  "skipped": 0,
+  "deleted": 0,
+  "renamed": 0,
+  "new_ocr_pages": 116,
+  "llm_api_calls": 0,
+  "errors": [],
+  "documents_detail": [
+    {
+      "doc_id": "03e009c1602a465e493d6b9ddcd6983ba0a1e66f3a5f31cfa90312a16f2030dd",
+      "path": "jurisprudencia/CE_2da_AP_2010_028_Radley_Bent_VS_Dimar_Daños_Ambientales_Embarcaciones.pdf",
+      "chunks": 87,
+      "new_embeddings": 87,
+      "cpu_seconds_local": 1.1590227299999998,
+      "cpu_seconds_python": 1.1593933459999999,
+      "cpu_seconds_extract": 0.675415533,
+      "quarantined": false,
+      "gates": {
+        "schema": true,
+        "identity": true,
+        "characters": true,
+        "ocr": true,
+        "sections": true,
+        "size": true
+      }
+    },
+    {
+      "doc_id": "06139556e7f0112a6c7c06996b876f22310b6ae05ccb2c9e675339f5599be64d",
+      "path": "normativa/Reglamento Maritimo Colombiano REMAC 5-DIMAR (202103).md",
+      "chunks": 547,
+      "new_embeddings": 547,
+      "cpu_seconds_local": 2.899448416,
+      "cpu_seconds_python": 2.8994585129999995,
+      "cpu_seconds_extract": 0.013492002000000003,
+      "quarantined": false,
+      "gates": {
+        "schema": true,
+        "identity": true,
+        "characters": true,
+        "ocr": true,
+        "sections": true,
+        "size": true
+      }
+    },
+    {
+      "doc_id": "0c26a7cb41434bb05dd6969ef5a31039e3de0904c64f2534e10e2e3862fe9ec4",
+      "path": "jurisprudencia/AP Rodrigo Martínez Silva VS Minambiente y otros.pdf",
+      "chunks": 300,
+      "new_embeddings": 300,
+      "cpu_seconds_local": 200.99733404399998,
+      "cpu_seconds_python": 11.330561395,
+      "cpu_seconds_extract": 199.81760907199998,
+      "quarantined": false,
+      "gates": {
+        "schema": true,
+        "identity": true,
+        "characters": true,
+        "ocr": true,
+        "sections": true,
+        "size": true
+      }
+    },
+    {
+      "doc_id": "10387c6fbe01c74ca9785658239f0883bb864d86890d2ea02b4ee7fc22cb8239",
+      "path": "jurisprudencia/CE_2da_NYR_1999_503_Inversiones_Mercedes_VS_Dimar_Concesiones_Uso_Playa.pdf",
+      "chunks": 30,
+      "new_embeddings": 30,
+      "cpu_seconds_local": 0.6286079929999744,
+      "cpu_seconds_python": 0.6286191209999998,
+      "cpu_seconds_extract": 0.42885175999998637,
+      "quarantined": false,
+      "gates": {
+        "schema": true,
+        "identity": true,
+        "characters": true,
+        "ocr": true,
+        "sections": true,
+        "size": true
+      }
+    },
+    {
+      "doc_id": "146a9127ede00a90c2d1e5cf80a31ebe8734e8e56a05b9192e1e1ab8b948f204",
+      "path": "normativa/Por medio del cual se expiden las normas bases para la reglamentación de las actividades en las playas urbanas y rurales en el Distrito de Cartagena de Indias.pdf",
+      "chunks": 90,
+      "new_embeddings": 90,
+      "cpu_seconds_local": 108.26084738099996,
+      "cpu_seconds_python": 12.040465075,
+      "cpu_seconds_extract": 107.84383154299996,
+      "quarantined": false,
+      "gates": {
+        "schema": true,
+        "identity": true,
+        "characters": true,
+        "ocr": true,
+        "sections": true,
+        "size": true
+      }
+    },
+    {
+      "doc_id": "1c5b6f4ab37379e6e2286a45eec056647dbcf3a5fe08dfd335a5e730ae17f6b6",
+      "path": "normativa/Por el cual se reglamentan las disposiciones sobre licencias urbanísticas, reconocimiento de edificaciones y legalización de asentamientos humanos.pdf",
+      "chunks": 14,
+      "new_embeddings": 14,
+      "cpu_seconds_local": 0.058275203999983205,
+      "cpu_seconds_python": 0.05828472900000037,
+      "cpu_seconds_extract": 0.002825453000014022,
+      "quarantined": false,
+      "gates": {
+        "schema": true,
+        "identity": true,
+        "characters": true,
+        "ocr": true,
+        "sections": true,
+        "size": true
+      }
+    },
+    {
+      "doc_id": "1d08315fb0c629010d1b755a1c29f43ee3703c61cdb569c346b246bef040a046",
+      "path": "jurisprudencia/CE_2da_AP_2015_550_Angela_Muñoz_VS_Dpto_Cordoba_Bienes_De_Uso_Publico.pdf",
+      "chunks": 116,
+      "new_embeddings": 116,
+      "cpu_seconds_local": 0.32493645600004584,
+      "cpu_seconds_python": 0.32494515500000176,
+      "cpu_seconds_extract": 0.002367989999982001,
+      "quarantined": false,
+      "gates": {
+        "schema": true,
+        "identity": true,
+        "characters": true,
+        "ocr": true,
+        "sections": true,
+        "size": true
+      }
+    },
+    {
+      "doc_id": "1d4aab7f474e7fbd2f071042d990fe781ea5eb74a1531d322bd610bc2114e35d",
+      "path": "normativa/Por medio del cual se expide el Decreto Único Reglamentario del Sector Transporte.pdf",
+      "chunks": 22,
+      "new_embeddings": 22,
+      "cpu_seconds_local": 0.07750938499998483,
+      "cpu_seconds_python": 0.07752196799999922,
+      "cpu_seconds_extract": 0.004018379999990884,
+      "quarantined": false,
+      "gates": {
+        "schema": true,
+        "identity": false,
+        "characters": true,
+        "ocr": true,
+        "sections": true,
+        "size": true
+      }
+    },
+    {
+      "doc_id": "2dc9684da826f4ca3dccdd7d5ef2bc41852eb2f4f5cef750c4666a2c4717d9e5",
+      "path": "normativa/Por el cual se reglamenta la Ley 13 de 1990.pdf",
+      "chunks": 14,
+      "new_embeddings": 14,
+      "cpu_seconds_local": 0.0490983890000507,
+      "cpu_seconds_python": 0.04910736300000096,
+      "cpu_seconds_extract": 0.0008715619999861701,
+      "quarantined": false,
+      "gates": {
+        "schema": true,
+        "identity": true,
+        "characters": true,
+        "ocr": true,
+        "sections": true,
+        "size": true
+      }
+    },
+    {
+      "doc_id": "2f4215147caaf2c5bc851eea326f65aa52a3e6a7712ff0725c1f72b6594b9245",
+      "path": "jurisprudencia/CE_2da_AP_2021_041_Edgar_Stephengs_VS_Archipielago_San_Andres_Desarrollo_Urbanistico.pdf",
+      "chunks": 202,
+      "new_embeddings": 202,
+      "cpu_seconds_local": 0.6254324899999801,
+      "cpu_seconds_python": 0.6254423980000006,
+      "cpu_seconds_extract": 0.007670272999973804,
+      "quarantined": false,
+      "gates": {
+        "schema": true,
+        "identity": true,
+        "characters": true,
+        "ocr": true,
+        "sections": true,
+        "size": true
+      }
+    },
+    {
+      "doc_id": "376195b011c3f52d6176617a8175b3de9d507ea6d26cc99b7a74a0517b7d562e",
+      "path": "jurisprudencia/CE_2da_AP_2011_842_Gabriel_Carrero_VS_Dimar_Erosión_Costera.pdf",
+      "chunks": 262,
+      "new_embeddings": 262,
+      "cpu_seconds_local": 0.8569295140000008,
+      "cpu_seconds_python": 0.8569414319999993,
+      "cpu_seconds_extract": 0.004764962000024298,
+      "quarantined": false,
+      "gates": {
+        "schema": true,
+        "identity": true,
+        "characters": true,
+        "ocr": true,
+        "sections": true,
+        "size": true
+      }
+    },
+    {
+      "doc_id": "39b9b682861845800f858579e6523aea2663612a56837b3c4811476681be0c3d",
+      "path": "jurisprudencia/AP Gerardo Antenor Lemus Orozco VS Distrito de Santa Mata y otros.pdf",
+      "chunks": 126,
+      "new_embeddings": 126,
+      "cpu_seconds_local": 0.415539788999979,
+      "cpu_seconds_python": 0.4155497480000001,
+      "cpu_seconds_extract": 0.007082448999994995,
+      "quarantined": false,
+      "gates": {
+        "schema": true,
+        "identity": true,
+        "characters": true,
+        "ocr": true,
+        "sections": true,
+        "size": true
+      }
+    },
+    {
+      "doc_id": "3d138b060f20e0fb31e72912f89e8dfa6061935106799ceb74cf9231d2741bb7",
+      "path": "jurisprudencia/CE_Consulta_1990_Horacio_Serpa_Uso_Publico_Playa.pdf",
+      "chunks": 38,
+      "new_embeddings": 38,
+      "cpu_seconds_local": 0.11856028500000093,
+      "cpu_seconds_python": 0.11856990899999786,
+      "cpu_seconds_extract": 0.0012588839999807533,
+      "quarantined": false,
+      "gates": {
+        "schema": true,
+        "identity": true,
+        "characters": true,
+        "ocr": true,
+        "sections": true,
+        "size": true
+      }
+    },
+    {
+      "doc_id": "44967f498aeb586b9adbb2e95be0319e3f78cbc4cabfae4f3f39ed735dfcc705",
+      "path": "jurisprudencia/CE_2da_AP_2017_103_Personeria_VS_Distrito_Cartagena_Desembocadura.pdf",
+      "chunks": 109,
+      "new_embeddings": 109,
+      "cpu_seconds_local": 0.34651509100001476,
+      "cpu_seconds_python": 0.3465256679999982,
+      "cpu_seconds_extract": 0.003296653999996124,
+      "quarantined": false,
+      "gates": {
+        "schema": true,
+        "identity": true,
+        "characters": true,
+        "ocr": true,
+        "sections": true,
+        "size": true
+      }
+    },
+    {
+      "doc_id": "4a24d93603bf282965fbbc7154672fc8a938015f5ece90acf6f036504c6dc565",
+      "path": "jurisprudencia/AP Gabriel Antonio Carrero VS DIMAR y otros.pdf",
+      "chunks": 112,
+      "new_embeddings": 112,
+      "cpu_seconds_local": 0.3616361840000195,
+      "cpu_seconds_python": 0.3616468370000021,
+      "cpu_seconds_extract": 0.004437700999972094,
+      "quarantined": false,
+      "gates": {
+        "schema": true,
+        "identity": true,
+        "characters": true,
+        "ocr": true,
+        "sections": true,
+        "size": true
+      }
+    },
+    {
+      "doc_id": "4b3572e33fe75767dbc23d20ccaae73bb0df23e4a09fbfa49554b433be28ae3f",
+      "path": "normativa/Por el cual se reglamenta parcialmente el artículo noveno de la Ley 10 de 1978..pdf",
+      "chunks": 6,
+      "new_embeddings": 6,
+      "cpu_seconds_local": 0.038934596999979476,
+      "cpu_seconds_python": 0.03894429600000393,
+      "cpu_seconds_extract": 0.0007911900000294736,
+      "quarantined": false,
+      "gates": {
+        "schema": true,
+        "identity": false,
+        "characters": true,
+        "ocr": true,
+        "sections": true,
+        "size": true
+      }
+    },
+    {
+      "doc_id": "4c2617061848464576823dfea2e8f11220664e4c719d56535682951e939be983",
+      "path": "jurisprudencia/AP Felipe José Campo Fernández VS Corpamag y otros.pdf",
+      "chunks": 205,
+      "new_embeddings": 205,
+      "cpu_seconds_local": 0.7674097599999641,
+      "cpu_seconds_python": 0.767422039000003,
+      "cpu_seconds_extract": 0.005969859999993332,
+      "quarantined": false,
+      "gates": {
+        "schema": true,
+        "identity": true,
+        "characters": true,
+        "ocr": true,
+        "sections": true,
+        "size": true
+      }
+    },
+    {
+      "doc_id": "4f08704b7c76bd2a6792cdc5743162aec1742a18f69dbb4a4125197147d71b73",
+      "path": "jurisprudencia/AP PROCURADURÍA GENERAL DE LA ANCIÓN VS COORPAMAG Y OTROS.pdf",
+      "chunks": 324,
+      "new_embeddings": 322,
+      "cpu_seconds_local": 2.0228057759999842,
+      "cpu_seconds_python": 2.0228202609999997,
+      "cpu_seconds_extract": 0.010301697999977932,
+      "quarantined": false,
+      "gates": {
+        "schema": true,
+        "identity": true,
+        "characters": true,
+        "ocr": true,
+        "sections": true,
+        "size": true
+      }
+    },
+    {
+      "doc_id": "665747b6f8e03a7e9473fc5bb2e29f5c4d8a11f25564b9292f89070c666d23d2",
+      "path": "jurisprudencia/CE_2da_AP_2016_328_Ricardo_Cabrales_VS_Mun_Coveñas_Playa_Uso_Publico.pdf",
+      "chunks": 113,
+      "new_embeddings": 112,
+      "cpu_seconds_local": 0.7087065819999907,
+      "cpu_seconds_python": 0.7087210240000061,
+      "cpu_seconds_extract": 0.0074412999999822205,
+      "quarantined": false,
+      "gates": {
+        "schema": true,
+        "identity": true,
+        "characters": true,
+        "ocr": true,
+        "sections": true,
+        "size": true
+      }
+    },
+    {
+      "doc_id": "6c078770b277a7baa7dd78be5beb650cff6441c751dbe3a43f16a8b4e4750384",
+      "path": "normativa/Por el cual se reglamenta parcialmente la Ley 47 del 19 de febrero de 1993.pdf",
+      "chunks": 4,
+      "new_embeddings": 4,
+      "cpu_seconds_local": 0.044848855999987336,
+      "cpu_seconds_python": 0.04486585300000456,
+      "cpu_seconds_extract": 0.0018202970000515961,
+      "quarantined": false,
+      "gates": {
+        "schema": true,
+        "identity": true,
+        "characters": true,
+        "ocr": true,
+        "sections": true,
+        "size": true
+      }
+    },
+    {
+      "doc_id": "70fc0abaf0d1de720c0b38bba58fb6a252e3ec8b75ec325d5865877a431100ea",
+      "path": "jurisprudencia/CE_2da_NYR_1998_102_Flury_Valencia_VS_MinDefensa_Uso_Urbanistico_Playa.pdf",
+      "chunks": 63,
+      "new_embeddings": 63,
+      "cpu_seconds_local": 0.4052345569999716,
+      "cpu_seconds_python": 0.40524832999999916,
+      "cpu_seconds_extract": 0.003952884999989692,
+      "quarantined": false,
+      "gates": {
+        "schema": true,
+        "identity": true,
+        "characters": true,
+        "ocr": true,
+        "sections": true,
+        "size": true
+      }
+    },
+    {
+      "doc_id": "726fdd46244b72e04926a8780f3d7261610b1a25baa95369f0cae1925bf85f10",
+      "path": "normativa/Por el cual se expide el Código de Comercio.pdf",
+      "chunks": 8,
+      "new_embeddings": 8,
+      "cpu_seconds_local": 0.1445920230000297,
+      "cpu_seconds_python": 0.14460547699999893,
+      "cpu_seconds_extract": 0.003847619999987728,
+      "quarantined": false,
+      "gates": {
+        "schema": true,
+        "identity": false,
+        "characters": true,
+        "ocr": true,
+        "sections": true,
+        "size": true
+      }
+    },
+    {
+      "doc_id": "735e943c4c638ee8fca44d35fbd3179f1ddb47368e3ef68eeb02f3736070e360",
+      "path": "jurisprudencia/CE_2da_AP_2011_178_Jose_Caballero_VS_Distrito_Cartagena_Venta_Inmueble_Valor_Cultural.pdf",
+      "chunks": 145,
+      "new_embeddings": 145,
+      "cpu_seconds_local": 0.9783795779999878,
+      "cpu_seconds_python": 0.978394600999998,
+      "cpu_seconds_extract": 0.007550232000028245,
+      "quarantined": false,
+      "gates": {
+        "schema": true,
+        "identity": true,
+        "characters": true,
+        "ocr": true,
+        "sections": true,
+        "size": true
+      }
+    },
+    {
+      "doc_id": "78af35fecb0ae3068733a39e72a9bc633becff8cf34848c23ac2d9485ab92b2a",
+      "path": "normativa/Por medio del cual se expide el Decreto Único Reglamentario del Sector Ambiente y Desarrollo Sostenible.pdf",
+      "chunks": 43,
+      "new_embeddings": 43,
+      "cpu_seconds_local": 0.291310669999973,
+      "cpu_seconds_python": 0.29132884500000245,
+      "cpu_seconds_extract": 0.016253637000033905,
+      "quarantined": false,
+      "gates": {
+        "schema": true,
+        "identity": false,
+        "characters": true,
+        "ocr": true,
+        "sections": true,
+        "size": true
+      }
+    },
+    {
+      "doc_id": "7f8cacb216710ec6501d5f2a52189de565ed8f8fa46ee1dc3abc9e16dd3d6aec",
+      "path": "normativa/Por el cual adiciona al Título 4 de la Parte 2 del Libro 2 del Decreto 1076 de 2015, un Capítulo 3 en el que se establece el Plan de Ordenación y Manejo Integrado de la Unidad Ambiental Costera -POMIUAC- Caribe In.pdf",
+      "chunks": 25,
+      "new_embeddings": 25,
+      "cpu_seconds_local": 0.1690609220000283,
+      "cpu_seconds_python": 0.16907463400000466,
+      "cpu_seconds_extract": 0.0017339949999950477,
+      "quarantined": false,
+      "gates": {
+        "schema": true,
+        "identity": false,
+        "characters": true,
+        "ocr": true,
+        "sections": true,
+        "size": true
+      }
+    },
+    {
+      "doc_id": "806bf6ddda0b606454dcca3d24ef9cdd2401770e218fcd30690b6952c59bd9b5",
+      "path": "normativa/Por el cual se dictan normas sobre la prevención de la contaminación del medio marino y otras disposiciones.pdf",
+      "chunks": 12,
+      "new_embeddings": 12,
+      "cpu_seconds_local": 0.08964499699999351,
+      "cpu_seconds_python": 0.0896752440000057,
+      "cpu_seconds_extract": 0.0018919990000085818,
+      "quarantined": false,
+      "gates": {
+        "schema": true,
+        "identity": true,
+        "characters": true,
+        "ocr": true,
+        "sections": true,
+        "size": true
+      }
+    },
+    {
+      "doc_id": "86f2865bf61ce17a92c24de51dd5ef8787972a44c634ff071929e4101c2e94f8",
+      "path": "normativa/Por el cual se reglamenta el funcionamiento de los Comités Locales para la  organización de las Playas de que trata el artículo 12 de la Ley 1558 de 2012.pdf",
+      "chunks": 19,
+      "new_embeddings": 19,
+      "cpu_seconds_local": 0.12876902900001141,
+      "cpu_seconds_python": 0.1287837819999993,
+      "cpu_seconds_extract": 0.00143571600000314,
+      "quarantined": false,
+      "gates": {
+        "schema": true,
+        "identity": true,
+        "characters": true,
+        "ocr": true,
+        "sections": true,
+        "size": true
+      }
+    },
+    {
+      "doc_id": "873661fbf4b7aa77cfcf3ed3cfb8c95fcc63b7181c3dfe3cfcc9fed6168e87b6",
+      "path": "jurisprudencia/AP Miguel Ángel Enciso VS Distrito y otros.pdf",
+      "chunks": 89,
+      "new_embeddings": 89,
+      "cpu_seconds_local": 0.5743954679999774,
+      "cpu_seconds_python": 0.5744114909999993,
+      "cpu_seconds_extract": 0.07057097400002021,
+      "quarantined": false,
+      "gates": {
+        "schema": true,
+        "identity": true,
+        "characters": true,
+        "ocr": true,
+        "sections": true,
+        "size": true
+      }
+    },
+    {
+      "doc_id": "8767ea352084c54abe68cb6ea25d200f2eb63455937766dff9bef56dca3a2356",
+      "path": "jurisprudencia/AP Inversiones E y D S.A.S VS DIMAR y otros.pdf",
+      "chunks": 113,
+      "new_embeddings": 113,
+      "cpu_seconds_local": 0.6579520270000216,
+      "cpu_seconds_python": 0.6579669889999948,
+      "cpu_seconds_extract": 0.011707957999988139,
+      "quarantined": false,
+      "gates": {
+        "schema": true,
+        "identity": true,
+        "characters": true,
+        "ocr": true,
+        "sections": true,
+        "size": true
+      }
+    },
+    {
+      "doc_id": "889ce44641f6624c2b4084fe611e3de358b87957b8572d9224ae489260d379e8",
+      "path": "jurisprudencia/CE_2da_NYR_1994_993_Inversiones_Araujo_VS_Capitania_Puerto_Cartagena_Urbanismo_Playa.pdf",
+      "chunks": 55,
+      "new_embeddings": 55,
+      "cpu_seconds_local": 0.35236109300001317,
+      "cpu_seconds_python": 0.3523749639999991,
+      "cpu_seconds_extract": 0.0027868970000213267,
+      "quarantined": false,
+      "gates": {
+        "schema": true,
+        "identity": true,
+        "characters": true,
+        "ocr": true,
+        "sections": true,
+        "size": true
+      }
+    },
+    {
+      "doc_id": "896646ecc76401dc95ace08f8e586bd98d368dafdfa9287ad88213cfefcc9f8f",
+      "path": "normativa/Por el cual se reglamenta el funcionamiento de los comités locales para la organización de las playas.pdf",
+      "chunks": 17,
+      "new_embeddings": 17,
+      "cpu_seconds_local": 0.12465822799998705,
+      "cpu_seconds_python": 0.12467184500000172,
+      "cpu_seconds_extract": 0.0016635420000170598,
+      "quarantined": false,
+      "gates": {
+        "schema": true,
+        "identity": true,
+        "characters": true,
+        "ocr": true,
+        "sections": true,
+        "size": true
+      }
+    },
+    {
+      "doc_id": "907021edf55bd5334a992546b582985b1a606986cde94d860e4567d1bc971795",
+      "path": "normativa/Por el cual se reglamenta el manejo del espacio público en los planes de ordenamiento territorial.pdf",
+      "chunks": 12,
+      "new_embeddings": 12,
+      "cpu_seconds_local": 0.09350306000004593,
+      "cpu_seconds_python": 0.09351651200000077,
+      "cpu_seconds_extract": 0.004978913000002194,
+      "quarantined": false,
+      "gates": {
+        "schema": true,
+        "identity": false,
+        "characters": true,
+        "ocr": true,
+        "sections": true,
+        "size": true
+      }
+    },
+    {
+      "doc_id": "98cdaeff3860fa527d4e605b11567ed38c8af17d150cd14d9a3a81a59782e4e9",
+      "path": "jurisprudencia/CE_1era_NS_2009_603_Jose_Palencia_VS_MinDefensa_Resolución_Pilotos_Embargaciones.pdf",
+      "chunks": 80,
+      "new_embeddings": 80,
+      "cpu_seconds_local": 0.6480824830000529,
+      "cpu_seconds_python": 0.6480944380000011,
+      "cpu_seconds_extract": 0.004287591999968754,
+      "quarantined": false,
+      "gates": {
+        "schema": true,
+        "identity": true,
+        "characters": true,
+        "ocr": true,
+        "sections": true,
+        "size": true
+      }
+    },
+    {
+      "doc_id": "9cd38a2e2d8a4885fa6635e500ec6dc3d196d992edcad7cb7be479d7d7baa8a3",
+      "path": "normativa/Por el cual se modifica el artículo 16 del Decreto 3888 del 10 de octubre de 2007.pdf",
+      "chunks": 2,
+      "new_embeddings": 2,
+      "cpu_seconds_local": 0.029456697999989956,
+      "cpu_seconds_python": 0.029470708000005175,
+      "cpu_seconds_extract": 0.002285181000047487,
+      "quarantined": false,
+      "gates": {
+        "schema": true,
+        "identity": false,
+        "characters": true,
+        "ocr": true,
+        "sections": true,
+        "size": true
+      }
+    },
+    {
+      "doc_id": "a0bf9588ade80b79915f69983aa64f610a540a73fd0b19e3ab41dd00d062ee32",
+      "path": "normativa/Por medio de la cual se reglamenta el área de playa en el Balneario Turístico El Rodadero.pdf",
+      "chunks": 23,
+      "new_embeddings": 23,
+      "cpu_seconds_local": 0.1491563530000235,
+      "cpu_seconds_python": 0.14917064400000157,
+      "cpu_seconds_extract": 0.003950591999966946,
+      "quarantined": false,
+      "gates": {
+        "schema": true,
+        "identity": true,
+        "characters": true,
+        "ocr": true,
+        "sections": true,
+        "size": true
+      }
+    },
+    {
+      "doc_id": "a22960ee6affae1f8c416fa02006d3a9bbf76d2c1fc572f4bbd483aa7bafe178",
+      "path": "normativa/Por el cual se dictan normas para simplificar, suprimir y reformar trámites, procesos y procedimientos innecesarios existentes en la administración pública.pdf",
+      "chunks": 15,
+      "new_embeddings": 15,
+      "cpu_seconds_local": 0.11488720699998112,
+      "cpu_seconds_python": 0.11490135999999751,
+      "cpu_seconds_extract": 0.006410275000007459,
+      "quarantined": false,
+      "gates": {
+        "schema": true,
+        "identity": true,
+        "characters": true,
+        "ocr": true,
+        "sections": true,
+        "size": true
+      }
+    },
+    {
+      "doc_id": "a3aa6bf5f1893ed3609be73db110297401aaa6eaeb93e3deccb3b101ae82c628",
+      "path": "jurisprudencia/CC_TU_039_2024_Modesto_Manjarrez_VS_Autopistas_Del_Caribe_Consulta_Previa_Via.pdf",
+      "chunks": 512,
+      "new_embeddings": 512,
+      "cpu_seconds_local": 2.930957755999998,
+      "cpu_seconds_python": 2.9309742619999994,
+      "cpu_seconds_extract": 0.01813588600003868,
+      "quarantined": false,
+      "gates": {
+        "schema": true,
+        "identity": true,
+        "characters": true,
+        "ocr": true,
+        "sections": true,
+        "size": true
+      }
+    },
+    {
+      "doc_id": "a863f4899a72052c0883fb80450de04525f75398d2177f9304dff88b9554665f",
+      "path": "normativa/Por medio del cual se expide el Decreto Único Reglamentario del Sector Vivienda, Ciudad y Territorio.pdf",
+      "chunks": 26,
+      "new_embeddings": 26,
+      "cpu_seconds_local": 0.18185595199997806,
+      "cpu_seconds_python": 0.18186974099999986,
+      "cpu_seconds_extract": 0.009790146000000277,
+      "quarantined": false,
+      "gates": {
+        "schema": true,
+        "identity": false,
+        "characters": true,
+        "ocr": true,
+        "sections": true,
+        "size": true
+      }
+    },
+    {
+      "doc_id": "a8cb22ceba9c6745038ad499cc33c6c3bc4084de768f1f2aedb8b12bb73a01a0",
+      "path": "normativa/Por el cual se dicta el Código Nacional de Recursos Naturales Renovables y de Protección al Medio Ambiente.pdf",
+      "chunks": 25,
+      "new_embeddings": 25,
+      "cpu_seconds_local": 0.16496250300002657,
+      "cpu_seconds_python": 0.16497545699999705,
+      "cpu_seconds_extract": 0.009588742000005368,
+      "quarantined": false,
+      "gates": {
+        "schema": true,
+        "identity": true,
+        "characters": true,
+        "ocr": true,
+        "sections": true,
+        "size": true
+      }
+    },
+    {
+      "doc_id": "b0006c9414d19ff8d301a028312258324208cfb25bafb1f2b6d52c2558fda801",
+      "path": "normativa/Por medio del cual se implementa el Reglamento de Playas del Distrito Portuario, Logístico, Industrial, Turístico y Comercial de Turbo – Antioquia.pdf",
+      "chunks": 107,
+      "new_embeddings": 107,
+      "cpu_seconds_local": 0.6941155819999949,
+      "cpu_seconds_python": 0.6941299319999956,
+      "cpu_seconds_extract": 0.089912580000032,
+      "quarantined": false,
+      "gates": {
+        "schema": true,
+        "identity": true,
+        "characters": true,
+        "ocr": true,
+        "sections": true,
+        "size": true
+      }
+    },
+    {
+      "doc_id": "bb879704f4a16df1d7111533b76ed25f0967c51dc7f21530d753071365fa8ed8",
+      "path": "normativa/Por medio del cual se expide el Decreto Único Reglamentario del Sector Comercio, Industria y Turismo.pdf",
+      "chunks": 37,
+      "new_embeddings": 37,
+      "cpu_seconds_local": 0.2198622049999699,
+      "cpu_seconds_python": 0.21987836499999958,
+      "cpu_seconds_extract": 0.01217176499994821,
+      "quarantined": false,
+      "gates": {
+        "schema": true,
+        "identity": true,
+        "characters": true,
+        "ocr": true,
+        "sections": true,
+        "size": true
+      }
+    },
+    {
+      "doc_id": "c2fb5502b786e7c075916676b17f3ab5bd4ca29c1107a33d0787390bcd25ca27",
+      "path": "normativa/Por el cual se reorganiza la Dirección General Marítima y Portuaria.pdf",
+      "chunks": 20,
+      "new_embeddings": 20,
+      "cpu_seconds_local": 0.1318393030000493,
+      "cpu_seconds_python": 0.13185256900000297,
+      "cpu_seconds_extract": 0.001314251999986027,
+      "quarantined": false,
+      "gates": {
+        "schema": true,
+        "identity": true,
+        "characters": true,
+        "ocr": true,
+        "sections": true,
+        "size": true
+      }
+    },
+    {
+      "doc_id": "c4e2a931403664039099bcad9c955e6e18414b0656c97834cfce58f763aa474e",
+      "path": "jurisprudencia/CE_Consulta_2005_168_MinDefensa_Bienes_De_Uso_Publico.pdf",
+      "chunks": 185,
+      "new_embeddings": 185,
+      "cpu_seconds_local": 1.1305327310000166,
+      "cpu_seconds_python": 1.1305457799999985,
+      "cpu_seconds_extract": 0.005046246999995674,
+      "quarantined": false,
+      "gates": {
+        "schema": true,
+        "identity": true,
+        "characters": true,
+        "ocr": true,
+        "sections": true,
+        "size": true
+      }
+    },
+    {
+      "doc_id": "ca6c92bddb4dd5675a81bdb934b895269480b374521dff64543ba40920109f6d",
+      "path": "normativa/Por el cual se reglamenta la habilitación y la prestación del servicio público de transporte fluvial.pdf",
+      "chunks": 8,
+      "new_embeddings": 8,
+      "cpu_seconds_local": 0.07158053000000564,
+      "cpu_seconds_python": 0.07159489800000074,
+      "cpu_seconds_extract": 0.0022235880000494035,
+      "quarantined": false,
+      "gates": {
+        "schema": true,
+        "identity": false,
+        "characters": true,
+        "ocr": true,
+        "sections": true,
+        "size": true
+      }
+    },
+    {
+      "doc_id": "cb344ef6d28447d882e669618da06f06bd5a8271a4e3079845c69ac32ef8435b",
+      "path": "normativa/Por el cual se aprueba el ajuste y la modificación a la planta de personal de Empleados Públicos del Ministerio de Defensa Nacional - Dirección General Marítima y se dictan otras disposiciones.pdf",
+      "chunks": 12,
+      "new_embeddings": 12,
+      "cpu_seconds_local": 0.1073473360000321,
+      "cpu_seconds_python": 0.10736102899999622,
+      "cpu_seconds_extract": 0.0018299260000276263,
+      "quarantined": false,
+      "gates": {
+        "schema": true,
+        "identity": true,
+        "characters": true,
+        "ocr": true,
+        "sections": true,
+        "size": true
+      }
+    },
+    {
+      "doc_id": "cd99d30acb8bc912f968336f0cdafc93e14ce224449f4b9e86023ba7ffd3d247",
+      "path": "jurisprudencia/AP Gieseken Cuello & Cía. S. en C. VS DIMAR y otros.pdf",
+      "chunks": 151,
+      "new_embeddings": 151,
+      "cpu_seconds_local": 0.9507637140000043,
+      "cpu_seconds_python": 0.950780648999995,
+      "cpu_seconds_extract": 0.006681216000004042,
+      "quarantined": false,
+      "gates": {
+        "schema": true,
+        "identity": true,
+        "characters": true,
+        "ocr": true,
+        "sections": true,
+        "size": true
+      }
+    },
+    {
+      "doc_id": "cdf6172fabdb42477c25d374d7d42b3a6e91d31c4ec553e85d056036f82c47b3",
+      "path": "jurisprudencia/AP  Carlos Alberto Zúñiga Mejía y otros VS DIMAR y otros.pdf",
+      "chunks": 109,
+      "new_embeddings": 109,
+      "cpu_seconds_local": 0.6909771910000018,
+      "cpu_seconds_python": 0.6909922629999983,
+      "cpu_seconds_extract": 0.01062149900002396,
+      "quarantined": false,
+      "gates": {
+        "schema": true,
+        "identity": true,
+        "characters": true,
+        "ocr": true,
+        "sections": true,
+        "size": true
+      }
+    },
+    {
+      "doc_id": "cfc6780cb3add10595e8d852b8537179cc4a5c22baeddfabe40833d19c3164fe",
+      "path": "jurisprudencia/TAA_2da_RD_2015_281_XXXX_VS_Dpto_Antioquia_Responsabilidad_Del_Estado.pdf",
+      "chunks": 117,
+      "new_embeddings": 117,
+      "cpu_seconds_local": 0.7502831900000047,
+      "cpu_seconds_python": 0.7502966240000006,
+      "cpu_seconds_extract": 0.009390876999987086,
+      "quarantined": false,
+      "gates": {
+        "schema": true,
+        "identity": true,
+        "characters": true,
+        "ocr": true,
+        "sections": true,
+        "size": true
+      }
+    },
+    {
+      "doc_id": "cfe17c3386aef4bb01dfe4a91a6026a6b1be31e97c38d38f02651a2fbb51f41a",
+      "path": "jurisprudencia/CE_Consulta_2010_071_MinAmbiente_Bienes_De_Uso_Publico.pdf",
+      "chunks": 115,
+      "new_embeddings": 115,
+      "cpu_seconds_local": 0.6711499459999573,
+      "cpu_seconds_python": 0.6711628709999999,
+      "cpu_seconds_extract": 0.011189500000000407,
+      "quarantined": false,
+      "gates": {
+        "schema": true,
+        "identity": true,
+        "characters": true,
+        "ocr": true,
+        "sections": true,
+        "size": true
+      }
+    },
+    {
+      "doc_id": "d4ee8f2c8fbbc3663d06df95c5a437eb6af4104f10bfa24fe832a0282d206841",
+      "path": "normativa/Por medio del cual se reglamenta el trámite de solicitud de concesiones para el desarrollo de actividades portuarias previstas en las Leyes 1ª de 1991 y 1242 de 2008.pdf",
+      "chunks": 18,
+      "new_embeddings": 18,
+      "cpu_seconds_local": 0.12875422899998057,
+      "cpu_seconds_python": 0.12876752800000446,
+      "cpu_seconds_extract": 0.006042386000046918,
+      "quarantined": false,
+      "gates": {
+        "schema": true,
+        "identity": false,
+        "characters": true,
+        "ocr": true,
+        "sections": true,
+        "size": true
+      }
+    },
+    {
+      "doc_id": "d85a4046092c00bab319adfdfd52e28e6db92d883378dbfbe3c4dec7a4efb217",
+      "path": "normativa/Por el cual se reglamenta el servicio público de transporte marítimo.pdf",
+      "chunks": 13,
+      "new_embeddings": 13,
+      "cpu_seconds_local": 0.09545830500002239,
+      "cpu_seconds_python": 0.09547379600000028,
+      "cpu_seconds_extract": 0.0023841850000394516,
+      "quarantined": false,
+      "gates": {
+        "schema": true,
+        "identity": true,
+        "characters": true,
+        "ocr": true,
+        "sections": true,
+        "size": true
+      }
+    },
+    {
+      "doc_id": "e3b99341f41a6e1c5080be22fcf10f8ba1d98e5495c78ca0eabefc79703bd0f7",
+      "path": "normativa/Por medio del cual se reglamenta el uso, zonificación y horario de las playas con vocación turística del Distrito Turístico, Cultural e Histórico de Santa Marta, aptas para la realización de activiades de aprovech.pdf",
+      "chunks": 78,
+      "new_embeddings": 78,
+      "cpu_seconds_local": 0.46212951100000055,
+      "cpu_seconds_python": 0.46214491599999974,
+      "cpu_seconds_extract": 0.011172887999975956,
+      "quarantined": false,
+      "gates": {
+        "schema": true,
+        "identity": true,
+        "characters": true,
+        "ocr": true,
+        "sections": true,
+        "size": true
+      }
+    },
+    {
+      "doc_id": "e495d6d7e97dee0d0f0a4fe139ac8a530d61046bfd904bd4511d917b78ed5081",
+      "path": "normativa/decreto-2324-de-1984.md",
+      "chunks": 154,
+      "new_embeddings": 154,
+      "cpu_seconds_local": 1.0405149160000065,
+      "cpu_seconds_python": 1.0405277959999992,
+      "cpu_seconds_extract": 0.00289433799997596,
+      "quarantined": false,
+      "gates": {
+        "schema": true,
+        "identity": true,
+        "characters": true,
+        "ocr": true,
+        "sections": true,
+        "size": true
+      }
+    },
+    {
+      "doc_id": "e820f079f4ad0777151ed4b7673f096edbca8547b84047868a9e34d93857778c",
+      "path": "normativa/Por el cual se reglamentan las Unidades Ambientales Costeras - UAC- y las comisiones conjuntas, se establecen las reglas de procedimiento y criterios para reglamentar la restricción de ciertas actividades en.pdf",
+      "chunks": 7,
+      "new_embeddings": 7,
+      "cpu_seconds_local": 0.06779272900001843,
+      "cpu_seconds_python": 0.06780522600000438,
+      "cpu_seconds_extract": 0.0035594670000023143,
+      "quarantined": false,
+      "gates": {
+        "schema": true,
+        "identity": false,
+        "characters": true,
+        "ocr": true,
+        "sections": true,
+        "size": true
+      }
+    },
+    {
+      "doc_id": "f898b193a5d79170d179ee4e43388eae478815894e46add8d911ab833439c166",
+      "path": "jurisprudencia/CE_2da_NYR_2009_164_FEPEP_VS_DIMAR_Playa_Uso_Urbanistico.pdf",
+      "chunks": 145,
+      "new_embeddings": 145,
+      "cpu_seconds_local": 0.8844684169999937,
+      "cpu_seconds_python": 0.8844820589999998,
+      "cpu_seconds_extract": 0.015211042000032649,
+      "quarantined": false,
+      "gates": {
+        "schema": true,
+        "identity": true,
+        "characters": true,
+        "ocr": true,
+        "sections": true,
+        "size": true
+      }
+    }
+  ],
+  "new_embeddings": 5278,
+  "seconds": 6475.901738247001,
+  "embeddings": {
+    "model": "embeddinggemma:latest",
+    "digest": "85462619ee721b466c5927d109d4cb765861907d5417b9109caebc4e614679f1",
+    "dimension": 768,
+    "cache_checksum": "2ee40ae1bd203dbf40ca1081de534c64a24afc184f0e5475c734ccc3a026c8a6",
+    "new_embeddings": 5278,
+    "embedding_batch_calls": 355,
+    "embedding_seconds": 6086.222849300992,
+    "seconds_per_new_chunk": 1.153130513319627,
+    "llm_api_calls": 0
+  }
+}

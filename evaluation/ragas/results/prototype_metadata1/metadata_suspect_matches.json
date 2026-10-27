@@ -1,0 +1,319 @@
+{
+  "validado_por_abogado": false,
+  "suspect_matches": [
+    {
+      "doc_id": "03e009c1602a465e493d6b9ddcd6983ba0a1e66f3a5f31cfa90312a16f2030dd",
+      "source": "jurisprudencia/CE_2da_AP_2010_028_Radley_Bent_VS_Dimar_Daños_Ambientales_Embarcaciones.pdf",
+      "valor": "lieran con sus funciones de custodia, e inició y falló las",
+      "evidencia": "mplieran con sus funciones de custodia, e inició y falló las",
+      "confidence": 0.9,
+      "reason": "MP sin limites de palabra puede coincidir dentro de otra palabra; revisar manualmente"
+    },
+    {
+      "doc_id": "06139556e7f0112a6c7c06996b876f22310b6ae05ccb2c9e675339f5599be64d",
+      "source": "normativa/Reglamento Maritimo Colombiano REMAC 5-DIMAR (202103).md",
+      "valor": "ieza de casco a flote en la jurisdicción",
+      "evidencia": "mpieza de casco a flote en la jurisdicción ",
+      "confidence": 0.9,
+      "reason": "MP sin limites de palabra puede coincidir dentro de otra palabra; revisar manualmente"
+    },
+    {
+      "doc_id": "10387c6fbe01c74ca9785658239f0883bb864d86890d2ea02b4ee7fc22cb8239",
+      "source": "jurisprudencia/CE_2da_NYR_1999_503_Inversiones_Mercedes_VS_Dimar_Concesiones_Uso_Playa.pdf",
+      "valor": "etencia de la Dirección",
+      "evidencia": "mpetencia de la Dirección",
+      "confidence": 0.9,
+      "reason": "MP sin limites de palabra puede coincidir dentro de otra palabra; revisar manualmente"
+    },
+    {
+      "doc_id": "146a9127ede00a90c2d1e5cf80a31ebe8734e8e56a05b9192e1e1ab8b948f204",
+      "source": "normativa/Por medio del cual se expiden las normas bases para la reglamentación de las actividades en las playas urbanas y rurales en el Distrito de Cartagena de Indias.pdf",
+      "valor": "lida satisfacción en el uso público, en las actividades",
+      "evidencia": "mplida satisfacción en el uso público, en las actividades",
+      "confidence": 0.9,
+      "reason": "MP sin limites de palabra puede coincidir dentro de otra palabra; revisar manualmente"
+    },
+    {
+      "doc_id": "1c5b6f4ab37379e6e2286a45eec056647dbcf3a5fe08dfd335a5e730ae17f6b6",
+      "source": "normativa/Por el cual se reglamentan las disposiciones sobre licencias urbanísticas, reconocimiento de edificaciones y legalización de asentamientos humanos.pdf",
+      "valor": "liación de redes de",
+      "evidencia": "mpliación de redes de",
+      "confidence": 0.9,
+      "reason": "MP sin limites de palabra puede coincidir dentro de otra palabra; revisar manualmente"
+    },
+    {
+      "doc_id": "1d4aab7f474e7fbd2f071042d990fe781ea5eb74a1531d322bd610bc2114e35d",
+      "source": "normativa/Por medio del cual se expide el Decreto Único Reglamentario del Sector Transporte.pdf",
+      "valor": "lido los requisitos establecidos en el acto administrativo de fijación de condiciones, incluidos los",
+      "evidencia": "mplido los requisitos establecidos en el acto administrativo de fijación de condiciones, incluidos los",
+      "confidence": 0.9,
+      "reason": "MP sin limites de palabra puede coincidir dentro de otra palabra; revisar manualmente"
+    },
+    {
+      "doc_id": "2dc9684da826f4ca3dccdd7d5ef2bc41852eb2f4f5cef750c4666a2c4717d9e5",
+      "source": "normativa/Por el cual se reglamenta la Ley 13 de 1990.pdf",
+      "valor": "resa autorizada.",
+      "evidencia": "mpresa autorizada.",
+      "confidence": 0.9,
+      "reason": "MP sin limites de palabra puede coincidir dentro de otra palabra; revisar manualmente"
+    },
+    {
+      "doc_id": "376195b011c3f52d6176617a8175b3de9d507ea6d26cc99b7a74a0517b7d562e",
+      "source": "jurisprudencia/CE_2da_AP_2011_842_Gabriel_Carrero_VS_Dimar_Erosión_Costera.pdf",
+      "valor": "ETENCIAS  DE  LAS  CORPORACIONES",
+      "evidencia": "MPETENCIAS  DE  LAS  CORPORACIONES",
+      "confidence": 0.9,
+      "reason": "MP sin limites de palabra puede coincidir dentro de otra palabra; revisar manualmente"
+    },
+    {
+      "doc_id": "3d138b060f20e0fb31e72912f89e8dfa6061935106799ceb74cf9231d2741bb7",
+      "source": "jurisprudencia/CE_Consulta_1990_Horacio_Serpa_Uso_Publico_Playa.pdf",
+      "valor": "ETENCIA /",
+      "evidencia": "MPETENCIA /",
+      "confidence": 0.9,
+      "reason": "MP sin limites de palabra puede coincidir dentro de otra palabra; revisar manualmente"
+    },
+    {
+      "doc_id": "4b3572e33fe75767dbc23d20ccaae73bb0df23e4a09fbfa49554b433be28ae3f",
+      "source": "normativa/Por el cual se reglamenta parcialmente el artículo noveno de la Ley 10 de 1978..pdf",
+      "valor": "artir este    Lectura de voz",
+      "evidencia": "mpartir este    Lectura de voz",
+      "confidence": 0.9,
+      "reason": "MP sin limites de palabra puede coincidir dentro de otra palabra; revisar manualmente"
+    },
+    {
+      "doc_id": "6c078770b277a7baa7dd78be5beb650cff6441c751dbe3a43f16a8b4e4750384",
+      "source": "normativa/Por el cual se reglamenta parcialmente la Ley 47 del 19 de febrero de 1993.pdf",
+      "valor": "uestos Nacionales, para que se pronuncien sobre lo de",
+      "evidencia": "mpuestos Nacionales, para que se pronuncien sobre lo de",
+      "confidence": 0.9,
+      "reason": "MP sin limites de palabra puede coincidir dentro de otra palabra; revisar manualmente"
+    },
+    {
+      "doc_id": "70fc0abaf0d1de720c0b38bba58fb6a252e3ec8b75ec325d5865877a431100ea",
+      "source": "jurisprudencia/CE_2da_NYR_1998_102_Flury_Valencia_VS_MinDefensa_Uso_Urbanistico_Playa.pdf",
+      "valor": "osición de multas por la DIMAR por no tramitar",
+      "evidencia": "mposición de multas por la DIMAR por no tramitar",
+      "confidence": 0.9,
+      "reason": "MP sin limites de palabra puede coincidir dentro de otra palabra; revisar manualmente"
+    },
+    {
+      "doc_id": "726fdd46244b72e04926a8780f3d7261610b1a25baa95369f0cae1925bf85f10",
+      "source": "normativa/Por el cual se expide el Código de Comercio.pdf",
+      "valor": "limiento de las normas relacionadas con las",
+      "evidencia": "mplimiento de las normas relacionadas con las",
+      "confidence": 0.9,
+      "reason": "MP sin limites de palabra puede coincidir dentro de otra palabra; revisar manualmente"
+    },
+    {
+      "doc_id": "78af35fecb0ae3068733a39e72a9bc633becff8cf34848c23ac2d9485ab92b2a",
+      "source": "normativa/Por medio del cual se expide el Decreto Único Reglamentario del Sector Ambiente y Desarrollo Sostenible.pdf",
+      "valor": "etencia para definir los criterios de calidad del recurso hídrico. El Ministerio de Ambiente y Desar",
+      "evidencia": "mpetencia para definir los criterios de calidad del recurso hídrico. El Ministerio de Ambiente y Desar",
+      "confidence": 0.9,
+      "reason": "MP sin limites de palabra puede coincidir dentro de otra palabra; revisar manualmente"
+    },
+    {
+      "doc_id": "7f8cacb216710ec6501d5f2a52189de565ed8f8fa46ee1dc3abc9e16dd3d6aec",
+      "source": "normativa/Por el cual adiciona al Título 4 de la Parte 2 del Libro 2 del Decreto 1076 de 2015, un Capítulo 3 en el que se establece el Plan de Ordenación y Manejo Integrado de la Unidad Ambiental Costera -POMIUAC- Caribe In.pdf",
+      "valor": "ortancia ecológica y fomentar la educación para el logro de estos ﬁnes”.",
+      "evidencia": "mportancia ecológica y fomentar la educación para el logro de estos ﬁnes”.",
+      "confidence": 0.9,
+      "reason": "MP sin limites de palabra puede coincidir dentro de otra palabra; revisar manualmente"
+    },
+    {
+      "doc_id": "806bf6ddda0b606454dcca3d24ef9cdd2401770e218fcd30690b6952c59bd9b5",
+      "source": "normativa/Por el cual se dictan normas sobre la prevención de la contaminación del medio marino y otras disposiciones.pdf",
+      "valor": "uestos de Mercurio.",
+      "evidencia": "mpuestos de Mercurio.",
+      "confidence": 0.9,
+      "reason": "MP sin limites de palabra puede coincidir dentro de otra palabra; revisar manualmente"
+    },
+    {
+      "doc_id": "86f2865bf61ce17a92c24de51dd5ef8787972a44c634ff071929e4101c2e94f8",
+      "source": "normativa/Por el cual se reglamenta el funcionamiento de los Comités Locales para la  organización de las Playas de que trata el artículo 12 de la Ley 1558 de 2012.pdf",
+      "valor": "o libre que desarrollen los usuarios de",
+      "evidencia": "mpo libre que desarrollen los usuarios de",
+      "confidence": 0.9,
+      "reason": "MP sin limites de palabra puede coincidir dentro de otra palabra; revisar manualmente"
+    },
+    {
+      "doc_id": "873661fbf4b7aa77cfcf3ed3cfb8c95fcc63b7181c3dfe3cfcc9fed6168e87b6",
+      "source": "jurisprudencia/AP Miguel Ángel Enciso VS Distrito y otros.pdf",
+      "valor": "aró los",
+      "evidencia": "mparó los",
+      "confidence": 0.9,
+      "reason": "MP sin limites de palabra puede coincidir dentro de otra palabra; revisar manualmente"
+    },
+    {
+      "doc_id": "889ce44641f6624c2b4084fe611e3de358b87957b8572d9224ae489260d379e8",
+      "source": "jurisprudencia/CE_2da_NYR_1994_993_Inversiones_Araujo_VS_Capitania_Puerto_Cartagena_Urbanismo_Playa.pdf",
+      "valor": "oral”. En este orden de ideas, resulta que en el proceso no se desvirtuó el",
+      "evidencia": "mporal”. En este orden de ideas, resulta que en el proceso no se desvirtuó el",
+      "confidence": 0.9,
+      "reason": "MP sin limites de palabra puede coincidir dentro de otra palabra; revisar manualmente"
+    },
+    {
+      "doc_id": "896646ecc76401dc95ace08f8e586bd98d368dafdfa9287ad88213cfefcc9f8f",
+      "source": "normativa/Por el cual se reglamenta el funcionamiento de los comités locales para la organización de las playas.pdf",
+      "valor": "o libre",
+      "evidencia": "mpo libre",
+      "confidence": 0.9,
+      "reason": "MP sin limites de palabra puede coincidir dentro de otra palabra; revisar manualmente"
+    },
+    {
+      "doc_id": "907021edf55bd5334a992546b582985b1a606986cde94d860e4567d1bc971795",
+      "source": "normativa/Por el cual se reglamenta el manejo del espacio público en los planes de ordenamiento territorial.pdf",
+      "valor": "limiento de la función pública del urbanismo. Los municipios y distritos deberán dar prelación a la",
+      "evidencia": "mplimiento de la función pública del urbanismo. Los municipios y distritos deberán dar prelación a la",
+      "confidence": 0.9,
+      "reason": "MP sin limites de palabra puede coincidir dentro de otra palabra; revisar manualmente"
+    },
+    {
+      "doc_id": "9cd38a2e2d8a4885fa6635e500ec6dc3d196d992edcad7cb7be479d7d7baa8a3",
+      "source": "normativa/Por el cual se modifica el artículo 16 del Decreto 3888 del 10 de octubre de 2007.pdf",
+      "valor": "lan una",
+      "evidencia": "mplan una",
+      "confidence": 0.9,
+      "reason": "MP sin limites de palabra puede coincidir dentro de otra palabra; revisar manualmente"
+    },
+    {
+      "doc_id": "a0bf9588ade80b79915f69983aa64f610a540a73fd0b19e3ab41dd00d062ee32",
+      "source": "normativa/Por medio de la cual se reglamenta el área de playa en el Balneario Turístico El Rodadero.pdf",
+      "valor": "limiento;",
+      "evidencia": "mplimiento;",
+      "confidence": 0.9,
+      "reason": "MP sin limites de palabra puede coincidir dentro de otra palabra; revisar manualmente"
+    },
+    {
+      "doc_id": "a22960ee6affae1f8c416fa02006d3a9bbf76d2c1fc572f4bbd483aa7bafe178",
+      "source": "normativa/Por el cual se dictan normas para simplificar, suprimir y reformar trámites, procesos y procedimientos innecesarios existentes en la administración pública.pdf",
+      "valor": "ulsen en cualquier tiempo y salvo lo previsto para el caso de pérdida o",
+      "evidencia": "mpulsen en cualquier tiempo y salvo lo previsto para el caso de pérdida o",
+      "confidence": 0.9,
+      "reason": "MP sin limites de palabra puede coincidir dentro de otra palabra; revisar manualmente"
+    },
+    {
+      "doc_id": "a3aa6bf5f1893ed3609be73db110297401aaa6eaeb93e3deccb3b101ae82c628",
+      "source": "jurisprudencia/CC_TU_039_2024_Modesto_Manjarrez_VS_Autopistas_Del_Caribe_Consulta_Previa_Via.pdf",
+      "valor": "limiento de sus deberes legales como empresa contratante, la ANI",
+      "evidencia": "mplimiento de sus deberes legales como empresa contratante, la ANI",
+      "confidence": 0.9,
+      "reason": "MP sin limites de palabra puede coincidir dentro de otra palabra; revisar manualmente"
+    },
+    {
+      "doc_id": "a863f4899a72052c0883fb80450de04525f75398d2177f9304dff88b9554665f",
+      "source": "normativa/Por medio del cual se expide el Decreto Único Reglamentario del Sector Vivienda, Ciudad y Territorio.pdf",
+      "valor": "osibilidad física de acceso, cuando",
+      "evidencia": "mposibilidad física de acceso, cuando",
+      "confidence": 0.9,
+      "reason": "MP sin limites de palabra puede coincidir dentro de otra palabra; revisar manualmente"
+    },
+    {
+      "doc_id": "a8cb22ceba9c6745038ad499cc33c6c3bc4084de768f1f2aedb8b12bb73a01a0",
+      "source": "normativa/Por el cual se dicta el Código Nacional de Recursos Naturales Renovables y de Protección al Medio Ambiente.pdf",
+      "valor": "rescriptibles.",
+      "evidencia": "mprescriptibles.",
+      "confidence": 0.9,
+      "reason": "MP sin limites de palabra puede coincidir dentro de otra palabra; revisar manualmente"
+    },
+    {
+      "doc_id": "b0006c9414d19ff8d301a028312258324208cfb25bafb1f2b6d52c2558fda801",
+      "source": "normativa/Por medio del cual se implementa el Reglamento de Playas del Distrito Portuario, Logístico, Industrial, Turístico y Comercial de Turbo – Antioquia.pdf",
+      "valor": "LEMENTA EL REGLAMENTO DE PLAYAS DEL",
+      "evidencia": "MPLEMENTA EL REGLAMENTO DE PLAYAS DEL",
+      "confidence": 0.9,
+      "reason": "MP sin limites de palabra puede coincidir dentro de otra palabra; revisar manualmente"
+    },
+    {
+      "doc_id": "bb879704f4a16df1d7111533b76ed25f0967c51dc7f21530d753071365fa8ed8",
+      "source": "normativa/Por medio del cual se expide el Decreto Único Reglamentario del Sector Comercio, Industria y Turismo.pdf",
+      "valor": "etentes para fijar la capacidad de los atractivos turísticos,",
+      "evidencia": "mpetentes para fijar la capacidad de los atractivos turísticos,",
+      "confidence": 0.9,
+      "reason": "MP sin limites de palabra puede coincidir dentro de otra palabra; revisar manualmente"
+    },
+    {
+      "doc_id": "c2fb5502b786e7c075916676b17f3ab5bd4ca29c1107a33d0787390bcd25ca27",
+      "source": "normativa/Por el cual se reorganiza la Dirección General Marítima y Portuaria.pdf",
+      "valor": "romisos internacionales. La reserva de carga se aplicará sin",
+      "evidencia": "mpromisos internacionales. La reserva de carga se aplicará sin",
+      "confidence": 0.9,
+      "reason": "MP sin limites de palabra puede coincidir dentro de otra palabra; revisar manualmente"
+    },
+    {
+      "doc_id": "ca6c92bddb4dd5675a81bdb934b895269480b374521dff64543ba40920109f6d",
+      "source": "normativa/Por el cual se reglamenta la habilitación y la prestación del servicio público de transporte fluvial.pdf",
+      "valor": "resa y origen del capital para",
+      "evidencia": "mpresa y origen del capital para",
+      "confidence": 0.9,
+      "reason": "MP sin limites de palabra puede coincidir dentro de otra palabra; revisar manualmente"
+    },
+    {
+      "doc_id": "cb344ef6d28447d882e669618da06f06bd5a8271a4e3079845c69ac32ef8435b",
+      "source": "normativa/Por el cual se aprueba el ajuste y la modificación a la planta de personal de Empleados Públicos del Ministerio de Defensa Nacional - Dirección General Marítima y se dictan otras disposiciones.pdf",
+      "valor": "rimir la norma",
+      "evidencia": "mprimir la norma",
+      "confidence": 0.9,
+      "reason": "MP sin limites de palabra puede coincidir dentro de otra palabra; revisar manualmente"
+    },
+    {
+      "doc_id": "cd99d30acb8bc912f968336f0cdafc93e14ce224449f4b9e86023ba7ffd3d247",
+      "source": "jurisprudencia/AP Gieseken Cuello & Cía. S. en C. VS DIMAR y otros.pdf",
+      "valor": "aren los derechos e intereses colectivos de goce del espacio público",
+      "evidencia": "mparen los derechos e intereses colectivos de goce del espacio público",
+      "confidence": 0.9,
+      "reason": "MP sin limites de palabra puede coincidir dentro de otra palabra; revisar manualmente"
+    },
+    {
+      "doc_id": "cfc6780cb3add10595e8d852b8537179cc4a5c22baeddfabe40833d19c3164fe",
+      "source": "jurisprudencia/TAA_2da_RD_2015_281_XXXX_VS_Dpto_Antioquia_Responsabilidad_Del_Estado.pdf",
+      "valor": "ete a ésta regular el transporte fluvial, el asentamiento de poblaciones, la utilización de las play",
+      "evidencia": "mpete a ésta regular el transporte fluvial, el asentamiento de poblaciones, la utilización de las play",
+      "confidence": 0.9,
+      "reason": "MP sin limites de palabra puede coincidir dentro de otra palabra; revisar manualmente"
+    },
+    {
+      "doc_id": "d4ee8f2c8fbbc3663d06df95c5a437eb6af4104f10bfa24fe832a0282d206841",
+      "source": "normativa/Por medio del cual se reglamenta el trámite de solicitud de concesiones para el desarrollo de actividades portuarias previstas en las Leyes 1ª de 1991 y 1242 de 2008.pdf",
+      "valor": "etente, dispondrá de un plazo de quince (15) días para su estudio",
+      "evidencia": "mpetente, dispondrá de un plazo de quince (15) días para su estudio",
+      "confidence": 0.9,
+      "reason": "MP sin limites de palabra puede coincidir dentro de otra palabra; revisar manualmente"
+    },
+    {
+      "doc_id": "d85a4046092c00bab319adfdfd52e28e6db92d883378dbfbe3c4dec7a4efb217",
+      "source": "normativa/Por el cual se reglamenta el servicio público de transporte marítimo.pdf",
+      "valor": "etencia. Corresponde a la Dirección General Marítima, Dimar, habilitar y",
+      "evidencia": "mpetencia. Corresponde a la Dirección General Marítima, Dimar, habilitar y",
+      "confidence": 0.9,
+      "reason": "MP sin limites de palabra puede coincidir dentro de otra palabra; revisar manualmente"
+    },
+    {
+      "doc_id": "e3b99341f41a6e1c5080be22fcf10f8ba1d98e5495c78ca0eabefc79703bd0f7",
+      "source": "normativa/Por medio del cual se reglamenta el uso, zonificación y horario de las playas con vocación turística del Distrito Turístico, Cultural e Histórico de Santa Marta, aptas para la realización de activiades de aprovech.pdf",
+      "valor": "o libre”.",
+      "evidencia": "mpo libre”.",
+      "confidence": 0.9,
+      "reason": "MP sin limites de palabra puede coincidir dentro de otra palabra; revisar manualmente"
+    },
+    {
+      "doc_id": "e495d6d7e97dee0d0f0a4fe139ac8a530d61046bfd904bd4511d917b78ed5081",
+      "source": "normativa/decreto-2324-de-1984.md",
+      "valor": "limiento.",
+      "evidencia": "mplimiento.  ",
+      "confidence": 0.9,
+      "reason": "MP sin limites de palabra puede coincidir dentro de otra palabra; revisar manualmente"
+    },
+    {
+      "doc_id": "e820f079f4ad0777151ed4b7673f096edbca8547b84047868a9e34d93857778c",
+      "source": "normativa/Por el cual se reglamentan las Unidades Ambientales Costeras - UAC- y las comisiones conjuntas, se establecen las reglas de procedimiento y criterios para reglamentar la restricción de ciertas actividades en.pdf",
+      "valor": "rendida entre la Línea de Marea Baja Promedio (LMBP) y el",
+      "evidencia": "mprendida entre la Línea de Marea Baja Promedio (LMBP) y el",
+      "confidence": 0.9,
+      "reason": "MP sin limites de palabra puede coincidir dentro de otra palabra; revisar manualmente"
+    }
+  ],
+  "count": 39,
+  "not_accuracy_estimate": true
+}

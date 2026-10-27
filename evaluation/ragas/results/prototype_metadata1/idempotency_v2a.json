@@ -1,0 +1,41 @@
+{
+  "utc": "2026-10-22T06:11:51.763495+00:00",
+  "configuration": {
+    "pipeline": "offline-1",
+    "normalizer": "nfc-mapped-1",
+    "extractor": "pymupdf-tesseract-spa-1",
+    "schema": "legal-metadata-1",
+    "chunker": "legacy",
+    "chunker_version": "legal-spans-1",
+    "token_budget": 512,
+    "legacy_size": 1000,
+    "legacy_overlap": 200,
+    "model": "embeddinggemma:latest",
+    "digest": "85462619ee721b466c5927d109d4cb765861907d5417b9109caebc4e614679f1",
+    "dimension": 768
+  },
+  "config_hash": "77a10337669650ae8fd135c45f805f161571dcc0060fc96509a24d6a07cadf21",
+  "files": 56,
+  "documents": 55,
+  "processed": 0,
+  "skipped": 55,
+  "deleted": 0,
+  "renamed": 0,
+  "new_ocr_pages": 0,
+  "llm_api_calls": 0,
+  "errors": [],
+  "documents_detail": [],
+  "new_embeddings": 0,
+  "seconds": 0.5277772660010669,
+  "embeddings": {
+    "model": "embeddinggemma:latest",
+    "digest": "85462619ee721b466c5927d109d4cb765861907d5417b9109caebc4e614679f1",
+    "dimension": 768,
+    "cache_checksum": "2ee40ae1bd203dbf40ca1081de534c64a24afc184f0e5475c734ccc3a026c8a6",
+    "new_embeddings": 0,
+    "embedding_batch_calls": 0,
+    "embedding_seconds": 0.0,
+    "seconds_per_new_chunk": 0,
+    "llm_api_calls": 0
+  }
+}

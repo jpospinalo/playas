@@ -1,0 +1,167 @@
+{
+  "validado_por_abogado": false,
+  "before_snapshot": {
+    "all": {
+      "documents": 56,
+      "fields": {
+        "tipo_documento": 0,
+        "corporacion": 9,
+        "sala": 0,
+        "clase": 0,
+        "numero": 0,
+        "anio": 0,
+        "radicado": 9,
+        "fecha_iso": 0,
+        "magistrado_ponente": 9,
+        "ambito": 0,
+        "municipio": 0,
+        "normas_citadas": 0
+      }
+    },
+    "jurisprudencia": {
+      "documents": 27,
+      "fields": {
+        "tipo_documento": 0,
+        "corporacion": 9,
+        "sala": 0,
+        "clase": 0,
+        "numero": 0,
+        "anio": 0,
+        "radicado": 9,
+        "fecha_iso": 0,
+        "magistrado_ponente": 9,
+        "ambito": 0,
+        "municipio": 0,
+        "normas_citadas": 0
+      }
+    },
+    "normativa": {
+      "documents": 29,
+      "fields": {
+        "tipo_documento": 0,
+        "corporacion": 0,
+        "sala": 0,
+        "clase": 0,
+        "numero": 0,
+        "anio": 0,
+        "radicado": 0,
+        "fecha_iso": 0,
+        "magistrado_ponente": 0,
+        "ambito": 0,
+        "municipio": 0,
+        "normas_citadas": 0
+      }
+    }
+  },
+  "after": {
+    "v2a": {
+      "all": {
+        "documents": 55,
+        "fields": {
+          "tipo_documento": 53,
+          "corporacion": 44,
+          "sala": 21,
+          "clase": 19,
+          "numero": 35,
+          "anio": 46,
+          "radicado": 18,
+          "fecha_iso": 34,
+          "magistrado_ponente": 55,
+          "ambito": 44,
+          "municipio": 25,
+          "normas_citadas": 55
+        }
+      },
+      "jurisprudencia": {
+        "documents": 26,
+        "fields": {
+          "tipo_documento": 26,
+          "corporacion": 26,
+          "sala": 21,
+          "clase": 18,
+          "numero": 10,
+          "anio": 23,
+          "radicado": 18,
+          "fecha_iso": 23,
+          "magistrado_ponente": 26,
+          "ambito": 26,
+          "municipio": 17,
+          "normas_citadas": 26
+        }
+      },
+      "normativa": {
+        "documents": 29,
+        "fields": {
+          "tipo_documento": 27,
+          "corporacion": 18,
+          "sala": 0,
+          "clase": 1,
+          "numero": 25,
+          "anio": 23,
+          "radicado": 0,
+          "fecha_iso": 11,
+          "magistrado_ponente": 29,
+          "ambito": 18,
+          "municipio": 8,
+          "normas_citadas": 29
+        }
+      },
+      "published_chunks": 5281
+    },
+    "v2b": {
+      "all": {
+        "documents": 55,
+        "fields": {
+          "tipo_documento": 53,
+          "corporacion": 44,
+          "sala": 21,
+          "clase": 19,
+          "numero": 35,
+          "anio": 46,
+          "radicado": 18,
+          "fecha_iso": 34,
+          "magistrado_ponente": 55,
+          "ambito": 44,
+          "municipio": 25,
+          "normas_citadas": 55
+        }
+      },
+      "jurisprudencia": {
+        "documents": 26,
+        "fields": {
+          "tipo_documento": 26,
+          "corporacion": 26,
+          "sala": 21,
+          "clase": 18,
+          "numero": 10,
+          "anio": 23,
+          "radicado": 18,
+          "fecha_iso": 23,
+          "magistrado_ponente": 26,
+          "ambito": 26,
+          "municipio": 17,
+          "normas_citadas": 26
+        }
+      },
+      "normativa": {
+        "documents": 29,
+        "fields": {
+          "tipo_documento": 27,
+          "corporacion": 18,
+          "sala": 0,
+          "clase": 1,
+          "numero": 25,
+          "anio": 23,
+          "radicado": 0,
+          "fecha_iso": 11,
+          "magistrado_ponente": 29,
+          "ambito": 18,
+          "municipio": 8,
+          "normas_citadas": 29
+        }
+      },
+      "published_chunks": 2373
+    }
+  },
+  "baseline_notes": "No se interpreta Nº/SM-xx como número de sentencia ni doc_type como tipo específico de providencia/norma."
+}

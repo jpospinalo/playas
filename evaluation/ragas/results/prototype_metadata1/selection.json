@@ -1,0 +1,11 @@
+{
+  "utc": "2026-10-22T06:30:58.022311+00:00",
+  "criterion": "mean document_mrr_at_k; tie favors legacy v2a",
+  "mrr": {
+    "v2a": 0.43125,
+    "v2b": 0.37083333333333335
+  },
+  "selected": "v2a",
+  "before_level1": true,
+  "level1_executed": false
+}

@@ -1,0 +1,16 @@
+{
+  "python": "3.12.3",
+  "packages": {
+    "ragas": "0.4.3",
+    "rapidfuzz": "3.14.3",
+    "pymupdf": "1.26.5",
+    "chromadb": "1.5.9",
+    "langchain-core": "1.4.7",
+    "langchain-text-splitters": "1.1.1",
+    "numpy": "2.4.6",
+    "rank-bm25": "0.2.2"
+  },
+  "tesseract": "tesseract 5.3.4",
+  "llm_api_calls": 0,
+  "validado_por_abogado": false
+}

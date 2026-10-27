@@ -1,0 +1,304 @@
+{
+  "exact": [
+    [
+      {
+        "doc_id": "376195b011c3f52d6176617a8175b3de9d507ea6d26cc99b7a74a0517b7d562e",
+        "path": "jurisprudencia/CE_2da_AP_2011_842_Gabriel_Carrero_VS_Dimar_Erosión_Costera.pdf"
+      },
+      {
+        "doc_id": "376195b011c3f52d6176617a8175b3de9d507ea6d26cc99b7a74a0517b7d562e",
+        "path": "jurisprudencia/SENTENCIA DE SEGUNDA INSTANCIA 47001-2332-000-2011-08425-02- GABRIEL CARRERO.pdf"
+      }
+    ]
+  ],
+  "near_simhash64": [
+    {
+      "documents": [
+        "0c26a7cb41434bb05dd6969ef5a31039e3de0904c64f2534e10e2e3862fe9ec4",
+        "1d08315fb0c629010d1b755a1c29f43ee3703c61cdb569c346b246bef040a046"
+      ],
+      "hamming_distance": 3
+    },
+    {
+      "documents": [
+        "0c26a7cb41434bb05dd6969ef5a31039e3de0904c64f2534e10e2e3862fe9ec4",
+        "376195b011c3f52d6176617a8175b3de9d507ea6d26cc99b7a74a0517b7d562e"
+      ],
+      "hamming_distance": 3
+    },
+    {
+      "documents": [
+        "1d08315fb0c629010d1b755a1c29f43ee3703c61cdb569c346b246bef040a046",
+        "376195b011c3f52d6176617a8175b3de9d507ea6d26cc99b7a74a0517b7d562e"
+      ],
+      "hamming_distance": 2
+    },
+    {
+      "documents": [
+        "0c26a7cb41434bb05dd6969ef5a31039e3de0904c64f2534e10e2e3862fe9ec4",
+        "44967f498aeb586b9adbb2e95be0319e3f78cbc4cabfae4f3f39ed735dfcc705"
+      ],
+      "hamming_distance": 2
+    },
+    {
+      "documents": [
+        "1d08315fb0c629010d1b755a1c29f43ee3703c61cdb569c346b246bef040a046",
+        "4a24d93603bf282965fbbc7154672fc8a938015f5ece90acf6f036504c6dc565"
+      ],
+      "hamming_distance": 3
+    },
+    {
+      "documents": [
+        "376195b011c3f52d6176617a8175b3de9d507ea6d26cc99b7a74a0517b7d562e",
+        "4a24d93603bf282965fbbc7154672fc8a938015f5ece90acf6f036504c6dc565"
+      ],
+      "hamming_distance": 3
+    },
+    {
+      "documents": [
+        "2f4215147caaf2c5bc851eea326f65aa52a3e6a7712ff0725c1f72b6594b9245",
+        "4c2617061848464576823dfea2e8f11220664e4c719d56535682951e939be983"
+      ],
+      "hamming_distance": 3
+    },
+    {
+      "documents": [
+        "4a24d93603bf282965fbbc7154672fc8a938015f5ece90acf6f036504c6dc565",
+        "4f08704b7c76bd2a6792cdc5743162aec1742a18f69dbb4a4125197147d71b73"
+      ],
+      "hamming_distance": 3
+    },
+    {
+      "documents": [
+        "39b9b682861845800f858579e6523aea2663612a56837b3c4811476681be0c3d",
+        "665747b6f8e03a7e9473fc5bb2e29f5c4d8a11f25564b9292f89070c666d23d2"
+      ],
+      "hamming_distance": 3
+    },
+    {
+      "documents": [
+        "0c26a7cb41434bb05dd6969ef5a31039e3de0904c64f2534e10e2e3862fe9ec4",
+        "70fc0abaf0d1de720c0b38bba58fb6a252e3ec8b75ec325d5865877a431100ea"
+      ],
+      "hamming_distance": 3
+    },
+    {
+      "documents": [
+        "0c26a7cb41434bb05dd6969ef5a31039e3de0904c64f2534e10e2e3862fe9ec4",
+        "735e943c4c638ee8fca44d35fbd3179f1ddb47368e3ef68eeb02f3736070e360"
+      ],
+      "hamming_distance": 2
+    },
+    {
+      "documents": [
+        "2f4215147caaf2c5bc851eea326f65aa52a3e6a7712ff0725c1f72b6594b9245",
+        "8767ea352084c54abe68cb6ea25d200f2eb63455937766dff9bef56dca3a2356"
+      ],
+      "hamming_distance": 2
+    },
+    {
+      "documents": [
+        "39b9b682861845800f858579e6523aea2663612a56837b3c4811476681be0c3d",
+        "8767ea352084c54abe68cb6ea25d200f2eb63455937766dff9bef56dca3a2356"
+      ],
+      "hamming_distance": 3
+    },
+    {
+      "documents": [
+        "3d138b060f20e0fb31e72912f89e8dfa6061935106799ceb74cf9231d2741bb7",
+        "8767ea352084c54abe68cb6ea25d200f2eb63455937766dff9bef56dca3a2356"
+      ],
+      "hamming_distance": 3
+    },
+    {
+      "documents": [
+        "0c26a7cb41434bb05dd6969ef5a31039e3de0904c64f2534e10e2e3862fe9ec4",
+        "889ce44641f6624c2b4084fe611e3de358b87957b8572d9224ae489260d379e8"
+      ],
+      "hamming_distance": 3
+    },
+    {
+      "documents": [
+        "70fc0abaf0d1de720c0b38bba58fb6a252e3ec8b75ec325d5865877a431100ea",
+        "889ce44641f6624c2b4084fe611e3de358b87957b8572d9224ae489260d379e8"
+      ],
+      "hamming_distance": 2
+    },
+    {
+      "documents": [
+        "86f2865bf61ce17a92c24de51dd5ef8787972a44c634ff071929e4101c2e94f8",
+        "896646ecc76401dc95ace08f8e586bd98d368dafdfa9287ad88213cfefcc9f8f"
+      ],
+      "hamming_distance": 2
+    },
+    {
+      "documents": [
+        "10387c6fbe01c74ca9785658239f0883bb864d86890d2ea02b4ee7fc22cb8239",
+        "98cdaeff3860fa527d4e605b11567ed38c8af17d150cd14d9a3a81a59782e4e9"
+      ],
+      "hamming_distance": 3
+    },
+    {
+      "documents": [
+        "2f4215147caaf2c5bc851eea326f65aa52a3e6a7712ff0725c1f72b6594b9245",
+        "98cdaeff3860fa527d4e605b11567ed38c8af17d150cd14d9a3a81a59782e4e9"
+      ],
+      "hamming_distance": 2
+    },
+    {
+      "documents": [
+        "39b9b682861845800f858579e6523aea2663612a56837b3c4811476681be0c3d",
+        "98cdaeff3860fa527d4e605b11567ed38c8af17d150cd14d9a3a81a59782e4e9"
+      ],
+      "hamming_distance": 3
+    },
+    {
+      "documents": [
+        "70fc0abaf0d1de720c0b38bba58fb6a252e3ec8b75ec325d5865877a431100ea",
+        "98cdaeff3860fa527d4e605b11567ed38c8af17d150cd14d9a3a81a59782e4e9"
+      ],
+      "hamming_distance": 3
+    },
+    {
+      "documents": [
+        "8767ea352084c54abe68cb6ea25d200f2eb63455937766dff9bef56dca3a2356",
+        "98cdaeff3860fa527d4e605b11567ed38c8af17d150cd14d9a3a81a59782e4e9"
+      ],
+      "hamming_distance": 2
+    },
+    {
+      "documents": [
+        "0c26a7cb41434bb05dd6969ef5a31039e3de0904c64f2534e10e2e3862fe9ec4",
+        "98cdaeff3860fa527d4e605b11567ed38c8af17d150cd14d9a3a81a59782e4e9"
+      ],
+      "hamming_distance": 2
+    },
+    {
+      "documents": [
+        "735e943c4c638ee8fca44d35fbd3179f1ddb47368e3ef68eeb02f3736070e360",
+        "98cdaeff3860fa527d4e605b11567ed38c8af17d150cd14d9a3a81a59782e4e9"
+      ],
+      "hamming_distance": 2
+    },
+    {
+      "documents": [
+        "889ce44641f6624c2b4084fe611e3de358b87957b8572d9224ae489260d379e8",
+        "98cdaeff3860fa527d4e605b11567ed38c8af17d150cd14d9a3a81a59782e4e9"
+      ],
+      "hamming_distance": 3
+    },
+    {
+      "documents": [
+        "4c2617061848464576823dfea2e8f11220664e4c719d56535682951e939be983",
+        "98cdaeff3860fa527d4e605b11567ed38c8af17d150cd14d9a3a81a59782e4e9"
+      ],
+      "hamming_distance": 3
+    },
+    {
+      "documents": [
+        "03e009c1602a465e493d6b9ddcd6983ba0a1e66f3a5f31cfa90312a16f2030dd",
+        "a22960ee6affae1f8c416fa02006d3a9bbf76d2c1fc572f4bbd483aa7bafe178"
+      ],
+      "hamming_distance": 1
+    },
+    {
+      "documents": [
+        "4f08704b7c76bd2a6792cdc5743162aec1742a18f69dbb4a4125197147d71b73",
+        "a3aa6bf5f1893ed3609be73db110297401aaa6eaeb93e3deccb3b101ae82c628"
+      ],
+      "hamming_distance": 3
+    },
+    {
+      "documents": [
+        "0c26a7cb41434bb05dd6969ef5a31039e3de0904c64f2534e10e2e3862fe9ec4",
+        "a3aa6bf5f1893ed3609be73db110297401aaa6eaeb93e3deccb3b101ae82c628"
+      ],
+      "hamming_distance": 2
+    },
+    {
+      "documents": [
+        "735e943c4c638ee8fca44d35fbd3179f1ddb47368e3ef68eeb02f3736070e360",
+        "a3aa6bf5f1893ed3609be73db110297401aaa6eaeb93e3deccb3b101ae82c628"
+      ],
+      "hamming_distance": 2
+    },
+    {
+      "documents": [
+        "889ce44641f6624c2b4084fe611e3de358b87957b8572d9224ae489260d379e8",
+        "a3aa6bf5f1893ed3609be73db110297401aaa6eaeb93e3deccb3b101ae82c628"
+      ],
+      "hamming_distance": 3
+    },
+    {
+      "documents": [
+        "98cdaeff3860fa527d4e605b11567ed38c8af17d150cd14d9a3a81a59782e4e9",
+        "a3aa6bf5f1893ed3609be73db110297401aaa6eaeb93e3deccb3b101ae82c628"
+      ],
+      "hamming_distance": 2
+    },
+    {
+      "documents": [
+        "1c5b6f4ab37379e6e2286a45eec056647dbcf3a5fe08dfd335a5e730ae17f6b6",
+        "a863f4899a72052c0883fb80450de04525f75398d2177f9304dff88b9554665f"
+      ],
+      "hamming_distance": 3
+    },
+    {
+      "documents": [
+        "8767ea352084c54abe68cb6ea25d200f2eb63455937766dff9bef56dca3a2356",
+        "cd99d30acb8bc912f968336f0cdafc93e14ce224449f4b9e86023ba7ffd3d247"
+      ],
+      "hamming_distance": 2
+    },
+    {
+      "documents": [
+        "44967f498aeb586b9adbb2e95be0319e3f78cbc4cabfae4f3f39ed735dfcc705",
+        "cdf6172fabdb42477c25d374d7d42b3a6e91d31c4ec553e85d056036f82c47b3"
+      ],
+      "hamming_distance": 3
+    },
+    {
+      "documents": [
+        "39b9b682861845800f858579e6523aea2663612a56837b3c4811476681be0c3d",
+        "cdf6172fabdb42477c25d374d7d42b3a6e91d31c4ec553e85d056036f82c47b3"
+      ],
+      "hamming_distance": 2
+    },
+    {
+      "documents": [
+        "873661fbf4b7aa77cfcf3ed3cfb8c95fcc63b7181c3dfe3cfcc9fed6168e87b6",
+        "cfc6780cb3add10595e8d852b8537179cc4a5c22baeddfabe40833d19c3164fe"
+      ],
+      "hamming_distance": 0
+    },
+    {
+      "documents": [
+        "3d138b060f20e0fb31e72912f89e8dfa6061935106799ceb74cf9231d2741bb7",
+        "cfe17c3386aef4bb01dfe4a91a6026a6b1be31e97c38d38f02651a2fbb51f41a"
+      ],
+      "hamming_distance": 3
+    },
+    {
+      "documents": [
+        "a8cb22ceba9c6745038ad499cc33c6c3bc4084de768f1f2aedb8b12bb73a01a0",
+        "e495d6d7e97dee0d0f0a4fe139ac8a530d61046bfd904bd4511d917b78ed5081"
+      ],
+      "hamming_distance": 3
+    },
+    {
+      "documents": [
+        "10387c6fbe01c74ca9785658239f0883bb864d86890d2ea02b4ee7fc22cb8239",
+        "f898b193a5d79170d179ee4e43388eae478815894e46add8d911ab833439c166"
+      ],
+      "hamming_distance": 3
+    },
+    {
+      "documents": [
+        "98cdaeff3860fa527d4e605b11567ed38c8af17d150cd14d9a3a81a59782e4e9",
+        "f898b193a5d79170d179ee4e43388eae478815894e46add8d911ab833439c166"
+      ],
+      "hamming_distance": 2
+    }
+  ],
+  "deleted_source_files": 0
+}

@@ -1,0 +1,91 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.1.0, pluggy-1.6.0
+rootdir: /home/ubuntu/atlas-ingesta/rag
+configfile: pyproject.toml
+plugins: anyio-4.14.0, langsmith-0.8.16, cov-7.1.0
+collected 770 items
+
+tests/unit/test_admin_date_filters.py ................                   [  2%]
+tests/unit/test_admin_feedback_sql_aggregation.py ............           [  3%]
+tests/unit/test_agent_controls.py .....                                  [  4%]
+tests/unit/test_agent_graph.py ......                                    [  5%]
+tests/unit/test_agent_observability.py ...........                       [  6%]
+tests/unit/test_auth_tokens.py ..........                                [  7%]
+tests/unit/test_backpressure.py ..........                               [  9%]
+tests/unit/test_bcrypt_off_event_loop.py ..............                  [ 10%]
+tests/unit/test_bm25_compatibility.py .                                  [ 11%]
+tests/unit/test_bm25_empty_corpus.py ...........                         [ 12%]
+tests/unit/test_bm25_zero_score_filter.py ...........                    [ 13%]
+tests/unit/test_checkpoint_cleanup_failure_isolation.py ......           [ 14%]
+tests/unit/test_chroma_scripts.py .....................                  [ 17%]
+tests/unit/test_citation_coverage.py ...........                         [ 18%]
+tests/unit/test_config_env_resolution.py ............................... [ 22%]
+.............                                                            [ 24%]
+tests/unit/test_config_import_order.py .....                             [ 25%]
+tests/unit/test_config_no_dead_code.py ....                              [ 25%]
+tests/unit/test_context_block_doctype.py ..                              [ 25%]
+tests/unit/test_context_budget_warning.py ......                         [ 26%]
+tests/unit/test_conversation_delete_dual_checkpoint_cleanup.py ........  [ 27%]
+tests/unit/test_conversation_hydration.py ...                            [ 28%]
+tests/unit/test_conversation_lock.py ......                              [ 28%]
+tests/unit/test_conversation_message_sources.py .............            [ 30%]
+tests/unit/test_core_generator.py ...                                    [ 31%]
+tests/unit/test_email_race_conditions.py ......                          [ 31%]
+tests/unit/test_embeddings.py ....................                       [ 34%]
+tests/unit/test_enrichment_llm_skip.py ................................  [ 38%]
+tests/unit/test_ephemeral_checkpoint_cleanup.py ........                 [ 39%]
+tests/unit/test_expanded_query_length.py ......................          [ 42%]
+tests/unit/test_generator.py ..                                          [ 42%]
+tests/unit/test_generator_no_api_dependency.py ..                        [ 42%]
+tests/unit/test_ground_truth_dataset.py ...................              [ 45%]
+tests/unit/test_layer_prefix.py ....                                     [ 45%]
+tests/unit/test_level0_offline.py .....                                  [ 46%]
+tests/unit/test_load_test_script.py ..........................           [ 50%]
+tests/unit/test_lock_before_backpressure.py ...                          [ 50%]
+tests/unit/test_login_nonexistent_user.py ......                         [ 51%]
+tests/unit/test_login_opportunistic_rehash.py ......                     [ 51%]
+tests/unit/test_main_backpressure.py ....                                [ 52%]
+tests/unit/test_main_observability.py ...                                [ 52%]
+tests/unit/test_observability.py ...................                     [ 55%]
+tests/unit/test_password_hash_concurrency_limit.py ......                [ 56%]
+tests/unit/test_passwords.py ..........                                  [ 57%]
+tests/unit/test_query_analysis.py ...................................... [ 62%]
+........................................................................ [ 71%]
+..........................................................               [ 79%]
+tests/unit/test_query_json_sse_validation_parity.py ....                 [ 79%]
+tests/unit/test_query_schema.py ..............                           [ 81%]
+tests/unit/test_query_stream_endpoint.py ......                          [ 82%]
+tests/unit/test_query_stream_openapi_contract.py ......                  [ 83%]
+tests/unit/test_query_timeouts.py ....                                   [ 83%]
+tests/unit/test_ragas_common.py ..................................       [ 88%]
+tests/unit/test_ragas_import_isolation.py ...                            [ 88%]
+tests/unit/test_rate_limit.py ...............                            [ 90%]
+tests/unit/test_readiness_endpoint.py ........                           [ 91%]
+tests/unit/test_retriever_async_concurrency.py .....                     [ 92%]
+tests/unit/test_retriever_invariants.py .............                    [ 93%]
+tests/unit/test_retriever_limit.py .                                     [ 93%]
+tests/unit/test_retriever_no_dead_code.py ...                            [ 94%]
+tests/unit/test_retriever_structural_filter.py ......                    [ 95%]
+tests/unit/test_rrf_diagnostic.py ........                               [ 96%]
+tests/unit/test_shutdown_cleanup.py ..................                   [ 98%]
+tests/unit/test_snapshot_import.py ....                                  [ 98%]
+tests/unit/test_vectorstore.py .....                                     [ 99%]
+tests/unit/test_vectorstore_retry.py ...                                 [100%]
+
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/fastapi/testclient.py:1
+  /home/ubuntu/atlas-ingesta/rag/.venv/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+tests/unit/test_level0_offline.py:8
+tests/unit/test_level0_offline.py:8
+  /home/ubuntu/atlas-ingesta/rag/tests/unit/test_level0_offline.py:8: DeprecationWarning: Importing NonLLMContextPrecisionWithReference from 'ragas.metrics' is deprecated and will be removed in v1.0. Please use 'ragas.metrics.collections' instead. Example: from ragas.metrics.collections import NonLLMContextPrecisionWithReference
+    from ragas.metrics import NonLLMContextPrecisionWithReference, NonLLMContextRecall
+
+tests/unit/test_level0_offline.py:8
+tests/unit/test_level0_offline.py:8
+  /home/ubuntu/atlas-ingesta/rag/tests/unit/test_level0_offline.py:8: DeprecationWarning: Importing NonLLMContextRecall from 'ragas.metrics' is deprecated and will be removed in v1.0. Please use 'ragas.metrics.collections' instead. Example: from ragas.metrics.collections import NonLLMContextRecall
+    from ragas.metrics import NonLLMContextPrecisionWithReference, NonLLMContextRecall
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+================= 770 passed, 5 warnings in 115.60s (0:01:55) ==================

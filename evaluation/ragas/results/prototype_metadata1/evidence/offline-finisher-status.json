@@ -1,0 +1,7 @@
+{
+  "v2a_complete": true,
+  "v2b_complete": true,
+  "remote_ollama_can_stop": true,
+  "finished": true,
+  "last_evaluated": "v2b"
+}
