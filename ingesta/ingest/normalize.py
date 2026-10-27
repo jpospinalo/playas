@@ -3,10 +3,12 @@
 from __future__ import annotations
 
 import re
+import unicodedata
 from pathlib import Path
 from typing import Any
 
 from langchain_core.documents import Document
+
 
 
 def normalize_text(text: str) -> str:
@@ -17,6 +19,10 @@ def normalize_text(text: str) -> str:
     - Colapsa 3+ líneas en blanco consecutivas a máximo 2.
     - Elimina caracteres de control no imprimibles (excepto saltos de línea y tabs).
     """
+    text = unicodedata.normalize("NFC", text.replace("\r\n", "\n").replace("\r", "\n"))
+    text = "".join(
+        char for char in text if unicodedata.category(char) not in {"Cc", "Cf"} or char in "\n\t"
+    )
     text = re.sub(r"[^\S\n\t]", " ", text)
     text = re.sub(r"[ \t]+$", "", text, flags=re.MULTILINE)
     text = re.sub(r"\n{3,}", "\n\n", text)
@@ -31,7 +37,7 @@ def normalize_metadata(meta: dict[str, Any]) -> dict[str, Any]:
     legible a partir del stem del archivo (reemplaza guiones bajos
     por espacios).
     """
-    src = meta.get("source", "")
+    src = normalize_text(str(meta.get("source", "")))
     file_path = Path(src)
     filename = file_path.name
     stem = file_path.stem

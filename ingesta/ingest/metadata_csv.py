@@ -22,6 +22,7 @@ import csv
 import io
 
 from .config import layer_prefix
+from .normalize import normalize_text
 from .s3_client import key_exists, read_text
 
 # Caché de CSV por doc_type (cada tipo tiene su propio metadata.csv opcional).
@@ -30,10 +31,11 @@ _csv_cache: dict[str, dict[str, dict]] = {}
 
 def parse_metadata_csv_content(content: str) -> dict[str, dict]:
     """Parsea metadata.csv (delimiter `;`). Quita BOM UTF-8 para que exista la columna `Archivo`."""
-    content = content.lstrip("﻿")
+    content = normalize_text(content.lstrip("﻿"))
     result: dict[str, dict] = {}
     reader = csv.DictReader(io.StringIO(content), delimiter=";")
     for row in reader:
+        row = {normalize_text(k): normalize_text(v or "") for k, v in row.items() if k is not None}
         archivo = row.get("Archivo", "").strip()
         if archivo:
             result[archivo] = {k: v.strip() for k, v in row.items() if v.strip()}
@@ -64,6 +66,7 @@ def get_metadata_for_file(filename: str, doc_type: str = "jurisprudencia") -> di
     Prueba varias variantes de extensión porque la columna `Archivo` del CSV de
     jurisprudencia usa `.pdf`, mientras que la normativa puede entrar como `.md`.
     """
+    filename = normalize_text(filename)
     table = load_metadata_csv(doc_type)
     if not table:
         return None
