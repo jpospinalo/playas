@@ -180,7 +180,7 @@ function Cierre({ inicial }: { inicial: boolean }) {
 						<button type="button" className="pnl-btn" onClick={() => cambiar(true)}>
 							Sí, cerrar
 						</button>
-						<button type="button" className="pnl-btn-sec" onClick={() => setConfirmar(false)}>
+						<button type="button" className="pnl-btn-sec" data-foco onClick={() => setConfirmar(false)}>
 							Cancelar
 						</button>
 					</div>

@@ -710,7 +710,9 @@ async def archivar_practica(
     """T7: antes del 2 nov, el admin archiva la práctica (sale de todas las
     vistas; nada se borra). Se puede deshacer."""
     if user["role"] not in ("admin", "super-admin"):
-        raise HTTPException(status.HTTP_403_FORBIDDEN, "Solo el administrador archiva la práctica.")
+        raise HTTPException(
+            status.HTTP_403_FORBIDDEN, "Solo la administración archiva la práctica."
+        )
     s = await session.get(ExerciseSetting, "practica_archivada")
     if s is None:
         s = ExerciseSetting(clave="practica_archivada", valor="no")
@@ -1018,7 +1020,7 @@ async def guardar_final(
     if not await puede_fijar_final(session, user):
         raise HTTPException(
             status.HTTP_403_FORBIDDEN,
-            "La calificación final la fija la validación jurídica o el administrador.",
+            "La calificación final la fija quien valida lo jurídico o la administración.",
         )
     if not any(not c.es_final for c in p.cals):
         raise HTTPException(
@@ -1045,7 +1047,7 @@ async def quitar_final(
     if not await puede_fijar_final(session, user):
         raise HTTPException(
             status.HTTP_403_FORBIDDEN,
-            "La calificación final la quita la validación jurídica o el administrador.",
+            "La calificación final la quita quien valida lo jurídico o la administración.",
         )
     await calendario.exigir_plazo(session, "fin_validacion", "validar")
     finales = (

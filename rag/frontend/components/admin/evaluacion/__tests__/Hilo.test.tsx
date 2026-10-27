@@ -43,4 +43,17 @@ describe("Hilo (J6-A2/A3)", () => {
 		render(<Hilo detalle={base} onCambio={vi.fn()} lado="validacion" />);
 		expect(screen.getByLabelText("Escribirle a Semillerista Santa Marta 1")).toBeInTheDocument();
 	});
+
+	it("PQ-111: una corrección propia no abre el cuadro para responder", () => {
+		const detalle = {
+			...base,
+			hilo: [
+				{ autor: "Semillerista Santa Marta 1", tipo: "correccion" as const, texto: "Cv 4 → 5", fecha: "2026-10-27T10:00:00" },
+			],
+		};
+		render(<Hilo detalle={detalle} onCambio={vi.fn()} lado="semillerista" />);
+		expect(screen.getByText("Cv 4 → 5")).toBeInTheDocument();
+		expect(screen.queryByRole("textbox")).toBeNull();
+		expect(screen.getByText("Cuando la validación se haga, aquí verá su comentario.")).toBeInTheDocument();
+	});
 });

@@ -37,7 +37,9 @@ export function Hilo({
 	const otro = detalle.hilo.find((m) => m.autor !== quienCalifico)?.autor;
 	const etiqueta =
 		lado === "validacion" ? `Escribirle a ${quienCalifico}` : `Responder a ${otro ?? "quien valida"}`;
-	const puedeEscribir = lado === "validacion" || detalle.hilo.length > 0;
+	// PQ-111: quien calificó responde solo si quien valida ya escribió (sus
+	// propias correcciones son historial, no algo a qué responder).
+	const puedeEscribir = lado === "validacion" || otro !== undefined;
 
 	async function enviar(e: React.FormEvent) {
 		e.preventDefault();
@@ -65,13 +67,11 @@ export function Hilo({
 						</li>
 					))}
 				</ol>
-			) : (
-				<p className="pnl-vacio">
-					{lado === "semillerista"
-						? "Cuando la validación se haga, aquí verá su comentario."
-						: "Todavía no hay mensajes."}
-				</p>
-			)}
+			) : null}
+			{lado === "semillerista" && otro === undefined ? (
+				<p className="pnl-vacio">Cuando la validación se haga, aquí verá su comentario.</p>
+			) : null}
+			{lado === "validacion" && !detalle.hilo.length ? <p className="pnl-vacio">Todavía no hay mensajes.</p> : null}
 			{puedeEscribir ? (
 				<form onSubmit={enviar} className="pnl-hilo-form">
 					<label htmlFor={`hilo-${id}`}>{etiqueta}</label>

@@ -346,6 +346,11 @@ export function cuantas(n: number, uno: string, varios: string): string {
 	return `${numero(n)} ${n === 1 ? uno : varios}`;
 }
 
+/** Promedio con su sustantivo: "1 pregunta", "1,5 preguntas" (PQ-96). */
+export function cuantasDecimal(n: number, uno: string, varios: string): string {
+	return `${decimal(n)} ${n === 1 ? uno : varios}`;
+}
+
 /** Porcentaje entero, o `null` si no hay base. */
 export function porcentaje(parte: number, total: number): number | null {
 	if (!total) return null;

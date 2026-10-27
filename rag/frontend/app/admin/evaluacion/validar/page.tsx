@@ -201,7 +201,7 @@ export default function PaginaValidar() {
 									<button type="button" className="pnl-btn" onClick={lote}>
 										Sí, de acuerdo con {numero(elegidas.size)}
 									</button>
-									<button type="button" className="pnl-btn-sec" onClick={() => setConfirmar(false)}>
+									<button type="button" className="pnl-btn-sec" data-foco onClick={() => setConfirmar(false)}>
 										Cancelar
 									</button>
 								</div>
@@ -315,7 +315,9 @@ function FilaValidacion({
 					<span className="pnl-etq">{item.codigo}</span>
 					<span>{item.tipo_playa_nombre ?? "Sin tipo"}</span>
 					<span>{diaMesCalendario(item.fecha)}</span>
-					{item.pertinente === false ? <span>No es del tema (gestión costera)</span> : null}
+					{item.pertinente === false ? (
+						<ChipEstado tono="ojo">No es del tema (gestión costera)</ChipEstado>
+					) : null}
 				</p>
 				{tipo === "costero" ? (
 					<Pertinencia item={item} onCambio={onCambio} />
@@ -448,7 +450,13 @@ function Evaluacion({
 					</button>
 				) : null}
 				<button type="button" className="pnl-enlace" aria-expanded={abierta} onClick={abrir}>
-					{abierta ? "Ocultar conversación" : `Ver conversación${e.comentarios ? ` (${e.comentarios})` : ""}`}
+					{abierta
+						? e.comentarios
+							? "Ocultar conversación"
+							: "Cerrar"
+						: e.comentarios
+							? `Ver conversación (${e.comentarios})`
+							: `Escribirle a ${e.evaluador}`}
 				</button>
 			</div>
 			<ResultadoJunto resultado={acc.resultado} />

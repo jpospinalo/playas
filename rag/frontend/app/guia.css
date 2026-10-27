@@ -363,6 +363,10 @@ body:has(.guia) {
 	gap: 12px;
 	flex-wrap: wrap;
 }
+/* PQ-98: el botón principal y el secundario de una misma fila, del mismo alto. */
+.guia-acciones > .guia-btn-sec {
+	min-height: 60px;
+}
 /* Errores: ícono de aviso y texto, nunca solo color. */
 .guia-error {
 	display: flex;

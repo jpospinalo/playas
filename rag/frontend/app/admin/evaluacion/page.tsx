@@ -93,8 +93,11 @@ export default function PaginaBandeja() {
 				{comite
 					? "Cada pregunta la evalúan dos semilleristas, uno de Santa Marta y uno de Barranquilla, que el sistema asigna solo."
 					: "El sistema le asigna preguntas automáticamente, repartidas por igual entre los semilleristas de su sede."}{" "}
-				Califique con la planilla: cómo está escrita la pregunta (forma: F1, F2, F3) y qué tan de fondo es el caso (nivel Ct y valor Cv). Solo se ve el número del participante y su
-				tipo de usuario de playa.
+				{/* PQ-101: quien no califica no recibe la instrucción de calificar. */}
+				{comite
+					? "Aquí ve en qué va cada pregunta: quién la calificó, si coinciden y cuáles revisa el comité."
+					: "Califique con la planilla: cómo está escrita la pregunta (forma: F1, F2, F3) y qué tan de fondo es el caso (nivel Ct y valor Cv)."}{" "}
+				Solo se ve el número del participante y su tipo de usuario de playa.
 			</CabezaPestana>
 			<Plazo pendientes={datos ? (datos.conteos[comite ? "con_diferencias" : "pendientes"] ?? 0) : null} comite={comite} />
 			{comite ? <Practica /> : null}
@@ -367,7 +370,7 @@ function Practica() {
 						<button type="button" className="pnl-btn" onClick={() => cambiar(true)}>
 							Sí, archivar
 						</button>
-						<button type="button" className="pnl-btn-sec" onClick={() => setConfirmar(false)}>
+						<button type="button" className="pnl-btn-sec" data-foco onClick={() => setConfirmar(false)}>
 							Cancelar
 						</button>
 					</div>

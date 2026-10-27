@@ -39,4 +39,27 @@ describe("Aparece (J5-6)", () => {
 		expect(screen.queryByLabelText("Rol")).toBeNull();
 		expect(screen.getByRole("button", { name: "Sí, desactivar" })).toHaveFocus();
 	});
+
+	it("PQ-99: en una confirmación destructiva el foco va a Cancelar", async () => {
+		const user = userEvent.setup();
+		function Baja() {
+			const [abierto, setAbierto] = useState(false);
+			return (
+				<>
+					<button type="button" onClick={() => setAbierto(true)}>
+						Desactivar
+					</button>
+					<Aparece abierto={abierto} enfocar>
+						<button type="button">Sí, desactivar</button>
+						<button type="button" data-foco>
+							Cancelar
+						</button>
+					</Aparece>
+				</>
+			);
+		}
+		render(<Baja />);
+		await user.click(screen.getByRole("button", { name: "Desactivar" }));
+		expect(screen.getByRole("button", { name: "Cancelar" })).toHaveFocus();
+	});
 });

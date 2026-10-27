@@ -28,7 +28,7 @@ export function Aparece({
 }: {
 	abierto: boolean;
 	children: ReactNode;
-	/** Al abrir, el foco va al primer campo o botón de adentro. */
+	/** Al abrir, el foco va al elemento con `data-foco` o, si no hay, al primer campo o botón. */
 	enfocar?: boolean;
 	className?: string;
 }) {
@@ -52,7 +52,13 @@ export function Aparece({
 			primera.current = false;
 			return;
 		}
-		if (abierto && enfocar) caja.current?.querySelector<HTMLElement>(ENFOCABLE)?.focus();
+		// PQ-99: en una confirmación destructiva el foco va a "Cancelar" (marcado
+		// con data-foco), para que un Enter de más no borre ni desactive nada.
+		if (abierto && enfocar)
+			(
+				caja.current?.querySelector<HTMLElement>("[data-foco]") ??
+				caja.current?.querySelector<HTMLElement>(ENFOCABLE)
+			)?.focus();
 	}, [abierto, enfocar]);
 
 	if (!abierto && !cerrando) return null;

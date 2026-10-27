@@ -150,10 +150,10 @@ async def cambiar(
     user: dict = Depends(get_current_user),
     session: AsyncSession = Depends(get_session),
 ) -> CalendarioOut:
-    """Solo el administrador cambia las fechas (por ejemplo, para ampliar un plazo)."""
+    """Solo la administración cambia las fechas (por ejemplo, para ampliar un plazo)."""
     if user["role"] not in ("admin", "super-admin"):
         raise HTTPException(
-            status.HTTP_403_FORBIDDEN, "Solo el administrador cambia el calendario."
+            status.HTTP_403_FORBIDDEN, "Solo la administración cambia el calendario."
         )
     desconocidas = set(payload.fechas) - set(FECHAS)
     if desconocidas:
@@ -240,7 +240,9 @@ async def cerrar(
     califica, valida ni elige ganadoras; el Excel sigue disponible. Se puede
     reabrir."""
     if user["role"] not in ("admin", "super-admin"):
-        raise HTTPException(status.HTTP_403_FORBIDDEN, "Solo el administrador cierra el ejercicio.")
+        raise HTTPException(
+            status.HTTP_403_FORBIDDEN, "Solo la administración cierra el ejercicio."
+        )
     s = await session.get(ExerciseSetting, "ejercicio_cerrado")
     if s is None:
         s = ExerciseSetting(clave="ejercicio_cerrado", valor="no")

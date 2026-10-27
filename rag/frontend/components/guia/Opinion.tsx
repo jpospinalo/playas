@@ -105,8 +105,8 @@ export function PantallaOpinion({
 					Gracias por su opinión
 				</h1>
 				<p>
-					Gracias. Puede seguir preguntando cuando quiera, desde su casa, hasta el {hasta ?? "20 de noviembre"}, con el
-					mismo correo y clave. Quien participe más días puede ganar un bono.
+					Puede seguir preguntando cuando quiera, desde su casa, hasta el {hasta ?? "20 de noviembre"}, con el mismo
+					correo y clave. Quien participe más días puede ganar un bono.
 				</p>
 				<div className="guia-acciones">
 					<button type="button" className="guia-btn" onClick={onOtraPregunta}>

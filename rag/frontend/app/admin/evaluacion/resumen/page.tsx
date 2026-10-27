@@ -683,7 +683,7 @@ function NivelPremio({
 							<button type="button" className="pnl-btn" disabled={acc.enviando} onClick={quitar}>
 								Sí, quitar la elección
 							</button>
-							<button type="button" className="pnl-btn-sec" onClick={() => setConfirmar(false)}>
+							<button type="button" className="pnl-btn-sec" data-foco onClick={() => setConfirmar(false)}>
 								Cancelar
 							</button>
 						</div>

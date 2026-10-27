@@ -174,7 +174,7 @@ function Ficha_() {
 									<p className="pnl-vacio">
 										{ficha.puede_fijar_final
 											? "Se podrá fijar cuando los semilleristas la califiquen."
-											: "La fija la validación jurídica (Ana María o Sandra) o el administrador."}
+											: "La fija quien valida lo jurídico (Ana María Muelle o Sandra Otero) o la administración."}
 									</p>
 								)}
 							</section>
@@ -261,13 +261,14 @@ function MiValidacion({ evaluacionId }: { evaluacionId: string }) {
 					{TEXTO_VALIDACION[est]}
 				</ChipEstado>
 			</div>
-			<p>
-				{est === "en_conversacion"
-					? `${quien ?? "Quien valida"} no está de acuerdo. Lea su comentario, respóndale y, si corresponde, corrija la calificación arriba.`
-					: est === "por_validar"
-						? "Quien valida lo jurídico en su sede todavía no la revisa."
+			{/* PQ-101: "Por validar" no repite la espera; la dice el hilo una sola vez. */}
+			{est === "por_validar" ? null : (
+				<p>
+					{est === "en_conversacion"
+						? `${quien ?? "Quien valida"} no está de acuerdo. Lea su comentario, respóndale y, si corresponde, corrija la calificación arriba.`
 						: `${quien ?? "Quien valida"} está de acuerdo.`}
-			</p>
+				</p>
+			)}
 			<Hilo detalle={detalle} onCambio={setDetalle} lado="semillerista" />
 		</section>
 	);
@@ -306,7 +307,7 @@ function QuitarFinal({ id, onCambio }: { id: string; onCambio: (f: Ficha) => voi
 						<button type="button" className="pnl-btn" disabled={acc.enviando} onClick={quitar}>
 							Sí, quitarla
 						</button>
-						<button type="button" className="pnl-btn-sec" onClick={() => setConfirmar(false)}>
+						<button type="button" className="pnl-btn-sec" data-foco onClick={() => setConfirmar(false)}>
 							Cancelar
 						</button>
 					</div>

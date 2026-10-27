@@ -11,7 +11,7 @@ import {
 	mensajeError,
 	cambioTasa,
 	cuantas,
-	decimal,
+	cuantasDecimal,
 	descargarCsv,
 	diaMes,
 	fechaLarga,
@@ -421,8 +421,8 @@ function Contenido({
 						<span className="pnl-valor num">{numero(c.personas)}</span>
 						<span className="pnl-det">
 							{dias === 0
-								? `${decimal(datos.personas.preguntas_por_persona)} preguntas por persona`
-								: `${numero(c.personas_nuevas)} por primera vez; ${decimal(datos.personas.preguntas_por_persona)} preguntas por persona`}
+								? `${cuantasDecimal(datos.personas.preguntas_por_persona, "pregunta", "preguntas")} por persona`
+								: `${numero(c.personas_nuevas)} por primera vez; ${cuantasDecimal(datos.personas.preguntas_por_persona, "pregunta", "preguntas")} por persona`}
 						</span>
 					</dd>
 				</div>
@@ -555,7 +555,10 @@ function Contenido({
 						}))}
 					/>
 					<p className="pnl-nota">
-						Suman {numero(datos.temas.reduce((s, t) => s + t.preguntas, 0))} preguntas.
+						{(() => {
+							const n = datos.temas.reduce((s, t) => s + t.preguntas, 0);
+							return `${n === 1 ? "Suma" : "Suman"} ${cuantas(n, "pregunta", "preguntas")}.`;
+						})()}
 					</p>
 					<VerComoTabla titulo="temas">
 						<table>
@@ -728,7 +731,7 @@ function Personas({ datos, dias }: { datos: Resumen; dias: number }) {
 		return (
 			<p>
 				En todo el tiempo {p.activas === 1 ? "preguntó" : "preguntaron"} {cuantas(p.activas, "persona", "personas")}, con{" "}
-				{decimal(p.preguntas_por_persona)} preguntas por persona en promedio.
+				{cuantasDecimal(p.preguntas_por_persona, "pregunta", "preguntas")} por persona en promedio.
 			</p>
 		);
 	}
@@ -760,7 +763,7 @@ function Personas({ datos, dias }: { datos: Resumen; dias: number }) {
 				</li>
 			</ul>
 			<p style={{ margin: 0 }}>
-				En promedio, {decimal(p.preguntas_por_persona)} preguntas por persona. La lista de cuentas
+				En promedio, {cuantasDecimal(p.preguntas_por_persona, "pregunta", "preguntas")} por persona. La lista de cuentas
 				está en <Link href="/admin/cuentas">Cuentas</Link>.
 			</p>
 		</>

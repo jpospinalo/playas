@@ -587,7 +587,7 @@ function FilaCuenta({ cuenta, onCambiada }: { cuenta: Cuenta; onCambiada: (c: Cu
 							<button type="button" className="pnl-btn" onClick={reasignar}>
 								Sí, reasignar
 							</button>
-							<button type="button" className="pnl-btn-sec" onClick={() => setPanel(null)}>
+							<button type="button" className="pnl-btn-sec" data-foco onClick={() => setPanel(null)}>
 								Cancelar
 							</button>
 						</div>
@@ -604,7 +604,7 @@ function FilaCuenta({ cuenta, onCambiada }: { cuenta: Cuenta; onCambiada: (c: Cu
 							<button type="button" className="pnl-btn" onClick={() => cambiarActiva(false)}>
 								Sí, desactivar
 							</button>
-							<button type="button" className="pnl-btn-sec" onClick={() => setPanel(null)}>
+							<button type="button" className="pnl-btn-sec" data-foco onClick={() => setPanel(null)}>
 								Cancelar
 							</button>
 						</div>

@@ -32,11 +32,17 @@
 	--p-esp-2: 8px;
 	--p-esp-3: 12px;
 	--p-esp-4: 16px;
-	--p-esp-5: 24px;
+	--p-esp-5: 20px;
 	--p-esp-6: 32px;
 	/* Texto → botón o bloque siguiente, y campo → botón. */
 	--p-esp-texto: var(--p-esp-4);
+	/* PQ-103: anillo de foco de 3 px a 1 px del borde (sale 4 px). Entre
+	   botones vecinos hay al menos --p-esp-2 (8 px) = anillo + 4 px. */
+	--p-foco: 3px;
+	--p-foco-sep: 1px;
 	--p-esp-campo: var(--p-esp-3);
+	/* PQ-106: entre tarjetas, siempre 20 px (a cualquier ancho). */
+	--p-esp-tarjetas: var(--p-esp-5);
 
 	/* Las páginas viejas de /admin (Tailwind) usan estos tokens: aquí toman la
 	   paleta B, en claro y en oscuro (PQ-J3). */
@@ -99,16 +105,16 @@
 	box-sizing: border-box;
 }
 .pnl :focus-visible {
-	outline: 4px solid var(--p-marino);
-	outline-offset: 3px;
+	outline: var(--p-foco) solid var(--p-marino);
+	outline-offset: var(--p-foco-sep);
 }
 /* J6-A4: en los campos el anillo va por dentro (no crece hacia afuera), así
    nunca toca ni tapa el botón de al lado ni cambia cómo se ve el espacio. */
 .pnl input:not([type="checkbox"], [type="radio"], [type="file"]):focus-visible,
 .pnl textarea:focus-visible,
 .pnl select:focus-visible {
-	outline: 3px solid var(--p-marino);
-	outline-offset: -3px;
+	outline: var(--p-foco) solid var(--p-marino);
+	outline-offset: calc(-1 * var(--p-foco));
 	border-color: var(--p-marino);
 }
 .pnl-pag a {
@@ -193,7 +199,7 @@
 .pnl-nav {
 	display: flex;
 	flex-wrap: nowrap;
-	gap: 4px;
+	gap: var(--p-esp-2);
 	margin: 0;
 	padding: 0;
 	list-style: none;
@@ -535,8 +541,8 @@
 .pnl-grid {
 	display: grid;
 	grid-template-columns: repeat(12, minmax(0, 1fr));
-	gap: 20px;
-	margin-bottom: 20px;
+	gap: var(--p-esp-tarjetas);
+	margin-bottom: var(--p-esp-tarjetas);
 }
 .pnl-bloque {
 	background: var(--p-papel);
@@ -544,7 +550,7 @@
 	border-radius: 6px;
 	padding: 20px 22px 22px;
 	min-width: 0;
-	margin-bottom: 20px;
+	margin-bottom: var(--p-esp-tarjetas);
 }
 .pnl-grid > .pnl-bloque {
 	margin-bottom: 0;
@@ -565,9 +571,11 @@
 	display: flex;
 	justify-content: space-between;
 	align-items: baseline;
-	gap: 8px 12px;
+	/* PQ-97: si el botón baja de línea (celular), queda a la misma distancia
+	   del texto que en todo el panel. */
+	gap: var(--p-esp-texto) var(--p-esp-3);
 	flex-wrap: wrap;
-	margin-bottom: 14px;
+	margin-bottom: var(--p-esp-texto);
 }
 .pnl-bloque-cab p {
 	margin: 2px 0 0;
@@ -930,7 +938,7 @@
 	margin-top: 10px;
 	display: flex;
 	flex-direction: column;
-	gap: 6px;
+	gap: var(--p-esp-2);
 }
 .pnl-msj-pie ul {
 	margin: 0;
@@ -939,7 +947,7 @@
 
 .pnl-pie {
 	color: var(--p-tinta-2);
-	margin: 28px 0 0;
+	margin: var(--p-esp-6) 0 0;
 	padding-top: 16px;
 	border-top: 3px solid var(--p-arena);
 }
@@ -1059,11 +1067,11 @@
 		padding: 16px 14px;
 	}
 	.pnl-grid {
-		gap: 14px;
-		margin-bottom: 14px;
+		gap: var(--p-esp-tarjetas);
+		margin-bottom: var(--p-esp-tarjetas);
 	}
 	.pnl-bloque {
-		margin-bottom: 14px;
+		margin-bottom: var(--p-esp-tarjetas);
 	}
 	.pnl-col b {
 		font-size: 16px;
@@ -1126,7 +1134,7 @@
 	display: flex;
 	flex-wrap: wrap;
 	gap: var(--p-esp-2) var(--p-esp-3);
-	margin-top: var(--p-esp-campo);
+	margin-top: var(--p-esp-texto);
 }
 
 /* Fechas de los extremos: nunca se salen del gráfico. */
@@ -1144,7 +1152,7 @@
 .pnl-chips-w {
 	display: flex;
 	align-items: baseline;
-	gap: 6px 12px;
+	gap: var(--p-esp-2) var(--p-esp-3);
 	flex-wrap: wrap;
 	margin-bottom: 8px;
 }
@@ -1392,7 +1400,7 @@
 	padding: 0;
 	display: grid;
 	grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-	gap: 12px;
+	gap: var(--p-esp-tarjetas);
 }
 .pnl-tarjetas-cred li {
 	border: 2px dashed var(--p-borde-ctl);
@@ -1716,7 +1724,7 @@ fieldset:disabled .pnl-opcion {
 .pnl-comparar {
 	display: grid;
 	grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-	gap: 14px;
+	gap: var(--p-esp-tarjetas);
 }
 .pnl-tarjeta-cal {
 	border: 2px solid var(--p-linea);
@@ -1892,7 +1900,7 @@ fieldset:disabled .pnl-opcion {
 
 /* ── Validación (reunión del 20-oct) ─────────────────────────────────────── */
 .pnl-eval-val {
-	margin-top: 12px;
+	margin-top: var(--p-esp-3);
 	padding: 12px 14px;
 	border: 1px solid var(--p-linea);
 	border-radius: 6px;
@@ -2032,7 +2040,7 @@ fieldset:disabled .pnl-opcion {
 	padding: 0;
 	display: grid;
 	grid-template-columns: repeat(4, minmax(0, 1fr));
-	gap: 12px;
+	gap: var(--p-esp-tarjetas);
 }
 .pnl-ganadores li {
 	padding: 12px 14px;
@@ -2260,4 +2268,10 @@ html:has(.pnl) {
 	.pnl .pnl-limpiar-oculto {
 		display: none;
 	}
+}
+
+/* PQ-97: regla única texto → botón (o enlace-botón) = --p-esp-texto (16 px),
+   también dentro de cada evaluación de Validar. */
+.pnl .pnl-eval-val > .pnl-acciones {
+	margin-top: var(--p-esp-texto);
 }
