@@ -10,26 +10,26 @@ Cobertura de campos, evidencia textual y similitud no prueban corrección juríd
 
 ## Entorno y dependencias
 
-Linux, Python3.12+, Tesseract con idioma español, Chroma y Ollama propios.
-El extra `offline` de `ingesta/pyproject.toml` agrega PyMuPDF1.26.5 y Chroma;
+Linux, Python 3.12+, Tesseract con idioma español, Chroma y Ollama propios.
+El extra `offline` de `ingesta/pyproject.toml` agrega PyMuPDF 1.26.5 y Chroma;
 el paquete ya declara `langchain-text-splitters`. La ruta histórica con Docling
 y enriquecimiento no se ejecuta por estos comandos.
 
 Para un entorno pequeño, sin instalar Docling/Torch del pipeline histórico:
 
 ```bash
-uv venv .offline-venv
+uv venv --python 3.12 .offline-venv
 uv pip install --python .offline-venv/bin/python \
   pymupdf==1.26.5 chromadb==1.3.5 langchain-text-splitters==1.1.1
 export PYTHONPATH="$PWD/ingesta"
 export OPENAI_API_KEY='' OPENROUTER_API_KEY='' GOOGLE_API_KEY='' GEMINI_API_KEY=''
 ```
 
-Chroma escucha en localhost8000 con persistencia propia; Ollama en11434.
+Chroma escucha en localhost:8000 con persistencia propia; Ollama en 11434.
 El modelo `embeddinggemma:latest` debe tener este digest exacto:
 `85462619ee721b466c5927d109d4cb765861907d5417b9109caebc4e614679f1`.
 Se comprueba por `/api/tags` antes de calcular vectores; un digest distinto
-aborta. Todos los vectores deben tener768componentes numéricos finitos.
+aborta. Todos los vectores deben tener 768 componentes numéricos finitos.
 
 ## Agregar y sincronizar
 
@@ -85,7 +85,7 @@ Los originales y extracciones NFC quedan en la caché por hash. Los artefactos
 páginas, mapa de offsets y chunks. Los offsets son puntos Unicode en la
 extracción NFC anterior a limpieza, fin exclusivo; no son offsets binarios PDF.
 
-PDF digital usa PyMuPDF. Solo páginas con menos de80caracteres no blancos pasan
+PDF digital usa PyMuPDF. Solo páginas con menos de 80 caracteres no blancos pasan
 a OCR Tesseract español local; se cachean por contenido/página/versión. Fallos
 de OCR aparecen explícitos, sin invocar un servicio externo. La limpieza elimina
 controles, compacta espacios y guiones de fin de línea, y detecta mobiliario
@@ -126,13 +126,13 @@ magistrado_ponente, ambito, municipio y normas_citadas.
 
 ## Variantes, calidad y publicación
 
-`legacy` conserva RecursiveCharacterTextSplitter de1000caracteres, solapamiento200
+`legacy` conserva RecursiveCharacterTextSplitter de 1.000 caracteres, solapamiento 200
 y separadores históricos, sobre el texto limpio del documento. No reproduce
 la concatenación histórica de las cuatro secciones silver: esta diferencia y
 el reemplazo de Docling por extracción local forman parte de la normalización.
 `structure` corta primero en artículos/encabezados jurídicos y usa presupuesto
 aproximado en tokens: ceil(bytes UTF-8/3). No es el tokenizer del modelo.
-El CLI usa1024por defecto en structure y512en legacy (legacy se limita por
+El CLI usa 1.024 por defecto en structure y 512 en legacy (legacy se limita por
 caracteres). `--token-budget` deja explícito el experimento. El header se descuenta
 del presupuesto estructural; se conserva el nombre de sección y los offsets.
 
@@ -163,7 +163,7 @@ reutilizar una colección con hash diferente.
 
 El snapshot exportado incluye manifiesto y checksums de registros/archivo.
 Vectores, cachés, manifiestos SQLite y snapshots generados no se versionan.
-`run_manifest.json` informa embeddings nuevos, llamadas LLM0 y CPU local por
+`run_manifest.json` informa embeddings nuevos, llamadas LLM 0 y CPU local por
 documento (incluido OCR hijo). CPU del servicio Ollama, local o remoto, no está
 incluida en ese contador Python/OCR; su latencia sí se mide. Una segunda corrida
-sin cambios debe producir0embeddings nuevos.
+sin cambios debe producir 0 embeddings nuevos.
