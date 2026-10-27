@@ -755,6 +755,13 @@ async def exportar(
             "Con diferencias pendientes del comité",
             sum(p.oficial.estado == "con_diferencias" for p in preguntas),
         ],
+        [],
+        # PQ-64: la planilla original usa COUNT/COUNTIF; aquí son cifras fijas.
+        [
+            "Cifras calculadas al exportar (no se actualizan si se editan filas): "
+            + datetime.now(pm.HORA_COLOMBIA).strftime("%Y-%m-%d %H:%M")
+            + " (hora de Colombia)"
+        ],
     ]
     datos = await _premios(session, preguntas)
     premios_hoja: list[list[object]] = [["Mejor pregunta del ejercicio (mayor Cv por nivel)"]]

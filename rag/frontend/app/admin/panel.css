@@ -1725,3 +1725,13 @@ fieldset:disabled .pnl-opcion {
 		flex: 1 1 140px;
 	}
 }
+
+/* PQ-51: instrucción en cada credencial impresa. */
+.pnl-cred-como {
+	margin: 10px 0 0;
+	font-size: 15px;
+	color: var(--p-tinta-2);
+}
+.pnl-cred-como b {
+	color: var(--p-tinta);
+}

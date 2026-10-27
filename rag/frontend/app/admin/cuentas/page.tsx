@@ -294,6 +294,8 @@ function CrearCuentas({ onCreadas }: { onCreadas: (c: Credencial[]) => void }) {
 }
 
 function Credenciales({ lista, onCerrar }: { lista: Credencial[]; onCerrar: () => void }) {
+	// Dirección pública de ATLAS (la misma del panel, sin /admin).
+	const direccionAtlas = typeof window === "undefined" ? "" : window.location.host;
 	return (
 		<section className="pnl-bloque pnl-credenciales" aria-labelledby="t-cred">
 			<div className="pnl-bloque-cab">
@@ -332,6 +334,10 @@ function Credenciales({ lista, onCerrar }: { lista: Credencial[]; onCerrar: () =
 								<dd className="pnl-clave">{c.clave}</dd>
 							</div>
 						</dl>
+						{/* PQ-51: la tarjeta dice dónde entrar y qué hacer. */}
+						<p className="pnl-cred-como">
+							Entre en <b>{direccionAtlas}</b>, escriba este correo y esta clave, y toque “Entrar”.
+						</p>
 					</li>
 				))}
 			</ol>

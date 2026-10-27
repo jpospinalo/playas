@@ -92,6 +92,13 @@ describe("leerLista — lista pegada para crear cuentas", () => {
 		]);
 	});
 
+	it("distingue un tipo inexistente de uno que falta (PQ-50)", () => {
+		const r = leerLista("QA Prueba; 7", "user");
+		expect(r.errores).toEqual([
+			"Renglón 1 (QA Prueba): el tipo «7» no existe; use 1 a 5 o su nombre (p. ej. Pescadores).",
+		]);
+	});
+
 	it("evaluadores llevan la sede y no piden tipo", () => {
 		const r = leerLista("Ana\nLuis", "evaluador", "Santa Marta");
 		expect(r.personas).toEqual([
@@ -118,6 +125,7 @@ describe("app/admin/cuentas", () => {
 		await userEvent.click(screen.getByRole("button", { name: "Crear cuentas" }));
 		expect(await screen.findByText("Credenciales para entregar")).toBeInTheDocument();
 		expect(screen.getByText("ola-1234-faro")).toBeInTheDocument();
+		expect(screen.getByText(/escriba este correo y esta clave/)).toBeInTheDocument();
 		const lote = llamadas.find((l) => l.url.endsWith("/lote"));
 		expect(JSON.parse(String(lote?.init?.body))).toEqual({
 			personas: [{ nombre: "María Pérez", rol: "user", tipo_playa: 2 }],

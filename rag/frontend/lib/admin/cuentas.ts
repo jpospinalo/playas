@@ -153,7 +153,12 @@ export function leerLista(
 							t.nombre.toLowerCase().startsWith(tipoCrudo.toLowerCase().slice(0, 5)) && tipoCrudo.length >= 4,
 						)?.id;
 			if (!tipo) {
-				errores.push(`Renglón ${i + 1} (${nombre}): falta el tipo de usuario de playa (1 a 5).`);
+				// PQ-50: no es lo mismo no escribir el tipo que escribir uno que no existe.
+				errores.push(
+					tipoCrudo
+						? `Renglón ${i + 1} (${nombre}): el tipo «${tipoCrudo}» no existe; use 1 a 5 o su nombre (p. ej. Pescadores).`
+						: `Renglón ${i + 1} (${nombre}): falta el tipo de usuario de playa (1 a 5).`,
+				);
 				return;
 			}
 			personas.push({ nombre, rol, tipo_playa: tipo, ...(orgCruda ? { organizacion: orgCruda } : {}) });
