@@ -1405,3 +1405,37 @@
 	gap: 10px;
 	align-content: start;
 }
+
+/* ── Ronda 4 de QA ───────────────────────────────────────────────────────── */
+/* PQ-42: antes de que las pestañas choquen con los botones, pasan a su propia
+   fila (probado a 1024, 1100, 1180 y 1280 px). */
+@media (max-width: 1360px) {
+	.pnl-nav-w {
+		order: 3;
+		flex-basis: 100%;
+	}
+	.pnl-nav {
+		flex-wrap: wrap;
+	}
+	.pnl-cab-acc {
+		margin-left: auto;
+	}
+}
+/* PQ-44: en celular "Modo oscuro" vuelve a la primera fila y "Volver a ATLAS"
+   pasa a la cuadrícula de pestañas. */
+.pnl-solo-cel {
+	display: none;
+}
+@media (max-width: 600px) {
+	.pnl .pnl-tema {
+		display: inline-flex;
+		min-height: 44px;
+		padding: 0 12px;
+	}
+	.pnl-cab-acc > a.pnl-btn-sec {
+		display: none;
+	}
+	.pnl-solo-cel {
+		display: block;
+	}
+}

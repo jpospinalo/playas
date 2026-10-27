@@ -148,6 +148,11 @@ async def _cargar_filas(session: AsyncSession, desde: datetime | None) -> list[_
                 previa.respuesta_id = mid
                 previa.resultado = pm.clasificar_respuesta(texto, sources)
                 previa.normas = pm.normas_citadas(sources)
+                # Si ATLAS la juzgó fuera del tema de playas (o era un saludo),
+                # no cuenta en un tema de playas aunque nombre un "restaurante"
+                # o un "hotel" (PQ-46).
+                if previa.resultado in (pm.FUERA_DE_TEMA, pm.SALUDO):
+                    previa.tema = pm.TEMA_OTROS
             previa = None
 
     por_respuesta = {f.respuesta_id: f for f in filas if f.respuesta_id}

@@ -75,7 +75,7 @@ export default function PaginaOpiniones() {
 			) : null}
 
 			{c ? (
-				<dl className="pnl-cifras pnl-cifras-3">
+				<dl className="pnl-cifras pnl-cifras-4">
 					<div className="pnl-cifra">
 						<dt>Opiniones</dt>
 						<dd>
@@ -97,6 +97,19 @@ export default function PaginaOpiniones() {
 						<dd>
 							<span className="pnl-valor num">{numero(c.no_le_sirvio)}</span>
 							<span className="pnl-det">{textoPorcentaje(c.no_le_sirvio, c.calificaciones)} de las opiniones</span>
+						</dd>
+					</div>
+					{/* Estrellas del chat del equipo con nota 3: así las tres partes suman el total (PQ-43). */}
+					<div className="pnl-cifra">
+						<dt>Le sirvió a medias</dt>
+						<dd>
+							<span className="pnl-valor num">
+								{numero(c.calificaciones - c.le_sirvio - c.no_le_sirvio)}
+							</span>
+							<span className="pnl-det">
+								{textoPorcentaje(c.calificaciones - c.le_sirvio - c.no_le_sirvio, c.calificaciones)} de
+								las opiniones
+							</span>
 						</dd>
 					</div>
 				</dl>

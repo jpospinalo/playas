@@ -23,11 +23,12 @@ const OPCIONES: { valor: FiltroEncuesta; texto: string }[] = [
 	{ valor: "con_comentario", texto: "Con comentario" },
 ];
 
+// Qué mide cada nota de la encuesta (1 = muy mal, 5 = muy bien), PQ-47.
 const DIMENSIONES = [
-	{ clave: "general", texto: "General" },
-	{ clave: "tono", texto: "Tono" },
-	{ clave: "largo", texto: "Largo" },
-	{ clave: "facilidad", texto: "Facilidad" },
+	{ clave: "general", texto: "General", mide: "Qué tan bien le fue en general" },
+	{ clave: "tono", texto: "Tono", mide: "Trato y lenguaje de la respuesta" },
+	{ clave: "largo", texto: "Largo", mide: "Si el largo de la respuesta fue el adecuado" },
+	{ clave: "facilidad", texto: "Facilidad", mide: "Qué tan fácil fue usar ATLAS" },
 ] as const;
 
 const POR_PAGINA = 10;
@@ -74,7 +75,10 @@ export default function PaginaEncuestas() {
 			<div className="pnl-cabeza">
 				<div>
 					<h1>Encuestas de satisfacción</h1>
-					<p className="pnl-sub">Lo que respondió cada persona al terminar una conversación.</p>
+					<p className="pnl-sub">
+						Lo que respondió cada persona al terminar una conversación. Cada nota va de 1 (muy mal) a 5 (muy
+						bien); arriba, el promedio del periodo.
+					</p>
 				</div>
 				<div className="pnl-controles">
 					<Periodo
@@ -110,7 +114,7 @@ export default function PaginaEncuestas() {
 									{total || filtro ? decimal(datos.promedios[d.clave]) : "—"}
 									<small>&nbsp;de 5</small>
 								</span>
-								<span className="pnl-det">Promedio del periodo</span>
+								<span className="pnl-det">{d.mide}</span>
 							</dd>
 						</div>
 					))}

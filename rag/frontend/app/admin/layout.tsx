@@ -122,6 +122,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 									</li>
 								);
 							})}
+							{/* En celular "Volver a ATLAS" va aquí (PQ-44). */}
+							<li className="pnl-solo-cel">
+								<Link href="/">Volver a ATLAS</Link>
+							</li>
 						</ul>
 					</nav>
 					<div className="pnl-cab-acc">

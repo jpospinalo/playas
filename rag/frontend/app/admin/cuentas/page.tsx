@@ -33,6 +33,7 @@ export default function PaginaCuentas() {
 	const [filtroRol, setFiltroRol] = useState<string>("");
 	const [filtroTipo, setFiltroTipo] = useState<string>("");
 	const [credenciales, setCredenciales] = useState<Credencial[]>([]);
+	const [pagina, setPagina] = useState(1);
 
 	useEffect(() => {
 		let vigente = true;
@@ -57,6 +58,11 @@ export default function PaginaCuentas() {
 			(!filtroRol || c.rol === filtroRol || (filtroRol === "admin" && c.rol === "super-admin")) &&
 			(!filtroTipo || c.tipo_playa === Number(filtroTipo)),
 	);
+	// 20 por página: con 80 participantes la lista entera era muy larga (PQ-45).
+	const POR_PAGINA = 20;
+	const ultimaPagina = Math.max(1, Math.ceil(visibles.length / POR_PAGINA));
+	const paginaActual = Math.min(pagina, ultimaPagina);
+	const enPagina = visibles.slice((paginaActual - 1) * POR_PAGINA, paginaActual * POR_PAGINA);
 
 	return (
 		<div className="pnl-pag">
@@ -90,7 +96,10 @@ export default function PaginaCuentas() {
 					<div className="pnl-controles">
 						<div className="pnl-campo">
 							<label htmlFor="f-rol">Rol</label>
-							<select id="f-rol" value={filtroRol} onChange={(e) => setFiltroRol(e.target.value)}>
+							<select id="f-rol" value={filtroRol} onChange={(e) => {
+									setFiltroRol(e.target.value);
+									setPagina(1);
+								}}>
 								<option value="">Todos</option>
 								{ROLES.map((r) => (
 									<option key={r.valor} value={r.valor}>
@@ -101,7 +110,10 @@ export default function PaginaCuentas() {
 						</div>
 						<div className="pnl-campo">
 							<label htmlFor="f-tipo">Tipo de usuario de playa</label>
-							<select id="f-tipo" value={filtroTipo} onChange={(e) => setFiltroTipo(e.target.value)}>
+							<select id="f-tipo" value={filtroTipo} onChange={(e) => {
+									setFiltroTipo(e.target.value);
+									setPagina(1);
+								}}>
 								<option value="">Todos</option>
 								{TIPOS_PLAYA.map((t) => (
 									<option key={t.id} value={t.id}>
@@ -134,7 +146,7 @@ export default function PaginaCuentas() {
 				) : null}
 				{visibles.length ? (
 					<ol className="pnl-filas" aria-label="Cuentas">
-						{visibles.map((c) => (
+						{enPagina.map((c) => (
 							<FilaCuenta
 								key={c.uid}
 								cuenta={c}
@@ -144,6 +156,33 @@ export default function PaginaCuentas() {
 							/>
 						))}
 					</ol>
+				) : null}
+				{visibles.length > POR_PAGINA ? (
+					<nav className="pnl-pagin" aria-label="Páginas de cuentas">
+						<span>
+							{numero((paginaActual - 1) * POR_PAGINA + 1)} a{" "}
+							{numero(Math.min(paginaActual * POR_PAGINA, visibles.length))} de {numero(visibles.length)}{" "}
+							cuentas
+						</span>
+						<div>
+							<button
+								type="button"
+								className="pnl-btn-sec"
+								disabled={paginaActual <= 1}
+								onClick={() => setPagina(paginaActual - 1)}
+							>
+								Anteriores
+							</button>
+							<button
+								type="button"
+								className="pnl-btn-sec"
+								disabled={paginaActual >= ultimaPagina}
+								onClick={() => setPagina(paginaActual + 1)}
+							>
+								Siguientes
+							</button>
+						</div>
+					</nav>
 				) : null}
 			</section>
 		</div>
