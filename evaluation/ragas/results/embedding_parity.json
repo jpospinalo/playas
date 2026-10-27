@@ -1,0 +1,23 @@
+{
+  "sample_n": 3,
+  "model": "embeddinggemma:latest",
+  "native_vs_legacy_cosine": 0.9999999999999998,
+  "samples": [
+    {
+      "source": "AP  Carlos Alberto Zúñiga Mejía y otros VS DIMAR y otros.md",
+      "raw_vs_snapshot_cosine": 0.8975274478053333,
+      "augmented_vs_snapshot_cosine": 0.9929163192635151
+    },
+    {
+      "source": "Por medio del cual se expide el Decreto Único Reglamentario del Sector Transporte.md",
+      "raw_vs_snapshot_cosine": 0.9181574236849638,
+      "augmented_vs_snapshot_cosine": 0.9959826450564739
+    },
+    {
+      "source": "TAA_2da_RD_2015_281_XXXX_VS_Dpto_Antioquia_Responsabilidad_Del_Estado.md",
+      "raw_vs_snapshot_cosine": 0.8351951230638125,
+      "augmented_vs_snapshot_cosine": 0.9999999999999996
+    }
+  ],
+  "llm_api_calls": 0
+}

@@ -1,0 +1,13 @@
+{
+  "schema": "legal-metadata-2",
+  "finished": true,
+  "remote_ollama_can_stop": true,
+  "completed": [
+    "v2b",
+    "v2a"
+  ],
+  "resumed_after_lab_reactivation": true,
+  "v2a_pid": 2208,
+  "v2b_pid": 2209,
+  "last_evaluated": "v2b"
+}

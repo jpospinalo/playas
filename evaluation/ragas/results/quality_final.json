@@ -1,0 +1,24 @@
+{
+  "v2a": {
+    "documents": 55,
+    "failed_gates": {
+      "schema": 0,
+      "identity": 11,
+      "characters": 0,
+      "ocr": 0,
+      "sections": 0,
+      "size": 0
+    }
+  },
+  "v2b": {
+    "documents": 55,
+    "failed_gates": {
+      "schema": 0,
+      "identity": 11,
+      "characters": 0,
+      "ocr": 0,
+      "sections": 0,
+      "size": 0
+    }
+  }
+}

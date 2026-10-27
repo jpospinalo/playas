@@ -1,0 +1,40 @@
+{
+  "utc": "2026-10-22T17:08:05.445083+00:00",
+  "schema": "legal-metadata-2",
+  "interruption": "lab/authorization failure; VM rebooted; original process CPU counters unavailable",
+  "states": {
+    "v2a": {
+      "published_documents": 8,
+      "doc_ids": [
+        "03e009c1602a465e493d6b9ddcd6983ba0a1e66f3a5f31cfa90312a16f2030dd",
+        "06139556e7f0112a6c7c06996b876f22310b6ae05ccb2c9e675339f5599be64d",
+        "0c26a7cb41434bb05dd6969ef5a31039e3de0904c64f2534e10e2e3862fe9ec4",
+        "10387c6fbe01c74ca9785658239f0883bb864d86890d2ea02b4ee7fc22cb8239",
+        "146a9127ede00a90c2d1e5cf80a31ebe8734e8e56a05b9192e1e1ab8b948f204",
+        "1c5b6f4ab37379e6e2286a45eec056647dbcf3a5fe08dfd335a5e730ae17f6b6",
+        "1d08315fb0c629010d1b755a1c29f43ee3703c61cdb569c346b246bef040a046",
+        "1d4aab7f474e7fbd2f071042d990fe781ea5eb74a1531d322bd610bc2114e35d"
+      ],
+      "sqlite_integrity": "ok",
+      "run_rows": 0
+    },
+    "v2b": {
+      "published_documents": 10,
+      "doc_ids": [
+        "03e009c1602a465e493d6b9ddcd6983ba0a1e66f3a5f31cfa90312a16f2030dd",
+        "06139556e7f0112a6c7c06996b876f22310b6ae05ccb2c9e675339f5599be64d",
+        "0c26a7cb41434bb05dd6969ef5a31039e3de0904c64f2534e10e2e3862fe9ec4",
+        "10387c6fbe01c74ca9785658239f0883bb864d86890d2ea02b4ee7fc22cb8239",
+        "146a9127ede00a90c2d1e5cf80a31ebe8734e8e56a05b9192e1e1ab8b948f204",
+        "1c5b6f4ab37379e6e2286a45eec056647dbcf3a5fe08dfd335a5e730ae17f6b6",
+        "1d08315fb0c629010d1b755a1c29f43ee3703c61cdb569c346b246bef040a046",
+        "1d4aab7f474e7fbd2f071042d990fe781ea5eb74a1531d322bd610bc2114e35d",
+        "2dc9684da826f4ca3dccdd7d5ef2bc41852eb2f4f5cef750c4666a2c4717d9e5",
+        "2f4215147caaf2c5bc851eea326f65aa52a3e6a7712ff0725c1f72b6594b9245"
+      ],
+      "sqlite_integrity": "ok",
+      "run_rows": 0
+    }
+  },
+  "persisted_cache_vectors_before_resume": 8951
+}

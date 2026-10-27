@@ -1,0 +1,13 @@
+{
+  "local_digest": "85462619ee721b466c5927d109d4cb765861907d5417b9109caebc4e614679f1",
+  "local_version": "0.40.8",
+  "remote_version": "0.40.8",
+  "sample_n": 3,
+  "cosines": [
+    1.0,
+    1.0,
+    1.0
+  ],
+  "accepted": true,
+  "llm_api_calls": 0
+}

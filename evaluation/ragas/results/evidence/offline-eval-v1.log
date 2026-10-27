@@ -1,0 +1,4 @@
+/home/ubuntu/atlas-ingesta/evaluation/ragas/run_level0.py:101: DeprecationWarning: Importing NonLLMContextPrecisionWithReference from 'ragas.metrics' is deprecated and will be removed in v1.0. Please use 'ragas.metrics.collections' instead. Example: from ragas.metrics.collections import NonLLMContextPrecisionWithReference
+  from ragas.metrics import NonLLMContextPrecisionWithReference, NonLLMContextRecall
+/home/ubuntu/atlas-ingesta/evaluation/ragas/run_level0.py:101: DeprecationWarning: Importing NonLLMContextRecall from 'ragas.metrics' is deprecated and will be removed in v1.0. Please use 'ragas.metrics.collections' instead. Example: from ragas.metrics.collections import NonLLMContextRecall
+  from ragas.metrics import NonLLMContextPrecisionWithReference, NonLLMContextRecall

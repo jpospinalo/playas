@@ -1,0 +1,32 @@
+{
+  "selected": "v2a",
+  "means": {
+    "v1": {
+      "document_hit_at_k": 0.75,
+      "document_mrr_at_k": 0.7208333333333333,
+      "passage_hit_at_k": 0.1,
+      "passage_mrr_at_k": 0.07083333333333333,
+      "document_recall_at_k": 0.7125,
+      "nonllm_context_recall": 0.025,
+      "nonllm_context_precision": 0.0083333333325
+    },
+    "v2a": {
+      "document_hit_at_k": 0.55,
+      "document_mrr_at_k": 0.46041666666666664,
+      "passage_hit_at_k": 0.2,
+      "passage_mrr_at_k": 0.18125,
+      "document_recall_at_k": 0.525,
+      "nonllm_context_recall": 0.0,
+      "nonllm_context_precision": 0.0
+    },
+    "v2b": {
+      "document_hit_at_k": 0.475,
+      "document_mrr_at_k": 0.3854166666666667,
+      "passage_hit_at_k": 0.25,
+      "passage_mrr_at_k": 0.20416666666666666,
+      "document_recall_at_k": 0.45,
+      "nonllm_context_recall": 0.0,
+      "nonllm_context_precision": 0.0
+    }
+  }
+}

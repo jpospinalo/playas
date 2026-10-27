@@ -1,0 +1,14 @@
+{
+  "v2a": {
+    "records": 5281,
+    "dimension": 768,
+    "all_finite": true,
+    "export_checksums_verified": true
+  },
+  "v2b": {
+    "records": 2366,
+    "dimension": 768,
+    "all_finite": true,
+    "export_checksums_verified": true
+  }
+}

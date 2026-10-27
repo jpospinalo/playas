@@ -1,0 +1,8 @@
+{
+  "file": "ingesta-offline-checkpoint.tar.gz",
+  "bytes": 219587160,
+  "gzip_crc_verified": true,
+  "required_states_exports_present": true,
+  "files": 725,
+  "not_for_git": true
+}

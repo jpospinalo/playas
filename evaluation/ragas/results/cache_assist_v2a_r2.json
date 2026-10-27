@@ -1,0 +1,49 @@
+{
+  "purpose": "cache for v2a_r2 only; no collection writes",
+  "llm_api_calls": 0,
+  "documents": [
+    {
+      "doc_id": "f898b193a5d79170d179ee4e43388eae478815894e46add8d911ab833439c166",
+      "source": "jurisprudencia/CE_2da_NYR_2009_164_FEPEP_VS_DIMAR_Playa_Uso_Urbanistico.pdf",
+      "new_embeddings": 0,
+      "cpu_seconds_local": 4.528072945
+    },
+    {
+      "doc_id": "e820f079f4ad0777151ed4b7673f096edbca8547b84047868a9e34d93857778c",
+      "source": "normativa/Por el cual se reglamentan las Unidades Ambientales Costeras - UAC- y las comisiones conjuntas, se establecen las reglas de procedimiento y criterios para reglamentar la restricción de ciertas actividades en.pdf",
+      "new_embeddings": 7,
+      "cpu_seconds_local": 0.4208598290000003
+    },
+    {
+      "doc_id": "e495d6d7e97dee0d0f0a4fe139ac8a530d61046bfd904bd4511d917b78ed5081",
+      "source": "normativa/decreto-2324-de-1984.md",
+      "new_embeddings": 154,
+      "cpu_seconds_local": 4.729030112
+    },
+    {
+      "doc_id": "e3b99341f41a6e1c5080be22fcf10f8ba1d98e5495c78ca0eabefc79703bd0f7",
+      "source": "normativa/Por medio del cual se reglamenta el uso, zonificación y horario de las playas con vocación turística del Distrito Turístico, Cultural e Histórico de Santa Marta, aptas para la realización de activiades de aprovech.pdf",
+      "new_embeddings": 78,
+      "cpu_seconds_local": 2.2672215450000017
+    },
+    {
+      "doc_id": "d85a4046092c00bab319adfdfd52e28e6db92d883378dbfbe3c4dec7a4efb217",
+      "source": "normativa/Por el cual se reglamenta el servicio público de transporte marítimo.pdf",
+      "new_embeddings": 13,
+      "cpu_seconds_local": 0.4468164140000006
+    }
+  ],
+  "finished": true,
+  "embeddings": {
+    "model": "embeddinggemma:latest",
+    "digest": "85462619ee721b466c5927d109d4cb765861907d5417b9109caebc4e614679f1",
+    "dimension": 768,
+    "cache_checksum": "6ecef534ecdc160216841f800806c921b858287b3fa322569b3ecd2eb199e06f",
+    "new_embeddings": 252,
+    "embedding_batch_calls": 17,
+    "embedding_seconds": 277.96247220500027,
+    "seconds_per_new_chunk": 1.1030256833531757,
+    "llm_api_calls": 0
+  },
+  "seconds": 290.8973676169999
+}

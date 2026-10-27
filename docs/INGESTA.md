@@ -130,6 +130,13 @@ magistrado_ponente, ambito, municipio y normas_citadas.
 
 ## Variantes, calidad y publicación
 
+El experimento corregido usa `legal-metadata-2` y colecciones físicas
+`v2a_r2`/`v2b_r2`. Las colecciones `v2a`/`v2b` del primer prototipo conservan
+el esquema anterior; no reutilizar sus estados con el código corregido.
+Los ejemplos de esta guía requieren nombres y estados nuevos si ya existen
+colecciones con otra versión. La comparación completa está en
+`docs/COMPARACION_INGESTA.md`, mantenida sin commit.
+
 `legacy` conserva RecursiveCharacterTextSplitter de 1.000 caracteres, solapamiento 200
 y separadores históricos, sobre el texto limpio del documento. No reproduce
 la concatenación histórica de las cuatro secciones silver: esta diferencia y

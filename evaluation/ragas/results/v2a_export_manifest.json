@@ -1,0 +1,19 @@
+{
+  "configuration": {
+    "pipeline": "offline-1",
+    "normalizer": "nfc-mapped-1",
+    "extractor": "pymupdf-tesseract-spa-1",
+    "schema": "legal-metadata-2",
+    "chunker": "legacy",
+    "chunker_version": "legal-spans-1",
+    "token_budget": 512,
+    "legacy_size": 1000,
+    "legacy_overlap": 200,
+    "model": "embeddinggemma:latest",
+    "digest": "85462619ee721b466c5927d109d4cb765861907d5417b9109caebc4e614679f1",
+    "dimension": 768
+  },
+  "records": 5281,
+  "records_sha256": "c7f1cb7afaf39d86da59ccdbc884edbdc99be34891b6a65c38157aea7e0d2cec",
+  "compressed_sha256": "2ee27c25c5e27877392275e9607d11f4ce25a06fcbb06353459d74c096580533"
+}

@@ -1,0 +1,22 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.1.0, pluggy-1.6.0
+rootdir: /home/ubuntu/atlas-ingesta/rag
+configfile: pyproject.toml
+plugins: anyio-4.14.0, langsmith-0.8.16, cov-7.1.0
+collected 5 items
+
+tests/unit/test_level0_offline.py .....                                  [100%]
+
+=============================== warnings summary ===============================
+tests/unit/test_level0_offline.py:8
+tests/unit/test_level0_offline.py:8
+  /home/ubuntu/atlas-ingesta/rag/tests/unit/test_level0_offline.py:8: DeprecationWarning: Importing NonLLMContextPrecisionWithReference from 'ragas.metrics' is deprecated and will be removed in v1.0. Please use 'ragas.metrics.collections' instead. Example: from ragas.metrics.collections import NonLLMContextPrecisionWithReference
+    from ragas.metrics import NonLLMContextPrecisionWithReference, NonLLMContextRecall
+
+tests/unit/test_level0_offline.py:8
+tests/unit/test_level0_offline.py:8
+  /home/ubuntu/atlas-ingesta/rag/tests/unit/test_level0_offline.py:8: DeprecationWarning: Importing NonLLMContextRecall from 'ragas.metrics' is deprecated and will be removed in v1.0. Please use 'ragas.metrics.collections' instead. Example: from ragas.metrics.collections import NonLLMContextRecall
+    from ragas.metrics import NonLLMContextPrecisionWithReference, NonLLMContextRecall
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================== 5 passed, 4 warnings in 3.60s =========================

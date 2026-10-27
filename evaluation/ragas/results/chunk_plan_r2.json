@@ -1,0 +1,454 @@
+{
+  "documents": [
+    {
+      "source": "jurisprudencia/AP  Carlos Alberto Zúñiga Mejía y otros VS DIMAR y otros.pdf",
+      "doc_id": "cdf6172fabdb42477c25d374d7d42b3a6e91d31c4ec553e85d056036f82c47b3",
+      "original_chars": 89649,
+      "ocr_pages": 0,
+      "v2a_chunks": 109,
+      "v2b_chunks": 33
+    },
+    {
+      "source": "jurisprudencia/AP Felipe José Campo Fernández VS Corpamag y otros.pdf",
+      "doc_id": "4c2617061848464576823dfea2e8f11220664e4c719d56535682951e939be983",
+      "original_chars": 161072,
+      "ocr_pages": 0,
+      "v2a_chunks": 205,
+      "v2b_chunks": 61
+    },
+    {
+      "source": "jurisprudencia/AP Gabriel Antonio Carrero VS DIMAR y otros.pdf",
+      "doc_id": "4a24d93603bf282965fbbc7154672fc8a938015f5ece90acf6f036504c6dc565",
+      "original_chars": 100872,
+      "ocr_pages": 0,
+      "v2a_chunks": 112,
+      "v2b_chunks": 38
+    },
+    {
+      "source": "jurisprudencia/AP Gerardo Antenor Lemus Orozco VS Distrito de Santa Mata y otros.pdf",
+      "doc_id": "39b9b682861845800f858579e6523aea2663612a56837b3c4811476681be0c3d",
+      "original_chars": 109597,
+      "ocr_pages": 0,
+      "v2a_chunks": 126,
+      "v2b_chunks": 40
+    },
+    {
+      "source": "jurisprudencia/AP Gieseken Cuello & Cía. S. en C. VS DIMAR y otros.pdf",
+      "doc_id": "cd99d30acb8bc912f968336f0cdafc93e14ce224449f4b9e86023ba7ffd3d247",
+      "original_chars": 131326,
+      "ocr_pages": 0,
+      "v2a_chunks": 151,
+      "v2b_chunks": 50
+    },
+    {
+      "source": "jurisprudencia/AP Inversiones E y D S.A.S VS DIMAR y otros.pdf",
+      "doc_id": "8767ea352084c54abe68cb6ea25d200f2eb63455937766dff9bef56dca3a2356",
+      "original_chars": 87497,
+      "ocr_pages": 33,
+      "v2a_chunks": 113,
+      "v2b_chunks": 39
+    },
+    {
+      "source": "jurisprudencia/AP Miguel Ángel Enciso VS Distrito y otros.pdf",
+      "doc_id": "873661fbf4b7aa77cfcf3ed3cfb8c95fcc63b7181c3dfe3cfcc9fed6168e87b6",
+      "original_chars": 65693,
+      "ocr_pages": 29,
+      "v2a_chunks": 89,
+      "v2b_chunks": 34
+    },
+    {
+      "source": "jurisprudencia/AP PROCURADURÍA GENERAL DE LA ANCIÓN VS COORPAMAG Y OTROS.pdf",
+      "doc_id": "4f08704b7c76bd2a6792cdc5743162aec1742a18f69dbb4a4125197147d71b73",
+      "original_chars": 263648,
+      "ocr_pages": 0,
+      "v2a_chunks": 324,
+      "v2b_chunks": 99
+    },
+    {
+      "source": "jurisprudencia/AP Rodrigo Martínez Silva VS Minambiente y otros.pdf",
+      "doc_id": "0c26a7cb41434bb05dd6969ef5a31039e3de0904c64f2534e10e2e3862fe9ec4",
+      "original_chars": 227122,
+      "ocr_pages": 81,
+      "v2a_chunks": 300,
+      "v2b_chunks": 93
+    },
+    {
+      "source": "jurisprudencia/CC_TU_039_2024_Modesto_Manjarrez_VS_Autopistas_Del_Caribe_Consulta_Previa_Via.pdf",
+      "doc_id": "a3aa6bf5f1893ed3609be73db110297401aaa6eaeb93e3deccb3b101ae82c628",
+      "original_chars": 356224,
+      "ocr_pages": 1,
+      "v2a_chunks": 512,
+      "v2b_chunks": 157
+    },
+    {
+      "source": "jurisprudencia/CE_1era_NS_2009_603_Jose_Palencia_VS_MinDefensa_Resolución_Pilotos_Embargaciones.pdf",
+      "doc_id": "98cdaeff3860fa527d4e605b11567ed38c8af17d150cd14d9a3a81a59782e4e9",
+      "original_chars": 68474,
+      "ocr_pages": 0,
+      "v2a_chunks": 80,
+      "v2b_chunks": 33
+    },
+    {
+      "source": "jurisprudencia/CE_2da_AP_2010_028_Radley_Bent_VS_Dimar_Daños_Ambientales_Embarcaciones.pdf",
+      "doc_id": "03e009c1602a465e493d6b9ddcd6983ba0a1e66f3a5f31cfa90312a16f2030dd",
+      "original_chars": 70112,
+      "ocr_pages": 0,
+      "v2a_chunks": 87,
+      "v2b_chunks": 28
+    },
+    {
+      "source": "jurisprudencia/CE_2da_AP_2011_178_Jose_Caballero_VS_Distrito_Cartagena_Venta_Inmueble_Valor_Cultural.pdf",
+      "doc_id": "735e943c4c638ee8fca44d35fbd3179f1ddb47368e3ef68eeb02f3736070e360",
+      "original_chars": 128764,
+      "ocr_pages": 0,
+      "v2a_chunks": 145,
+      "v2b_chunks": 52
+    },
+    {
+      "source": "jurisprudencia/CE_2da_AP_2011_842_Gabriel_Carrero_VS_Dimar_Erosión_Costera.pdf",
+      "doc_id": "376195b011c3f52d6176617a8175b3de9d507ea6d26cc99b7a74a0517b7d562e",
+      "original_chars": 221518,
+      "ocr_pages": 0,
+      "v2a_chunks": 262,
+      "v2b_chunks": 85
+    },
+    {
+      "source": "jurisprudencia/CE_2da_AP_2015_550_Angela_Muñoz_VS_Dpto_Cordoba_Bienes_De_Uso_Publico.pdf",
+      "doc_id": "1d08315fb0c629010d1b755a1c29f43ee3703c61cdb569c346b246bef040a046",
+      "original_chars": 91756,
+      "ocr_pages": 0,
+      "v2a_chunks": 116,
+      "v2b_chunks": 33
+    },
+    {
+      "source": "jurisprudencia/CE_2da_AP_2016_328_Ricardo_Cabrales_VS_Mun_Coveñas_Playa_Uso_Publico.pdf",
+      "doc_id": "665747b6f8e03a7e9473fc5bb2e29f5c4d8a11f25564b9292f89070c666d23d2",
+      "original_chars": 89788,
+      "ocr_pages": 0,
+      "v2a_chunks": 113,
+      "v2b_chunks": 36
+    },
+    {
+      "source": "jurisprudencia/CE_2da_AP_2017_103_Personeria_VS_Distrito_Cartagena_Desembocadura.pdf",
+      "doc_id": "44967f498aeb586b9adbb2e95be0319e3f78cbc4cabfae4f3f39ed735dfcc705",
+      "original_chars": 100797,
+      "ocr_pages": 0,
+      "v2a_chunks": 109,
+      "v2b_chunks": 34
+    },
+    {
+      "source": "jurisprudencia/CE_2da_AP_2021_041_Edgar_Stephengs_VS_Archipielago_San_Andres_Desarrollo_Urbanistico.pdf",
+      "doc_id": "2f4215147caaf2c5bc851eea326f65aa52a3e6a7712ff0725c1f72b6594b9245",
+      "original_chars": 157601,
+      "ocr_pages": 0,
+      "v2a_chunks": 202,
+      "v2b_chunks": 65
+    },
+    {
+      "source": "jurisprudencia/CE_2da_NYR_1994_993_Inversiones_Araujo_VS_Capitania_Puerto_Cartagena_Urbanismo_Playa.pdf",
+      "doc_id": "889ce44641f6624c2b4084fe611e3de358b87957b8572d9224ae489260d379e8",
+      "original_chars": 43367,
+      "ocr_pages": 1,
+      "v2a_chunks": 55,
+      "v2b_chunks": 21
+    },
+    {
+      "source": "jurisprudencia/CE_2da_NYR_1998_102_Flury_Valencia_VS_MinDefensa_Uso_Urbanistico_Playa.pdf",
+      "doc_id": "70fc0abaf0d1de720c0b38bba58fb6a252e3ec8b75ec325d5865877a431100ea",
+      "original_chars": 48891,
+      "ocr_pages": 0,
+      "v2a_chunks": 63,
+      "v2b_chunks": 30
+    },
+    {
+      "source": "jurisprudencia/CE_2da_NYR_1999_503_Inversiones_Mercedes_VS_Dimar_Concesiones_Uso_Playa.pdf",
+      "doc_id": "10387c6fbe01c74ca9785658239f0883bb864d86890d2ea02b4ee7fc22cb8239",
+      "original_chars": 25984,
+      "ocr_pages": 0,
+      "v2a_chunks": 30,
+      "v2b_chunks": 11
+    },
+    {
+      "source": "jurisprudencia/CE_2da_NYR_2009_164_FEPEP_VS_DIMAR_Playa_Uso_Urbanistico.pdf",
+      "doc_id": "f898b193a5d79170d179ee4e43388eae478815894e46add8d911ab833439c166",
+      "original_chars": 116562,
+      "ocr_pages": 0,
+      "v2a_chunks": 145,
+      "v2b_chunks": 62
+    },
+    {
+      "source": "jurisprudencia/CE_Consulta_1990_Horacio_Serpa_Uso_Publico_Playa.pdf",
+      "doc_id": "3d138b060f20e0fb31e72912f89e8dfa6061935106799ceb74cf9231d2741bb7",
+      "original_chars": 27285,
+      "ocr_pages": 0,
+      "v2a_chunks": 38,
+      "v2b_chunks": 16
+    },
+    {
+      "source": "jurisprudencia/CE_Consulta_2005_168_MinDefensa_Bienes_De_Uso_Publico.pdf",
+      "doc_id": "c4e2a931403664039099bcad9c955e6e18414b0656c97834cfce58f763aa474e",
+      "original_chars": 134024,
+      "ocr_pages": 0,
+      "v2a_chunks": 185,
+      "v2b_chunks": 74
+    },
+    {
+      "source": "jurisprudencia/CE_Consulta_2010_071_MinAmbiente_Bienes_De_Uso_Publico.pdf",
+      "doc_id": "cfe17c3386aef4bb01dfe4a91a6026a6b1be31e97c38d38f02651a2fbb51f41a",
+      "original_chars": 85444,
+      "ocr_pages": 31,
+      "v2a_chunks": 115,
+      "v2b_chunks": 37
+    },
+    {
+      "source": "jurisprudencia/SENTENCIA DE SEGUNDA INSTANCIA 47001-2332-000-2011-08425-02- GABRIEL CARRERO.pdf",
+      "doc_id": "376195b011c3f52d6176617a8175b3de9d507ea6d26cc99b7a74a0517b7d562e",
+      "original_chars": 221518,
+      "ocr_pages": 0,
+      "v2a_chunks": 262,
+      "v2b_chunks": 85
+    },
+    {
+      "source": "jurisprudencia/TAA_2da_RD_2015_281_XXXX_VS_Dpto_Antioquia_Responsabilidad_Del_Estado.pdf",
+      "doc_id": "cfc6780cb3add10595e8d852b8537179cc4a5c22baeddfabe40833d19c3164fe",
+      "original_chars": 100502,
+      "ocr_pages": 0,
+      "v2a_chunks": 117,
+      "v2b_chunks": 40
+    },
+    {
+      "source": "normativa/Por el cual adiciona al Título 4 de la Parte 2 del Libro 2 del Decreto 1076 de 2015, un Capítulo 3 en el que se establece el Plan de Ordenación y Manejo Integrado de la Unidad Ambiental Costera -POMIUAC- Caribe In.pdf",
+      "doc_id": "7f8cacb216710ec6501d5f2a52189de565ed8f8fa46ee1dc3abc9e16dd3d6aec",
+      "original_chars": 20974,
+      "ocr_pages": 0,
+      "v2a_chunks": 25,
+      "v2b_chunks": 16
+    },
+    {
+      "source": "normativa/Por el cual se aprueba el ajuste y la modificación a la planta de personal de Empleados Públicos del Ministerio de Defensa Nacional - Dirección General Marítima y se dictan otras disposiciones.pdf",
+      "doc_id": "cb344ef6d28447d882e669618da06f06bd5a8271a4e3079845c69ac32ef8435b",
+      "original_chars": 13542,
+      "ocr_pages": 0,
+      "v2a_chunks": 12,
+      "v2b_chunks": 11
+    },
+    {
+      "source": "normativa/Por el cual se dicta el Código Nacional de Recursos Naturales Renovables y de Protección al Medio Ambiente.pdf",
+      "doc_id": "a8cb22ceba9c6745038ad499cc33c6c3bc4084de768f1f2aedb8b12bb73a01a0",
+      "original_chars": 20097,
+      "ocr_pages": 6,
+      "v2a_chunks": 25,
+      "v2b_chunks": 58
+    },
+    {
+      "source": "normativa/Por el cual se dictan normas para simplificar, suprimir y reformar trámites, procesos y procedimientos innecesarios existentes en la administración pública.pdf",
+      "doc_id": "a22960ee6affae1f8c416fa02006d3a9bbf76d2c1fc572f4bbd483aa7bafe178",
+      "original_chars": 12603,
+      "ocr_pages": 3,
+      "v2a_chunks": 15,
+      "v2b_chunks": 11
+    },
+    {
+      "source": "normativa/Por el cual se dictan normas sobre la prevención de la contaminación del medio marino y otras disposiciones.pdf",
+      "doc_id": "806bf6ddda0b606454dcca3d24ef9cdd2401770e218fcd30690b6952c59bd9b5",
+      "original_chars": 9615,
+      "ocr_pages": 0,
+      "v2a_chunks": 12,
+      "v2b_chunks": 16
+    },
+    {
+      "source": "normativa/Por el cual se expide el Código de Comercio.pdf",
+      "doc_id": "726fdd46244b72e04926a8780f3d7261610b1a25baa95369f0cae1925bf85f10",
+      "original_chars": 5861,
+      "ocr_pages": 3,
+      "v2a_chunks": 8,
+      "v2b_chunks": 12
+    },
+    {
+      "source": "normativa/Por el cual se modifica el artículo 16 del Decreto 3888 del 10 de octubre de 2007.pdf",
+      "doc_id": "9cd38a2e2d8a4885fa6635e500ec6dc3d196d992edcad7cb7be479d7d7baa8a3",
+      "original_chars": 1349,
+      "ocr_pages": 0,
+      "v2a_chunks": 2,
+      "v2b_chunks": 3
+    },
+    {
+      "source": "normativa/Por el cual se reglamenta el funcionamiento de los Comités Locales para la  organización de las Playas de que trata el artículo 12 de la Ley 1558 de 2012.pdf",
+      "doc_id": "86f2865bf61ce17a92c24de51dd5ef8787972a44c634ff071929e4101c2e94f8",
+      "original_chars": 15538,
+      "ocr_pages": 0,
+      "v2a_chunks": 19,
+      "v2b_chunks": 13
+    },
+    {
+      "source": "normativa/Por el cual se reglamenta el funcionamiento de los comités locales para la organización de las playas.pdf",
+      "doc_id": "896646ecc76401dc95ace08f8e586bd98d368dafdfa9287ad88213cfefcc9f8f",
+      "original_chars": 13754,
+      "ocr_pages": 0,
+      "v2a_chunks": 17,
+      "v2b_chunks": 13
+    },
+    {
+      "source": "normativa/Por el cual se reglamenta el manejo del espacio público en los planes de ordenamiento territorial.pdf",
+      "doc_id": "907021edf55bd5334a992546b582985b1a606986cde94d860e4567d1bc971795",
+      "original_chars": 10015,
+      "ocr_pages": 3,
+      "v2a_chunks": 12,
+      "v2b_chunks": 11
+    },
+    {
+      "source": "normativa/Por el cual se reglamenta el servicio público de transporte marítimo.pdf",
+      "doc_id": "d85a4046092c00bab319adfdfd52e28e6db92d883378dbfbe3c4dec7a4efb217",
+      "original_chars": 10206,
+      "ocr_pages": 0,
+      "v2a_chunks": 13,
+      "v2b_chunks": 9
+    },
+    {
+      "source": "normativa/Por el cual se reglamenta la Ley 13 de 1990.pdf",
+      "doc_id": "2dc9684da826f4ca3dccdd7d5ef2bc41852eb2f4f5cef750c4666a2c4717d9e5",
+      "original_chars": 9784,
+      "ocr_pages": 0,
+      "v2a_chunks": 14,
+      "v2b_chunks": 18
+    },
+    {
+      "source": "normativa/Por el cual se reglamenta la habilitación y la prestación del servicio público de transporte fluvial.pdf",
+      "doc_id": "ca6c92bddb4dd5675a81bdb934b895269480b374521dff64543ba40920109f6d",
+      "original_chars": 6673,
+      "ocr_pages": 0,
+      "v2a_chunks": 8,
+      "v2b_chunks": 9
+    },
+    {
+      "source": "normativa/Por el cual se reglamenta parcialmente el artículo noveno de la Ley 10 de 1978..pdf",
+      "doc_id": "4b3572e33fe75767dbc23d20ccaae73bb0df23e4a09fbfa49554b433be28ae3f",
+      "original_chars": 7542,
+      "ocr_pages": 0,
+      "v2a_chunks": 6,
+      "v2b_chunks": 4
+    },
+    {
+      "source": "normativa/Por el cual se reglamenta parcialmente la Ley 47 del 19 de febrero de 1993.pdf",
+      "doc_id": "6c078770b277a7baa7dd78be5beb650cff6441c751dbe3a43f16a8b4e4750384",
+      "original_chars": 3133,
+      "ocr_pages": 0,
+      "v2a_chunks": 4,
+      "v2b_chunks": 7
+    },
+    {
+      "source": "normativa/Por el cual se reglamentan las Unidades Ambientales Costeras - UAC- y las comisiones conjuntas, se establecen las reglas de procedimiento y criterios para reglamentar la restricción de ciertas actividades en.pdf",
+      "doc_id": "e820f079f4ad0777151ed4b7673f096edbca8547b84047868a9e34d93857778c",
+      "original_chars": 5224,
+      "ocr_pages": 2,
+      "v2a_chunks": 7,
+      "v2b_chunks": 3
+    },
+    {
+      "source": "normativa/Por el cual se reglamentan las disposiciones sobre licencias urbanísticas, reconocimiento de edificaciones y legalización de asentamientos humanos.pdf",
+      "doc_id": "1c5b6f4ab37379e6e2286a45eec056647dbcf3a5fe08dfd335a5e730ae17f6b6",
+      "original_chars": 11129,
+      "ocr_pages": 2,
+      "v2a_chunks": 14,
+      "v2b_chunks": 10
+    },
+    {
+      "source": "normativa/Por el cual se reorganiza la Dirección General Marítima y Portuaria.pdf",
+      "doc_id": "c2fb5502b786e7c075916676b17f3ab5bd4ca29c1107a33d0787390bcd25ca27",
+      "original_chars": 15534,
+      "ocr_pages": 0,
+      "v2a_chunks": 20,
+      "v2b_chunks": 23
+    },
+    {
+      "source": "normativa/Por medio de la cual se reglamenta el área de playa en el Balneario Turístico El Rodadero.pdf",
+      "doc_id": "a0bf9588ade80b79915f69983aa64f610a540a73fd0b19e3ab41dd00d062ee32",
+      "original_chars": 17346,
+      "ocr_pages": 7,
+      "v2a_chunks": 23,
+      "v2b_chunks": 25
+    },
+    {
+      "source": "normativa/Por medio del cual se expide el Decreto Único Reglamentario del Sector Ambiente y Desarrollo Sostenible.pdf",
+      "doc_id": "78af35fecb0ae3068733a39e72a9bc633becff8cf34848c23ac2d9485ab92b2a",
+      "original_chars": 33969,
+      "ocr_pages": 8,
+      "v2a_chunks": 43,
+      "v2b_chunks": 31
+    },
+    {
+      "source": "normativa/Por medio del cual se expide el Decreto Único Reglamentario del Sector Comercio, Industria y Turismo.pdf",
+      "doc_id": "bb879704f4a16df1d7111533b76ed25f0967c51dc7f21530d753071365fa8ed8",
+      "original_chars": 26834,
+      "ocr_pages": 5,
+      "v2a_chunks": 37,
+      "v2b_chunks": 20
+    },
+    {
+      "source": "normativa/Por medio del cual se expide el Decreto Único Reglamentario del Sector Transporte.pdf",
+      "doc_id": "1d4aab7f474e7fbd2f071042d990fe781ea5eb74a1531d322bd610bc2114e35d",
+      "original_chars": 17516,
+      "ocr_pages": 6,
+      "v2a_chunks": 22,
+      "v2b_chunks": 22
+    },
+    {
+      "source": "normativa/Por medio del cual se expide el Decreto Único Reglamentario del Sector Vivienda, Ciudad y Territorio.pdf",
+      "doc_id": "a863f4899a72052c0883fb80450de04525f75398d2177f9304dff88b9554665f",
+      "original_chars": 20370,
+      "ocr_pages": 4,
+      "v2a_chunks": 26,
+      "v2b_chunks": 19
+    },
+    {
+      "source": "normativa/Por medio del cual se expiden las normas bases para la reglamentación de las actividades en las playas urbanas y rurales en el Distrito de Cartagena de Indias.pdf",
+      "doc_id": "146a9127ede00a90c2d1e5cf80a31ebe8734e8e56a05b9192e1e1ab8b948f204",
+      "original_chars": 69189,
+      "ocr_pages": 35,
+      "v2a_chunks": 90,
+      "v2b_chunks": 48
+    },
+    {
+      "source": "normativa/Por medio del cual se implementa el Reglamento de Playas del Distrito Portuario, Logístico, Industrial, Turístico y Comercial de Turbo – Antioquia.pdf",
+      "doc_id": "b0006c9414d19ff8d301a028312258324208cfb25bafb1f2b6d52c2558fda801",
+      "original_chars": 79825,
+      "ocr_pages": 25,
+      "v2a_chunks": 107,
+      "v2b_chunks": 61
+    },
+    {
+      "source": "normativa/Por medio del cual se reglamenta el trámite de solicitud de concesiones para el desarrollo de actividades portuarias previstas en las Leyes 1ª de 1991 y 1242 de 2008.pdf",
+      "doc_id": "d4ee8f2c8fbbc3663d06df95c5a437eb6af4104f10bfa24fe832a0282d206841",
+      "original_chars": 12935,
+      "ocr_pages": 3,
+      "v2a_chunks": 18,
+      "v2b_chunks": 13
+    },
+    {
+      "source": "normativa/Por medio del cual se reglamenta el uso, zonificación y horario de las playas con vocación turística del Distrito Turístico, Cultural e Histórico de Santa Marta, aptas para la realización de activiades de aprovech.pdf",
+      "doc_id": "e3b99341f41a6e1c5080be22fcf10f8ba1d98e5495c78ca0eabefc79703bd0f7",
+      "original_chars": 62504,
+      "ocr_pages": 16,
+      "v2a_chunks": 78,
+      "v2b_chunks": 40
+    },
+    {
+      "source": "normativa/Reglamento Maritimo Colombiano REMAC 5-DIMAR (202103).md",
+      "doc_id": "06139556e7f0112a6c7c06996b876f22310b6ae05ccb2c9e675339f5599be64d",
+      "original_chars": 348967,
+      "ocr_pages": 0,
+      "v2a_chunks": 547,
+      "v2b_chunks": 338
+    },
+    {
+      "source": "normativa/decreto-2324-de-1984.md",
+      "doc_id": "e495d6d7e97dee0d0f0a4fe139ac8a530d61046bfd904bd4511d917b78ed5081",
+      "original_chars": 118989,
+      "ocr_pages": 0,
+      "v2a_chunks": 154,
+      "v2b_chunks": 201
+    }
+  ],
+  "cpu_seconds_planning": 18.290407154,
+  "llm_api_calls": 0
+}

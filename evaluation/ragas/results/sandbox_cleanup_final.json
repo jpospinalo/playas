@@ -1,0 +1,19 @@
+{
+  "utc": "2026-10-22T17:53:19.559507+00:00",
+  "account": "679786170402",
+  "ec2": [
+    {
+      "id": "i-03c5de31fb6f876b3",
+      "state": "stopped"
+    },
+    {
+      "id": "i-091d4f3eaed43cb5d",
+      "state": "stopped"
+    },
+    {
+      "id": "i-09c723d5f76be14eb",
+      "state": "terminated"
+    }
+  ],
+  "temporary_volumes_remaining": []
+}

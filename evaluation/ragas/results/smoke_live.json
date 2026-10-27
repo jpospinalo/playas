@@ -1,0 +1,59 @@
+{
+  "first": {
+    "processed": 1,
+    "skipped": 0,
+    "deleted": 0,
+    "renamed": 0,
+    "llm_api_calls": 0,
+    "errors": [],
+    "new_embeddings": 1
+  },
+  "repeat": {
+    "processed": 0,
+    "skipped": 1,
+    "deleted": 0,
+    "renamed": 0,
+    "llm_api_calls": 0,
+    "errors": [],
+    "new_embeddings": 0
+  },
+  "add": {
+    "processed": 1,
+    "skipped": 1,
+    "deleted": 0,
+    "renamed": 0,
+    "llm_api_calls": 0,
+    "errors": [],
+    "new_embeddings": 1
+  },
+  "rename": {
+    "processed": 1,
+    "skipped": 1,
+    "deleted": 0,
+    "renamed": 1,
+    "llm_api_calls": 0,
+    "errors": [],
+    "new_embeddings": 0
+  },
+  "modify": {
+    "processed": 1,
+    "skipped": 1,
+    "deleted": 1,
+    "renamed": 0,
+    "llm_api_calls": 0,
+    "errors": [],
+    "new_embeddings": 1
+  },
+  "delete": {
+    "processed": 0,
+    "skipped": 1,
+    "deleted": 1,
+    "renamed": 0,
+    "llm_api_calls": 0,
+    "errors": [],
+    "new_embeddings": 0
+  },
+  "export_count": 1,
+  "all_passed": true,
+  "validado_por_abogado": false
+}

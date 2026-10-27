@@ -1,14 +1,23 @@
 {
-  "utc": "2026-10-22T06:53:48Z",
-  "status": "blocked",
-  "ssh": "connection closed then timeout, two attempts",
-  "aws": "UnauthorizedOperation on describe/stop/terminate",
-  "cleanup_confirmed": false,
-  "account": "679786170402",
-  "work_id": "i-09c723d5f76be14eb",
-  "ollama_id": "i-03c5de31fb6f876b3",
-  "chroma_id": "i-091d4f3eaed43cb5d",
-  "not_touched": "mlflow2",
+  "status": "resolved",
+  "original_failure": {
+    "utc": "2026-10-22T06:53:48Z",
+    "status": "blocked",
+    "ssh": "connection closed then timeout, two attempts",
+    "aws": "UnauthorizedOperation on describe/stop/terminate",
+    "cleanup_confirmed": false,
+    "account": "679786170402",
+    "work_id": "i-09c723d5f76be14eb",
+    "ollama_id": "i-03c5de31fb6f876b3",
+    "chroma_id": "i-091d4f3eaed43cb5d",
+    "not_touched": "mlflow2",
+    "llm_api_calls": 0,
+    "validado_por_abogado": false
+  },
+  "resolved_utc": "2026-10-22T17:53:19.559507+00:00",
+  "second_iteration_completed": true,
+  "cleanup_confirmed": true,
+  "evidence": "sandbox_cleanup_final.json",
   "llm_api_calls": 0,
   "validado_por_abogado": false
 }

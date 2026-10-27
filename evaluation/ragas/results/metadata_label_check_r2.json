@@ -1,0 +1,18 @@
+{
+  "schema": "legal-metadata-2",
+  "documents_checked": 55,
+  "suspect_abbreviation_matches": [],
+  "examples": [
+    {
+      "source": "normativa/Reglamento Maritimo Colombiano REMAC 5-DIMAR (202103).md",
+      "ponente": {
+        "valor": null,
+        "evidencia": null,
+        "confianza": 0.0,
+        "razon": "sin_evidencia"
+      }
+    }
+  ],
+  "validado_por_abogado": false,
+  "does_not_validate_legal_accuracy": true
+}

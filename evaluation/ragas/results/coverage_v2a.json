@@ -1,0 +1,30 @@
+{
+  "documents": 55,
+  "coverage": {
+    "tipo_documento": 53,
+    "corporacion": 44,
+    "sala": 21,
+    "clase": 19,
+    "numero": 35,
+    "anio": 46,
+    "radicado": 18,
+    "fecha_iso": 34,
+    "magistrado_ponente": 24,
+    "ambito": 44,
+    "municipio": 25,
+    "normas_citadas": 55
+  },
+  "quarantine_if_enforced": [
+    "1d4aab7f474e7fbd2f071042d990fe781ea5eb74a1531d322bd610bc2114e35d",
+    "4b3572e33fe75767dbc23d20ccaae73bb0df23e4a09fbfa49554b433be28ae3f",
+    "726fdd46244b72e04926a8780f3d7261610b1a25baa95369f0cae1925bf85f10",
+    "78af35fecb0ae3068733a39e72a9bc633becff8cf34848c23ac2d9485ab92b2a",
+    "7f8cacb216710ec6501d5f2a52189de565ed8f8fa46ee1dc3abc9e16dd3d6aec",
+    "907021edf55bd5334a992546b582985b1a606986cde94d860e4567d1bc971795",
+    "9cd38a2e2d8a4885fa6635e500ec6dc3d196d992edcad7cb7be479d7d7baa8a3",
+    "a863f4899a72052c0883fb80450de04525f75398d2177f9304dff88b9554665f",
+    "ca6c92bddb4dd5675a81bdb934b895269480b374521dff64543ba40920109f6d",
+    "d4ee8f2c8fbbc3663d06df95c5a437eb6af4104f10bfa24fe832a0282d206841",
+    "e820f079f4ad0777151ed4b7673f096edbca8547b84047868a9e34d93857778c"
+  ]
+}
