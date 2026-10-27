@@ -404,6 +404,8 @@ class PanelPreguntaItem(BaseModel):
     calificacion: str | None
     esperaba: str | None
     persona: str = Field(..., description="Nombre de registro (nunca el correo)")
+    participante: str | None = Field(default=None, description="Número de participante")
+    tipo_playa: int | None = Field(default=None, description="Tipo de usuario de playa (1-5)")
     conversation_id: str
 
 

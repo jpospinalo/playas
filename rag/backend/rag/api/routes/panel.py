@@ -32,7 +32,14 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from rag.api import panel_metricas as pm
 from rag.api.auth import require_admin
 from rag.api.database import get_session
-from rag.api.models import Conversation, Feedback, Message, MessageFeedback, User
+from rag.api.models import (
+    Conversation,
+    ExerciseProfile,
+    Feedback,
+    Message,
+    MessageFeedback,
+    User,
+)
 from rag.api.schemas import (
     PanelBrecha,
     PanelCifras,
@@ -63,6 +70,8 @@ _TOP_BRECHAS = 50
 
 DiasQuery = Query(default=30, ge=0, le=3660, description="Últimos N días (0 = todo)")
 TemaQuery = Query(default=None, description="Id de tema (entrar, pescar, …, otros)")
+ParticipanteQuery = Query(default=None, max_length=20, description="Número de participante (P001…)")
+TipoPlayaQuery = Query(default=None, ge=1, le=5, description="Tipo de usuario de playa (1-5)")
 ResultadoFiltro = Literal[
     "con_fuente",
     "sin_respuesta_segura",
@@ -329,6 +338,28 @@ def _brechas(filas: list[_Fila]) -> tuple[int, list[PanelBrecha]]:
     return sum(len(fs) for fs in grupos.values()), salida[:_TOP_BRECHAS]
 
 
+async def _perfiles(session: AsyncSession) -> dict[str, tuple[str | None, int | None]]:
+    """user_id → (número de participante, tipo de usuario de playa)."""
+    filas = await session.execute(
+        select(ExerciseProfile.user_id, ExerciseProfile.codigo, ExerciseProfile.tipo_playa)
+    )
+    return {uid: (codigo, tipo) for uid, codigo, tipo in filas.all()}
+
+
+def _filtrar_persona(
+    filas: list[_Fila],
+    perfiles: dict[str, tuple[str | None, int | None]],
+    participante: str | None,
+    tipo_playa: int | None,
+) -> list[_Fila]:
+    if participante:
+        buscado = participante.strip().upper()
+        filas = [f for f in filas if (perfiles.get(f.user_id, (None, None))[0] or "") == buscado]
+    if tipo_playa:
+        filas = [f for f in filas if perfiles.get(f.user_id, (None, None))[1] == tipo_playa]
+    return filas
+
+
 def _filtrar_tema(filas: list[_Fila], tema: str | None) -> list[_Fila]:
     if not tema:
         return filas
@@ -341,12 +372,19 @@ def _filtrar_tema(filas: list[_Fila], tema: str | None) -> list[_Fila]:
 async def resumen(
     dias: int = DiasQuery,
     tema: str | None = TemaQuery,
+    participante: str | None = ParticipanteQuery,
+    tipo_playa: int | None = TipoPlayaQuery,
     _admin: dict = Depends(require_admin),
     session: AsyncSession = Depends(get_session),
 ) -> PanelResumenResponse:
     """Cifras del periodo y del periodo anterior, con temas, normas, playas y brechas."""
     periodo = pm.calcular_periodo(dias)
-    todas = _filtrar_tema(await _cargar_filas(session, periodo.anterior_inicio), tema)
+    todas = _filtrar_persona(
+        _filtrar_tema(await _cargar_filas(session, periodo.anterior_inicio), tema),
+        await _perfiles(session),
+        participante,
+        tipo_playa,
+    )
     primeras = await _primeras_preguntas(session)
     filas = _en(todas, periodo.inicio, None)
     cifras = _cifras(filas, primeras, periodo.inicio)
@@ -380,10 +418,16 @@ async def resumen(
 
 
 async def _preguntas_filtradas(
-    session: AsyncSession, dias: int, tema: str | None, resultado: ResultadoFiltro | None
+    session: AsyncSession,
+    dias: int,
+    tema: str | None,
+    resultado: ResultadoFiltro | None,
+    participante: str | None = None,
+    tipo_playa: int | None = None,
 ) -> list[_Fila]:
     periodo = pm.calcular_periodo(dias)
     filas = _filtrar_tema(await _cargar_filas(session, periodo.inicio), tema)
+    filas = _filtrar_persona(filas, await _perfiles(session), participante, tipo_playa)
     if resultado == "con_fuente":
         filas = [f for f in filas if f.resultado == pm.CON_FUENTE]
     elif resultado == "sin_respuesta_segura":
@@ -417,8 +461,15 @@ async def _nombres(session: AsyncSession, filas: list[_Fila]) -> dict[str, str]:
     return {uid: _nombre(nombre) for uid, nombre in (await session.execute(stmt)).all()}
 
 
-def _item(f: _Fila, nombres: dict[str, str]) -> PanelPreguntaItem:
+def _item(
+    f: _Fila,
+    nombres: dict[str, str],
+    perfiles: dict[str, tuple[str | None, int | None]] | None = None,
+) -> PanelPreguntaItem:
+    codigo, tipo = (perfiles or {}).get(f.user_id, (None, None))
     return PanelPreguntaItem(
+        participante=codigo,
+        tipo_playa=tipo,
         id=f.id,
         fecha=f.fecha.isoformat(),
         pregunta=f.texto,
@@ -440,17 +491,22 @@ async def preguntas(
     dias: int = DiasQuery,
     tema: str | None = TemaQuery,
     resultado: ResultadoFiltro | None = Query(default=None),
+    participante: str | None = ParticipanteQuery,
+    tipo_playa: int | None = TipoPlayaQuery,
     page: int = Query(default=1, ge=1),
     page_size: int = Query(default=20, ge=1, le=100),
     _admin: dict = Depends(require_admin),
     session: AsyncSession = Depends(get_session),
 ) -> PanelPreguntasResponse:
     """Preguntas del periodo, de la más reciente a la más antigua."""
-    filas = await _preguntas_filtradas(session, dias, tema, resultado)
+    filas = await _preguntas_filtradas(session, dias, tema, resultado, participante, tipo_playa)
     pagina = filas[(page - 1) * page_size : page * page_size]
     nombres = await _nombres(session, pagina)
     return PanelPreguntasResponse(
-        items=[_item(f, nombres) for f in pagina], total=len(filas), page=page, page_size=page_size
+        items=[_item(f, nombres, await _perfiles(session)) for f in pagina],
+        total=len(filas),
+        page=page,
+        page_size=page_size,
     )
 
 
@@ -478,11 +534,13 @@ async def preguntas_csv(
     dias: int = DiasQuery,
     tema: str | None = TemaQuery,
     resultado: ResultadoFiltro | None = Query(default=None),
+    participante: str | None = ParticipanteQuery,
+    tipo_playa: int | None = TipoPlayaQuery,
     _admin: dict = Depends(require_admin),
     session: AsyncSession = Depends(get_session),
 ) -> Response:
     """Las preguntas del periodo con los mismos filtros, en CSV para Excel."""
-    filas = await _preguntas_filtradas(session, dias, tema, resultado)
+    filas = await _preguntas_filtradas(session, dias, tema, resultado, participante, tipo_playa)
     nombres = await _nombres(session, filas)
     salida = io.StringIO()
     escritor = csv.writer(salida)

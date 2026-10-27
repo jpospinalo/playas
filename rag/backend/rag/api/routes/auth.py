@@ -14,7 +14,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from rag.api.auth import create_access_token, get_current_user
 from rag.api.database import get_session
-from rag.api.models import User
+from rag.api.models import ExerciseProfile, User
 from rag.api.passwords import (
     hash_password_async,
     needs_rehash,
@@ -64,6 +64,10 @@ class RegisterRequest(BaseModel):
     email: str = Field(min_length=3, max_length=320)
     password: str = Field(min_length=8, max_length=1024)
     display_name: str | None = Field(default=None, max_length=120)
+    # Ejercicio de validación: tipo de usuario de playa (1-5, una sola
+    # categoría). Opcional en la API; la pantalla de registro, si se activa,
+    # debe pedirlo. Con él, la cuenta queda con número de participante.
+    tipo_playa: int | None = Field(default=None, ge=1, le=5)
 
     @field_validator("email")
     @classmethod
@@ -220,6 +224,18 @@ async def register(
                 detail="Este correo ya está registrado.",
             ) from None
         raise
+    if payload.tipo_playa is not None:
+        # Import tardío: participantes importa este módulo indirectamente.
+        from rag.api.routes.participantes import siguiente_codigo
+
+        session.add(
+            ExerciseProfile(
+                user_id=user.id,
+                codigo=await siguiente_codigo(session, set()),
+                tipo_playa=payload.tipo_playa,
+            )
+        )
+        await session.commit()
     token = create_access_token(user.id, user.email, user.role)
     return TokenResponse(
         access_token=token,

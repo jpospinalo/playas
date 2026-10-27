@@ -5,7 +5,16 @@ from __future__ import annotations
 import uuid
 from datetime import UTC, datetime
 
-from sqlalchemy import JSON, DateTime, ForeignKey, Integer, String, Text
+from sqlalchemy import (
+    JSON,
+    Boolean,
+    DateTime,
+    ForeignKey,
+    Integer,
+    String,
+    Text,
+    UniqueConstraint,
+)
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 
@@ -90,3 +99,52 @@ class MessageFeedback(Base):
     ratings: Mapped[dict] = mapped_column(JSON, nullable=False)
     expected_answer: Mapped[str | None] = mapped_column(Text)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)
+
+
+# ── Ejercicio de validación (tablas nuevas; no alteran las anteriores) ────────
+
+
+class ExerciseProfile(Base):
+    """Datos del ejercicio de validación para una cuenta.
+
+    Participantes: número de participante (``codigo``) y tipo de usuario de
+    playa (``tipo_playa``, uno de los 5 del ejercicio). Evaluadores
+    (semilleristas): ``sede`` (Santa Marta o Barranquilla). El rol sigue en
+    ``users.role`` (user, evaluador, comite, admin).
+    """
+
+    __tablename__ = "exercise_profile"
+
+    user_id: Mapped[str] = mapped_column(String, ForeignKey("users.id"), primary_key=True)
+    codigo: Mapped[str | None] = mapped_column(String, unique=True, index=True)
+    tipo_playa: Mapped[int | None] = mapped_column(Integer)
+    sede: Mapped[str | None] = mapped_column(String)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)
+
+
+class QuestionEvaluation(Base):
+    """Calificación de una pregunta (mensaje ``user``) con la planilla del
+    ejercicio: forma F1-F3 (1 a 3), complejidad Ct (S/I/A) y valor Cv dentro
+    del rango de Ct. Cada evaluador califica una vez cada pregunta; la
+    calificación del comité lleva ``es_final`` (columna "Revisó")."""
+
+    __tablename__ = "question_evaluation"
+    __table_args__ = (UniqueConstraint("message_id", "evaluador_id", "es_final"),)
+
+    id: Mapped[str] = mapped_column(String, primary_key=True, default=_uuid)
+    message_id: Mapped[str] = mapped_column(
+        String, ForeignKey("messages.id"), nullable=False, index=True
+    )
+    evaluador_id: Mapped[str] = mapped_column(String, ForeignKey("users.id"), nullable=False)
+    sede: Mapped[str | None] = mapped_column(String)
+    f1: Mapped[int] = mapped_column(Integer, nullable=False)
+    f2: Mapped[int] = mapped_column(Integer, nullable=False)
+    f3: Mapped[int] = mapped_column(Integer, nullable=False)
+    ct: Mapped[str] = mapped_column(String(1), nullable=False)
+    cv: Mapped[int] = mapped_column(Integer, nullable=False)
+    total: Mapped[int] = mapped_column(Integer, nullable=False)
+    valida: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
+    observaciones: Mapped[str | None] = mapped_column(Text)
+    es_final: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)

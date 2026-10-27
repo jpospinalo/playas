@@ -23,6 +23,8 @@ from rag.api.main import app
 # Conjunto de rutas confirmado en la línea base (capturada antes de tocar
 # código productivo): 17 rutas, 21 operaciones. El panel de administración
 # (routes/panel.py) agregó 5 rutas GET de solo lectura: 22 rutas, 26 operaciones.
+# El ejercicio de validación (routes/participantes.py) agregó 5 rutas y 5
+# operaciones: 27 rutas, 31 operaciones.
 _EXPECTED_ROUTES: dict[str, set[str]] = {
     "/api/admin/feedback": {"get"},
     "/api/admin/message-feedback": {"get"},
@@ -31,6 +33,11 @@ _EXPECTED_ROUTES: dict[str, set[str]] = {
     "/api/admin/panel/preguntas.csv": {"get"},
     "/api/admin/panel/resumen": {"get"},
     "/api/admin/panel/encuestas": {"get"},
+    "/api/admin/participantes": {"get"},
+    "/api/admin/participantes/catalogo": {"get"},
+    "/api/admin/participantes/lote": {"post"},
+    "/api/admin/participantes/{uid}": {"patch"},
+    "/api/admin/participantes/{uid}/clave": {"post"},
     "/api/admin/users": {"get", "post"},
     "/api/admin/users/{uid}/password": {"patch"},
     "/api/auth/login": {"post"},
@@ -61,7 +68,7 @@ def test_route_and_operation_count_matches_expected_contract() -> None:
     assert actual_routes == _EXPECTED_ROUTES
 
     operation_count = sum(len(methods) for methods in paths.values())
-    assert operation_count == 26
+    assert operation_count == 31
 
 
 def test_query_stream_declares_text_event_stream_and_not_json() -> None:
