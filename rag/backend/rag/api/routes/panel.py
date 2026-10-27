@@ -29,6 +29,7 @@ from fastapi.responses import Response
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from rag.api import ejercicio as ej
 from rag.api import panel_metricas as pm
 from rag.api.auth import require_admin
 from rag.api.database import get_session
@@ -516,7 +517,7 @@ async def preguntas(
 
 
 _ETIQUETAS_RESULTADO = {
-    pm.CON_FUENTE: "Con norma citada",
+    pm.CON_FUENTE: "Con fuente citada",
     pm.SIN_EVIDENCIA: "Sin respuesta segura (sin evidencia)",
     pm.SIN_CITA_VALIDA: "Sin respuesta segura (citas no válidas)",
     pm.SIN_FUENTE_OTRO: "Sin respuesta segura (sin fuente)",
@@ -526,6 +527,11 @@ _ETIQUETAS_RESULTADO = {
     pm.SIN_RESPUESTA: "Sin respuesta guardada",
 }
 _ETIQUETAS_CALIFICACION = {pm.UTIL: "Le sirvió", pm.NO_UTIL: "No le sirvió", pm.NEUTRA: "Regular"}
+
+
+def _tipo_texto(tipo: int | None) -> str:
+    """Mismo texto de la planilla del ejercicio: "Tipo 2. Pescadores"."""
+    return f"Tipo {tipo}. {ej.TIPOS_PLAYA[tipo]}" if tipo in ej.TIPOS_PLAYA else ""
 
 
 def _celda(valor: object) -> str:
@@ -547,16 +553,19 @@ async def preguntas_csv(
     """Las preguntas del periodo con los mismos filtros, en CSV para Excel."""
     filas = await _preguntas_filtradas(session, dias, tema, resultado, participante, tipo_playa)
     nombres = await _nombres(session, filas)
+    perfiles = await _perfiles(session)
     salida = io.StringIO()
     escritor = csv.writer(salida)
     escritor.writerow(
         [
             "Fecha (hora de Colombia)",
+            "Participante",
+            "Tipo de usuario de playa",
             "Pregunta",
             "Tema",
-            "Playa",
+            "Playa mencionada",
             "Resultado",
-            "Normas citadas",
+            "Fuentes citadas",
             "Calificación",
             "Lo que esperaba",
             "Persona",
@@ -569,6 +578,8 @@ async def preguntas_csv(
                 _celda(v)
                 for v in (
                     f.fecha.astimezone(pm.HORA_COLOMBIA).strftime("%Y-%m-%d %H:%M"),
+                    perfiles.get(f.user_id, (None, None))[0] or "",
+                    _tipo_texto(perfiles.get(f.user_id, (None, None))[1]),
                     f.texto,
                     pm.titulo_tema(f.tema),
                     "" if f.playa == pm.SIN_PLAYA else f.playa,

@@ -379,8 +379,11 @@ def test_csv_bom_y_formulas_escapadas(cliente) -> None:
     assert r.content.startswith(b"\xef\xbb\xbf")
     filas = list(csv.reader(io.StringIO(r.content.decode("utf-8-sig"))))
     assert len(filas) == 1 + 7
-    assert filas[0][0] == "Fecha (hora de Colombia)"
-    esperaba = [f[7] for f in filas[1:] if f[7]]
+    assert filas[0][:3] == ["Fecha (hora de Colombia)", "Participante", "Tipo de usuario de playa"]
+    assert "Fuentes citadas" in filas[0] and "Normas citadas" not in filas[0]  # PQ-49
+    assert not any("norma citada" in ",".join(f) for f in filas)
+    col = filas[0].index("Lo que esperaba")
+    esperaba = [f[col] for f in filas[1:] if f[col]]
     assert "'=HYPERLINK(malo)" in esperaba
     assert all("correo.co" not in ",".join(f) for f in filas)
 
@@ -446,7 +449,13 @@ def test_encuestas(cliente) -> None:
     h = _auth(**_ADMIN)
     r = c.get("/api/admin/panel/encuestas?dias=30", headers=h).json()
     assert r["total"] == 2
-    assert r["promedios"] == {"general": 3.0, "claridad": 0.0, "tono": 3.0, "largo": 3.0, "facilidad": 3.0}
+    assert r["promedios"] == {
+        "general": 3.0,
+        "claridad": 0.0,
+        "tono": 3.0,
+        "largo": 3.0,
+        "facilidad": 3.0,
+    }
     assert r["items"][0]["claridad"] is None  # encuesta vieja, sin claridad
     primera = r["items"][0]
     assert (

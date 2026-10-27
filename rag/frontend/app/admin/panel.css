@@ -1135,17 +1135,19 @@
 .pnl-fila .pnl-esperaba {
 	margin: 10px 0 0;
 }
+/* Rótulo y valor en dos columnas compartidas: la de rótulos toma el ancho
+   del más largo ("Calificadas", "Calificación"), así nunca pisa el valor
+   y los valores quedan alineados (PQ-60). */
 .pnl-fila-estado {
 	display: grid;
-	gap: 8px;
+	grid-template-columns: max-content minmax(0, 1fr);
+	gap: 8px 12px;
 	margin: 0;
 	align-content: start;
+	align-items: baseline;
 }
 .pnl-fila-estado > div {
-	display: grid;
-	grid-template-columns: 84px minmax(0, 1fr);
-	gap: 10px;
-	align-items: baseline;
+	display: contents;
 }
 .pnl-fila-estado dt {
 	color: var(--p-tinta-2);

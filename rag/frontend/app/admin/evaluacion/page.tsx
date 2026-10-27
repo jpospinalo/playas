@@ -192,7 +192,7 @@ export default function PaginaBandeja() {
 										</dd>
 									</div>
 									<div>
-										<dt>Calificaciones</dt>
+										<dt>Calificadas</dt>
 										<dd>
 											{p.evaluaciones} de 2{p.evaluada_por_mi ? " (una es suya)" : ""}
 										</dd>
