@@ -56,6 +56,7 @@ class PersonaNueva(BaseModel):
     sede: Literal["Santa Marta", "Barranquilla"] | None = None
     codigo: str | None = Field(default=None, max_length=20, pattern=r"^[A-Za-z0-9-]+$")
     correo: str | None = Field(default=None, max_length=320)
+    organizacion: str | None = Field(default=None, max_length=160)
 
 
 class LoteRequest(BaseModel):
@@ -86,6 +87,7 @@ class Cuenta(BaseModel):
     tipo_playa: int | None
     tipo_playa_nombre: str | None
     sede: str | None
+    organizacion: str | None = None
     preguntas: int
     creada: str
 
@@ -100,6 +102,7 @@ class CambioCuenta(BaseModel):
     rol: Rol | None = None
     tipo_playa: int | None = Field(default=None, ge=1, le=5)
     sede: Literal["Santa Marta", "Barranquilla"] | None = None
+    organizacion: str | None = Field(default=None, max_length=160)
 
 
 class ClaveResponse(BaseModel):
@@ -161,6 +164,7 @@ async def listar(
                 tipo_playa=tipo,
                 tipo_playa_nombre=ej.TIPOS_PLAYA.get(tipo) if tipo else None,
                 sede=perfil.sede if perfil else None,
+                organizacion=perfil.organizacion if perfil else None,
                 preguntas=preguntas.get(u.id, 0),
                 creada=(u.created_at or datetime.now(UTC)).isoformat(),
             )
@@ -256,7 +260,13 @@ async def crear_lote(
         )
         await session.flush()
         session.add(
-            ExerciseProfile(user_id=uid, codigo=codigo, tipo_playa=p.tipo_playa, sede=p.sede)
+            ExerciseProfile(
+                user_id=uid,
+                codigo=codigo,
+                tipo_playa=p.tipo_playa,
+                sede=p.sede,
+                organizacion=(p.organizacion or "").strip() or None,
+            )
         )
         creadas.append(
             Credencial(
@@ -296,6 +306,8 @@ async def cambiar(
         perfil.tipo_playa = payload.tipo_playa
     if payload.sede is not None:
         perfil.sede = payload.sede
+    if payload.organizacion is not None:
+        perfil.organizacion = payload.organizacion.strip() or None
     await session.commit()
     n = (
         await session.execute(
@@ -313,6 +325,7 @@ async def cambiar(
         tipo_playa=perfil.tipo_playa,
         tipo_playa_nombre=ej.TIPOS_PLAYA.get(perfil.tipo_playa) if perfil.tipo_playa else None,
         sede=perfil.sede,
+        organizacion=perfil.organizacion,
         preguntas=n,
         creada=(user.created_at or datetime.now(UTC)).isoformat(),
     )

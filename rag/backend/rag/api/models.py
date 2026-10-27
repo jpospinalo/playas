@@ -119,6 +119,8 @@ class ExerciseProfile(Base):
     codigo: Mapped[str | None] = mapped_column(String, unique=True, index=True)
     tipo_playa: Mapped[int | None] = mapped_column(Integer)
     sede: Mapped[str | None] = mapped_column(String)
+    # Organización, institución o asociación (opcional; listado de tipos de usuario).
+    organizacion: Mapped[str | None] = mapped_column(String)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)
 
 
@@ -148,3 +150,16 @@ class QuestionEvaluation(Base):
     es_final: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)
+
+
+class AwardDecision(Base):
+    """Ganadora de "mejor pregunta" elegida por el comité cuando hay empate en
+    Cv dentro de un nivel (el documento: decide el comité por pertinencia
+    jurídica; la app no desempata sola)."""
+
+    __tablename__ = "award_decision"
+
+    nivel: Mapped[str] = mapped_column(String(1), primary_key=True)
+    message_id: Mapped[str] = mapped_column(String, ForeignKey("messages.id"), nullable=False)
+    decidido_por: Mapped[str] = mapped_column(String, ForeignKey("users.id"), nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)

@@ -224,36 +224,61 @@ class PreguntaOficial:
     oficial: Oficial
 
 
-def mejores_por_nivel(preguntas: list[PreguntaOficial], top: int = 3) -> dict[str, list[dict]]:
-    """Las ``top`` preguntas válidas con mayor Cv en cada nivel. ``empate``
-    marca las que comparten el Cv del primer puesto: el documento dice que
-    entonces decide el comité por pertinencia jurídica."""
-    salida: dict[str, list[dict]] = {}
+def mejores_por_nivel(
+    preguntas: list[PreguntaOficial], elegidas: dict[str, str] | None = None, top: int = 3
+) -> dict[str, dict]:
+    """Mejor pregunta de cada nivel = mayor Cv (puntaje de Fondo) entre las
+    válidas. Si varias comparten el Cv más alto, hay **empate** y decide el
+    comité (``elegidas``: nivel → message_id); la app no desempata por fecha
+    ni por puntaje total. Devuelve, por nivel, la ganadora (o ``None`` si hay
+    empate sin decidir), las empatadas y las siguientes."""
+    elegidas = elegidas or {}
+    salida: dict[str, dict] = {}
     for ct in RANGOS_CV:
         candidatas = [
             p for p in preguntas if p.oficial.valida and p.oficial.ct == ct and p.oficial.cv
         ]
-        candidatas.sort(key=lambda p: (-(p.oficial.cv or 0), -(p.oficial.total or 0), p.fecha))
-        mejor_cv = candidatas[0].oficial.cv if candidatas else None
-        salida[ct] = [
-            {
+        # Solo para mostrarlas en orden estable: Cv y luego orden de llegada.
+        candidatas.sort(key=lambda p: (-(p.oficial.cv or 0), p.fecha))
+        if not candidatas:
+            salida[ct] = {
+                "ganadora": None,
+                "empatadas": [],
+                "siguientes": [],
+                "decide_comite": False,
+            }
+            continue
+        mejor_cv = candidatas[0].oficial.cv
+        empatadas = [p for p in candidatas if p.oficial.cv == mejor_cv]
+
+        def fila(p: PreguntaOficial) -> dict:
+            return {
                 "message_id": p.message_id,
                 "codigo": p.codigo,
                 "texto": p.texto,
                 "cv": p.oficial.cv,
                 "total": p.oficial.total,
-                "empate": p.oficial.cv == mejor_cv
-                and sum(1 for q in candidatas if q.oficial.cv == mejor_cv) > 1,
             }
-            for p in candidatas[:top]
-        ]
+
+        ganadora = None
+        if len(empatadas) == 1:
+            ganadora = fila(empatadas[0])
+        elif elegidas.get(ct) in {p.message_id for p in empatadas}:
+            ganadora = fila(next(p for p in empatadas if p.message_id == elegidas[ct]))
+        salida[ct] = {
+            "ganadora": ganadora,
+            "empatadas": [fila(p) for p in empatadas] if len(empatadas) > 1 else [],
+            "decide_comite": len(empatadas) > 1,
+            "siguientes": [fila(p) for p in candidatas[len(empatadas) : len(empatadas) + top]],
+        }
     return salida
 
 
 def ranking_participantes(preguntas: list[PreguntaOficial]) -> list[dict]:
-    """Constancia: días distintos con preguntas válidas; desempate por número
-    de preguntas válidas y luego puntaje acumulado (documento del ejercicio).
-    Incluye el puntaje acumulado de cada participante."""
+    """Participación más constante: días distintos con preguntas válidas;
+    desempate por número de preguntas válidas y luego puntaje acumulado
+    (criterios numéricos del documento). Trae el puntaje acumulado, que sirve
+    para la gratificación (no es un premio aparte)."""
     por_codigo: dict[str, list[PreguntaOficial]] = defaultdict(list)
     for p in preguntas:
         if p.oficial.valida and p.oficial.total is not None:
