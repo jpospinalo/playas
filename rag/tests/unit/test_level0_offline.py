@@ -35,6 +35,14 @@ def test_quote_from_another_source_is_not_a_passage_hit():
     assert level0.ranks(docs, case, 4)["passage_hit_at_k"] == 0.0
 
 
+def test_complete_query_cache_is_pinned_and_finite():
+    cases = [{"pregunta": "¿Qué es una playa?"}]
+    key = level0.query_key(cases[0]["pregunta"])
+    assert not level0.complete_query_cache({}, cases)
+    assert not level0.complete_query_cache({key: [float("nan")] * 768}, cases)
+    assert level0.complete_query_cache({key: [0.1] * 768}, cases)
+
+
 def test_nonllm_ragas_runs_with_empty_keys_and_no_http(monkeypatch):
     import requests
 

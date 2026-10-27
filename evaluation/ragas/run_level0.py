@@ -7,6 +7,7 @@ import asyncio
 import hashlib
 import importlib.metadata
 import json
+import math
 import os
 import sys
 import time
@@ -15,6 +16,25 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 EXPECTED_DIGEST = "85462619ee721b466c5927d109d4cb765861907d5417b9109caebc4e614679f1"
+
+
+def query_key(text):
+    return hashlib.sha256((EXPECTED_DIGEST + "\0" + text).encode()).hexdigest()
+
+
+def valid_query_vector(vector):
+    return (
+        isinstance(vector, list)
+        and len(vector) == 768
+        and all(
+            isinstance(v, (float, int)) and not isinstance(v, bool) and math.isfinite(v)
+            for v in vector
+        )
+    )
+
+
+def complete_query_cache(cache, cases):
+    return all(valid_query_vector(cache.get(query_key(case["pregunta"]))) for case in cases)
 
 
 def canonical(text):
@@ -70,10 +90,6 @@ async def run(args):
     from rag.core.embeddings import OllamaEmbeddingClient
 
     assert importlib.metadata.version("ragas") == "0.4.3", "Se requiere RAGAS 0.4.3"
-    models = requests.get(args.ollama.rstrip("/") + "/api/tags", timeout=10).json()["models"]
-    assert any(
-        m["name"] == "embeddinggemma:latest" and m["digest"] == EXPECTED_DIGEST for m in models
-    ), "Digest de embeddings distinto"
     config = {
         "harness_version": "level0-2-source-constrained-passage",
         "k": 4,
@@ -96,12 +112,29 @@ async def run(args):
     cache_dir.mkdir(exist_ok=True)
     cache_path = cache_dir / "query_vectors.json"
     cache = json.loads(cache_path.read_text()) if cache_path.exists() else {}
+    cases = [
+        json.loads(line) for line in args.dataset.read_text(encoding="utf-8").splitlines() if line
+    ]
+    cache_complete = complete_query_cache(cache, cases)
+    for case in cases:
+        key = query_key(case["pregunta"])
+        if key in cache and not valid_query_vector(cache[key]):
+            del cache[key]
+    if not cache_complete:
+        response = requests.get(args.ollama.rstrip("/") + "/api/tags", timeout=10)
+        response.raise_for_status()
+        assert any(
+            m["name"] == "embeddinggemma:latest" and m["digest"] == EXPECTED_DIGEST
+            for m in response.json()["models"]
+        ), "Digest de embeddings distinto"
     original = OllamaEmbeddingClient.embed_one
 
     def cached_embed(client, text):
-        cache_key = hashlib.sha256((EXPECTED_DIGEST + "\0" + text).encode()).hexdigest()
+        cache_key = query_key(text)
         if cache_key not in cache:
             cache[cache_key] = original(client, text)
+            if not valid_query_vector(cache[cache_key]):
+                raise ValueError("Vector de consulta inválido")
             cache_path.write_text(json.dumps(cache))
         return cache[cache_key]
 
@@ -110,9 +143,6 @@ async def run(args):
         "nonllm_context_recall": NonLLMContextRecall(),
         "nonllm_context_precision": NonLLMContextPrecisionWithReference(),
     }
-    cases = [
-        json.loads(line) for line in args.dataset.read_text(encoding="utf-8").splitlines() if line
-    ]
     previous = (
         [json.loads(line) for line in args.output.read_text().splitlines()]
         if args.output.exists()

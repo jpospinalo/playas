@@ -26,7 +26,12 @@ Repetir reanuda IDs pendientes con hashes de configuración y dataset. Se rechaz
 checkpoint de otra configuración/colección. Vectores de preguntas en `.cache/`,
 ignorados, por texto+digest. Digest requerido:
 `85462619ee721b466c5927d109d4cb765861907d5417b9109caebc4e614679f1`.
-Aquí coincide exactamente; no se necesitó comparar cosenos.
+Aquí coincide exactamente. Además, una réplica local del mismo Ollama0.40.8
+produjo coseno1 en tres muestras frente al servicio original.
+Con todas las consultas presentes en caché por digest, dimensión y finitud,
+el harness puede repetir la evaluación con Ollama apagado. Si falta un vector,
+comprueba `/api/tags` y exige el digest antes de calcularlo. Esto permite apagar
+el cómputo de embeddings en cuanto termina su trabajo.
 
 Hit/MRR documentales deduplican fuentes dentro de top4chunks. Pasaje requiere
 cita dentro del chunk tras NFC+espacios. En cruces, hit/MRR usan primera evidencia;
