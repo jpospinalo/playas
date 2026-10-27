@@ -6,11 +6,11 @@ Generado desde los archivos locales. No editar manualmente: regenerar ambos arte
 **No confirma el índice desplegado, vigencia jurídica, calidad OCR ni cobertura completa.**
 La presencia de capas y la firma PDF no certifican fidelidad del procesamiento.
 
-Archivos fuente: 56. Entradas: 56. Chunks Gold leídos: 5887.
+Archivos fuente: 56. Entradas: 56. Chunks Gold leídos: 5889.
 Errores técnicos: 0. Advertencias: 63.
 
 Backup: data/chroma-rag\_playas\_magdalena-20260731-135720.jsonl.gz. Colección: rag\_playas\_magdalena. Fecha declarada: 2026-07-31T13:57:20.520769+00:00.
-Registros: 5888; IDs coincidentes: 5846; textos diferentes: 134; registros con diferencias de metadata: 690.
+Registros: 5888; IDs coincidentes: 5844; textos diferentes: 137; registros con diferencias de metadata: 694.
 
 ## Fuentes y capas
 
@@ -58,7 +58,7 @@ Los títulos y metadatos observados, hashes y evidencias detalladas están en [c
 | [Por el cual se reglamenta el servicio público de transporte marítimo.pdf](documents/raw/normativa/Por%20el%20cual%20se%20reglamenta%20el%20servicio%20pu%CC%81blico%20de%20transporte%20mari%CC%81timo.pdf) | normativa | Sí | Sí | Sí | 8 | 8 |
 | [Por el cual se reglamenta la Ley 13 de 1990.pdf](documents/raw/normativa/Por%20el%20cual%20se%20reglamenta%20la%20Ley%2013%20de%201990.pdf) | normativa | Sí | Sí | Sí | 4 | 4 |
 | [Por el cual se reglamenta la habilitación y la prestación del servicio público de transporte fluvial.pdf](documents/raw/normativa/Por%20el%20cual%20se%20reglamenta%20la%20habilitacio%CC%81n%20y%20la%20prestacio%CC%81n%20del%20servicio%20pu%CC%81blico%20de%20transporte%20fluvial.pdf) | normativa | Sí | Sí | Sí | 3 | 3 |
-| [Por el cual se reglamenta parcialmente el artículo noveno de la Ley 10 de 1978..pdf](documents/raw/normativa/Por%20el%20cual%20se%20reglamenta%20parcialmente%20el%20arti%CC%81culo%20noveno%20de%20la%20Ley%2010%20de%201978..pdf) | normativa | Sí | Sí | Sí | 6 | 6 |
+| [Por el cual se reglamenta parcialmente el artículo noveno de la Ley 10 de 1978..pdf](documents/raw/normativa/Por%20el%20cual%20se%20reglamenta%20parcialmente%20el%20arti%CC%81culo%20noveno%20de%20la%20Ley%2010%20de%201978..pdf) | normativa | Sí | Sí | Sí | 8 | 4 |
 | [Por el cual se reglamenta parcialmente la Ley 47 del 19 de febrero de 1993.pdf](documents/raw/normativa/Por%20el%20cual%20se%20reglamenta%20parcialmente%20la%20Ley%2047%20del%2019%20de%20febrero%20de%201993.pdf) | normativa | Sí | Sí | Sí | 3 | 3 |
 | [Por el cual se reglamentan las Unidades Ambientales Costeras - UAC- y las comisiones conjuntas, se establecen las reglas de procedimiento y criterios para reglamentar la restricción de ciertas actividades en.pdf](documents/raw/normativa/Por%20el%20cual%20se%20reglamentan%20las%20Unidades%20Ambientales%20Costeras%20-%20UAC-%20y%20las%20comisiones%20conjuntas%2C%20se%20establecen%20las%20reglas%20de%20procedimiento%20y%20criterios%20para%20reglamentar%20la%20restriccio%CC%81n%20de%20ciertas%20actividades%20en.pdf) | normativa | Sí | Sí | Sí | 4 | 4 |
 | [Por el cual se reglamentan las disposiciones sobre licencias urbanísticas, reconocimiento de edificaciones y legalización de asentamientos humanos.pdf](documents/raw/normativa/Por%20el%20cual%20se%20reglamentan%20las%20disposiciones%20sobre%20licencias%20urbani%CC%81sticas%2C%20reconocimiento%20de%20edificaciones%20y%20legalizacio%CC%81n%20de%20asentamientos%20humanos.pdf) | normativa | Sí | Sí | Sí | 6 | 6 |
@@ -79,10 +79,10 @@ Los títulos y metadatos observados, hashes y evidencias detalladas están en [c
 
 Las advertencias no autorizan renombrados, borrados, reparaciones ni reindexaciones.
 
-- warning / gold\_ids\_missing\_export: data/chroma-rag\_playas\_magdalena-20260731-135720.jsonl.gz — 41 registros; diferencia de snapshots, no autorización para reemplazar datos
-- warning / ids\_missing\_gold: data/chroma-rag\_playas\_magdalena-20260731-135720.jsonl.gz — 42 registros; diferencia de snapshots, no autorización para reemplazar datos
-- warning / records\_with\_metadata\_differences: data/chroma-rag\_playas\_magdalena-20260731-135720.jsonl.gz — 690 registros; diferencia de snapshots, no autorización para reemplazar datos
-- warning / text\_mismatches: data/chroma-rag\_playas\_magdalena-20260731-135720.jsonl.gz — 134 registros; diferencia de snapshots, no autorización para reemplazar datos
+- warning / gold\_ids\_missing\_export: data/chroma-rag\_playas\_magdalena-20260731-135720.jsonl.gz — 45 registros; diferencia de snapshots, no autorización para reemplazar datos
+- warning / ids\_missing\_gold: data/chroma-rag\_playas\_magdalena-20260731-135720.jsonl.gz — 44 registros; diferencia de snapshots, no autorización para reemplazar datos
+- warning / records\_with\_metadata\_differences: data/chroma-rag\_playas\_magdalena-20260731-135720.jsonl.gz — 694 registros; diferencia de snapshots, no autorización para reemplazar datos
+- warning / text\_mismatches: data/chroma-rag\_playas\_magdalena-20260731-135720.jsonl.gz — 137 registros; diferencia de snapshots, no autorización para reemplazar datos
 - warning / double\_spaces: data/documents/raw/jurisprudencia/AP  Carlos Alberto Zúñiga Mejía y otros VS DIMAR y otros.pdf — Nombre con espacios consecutivos
 - warning / unicode\_non\_nfc: data/documents/raw/jurisprudencia/AP  Carlos Alberto Zúñiga Mejía y otros VS DIMAR y otros.pdf — Unicode descompuesto; no implica corrupción
 - warning / unicode\_non\_nfc: data/documents/raw/jurisprudencia/AP Felipe José Campo Fernández VS Corpamag y otros.pdf — Unicode descompuesto; no implica corrupción
