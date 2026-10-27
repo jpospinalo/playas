@@ -16,6 +16,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 EXPECTED_DIGEST = "85462619ee721b466c5927d109d4cb765861907d5417b9109caebc4e614679f1"
+ALIASES_PATH = Path(__file__).with_name("source_aliases.json")
+SOURCE_ALIASES = json.loads(ALIASES_PATH.read_text(encoding="utf-8"))["aliases"]
 
 
 def query_key(text):
@@ -34,7 +36,9 @@ def valid_query_vector(vector):
 
 
 def complete_query_cache(cache, cases):
-    return all(valid_query_vector(cache.get(query_key(case["pregunta"]))) for case in cases)
+    return all(
+        valid_query_vector(cache.get(query_key(case["pregunta"]))) for case in cases
+    )
 
 
 def canonical(text):
@@ -42,11 +46,15 @@ def canonical(text):
 
 
 def key(source):
-    return unicodedata.normalize("NFC", Path(str(source)).stem).casefold()
+    stem = unicodedata.normalize("NFC", Path(str(source)).stem).casefold()
+    return SOURCE_ALIASES.get(stem, stem)
 
 
 def ranks(docs, case, k):
-    expected = {e["document_key"] for e in case["evidence"]}
+    expected = {
+        SOURCE_ALIASES.get(e["document_key"], e["document_key"])
+        for e in case["evidence"]
+    }
     seen = []
     passage_rank = None
     for position, doc in enumerate(docs[:k], 1):
@@ -54,7 +62,8 @@ def ranks(docs, case, k):
         if source not in seen:
             seen.append(source)
         if passage_rank is None and any(
-            source == e["document_key"] and canonical(e["quote"]) in canonical(doc.page_content)
+            source == SOURCE_ALIASES.get(e["document_key"], e["document_key"])
+            and canonical(e["quote"]) in canonical(doc.page_content)
             for e in case["evidence"]
         ):
             passage_rank = position
@@ -70,7 +79,12 @@ def ranks(docs, case, k):
 
 async def run(args):
     # El harness no construye el agente ni importa la fábrica de LLM.
-    for name in ["OPENAI_API_KEY", "OPENROUTER_API_KEY", "GOOGLE_API_KEY", "GEMINI_API_KEY"]:
+    for name in [
+        "OPENAI_API_KEY",
+        "OPENROUTER_API_KEY",
+        "GOOGLE_API_KEY",
+        "GEMINI_API_KEY",
+    ]:
         os.environ[name] = ""
     os.environ.update(
         CHROMA_HOST="127.0.0.1",
@@ -91,7 +105,8 @@ async def run(args):
 
     assert importlib.metadata.version("ragas") == "0.4.3", "Se requiere RAGAS 0.4.3"
     config = {
-        "harness_version": "level0-2-source-constrained-passage",
+        "harness_version": "level0-3-content-aliases",
+        "source_aliases_sha256": hashlib.sha256(ALIASES_PATH.read_bytes()).hexdigest(),
         "k": 4,
         "k_candidates": 8,
         "query": "raw",
@@ -101,19 +116,23 @@ async def run(args):
         "embedding_model": "embeddinggemma:latest",
         "embedding_digest": EXPECTED_DIGEST,
         "evidence_matching": "NFC + whitespace",
-        "document_rank": "deduplicated source stem NFC casefold",
+        "document_rank": "deduplicated source stem NFC casefold + frozen exact-content aliases",
         "backend_sha256": hashlib.sha256(
             (ROOT / "rag/backend/rag/core/retriever.py").read_bytes()
         ).hexdigest(),
     }
-    config_hash = hashlib.sha256(json.dumps(config, sort_keys=True).encode()).hexdigest()
+    config_hash = hashlib.sha256(
+        json.dumps(config, sort_keys=True).encode()
+    ).hexdigest()
     dataset_hash = hashlib.sha256(args.dataset.read_bytes()).hexdigest()
     cache_dir = ROOT / "evaluation/ragas/.cache"
     cache_dir.mkdir(exist_ok=True)
     cache_path = cache_dir / "query_vectors.json"
     cache = json.loads(cache_path.read_text()) if cache_path.exists() else {}
     cases = [
-        json.loads(line) for line in args.dataset.read_text(encoding="utf-8").splitlines() if line
+        json.loads(line)
+        for line in args.dataset.read_text(encoding="utf-8").splitlines()
+        if line
     ]
     cache_complete = complete_query_cache(cache, cases)
     for case in cases:
@@ -167,7 +186,8 @@ async def run(args):
             docs = engine.invoke(case["pregunta"])
             contexts = [d.page_content for d in docs]
             sample = SingleTurnSample(
-                retrieved_contexts=contexts, reference_contexts=case["reference_contexts"]
+                retrieved_contexts=contexts,
+                reference_contexts=case["reference_contexts"],
             )
             scores = ranks(docs, case, 4)
             for name, metric in metrics.items():
@@ -215,6 +235,8 @@ if __name__ == "__main__":
     parser.add_argument("--collection", required=True)
     parser.add_argument("--port", type=int, default=8000)
     parser.add_argument("--ollama", required=True)
-    parser.add_argument("--dataset", type=Path, default=ROOT / "evaluation/ragas/dataset_v1.jsonl")
+    parser.add_argument(
+        "--dataset", type=Path, default=ROOT / "evaluation/ragas/dataset_v1.jsonl"
+    )
     parser.add_argument("--output", type=Path, required=True)
     asyncio.run(run(parser.parse_args()))

@@ -1,6 +1,7 @@
 {
   "config": {
-    "harness_version": "level0-2-source-constrained-passage",
+    "harness_version": "level0-3-content-aliases",
+    "source_aliases_sha256": "489cb962e3ba1ea3b78bf8e2ea38891cdbca65873b941be21b582516bc50ff68",
     "k": 4,
     "k_candidates": 8,
     "query": "raw",
@@ -10,10 +11,10 @@
     "embedding_model": "embeddinggemma:latest",
     "embedding_digest": "85462619ee721b466c5927d109d4cb765861907d5417b9109caebc4e614679f1",
     "evidence_matching": "NFC + whitespace",
-    "document_rank": "deduplicated source stem NFC casefold",
+    "document_rank": "deduplicated source stem NFC casefold + frozen exact-content aliases",
     "backend_sha256": "b1b1298e46520226eed6e289905b52c635f5f7642575ab44a91962b359ce31ce"
   },
-  "config_hash": "c40b8b686d1cac61a5fe87a5ca48671bec19e3a48f23c2d1835ac36c16624a6a",
+  "config_hash": "d7a6e9cb156f31bbf4d474ea6e224200e7a37ddf6b8076f40500ccaeb885042f",
   "dataset_sha256": "d1f6d6de57729f31dd6951c067a6e4acb28e8fda19b3f81cca75aca857352973",
   "collection": "atlas_v1",
   "validado_por_abogado": false

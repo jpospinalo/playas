@@ -35,6 +35,14 @@ def test_quote_from_another_source_is_not_a_passage_hit():
     assert level0.ranks(docs, case, 4)["passage_hit_at_k"] == 0.0
 
 
+def test_exact_content_alias_is_same_document_and_passage(monkeypatch):
+    monkeypatch.setattr(level0, "SOURCE_ALIASES", {"nombre original": "hash-x", "copia": "hash-x"})
+    docs = [SimpleNamespace(metadata={"source": "copia.pdf"}, page_content="cita de evidencia")]
+    case = {"evidence": [{"document_key": "nombre original", "quote": "cita de evidencia"}]}
+    result = level0.ranks(docs, case, 4)
+    assert result["document_mrr_at_k"] == result["passage_mrr_at_k"] == 1.0
+
+
 def test_complete_query_cache_is_pinned_and_finite():
     cases = [{"pregunta": "¿Qué es una playa?"}]
     key = level0.query_key(cases[0]["pregunta"])

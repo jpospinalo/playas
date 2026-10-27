@@ -38,6 +38,12 @@ cita dentro del chunk tras NFC+espacios. En cruces, hit/MRR usan primera evidenc
 document_recall mide todas. RAGAS textual depende del tamaño de los chunks.
 Las preguntas enuncian documentos: sesgo documental y cobertura parcial.
 
+Los 56 archivos fuente contienen 55 contenidos únicos. `source_aliases.json`
+congela los dos nombres de la copia exacta, comprobada por SHA256, para las tres
+colecciones. Su checksum forma parte de la configuración. Se repitió v1 antes
+de evaluar v2; las preguntas y sus citas no cambiaron. No se equiparan documentos
+por parecido textual ni por coincidencias de nombres.
+
 Comparar las tres colecciones completadas:
 
 ```bash

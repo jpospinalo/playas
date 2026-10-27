@@ -1,0 +1,7 @@
+{
+  "reason": "Aliases verificados por SHA256 de bytes fuente, antes de evaluar v2; misma regla para v1/v2a/v2b",
+  "aliases": {
+    "ce_2da_ap_2011_842_gabriel_carrero_vs_dimar_erosión_costera": "sha256:376195b011c3f52d6176617a8175b3de9d507ea6d26cc99b7a74a0517b7d562e",
+    "sentencia de segunda instancia 47001-2332-000-2011-08425-02- gabriel carrero": "sha256:376195b011c3f52d6176617a8175b3de9d507ea6d26cc99b7a74a0517b7d562e"
+  }
+}
