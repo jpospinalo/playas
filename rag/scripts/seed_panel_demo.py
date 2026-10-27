@@ -18,7 +18,8 @@ Uso (desde ``rag/``):
 
 Cuenta de administrador de la demo (solo local): admin@atlas.demo / panel-demo-2026
 Evaluadores: evaluador.sm1@atlas.demo, evaluador.bq1@atlas.demo (y sm2, bq2); comité:
-comite@atlas.demo. Todos con la misma clave de la demo.
+comite@atlas.demo (Ana María Muelle), comite.otero@, comite.botero@ y comite.ospina@atlas.demo.
+Todos con la misma clave de la demo.
 """
 
 from __future__ import annotations
@@ -62,7 +63,14 @@ EVALUADORES = [
     ("evaluador.bq1@atlas.demo", "Semillerista Barranquilla 1", "Barranquilla"),
     ("evaluador.bq2@atlas.demo", "Semillerista Barranquilla 2", "Barranquilla"),
 ]
-COMITE = [("comite@atlas.demo", "Comité de validación")]
+# Comité de validación del documento (p. 8): una cuenta por persona, para que
+# "Revisó" diga quién revisó.
+COMITE = [
+    ("comite@atlas.demo", "Ana María Muelle"),
+    ("comite.otero@atlas.demo", "Sandra Otero"),
+    ("comite.botero@atlas.demo", "Camilo Botero"),
+    ("comite.ospina@atlas.demo", "Juan P. Ospina"),
+]
 
 # ── Normas y sentencias (títulos reales del corpus) ──────────────────────────
 N_DIMAR = "decreto-2324-de-1984"
@@ -693,7 +701,7 @@ async def _evaluaciones(s, rng: random.Random, ahora: datetime) -> int:
         ]
         for sede in ej.SEDES
     }
-    comite = (await s.execute(select(User.id).where(User.role == "comite"))).scalars().first()
+    comites = (await s.execute(select(User.id).where(User.role == "comite"))).scalars().all()
     filas = (
         await s.execute(
             select(Message.id, Message.text, Message.created_at, Conversation.user_id)
@@ -808,8 +816,8 @@ async def _evaluaciones(s, rng: random.Random, ahora: datetime) -> int:
             valida=valida,
         )
         n += 1
-        if comite and r < 0.22 and rng.random() < 0.5:
-            calificar(mid, comite, None, ct, cv, f, final=True)
+        if comites and r < 0.22 and rng.random() < 0.5:
+            calificar(mid, rng.choice(comites), None, ct, cv, f, final=True)
             n += 1
     return n
 

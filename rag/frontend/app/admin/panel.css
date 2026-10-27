@@ -1409,19 +1409,18 @@
 }
 
 /* ── Ronda 4 de QA ───────────────────────────────────────────────────────── */
-/* PQ-42: antes de que las pestañas choquen con los botones, pasan a su propia
-   fila (probado a 1024, 1100, 1180 y 1280 px). */
-@media (max-width: 1360px) {
-	.pnl-nav-w {
-		order: 3;
-		flex-basis: 100%;
-	}
-	.pnl-nav {
-		flex-wrap: wrap;
-	}
-	.pnl-cab-acc {
-		margin-left: auto;
-	}
+/* PQ-42: las pestañas van siempre en su propia fila, debajo de la marca y
+   los botones. El encabezado mide como mucho 1200 px, así que con seis
+   pestañas no caben en la misma fila en ningún ancho de pantalla. */
+.pnl-nav-w {
+	order: 3;
+	flex-basis: 100%;
+}
+.pnl-nav {
+	flex-wrap: wrap;
+}
+.pnl-cab-acc {
+	margin-left: auto;
 }
 /* PQ-44: en celular "Modo oscuro" vuelve a la primera fila y "Volver a ATLAS"
    pasa a la cuadrícula de pestañas. */
