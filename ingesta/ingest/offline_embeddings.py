@@ -29,9 +29,24 @@ def validate_vector(vector, dimension=DIMENSION):
 
 
 class OllamaBatchEmbeddings:
+    def has_vectors(self, texts):
+        for text in texts:
+            key = hashlib.sha256((self.digest + "\0" + text).encode()).hexdigest()
+            row = self.db.execute("SELECT vector FROM vectors WHERE key=?", (key,)).fetchone()
+            if not row:
+                return False
+            try:
+                validate_vector(json.loads(row[0]), self.dimension)
+            except ValueError:
+                return False
+        return True
+
     def __init__(
         self, cache: Path, base_url="http://localhost:11434", allow_remote=False, batch_size=16
     ):
+        from .offline.storage import guard_output
+
+        cache = guard_output(cache)
         parsed = urllib.parse.urlparse(base_url)
         if parsed.scheme not in {"http", "https"} or parsed.username or parsed.password:
             raise ValueError("URL Ollama inválida")
@@ -50,9 +65,13 @@ class OllamaBatchEmbeddings:
         self.db.execute(
             "CREATE TABLE IF NOT EXISTS vectors (key TEXT PRIMARY KEY, vector TEXT NOT NULL)"
         )
-        models = self._request("/api/tags")["models"]
-        if not any(m["name"] == self.model and m["digest"] == self.digest for m in models):
-            raise ValueError("El digest de embeddinggemma no coincide con el pin; no publicar")
+        try:
+            models = self._request("/api/tags")["models"]
+            if not any(m["name"] == self.model and m["digest"] == self.digest for m in models):
+                raise ValueError("El digest de embeddinggemma no coincide con el pin; no publicar")
+        except Exception:
+            self.db.close()
+            raise
 
     def _request(self, path, body=None):
         if path not in {"/api/tags", "/api/embed"}:
@@ -130,3 +149,39 @@ class OllamaBatchEmbeddings:
 
     def close(self):
         self.db.close()
+
+
+class FakeBatchEmbeddings(OllamaBatchEmbeddings):
+    """Vectores reproducibles exclusivos de benchmarks, con caché separada."""
+
+    is_fake = True
+
+    def __init__(self, cache: Path):
+        from .offline.storage import guard_output
+
+        cache = guard_output(cache)
+        self.model, self.digest, self.dimension = "bench_hash", "bench-sha256-768-1", DIMENSION
+        self.batch_size = 16
+        self.new_embeddings = self.http_embedding_calls = 0
+        self.embedding_seconds = 0.0
+        cache.parent.mkdir(parents=True, exist_ok=True)
+        self.db = sqlite3.connect(cache)
+        self.db.execute(
+            "CREATE TABLE IF NOT EXISTS vectors (key TEXT PRIMARY KEY, vector TEXT NOT NULL)"
+        )
+
+    def _request(self, path, body=None):
+        if path != "/api/embed":
+            raise ValueError("El embedder de benchmark no realiza solicitudes")
+        vectors = []
+        for text in body["input"]:
+            seed = hashlib.sha256(text.encode()).digest()
+            values = [
+                int.from_bytes(hashlib.sha256(seed + index.to_bytes(4, "big")).digest()[:4], "big")
+                / (2**31)
+                - 1
+                for index in range(DIMENSION)
+            ]
+            norm = math.sqrt(sum(x * x for x in values))
+            vectors.append([x / norm for x in values])
+        return {"embeddings": vectors}

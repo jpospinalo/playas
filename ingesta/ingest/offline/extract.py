@@ -7,22 +7,21 @@ import json
 import math
 import os
 import re
-import shutil
 import subprocess
 import time
 import unicodedata
 from collections import Counter
 from pathlib import Path
 
-EXTRACTOR_VERSION = "pymupdf-tesseract-spa-1"
+EXTRACTOR_VERSION = "pymupdf-tesseract-spa-2"
 NORMALIZER_VERSION = "nfc-mapped-1"
 MIN_PAGE_CHARS = 80
 
 
 def atomic_text(path, content):
-    temporary = path.with_name(path.name + f".{os.getpid()}.tmp")
-    temporary.write_text(content, encoding="utf-8")
-    temporary.replace(path)
+    from .storage import atomic_bytes
+
+    return atomic_bytes(path, content.encode("utf-8"))
 
 
 def cpu_time():
@@ -46,12 +45,14 @@ def sha256_file(path):
 def _ocr(page, cache, key):
     target = cache / "ocr" / (key + ".txt")
     if target.exists():
-        return target.read_text(encoding="utf-8"), False
+        confidence_file = target.with_suffix(".confidence.json")
+        confidence = json.loads(confidence_file.read_text()) if confidence_file.exists() else None
+        return target.read_text(encoding="utf-8"), False, confidence
     import fitz
 
     image = page.get_pixmap(matrix=fitz.Matrix(2, 2), alpha=False).tobytes("png")
     result = subprocess.run(
-        ["tesseract", "stdin", "stdout", "-l", "spa", "--psm", "3"],
+        ["tesseract", "stdin", "stdout", "-l", "spa", "--psm", "3", "tsv"],
         input=image,
         capture_output=True,
         timeout=120,
@@ -59,10 +60,32 @@ def _ocr(page, cache, key):
     )
     if result.returncode:
         raise RuntimeError("Tesseract falló; revisar instalación e idioma spa")
-    text = result.stdout.decode("utf-8", "replace")
+    import csv
+    import io
+
+    rows = list(
+        csv.DictReader(io.StringIO(result.stdout.decode("utf-8", "replace")), delimiter="\t")
+    )
+    lines = {}
+    confidences = []
+    for row in rows:
+        word = row.get("text", "").strip()
+        if not word:
+            continue
+        key_line = tuple(row.get(k) for k in ("page_num", "block_num", "par_num", "line_num"))
+        lines.setdefault(key_line, []).append(word)
+        try:
+            confidence = float(row["conf"])
+            if math.isfinite(confidence) and confidence >= 0:
+                confidences.append(confidence)
+        except (ValueError, KeyError):
+            pass
+    text = "\n".join(" ".join(words) for words in lines.values())
+    confidence = sum(confidences) / len(confidences) if confidences else None
     target.parent.mkdir(parents=True, exist_ok=True)
     atomic_text(target, text)
-    return text, True
+    atomic_text(target.with_suffix(".confidence.json"), json.dumps(confidence))
+    return text, True, confidence
 
 
 def read_document(path: Path, cache: Path):
@@ -79,29 +102,42 @@ def read_document(path: Path, cache: Path):
             "extraction_cache_hit": True,
             "new_ocr_pages": 0,
             "cpu_seconds": cpu_time() - started,
+            "ocr_seconds": 0.0,
         }
     originals = cache / "originals"
     originals.mkdir(parents=True, exist_ok=True)
     original_path = originals / (digest + path.suffix.lower())
     if not original_path.exists():
-        shutil.copy2(path, original_path)
+        from .storage import atomic_bytes
+
+        atomic_bytes(original_path, path.read_bytes())
     pages = []
     ocr_pages = []
     failures = []
     new_ocr = 0
+    ocr_confidence = {}
+    ocr_seconds = 0.0
+    library_version = None
     if path.suffix.lower() == ".pdf":
         import fitz
 
+        library_version = getattr(fitz, "VersionBind", None)
         with fitz.open(path) as pdf:
             for index, page in enumerate(pdf):
                 text = page.get_text("text", sort=True)
                 if len(re.sub(r"\s", "", text)) < MIN_PAGE_CHARS:
                     try:
-                        text, created = _ocr(page, cache, digest + f"-{index}-{EXTRACTOR_VERSION}")
+                        ocr_started = time.monotonic()
+                        text, created, confidence = _ocr(
+                            page, cache, digest + f"-{index}-{EXTRACTOR_VERSION}"
+                        )
+                        ocr_confidence[str(index + 1)] = confidence
                         new_ocr += int(created)
                         ocr_pages.append(index + 1)
                     except (RuntimeError, subprocess.TimeoutExpired, FileNotFoundError):
                         failures.append(index + 1)
+                    finally:
+                        ocr_seconds += time.monotonic() - ocr_started
                 pages.append(unicodedata.normalize("NFC", text))
     else:
         pages = [
@@ -117,6 +153,11 @@ def read_document(path: Path, cache: Path):
         "ocr_failed_pages": failures,
         "original_file": str(original_path),
         "extractor_version": EXTRACTOR_VERSION,
+        "extractor": "PyMuPDF" if path.suffix.lower() == ".pdf" else "texto UTF-8",
+        "extractor_library_version": library_version,
+        "ocr_engine": "Tesseract spa" if ocr_pages or failures else None,
+        "ocr_confidence": ocr_confidence,
+        "ocr_seconds": ocr_seconds,
     }
     target.parent.mkdir(parents=True, exist_ok=True)
     atomic_text(target, json.dumps(doc, ensure_ascii=False))

@@ -6,25 +6,27 @@ import csv
 import datetime as dt
 import gzip
 import hashlib
+import io
 import json
 import os
 import re
 import sqlite3
 import time
 from collections import Counter, defaultdict
+from functools import partial
 from pathlib import Path
 
-from ..legal_metadata import FIELDS, SCHEMA_VERSION, apply_overrides, extract_legal_metadata
+from ..legal_metadata import FIELDS, SCHEMA_VERSION
 from ..offline_embeddings import DIGEST, DIMENSION, MODEL
-from .chunks import CHUNKER_VERSION, HEADING, make_chunks
+from .chunks import CHUNKER_VERSION, HEADING
 from .extract import (
     EXTRACTOR_VERSION,
     NORMALIZER_VERSION,
-    clean_pages,
     cpu_time,
-    read_document,
     sha256_file,
 )
+from .layers import STAGE_VERSIONS, Layers, canonical, signature
+from .storage import atomic_bytes, atomic_stream, guard_output, input_scope, writer_lock
 
 PIPELINE_VERSION = "offline-1"
 
@@ -47,7 +49,20 @@ def configuration(chunker="legacy", token_budget=512):
 
 
 def config_hash(config):
-    return hashlib.sha256(json.dumps(config, sort_keys=True).encode()).hexdigest()
+    # Las versiones de etapas invalidan capas, no la identidad de la colección.
+    stable = {
+        k: v
+        for k, v in config.items()
+        if k not in {"normalizer", "extractor", "schema", "chunker_version"}
+    }
+    return hashlib.sha256(json.dumps(stable, sort_keys=True).encode()).hexdigest()
+
+
+def legacy_config_hashes(config):
+    variants = (config, {**config, "extractor": "pymupdf-tesseract-spa-1"})
+    return {
+        hashlib.sha256(json.dumps(value, sort_keys=True).encode()).hexdigest() for value in variants
+    }
 
 
 def simhash(text):
@@ -84,21 +99,46 @@ class Pipeline:
         token_budget=512,
         enforce=False,
         overrides=None,
+        layers_root=None,
+        from_stage=None,
     ):
-        self.root, self.state, self.cache = Path(root).resolve(), Path(state), Path(cache)
+        self.root = Path(root).resolve()
+        self.state = guard_output(state, self.root)
+        self.cache = guard_output(cache, self.root)
+        self.layers_root = guard_output(layers_root or self.state / "layers", self.root)
+        self.from_stage = from_stage
         self.config = configuration(chunker, token_budget)
+        if getattr(embedder, "is_fake", False):
+            if not getattr(publisher, "collection_name", "").startswith("bench_"):
+                raise ValueError("Embeddings ficticios requieren colección bench_")
+            self.config.update(model=embedder.model, digest=embedder.digest)
         self.hash = config_hash(self.config)
-        self.state.mkdir(parents=True, exist_ok=True)
-        self.db = sqlite3.connect(self.state / "manifest.sqlite")
-        self.db.executescript(
-            "CREATE TABLE IF NOT EXISTS settings (key TEXT PRIMARY KEY,value TEXT); CREATE TABLE IF NOT EXISTS documents (doc_id TEXT PRIMARY KEY,build_hash TEXT,artifact TEXT,status TEXT,text_hash TEXT,fingerprint TEXT); CREATE TABLE IF NOT EXISTS paths (path TEXT PRIMARY KEY,doc_id TEXT); CREATE TABLE IF NOT EXISTS runs (id INTEGER PRIMARY KEY,report TEXT);"
-        )
-        row = self.db.execute("SELECT value FROM settings WHERE key='config'").fetchone()
-        if row and row[0] != self.hash:
-            raise ValueError("Cambio de versión/modelo: usa estado y colección nuevos")
-        self.db.execute("INSERT OR REPLACE INTO settings VALUES ('config',?)", (self.hash,))
-        self.db.commit()
-        self.embedder, self.publisher, self.enforce = embedder, publisher, enforce
+        with input_scope(self.root), writer_lock(self.state, self.layers_root, self.cache):
+            self.state.mkdir(parents=True, exist_ok=True)
+            self.db = sqlite3.connect(guard_output(self.state / "manifest.sqlite"))
+            self.db.executescript(
+                "CREATE TABLE IF NOT EXISTS settings (key TEXT PRIMARY KEY,value TEXT); CREATE TABLE IF NOT EXISTS documents (doc_id TEXT PRIMARY KEY,build_hash TEXT,artifact TEXT,status TEXT,text_hash TEXT,fingerprint TEXT); CREATE TABLE IF NOT EXISTS paths (path TEXT PRIMARY KEY,doc_id TEXT); CREATE TABLE IF NOT EXISTS runs (id INTEGER PRIMARY KEY,report TEXT);"
+            )
+            compatibility = self.hash
+            row = self.db.execute("SELECT value FROM settings WHERE key='compatibility'").fetchone()
+            legacy = self.db.execute("SELECT value FROM settings WHERE key='config'").fetchone()
+            incompatible = row and row[0] != compatibility
+            if (
+                not row
+                and legacy
+                and legacy[0] not in legacy_config_hashes(self.config) | {compatibility}
+            ):
+                incompatible = True
+            if incompatible:
+                self.db.close()
+                raise ValueError("Cambio de versión/modelo: usa estado y colección nuevos")
+            self.db.execute(
+                "INSERT OR REPLACE INTO settings VALUES ('compatibility',?)", (compatibility,)
+            )
+            self.db.execute("INSERT OR REPLACE INTO settings VALUES ('config',?)", (self.hash,))
+            self.db.commit()
+            self.embedder, self.publisher, self.enforce = embedder, publisher, enforce
+            self.layers = Layers(self.layers_root, self.db, self.root)
         self.overrides = []
         if overrides and Path(overrides).exists():
             with Path(overrides).open(encoding="utf-8-sig", newline="") as stream:
@@ -121,15 +161,32 @@ class Pipeline:
                     result.append(path)
         return sorted(result)
 
-    def run(self, add=None):
+    def run(self, add=None, from_stage=None):
+        with input_scope(self.root), writer_lock(self.state, self.layers_root, self.cache):
+            return self._run(add, from_stage or self.from_stage)
+
+    def _run(self, add=None, from_stage=None):
         start = time.monotonic()
         previous = dict(self.db.execute("SELECT path,doc_id FROM paths"))
+        if from_stage in {"silver", "gold", "embeddings"} and not previous:
+            catalog = self.layers_root / "catalog.json"
+            if catalog.exists():
+                previous = {
+                    path: doc_id
+                    for doc_id, paths in json.loads(catalog.read_text(encoding="utf-8"))
+                    .get("documentos", {})
+                    .items()
+                    for path in paths
+                }
+        reuse_mapping = from_stage in {"silver", "gold", "embeddings"} and bool(previous)
         if add:
             path = Path(add).resolve()
             if not path.is_relative_to(self.root) or not path.is_file():
                 raise ValueError("add requiere archivo existente dentro de input-dir")
             files = [path]
             mapping = dict(previous)
+        elif reuse_mapping:
+            files, mapping = [], dict(previous)
         else:
             files = self._files()
             mapping = {}
@@ -153,52 +210,111 @@ class Pipeline:
             "errors": [],
             "documents_detail": [],
         }
+        timings = {
+            name: {"seconds": 0.0, "calls": 0}
+            for name in (
+                "extraction",
+                "ocr",
+                "cleaning",
+                "metadata",
+                "chunking",
+                "duplicates",
+                "embeddings",
+                "chroma_publish",
+                "quality_report",
+            )
+        }
+
+        def measure(name, operation):
+            started = time.monotonic()
+            try:
+                return operation()
+            finally:
+                timings[name]["seconds"] += time.monotonic() - started
+                timings[name]["calls"] += 1
+
         before_new = self.embedder.new_embeddings
         for doc_id, aliases in sorted(by_id.items()):
             aliases = sorted(aliases)
             rows = [r for r in self.overrides if r.get("doc_id") == doc_id]
-            build_hash = hashlib.sha256(
-                (self.hash + json.dumps(rows, sort_keys=True) + str(self.enforce)).encode()
-            ).hexdigest()
+            build_hash = signature([self.hash, rows, self.enforce, STAGE_VERSIONS])
             old = self.db.execute(
                 "SELECT build_hash,artifact,status FROM documents WHERE doc_id=?", (doc_id,)
             ).fetchone()
             old_aliases = sorted(path for path, identity in previous.items() if identity == doc_id)
-            if old and old[0] == build_hash and aliases == old_aliases and old[2] != "error":
-                report["skipped"] += 1
-                continue
             started = time.process_time()
             started_local_cpu = cpu_time()
             try:
-                document = read_document(self.root / aliases[0], self.cache)
-                # Metadatos y referencias SIEMPRE antes de quitar mobiliario.
-                metadata = apply_overrides(
-                    extract_legal_metadata(document["original"]), rows, doc_id, document["original"]
-                )
-                cleaned = clean_pages(document["raw_pages"])
-                gates = quality(document, cleaned, metadata)
-                doc_type = (
-                    "normativa" if "normativa" in Path(aliases[0]).parts else "jurisprudencia"
-                )
-                chunks = make_chunks(
+                document, metadata, cleaned, chunks, changed = self.layers.build(
                     doc_id,
-                    cleaned,
-                    metadata,
-                    aliases[0],
-                    doc_type,
-                    self.config["chunker"],
-                    self.config["token_budget"],
+                    aliases,
+                    self.root,
+                    self.cache,
+                    self.config,
+                    rows,
+                    getattr(self.embedder, "digest", DIGEST),
+                    from_stage,
+                    measure,
                 )
+                timings["ocr"]["seconds"] += document.get("ocr_seconds", 0)
+                timings["ocr"]["calls"] += document.get("new_ocr_pages", 0)
+                timings["extraction"]["seconds"] = max(
+                    0, timings["extraction"]["seconds"] - document.get("ocr_seconds", 0)
+                )
+                gates = quality(document, cleaned, metadata)
+                quarantined = self.enforce and not all(gates.values())
+                embedding_inputs = [
+                    self.layers.artifacts(doc_id, "gold"),
+                    getattr(self.embedder, "digest", DIGEST),
+                ]
+                vectors_valid = getattr(self.embedder, "has_vectors", lambda texts: True)(
+                    [c["document"] for c in chunks]
+                )
+                embeddings_changed = (
+                    not self.layers.valid(doc_id, "embeddings", embedding_inputs)
+                    or not vectors_valid
+                )
+                if (
+                    old
+                    and not changed
+                    and not embeddings_changed
+                    and old[0] == build_hash
+                    and aliases == old_aliases
+                    and old[2] != "error"
+                ):
+                    report["skipped"] += 1
+                    continue
                 for chunk in chunks:
                     chunk["metadata"]["source_aliases"] = json.dumps(aliases, ensure_ascii=False)
                     chunk["metadata"]["duplicate_exact"] = len(aliases) > 1
-                quarantined = self.enforce and not all(gates.values())
                 new_before = self.embedder.new_embeddings
                 if not quarantined:
-                    vectors = self.embedder.embed([c["document"] for c in chunks])
-                    self.publisher.upsert_document(doc_id, chunks, vectors)
+                    vectors = measure(
+                        "embeddings", partial(self.embedder.embed, [c["document"] for c in chunks])
+                    )
+                    measure(
+                        "chroma_publish",
+                        partial(self.publisher.upsert_document, doc_id, chunks, vectors),
+                    )
+                    self.layers.save(
+                        doc_id,
+                        "embeddings",
+                        embedding_inputs,
+                        {
+                            ".json": canonical(
+                                {
+                                    "doc_id": doc_id,
+                                    "digest": getattr(self.embedder, "digest", DIGEST),
+                                    "dimension": DIMENSION,
+                                    "cache_keys": [
+                                        c["metadata"]["embedding_cache_key"] for c in chunks
+                                    ],
+                                }
+                            )
+                        },
+                    )
                 else:
-                    self.publisher.delete_document(doc_id)
+                    measure("chroma_publish", partial(self.publisher.delete_document, doc_id))
                 artifact = {
                     "doc_id": doc_id,
                     "sha256": document["sha256"],
@@ -218,11 +334,7 @@ class Pipeline:
                     "chunks": chunks,
                 }
                 target = self.state / "documents" / (doc_id + ".json.gz")
-                target.parent.mkdir(exist_ok=True)
-                temporary = target.with_suffix(".tmp")
-                with gzip.open(temporary, "wt", encoding="utf-8") as stream:
-                    json.dump(artifact, stream, ensure_ascii=False)
-                temporary.replace(target)
+                atomic_bytes(target, gzip.compress(canonical(artifact), mtime=0))
                 status = "quarantined" if quarantined else "published"
                 self.db.execute(
                     "INSERT OR REPLACE INTO documents VALUES (?,?,?,?,?,?)",
@@ -276,7 +388,7 @@ class Pipeline:
             active = set(by_id)
             removed = {identity for identity in previous.values()} - active
             for doc_id in removed:
-                self.publisher.delete_document(doc_id)
+                measure("chroma_publish", partial(self.publisher.delete_document, doc_id))
                 self.db.execute("UPDATE documents SET status='deleted' WHERE doc_id=?", (doc_id,))
                 self.db.execute("DELETE FROM paths WHERE doc_id=?", (doc_id,))
                 report["deleted"] += 1
@@ -284,10 +396,42 @@ class Pipeline:
         report["new_embeddings"] = self.embedder.new_embeddings - before_new
         report["seconds"] = time.monotonic() - start
         report["embeddings"] = self.embedder.manifest()
-        self._reports()
-        (self.state / "run_manifest.json").write_text(
-            json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8"
+        measure("duplicates", self._reports)
+        active_mapping = defaultdict(list)
+        for path, doc_id in self.db.execute("SELECT path,doc_id FROM paths ORDER BY path"):
+            active_mapping[doc_id].append(path)
+        retired = [
+            row[0]
+            for row in self.db.execute(
+                "SELECT doc_id FROM documents WHERE status='deleted' ORDER BY doc_id"
+            )
+        ]
+        atomic_bytes(
+            self.layers_root / "catalog.json",
+            canonical({"documentos": dict(active_mapping), "retirados": retired}),
         )
+        from .quality import report_quality
+
+        quality_report = measure(
+            "quality_report",
+            lambda: report_quality(
+                self.layers_root,
+                self.state,
+                self.cache
+                / (
+                    "bench_embeddings.sqlite"
+                    if getattr(self.embedder, "is_fake", False)
+                    else "embeddings.sqlite"
+                ),
+                enforce=self.enforce,
+                measure=measure,
+                input_root=self.root,
+            ),
+        )
+        report["quality_enforce_failed"] = quality_report["enforce_failed"]
+        report["stage_timings"] = timings
+        report["seconds"] = time.monotonic() - start
+        atomic_bytes(self.state / "run_manifest.json", canonical(report))
         self.db.execute("INSERT INTO runs(report) VALUES (?)", (json.dumps(report),))
         self.db.commit()
         return report
@@ -310,30 +454,50 @@ class Pipeline:
                     "artifact": {key: item[key] for key in ("paths", "metadata", "gates")},
                 }
             )
-        with (self.state / "review_queue.csv").open("w", encoding="utf-8", newline="") as stream:
-            writer = csv.DictWriter(stream, fieldnames=["doc_id", "paths", "campo", "razon"])
-            writer.writeheader()
-            for doc in docs:
-                item = doc["artifact"]
-                for field, value in item["metadata"]["campos"].items():
-                    if value["valor"] is None:
-                        writer.writerow(
-                            {
-                                "doc_id": doc["doc_id"],
-                                "paths": "|".join(item["paths"]),
-                                "campo": field,
-                                "razon": value["razon"],
-                            }
-                        )
-                for conflict in item["metadata"]["conflictos"]:
+        stream = io.StringIO(newline="")
+        writer = csv.DictWriter(stream, fieldnames=["doc_id", "paths", "campo", "razon"])
+        writer.writeheader()
+        for doc in docs:
+            item = doc["artifact"]
+            for field, value in item["metadata"]["campos"].items():
+                if value["valor"] is None:
                     writer.writerow(
                         {
                             "doc_id": doc["doc_id"],
                             "paths": "|".join(item["paths"]),
-                            "campo": conflict["campo"],
-                            "razon": "conflicto_reglas",
+                            "campo": field,
+                            "razon": value["razon"],
                         }
                     )
+            for conflict in item["metadata"]["conflictos"]:
+                writer.writerow(
+                    {
+                        "doc_id": doc["doc_id"],
+                        "paths": "|".join(item["paths"]),
+                        "campo": conflict["campo"],
+                        "razon": "conflicto_reglas",
+                    }
+                )
+            for field, coverage in item["metadata"].get("cobertura_csv", {}).items():
+                if coverage.get("estado") == "difiere":
+                    writer.writerow(
+                        {
+                            "doc_id": doc["doc_id"],
+                            "paths": "|".join(item["paths"]),
+                            "campo": "metadata_curada." + field,
+                            "razon": "conflicto_csv_regex",
+                        }
+                    )
+            if item["metadata"].get("origen_csv", {}).get("conflicto_csv"):
+                writer.writerow(
+                    {
+                        "doc_id": doc["doc_id"],
+                        "paths": "|".join(item["paths"]),
+                        "campo": "metadata_curada",
+                        "razon": "coincidencia_csv_ambigua",
+                    }
+                )
+        atomic_bytes(self.state / "review_queue.csv", stream.getvalue().encode())
         exact = defaultdict(list)
         near, buckets, seen = [], defaultdict(list), set()
         for doc in docs:
@@ -358,36 +522,41 @@ class Pipeline:
             "near_simhash64": near,
             "deleted_source_files": 0,
         }
-        (self.state / "duplicates.json").write_text(
-            json.dumps(duplicate_report, ensure_ascii=False, indent=2), encoding="utf-8"
-        )
+        atomic_bytes(self.state / "duplicates.json", canonical(duplicate_report))
         coverage = {
             field: sum(
                 d["artifact"]["metadata"]["campos"][field]["valor"] is not None for d in docs
             )
             for field in FIELDS
         }
-        (self.state / "metadata_coverage.json").write_text(
-            json.dumps(
+        atomic_bytes(
+            self.state / "metadata_coverage.json",
+            canonical(
                 {
                     "documents": len(docs),
                     "coverage": coverage,
                     "quarantine_if_enforced": [
                         d["doc_id"] for d in docs if not all(d["artifact"]["gates"].values())
                     ],
-                },
-                indent=2,
+                }
             ),
-            encoding="utf-8",
         )
 
     def export(self, path):
+        with input_scope(self.root), writer_lock(self.state, self.layers_root, self.cache):
+            return self._export(path)
+
+    def _export(self, path):
         digest = hashlib.sha256()
         count = 0
-        path = Path(path)
+        path = guard_output(path)
         path.parent.mkdir(parents=True, exist_ok=True)
         # El export se obtiene del manifiesto, no de colecciones ajenas.
-        with gzip.open(path, "wt", encoding="utf-8") as stream:
+        with (
+            atomic_stream(path) as raw,
+            gzip.GzipFile(filename="", fileobj=raw, mode="wb", mtime=0) as compressed,
+            io.TextIOWrapper(compressed, encoding="utf-8", newline="\n") as stream,
+        ):
             stream.write(
                 json.dumps({"__manifest__": {**self.config, "config_hash": self.hash}}) + "\n"
             )
@@ -409,16 +578,16 @@ class Pipeline:
                     stream.write(body + "\n")
                     digest.update((body + "\n").encode())
                     count += 1
-        (path.parent / (path.name + ".manifest.json")).write_text(
-            json.dumps(
+        atomic_bytes(
+            path.parent / (path.name + ".manifest.json"),
+            canonical(
                 {
                     "configuration": self.config,
                     "records": count,
                     "records_sha256": digest.hexdigest(),
                     "compressed_sha256": sha256_file(path),
-                },
-                indent=2,
-            )
+                }
+            ),
         )
         return count
 

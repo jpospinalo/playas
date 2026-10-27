@@ -2,7 +2,11 @@
 
 from __future__ import annotations
 
+import hashlib
 import time
+from pathlib import Path
+
+from .storage import writer_lock
 
 
 def retry(operation):
@@ -16,22 +20,45 @@ def retry(operation):
 
 
 class ChromaPublisher:
-    def __init__(self, collection, config_hash, port=8000):
+    def __init__(self, collection, config_hash, port=8000, fake_embeddings=False, legacy_hashes=()):
+        if fake_embeddings and not collection.startswith("bench_"):
+            raise ValueError("Embeddings ficticios requieren colección bench_")
+        self.collection_name = collection
         if collection in {"v1", "atlas_v1", "rag_playas", "rag_playas_magdalena"}:
             raise ValueError("Colección base protegida; usa otro nombre")
         import chromadb
 
-        client = chromadb.HttpClient(host="127.0.0.1", port=port)
-        try:
-            self.collection = client.get_collection(collection)
-        except chromadb.errors.NotFoundError:
-            self.collection = client.create_collection(
-                collection, metadata={"hnsw:space": "cosine", "atlas_offline_config": config_hash}
-            )
-        if self.collection.metadata.get("atlas_offline_config") != config_hash:
-            raise ValueError("Colección de otra versión/modelo; crea una colección nueva")
+        self.lock_directory = (
+            Path(".offline/chroma-writers")
+            / hashlib.sha256(f"{port}/{collection}".encode()).hexdigest()
+        )
+        with writer_lock(self.lock_directory):
+            client = chromadb.HttpClient(host="127.0.0.1", port=port)
+            try:
+                self.collection = client.get_collection(collection)
+            except chromadb.errors.NotFoundError:
+                self.collection = client.create_collection(
+                    collection,
+                    metadata={"hnsw:space": "cosine", "atlas_offline_config": config_hash},
+                )
+            previous_hash = self.collection.metadata.get("atlas_offline_config")
+            if previous_hash in legacy_hashes:
+                self.collection.modify(
+                    metadata={**self.collection.metadata, "atlas_offline_config": config_hash}
+                )
+            elif previous_hash != config_hash:
+                raise ValueError("Colección de otra versión/modelo; crea una colección nueva")
 
     def upsert_document(self, doc_id, records, vectors):
+        if not self.collection_name.startswith("bench_") and any(
+            r.get("metadata", {}).get("embedding_model_digest", "").startswith("bench-")
+            for r in records
+        ):
+            raise ValueError("Embeddings ficticios requieren colección bench_")
+        with writer_lock(self.lock_directory):
+            return self._upsert_document(doc_id, records, vectors)
+
+    def _upsert_document(self, doc_id, records, vectors):
         wanted = {r["id"] for r in records}
         before = set(self.collection.get(where={"doc_id": doc_id}, include=[])["ids"])
         for offset in range(0, len(records), 100):
@@ -54,4 +81,5 @@ class ChromaPublisher:
             raise RuntimeError("No coincide el conteo por documento")
 
     def delete_document(self, doc_id):
-        retry(lambda: self.collection.delete(where={"doc_id": doc_id}))
+        with writer_lock(self.lock_directory):
+            retry(lambda: self.collection.delete(where={"doc_id": doc_id}))

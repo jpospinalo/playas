@@ -99,3 +99,9 @@ _claude_sync/
 # 16) Binarios de terceros descargados (instaladores, plugins) — no deben versionarse
 *.deb
 session-manager-plugin.deb
+
+# Capas medallion v2 generadas; solo se permite versionar la muestra revisada.
+!data/documents-v2/
+data/documents-v2/*
+!data/documents-v2/sample/
+!data/documents-v2/sample/**
