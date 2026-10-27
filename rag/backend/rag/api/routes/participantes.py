@@ -31,6 +31,7 @@ from rag.api.auth import require_admin
 from rag.api.database import get_session
 from rag.api.models import Conversation, ExerciseProfile, Message, User
 from rag.api.passwords import hash_password_async
+from rag.api.routes.panel import DEMO_EMAIL
 
 router = APIRouter(prefix="/api/admin/participantes", tags=["admin-participantes"])
 
@@ -142,9 +143,10 @@ async def listar(
     )
     filas = (
         await session.execute(
-            select(User, ExerciseProfile).join(
-                ExerciseProfile, ExerciseProfile.user_id == User.id, isouter=True
-            )
+            select(User, ExerciseProfile)
+            .join(ExerciseProfile, ExerciseProfile.user_id == User.id, isouter=True)
+            # La cuenta marcador de la semilla de demostración no es una persona.
+            .where(User.email != DEMO_EMAIL)
         )
     ).all()
     items = []

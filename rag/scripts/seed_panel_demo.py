@@ -363,12 +363,16 @@ async def sembrar(
                 created_at=ahora - timedelta(days=dias + 30),
             )
         )
+        # Participante con clave conocida (para entrar al flujo guiado y para
+        # mostrar el 403 del panel). Como todo participante, tiene número y un
+        # solo tipo (PQ-54); el número va después de los de la semilla.
+        persona_id = uid()
         s.add(
             User(
-                id=uid(),
+                id=persona_id,
                 email=USUARIO_EMAIL,
                 password_hash=hash_demo,
-                display_name="Persona de prueba",
+                display_name="Participante de demostración",
                 role="user",
                 created_at=ahora - timedelta(days=dias + 30),
             )
@@ -443,6 +447,7 @@ async def sembrar(
                     tipo_playa=rng_ej.choice((1, 2, 3, 3, 4, 5, 5)),
                 )
             )
+        s.add(ExerciseProfile(user_id=persona_id, codigo=f"P{len(personas) + 1:03d}", tipo_playa=5))
         conteo["usuarios"] = len(personas)
         ids, pesos = zip(*personas, strict=True)
 
@@ -817,7 +822,12 @@ def main() -> None:
         "--db", type=Path, default=Path("data/panel-demo.db"), help="Archivo SQLite a crear"
     )
     p.add_argument("--preguntas", type=int, default=480)
-    p.add_argument("--dias", type=int, default=120, help="Días hacia atrás que cubren los datos")
+    p.add_argument(
+        "--dias",
+        type=int,
+        default=14,
+        help="Días hacia atrás que cubren los datos (el ejercicio dura 2 semanas)",
+    )
     p.add_argument("--semilla", type=int, default=42)
     p.add_argument("--reset", action="store_true", help="Borra el archivo si ya existe")
     p.add_argument(
