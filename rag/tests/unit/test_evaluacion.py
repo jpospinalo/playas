@@ -392,6 +392,12 @@ def test_resumen_premios_y_excel(cliente) -> None:
     for col in ("ID pregunta", "ID Usuario", "Fecha", "Hora", "Tipo de Usuario de Playa", "Revisó"):
         assert col in hoja
     assert '<c r="A2"><v>1</v></c>' in hoja  # ID de pregunta numérico
+    # B22: mismas validaciones que la planilla (listas, Cv 3-12, Cv en rojo fuera de rango).
+    assert '<formula1>"1,2,3"</formula1>' in hoja
+    assert "S - Sencillo,I - Intermedio,A - Avanzado" in hoja and "Tipo 5. Turistas" in hoja
+    assert "<formula1>3</formula1><formula2>12</formula2>" in hoja
+    assert 'conditionalFormatting sqref="L2:L' in hoja
+    assert "<dxfs" in z.read("xl/styles.xml").decode()
     assert "Tipo 3. Comerciantes" in hoja and "S - Sencillo" in hoja
     assert "Ana" not in hoja
 

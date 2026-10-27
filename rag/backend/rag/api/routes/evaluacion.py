@@ -852,7 +852,7 @@ async def exportar(
         )
     contenido = ej.libro_xlsx(
         [
-            ("Evaluación", hoja, ej.ANCHOS_PLANILLA),
+            ("Evaluación", hoja, ej.ANCHOS_PLANILLA, ej.controles_planilla(len(hoja))),
             ("Calificaciones", individuales, [12, 12, 28, 14, 6, 6, 6, 16, 16, 6, 14, 8, 16, 40]),
             ("Resumen", resumen_hoja, [40, 14]),
             ("Premios y participación", premios_hoja, [26, 14, 24, 60, 26]),

@@ -331,7 +331,7 @@ def _col(n: int) -> str:
     return letras
 
 
-def _hoja(filas: list[list[object]], anchos: list[float]) -> str:
+def _hoja(filas: list[list[object]], anchos: list[float], controles: str = "") -> str:
     cols = "".join(
         f'<col min="{i}" max="{i}" width="{w}" customWidth="1"/>' for i, w in enumerate(anchos, 1)
     )
@@ -358,12 +358,47 @@ def _hoja(filas: list[list[object]], anchos: list[float]) -> str:
         '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'
         '<sheetViews><sheetView workbookViewId="0"><pane ySplit="1" topLeftCell="A2" '
         'activePane="bottomLeft" state="frozen"/></sheetView></sheetViews>'
-        f"<cols>{cols}</cols><sheetData>{''.join(xml_filas)}</sheetData></worksheet>"
+        f"<cols>{cols}</cols><sheetData>{''.join(xml_filas)}</sheetData>{controles}</worksheet>"
     )
 
 
-def libro_xlsx(hojas: list[tuple[str, list[list[object]], list[float]]]) -> bytes:
-    """Arma un .xlsx mínimo (texto y números, encabezado en negrita)."""
+def controles_planilla(filas: int) -> str:
+    """Las mismas validaciones de la hoja "Evaluación" de la planilla del
+    equipo jurídico, para que una corrección a mano en el Excel exportado no
+    se salga de las reglas (B22): listas de F1-F3, Ct y tipo de usuario, Cv de
+    3 a 12, y Cv en rojo si no cae en el rango de su Ct (Instructivo A17)."""
+    ultima = max(501, filas + 100)
+    tipos = ",".join(f"Tipo {n}. {t}" for n, t in TIPOS_PLAYA.items())
+    niveles = ",".join(CT_PLANILLA[c] for c in ("S", "I", "A"))
+    fuera = (
+        'AND($L2<>"",OR(AND(LEFT($K2,1)="S",OR($L2<3,$L2>6)),'
+        'AND(LEFT($K2,1)="I",OR($L2<7,$L2>9)),AND(LEFT($K2,1)="A",OR($L2<10,$L2>12))))'
+    )
+
+    def lista(rango: str, valores: str, titulo: str) -> str:
+        return (
+            f'<dataValidation type="list" allowBlank="1" showErrorMessage="1" '
+            f'errorTitle="{escape(titulo)}" error="Elija un valor de la lista." sqref="{rango}">'
+            f'<formula1>"{escape(valores)}"</formula1></dataValidation>'
+        )
+
+    return (
+        f'<conditionalFormatting sqref="L2:L{ultima}"><cfRule type="expression" dxfId="0" '
+        f'priority="1"><formula>{escape(fuera)}</formula></cfRule></conditionalFormatting>'
+        '<dataValidations count="4">'
+        + lista(f"E2:E{ultima}", tipos, "Tipo de usuario de playa")
+        + lista(f"G2:I{ultima}", "1,2,3", "F1, F2 y F3")
+        + lista(f"K2:K{ultima}", niveles, "Complejidad tipo (Ct)")
+        + f'<dataValidation type="whole" operator="between" allowBlank="1" showErrorMessage="1" '
+        f'errorTitle="Cv" error="Cv va de 3 a 12 (S 3-6, I 7-9, A 10-12)." sqref="L2:L{ultima}">'
+        "<formula1>3</formula1><formula2>12</formula2></dataValidation>"
+        "</dataValidations>"
+    )
+
+
+def libro_xlsx(hojas: list[tuple]) -> bytes:
+    """Arma un .xlsx mínimo (texto y números, encabezado en negrita). Cada hoja
+    es (nombre, filas, anchos) o (nombre, filas, anchos, controles XML)."""
     buf = io.BytesIO()
     with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as z:
         z.writestr(
@@ -394,7 +429,7 @@ def libro_xlsx(hojas: list[tuple[str, list[list[object]], list[float]]]) -> byte
             'xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets>'
             + "".join(
                 f'<sheet name="{escape(nombre)}" sheetId="{i}" r:id="rId{i}"/>'
-                for i, (nombre, _, _) in enumerate(hojas, 1)
+                for i, (nombre, *_) in enumerate(hojas, 1)
             )
             + "</sheets></workbook>",
         )
@@ -420,10 +455,14 @@ def libro_xlsx(hojas: list[tuple[str, list[list[object]], list[float]]]) -> byte
             '<borders count="1"><border/></borders>'
             '<cellStyleXfs count="1"><xf/></cellStyleXfs>'
             '<cellXfs count="2"><xf/><xf fontId="1" applyFont="1"><alignment wrapText="1"/></xf></cellXfs>'
+            '<cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles>'
+            # Formato de "Cv fuera de rango" (rojo, como la planilla).
+            '<dxfs count="1"><dxf><font><color rgb="FF9C0006"/></font>'
+            '<fill><patternFill><bgColor rgb="FFFFC7CE"/></patternFill></fill></dxf></dxfs>'
             "</styleSheet>",
         )
-        for i, (_, filas, anchos) in enumerate(hojas, 1):
-            z.writestr(f"xl/worksheets/sheet{i}.xml", _hoja(filas, anchos))
+        for i, (_, filas, anchos, *controles) in enumerate(hojas, 1):
+            z.writestr(f"xl/worksheets/sheet{i}.xml", _hoja(filas, anchos, *controles))
     return buf.getvalue()
 
 
