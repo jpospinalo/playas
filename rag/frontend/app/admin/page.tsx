@@ -218,12 +218,11 @@ function ResumenConFiltros() {
 						</select>
 					</div>
 					<div className="pnl-campo">
-						<label htmlFor="pnl-part">Participante</label>
+						<label htmlFor="pnl-part">Participante (ej. P007)</label>
 						<input
 							id="pnl-part"
 							className="pnl-input"
 							value={borradorPart}
-							placeholder="P007"
 							onChange={(e) => setBorradorPart(e.target.value)}
 							onBlur={() => cambiarParticipante(borradorPart)}
 							onKeyDown={(e) => {
@@ -231,8 +230,9 @@ function ResumenConFiltros() {
 							}}
 							aria-describedby="pnl-part-ayuda"
 						/>
+						{/* PQ-52: la ayuda se ve (el placeholder parecía un valor escrito). */}
 						<span id="pnl-part-ayuda" className="sr">
-							Escriba el número y presione Enter. Vacío para ver a todos.
+							Se aplica al salir del campo o con Enter. Vacío para ver a todos.
 						</span>
 					</div>
 					<div className="pnl-campo">
@@ -357,9 +357,15 @@ function Contenido({
 	if (c.preguntas === 0) {
 		return (
 			<section className="pnl-bloque" aria-labelledby="t-vacio">
-				<h2 id="t-vacio">No hay preguntas en este periodo</h2>
+				<h2 id="t-vacio">
+					{persona.participante
+						? `No hay preguntas de ${persona.participante} en este periodo`
+						: "No hay preguntas en este periodo"}
+				</h2>
 				<p className="pnl-vacio">
-					{tema
+					{persona.participante
+						? "Revise que el número exista (en Cuentas) o pruebe con un periodo más largo, por ejemplo Todo."
+						: tema
 						? "Nadie preguntó sobre este tema en estas fechas. Pruebe con otro tema o con un periodo más largo."
 						: "Nadie hizo preguntas en estas fechas. Pruebe con un periodo más largo, por ejemplo 90 días o Todo."}
 				</p>

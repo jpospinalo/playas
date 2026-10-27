@@ -32,6 +32,8 @@ export default function PaginaCuentas() {
 	const [intento, setIntento] = useState(0);
 	const [filtroRol, setFiltroRol] = useState<string>("");
 	const [filtroTipo, setFiltroTipo] = useState<string>("");
+	// PQ-53: buscar por número, nombre o correo.
+	const [buscar, setBuscar] = useState("");
 	const [credenciales, setCredenciales] = useState<Credencial[]>([]);
 	const [pagina, setPagina] = useState(1);
 
@@ -56,7 +58,11 @@ export default function PaginaCuentas() {
 		(c) =>
 			c.correo !== "demo-seed@atlas.local" &&
 			(!filtroRol || c.rol === filtroRol || (filtroRol === "admin" && c.rol === "super-admin")) &&
-			(!filtroTipo || c.tipo_playa === Number(filtroTipo)),
+			(!filtroTipo || c.tipo_playa === Number(filtroTipo)) &&
+			(!buscar.trim() ||
+				[c.codigo, c.nombre, c.correo].some((v) =>
+					(v ?? "").toLowerCase().includes(buscar.trim().toLowerCase()),
+				)),
 	);
 	// 20 por página: con 80 participantes la lista entera era muy larga (PQ-45).
 	const POR_PAGINA = 20;
@@ -94,6 +100,19 @@ export default function PaginaCuentas() {
 						<p>{cuentas ? `${numero(visibles.length)} con este filtro` : " "}</p>
 					</div>
 					<div className="pnl-controles">
+						<div className="pnl-campo">
+							<label htmlFor="f-buscar">Buscar (número, nombre o correo)</label>
+							<input
+								id="f-buscar"
+								type="search"
+								className="pnl-input"
+								value={buscar}
+								onChange={(e) => {
+									setBuscar(e.target.value);
+									setPagina(1);
+								}}
+							/>
+						</div>
 						<div className="pnl-campo">
 							<label htmlFor="f-rol">Rol</label>
 							<select id="f-rol" value={filtroRol} onChange={(e) => {

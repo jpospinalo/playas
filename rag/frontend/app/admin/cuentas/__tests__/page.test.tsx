@@ -118,6 +118,18 @@ describe("app/admin/cuentas", () => {
 		expect(screen.getByText("7")).toBeInTheDocument();
 	});
 
+	it("busca por número, nombre o correo (PQ-53)", async () => {
+		render(<PaginaCuentas />);
+		await screen.findByText("Ana Gómez");
+		await userEvent.type(screen.getByLabelText("Buscar (número, nombre o correo)"), "p001");
+		expect(screen.getByText("Ana Gómez")).toBeInTheDocument();
+		expect(screen.queryByText("Luis Díaz")).not.toBeInTheDocument();
+		await userEvent.clear(screen.getByLabelText("Buscar (número, nombre o correo)"));
+		await userEvent.type(screen.getByLabelText("Buscar (número, nombre o correo)"), "díaz");
+		expect(screen.getByText("Luis Díaz")).toBeInTheDocument();
+		expect(screen.queryByText("Ana Gómez")).not.toBeInTheDocument();
+	});
+
 	it("crea por lote y muestra las credenciales para imprimir", async () => {
 		render(<PaginaCuentas />);
 		await screen.findByText("Ana Gómez");
