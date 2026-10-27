@@ -3,10 +3,24 @@
 from __future__ import annotations
 
 import hashlib
+import os
+import tempfile
 import time
+from contextlib import contextmanager
 from pathlib import Path
 
 from .storage import writer_lock
+
+
+def chroma_lock_directory(collection, port=8000, host="127.0.0.1"):
+    """Identidad compartida entre procesos, independiente del directorio de trabajo."""
+    root = Path(
+        os.environ.get("ATLAS_CHROMA_LOCK_DIR")
+        or Path(tempfile.gettempdir()) / "atlas-chroma-writers"
+    )
+    if not root.is_absolute():
+        raise ValueError("ATLAS_CHROMA_LOCK_DIR debe ser una ruta absoluta")
+    return root.resolve() / hashlib.sha256(f"{host}/{port}/{collection}".encode()).hexdigest()
 
 
 def retry(operation):
@@ -28,10 +42,8 @@ class ChromaPublisher:
             raise ValueError("Colección base protegida; usa otro nombre")
         import chromadb
 
-        self.lock_directory = (
-            Path(".offline/chroma-writers")
-            / hashlib.sha256(f"{port}/{collection}".encode()).hexdigest()
-        )
+        self.lock_directory = chroma_lock_directory(collection, port)
+        self._publishing = False
         with writer_lock(self.lock_directory):
             client = chromadb.HttpClient(host="127.0.0.1", port=port)
             try:
@@ -49,13 +61,26 @@ class ChromaPublisher:
             elif previous_hash != config_hash:
                 raise ValueError("Colección de otra versión/modelo; crea una colección nueva")
 
+    @contextmanager
+    def publish_phase(self):
+        # El sync/add conserva el bloqueo también entre documentos y eliminaciones.
+        if self._publishing:
+            yield
+            return
+        with writer_lock(self.lock_directory):
+            self._publishing = True
+            try:
+                yield
+            finally:
+                self._publishing = False
+
     def upsert_document(self, doc_id, records, vectors):
         if not self.collection_name.startswith("bench_") and any(
             r.get("metadata", {}).get("embedding_model_digest", "").startswith("bench-")
             for r in records
         ):
             raise ValueError("Embeddings ficticios requieren colección bench_")
-        with writer_lock(self.lock_directory):
+        with self.publish_phase():
             return self._upsert_document(doc_id, records, vectors)
 
     def _upsert_document(self, doc_id, records, vectors):
@@ -81,5 +106,5 @@ class ChromaPublisher:
             raise RuntimeError("No coincide el conteo por documento")
 
     def delete_document(self, doc_id):
-        with writer_lock(self.lock_directory):
+        with self.publish_phase():
             retry(lambda: self.collection.delete(where={"doc_id": doc_id}))

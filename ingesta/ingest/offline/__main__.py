@@ -37,7 +37,16 @@ def main(argv=None):
     add.add_argument("file", type=Path)
     commands.add_parser("export").add_argument("file", type=Path)
     quality = commands.add_parser("quality")
-    quality.add_argument("--compare-v1", type=Path)
+    quality.add_argument(
+        "--compare-v1",
+        type=Path,
+        help="Línea base v1 no vacía; enforce exige cobertura. Ambigüedades entre alias explícitos del mismo doc_id se informan sin fallar enforce.",
+    )
+    quality.add_argument(
+        "--compare-exclude",
+        type=Path,
+        help="Archivo UTF-8 con rutas v1 excluidas de cobertura, relativas a --compare-v1 (p. ej. bronze/caso.md), una por línea.",
+    )
     for command in (sync, add, quality):
         command.add_argument("--layers-root", type=Path, default=argparse.SUPPRESS)
         command.add_argument(
@@ -50,6 +59,8 @@ def main(argv=None):
         quality.add_argument("--" + name, type=kind, default=argparse.SUPPRESS)
     quality.add_argument("--enforce", action="store_true", default=argparse.SUPPRESS)
     args = parser.parse_args(argv)
+    if args.command == "quality" and args.compare_exclude and not args.compare_v1:
+        parser.error("--compare-exclude requiere --compare-v1")
     if args.command != "quality" and not args.collection:
         parser.error("--collection es obligatorio para sync/add/export")
     if (
@@ -78,6 +89,7 @@ def main(argv=None):
                 args.compare_v1,
                 args.enforce,
                 input_root=args.input_dir,
+                compare_exclude=args.compare_exclude,
             )
             print(json.dumps(result["resumen"], ensure_ascii=False))
             return int(result["enforce_failed"])

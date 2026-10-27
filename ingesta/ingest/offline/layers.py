@@ -211,6 +211,65 @@ class Layers:
     def read_json(self, stage, doc_id, suffix):
         return json.loads(self.path(stage, doc_id, suffix).read_text(encoding="utf-8"))
 
+    def persist(self):
+        # Publicar las marcas confirmadas junto a las capas permite cambiar de estado.
+        for doc_id, stage, version, input_hash, artifacts in self.db.execute(
+            "SELECT doc_id,stage,version,input_hash,artifacts FROM layers"
+        ):
+            atomic_bytes(
+                self.path(stage, doc_id, ".manifest.json"),
+                canonical(
+                    {
+                        "version": version,
+                        "input_hash": input_hash,
+                        "artifacts": json.loads(artifacts),
+                    }
+                ),
+            )
+
+    def restore(self, doc_id, from_stage=None):
+        for stage in STAGES:
+            if self.artifacts(doc_id, stage) is not None:
+                continue
+            try:
+                manifest = self.read_json(stage, doc_id, ".manifest.json")
+                version, input_hash, artifacts = (
+                    manifest["version"],
+                    manifest["input_hash"],
+                    manifest["artifacts"],
+                )
+                if (
+                    not isinstance(version, str)
+                    or not isinstance(input_hash, str)
+                    or not isinstance(artifacts, dict)
+                    or not artifacts
+                ):
+                    continue
+                # No confiar en las marcas si falta un archivo o cambiaron sus bytes.
+                for relative, digest in artifacts.items():
+                    path = (self.root / relative).resolve()
+                    if (
+                        path.parent != self.root / stage
+                        or not path.name.startswith(doc_id + ".")
+                        or not path.is_file()
+                        or signature_bytes(path.read_bytes()) != digest
+                    ):
+                        break
+                else:
+                    self.db.execute(
+                        "INSERT INTO layers VALUES (?,?,?,?,?)",
+                        (doc_id, stage, version, input_hash, json.dumps(artifacts, sort_keys=True)),
+                    )
+            except (OSError, ValueError, KeyError, TypeError):
+                # Sin un manifiesto verificable, la etapa debe reconstruirse.
+                continue
+        if from_stage:
+            for stage in STAGES[: STAGES.index(from_stage)]:
+                if self.artifacts(doc_id, stage) is None:
+                    raise ValueError(
+                        f"{stage.capitalize()} ausente o inválido; ejecutar --from-stage {stage}"
+                    )
+
     def build(
         self,
         doc_id,

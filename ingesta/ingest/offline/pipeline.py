@@ -13,6 +13,7 @@ import re
 import sqlite3
 import time
 from collections import Counter, defaultdict
+from contextlib import contextmanager, nullcontext
 from functools import partial
 from pathlib import Path
 
@@ -29,6 +30,21 @@ from .layers import STAGE_VERSIONS, Layers, canonical, signature
 from .storage import atomic_bytes, atomic_stream, guard_output, input_scope, writer_lock
 
 PIPELINE_VERSION = "offline-1"
+
+
+@contextmanager
+def document_savepoint(db):
+    # Las capas en disco y Chroma se pueden reintentar; sus marcas solo se
+    # confirman junto al manifiesto después de persistir el artefacto completo.
+    db.execute("SAVEPOINT document")
+    try:
+        yield
+    except BaseException:
+        db.execute("ROLLBACK TO document")
+        db.execute("RELEASE document")
+        raise
+    else:
+        db.execute("RELEASE document")
 
 
 def configuration(chunker="legacy", token_budget=512):
@@ -162,7 +178,11 @@ class Pipeline:
         return sorted(result)
 
     def run(self, add=None, from_stage=None):
-        with input_scope(self.root), writer_lock(self.state, self.layers_root, self.cache):
+        with (
+            input_scope(self.root),
+            writer_lock(self.state, self.layers_root, self.cache),
+            getattr(self.publisher, "publish_phase", nullcontext)(),
+        ):
             return self._run(add, from_stage or self.from_stage)
 
     def _run(self, add=None, from_stage=None):
@@ -245,112 +265,117 @@ class Pipeline:
             started = time.process_time()
             started_local_cpu = cpu_time()
             try:
-                document, metadata, cleaned, chunks, changed = self.layers.build(
-                    doc_id,
-                    aliases,
-                    self.root,
-                    self.cache,
-                    self.config,
-                    rows,
-                    getattr(self.embedder, "digest", DIGEST),
-                    from_stage,
-                    measure,
-                )
-                timings["ocr"]["seconds"] += document.get("ocr_seconds", 0)
-                timings["ocr"]["calls"] += document.get("new_ocr_pages", 0)
-                timings["extraction"]["seconds"] = max(
-                    0, timings["extraction"]["seconds"] - document.get("ocr_seconds", 0)
-                )
-                gates = quality(document, cleaned, metadata)
-                quarantined = self.enforce and not all(gates.values())
-                embedding_inputs = [
-                    self.layers.artifacts(doc_id, "gold"),
-                    getattr(self.embedder, "digest", DIGEST),
-                ]
-                vectors_valid = getattr(self.embedder, "has_vectors", lambda texts: True)(
-                    [c["document"] for c in chunks]
-                )
-                embeddings_changed = (
-                    not self.layers.valid(doc_id, "embeddings", embedding_inputs)
-                    or not vectors_valid
-                )
-                if (
-                    old
-                    and not changed
-                    and not embeddings_changed
-                    and old[0] == build_hash
-                    and aliases == old_aliases
-                    and old[2] != "error"
-                ):
-                    report["skipped"] += 1
-                    continue
-                for chunk in chunks:
-                    chunk["metadata"]["source_aliases"] = json.dumps(aliases, ensure_ascii=False)
-                    chunk["metadata"]["duplicate_exact"] = len(aliases) > 1
-                new_before = self.embedder.new_embeddings
-                if not quarantined:
-                    vectors = measure(
-                        "embeddings", partial(self.embedder.embed, [c["document"] for c in chunks])
-                    )
-                    measure(
-                        "chroma_publish",
-                        partial(self.publisher.upsert_document, doc_id, chunks, vectors),
-                    )
-                    self.layers.save(
+                with document_savepoint(self.db):
+                    self.layers.restore(doc_id, from_stage)
+                    document, metadata, cleaned, chunks, changed = self.layers.build(
                         doc_id,
-                        "embeddings",
-                        embedding_inputs,
-                        {
-                            ".json": canonical(
-                                {
-                                    "doc_id": doc_id,
-                                    "digest": getattr(self.embedder, "digest", DIGEST),
-                                    "dimension": DIMENSION,
-                                    "cache_keys": [
-                                        c["metadata"]["embedding_cache_key"] for c in chunks
-                                    ],
-                                }
-                            )
-                        },
+                        aliases,
+                        self.root,
+                        self.cache,
+                        self.config,
+                        rows,
+                        getattr(self.embedder, "digest", DIGEST),
+                        from_stage,
+                        measure,
                     )
-                else:
-                    measure("chroma_publish", partial(self.publisher.delete_document, doc_id))
-                artifact = {
-                    "doc_id": doc_id,
-                    "sha256": document["sha256"],
-                    "paths": aliases,
-                    "text_sha256": hashlib.sha256(cleaned["text"].encode()).hexdigest(),
-                    "metadata": metadata,
-                    "gates": gates,
-                    "quarantined": quarantined,
-                    "ocr_pages": document["ocr_pages"],
-                    "ocr_failed_pages": document["ocr_failed_pages"],
-                    "pages": cleaned["pages"],
-                    "offset_map": cleaned["offset_map"],
-                    "removed_furniture_keys": cleaned["removed_furniture_keys"],
-                    "original_file": document["original_file"],
-                    "original": document["original"],
-                    "normalized": cleaned["text"],
-                    "chunks": chunks,
-                }
-                target = self.state / "documents" / (doc_id + ".json.gz")
-                atomic_bytes(target, gzip.compress(canonical(artifact), mtime=0))
-                status = "quarantined" if quarantined else "published"
-                self.db.execute(
-                    "INSERT OR REPLACE INTO documents VALUES (?,?,?,?,?,?)",
-                    (
-                        doc_id,
-                        build_hash,
-                        str(target),
-                        status,
-                        artifact["text_sha256"],
-                        str(simhash(cleaned["text"])),
-                    ),
-                )
-                self.db.execute("DELETE FROM paths WHERE doc_id=?", (doc_id,))
-                self.db.executemany(
-                    "INSERT OR REPLACE INTO paths VALUES (?,?)", [(p, doc_id) for p in aliases]
-                )
+                    timings["ocr"]["seconds"] += document.get("ocr_seconds", 0)
+                    timings["ocr"]["calls"] += document.get("new_ocr_pages", 0)
+                    timings["extraction"]["seconds"] = max(
+                        0, timings["extraction"]["seconds"] - document.get("ocr_seconds", 0)
+                    )
+                    gates = quality(document, cleaned, metadata)
+                    quarantined = self.enforce and not all(gates.values())
+                    embedding_inputs = [
+                        self.layers.artifacts(doc_id, "gold"),
+                        getattr(self.embedder, "digest", DIGEST),
+                    ]
+                    vectors_valid = getattr(self.embedder, "has_vectors", lambda texts: True)(
+                        [c["document"] for c in chunks]
+                    )
+                    embeddings_changed = (
+                        not self.layers.valid(doc_id, "embeddings", embedding_inputs)
+                        or not vectors_valid
+                    )
+                    if (
+                        old
+                        and not changed
+                        and not embeddings_changed
+                        and old[0] == build_hash
+                        and aliases == old_aliases
+                        and old[2] != "error"
+                    ):
+                        report["skipped"] += 1
+                        continue
+                    for chunk in chunks:
+                        chunk["metadata"]["source_aliases"] = json.dumps(
+                            aliases, ensure_ascii=False
+                        )
+                        chunk["metadata"]["duplicate_exact"] = len(aliases) > 1
+                    new_before = self.embedder.new_embeddings
+                    if not quarantined:
+                        vectors = measure(
+                            "embeddings",
+                            partial(self.embedder.embed, [c["document"] for c in chunks]),
+                        )
+                        measure(
+                            "chroma_publish",
+                            partial(self.publisher.upsert_document, doc_id, chunks, vectors),
+                        )
+                        self.layers.save(
+                            doc_id,
+                            "embeddings",
+                            embedding_inputs,
+                            {
+                                ".json": canonical(
+                                    {
+                                        "doc_id": doc_id,
+                                        "digest": getattr(self.embedder, "digest", DIGEST),
+                                        "dimension": DIMENSION,
+                                        "cache_keys": [
+                                            c["metadata"]["embedding_cache_key"] for c in chunks
+                                        ],
+                                    }
+                                )
+                            },
+                        )
+                    else:
+                        measure("chroma_publish", partial(self.publisher.delete_document, doc_id))
+                    artifact = {
+                        "doc_id": doc_id,
+                        "sha256": document["sha256"],
+                        "paths": aliases,
+                        "text_sha256": hashlib.sha256(cleaned["text"].encode()).hexdigest(),
+                        "metadata": metadata,
+                        "gates": gates,
+                        "quarantined": quarantined,
+                        "ocr_pages": document["ocr_pages"],
+                        "ocr_failed_pages": document["ocr_failed_pages"],
+                        "pages": cleaned["pages"],
+                        "offset_map": cleaned["offset_map"],
+                        "removed_furniture_keys": cleaned["removed_furniture_keys"],
+                        "original_file": document["original_file"],
+                        "original": document["original"],
+                        "normalized": cleaned["text"],
+                        "chunks": chunks,
+                    }
+                    target = self.state / "documents" / (doc_id + ".json.gz")
+                    atomic_bytes(target, gzip.compress(canonical(artifact), mtime=0))
+                    status = "quarantined" if quarantined else "published"
+                    self.db.execute(
+                        "INSERT OR REPLACE INTO documents VALUES (?,?,?,?,?,?)",
+                        (
+                            doc_id,
+                            build_hash,
+                            str(target),
+                            status,
+                            artifact["text_sha256"],
+                            str(simhash(cleaned["text"])),
+                        ),
+                    )
+                    self.db.execute("DELETE FROM paths WHERE doc_id=?", (doc_id,))
+                    self.db.executemany(
+                        "INSERT OR REPLACE INTO paths VALUES (?,?)", [(p, doc_id) for p in aliases]
+                    )
                 self.db.commit()
                 report["processed"] += 1
                 report["renamed"] += int(bool(old_aliases) and aliases != old_aliases)
@@ -397,6 +422,7 @@ class Pipeline:
         report["seconds"] = time.monotonic() - start
         report["embeddings"] = self.embedder.manifest()
         measure("duplicates", self._reports)
+        self.layers.persist()
         active_mapping = defaultdict(list)
         for path, doc_id in self.db.execute("SELECT path,doc_id FROM paths ORDER BY path"):
             active_mapping[doc_id].append(path)
@@ -406,10 +432,12 @@ class Pipeline:
                 "SELECT doc_id FROM documents WHERE status='deleted' ORDER BY doc_id"
             )
         ]
-        atomic_bytes(
-            self.layers_root / "catalog.json",
-            canonical({"documentos": dict(active_mapping), "retirados": retired}),
-        )
+        # Un reinicio fallido con estado nuevo debe conservar las rutas recuperables.
+        if not (reuse_mapping and report["errors"]):
+            atomic_bytes(
+                self.layers_root / "catalog.json",
+                canonical({"documentos": dict(active_mapping), "retirados": retired}),
+            )
         from .quality import report_quality
 
         quality_report = measure(

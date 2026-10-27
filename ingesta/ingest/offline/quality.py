@@ -440,39 +440,73 @@ def _comparison_changes(old, new):
     return regressions, changes
 
 
-def compare_v1(v1, documents, texts):
+def compare_v1(v1, documents, texts, exclude=None):
     index = defaultdict(list)
     all_paths = sorted((v1 / "bronze").rglob("*.md"))
+    errors, excluded = [], set()
+    if not v1.is_dir():
+        errors.append("La línea base v1 no existe o no es un directorio")
+    elif not all_paths or not any(p.read_text(encoding="utf-8").strip() for p in all_paths):
+        errors.append("La línea base v1 está vacía: se requieren documentos bronze/*.md")
+    if exclude is not None:
+        try:
+            for line in Path(exclude).read_text(encoding="utf-8-sig").splitlines():
+                relative = Path(line.strip().replace("\\", "/"))
+                if not line.strip():
+                    continue
+                if relative.is_absolute() or relative.drive or ".." in relative.parts:
+                    raise ValueError("Las exclusiones deben ser rutas relativas a v1 sin '..'")
+                excluded.add(relative.as_posix())
+        except (OSError, UnicodeError, ValueError) as exc:
+            errors.append(f"No se pudieron leer las exclusiones: {exc}")
     for path in all_paths:
         relative = path.relative_to(v1 / "bronze")
         index[_stem(relative.as_posix())].append(path)
         index["stem:" + key(path.stem)].append(path)
-    matched, used, unmatched = [], set(), []
+    candidates_by_id, exact_by_id, owners = {}, {}, defaultdict(set)
     for doc in documents:
         candidates = set()
         aliases = doc["paths"] + ([doc["source_path"]] if doc.get("source_path") else [])
         for alias in aliases:
             candidates.update(index.get(_stem(alias), []))
+        exact_by_id[doc["doc_id"]] = set(candidates)
         if not candidates:
             for alias in aliases:
                 candidates.update(index.get("stem:" + key(Path(alias).stem), []))
+        candidates_by_id[doc["doc_id"]] = candidates
+        for path in candidates:
+            owners[path].add(doc["doc_id"])
+    matched, used, unmatched = [], set(), []
+    for doc in documents:
+        candidates = candidates_by_id[doc["doc_id"]]
         if len(candidates) != 1:
+            # Solo las rutas explícitas de un mismo doc_id acreditan alias de
+            # bytes idénticos. Un stem ambiguo por sí solo no acredita identidad.
+            same_document = bool(candidates) and all(
+                p in exact_by_id[doc["doc_id"]] and owners[p] == {doc["doc_id"]} for p in candidates
+            )
+            if same_document:
+                used.update(candidates)
             unmatched.append(
                 {
                     "doc_id": doc["doc_id"],
                     "paths": doc["paths"],
                     "razon": "sin_coincidencia" if not candidates else "coincidencia_ambigua",
+                    "candidatos_v1": sorted(p.relative_to(v1).as_posix() for p in candidates),
+                    "aliases_mismo_doc_id": same_document,
                 }
             )
             continue
-        path = candidates.pop()
+        path = next(iter(candidates))
         used.add(path)
         missing = []
         text = strip_markdown(load_text(path, missing))
         gold = v1 / "gold" / path.relative_to(v1 / "bronze").with_suffix(".jsonl")
         records = load_jsonl(gold, missing)
         old_chunks = [r.get("page_content", "") for r in records]
-        original, cleaned, chunks = texts[doc["doc_id"]]
+        original, cleaned, chunks = (
+            texts(doc["doc_id"]) if callable(texts) else texts[doc["doc_id"]]
+        )
         old = text_metrics(text, text, old_chunks)
         old["extracted_chars"] = metric("extracted_chars", len(text))
         # Las tasas comparan texto extraído en ambos lados, sin limpieza silver.
@@ -536,7 +570,13 @@ def compare_v1(v1, documents, texts):
     regression_counts = {
         name: sum(name in d["regresiones"] for d in matched) for name in COMPARISON_METRICS
     }
+    unmatched_v1 = [p.relative_to(v1).as_posix() for p in all_paths if p not in used]
+    uncovered = [p for p in unmatched_v1 if p not in excluded]
     return {
+        "errores": errors,
+        "exclusiones_v1": sorted(excluded),
+        "sin_pareja_v1_no_excluidos": uncovered,
+        "enforce_failed": bool(errors or uncovered or regressions),
         "documentos": matched,
         "documentos_con_regresion": len(regressions),
         "regresiones_por_metrica": regression_counts,
@@ -553,7 +593,7 @@ def compare_v1(v1, documents, texts):
             "metricas_neutrales": sorted(NEUTRAL_METRICS),
         },
         "sin_pareja_v2": unmatched,
-        "sin_pareja_v1": [p.relative_to(v1).as_posix() for p in all_paths if p not in used],
+        "sin_pareja_v1": unmatched_v1,
         "peores_10": [d["doc_id"] for d in worst],
     }
 
@@ -576,7 +616,14 @@ def _read_manifest(state):
 
 
 def report_quality(
-    layers_root, state=None, cache=None, compare=None, enforce=False, measure=None, input_root=None
+    layers_root,
+    state=None,
+    cache=None,
+    compare=None,
+    enforce=False,
+    measure=None,
+    input_root=None,
+    compare_exclude=None,
 ):
     root = guard_output(layers_root, input_root)
     if not root.exists():
@@ -599,7 +646,7 @@ def report_quality(
     if state is not None and (Path(state) / "review_queue.csv").exists():
         with (Path(state) / "review_queue.csv").open(encoding="utf-8", newline="") as stream:
             review = Counter(row["doc_id"] for row in csv.DictReader(stream))
-    documents, texts = [], {}
+    documents = []
     for doc_id, paths in sorted(mapping.items()):
         if doc_id in retired:
             continue
@@ -607,7 +654,7 @@ def report_quality(
             root, doc_id, sorted(paths), cache, review, measure
         )
         documents.append(doc)
-        texts[doc_id] = original, cleaned, chunks
+        del original, cleaned, chunks
     flags = Counter(m["bandera"] for d in documents for m in d["metricas"].values())
     result = {
         "schema": "objective-quality-1",
@@ -617,8 +664,18 @@ def report_quality(
         "enforce_failed": bool(enforce and (flags["rojo"] or not documents)),
     }
     if compare is not None:
-        result["comparacion_v1"] = compare_v1(Path(compare), documents, texts)
-        if enforce and any(d["bandera"] == "rojo" for d in result["comparacion_v1"]["documentos"]):
+
+        def comparison_texts(doc_id):
+            # Leer solo el par que se compara, sin retener el corpus ni recalcular métricas.
+            missing = []
+            original = load_text(root / "bronze" / (doc_id + ".txt"), missing)
+            gold = load_jsonl(root / "gold" / (doc_id + ".jsonl"), missing)
+            return original, "", [chunk_body(record) for record in gold]
+
+        result["comparacion_v1"] = compare_v1(
+            Path(compare), documents, comparison_texts, compare_exclude
+        )
+        if enforce and result["comparacion_v1"]["enforce_failed"]:
             result["enforce_failed"] = True
     markdown = [
         "# Informe objetivo de calidad",
@@ -703,7 +760,7 @@ def report_quality(
             [
                 "## Comparación v1/v2",
                 "",
-                "Se eliminan referencias de imagen, prefijos de encabezado, enlaces (se conserva etiqueta), separadores de tablas y marcas **, __, ` del Markdown v1. Coincidencia por ruta sin extensión en NFC y sin acentos/mayúsculas; fallback a stem único. Ambigüedades se informan sin emparejar.",
+                "Se eliminan referencias de imagen, prefijos de encabezado, enlaces (se conserva etiqueta), separadores de tablas y marcas **, __, ` del Markdown v1. Coincidencia por ruta sin extensión en NFC y sin acentos/mayúsculas; fallback a stem único. Ambigüedades se informan sin emparejar; si todas las rutas candidatas son alias explícitos del mismo doc_id, se consideran cubiertas y no fallan enforce. Una línea base ausente/vacía y documentos v1 sin pareja no excluidos fallan enforce.",
                 "",
                 "Regresiones: caracteres v2 <80% de v1; invalid_pct, mojibake_pct y short_chunks_pct aumentan >20% y al menos 0,1 puntos porcentuales; duplicados aumentan >20% y al menos 2. Con base cero, la magnitud relativa usa como denominador ese mínimo absoluto. Conteo/mediana/p5/p95 de chunks: variación >20% es cambio neutral, nunca regresión. Comparación roja si hay regresiones, amarilla si solo hay cambios neutrales, verde en otro caso. Extractos iniciales, no selección semántica.",
                 "",
@@ -725,6 +782,13 @@ def report_quality(
                 "Sin pareja v2: " + json.dumps(comparison["sin_pareja_v2"], ensure_ascii=False),
                 "",
                 "Sin pareja v1: " + json.dumps(comparison["sin_pareja_v1"], ensure_ascii=False),
+                "",
+                "Errores de comparación: " + json.dumps(comparison["errores"], ensure_ascii=False),
+                "",
+                "Exclusiones v1: " + json.dumps(comparison["exclusiones_v1"], ensure_ascii=False),
+                "",
+                "Sin pareja v1 no excluidos: "
+                + json.dumps(comparison["sin_pareja_v1_no_excluidos"], ensure_ascii=False),
                 "",
                 "### Diez documentos con más regresiones objetivas",
                 "",
