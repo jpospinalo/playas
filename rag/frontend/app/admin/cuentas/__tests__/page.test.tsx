@@ -2,7 +2,7 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import PaginaCuentas from "@/app/admin/cuentas/page";
-import { leerLista } from "@/lib/admin/cuentas";
+import { csvALista, leerLista, tipoDeTexto } from "@/lib/admin/cuentas";
 
 vi.mock("@/lib/auth", () => ({
 	getToken: vi.fn(() => "test-token"),
@@ -105,6 +105,39 @@ describe("leerLista — lista pegada para crear cuentas", () => {
 			{ nombre: "Ana", rol: "evaluador", sede: "Santa Marta" },
 			{ nombre: "Luis", rol: "evaluador", sede: "Santa Marta" },
 		]);
+	});
+});
+
+describe("importar el CSV de Forms (T10)", () => {
+	it("reconoce las columnas por su encabezado y arma la lista", () => {
+		const csv =
+			"\ufeffMarca temporal,Nombre completo,Correo electrónico,Tipo de usuario de playa,Organización o asociación\n" +
+			'1/11/2026 9:00,María Pérez,MARIA@correo.co,"Hoteleros, restauranteros y empresas de servicios vinculados a la playa",Hotel Playa\n' +
+			"1/11/2026 9:05,Juan Ríos,juan@correo.co,Tipo 2. Pescadores,\n";
+		const r = csvALista(csv);
+		expect(r.faltan).toEqual([]);
+		expect(r.filas).toBe(2);
+		const l = leerLista(r.lista, "user");
+		expect(l.errores).toEqual([]);
+		expect(l.personas).toEqual([
+			{ nombre: "María Pérez", rol: "user", tipo_playa: 4, organizacion: "Hotel Playa", correo: "maria@correo.co" },
+			{ nombre: "Juan Ríos", rol: "user", tipo_playa: 2, correo: "juan@correo.co" },
+		]);
+	});
+
+	it("acepta punto y coma y avisa si faltan columnas", () => {
+		expect(csvALista("Nombre;Tipo\nAna;Turistas").filas).toBe(1);
+		expect(csvALista("Correo\na@b.co").faltan).toEqual([
+			"No encontré la columna del nombre.",
+			"No encontré la columna del tipo de usuario de playa.",
+		]);
+	});
+
+	it("entiende el tipo escrito de varias formas", () => {
+		expect(["3", "Tipo 3. Comerciantes", "comerciantes", "Comerciantes y trabajadores de playa"].map(tipoDeTexto)).toEqual([
+			3, 3, 3, 3,
+		]);
+		expect(tipoDeTexto("7")).toBeUndefined();
 	});
 });
 

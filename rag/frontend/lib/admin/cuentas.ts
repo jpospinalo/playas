@@ -65,6 +65,8 @@ export interface PersonaNueva {
 	sede?: Sede;
 	codigo?: string;
 	organizacion?: string;
+	/** Correo de la persona (p. ej. el de la inscripción en Forms); si no, se genera. */
+	correo?: string;
 }
 
 export interface Credencial {
@@ -178,6 +180,86 @@ export function nuevaClave(uid: string): Promise<{ correo: string; clave: string
  * Acepta tabulador (copiado de Excel). Devuelve las personas y los errores
  * por renglón.
  */
+/**
+ * Tipo de usuario de playa a partir de lo escrito: "2", "Tipo 2. Pescadores",
+ * "pescadores" o el texto largo de la planilla ("Hoteleros, restauranteros…").
+ */
+export function tipoDeTexto(crudo: string): number | undefined {
+	const t = crudo.trim().toLowerCase();
+	if (!t) return undefined;
+	const n = Number(t);
+	if (Number.isInteger(n) && n >= 1 && n <= 5) return n;
+	const conNumero = /^(?:tipo\s*)?([1-5])\b/.exec(t);
+	if (conNumero) return Number(conNumero[1]);
+	if (t.length < 4) return undefined;
+	const corto = t.slice(0, 5);
+	return TIPOS_PLAYA.find(
+		(x) => x.nombre.toLowerCase().startsWith(corto) || x.largo.toLowerCase().startsWith(corto),
+	)?.id;
+}
+
+/** Parte un CSV (comas o punto y coma, comillas dobles, BOM de Excel). */
+export function leerCsv(texto: string): string[][] {
+	const limpio = texto.replace(/^\ufeff/, "");
+	const primera = limpio.split(/\r?\n/, 1)[0] ?? "";
+	const sep = (primera.match(/;/g)?.length ?? 0) > (primera.match(/,/g)?.length ?? 0) ? ";" : ",";
+	const filas: string[][] = [];
+	let fila: string[] = [];
+	let campo = "";
+	let comillas = false;
+	for (let i = 0; i < limpio.length; i++) {
+		const ch = limpio[i];
+		if (comillas) {
+			if (ch === '"' && limpio[i + 1] === '"') {
+				campo += '"';
+				i++;
+			} else if (ch === '"') comillas = false;
+			else campo += ch;
+		} else if (ch === '"') comillas = true;
+		else if (ch === sep) {
+			fila.push(campo.trim());
+			campo = "";
+		} else if (ch === "\n" || ch === "\r") {
+			if (ch === "\r" && limpio[i + 1] === "\n") i++;
+			fila.push(campo.trim());
+			if (fila.some((c) => c)) filas.push(fila);
+			fila = [];
+			campo = "";
+		} else campo += ch;
+	}
+	fila.push(campo.trim());
+	if (fila.some((c) => c)) filas.push(fila);
+	return filas;
+}
+
+/**
+ * Reunión del 20-oct (T10): la inscripción se hace en un formulario (Forms).
+ * Convierte el CSV exportado a la lista "Nombre; tipo; organización; correo"
+ * reconociendo las columnas por su encabezado. Devuelve la lista para que el
+ * admin la revise antes de crear las cuentas.
+ */
+export function csvALista(texto: string): { lista: string; filas: number; faltan: string[] } {
+	const filas = leerCsv(texto);
+	if (!filas.length) return { lista: "", filas: 0, faltan: ["El archivo está vacío."] };
+	const cab = filas[0].map((h) => h.toLowerCase());
+	const col = (...claves: string[]) => cab.findIndex((h) => claves.some((k) => h.includes(k)));
+	const iNombre = col("nombre", "name");
+	const iTipo = col("tipo", "categor", "actor", "relación", "relacion");
+	const iOrg = col("organiz", "instituc", "asociac");
+	const iCorreo = col("correo", "email", "e-mail");
+	const faltan: string[] = [];
+	if (iNombre < 0) faltan.push("No encontré la columna del nombre.");
+	if (iTipo < 0) faltan.push("No encontré la columna del tipo de usuario de playa.");
+	if (faltan.length) return { lista: "", filas: 0, faltan };
+	const lineas = filas.slice(1).map((f) =>
+		[f[iNombre] ?? "", f[iTipo] ?? "", iOrg >= 0 ? (f[iOrg] ?? "") : "", iCorreo >= 0 ? (f[iCorreo] ?? "") : ""]
+			.map((x) => x.replace(/[;\t\n]/g, " ").trim())
+			.join("; ")
+			.replace(/(; )+$/, ""),
+	);
+	return { lista: lineas.join("\n"), filas: lineas.length, faltan: [] };
+}
+
 export function leerLista(
 	texto: string,
 	rol: Rol,
@@ -190,7 +272,9 @@ export function leerLista(
 		.map((l) => l.trim())
 		.forEach((linea, i) => {
 			if (!linea) return;
-			const [nombreCrudo, tipoCrudo = "", orgCruda = ""] = linea.split(/[;\t]/).map((x) => x.trim());
+			const [nombreCrudo, tipoCrudo = "", orgCruda = "", correoCrudo = ""] = linea
+				.split(/[;\t]/)
+				.map((x) => x.trim());
 			const nombre = nombreCrudo ?? "";
 			if (!nombre) {
 				errores.push(`Renglón ${i + 1}: falta el nombre.`);
@@ -200,13 +284,7 @@ export function leerLista(
 				personas.push({ nombre, rol, ...(rol === "evaluador" && sede ? { sede } : {}) });
 				return;
 			}
-			const n = Number(tipoCrudo);
-			const tipo =
-				Number.isInteger(n) && n >= 1 && n <= 5
-					? n
-					: TIPOS_PLAYA.find((t) =>
-							t.nombre.toLowerCase().startsWith(tipoCrudo.toLowerCase().slice(0, 5)) && tipoCrudo.length >= 4,
-						)?.id;
+			const tipo = tipoDeTexto(tipoCrudo);
 			if (!tipo) {
 				// PQ-50: no es lo mismo no escribir el tipo que escribir uno que no existe.
 				errores.push(
@@ -216,7 +294,17 @@ export function leerLista(
 				);
 				return;
 			}
-			personas.push({ nombre, rol, tipo_playa: tipo, ...(orgCruda ? { organizacion: orgCruda } : {}) });
+			if (correoCrudo && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(correoCrudo)) {
+				errores.push(`Renglón ${i + 1} (${nombre}): el correo «${correoCrudo}» no es válido.`);
+				return;
+			}
+			personas.push({
+				nombre,
+				rol,
+				tipo_playa: tipo,
+				...(orgCruda ? { organizacion: orgCruda } : {}),
+				...(correoCrudo ? { correo: correoCrudo.toLowerCase() } : {}),
+			});
 		});
 	return { personas, errores };
 }

@@ -9,6 +9,7 @@ import {
 	TIPOS_PLAYA,
 	cambiarCuenta,
 	crearLote,
+	csvALista,
 	detalleAuditoria,
 	leerLista,
 	listarCuentas,
@@ -285,6 +286,7 @@ function CrearCuentas({ onCreadas }: { onCreadas: (c: Credencial[]) => void }) {
 	const [rol, setRol] = useState<Rol>("user");
 	const [sede, setSede] = useState<Sede>("Santa Marta");
 	const [texto, setTexto] = useState("");
+	const [importado, setImportado] = useState<string | null>(null);
 	const [errores, setErrores] = useState<string[]>([]);
 	const [enviando, setEnviando] = useState(false);
 
@@ -346,6 +348,33 @@ function CrearCuentas({ onCreadas }: { onCreadas: (c: Credencial[]) => void }) {
 						</div>
 					) : null}
 				</div>
+				{rol === "user" ? (
+					<div className="pnl-campo" style={{ marginTop: 14 }}>
+						<label htmlFor="c-csv">Importar la lista de inscritos (CSV exportado de Forms)</label>
+						<input
+							id="c-csv"
+							type="file"
+							accept=".csv,text/csv"
+							onChange={async (e) => {
+								const archivo = e.target.files?.[0];
+								if (!archivo) return;
+								const r = csvALista(await archivo.text());
+								setImportado(
+									r.faltan.length
+										? r.faltan.join(" ")
+										: `Se leyeron ${r.filas} inscritos. Revise la lista abajo y luego toque “Crear cuentas”.`,
+								);
+								if (r.lista) setTexto(r.lista);
+								e.target.value = "";
+							}}
+						/>
+						{importado ? (
+							<p className="pnl-sub" role="status">
+								{importado}
+							</p>
+						) : null}
+					</div>
+				) : null}
 				<div className="pnl-campo" style={{ marginTop: 14 }}>
 					<label htmlFor="c-lista">{rol === "user" ? "Nombre; tipo; organización" : "Nombres"}</label>
 					<textarea
