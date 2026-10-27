@@ -806,12 +806,50 @@ async def exportar(
                 ", ".join(f["dias"]),
             ]
         )
+    # PDF p. 5: "para cada interacción se registrará el número del
+    # participante, la pregunta realizada, la categoría asignada, los puntos
+    # obtenidos y el puntaje acumulado" (B15). Solo preguntas válidas con
+    # calificación oficial, en orden de llegada por participante.
+    numero_de = {p.message_id: p.numero for p in preguntas}
+    interacciones: list[list[object]] = [
+        [
+            "ID Usuario",
+            "ID pregunta",
+            "Fecha",
+            "Pregunta formulada",
+            "Categoría (Ct)",
+            "Puntos (Puntaje Total)",
+            "Puntaje acumulado",
+            "Estado",
+        ]
+    ]
+    acumulado: dict[str, int] = {}
+    for o in sorted(
+        (o for o in _oficiales(preguntas) if o.oficial.valida),
+        key=lambda o: (o.codigo, o.fecha),
+    ):
+        acumulado[o.codigo] = acumulado.get(o.codigo, 0) + (o.oficial.total or 0)
+        interacciones.append(
+            [
+                o.codigo,
+                numero_de[o.message_id],
+                o.fecha.astimezone(pm.HORA_COLOMBIA).strftime("%Y-%m-%d %H:%M"),
+                ej.celda_segura(o.texto),
+                ej.CT_PLANILLA[o.oficial.ct] if o.oficial.ct else "",
+                o.oficial.total,
+                acumulado[o.codigo],
+                "Revisada por el comité"
+                if o.oficial.estado == "final"
+                else "Concordantes (promedio): pendiente de revisión del comité",
+            ]
+        )
     contenido = ej.libro_xlsx(
         [
             ("Evaluación", hoja, ej.ANCHOS_PLANILLA),
             ("Calificaciones", individuales, [12, 12, 28, 14, 6, 6, 6, 16, 16, 6, 14, 8, 16, 40]),
             ("Resumen", resumen_hoja, [40, 14]),
             ("Premios y participación", premios_hoja, [26, 14, 24, 60, 26]),
+            ("Puntaje por interacción", interacciones, [12, 12, 18, 70, 16, 14, 16, 34]),
         ]
     )
     return Response(

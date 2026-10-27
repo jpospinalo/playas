@@ -381,7 +381,13 @@ def test_resumen_premios_y_excel(cliente) -> None:
         "Calificaciones",
         "Resumen",
         "Premios y participación",
+        "Puntaje por interacción",
     ]
+    # PDF p. 5: número, pregunta, categoría, puntos y acumulado por interacción.
+    inter = z.read("xl/worksheets/sheet5.xml").decode()
+    for col in ("ID Usuario", "Categoría (Ct)", "Puntos (Puntaje Total)", "Puntaje acumulado"):
+        assert col in inter
+    assert "Ana" not in inter
     hoja = z.read("xl/worksheets/sheet1.xml").decode()
     for col in ("ID pregunta", "ID Usuario", "Fecha", "Hora", "Tipo de Usuario de Playa", "Revisó"):
         assert col in hoja
