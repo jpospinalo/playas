@@ -231,9 +231,12 @@ function Bandeja_() {
 					))}
 				</div>
 				{/* J6-B: si se llegó desde una cifra del tablero, el filtro se dice y se puede quitar. */}
-				{TEXTO_FILTRO[estado] && !pestanas.some((p) => p.valor === estado) ? (
+				{(TEXTO_FILTRO[estado] && !pestanas.some((p) => p.valor === estado)) || soloReales ? (
 					<p className="pnl-filtro-activo">
-						Mostrando: <ChipEstado tono="espera">{TEXTO_FILTRO[estado]}</ChipEstado>{" "}
+						Mostrando:{" "}
+						<ChipEstado tono="espera">
+							{TEXTO_FILTRO[estado] ?? pestanas.find((p) => p.valor === estado)?.texto ?? "Todas"}
+						</ChipEstado>{" "}
 						{datos ? <span className="num">({numero(datos.total)})</span> : null}
 						{soloReales ? <span>sin la práctica</span> : null}
 						<button
