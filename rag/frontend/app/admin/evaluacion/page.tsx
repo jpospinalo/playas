@@ -35,6 +35,10 @@ export default function PaginaBandeja() {
 	const [estado, setEstado] = useState<FiltroBandeja>(comite ? "con_diferencias" : "pendientes");
 	const [tipo, setTipo] = useState(0);
 	const [ct, setCt] = useState<Ct | "">("");
+	// PQ-91: buscar por ID o participante y ver primero las más recientes.
+	const [borrador, setBorrador] = useState("");
+	const [buscar, setBuscar] = useState("");
+	const [orden, setOrden] = useState<"antiguas" | "recientes">("antiguas");
 	const [pagina, setPagina] = useState(1);
 	const [datos, setDatos] = useState<Bandeja | null>(null);
 	const [error, setError] = useState<string | null>(null);
@@ -42,7 +46,7 @@ export default function PaginaBandeja() {
 
 	useEffect(() => {
 		let vigente = true;
-		pedirBandeja(estado, tipo, ct, pagina, POR_PAGINA)
+		pedirBandeja(estado, tipo, ct, pagina, POR_PAGINA, buscar, orden)
 			.then((r) => {
 				if (vigente) {
 					setDatos(r);
@@ -55,7 +59,7 @@ export default function PaginaBandeja() {
 		return () => {
 			vigente = false;
 		};
-	}, [estado, tipo, ct, pagina, intento]);
+	}, [estado, tipo, ct, pagina, intento, buscar, orden]);
 
 	// Comité: lo que debe resolver (diferencias); semillerista: lo que le toca.
 	const pestanas: { valor: FiltroBandeja; texto: string }[] = comite
@@ -101,6 +105,40 @@ export default function PaginaBandeja() {
 				<div className="pnl-bloque-cab">
 					<h2 id="t-bandeja">Preguntas</h2>
 					<div className="pnl-controles">
+						<div className="pnl-campo">
+							<label htmlFor="b-buscar">Buscar (ID de pregunta, participante o texto)</label>
+							<input
+								id="b-buscar"
+								type="search"
+								className="pnl-input"
+								value={borrador}
+								onChange={(e) => setBorrador(e.target.value)}
+								onBlur={() => {
+									setBuscar(borrador);
+									setPagina(1);
+								}}
+								onKeyDown={(e) => {
+									if (e.key === "Enter") {
+										setBuscar(borrador);
+										setPagina(1);
+									}
+								}}
+							/>
+						</div>
+						<div className="pnl-campo">
+							<label htmlFor="b-orden">Orden</label>
+							<select
+								id="b-orden"
+								value={orden}
+								onChange={(e) => {
+									setOrden(e.target.value as "antiguas" | "recientes");
+									setPagina(1);
+								}}
+							>
+								<option value="antiguas">Más antiguas primero</option>
+								<option value="recientes">Más recientes primero</option>
+							</select>
+						</div>
 						<div className="pnl-campo">
 							<label htmlFor="b-tipo">Tipo de usuario de playa</label>
 							<select

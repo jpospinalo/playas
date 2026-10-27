@@ -171,13 +171,22 @@ function Ficha_() {
 								<p className="pnl-sub" style={{ marginBottom: 12 }}>
 									Reemplaza a las de los semilleristas y queda como “Revisó” en la planilla.
 								</p>
-								<FormCalificacion
-									key={`final-${ficha.final ? "si" : "no"}`}
-									rubrica={rubrica}
-									inicial={ficha.final ?? ficha.otras?.[0] ?? null}
-									textoBoton={ficha.final ? "Actualizar la calificación final" : "Guardar la calificación final"}
-									onGuardar={(c) => guardar(c, true)}
-								/>
+								{/* PQ-93: la fija la validación jurídica o el admin, cuando ya hay calificaciones. */}
+								{ficha.puede_fijar_final && ficha.otras?.length ? (
+									<FormCalificacion
+										key={`final-${ficha.final ? "si" : "no"}`}
+										rubrica={rubrica}
+										inicial={ficha.final ?? ficha.otras?.[0] ?? null}
+										textoBoton={ficha.final ? "Actualizar la calificación final" : "Guardar la calificación final"}
+										onGuardar={(c) => guardar(c, true)}
+									/>
+								) : (
+									<p className="pnl-vacio">
+										{ficha.puede_fijar_final
+											? "Se podrá fijar cuando los semilleristas la califiquen."
+											: "La fija la validación jurídica (Ana María o Sandra) o el administrador."}
+									</p>
+								)}
 							</section>
 						</>
 					) : (

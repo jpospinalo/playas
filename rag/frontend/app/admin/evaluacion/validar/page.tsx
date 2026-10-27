@@ -36,10 +36,14 @@ export default function PaginaValidar() {
 	const [elegidas, setElegidas] = useState<Set<string>>(new Set());
 	const [confirmar, setConfirmar] = useState(false);
 	const [aviso, setAviso] = useState<string | null>(null);
+	// PQ-91: buscar y ver primero las más recientes.
+	const [borrador, setBorrador] = useState("");
+	const [buscar, setBuscar] = useState("");
+	const [orden, setOrden] = useState<"antiguas" | "recientes">("antiguas");
 
 	useEffect(() => {
 		let vigente = true;
-		pedirBandejaValidacion(estado, pagina, POR_PAGINA)
+		pedirBandejaValidacion(estado, pagina, POR_PAGINA, buscar, orden)
 			.then((d) => {
 				if (vigente) {
 					setDatos(d);
@@ -52,7 +56,7 @@ export default function PaginaValidar() {
 		return () => {
 			vigente = false;
 		};
-	}, [estado, pagina, recarga]);
+	}, [estado, pagina, recarga, buscar, orden]);
 
 	const tipo = datos?.tipo ?? null;
 	const pestanas: { valor: FiltroValidacion; texto: string }[] =
@@ -110,6 +114,42 @@ export default function PaginaValidar() {
 				<h2 id="t-val" className="sr">
 					Evaluaciones
 				</h2>
+				<div className="pnl-controles" style={{ marginBottom: 12 }}>
+						<div className="pnl-campo">
+							<label htmlFor="b-buscar">Buscar (ID de pregunta, participante o texto)</label>
+							<input
+								id="b-buscar"
+								type="search"
+								className="pnl-input"
+								value={borrador}
+								onChange={(e) => setBorrador(e.target.value)}
+								onBlur={() => {
+									setBuscar(borrador);
+									setPagina(1);
+								}}
+								onKeyDown={(e) => {
+									if (e.key === "Enter") {
+										setBuscar(borrador);
+										setPagina(1);
+									}
+								}}
+							/>
+						</div>
+						<div className="pnl-campo">
+							<label htmlFor="b-orden">Orden</label>
+							<select
+								id="b-orden"
+								value={orden}
+								onChange={(e) => {
+									setOrden(e.target.value as "antiguas" | "recientes");
+									setPagina(1);
+								}}
+							>
+								<option value="antiguas">Más antiguas primero</option>
+								<option value="recientes">Más recientes primero</option>
+							</select>
+						</div>
+				</div>
 				<div className="pnl-pestanas" role="group" aria-label="Mostrar">
 					{pestanas.map((p) => (
 						<button
@@ -407,7 +447,7 @@ function Pertinencia({ item, onCambio }: { item: ItemValidacion; onCambio: () =>
 			</p>
 			<div className="pnl-campo">
 				<label htmlFor={`p-${id}`}>Comentario (opcional)</label>
-				<input id={`p-${id}`} className="pnl-input" value={comentario} maxLength={2000} onChange={(e) => setComentario(e.target.value)} />
+				<textarea id={`p-${id}`} value={comentario} maxLength={2000} onChange={(e) => setComentario(e.target.value)} />
 			</div>
 			{error ? (
 				<p className="pnl-error-linea" role="alert">

@@ -94,8 +94,15 @@ async function llamar<T>(ruta: string, init: RequestInit = {}): Promise<T> {
 	return (await res.json()) as T;
 }
 
-export function pedirBandejaValidacion(estado: FiltroValidacion, page: number, pageSize = 20): Promise<BandejaValidacion> {
-	const q = new URLSearchParams({ estado, page: String(page), page_size: String(pageSize) });
+export function pedirBandejaValidacion(
+	estado: FiltroValidacion,
+	page: number,
+	pageSize = 20,
+	buscar = "",
+	orden: "antiguas" | "recientes" = "antiguas",
+): Promise<BandejaValidacion> {
+	const q = new URLSearchParams({ estado, page: String(page), page_size: String(pageSize), orden });
+	if (buscar.trim()) q.set("buscar", buscar.trim());
 	return llamar(`/bandeja?${q}`);
 }
 

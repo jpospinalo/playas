@@ -105,6 +105,8 @@ export interface CalificacionOut {
 }
 
 export interface Ficha {
+	/** PQ-93: validación jurídica o admin. */
+	puede_fijar_final?: boolean;
 	practica?: boolean;
 	asignada_a?: string[] | null;
 	message_id: string;
@@ -252,10 +254,14 @@ export function pedirBandeja(
 	ct: Ct | "",
 	page: number,
 	pageSize = 20,
+	buscar = "",
+	orden: "" | "antiguas" | "recientes" = "",
 ): Promise<Bandeja> {
 	const q = new URLSearchParams({ estado, page: String(page), page_size: String(pageSize) });
 	if (tipo) q.set("tipo_playa", String(tipo));
 	if (ct) q.set("ct", ct);
+	if (buscar.trim()) q.set("buscar", buscar.trim());
+	if (orden) q.set("orden", orden);
 	return llamar(`/bandeja?${q}`);
 }
 

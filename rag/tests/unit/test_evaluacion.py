@@ -371,7 +371,11 @@ def test_diferencias_y_final_del_comite(cliente) -> None:
     assert c.get("/api/evaluacion/bandeja?estado=pendientes", headers=COM).json()["total"] == 1
     ficha = c.get("/api/evaluacion/preguntas/q2", headers=COM).json()
     assert len(ficha["otras"]) == 2 and ficha["es_comite"]
-    f = c.put("/api/evaluacion/preguntas/q2/final", headers=COM, json=_cal_json("I", 9, f=3))
+    f = c.put(
+        "/api/evaluacion/preguntas/q2/final",
+        headers=_h("san", "comite"),
+        json=_cal_json("I", 9, f=3),
+    )
     assert f.json()["estado"] == "final" and f.json()["oficial"]["total"] == 18
     # Con final, los evaluadores ya no la cambian.
     assert (
@@ -483,7 +487,7 @@ def test_concordantes_por_validar_del_comite(cliente) -> None:
     b = c.get("/api/evaluacion/bandeja?estado=por_validar", headers=COM).json()
     assert [i["message_id"] for i in b["items"]] == ["q1"] and b["conteos"]["por_validar"] == 1
     # El comité la valida guardando la final: sale de "por validar".
-    c.put("/api/evaluacion/preguntas/q1/final", headers=COM, json=_cal_json("S", 5))
+    c.put("/api/evaluacion/preguntas/q1/final", headers=_h("san", "comite"), json=_cal_json("S", 5))
     assert c.get("/api/evaluacion/bandeja?estado=por_validar", headers=COM).json()["total"] == 0
 
 
@@ -854,3 +858,31 @@ def test_comite_ve_a_quien_quedo_asignada(cliente) -> None:
     b = c.get("/api/evaluacion/bandeja?estado=todas", headers=COM).json()
     assert all(len(i["asignada_a"]) == 2 for i in b["items"])
     assert c.get("/api/evaluacion/preguntas/q1", headers=BQ).json()["asignada_a"] is None
+
+
+def test_final_solo_juridica_o_admin(cliente) -> None:
+    """PQ-93: Camilo (costero) no fija la final; sin calificaciones tampoco."""
+    c = cliente
+    _, _, BQ, SIN, COM, USER = _hs()  # noqa: N806
+    CAM, SAN = _h("cam", "comite"), _h("san", "comite")  # noqa: N806
+    url = "/api/evaluacion/preguntas/q1/final"
+    assert c.put(url, headers=SAN, json=_cal_json("S", 4)).status_code == 409  # sin calificaciones
+    c.put("/api/evaluacion/preguntas/q1/mia", headers=BQ, json=_cal_json("S", 4))
+    assert c.put(url, headers=CAM, json=_cal_json("S", 4)).status_code == 403
+    assert c.put(url, headers=COM, json=_cal_json("S", 4)).status_code == 403
+    assert c.get("/api/evaluacion/preguntas/q1", headers=CAM).json()["puede_fijar_final"] is False
+    assert c.get("/api/evaluacion/preguntas/q1", headers=SAN).json()["puede_fijar_final"] is True
+    assert c.put(url, headers=SAN, json=_cal_json("S", 4)).status_code == 200
+
+
+def test_buscar_y_ordenar(cliente) -> None:
+    """PQ-91: buscar por ID de pregunta o participante y ver las más recientes."""
+    c = cliente
+    COM = _hs()[4]  # noqa: N806
+    r = c.get("/api/evaluacion/bandeja?estado=todas&buscar=2", headers=COM).json()
+    assert [i["numero"] for i in r["items"]] == [2]
+    r = c.get("/api/evaluacion/bandeja?estado=todas&buscar=p002", headers=COM).json()
+    assert [i["codigo"] for i in r["items"]] == ["P002"]
+    r = c.get("/api/evaluacion/bandeja?estado=pendientes&orden=recientes", headers=COM).json()
+    numeros = [i["numero"] for i in r["items"]]
+    assert numeros == sorted(numeros, reverse=True)

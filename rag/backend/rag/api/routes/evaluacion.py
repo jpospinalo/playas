@@ -452,6 +452,14 @@ async def reasignar_pendientes(
     return {"reasignadas": n, "sin_destino": sin}
 
 
+async def puede_fijar_final(session: AsyncSession, user: dict) -> bool:
+    """PQ-93: admin o validación jurídica (no la gestión costera)."""
+    if user["role"] in ("admin", "super-admin"):
+        return True
+    vp = await session.get(ValidatorProfile, user["sub"])
+    return vp is not None and vp.tipo == "juridico"
+
+
 async def _nombres(session: AsyncSession) -> dict[str, str]:
     return {
         uid: (nombre or correo or "").strip()
@@ -562,6 +570,7 @@ class FichaResponse(BaseModel):
     es_comite: bool
     # PQ-90: a quién quedó asignada (solo comité y admin).
     asignada_a: list[str] | None = None
+    puede_fijar_final: bool = False
     practica: bool = False
     anterior: str | None
     siguiente: str | None
@@ -610,6 +619,30 @@ def _puede_evaluar(p: _Pregunta, user_id: str, rol: str, sede: str | None) -> st
     if len([c for c in p.cals if not c.es_final]) >= 2:
         return "Ya tiene las dos calificaciones."
     return None
+
+
+ESTADO_PLANILLA = {
+    "sin_evaluar": "Sin evaluar",
+    "una_evaluacion": "Falta una calificación",
+    "con_diferencias": "Con diferencias: pendiente del comité",
+    "concordante": "Concordantes: falta la validación jurídica",
+    "validada": "Validada (promedio de las dos evaluaciones)",
+    "final": "Revisada por el comité",
+}
+
+
+def _buscar(preguntas: list[_Pregunta], buscar: str | None) -> list[_Pregunta]:
+    """PQ-91: por ID de pregunta (486), por participante (P081) o por texto."""
+    q = (buscar or "").strip()
+    if not q:
+        return preguntas
+    if q.isdigit():
+        return [p for p in preguntas if p.numero == int(q)]
+    qu = q.upper()
+    if qu.startswith("P") and qu[1:].isdigit():
+        return [p for p in preguntas if p.codigo == qu]
+    ql = q.lower()
+    return [p for p in preguntas if ql in p.texto.lower()]
 
 
 ESTADOS_FILTRO = Literal[
@@ -736,6 +769,8 @@ async def bandeja(
     ct: Literal["S", "I", "A"] | None = None,
     page: int = Query(default=1, ge=1),
     page_size: int = Query(default=20, ge=1, le=100),
+    buscar: str | None = Query(default=None, max_length=200),
+    orden: Literal["antiguas", "recientes"] | None = None,
     user: dict = Depends(require_evaluacion),
     session: AsyncSession = Depends(get_session),
 ) -> BandejaResponse:
@@ -756,7 +791,9 @@ async def bandeja(
     conteos = {k: sum(m[k] for m in marcas.values()) for k in ESTADOS_FILTRO.__args__}  # type: ignore[attr-defined]
     elegidas = [p for p in preguntas if marcas[p.message_id][estado]]
     # Pendientes: las más antiguas primero (orden de llegada); el resto, recientes primero.
-    elegidas.sort(key=lambda p: p.numero, reverse=estado != "pendientes")
+    elegidas = _buscar(elegidas, buscar)
+    recientes = orden == "recientes" if orden else estado != "pendientes"
+    elegidas.sort(key=lambda p: p.numero, reverse=recientes)
     pagina = elegidas[(page - 1) * page_size : page * page_size]
     return BandejaResponse(
         items=[
@@ -838,6 +875,7 @@ async def _ficha(session: AsyncSession, message_id: str, user: dict) -> FichaRes
         motivo_no_puede=motivo,
         es_comite=es_comite,
         asignada_a=_asignada_a(p, await _nombres(session)) if es_comite else None,
+        puede_fijar_final=es_comite and await puede_fijar_final(session, user),
         practica=p.practica,
         anterior=preguntas[indice - 1].message_id if indice > 0 else None,
         siguiente=preguntas[indice + 1].message_id if indice + 1 < len(preguntas) else None,
@@ -977,6 +1015,15 @@ async def guardar_final(
     p = next((x for x in preguntas if x.message_id == message_id), None)
     if p is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Pregunta no encontrada.")
+    if not await puede_fijar_final(session, user):
+        raise HTTPException(
+            status.HTTP_403_FORBIDDEN,
+            "La calificación final la fija la validación jurídica o el administrador.",
+        )
+    if not any(not c.es_final for c in p.cals):
+        raise HTTPException(
+            status.HTTP_409_CONFLICT, "Todavía no hay calificaciones de los semilleristas."
+        )
     await calendario.exigir_plazo(session, "fin_validacion", "validar")
     auditoria.registrar(
         session,
@@ -1230,14 +1277,7 @@ async def exportar(
     for p in preguntas:
         o = p.oficial
         forma = ej.puntaje_forma(o.f1, o.f2, o.f3) if o.f1 else None
-        estado = {
-            "sin_evaluar": "Sin evaluar",
-            "una_evaluacion": "Falta una calificación",
-            "con_diferencias": "Con diferencias: pendiente del comité",
-            "concordante": "Concordantes: falta la validación jurídica",
-            "validada": "Validada (promedio de las dos evaluaciones)",
-            "final": "Revisada por el comité",
-        }[o.estado]
+        estado = ESTADO_PLANILLA[o.estado]
         obs = "; ".join(
             x for x in (estado, "No válida" if o.valida is False else "", o.observaciones) if x
         )
@@ -1404,9 +1444,7 @@ async def exportar(
                 ej.CT_PLANILLA[o.oficial.ct] if o.oficial.ct else "",
                 o.oficial.total,
                 acumulado[o.codigo],
-                "Revisada por el comité"
-                if o.oficial.estado == "final"
-                else "Concordantes (promedio): pendiente de revisión del comité",
+                ESTADO_PLANILLA[o.oficial.estado],
             ]
         )
     contenido = ej.libro_xlsx(

@@ -37,7 +37,7 @@ from rag.api.models import (
     User,
     ValidatorProfile,
 )
-from rag.api.routes.evaluacion import _cargar, _Pregunta
+from rag.api.routes.evaluacion import _buscar, _cargar, _Pregunta
 
 router = APIRouter(prefix="/api/evaluacion/validacion", tags=["evaluacion"])
 
@@ -216,13 +216,15 @@ async def bandeja(
     estado: ESTADOS_VALIDACION = "por_validar",
     page: int = Query(default=1, ge=1),
     page_size: int = Query(default=20, ge=1, le=100),
+    buscar: str | None = Query(default=None, max_length=200),
+    orden: Literal["antiguas", "recientes"] = "antiguas",
     user: dict = Depends(require_validacion),
     session: AsyncSession = Depends(get_session),
 ) -> BandejaValidacion:
     """Jurídica: evaluaciones de su sede. Costera: preguntas (pertinencia).
     Admin: todas las evaluaciones, solo para ver."""
     tipo, sede = await _validador(session, user)
-    preguntas = await _cargar(session)
+    preguntas = _buscar(await _cargar(session), buscar)
     evals = await _evaluaciones(session, preguntas)
     items: list[tuple[_Pregunta, list[_Fila], str]] = []
     for p in preguntas:
@@ -257,7 +259,7 @@ async def bandeja(
     }
     conteos["todas"] = len(items)
     elegidos = [x for x in items if estado == "todas" or x[2] == estado]
-    elegidos.sort(key=lambda x: x[0].numero)
+    elegidos.sort(key=lambda x: x[0].numero, reverse=orden == "recientes")
     pagina = elegidos[(page - 1) * page_size : page * page_size]
     return BandejaValidacion(
         tipo=tipo,
@@ -366,8 +368,8 @@ async def validar(
             evaluation_id=evaluation_id,
             autor_id=user["sub"],
             tipo="acuerdo" if payload.de_acuerdo else "desacuerdo",
-            texto=("De acuerdo" if payload.de_acuerdo else "No de acuerdo")
-            + (f": {comentario}" if comentario else "."),
+            # PQ-92: el tipo ya dice "De acuerdo" / "No de acuerdo": el texto es el comentario.
+            texto=comentario or "Sin comentario.",
             created_at=ahora,
         )
     )
@@ -408,7 +410,7 @@ async def de_acuerdo_en_lote(
                 evaluation_id=eid,
                 autor_id=user["sub"],
                 tipo="acuerdo",
-                texto="De acuerdo (en lote).",
+                texto="Marcada en lote.",
                 created_at=ahora,
             )
         )

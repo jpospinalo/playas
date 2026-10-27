@@ -52,12 +52,14 @@ from rag.api.models import (  # noqa: E402
     MessageFeedback,
     PertinenceReview,
     PracticeAccount,
+    PrivacyConsent,
     QuestionEvaluation,
     User,
     ValidatorProfile,
 )
 from rag.api.passwords import hash_password  # noqa: E402
 from rag.api.routes.panel import DEMO_EMAIL  # noqa: E402
+from rag.api.routes.privacidad import VERSION as VERSION_PRIVACIDAD  # noqa: E402
 from rag.core import agent  # noqa: E402
 
 ADMIN_EMAIL = "admin@atlas.demo"
@@ -94,7 +96,7 @@ N_DIMAR = "decreto-2324-de-1984"
 N_PLAYAS_SM = (
     "Por medio del cual se reglamenta el uso, zonificación y horario de las playas con vocación "
     "turística del Distrito Turístico, Cultural e Histórico de Santa Marta, aptas para la "
-    "realización de actividades de aprovech"
+    "realización de actividades de aprovechamiento…"
 )
 N_RODADERO = (
     "Por medio de la cual se reglamenta el área de playa en el Balneario Turístico El Rodadero"
@@ -682,6 +684,11 @@ async def sembrar(
             conteo["preguntas"] += 1
         await s.commit()
         await _practica(s, hash_demo, ahora)
+        # El personal de la demo ya autorizó el aviso de privacidad (solo lo ve el participante).
+        for (uid_p,) in (
+            await s.execute(select(User.id).where(User.role.in_(("admin", "comite", "evaluador"))))
+        ).all():
+            s.add(PrivacyConsent(user_id=uid_p, version=VERSION_PRIVACIDAD, aceptada_at=ahora))
         await s.commit()
         conteo["evaluaciones"] = await _evaluaciones(s, random.Random(semilla + 2), ahora)
         await s.commit()
@@ -781,7 +788,7 @@ async def _validaciones(s, rng: random.Random, ahora: datetime) -> int:
                     evaluation_id=e.id,
                     autor_id=v,
                     tipo="acuerdo",
-                    texto="De acuerdo.",
+                    texto="Sin comentario.",
                     created_at=cuando,
                 )
             )
@@ -808,7 +815,7 @@ async def _validaciones(s, rng: random.Random, ahora: datetime) -> int:
                     evaluation_id=e.id,
                     autor_id=v,
                     tipo="desacuerdo",
-                    texto=f"No de acuerdo: {motivo}",
+                    texto=motivo,
                     created_at=cuando,
                 )
             )
