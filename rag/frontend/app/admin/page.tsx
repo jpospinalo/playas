@@ -71,7 +71,8 @@ function consultaFiltros(
 	persona: FiltroPersona = {},
 ): string {
 	const q = new URLSearchParams();
-	if (dias !== 30) q.set("dias", String(dias));
+	// Por defecto "Todo": el ejercicio dura 2 semanas (PQ-69).
+	if (dias !== 0) q.set("dias", String(dias));
 	if (tema) q.set("tema", tema);
 	if (resultado) q.set("ver", resultado);
 	if (persona.participante) q.set("part", persona.participante);
@@ -84,7 +85,7 @@ function ResumenConFiltros() {
 	const router = useRouter();
 	const [dias, setDias] = useState<number>(() => {
 		const d = Number(sp.get("dias"));
-		return sp.has("dias") && DIAS_VALIDOS.includes(d) ? d : 30;
+		return sp.has("dias") && DIAS_VALIDOS.includes(d) ? d : 0;
 	});
 	const [tema, setTema] = useState<string>(() => {
 		const t = sp.get("tema") ?? "";
@@ -732,7 +733,7 @@ function Personas({ datos, dias }: { datos: Resumen; dias: number }) {
 			</ul>
 			<p style={{ margin: 0 }}>
 				En promedio, {decimal(p.preguntas_por_persona)} preguntas por persona. La lista de cuentas
-				está en <Link href="/admin/usuarios">Usuarios</Link>.
+				está en <Link href="/admin/cuentas">Cuentas</Link>.
 			</p>
 		</>
 	);

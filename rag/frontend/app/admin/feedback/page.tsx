@@ -43,7 +43,7 @@ const POR_PAGINA = 10;
  * promedios en formato colombiano "3,4 de 5" (PQ-37) y filtro simple (PQ-38).
  */
 export default function PaginaEncuestas() {
-	const [dias, setDias] = useState(30);
+	const [dias, setDias] = useState(0); // "Todo" por defecto (PQ-69)
 	const [filtro, setFiltro] = useState<FiltroEncuesta>("");
 	const [pagina, setPagina] = useState(1);
 	const [datos, setDatos] = useState<Encuestas | null>(null);

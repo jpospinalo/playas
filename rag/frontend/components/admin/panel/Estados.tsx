@@ -166,7 +166,8 @@ export function Delta({
 	mejorSiSube: boolean;
 	sufijo: string;
 }) {
-	if (!cambio) return <>Sin datos del periodo anterior</>;
+	// Sin periodo anterior (p. ej. "Todo") no se compara: no se muestra nada (PQ-69).
+	if (!cambio) return null;
 	if (cambio.direccion === "igual") return <>Igual que {sufijo}</>;
 	const bueno = (cambio.direccion === "sube") === mejorSiSube;
 	return (

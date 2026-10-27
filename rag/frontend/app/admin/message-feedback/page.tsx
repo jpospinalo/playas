@@ -27,7 +27,7 @@ const OPCIONES: OpcionFiltro[] = [
  * mín/máx (PQ-38); nombre de registro, nunca el correo (PQ-05).
  */
 export default function PaginaOpiniones() {
-	const [dias, setDias] = useState(30);
+	const [dias, setDias] = useState(0); // "Todo" por defecto (PQ-69)
 	const [resultado, setResultado] = useState<FiltroResultado>("calificadas");
 	const [resumen, setResumen] = useState<Resumen | null>(null);
 	const [error, setError] = useState<string | null>(null);
