@@ -305,7 +305,9 @@ class Pipeline:
                     "status": status,
                     "text_hash": text_hash,
                     "fingerprint": int(fingerprint),
-                    "artifact": item,
+                    # Los informes necesitan solo metadatos: no retener todo
+                    # el texto y los chunks del corpus simultáneamente.
+                    "artifact": {key: item[key] for key in ("paths", "metadata", "gates")},
                 }
             )
         with (self.state / "review_queue.csv").open("w", encoding="utf-8", newline="") as stream:
