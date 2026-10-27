@@ -9,6 +9,7 @@ from typing import Any
 
 from langchain_core.documents import Document
 
+from .legal_metadata import extract_legal_metadata
 
 
 def normalize_text(text: str) -> str:
@@ -60,8 +61,10 @@ def normalize_documents(docs: list[Document]) -> list[Document]:
     normalized: list[Document] = []
 
     for d in docs:
+        legal = extract_legal_metadata(d.page_content)
         text = normalize_text(d.page_content)
         meta = normalize_metadata(d.metadata)
+        meta["legal_metadata"] = legal
         normalized.append(Document(page_content=text, metadata=meta))
 
     return normalized
