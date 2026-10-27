@@ -134,7 +134,7 @@ export function Tablero({ resumen, comite }: { resumen: ResumenEjercicio; comite
 	);
 }
 
-function Grupo({ id, titulo, sub, children }: { id: string; titulo: string; sub: string; children: ReactNode }) {
+export function Grupo({ id, titulo, sub, children }: { id: string; titulo: string; sub: string; children: ReactNode }) {
 	return (
 		<section className="pnl-tb-grupo" aria-labelledby={id}>
 			<header>
@@ -413,5 +413,57 @@ function Persona({
 		</Link>
 	) : (
 		<div className={clase}>{contenido}</div>
+	);
+}
+
+/**
+ * Cifra del tablero que, en vez de ir a otra página, filtra la lista de abajo
+ * (Resumen del admin): mismo aspecto que `Cifra`, con su contexto "X de Y".
+ */
+export function CifraBoton({
+	titulo,
+	det,
+	de,
+	progreso,
+	tono = "neutro",
+	onVer,
+	verTexto,
+	children,
+}: {
+	titulo: string;
+	det: ReactNode;
+	de?: string;
+	progreso?: number;
+	tono?: "neutro" | "ojo" | "bien";
+	onVer?: () => void;
+	verTexto?: string;
+	children: ReactNode;
+}) {
+	const cuerpo = (
+		<>
+			<span className="pnl-tb-titulo">
+				{tono === "ojo" ? <IconoAviso /> : null}
+				{titulo}
+			</span>
+			<span className="pnl-tb-valor num">
+				{children}
+				{de ? <small> {de}</small> : null}
+			</span>
+			{progreso !== undefined ? (
+				<span className={tono === "ojo" ? "pnl-tb-prog ojo" : "pnl-tb-prog"} aria-hidden="true">
+					<i style={{ width: `${progreso}%` }} />
+				</span>
+			) : null}
+			<span className="pnl-tb-det">{det}</span>
+			{onVer && verTexto ? <span className="pnl-tb-ir">{verTexto}</span> : null}
+		</>
+	);
+	const clase = tono === "ojo" ? "pnl-tb-cifra ojo" : "pnl-tb-cifra";
+	return onVer ? (
+		<button type="button" className={clase} onClick={onVer}>
+			{cuerpo}
+		</button>
+	) : (
+		<div className={clase}>{cuerpo}</div>
 	);
 }

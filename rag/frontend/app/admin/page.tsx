@@ -42,6 +42,7 @@ import { Brechas } from "@/components/admin/panel/Brechas";
 import { Recientes } from "@/components/admin/panel/Recientes";
 import { AparecerSi } from "@/components/admin/panel/Aparece";
 import { LimpiarFiltros } from "@/components/admin/panel/LimpiarFiltros";
+import { CifraBoton, Grupo } from "@/components/admin/evaluacion/Tablero";
 
 /**
  * Resumen del panel: qué se pregunta, sobre qué temas y normas, qué tan bien
@@ -375,6 +376,17 @@ function Contenido({
 	const pSinRespAnt = a ? porcentaje(a.sin_respuesta_segura, a.respuestas) : null;
 	const antes = `los ${dias} días anteriores`;
 
+	// J6-B: cada cifra abre su lista (la de "Pregunta por pregunta", ya filtrada).
+	function ver(r: FiltroResultado) {
+		onResultado(r);
+		requestAnimationFrame(() =>
+			document.getElementById("t-recientes")?.scrollIntoView({
+				behavior: window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+				block: "start",
+			}),
+		);
+	}
+
 	if (c.preguntas === 0) {
 		return (
 			<section className="pnl-bloque" aria-labelledby="t-vacio">
@@ -396,14 +408,14 @@ function Contenido({
 
 	return (
 		<>
-			<h2 className="sr">Cifras del periodo</h2>
-			<dl className="pnl-cifras">
-				<div className="pnl-cifra">
-					<dt>Preguntas</dt>
-					<dd>
-						<span className="pnl-valor num">{numero(c.preguntas)}</span>
-						<span className="pnl-det">
-							{a ? (
+			<Grupo id="g-vamos" titulo="¿Cuánto vamos?" sub="Toque una cifra para ver esas preguntas abajo">
+				<div className="pnl-tb-cifras">
+					<CifraBoton
+						titulo="Preguntas"
+						onVer={() => ver("")}
+						verTexto="Ver todas →"
+						det={
+							a ? (
 								<Delta
 									cambio={cambioConteo(c.preguntas, a.preguntas)}
 									mejorSiSube
@@ -411,92 +423,87 @@ function Contenido({
 								/>
 							) : (
 								"Desde la primera pregunta guardada"
-							)}
-						</span>
-					</dd>
-				</div>
-				<div className="pnl-cifra">
-					<dt>Personas que preguntaron</dt>
-					<dd>
-						<span className="pnl-valor num">{numero(c.personas)}</span>
-						<span className="pnl-det">
-							{dias === 0
+							)
+						}
+					>
+						{numero(c.preguntas)}
+					</CifraBoton>
+					<CifraBoton
+						titulo="Personas que preguntaron"
+						det={
+							dias === 0
 								? `${cuantasDecimal(datos.personas.preguntas_por_persona, "pregunta", "preguntas")} por persona`
-								: `${numero(c.personas_nuevas)} por primera vez; ${cuantasDecimal(datos.personas.preguntas_por_persona, "pregunta", "preguntas")} por persona`}
-						</span>
-					</dd>
-				</div>
-				<div className="pnl-cifra">
-					<dt>Respondidas con fuente citada</dt>
-					<dd>
-						<span className="pnl-valor num">
-							{pFuente ?? "—"}
-							{pFuente !== null ? <small>&nbsp;%</small> : null}
-						</span>
-						<span className="pnl-det">
-							{numero(c.con_fuente)} de {cuantas(c.respuestas, "respuesta", "respuestas")}.{" "}
-							{a ? (
+								: `${numero(c.personas_nuevas)} por primera vez; ${cuantasDecimal(datos.personas.preguntas_por_persona, "pregunta", "preguntas")} por persona`
+						}
+					>
+						{numero(c.personas)}
+					</CifraBoton>
+					<CifraBoton
+						titulo="Respondidas con fuente citada"
+						tono="bien"
+						de={`de ${numero(c.respuestas)}${pFuente !== null ? ` (${pFuente} %)` : ""}`}
+						progreso={pFuente ?? 0}
+						onVer={() => ver("con_fuente")}
+						verTexto="Ver cuáles →"
+						det={
+							a ? (
 								<Delta
 									cambio={cambioTasa(pFuente, pFuenteAnt)}
 									mejorSiSube
-									sufijo={pFuenteAnt === null ? "antes" : `${pFuenteAnt} % antes`}
+									sufijo={pFuenteAnt === null ? "antes" : `${pFuenteAnt} % antes`}
 								/>
-							) : null}
-						</span>
-					</dd>
-				</div>
-				<div className="pnl-cifra">
-					<dt>Le sirvió</dt>
-					<dd>
-						{c.calificaciones < MINIMO_PARA_PORCENTAJE ? (
-							<>
-								<span className="pnl-valor">
-									<small>Pocos datos</small>
-								</span>
-								<span className="pnl-det">
-									Solo {numero(c.calificaciones)}{" "}
-									{c.calificaciones === 1 ? "calificación" : "calificaciones"}
-								</span>
-							</>
-						) : (
-							<>
-								<span className="pnl-valor num">
-									{porcentaje(c.le_sirvio, c.calificaciones)}
-									<small>&nbsp;%</small>
-								</span>
-								<span className="pnl-det">
-									{numero(c.le_sirvio)} de {numero(c.calificaciones)} calificaciones. Calificaron el{" "}
-									{textoPorcentaje(c.calificaciones, c.respuestas)} de las respuestas.
-								</span>
-							</>
-						)}
-					</dd>
-				</div>
-				<div className="pnl-cifra">
-					<dt>Sin respuesta segura</dt>
-					<dd>
-						<span className="pnl-valor num">
-							{pSinResp ?? "—"}
-							{pSinResp !== null ? <small>&nbsp;%</small> : null}
-						</span>
-						<span className="pnl-det">
-							{numero(c.sin_respuesta_segura)} de {cuantas(c.respuestas, "respuesta", "respuestas")}.{" "}
-							{a ? (
+							) : (
+								"Respuestas que citan una norma o sentencia"
+							)
+						}
+					>
+						{numero(c.con_fuente)}
+					</CifraBoton>
+					{c.calificaciones < MINIMO_PARA_PORCENTAJE ? (
+						<CifraBoton
+							titulo="Le sirvió"
+							det={`Solo ${cuantas(c.calificaciones, "calificación", "calificaciones")}: pocos datos para un porcentaje`}
+						>
+							<small>Pocos datos</small>
+						</CifraBoton>
+					) : (
+						<CifraBoton
+							titulo="Le sirvió"
+							tono={(porcentaje(c.le_sirvio, c.calificaciones) ?? 0) < 60 ? "ojo" : "bien"}
+							de={`de ${numero(c.calificaciones)} (${porcentaje(c.le_sirvio, c.calificaciones)} %)`}
+							progreso={porcentaje(c.le_sirvio, c.calificaciones) ?? 0}
+							onVer={() => ver("no_le_sirvio")}
+							verTexto="Ver a quién no le sirvió →"
+							det={`Calificaron el ${textoPorcentaje(c.calificaciones, c.respuestas)} de las respuestas`}
+						>
+							{numero(c.le_sirvio)}
+						</CifraBoton>
+					)}
+					<CifraBoton
+						titulo="Sin respuesta segura"
+						tono={c.sin_respuesta_segura > 0 ? "ojo" : "neutro"}
+						de={`de ${numero(c.respuestas)}${pSinResp !== null ? ` (${pSinResp} %)` : ""}`}
+						onVer={c.sin_respuesta_segura > 0 ? () => ver("sin_respuesta_segura") : undefined}
+						verTexto="Ver cuáles →"
+						det={
+							a ? (
 								<Delta
 									cambio={cambioTasa(pSinResp, pSinRespAnt)}
 									mejorSiSube={false}
-									sufijo={pSinRespAnt === null ? "antes" : `${pSinRespAnt} % antes`}
+									sufijo={pSinRespAnt === null ? "antes" : `${pSinRespAnt} % antes`}
 								/>
-							) : null}
-						</span>
-					</dd>
+							) : (
+								"ATLAS no encontró respaldo en las normas"
+							)
+						}
+					>
+						{numero(c.sin_respuesta_segura)}
+					</CifraBoton>
 				</div>
-			</dl>
 			<p className="pnl-desglose">
 				{desglose(c)}
 			</p>
 
-			<Brechas datos={datos} volver={volver} />
 
 			<div className="pnl-grid">
 				<section className="pnl-bloque pnl-c7" aria-labelledby="t-serie">
@@ -529,6 +536,13 @@ function Contenido({
 					<Personas datos={datos} dias={dias} />
 				</section>
 			</div>
+			</Grupo>
+
+			<Grupo id="g-atencion" titulo="¿Qué necesita atención?" sub="Dónde ATLAS no respondió bien">
+				<Brechas datos={datos} volver={volver} />
+			</Grupo>
+
+			<Grupo id="g-resultados" titulo="Resultados" sub="De qué preguntan y qué responde ATLAS">
 
 			<div className="pnl-grid">
 				<section className="pnl-bloque pnl-c7" aria-labelledby="t-temas">
@@ -679,6 +693,9 @@ function Contenido({
 				</div>
 			</div>
 
+			</Grupo>
+
+			<Grupo id="g-lista" titulo="Pregunta por pregunta" sub="Lo que abren las cifras de arriba">
 			<Recientes
 				key={`${diasFiltro}-${tema}-${persona.participante ?? ""}-${persona.tipo ?? ""}`}
 				dias={diasFiltro}
@@ -688,6 +705,7 @@ function Contenido({
 				volver={volver}
 				persona={persona}
 			/>
+			</Grupo>
 
 			<p className="pnl-pie">
 				Las cifras cuentan las preguntas hechas con sesión iniciada (flujo guiado y equipo), en

@@ -2584,3 +2584,20 @@ html:has(.pnl) {
 		grid-template-columns: 1fr;
 	}
 }
+
+/* J6-B: cifras del Resumen del admin que filtran la lista de abajo. */
+.pnl button.pnl-tb-cifra {
+	font: inherit;
+	text-align: left;
+	cursor: pointer;
+	align-items: stretch;
+}
+.pnl button.pnl-tb-cifra:hover .pnl-tb-valor {
+	text-decoration: underline;
+}
+.pnl-tb-valor > small:only-child {
+	font-size: 24px;
+}
+.pnl-tb-prog.ojo i {
+	background: var(--p-ambar);
+}
