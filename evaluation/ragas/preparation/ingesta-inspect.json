@@ -1,0 +1,104 @@
+{
+  "collections": [
+    {
+      "name": "rag_playas",
+      "id": "b569496c-801d-4ad0-a03b-135c3ef74ff2"
+    }
+  ],
+  "v1_count": 5888,
+  "v1_dimension": 768,
+  "v1_metadata_keys": [
+    "Archivo",
+    "CATEGORIA ANALISIS",
+    "Corporación",
+    "Magistrado ponente",
+    "Nº",
+    "Partes procesales",
+    "RELACIÓN PLAYAS",
+    "Radicado",
+    "TEMÁTICA",
+    "Tema principal",
+    "chunk_id",
+    "chunk_index",
+    "doc_type",
+    "entities",
+    "keywords",
+    "keywords_str",
+    "section_heading",
+    "section_index",
+    "section_name",
+    "source",
+    "summary",
+    "title",
+    "total_chunks_in_section"
+  ],
+  "v1_document_sample": "as de inteligencia artificial.\n\nREPÚBLIC\n\nVictoria en línea f Despacho Tribunal Administrativo del Magdalena\n\nINNOVACIÓN\n\n\"bELERTIGA\n\n## TRIBUNAL ADMINISTRATIVO DEL MAGDALENA DESPACHO\n\n## Magistrada ponente: MARÍA VICTOR",
+  "ollama_models": [
+    {
+      "name": "embeddinggemma:latest",
+      "digest": "85462619ee721b466c5927d109d4cb765861907d5417b9109caebc4e614679f1"
+    }
+  ],
+  "source_documents": 56,
+  "source_types": {
+    "jurisprudencia": 27,
+    "normativa": 29
+  },
+  "source_characters": 3466794,
+  "sources_empty_or_small": [
+    "d19962751c1621f6",
+    "82d6068d4b8f01d5",
+    "7106749903930c2b",
+    "7744c1722586303a",
+    "57dc234918bef6f8",
+    "32d7ef495ae87e20",
+    "871ead50ade2d3f1",
+    "745fc9caf4f5907a",
+    "d28c01a972e9c233",
+    "a6c4b29af7c1b181",
+    "af520b03c93df957",
+    "137402a57b5f9016",
+    "c20f675377e78140",
+    "ab3e1eb7dae9e870",
+    "1d170a6fc66301eb",
+    "55201c2241ba43ec",
+    "49b9ee5395245e13",
+    "76d6552af8c2bb7a",
+    "2d9828158213ad36"
+  ],
+  "gold_files": 56,
+  "snapshot_record_shape": {
+    "keys": [
+      "id",
+      "document",
+      "metadata",
+      "embedding"
+    ],
+    "metadata_keys": [
+      "Corporación",
+      "section_name",
+      "Magistrado ponente",
+      "keywords",
+      "title",
+      "Tema principal",
+      "summary",
+      "CATEGORIA ANALISIS",
+      "entities",
+      "chunk_index",
+      "Partes procesales",
+      "source",
+      "keywords_str",
+      "total_chunks_in_section",
+      "RELACIÓN PLAYAS",
+      "doc_type",
+      "chunk_id",
+      "Radicado",
+      "section_heading",
+      "Nº",
+      "TEMÁTICA",
+      "section_index",
+      "Archivo"
+    ],
+    "document_head": "as de inteligencia artificial.\n\nREPÚBLIC\n\nVictoria en línea f Despacho Tribunal Administrativo del Magdalena\n\nINNOVACIÓN\n\n\"bELERTIGA\n\n## TRIBUNAL ADMINISTRATIVO DEL MAGDALENA DESPACHO\n\n## Magistrada ponente: MARÍA VICTOR"
+  }
+}

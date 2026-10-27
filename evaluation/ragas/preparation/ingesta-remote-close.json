@@ -1,0 +1,11 @@
+{
+  "utc": "2026-10-22T03:23:51.688188+00:00",
+  "v1_count_final": 5888,
+  "v1_collection_uuid": "b569496c-801d-4ad0-a03b-135c3ef74ff2",
+  "collections_final": [
+    "rag_playas"
+  ],
+  "temporary_key_file_removed": true,
+  "gemini_calls": 0,
+  "stop_reason": "estimated_budget_exceeds_1500"
+}
