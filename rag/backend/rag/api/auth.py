@@ -18,9 +18,13 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from rag.api.database import get_session
-from rag.api.models import User
+from rag.api.models import AccountStatus, User
 from rag.config import JWT_ALGORITHM as _ALGORITHM
 from rag.config import JWT_EXPIRE_MINUTES as _EXPIRE_MINUTES
+from rag.config import JWT_EXPIRE_MINUTES_STAFF as _EXPIRE_MINUTES_STAFF
+
+# Roles que ven datos de otras personas: sesión más corta.
+_ROLES_PERSONAL = frozenset({"admin", "super-admin", "comite", "evaluador"})
 
 logger = logging.getLogger(__name__)
 
@@ -41,7 +45,8 @@ def create_access_token(user_id: str, email: str, role: str) -> str:
         "email": email,
         "role": role,
         "iat": datetime.now(UTC),
-        "exp": datetime.now(UTC) + timedelta(minutes=_EXPIRE_MINUTES),
+        "exp": datetime.now(UTC)
+        + timedelta(minutes=_EXPIRE_MINUTES_STAFF if role in _ROLES_PERSONAL else _EXPIRE_MINUTES),
     }
     return jwt.encode(payload, _secret(), algorithm=_ALGORITHM)
 
@@ -106,6 +111,14 @@ async def get_current_user(
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Usuario no encontrado.",
+        )
+    # Cuenta desactivada por un administrador (CHECKLIST-FINAL c2): su
+    # historial se conserva, pero ya no puede usar ATLAS ni el panel.
+    estado = await session.get(AccountStatus, db_user.id)
+    if estado is not None and not estado.activa:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Esta cuenta está desactivada.",
         )
     return {
         **user,

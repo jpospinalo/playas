@@ -26,10 +26,11 @@ from pydantic import BaseModel, Field
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from rag.api import auditoria
 from rag.api import ejercicio as ej
 from rag.api.auth import require_admin
 from rag.api.database import get_session
-from rag.api.models import Conversation, ExerciseProfile, Message, User
+from rag.api.models import AccountStatus, Conversation, ExerciseProfile, Message, User
 from rag.api.passwords import hash_password_async
 from rag.api.routes.panel import DEMO_EMAIL
 
@@ -91,6 +92,7 @@ class Cuenta(BaseModel):
     organizacion: str | None = None
     preguntas: int
     creada: str
+    activa: bool = True
 
 
 class CuentasResponse(BaseModel):
@@ -104,6 +106,8 @@ class CambioCuenta(BaseModel):
     tipo_playa: int | None = Field(default=None, ge=1, le=5)
     sede: Literal["Santa Marta", "Barranquilla"] | None = None
     organizacion: str | None = Field(default=None, max_length=160)
+    # Desactivar sin borrar el historial (c2); True la reactiva.
+    activa: bool | None = None
 
 
 class ClaveResponse(BaseModel):
@@ -149,6 +153,15 @@ async def listar(
             .where(User.email != DEMO_EMAIL)
         )
     ).all()
+    inactivas = set(
+        (
+            await session.execute(
+                select(AccountStatus.user_id).where(AccountStatus.activa.is_(False))
+            )
+        )
+        .scalars()
+        .all()
+    )
     items = []
     for u, perfil in filas:
         if rol and u.role != rol:
@@ -169,6 +182,7 @@ async def listar(
                 organizacion=perfil.organizacion if perfil else None,
                 preguntas=preguntas.get(u.id, 0),
                 creada=(u.created_at or datetime.now(UTC)).isoformat(),
+                activa=u.id not in inactivas,
             )
         )
     items.sort(key=lambda c: (c.codigo is None, c.codigo or "", c.nombre or c.correo))
@@ -193,7 +207,7 @@ def _correo_generado(codigo: str | None, nombre: str) -> str:
 @router.post("/lote", response_model=LoteResponse, status_code=status.HTTP_201_CREATED)
 async def crear_lote(
     payload: LoteRequest,
-    _admin: dict = Depends(require_admin),
+    admin: dict = Depends(require_admin),
     session: AsyncSession = Depends(get_session),
 ) -> LoteResponse:
     """Crea varias cuentas a la vez. Participantes: número automático (P001…)
@@ -282,6 +296,15 @@ async def crear_lote(
                 clave=clave,
             )
         )
+    auditoria.registrar(
+        session,
+        admin["sub"],
+        "crear_cuentas",
+        detalle={
+            "cantidad": len(creadas),
+            "cuentas": [c.codigo or c.correo for c in creadas][:200],
+        },
+    )
     await session.commit()
     return LoteResponse(creadas=creadas)
 
@@ -290,16 +313,25 @@ async def crear_lote(
 async def cambiar(
     uid: str,
     payload: CambioCuenta,
-    _admin: dict = Depends(require_admin),
+    admin: dict = Depends(require_admin),
     session: AsyncSession = Depends(get_session),
 ) -> Cuenta:
     user = await session.get(User, uid)
     if user is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Cuenta no encontrada.")
+    if payload.activa is False and uid == admin["sub"]:
+        raise HTTPException(422, "No puede desactivar su propia cuenta.")
     perfil = await session.get(ExerciseProfile, uid)
     if perfil is None:
         perfil = ExerciseProfile(user_id=uid)
         session.add(perfil)
+    antes = {
+        "nombre": user.display_name,
+        "rol": user.role,
+        "tipo_playa": perfil.tipo_playa,
+        "sede": perfil.sede,
+        "organizacion": perfil.organizacion,
+    }
     if payload.nombre is not None:
         user.display_name = payload.nombre.strip()
     if payload.rol is not None:
@@ -310,6 +342,29 @@ async def cambiar(
         perfil.sede = payload.sede
     if payload.organizacion is not None:
         perfil.organizacion = payload.organizacion.strip() or None
+    despues = {
+        "nombre": user.display_name,
+        "rol": user.role,
+        "tipo_playa": perfil.tipo_playa,
+        "sede": perfil.sede,
+        "organizacion": perfil.organizacion,
+    }
+    cambios = {k: [antes[k], despues[k]] for k in antes if antes[k] != despues[k]}
+    if cambios:
+        auditoria.registrar(session, admin["sub"], "cambiar_cuenta", uid, {"cambios": cambios})
+    estado = await session.get(AccountStatus, uid)
+    activa = estado is None or estado.activa
+    if payload.activa is not None and payload.activa != activa:
+        if estado is None:
+            estado = AccountStatus(user_id=uid)
+            session.add(estado)
+        estado.activa = payload.activa
+        estado.cambiada_por = admin["sub"]
+        estado.cambiada_at = datetime.now(UTC)
+        activa = payload.activa
+        auditoria.registrar(
+            session, admin["sub"], "activar_cuenta" if activa else "desactivar_cuenta", uid
+        )
     await session.commit()
     n = (
         await session.execute(
@@ -330,13 +385,14 @@ async def cambiar(
         organizacion=perfil.organizacion,
         preguntas=n,
         creada=(user.created_at or datetime.now(UTC)).isoformat(),
+        activa=activa,
     )
 
 
 @router.post("/{uid}/clave", response_model=ClaveResponse)
 async def clave(
     uid: str,
-    _admin: dict = Depends(require_admin),
+    admin: dict = Depends(require_admin),
     session: AsyncSession = Depends(get_session),
 ) -> ClaveResponse:
     user = await session.get(User, uid)
@@ -344,5 +400,7 @@ async def clave(
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Cuenta no encontrada.")
     nueva = clave_nueva()
     user.password_hash = await hash_password_async(nueva)
+    # Nunca se guarda la clave en la auditoría: solo que se generó.
+    auditoria.registrar(session, admin["sub"], "nueva_clave", uid)
     await session.commit()
     return ClaveResponse(correo=user.email, clave=nueva)

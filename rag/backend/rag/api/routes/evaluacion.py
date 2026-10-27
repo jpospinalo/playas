@@ -31,6 +31,7 @@ from pydantic import BaseModel, Field
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from rag.api import auditoria
 from rag.api import ejercicio as ej
 from rag.api import panel_metricas as pm
 from rag.api.auth import get_current_user
@@ -518,8 +519,15 @@ async def guardar_final(
     """Calificación final del comité ("Revisó"); reemplaza a las de los evaluadores."""
     _validar(payload)
     preguntas = await _cargar(session)
-    if not any(x.message_id == message_id for x in preguntas):
+    p = next((x for x in preguntas if x.message_id == message_id), None)
+    if p is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Pregunta no encontrada.")
+    auditoria.registrar(
+        session,
+        user["sub"],
+        "calificacion_final",
+        detalle={"id_pregunta": p.numero, "ct": payload.ct, "cv": payload.cv},
+    )
     await _guardar(session, message_id, user["sub"], None, payload, final=True)
     return await _ficha(session, message_id, user)
 
@@ -571,6 +579,7 @@ async def validar_concordantes(
         )
         n += 1
     if n:
+        auditoria.registrar(session, user["sub"], "validar_concordantes", detalle={"cantidad": n})
         await session.commit()
     return ValidarLoteOut(validadas=n, por_validar=0)
 
@@ -721,6 +730,10 @@ async def elegir_ganadora(
         decision.message_id = payload.message_id
         decision.decidido_por = user["sub"]
         decision.created_at = datetime.now(UTC)
+    numero = next((x.numero for x in preguntas if x.message_id == payload.message_id), None)
+    auditoria.registrar(
+        session, user["sub"], "elegir_ganadora", detalle={"nivel": nivel, "id_pregunta": numero}
+    )
     await session.commit()
     return await _premios(session, preguntas)
 

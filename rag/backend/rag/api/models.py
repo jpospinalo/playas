@@ -175,3 +175,39 @@ class QuestionNumber(Base):
     message_id: Mapped[str] = mapped_column(String, ForeignKey("messages.id"), primary_key=True)
     numero: Mapped[int] = mapped_column(Integer, unique=True, nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)
+
+
+class AccountStatus(Base):
+    """Cuenta desactivada sin borrar su historial (CHECKLIST-FINAL c2). Sin
+    fila = cuenta activa."""
+
+    __tablename__ = "account_status"
+
+    user_id: Mapped[str] = mapped_column(String, ForeignKey("users.id"), primary_key=True)
+    activa: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    cambiada_por: Mapped[str | None] = mapped_column(String)
+    cambiada_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)
+
+
+class AdminAudit(Base):
+    """Auditoría de acciones de administración y del comité (c7)."""
+
+    __tablename__ = "admin_audit"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True, default=_uuid)
+    actor_id: Mapped[str] = mapped_column(String, nullable=False, index=True)
+    accion: Mapped[str] = mapped_column(String, nullable=False)
+    objetivo_id: Mapped[str | None] = mapped_column(String)
+    detalle: Mapped[dict] = mapped_column(JSON, default=dict)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now, index=True)
+
+
+class PrivacyConsent(Base):
+    """Autorización de tratamiento de datos (Ley 1581 / Decreto 1377, c8):
+    fecha y versión del aviso aceptado, como prueba."""
+
+    __tablename__ = "privacy_consent"
+
+    user_id: Mapped[str] = mapped_column(String, ForeignKey("users.id"), primary_key=True)
+    version: Mapped[str] = mapped_column(String, nullable=False)
+    aceptada_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)

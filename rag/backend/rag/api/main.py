@@ -24,6 +24,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, StreamingResponse
 from starlette.types import Receive, Scope, Send
 
+from rag.api.auditoria import router as auditoria_router
 from rag.api.conversation_lock import ConversationLockRegistry
 from rag.api.query_support import (
     _build_graph_input,
@@ -41,6 +42,7 @@ from rag.api.routes.evaluacion import router as evaluacion_router
 from rag.api.routes.feedback import router as feedback_router
 from rag.api.routes.panel import router as panel_router
 from rag.api.routes.participantes import router as participantes_router
+from rag.api.routes.privacidad import router as privacidad_router
 from rag.api.schemas import QueryRequest, QueryResponse
 from rag.config import (
     CONTEXT_LIMIT_TOKENS,
@@ -218,6 +220,8 @@ app.include_router(admin_router)
 app.include_router(panel_router)
 app.include_router(participantes_router)
 app.include_router(evaluacion_router)
+app.include_router(auditoria_router)
+app.include_router(privacidad_router)
 
 
 # ── Routes ─────────────────────────────────────────────────────────────────

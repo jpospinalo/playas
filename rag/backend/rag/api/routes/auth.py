@@ -14,7 +14,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from rag.api.auth import create_access_token, get_current_user
 from rag.api.database import get_session
-from rag.api.models import ExerciseProfile, User
+from rag.api.models import AccountStatus, ExerciseProfile, User
 from rag.api.passwords import (
     hash_password_async,
     needs_rehash,
@@ -155,6 +155,13 @@ async def login(
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Correo o contraseña incorrectos.",
+        )
+
+    estado = await session.get(AccountStatus, user.id)
+    if estado is not None and not estado.activa:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Esta cuenta está desactivada. Hable con el equipo del ejercicio.",
         )
 
     # Se capturan los datos de identidad ANTES del intento de re-hash

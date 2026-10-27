@@ -281,6 +281,9 @@ DATABASE_URL: str = os.getenv("DATABASE_URL", "sqlite+aiosqlite:///./data/atlas.
 # necesidad.
 JWT_ALGORITHM: str = os.getenv("JWT_ALGORITHM", "HS256")
 JWT_EXPIRE_MINUTES: int = int(os.getenv("JWT_EXPIRE_MINUTES", "10080"))  # 7 días
+# Admin, comité y evaluadores ven datos de todos: su sesión dura menos
+# (CHECKLIST-FINAL c5, OWASP). Los participantes siguen con JWT_EXPIRE_MINUTES.
+JWT_EXPIRE_MINUTES_STAFF: int = int(os.getenv("JWT_EXPIRE_MINUTES_STAFF", "480"))  # 8 horas
 
 # ── Registro de nuevas cuentas ─────────────────────────────────────────────
 # api/routes/auth.py se importa en main.py después de que algo más ya
