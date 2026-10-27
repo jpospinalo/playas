@@ -30,7 +30,7 @@ from typing import Literal
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from fastapi.responses import Response
 from pydantic import BaseModel, Field
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -54,6 +54,7 @@ from rag.api.models import (
     QuestionEvaluation,
     QuestionNumber,
     User,
+    ValidatorProfile,
 )
 
 router = APIRouter(prefix="/api/evaluacion", tags=["evaluacion"])
@@ -969,15 +970,68 @@ async def resumen(
     oficiales = _oficiales(preguntas)
     validas = [o for o in oficiales if o.oficial.valida]
     por_nivel = Counter(o.oficial.ct for o in validas)
-    avance: dict[str, dict] = {}
-    for p in preguntas:
-        for c in p.cals:
-            if c.es_final:
-                continue
-            fila = avance.setdefault(
-                c.evaluador_id, {"evaluador": c.evaluador, "sede": c.sede, "evaluadas": 0}
+    # T6: avance de cada semillerista frente a su plazo (asignadas, hechas,
+    # pendientes y cuántas al día le faltan para llegar).
+    fechas, _ = await calendario.leer(session)
+    dias_eval = max(1, (fechas["fin_evaluacion"] - calendario.hoy()).days + 1)
+    dias_val = max(1, (fechas["fin_validacion"] - calendario.hoy()).days + 1)
+    nombres = dict(
+        (
+            await session.execute(
+                select(User.id, func.coalesce(User.display_name, User.email)).where(
+                    User.role.in_(("evaluador", "comite"))
+                )
             )
-            fila["evaluadas"] += 1
+        ).all()
+    )
+    avance: dict[str, dict] = {}
+
+    def _fila(uid: str, sede: str | None) -> dict:
+        return avance.setdefault(
+            uid,
+            {
+                "evaluador": nombres.get(uid, uid),
+                "sede": sede,
+                "asignadas": 0,
+                "evaluadas": 0,
+                "pendientes": 0,
+            },
+        )
+
+    for p in preguntas:
+        for sede, uid in p.asignados.items():
+            _fila(uid, sede)["asignadas"] += 1
+        hechas = {c.evaluador_id for c in p.cals if not c.es_final}
+        for c in p.cals:
+            if not c.es_final:
+                _fila(c.evaluador_id, c.sede)["evaluadas"] += 1
+        final = any(c.es_final for c in p.cals)
+        for sede, uid in p.asignados.items():
+            if uid not in hechas and not final:
+                _fila(uid, sede)["pendientes"] += 1
+    for f in avance.values():
+        f["por_dia"] = round(f["pendientes"] / dias_eval, 1)
+    # Validadoras jurídicas: evaluaciones de su sede por validar.
+    validadoras = []
+    for uid, sede in (
+        await session.execute(
+            select(ValidatorProfile.user_id, ExerciseProfile.sede)
+            .join(ExerciseProfile, ExerciseProfile.user_id == ValidatorProfile.user_id)
+            .where(ValidatorProfile.tipo == "juridico")
+        )
+    ).all():
+        suyas = [c for p in preguntas for c in p.cals if not c.es_final and c.sede == sede]
+        pendientes = sum(not c.validada for c in suyas)
+        validadoras.append(
+            {
+                "validador": nombres.get(uid, uid),
+                "sede": sede,
+                "evaluaciones": len(suyas),
+                "validadas": len(suyas) - pendientes,
+                "pendientes": pendientes,
+                "por_dia": round(pendientes / dias_val, 1),
+            }
+        )
     por_tipo: dict[int, int] = defaultdict(int)
     for p in preguntas:
         por_tipo[p.tipo_playa or 0] += 1
@@ -997,6 +1051,9 @@ async def resumen(
         "avance_evaluadores": sorted(
             avance.values(), key=lambda f: (f["sede"] or "", -f["evaluadas"], f["evaluador"])
         ),
+        "avance_validadores": sorted(validadoras, key=lambda f: f["sede"] or ""),
+        "fin_evaluacion": fechas["fin_evaluacion"].isoformat(),
+        "fin_validacion": fechas["fin_validacion"].isoformat(),
         "umbral_diferencia": ej.UMBRAL_DIFERENCIA,
         "solo_revisadas": ej.PREMIOS_SOLO_REVISADAS,
     }

@@ -141,7 +141,25 @@ export interface ResumenEjercicio {
 	por_nivel: Record<Ct, number>;
 	promedio_total: number;
 	por_tipo_playa: { tipo: number; nombre: string; preguntas: number }[];
-	avance_evaluadores: { evaluador: string; sede: string | null; evaluadas: number }[];
+	avance_evaluadores: {
+		evaluador: string;
+		sede: string | null;
+		evaluadas: number;
+		asignadas?: number;
+		pendientes?: number;
+		por_dia?: number;
+	}[];
+	/** T6: validadoras jurídicas y lo que les falta por validar. */
+	avance_validadores?: {
+		validador: string;
+		sede: string | null;
+		evaluaciones: number;
+		validadas: number;
+		pendientes: number;
+		por_dia: number;
+	}[];
+	fin_evaluacion?: string;
+	fin_validacion?: string;
 	umbral_diferencia: number;
 	/** Decisión 9: solo cuentan las validadas por el comité. */
 	solo_revisadas: boolean;

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { decimal, mensajeError, numero, recortar } from "@/lib/admin/panel";
+import { diaLargo } from "@/lib/admin/calendario";
 import { nombreTipo } from "@/lib/admin/cuentas";
 import {
 	NIVELES,
@@ -197,6 +198,7 @@ export default function PaginaResumenEjercicio() {
 				</>
 			) : null}
 
+			{comite && resumen ? <AvancePlazo resumen={resumen} /> : null}
 			{comite && premios ? <PorValidar premios={premios} /> : null}
 			{comite && premios ? <SeccionPremios premios={premios} onElegir={elegir} /> : null}
 			{!comite && resumen ? (
@@ -443,3 +445,82 @@ function TablaRanking({
 		</>
 	);
 }
+
+/**
+ * T6 (reunión del 20-oct: "cada 2 días, media hora"): quién va al día y
+ * cuántas por día le faltan para llegar a su plazo.
+ */
+function AvancePlazo({ resumen }: { resumen: ResumenEjercicio }) {
+	const evaluadores = resumen.avance_evaluadores.filter((a) => a.asignadas !== undefined);
+	const validadores = resumen.avance_validadores ?? [];
+	if (!evaluadores.length && !validadores.length) return null;
+	return (
+		<section className="pnl-bloque" aria-labelledby="t-plazo">
+			<h2 id="t-plazo">Avance frente al plazo</h2>
+			{resumen.fin_evaluacion ? (
+				<p className="pnl-sub" style={{ marginBottom: 12 }}>
+					Semilleristas hasta el {diaLargo(resumen.fin_evaluacion)}; validación hasta el{" "}
+					{diaLargo(resumen.fin_validacion ?? resumen.fin_evaluacion)}. “Al día” es cuántas tendría que hacer cada día
+					para llegar.
+				</p>
+			) : null}
+			<div className="pnl-tabla-datos" role="region" aria-label="Avance de los semilleristas" tabIndex={0}>
+				<table>
+					<caption>Semilleristas</caption>
+					<thead>
+						<tr>
+							<th scope="col">Semillerista</th>
+							<th scope="col">Sede</th>
+							<th scope="col" className="num">Asignadas</th>
+							<th scope="col" className="num">Evaluadas</th>
+							<th scope="col" className="num">Sin evaluar</th>
+							<th scope="col" className="num">Al día</th>
+						</tr>
+					</thead>
+					<tbody>
+						{evaluadores.map((a) => (
+							<tr key={`${a.evaluador}-${a.sede}`}>
+								<td>{a.evaluador}</td>
+								<td>{a.sede ?? "—"}</td>
+								<td className="num">{numero(a.asignadas ?? 0)}</td>
+								<td className="num">{numero(a.evaluadas)}</td>
+								<td className="num">{numero(a.pendientes ?? 0)}</td>
+								<td className="num">{decimal(a.por_dia ?? 0)}</td>
+							</tr>
+						))}
+					</tbody>
+				</table>
+			</div>
+			{validadores.length ? (
+				<div className="pnl-tabla-datos" role="region" aria-label="Avance de la validación" tabIndex={0} style={{ marginTop: 16 }}>
+					<table>
+						<caption>Validación jurídica</caption>
+						<thead>
+							<tr>
+								<th scope="col">Validadora</th>
+								<th scope="col">Sede</th>
+								<th scope="col" className="num">Evaluaciones</th>
+								<th scope="col" className="num">Validadas</th>
+								<th scope="col" className="num">Por validar</th>
+								<th scope="col" className="num">Al día</th>
+							</tr>
+						</thead>
+						<tbody>
+							{validadores.map((v) => (
+								<tr key={v.validador}>
+									<td>{v.validador}</td>
+									<td>{v.sede ?? "—"}</td>
+									<td className="num">{numero(v.evaluaciones)}</td>
+									<td className="num">{numero(v.validadas)}</td>
+									<td className="num">{numero(v.pendientes)}</td>
+									<td className="num">{decimal(v.por_dia)}</td>
+								</tr>
+							))}
+						</tbody>
+					</table>
+				</div>
+			) : null}
+		</section>
+	);
+}
+

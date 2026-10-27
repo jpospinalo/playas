@@ -752,3 +752,18 @@ def test_calendario_plazos_por_rol(cliente) -> None:
     v = c.get("/api/ejercicio/ventana", headers=USER).json()
     assert v["ultimo_dia"] == "2020-01-04" and v["dias_restantes"] < 0
     assert _date.fromisoformat(v["primer_dia"]) <= _date.today()
+
+
+def test_avance_frente_al_plazo(cliente) -> None:
+    """T6: asignadas, hechas y pendientes por semillerista y por validadora."""
+    c = cliente
+    SM, SM2, BQ, SIN, COM, USER = _hs()  # noqa: N806
+    c.put("/api/evaluacion/preguntas/q1/mia", headers=BQ, json=_cal_json("S", 4))
+    r = c.get("/api/evaluacion/resumen", headers=COM).json()
+    bq = next(f for f in r["avance_evaluadores"] if f["evaluador"] == "Semillerista BQ")
+    assert (bq["asignadas"], bq["evaluadas"], bq["pendientes"]) == (3, 1, 2) and bq["por_dia"] >= 0
+    sm = [f for f in r["avance_evaluadores"] if f["sede"] == "Santa Marta"]
+    assert sum(f["asignadas"] for f in sm) == 3
+    san = next(v for v in r["avance_validadores"] if v["sede"] == "Barranquilla")
+    assert san["validador"] == "Sandra Otero" and san["pendientes"] == 1
+    assert r["fin_evaluacion"] == "2026-11-27"
