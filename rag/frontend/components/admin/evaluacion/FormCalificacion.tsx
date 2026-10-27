@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useState } from "react";
+import { type ReactNode, useId, useState } from "react";
 import {
 	NIVELES,
 	RANGOS,
@@ -12,6 +12,7 @@ import {
 	type Rubrica,
 } from "@/lib/admin/evaluacion";
 import { AparecerSi } from "@/components/admin/panel/Aparece";
+import { ResultadoJunto, textoBoton as textoSegun, useAccion } from "@/components/admin/panel/Resultado";
 
 /**
  * Formulario de la planilla: F1, F2 y F3 (1 a 3) con la rúbrica del
@@ -29,7 +30,8 @@ export function FormCalificacion({
 	rubrica: Rubrica;
 	inicial: CalificacionOut | null;
 	textoBoton: string;
-	onGuardar: (c: CalificacionIn) => Promise<void>;
+	/** Devuelve el texto que se muestra junto al botón (J6-A1); si falla, lanza el error. */
+	onGuardar: (c: CalificacionIn) => Promise<ReactNode | void>;
 	deshabilitado?: boolean;
 }) {
 	const id = useId();
@@ -43,7 +45,7 @@ export function FormCalificacion({
 	const [valida, setValida] = useState(inicial?.valida ?? true);
 	const [obs, setObs] = useState(inicial?.observaciones ?? "");
 	const [faltan, setFaltan] = useState<string | null>(null);
-	const [enviando, setEnviando] = useState(false);
+	const accion = useAccion();
 
 	const forma = f.f1 && f.f2 && f.f3 ? f.f1 + f.f2 + f.f3 : null;
 	const total = forma !== null && ct && cv ? totalPlanilla(f.f1, f.f2, f.f3, cv) : null;
@@ -54,20 +56,15 @@ export function FormCalificacion({
 			!f.f1 && "F1",
 			!f.f2 && "F2",
 			!f.f3 && "F3",
-			!ct && "Ct (nivel)",
-			(!cv || (ct && cvEnRango(ct, cv) !== cv)) && "Cv",
+			!ct && "nivel (Ct)",
+			(!cv || (ct && cvEnRango(ct, cv) !== cv)) && "valor de fondo (Cv)",
 		].filter(Boolean);
 		if (sinMarcar.length || !ct) {
 			setFaltan(`Falta elegir: ${sinMarcar.join(", ")}.`);
 			return;
 		}
 		setFaltan(null);
-		setEnviando(true);
-		try {
-			await onGuardar({ ...f, ct, cv, valida, observaciones: obs.trim() || null });
-		} finally {
-			setEnviando(false);
-		}
+		await accion.correr(() => onGuardar({ ...f, ct, cv, valida, observaciones: obs.trim() || null }));
 	}
 
 	return (
@@ -122,7 +119,7 @@ export function FormCalificacion({
 							/>
 							<span>
 								<b>
-									{k}: {NIVELES[k]} (Cv {RANGOS[k][0]} a {RANGOS[k][1]})
+									{k}: {NIVELES[k]} (valor de fondo {RANGOS[k][0]} a {RANGOS[k][1]})
 								</b>{" "}
 								{rubrica.fondo[k].como}
 							</span>
@@ -133,7 +130,7 @@ export function FormCalificacion({
 			{ct ? (
 				<fieldset className="pnl-criterio" disabled={deshabilitado}>
 					<legend>
-						Cv: valor de fondo para un caso {NIVELES[ct].toLowerCase()} ({RANGOS[ct][0]} a {RANGOS[ct][1]})
+						Valor de fondo (Cv) para un caso {NIVELES[ct].toLowerCase()} ({RANGOS[ct][0]} a {RANGOS[ct][1]})
 					</legend>
 					<div className="pnl-opciones">
 						{Object.entries(rubrica.fondo[ct].guia).map(([n, guia]) => (
@@ -153,11 +150,11 @@ export function FormCalificacion({
 					</div>
 				</fieldset>
 			) : (
-				<p className="pnl-nota">Elija primero el nivel (Ct) para ver los valores de Cv que le corresponden.</p>
+				<p className="pnl-nota">Elija primero el nivel (Ct) para ver los valores de fondo que le corresponden.</p>
 			)}
 
 			<p className="pnl-total" role="status">
-				Puntaje total (forma + Cv): <b className="num">{total ?? "—"}</b>
+				Puntaje total (forma + valor de fondo): <b className="num">{total ?? "—"}</b>
 			</p>
 
 			<div className="pnl-criterio">
@@ -189,11 +186,12 @@ export function FormCalificacion({
 					</p>
 				)}
 			</AparecerSi>
-			<p style={{ marginTop: 14 }}>
-				<button type="submit" className="pnl-btn" disabled={deshabilitado || enviando}>
-					{enviando ? "Guardando…" : textoBoton}
+			<div className="pnl-mt">
+				<button type="submit" className="pnl-btn" disabled={deshabilitado || accion.enviando}>
+					{textoSegun(accion.estado, { listo: textoBoton })}
 				</button>
-			</p>
+				<ResultadoJunto resultado={accion.resultado} />
+			</div>
 		</form>
 	);
 }
@@ -221,7 +219,7 @@ export function TarjetaCalificacion({ c, titulo }: { c: CalificacionOut; titulo:
 					</dd>
 				</div>
 				<div>
-					<dt>Cv</dt>
+					<dt>Valor de fondo (Cv)</dt>
 					<dd className="num">{c.cv}</dd>
 				</div>
 				<div>

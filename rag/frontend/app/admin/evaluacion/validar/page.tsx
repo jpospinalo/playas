@@ -16,10 +16,12 @@ import {
 	type FiltroValidacion,
 	type ItemValidacion,
 } from "@/lib/admin/validacion";
-import { IconoAviso } from "@/components/admin/panel/Estados";
+import { ChipEstado, IconoAviso } from "@/components/admin/panel/Estados";
+import { ResultadoJunto, useAccion } from "@/components/admin/panel/Resultado";
 import { CabezaPestana, EncabezadoEvaluacion } from "@/components/admin/evaluacion/SubNav";
 import { Hilo } from "@/components/admin/evaluacion/Hilo";
 import { Aparece, AparecerSi } from "@/components/admin/panel/Aparece";
+import { LimpiarFiltros } from "@/components/admin/panel/LimpiarFiltros";
 
 const POR_PAGINA = 20;
 
@@ -36,7 +38,7 @@ export default function PaginaValidar() {
 	const [recarga, setRecarga] = useState(0);
 	const [elegidas, setElegidas] = useState<Set<string>>(new Set());
 	const [confirmar, setConfirmar] = useState(false);
-	const [aviso, setAviso] = useState<string | null>(null);
+	const accLote = useAccion();
 	// PQ-91: buscar y ver primero las más recientes.
 	const [borrador, setBorrador] = useState("");
 	const [buscar, setBuscar] = useState("");
@@ -79,23 +81,25 @@ export default function PaginaValidar() {
 		setRecarga((n) => n + 1);
 	}
 
+	// J6-A1: el resultado queda junto a los botones del lote y, como la lista se
+	// recarga, también en el aviso fijo de abajo.
 	async function lote() {
-		setAviso(null);
-		try {
-			const r = await deAcuerdoEnLote([...elegidas]);
-			setAviso(`Listo: de acuerdo con ${cuantas(r.validadas, "evaluación", "evaluaciones")}.`);
-			setElegidas(new Set());
-			setConfirmar(false);
-			recargar();
-		} catch (e) {
-			setError(mensajeError(e, "No se pudieron validar."));
-		}
+		await accLote.correr(
+			async () => {
+				const r = await deAcuerdoEnLote([...elegidas]);
+				setElegidas(new Set());
+				setConfirmar(false);
+				recargar();
+				return `Listo: de acuerdo con ${cuantas(r.validadas, "evaluación", "evaluaciones")}.`;
+			},
+			{ error: "No se pudieron validar.", lejos: true },
+		);
 	}
 
 	const ultima = Math.max(1, Math.ceil((datos?.total ?? 0) / POR_PAGINA));
 	const descripcion =
 		tipo === "juridico"
-			? `Evaluaciones de los semilleristas de ${datos?.sede ?? "su sede"}. Revise si cada calificación tiene sentido o si fue muy generosa o muy corta. Si no está de acuerdo, explique por qué: el semillerista le responde y puede corregir.`
+			? `Evaluaciones de los semilleristas de ${datos?.sede ?? "su sede"}. Revise si cada calificación tiene sentido o si fue muy generosa o muy corta. Si no está de acuerdo, explique por qué: quien calificó le responde y puede corregir.`
 			: tipo === "costero"
 				? "Revise si cada pregunta es del tema de playas y gestión costera. Las que no lo son no cuentan para premios."
 				: "Vista de todas las evaluaciones y su validación (solo lectura).";
@@ -110,7 +114,7 @@ export default function PaginaValidar() {
 				<h2 id="t-val" className="sr">
 					Evaluaciones
 				</h2>
-				<div className="pnl-controles" style={{ marginBottom: 12 }}>
+				<div className="pnl-controles pnl-mb">
 						<div className="pnl-campo">
 							<label htmlFor="b-buscar">Buscar</label>
 							<input
@@ -146,6 +150,14 @@ export default function PaginaValidar() {
 								<option value="recientes">Más recientes primero</option>
 							</select>
 						</div>
+						<LimpiarFiltros
+							activo={!!(buscar || borrador)}
+							onLimpiar={() => {
+								setBorrador("");
+								setBuscar("");
+								setPagina(1);
+							}}
+						/>
 				</div>
 				<div className="pnl-pestanas" role="group" aria-label="Mostrar">
 					{pestanas.map((p) => (
@@ -165,13 +177,6 @@ export default function PaginaValidar() {
 					))}
 				</div>
 
-				<AparecerSi valor={aviso}>
-					{(aviso) => (
-						<p className="pnl-ok" role="status">
-							{aviso}
-						</p>
-					)}
-				</AparecerSi>
 				<AparecerSi valor={error}>
 					{(error) => (
 						<div className="pnl-error" role="alert">
@@ -204,15 +209,28 @@ export default function PaginaValidar() {
 						</Aparece>
 						{confirmar ? null : (
 							<div className="pnl-acciones">
-								<button
-									type="button"
-									className="pnl-btn-sec"
-									onClick={() =>
-										setElegidas(new Set(datos.items.flatMap((i) => i.evaluaciones.map((e) => e.id))))
-									}
-								>
-									Seleccionar las {numero(datos.items.length)} de esta página
-								</button>
+								{/* J6-A9: toda acción tiene su contraria a la vista. */}
+								{elegidas.size ? (
+									<button type="button" className="pnl-btn-sec" onClick={() => setElegidas(new Set())}>
+										Quitar la selección ({numero(elegidas.size)})
+									</button>
+								) : (
+									<button
+										type="button"
+										className="pnl-btn-sec"
+										onClick={() =>
+											setElegidas(
+												new Set(
+													datos.items.flatMap((i) =>
+														i.evaluaciones.filter((e) => e.estado === "por_validar").map((e) => e.id),
+													),
+												),
+											)
+										}
+									>
+										Seleccionar las {numero(datos.items.length)} de esta página
+									</button>
+								)}
 								<button
 									type="button"
 									className="pnl-btn"
@@ -223,6 +241,7 @@ export default function PaginaValidar() {
 								</button>
 							</div>
 						)}
+						<ResultadoJunto resultado={accLote.resultado} />
 					</div>
 				) : null}
 
@@ -337,6 +356,7 @@ function Evaluacion({
 	const [modo, setModo] = useState<"nada" | "desacuerdo">("nada");
 	const [comentario, setComentario] = useState("");
 	const [error, setError] = useState<string | null>(null);
+	const acc = useAccion();
 	const id = e.id.slice(0, 8);
 
 	async function abrir() {
@@ -352,15 +372,18 @@ function Evaluacion({
 	}
 
 	async function validar(deAcuerdo: boolean) {
-		setError(null);
-		try {
-			await validarEvaluacion(e.id, deAcuerdo, comentario.trim() || undefined);
-			setModo("nada");
-			setComentario("");
-			onCambio();
-		} catch (err) {
-			setError(mensajeError(err, "No se pudo guardar."));
-		}
+		await acc.correr(
+			async () => {
+				await validarEvaluacion(e.id, deAcuerdo, comentario.trim() || undefined);
+				setModo("nada");
+				setComentario("");
+				onCambio();
+				return deAcuerdo
+					? `Guardado: de acuerdo con la evaluación de ${e.evaluador}.`
+					: `Enviado a ${e.evaluador}: no está de acuerdo.`;
+			},
+			{ lejos: true },
+		);
 	}
 
 	return (
@@ -373,11 +396,11 @@ function Evaluacion({
 					</label>
 				) : null}
 				<p>
-					<b>{e.evaluador}</b> ({e.sede}): {NIVELES[e.ct]}, F {e.f1}-{e.f2}-{e.f3} (forma {e.forma}), Cv {e.cv},
+					<b>{e.evaluador}</b> ({e.sede}): {NIVELES[e.ct]}, forma {e.forma} (F {e.f1}-{e.f2}-{e.f3}), valor de fondo {e.cv} (Cv),
 					total {e.total}
 					{e.valida ? "" : ", marcada no válida"}
 				</p>
-				<span className={`pnl-estado ${e.estado === "validada" ? "bien" : e.estado === "en_conversacion" ? "ojo" : "neutro"}`}>
+				<span className={`pnl-estado ${e.estado === "validada" ? "bien" : e.estado === "en_conversacion" ? "ojo" : "espera"}`}>
 					{TEXTO_VALIDACION[e.estado]}
 				</span>
 			</div>
@@ -390,8 +413,8 @@ function Evaluacion({
 				)}
 			</AparecerSi>
 			<Aparece abierto={puedeValidar && modo === "desacuerdo"} enfocar>
-				<div className="pnl-campo" style={{ marginTop: 8 }}>
-					<label htmlFor={`d-${id}`}>¿Por qué no está de acuerdo? (lo verá el semillerista)</label>
+				<div className="pnl-campo pnl-mt">
+					<label htmlFor={`d-${id}`}>¿Por qué no está de acuerdo? (lo verá {e.evaluador})</label>
 					<textarea id={`d-${id}`} value={comentario} maxLength={2000} onChange={(ev) => setComentario(ev.target.value)} />
 					<div className="pnl-acciones">
 						<button type="button" className="pnl-btn" disabled={!comentario.trim()} onClick={() => validar(false)}>
@@ -406,7 +429,7 @@ function Evaluacion({
 			<div className="pnl-acciones">
 				{puedeValidar && e.estado !== "validada" && modo === "nada" ? (
 					<>
-						<button type="button" className="pnl-btn-sec" onClick={() => validar(true)}>
+						<button type="button" className="pnl-btn-sec" disabled={acc.enviando} onClick={() => validar(true)}>
 							De acuerdo<span className="sr"> con la evaluación de {e.evaluador}</span>
 						</button>
 						<button type="button" className="pnl-btn-sec" onClick={() => setModo("desacuerdo")}>
@@ -418,8 +441,9 @@ function Evaluacion({
 					{abierta ? "Ocultar conversación" : `Ver conversación${e.comentarios ? ` (${e.comentarios})` : ""}`}
 				</button>
 			</div>
+			<ResultadoJunto resultado={acc.resultado} />
 			<Aparece abierto={abierta && detalle !== null}>
-				{detalle ? <Hilo detalle={detalle} onCambio={setDetalle} etiqueta="Escribir al semillerista" /> : null}
+				{detalle ? <Hilo detalle={detalle} onCambio={setDetalle} lado="validacion" /> : null}
 			</Aparece>
 		</div>
 	);
@@ -427,39 +451,35 @@ function Evaluacion({
 
 function Pertinencia({ item, onCambio }: { item: ItemValidacion; onCambio: () => void }) {
 	const [comentario, setComentario] = useState("");
-	const [error, setError] = useState<string | null>(null);
+	const acc = useAccion();
 	const id = item.message_id.slice(0, 8);
 
 	async function marcar(pertinente: boolean) {
-		setError(null);
-		try {
-			await marcarPertinencia(item.message_id, pertinente, comentario.trim() || undefined);
-			onCambio();
-		} catch (err) {
-			setError(mensajeError(err, "No se pudo guardar."));
-		}
+		await acc.correr(
+			async () => {
+				await marcarPertinencia(item.message_id, pertinente, comentario.trim() || undefined);
+				onCambio();
+				return `Pregunta ${item.numero}: ${pertinente ? "marcada como del tema" : "marcada como fuera del tema"}.`;
+			},
+			{ lejos: true },
+		);
 	}
 
 	return (
 		<div className="pnl-eval-val">
 			<p>
-				{item.pertinente === null
-					? "Sin revisar."
-					: item.pertinente
-						? "Marcada como del tema."
-						: "Marcada como fuera del tema: no cuenta para premios."}
+				{item.pertinente === null ? (
+					<ChipEstado tono="sin">Sin revisar</ChipEstado>
+				) : item.pertinente ? (
+					<ChipEstado tono="bien">Del tema</ChipEstado>
+				) : (
+					<ChipEstado tono="ojo">Fuera del tema: no cuenta para premios</ChipEstado>
+				)}
 			</p>
 			<div className="pnl-campo">
 				<label htmlFor={`p-${id}`}>Comentario (opcional)</label>
 				<textarea id={`p-${id}`} value={comentario} maxLength={2000} onChange={(e) => setComentario(e.target.value)} />
 			</div>
-			<AparecerSi valor={error}>
-				{(error) => (
-					<p className="pnl-error-linea" role="alert">
-						{error}
-					</p>
-				)}
-			</AparecerSi>
 			<div className="pnl-acciones">
 				<button type="button" className="pnl-btn-sec" onClick={() => marcar(true)} aria-pressed={item.pertinente === true}>
 					Es del tema<span className="sr">: pregunta {item.numero}</span>
@@ -468,6 +488,7 @@ function Pertinencia({ item, onCambio }: { item: ItemValidacion; onCambio: () =>
 					No es del tema<span className="sr">: pregunta {item.numero}</span>
 				</button>
 			</div>
+			<ResultadoJunto resultado={acc.resultado} />
 		</div>
 	);
 }

@@ -33,9 +33,9 @@ export const RANGOS: Record<Ct, [number, number]> = { S: [3, 6], I: [7, 9], A: [
 export const TEXTO_ESTADO: Record<EstadoPregunta, string> = {
 	sin_evaluar: "Sin calificar",
 	una_evaluacion: "Falta una calificación",
-	concordante: "Concordantes: falta la validación jurídica",
+	concordante: "Coinciden: falta la validación jurídica",
 	validada: "Validada (promedio de las dos)",
-	con_diferencias: "Con diferencias: va al comité",
+	con_diferencias: "Con diferencias: la revisa el comité",
 	final: "Revisada por el comité",
 };
 

@@ -14,7 +14,7 @@ import {
 	type Ficha,
 	type Rubrica,
 } from "@/lib/admin/evaluacion";
-import { IconoAviso } from "@/components/admin/panel/Estados";
+import { ChipEstado, IconoAviso } from "@/components/admin/panel/Estados";
 import { EstadoEval } from "@/components/admin/evaluacion/EstadoEval";
 import { FormCalificacion, TarjetaCalificacion } from "@/components/admin/evaluacion/FormCalificacion";
 import { Hilo } from "@/components/admin/evaluacion/Hilo";
@@ -37,8 +37,6 @@ function Ficha_() {
 	const [ficha, setFicha] = useState<Ficha | null>(null);
 	const [rubrica, setRubrica] = useState<Rubrica | null>(null);
 	const [error, setError] = useState<string | null>(id ? null : "Falta indicar qué pregunta abrir.");
-	const [aviso, setAviso] = useState<string | null>(null);
-	const [errorGuardar, setErrorGuardar] = useState<string | null>(null);
 
 	useEffect(() => {
 		if (!id) return;
@@ -59,22 +57,25 @@ function Ficha_() {
 		};
 	}, [id]);
 
+	// J6-A1/A7: el resultado sale junto al botón y lleva a la siguiente pregunta.
 	async function guardar(c: CalificacionIn, final: boolean) {
-		setErrorGuardar(null);
-		setAviso(null);
-		try {
-			const nueva = await guardarCalificacion(id, c, final);
-			setFicha(nueva);
-			setAviso(
-				final
-					? "Calificación final guardada."
-					: nueva.estado === "con_diferencias"
-						? "Guardada. Difiere de la otra calificación: pasa al comité."
-						: "Calificación guardada.",
-			);
-		} catch (e) {
-			setErrorGuardar(mensajeError(e, "No se pudo guardar."));
-		}
+		const nueva = await guardarCalificacion(id, c, final);
+		setFicha(nueva);
+		const texto = final
+			? "Calificación final guardada."
+			: nueva.estado === "con_diferencias"
+				? "Guardada. No coincide con la otra calificación: la revisa el comité."
+				: "Calificación guardada.";
+		return (
+			<>
+				{texto}
+				{nueva.siguiente ? (
+					<Link className="pnl-btn pnl-btn-chico" href={`/admin/evaluacion/pregunta?id=${encodeURIComponent(nueva.siguiente)}`}>
+						Ir a la siguiente pregunta
+					</Link>
+				) : null}
+			</>
+		);
 	}
 
 	return (
@@ -103,7 +104,7 @@ function Ficha_() {
 			{ficha && rubrica ? (
 				<>
 					<h1>Pregunta {ficha.numero}</h1>
-					<p className="pnl-fila-meta" style={{ marginBottom: 14 }}>
+					<p className="pnl-fila-meta pnl-mb">
 						<span className="pnl-etq">{ficha.codigo}</span>
 						{ficha.practica ? <span className="pnl-practica">Práctica: no cuenta</span> : null}
 						<span>{ficha.tipo_playa_nombre ?? "Sin tipo"}</span>
@@ -113,7 +114,7 @@ function Ficha_() {
 						<EstadoEval estado={ficha.estado} />
 					</p>
 					{ficha.asignada_a?.length ? (
-						<p className="pnl-sub" style={{ marginBottom: 14 }}>
+						<p className="pnl-sub pnl-mb">
 							Asignada a: {ficha.asignada_a.join(" y ")}
 						</p>
 					) : null}
@@ -135,30 +136,6 @@ function Ficha_() {
 						) : null}
 					</section>
 
-					<AparecerSi valor={aviso}>
-						{(aviso) => (
-							<p className="pnl-ok" role="status">
-								{aviso}{" "}
-								{ficha.siguiente ? (
-									<Link href={`/admin/evaluacion/pregunta?id=${encodeURIComponent(ficha.siguiente)}`}>
-										Ir a la siguiente pregunta
-									</Link>
-								) : null}
-							</p>
-						)}
-					</AparecerSi>
-					<AparecerSi valor={errorGuardar}>
-						{(errorGuardar) => (
-							<div className="pnl-error" role="alert">
-								<IconoAviso />
-								<div>
-									<b>No se pudo guardar.</b>
-									<p>{errorGuardar}</p>
-								</div>
-							</div>
-						)}
-					</AparecerSi>
-
 					{ficha.es_comite ? (
 						<>
 							<section className="pnl-bloque" aria-labelledby="t-comp">
@@ -175,7 +152,7 @@ function Ficha_() {
 							</section>
 							<section className="pnl-bloque" aria-labelledby="t-final">
 								<h2 id="t-final">Calificación final del comité</h2>
-								<p className="pnl-sub" style={{ marginBottom: 12 }}>
+								<p className="pnl-sub pnl-mb">
 									Reemplaza a las de los semilleristas y queda como “Revisó” en la planilla.
 								</p>
 								{/* PQ-93: la fija la validación jurídica o el admin, cuando ya hay calificaciones. */}
@@ -240,7 +217,7 @@ function Ficha_() {
 	);
 }
 
-/** Reunión del 20-oct (T4): qué dijo la validadora y la conversación. */
+/** Reunión del 20-oct (T4): qué dijo quien valida y la conversación. */
 function MiValidacion({ evaluacionId }: { evaluacionId: string }) {
 	const [detalle, setDetalle] = useState<DetalleEvaluacion | null>(null);
 	const [error, setError] = useState<string | null>(null);
@@ -268,20 +245,24 @@ function MiValidacion({ evaluacionId }: { evaluacionId: string }) {
 	}
 	if (!detalle) return null;
 	const est = detalle.evaluacion.estado;
+	// J6-A3: el nombre real de quien validó, o neutro si todavía no hay nadie.
+	const quien = detalle.hilo.find((m) => m.autor !== detalle.evaluacion.evaluador)?.autor;
 	return (
 		<section className="pnl-bloque" aria-labelledby="t-validacion">
-			<h2 id="t-validacion">Validación de su calificación</h2>
-			<p>
-				<span className={`pnl-estado ${est === "validada" ? "bien" : est === "en_conversacion" ? "ojo" : "neutro"}`}>
+			<div className="pnl-titulo-estado">
+				<h2 id="t-validacion">Validación de su calificación</h2>
+				<ChipEstado tono={est === "validada" ? "bien" : est === "en_conversacion" ? "ojo" : "espera"}>
 					{TEXTO_VALIDACION[est]}
-				</span>{" "}
+				</ChipEstado>
+			</div>
+			<p>
 				{est === "en_conversacion"
-					? "La validadora no está de acuerdo. Lea su comentario, respóndale y, si corresponde, corrija la calificación arriba."
+					? `${quien ?? "Quien valida"} no está de acuerdo. Lea su comentario, respóndale y, si corresponde, corrija la calificación arriba.`
 					: est === "por_validar"
-						? "La validadora jurídica de su sede todavía no la revisa."
-						: "La validadora está de acuerdo."}
+						? "Quien valida lo jurídico en su sede todavía no la revisa."
+						: `${quien ?? "Quien valida"} está de acuerdo.`}
 			</p>
-			<Hilo detalle={detalle} onCambio={setDetalle} etiqueta="Responder a la validadora" />
+			<Hilo detalle={detalle} onCambio={setDetalle} lado="semillerista" />
 		</section>
 	);
 }

@@ -161,3 +161,18 @@ export function Delta({
 		</>
 	);
 }
+
+/**
+ * J6-A5: etiqueta de estado compartida. Tonos fijos en todo el panel:
+ * `sin` gris (sin empezar), `espera` azul (en proceso o esperando), `ojo`
+ * ámbar (necesita atención), `bien` verde (terminado o validado), `mal` rojo.
+ */
+export function ChipEstado({
+	tono,
+	children,
+}: {
+	tono: "sin" | "espera" | "ojo" | "bien" | "mal";
+	children: React.ReactNode;
+}) {
+	return <span className={`pnl-estado ${tono}`}>{children}</span>;
+}

@@ -70,7 +70,7 @@ function Detalle() {
 			<h1>Conversación</h1>
 			<AparecerSi valor={error}>
 				{(error) => (
-					<div className="pnl-error" role="alert" style={{ marginTop: 18 }}>
+					<div className="pnl-error pnl-mt" role="alert">
 						<IconoAviso />
 						<div>
 							<b>No se pudo abrir la conversación.</b>
@@ -82,7 +82,7 @@ function Detalle() {
 			{!datos && !error ? <p className="pnl-cargando">Cargando conversación…</p> : null}
 			{datos ? (
 				<>
-					<p className="pnl-sub" style={{ marginBottom: 18 }}>
+					<p className="pnl-sub pnl-mb">
 						De {datos.persona}, empezó el {fechaLarga(datos.creada)}
 					</p>
 					<ol className="pnl-mensajes">

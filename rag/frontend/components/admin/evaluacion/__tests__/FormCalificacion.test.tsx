@@ -62,7 +62,33 @@ describe("FormCalificacion — planilla del ejercicio", () => {
 		const onGuardar = vi.fn();
 		render(<FormCalificacion rubrica={RUBRICA} inicial={null} textoBoton="Guardar" onGuardar={onGuardar} />);
 		await user.click(screen.getByRole("button", { name: "Guardar" }));
-		expect(screen.getByRole("alert")).toHaveTextContent("Falta elegir: F1, F2, F3, Ct (nivel), Cv.");
+		expect(screen.getByRole("alert")).toHaveTextContent("Falta elegir: F1, F2, F3, nivel (Ct), valor de fondo (Cv).");
 		expect(onGuardar).not.toHaveBeenCalled();
+	});
+
+	it("J6-A1: el resultado sale junto al botón y el error queda fijo", async () => {
+		const user = userEvent.setup();
+		let falla = true;
+		const onGuardar = vi.fn(async () => {
+			if (falla) throw new Error("Sin conexión.");
+			return "Calificación guardada.";
+		});
+		render(<FormCalificacion rubrica={RUBRICA} inicial={null} textoBoton="Guardar" onGuardar={onGuardar} />);
+		await user.click(screen.getByRole("radio", { name: /3 Claro/ }));
+		await user.click(screen.getByRole("radio", { name: /3 Sí/ }));
+		await user.click(screen.getByRole("radio", { name: /2 Regular/ }));
+		await user.click(screen.getByRole("radio", { name: /I: Intermedio/ }));
+		await user.click(screen.getByRole("radio", { name: /9 muy bien/ }));
+		const boton = screen.getByRole("button", { name: "Guardar" });
+		await user.click(boton);
+		const error = await screen.findByRole("alert");
+		expect(error).toHaveTextContent("Sin conexión.");
+		// El error está en el mismo bloque que el botón, no arriba de la página.
+		expect(boton.parentElement?.contains(error)).toBe(true);
+		falla = false;
+		await user.click(boton);
+		expect(await screen.findByText("Calificación guardada.")).toBeInTheDocument();
+		expect(screen.getByRole("button", { name: "Guardado ✓" })).toBeInTheDocument();
+		expect(screen.queryByText("Sin conexión.")).toBeNull();
 	});
 });

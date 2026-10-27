@@ -13,6 +13,8 @@ import {
 import { IconoAviso } from "@/components/admin/panel/Estados";
 import { CabezaPestana, EncabezadoEvaluacion } from "@/components/admin/evaluacion/SubNav";
 import { Aparece, AparecerSi } from "@/components/admin/panel/Aparece";
+import { ResultadoJunto, textoBoton, useAccion } from "@/components/admin/panel/Resultado";
+import { ChipEstado } from "@/components/admin/panel/Estados";
 
 /**
  * Calendario del ejercicio (reunión del 20-oct, T5): las fechas que dijo
@@ -26,7 +28,7 @@ export default function PaginaCalendario() {
 	const [fechas, setFechas] = useState<Record<string, string>>({});
 	const [dias, setDias] = useState(14);
 	const [error, setError] = useState<string | null>(null);
-	const [aviso, setAviso] = useState<string | null>(null);
+	const acc = useAccion();
 
 	useEffect(() => {
 		let vigente = true;
@@ -45,17 +47,16 @@ export default function PaginaCalendario() {
 		};
 	}, []);
 
+	// J6-A1: el resultado (o el error) queda junto al botón, no arriba de la página.
 	async function guardar(e: React.FormEvent) {
 		e.preventDefault();
-		setError(null);
-		setAviso(null);
-		try {
-			const c = await guardarCalendario(fechas, dias);
-			setCal(c);
-			setAviso("Calendario guardado.");
-		} catch (err) {
-			setError(mensajeError(err, "No se pudo guardar el calendario."));
-		}
+		await acc.correr(
+			async () => {
+				setCal(await guardarCalendario(fechas, dias));
+				return "Calendario guardado.";
+			},
+			{ error: "No se pudo guardar el calendario." },
+		);
 	}
 
 	return (
@@ -119,17 +120,13 @@ export default function PaginaCalendario() {
 						Por confirmar con el profesor Camilo: en la reunión se dijo “2 semanas desde el primer día” y luego “una
 						semana más”.
 					</p>
-					<AparecerSi valor={aviso}>
-						{(aviso) => (
-							<p className="pnl-ok" role="status">
-								{aviso}
-							</p>
-						)}
-					</AparecerSi>
 					{esAdmin ? (
-						<button type="submit" className="pnl-btn">
-							Guardar el calendario
-						</button>
+						<div className="pnl-mt">
+							<button type="submit" className="pnl-btn" disabled={acc.enviando}>
+								{textoBoton(acc.estado, { listo: "Guardar el calendario" })}
+							</button>
+							<ResultadoJunto resultado={acc.resultado} />
+						</div>
 					) : null}
 				</form>
 			) : null}
@@ -164,8 +161,10 @@ function Cierre({ inicial }: { inicial: boolean }) {
 				como están. Se puede reabrir.
 			</p>
 			{/* PQ-86: siempre se dice en qué estado está; solo se ofrece la acción que aplica. */}
-			<p className={cambiado ? "pnl-ok" : "pnl-plazo"} role="status">
-				{cerrado ? "Estado: el ejercicio está cerrado." : "Estado: el ejercicio está abierto."}
+			<p role="status" aria-live={cambiado ? "polite" : undefined}>
+				<ChipEstado tono={cerrado ? "bien" : "espera"}>
+					{cerrado ? "El ejercicio está cerrado" : "El ejercicio está abierto"}
+				</ChipEstado>
 			</p>
 			<AparecerSi valor={error}>
 				{(error) => (

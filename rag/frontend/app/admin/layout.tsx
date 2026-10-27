@@ -9,6 +9,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { useTheme } from "@/components/providers/ThemeProvider";
 import { rolEvalua } from "@/lib/admin/evaluacion";
+import { AvisosProvider } from "@/components/admin/panel/Resultado";
 
 // Panel de administración con el diseño B del flujo guiado: encabezado
 // blanco con línea marino, navegación arriba (sin barra lateral), fuente del
@@ -151,10 +152,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 					</div>
 				</div>
 			</header>
-			<main id="main-content" className="pnl-main">
-				{TITULOS[pathname] ? <title>{TITULOS[pathname]}</title> : null}
-				{children}
-			</main>
+			<AvisosProvider>
+				<main id="main-content" className="pnl-main">
+					{TITULOS[pathname] ? <title>{TITULOS[pathname]}</title> : null}
+					{children}
+				</main>
+			</AvisosProvider>
 		</div>
 	);
 }

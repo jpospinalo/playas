@@ -21,6 +21,8 @@ import { IconoAviso } from "@/components/admin/panel/Estados";
 import { CabezaPestana, EncabezadoEvaluacion } from "@/components/admin/evaluacion/SubNav";
 import { diaLargo, pedirCalendario, textoRestante, type Calendario } from "@/lib/admin/calendario";
 import { Aparece, AparecerSi } from "@/components/admin/panel/Aparece";
+import { ResultadoJunto, useAccion } from "@/components/admin/panel/Resultado";
+import { LimpiarFiltros } from "@/components/admin/panel/LimpiarFiltros";
 
 const POR_PAGINA = 20;
 
@@ -91,7 +93,7 @@ export default function PaginaBandeja() {
 				{comite
 					? "Cada pregunta la evalúan dos semilleristas, uno de Santa Marta y uno de Barranquilla, que el sistema asigna solo."
 					: "El sistema le asigna preguntas automáticamente, repartidas por igual entre los semilleristas de su sede."}{" "}
-				Califique con la planilla: forma (F1, F2, F3) y fondo (Ct y Cv). Solo se ve el número del participante y su
+				Califique con la planilla: cómo está escrita la pregunta (forma: F1, F2, F3) y qué tan de fondo es el caso (nivel Ct y valor Cv). Solo se ve el número del participante y su
 				tipo de usuario de playa.
 			</CabezaPestana>
 			<Plazo pendientes={datos ? (datos.conteos[comite ? "con_diferencias" : "pendientes"] ?? 0) : null} comite={comite} />
@@ -172,6 +174,16 @@ export default function PaginaBandeja() {
 								))}
 							</select>
 						</div>
+						<LimpiarFiltros
+							activo={!!(buscar || borrador || tipo || ct)}
+							onLimpiar={() => {
+								setBorrador("");
+								setBuscar("");
+								setTipo(0);
+								setCt("");
+								setPagina(1);
+							}}
+						/>
 					</div>
 				</div>
 
@@ -231,7 +243,7 @@ export default function PaginaBandeja() {
 										{p.en_conversacion ? (
 											<span className="pnl-estado ojo">
 												<IconoAviso />
-												En conversación con la validadora
+												Quien valida no está de acuerdo: responder
 											</span>
 										) : null}
 										<span>{p.tipo_playa_nombre ?? "Sin tipo"}</span>
@@ -309,7 +321,7 @@ function Practica() {
 	const esAdmin = role === "admin" || role === "super-admin";
 	const [estado, setEstado] = useState<EstadoPractica | null>(null);
 	const [confirmar, setConfirmar] = useState(false);
-	const [error, setError] = useState<string | null>(null);
+	const acc = useAccion();
 
 	useEffect(() => {
 		let vigente = true;
@@ -328,13 +340,14 @@ function Practica() {
 	if (!estado || (!estado.cuentas && !estado.archivada)) return null;
 
 	async function cambiar(archivar: boolean) {
-		setError(null);
-		try {
-			setEstado(await archivarPractica(archivar));
-			setConfirmar(false);
-		} catch (e) {
-			setError(mensajeError(e, "No se pudo cambiar la práctica."));
-		}
+		await acc.correr(
+			async () => {
+				setEstado(await archivarPractica(archivar));
+				setConfirmar(false);
+				return archivar ? "Práctica archivada." : "La práctica se ve otra vez en las listas.";
+			},
+			{ error: "No se pudo cambiar la práctica." },
+		);
 	}
 
 	return (
@@ -345,13 +358,6 @@ function Practica() {
 					? "La práctica está archivada: sus preguntas ya no se ven en ninguna lista."
 					: `Hay ${cuantas(estado.cuentas, "cuenta", "cuentas")} de práctica con ${cuantas(estado.preguntas, "pregunta", "preguntas")}. Se evalúan y validan igual, pero no cuentan para el resumen, los premios ni el Excel.`}
 			</p>
-			<AparecerSi valor={error}>
-				{(error) => (
-					<p className="pnl-error-linea" role="alert">
-						{error}
-					</p>
-				)}
-			</AparecerSi>
 			<Aparece abierto={esAdmin && confirmar} enfocar>
 				<div className="pnl-confirmar" role="group" aria-labelledby="t-arch">
 					<p id="t-arch">
@@ -378,6 +384,7 @@ function Practica() {
 					</button>
 				)
 			) : null}
+			<ResultadoJunto resultado={acc.resultado} />
 		</section>
 	);
 }

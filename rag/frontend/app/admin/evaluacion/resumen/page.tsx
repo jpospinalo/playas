@@ -110,7 +110,7 @@ export default function PaginaResumenEjercicio() {
 							<dt>Preguntas registradas</dt>
 							<dd>
 								<span className="pnl-valor num">{numero(resumen.preguntas_registradas)}</span>
-								<span className="pnl-det">De participantes con número</span>
+								<span className="pnl-det">Hechas por los participantes del ejercicio</span>
 							</dd>
 						</div>
 						<div className="pnl-cifra">
@@ -120,7 +120,7 @@ export default function PaginaResumenEjercicio() {
 								<span className="pnl-det">
 									{resumen.solo_revisadas
 										? "Validadas por el comité"
-										: "Final del comité, o dos concordantes aún por validar"}
+										: "Final del comité, o dos calificaciones que coinciden y esperan la validación"}
 								</span>
 							</dd>
 						</div>
@@ -129,7 +129,7 @@ export default function PaginaResumenEjercicio() {
 							<dd>
 								<span className="pnl-valor num">{numero(resumen.estados.con_diferencias)}</span>
 								<span className="pnl-det">
-									Esperan al comité (umbral: {resumen.umbral_diferencia} puntos o distinto nivel)
+									Las dos calificaciones no coinciden ({resumen.umbral_diferencia} puntos o más, o distinto nivel): las revisa el comité
 								</span>
 							</dd>
 						</div>
@@ -157,7 +157,7 @@ export default function PaginaResumenEjercicio() {
 								{(Object.keys(NIVELES) as Ct[]).map((k) => (
 									<li key={k}>
 										<span>
-											Casos {NIVELES[k].toLowerCase()}s (Cv {RANGOS[k][0]} a {RANGOS[k][1]})
+											Casos {NIVELES[k].toLowerCase()}s (valor de fondo {RANGOS[k][0]} a {RANGOS[k][1]})
 										</span>
 										<b className="num">{numero(resumen.por_nivel[k])}</b>
 									</li>
@@ -243,8 +243,8 @@ function SeccionPremios({ premios, onElegir }: { premios: Premios; onElegir: (n:
 		<>
 			<section className="pnl-bloque" aria-labelledby="t-mejor">
 				<h2 id="t-mejor">Premio: mejor pregunta del ejercicio</h2>
-				<p className="pnl-sub" style={{ marginBottom: 12 }}>
-					Mayor puntaje de fondo (Cv) en cada nivel, solo preguntas válidas. Si hay empate en Cv, decide el
+				<p className="pnl-sub pnl-mb">
+					Mayor puntaje de fondo (Cv) en cada nivel, solo preguntas válidas. Si hay empate en el valor de fondo, decide el
 					comité por pertinencia jurídica.
 				</p>
 				<ol className="pnl-filas">
@@ -299,7 +299,7 @@ function SeccionPremios({ premios, onElegir }: { premios: Premios; onElegir: (n:
 								</div>
 								<dl className="pnl-fila-estado">
 									<div>
-										<dt>Cv</dt>
+										<dt>Valor de fondo (Cv)</dt>
 										<dd className="pnl-veces num">
 											{n.ganadora?.cv ?? n.empatadas[0]?.cv ?? "—"} de {RANGOS[k][1]}
 										</dd>
@@ -313,7 +313,7 @@ function SeccionPremios({ premios, onElegir }: { premios: Premios; onElegir: (n:
 
 			<section className="pnl-bloque" aria-labelledby="t-constancia">
 				<h2 id="t-constancia">Premio: participación más constante</h2>
-				<p className="pnl-sub" style={{ marginBottom: 12 }}>
+				<p className="pnl-sub pnl-mb">
 					Más días distintos con preguntas válidas; si empatan, más preguntas válidas; si siguen empatados,
 					mayor puntaje acumulado.
 				</p>
@@ -322,7 +322,7 @@ function SeccionPremios({ premios, onElegir }: { premios: Premios; onElegir: (n:
 
 			<section className="pnl-bloque" aria-labelledby="t-grat">
 				<h2 id="t-grat">Puntaje acumulado por participante (gratificación)</h2>
-				<p className="pnl-sub" style={{ marginBottom: 12 }}>
+				<p className="pnl-sub pnl-mb">
 					Suma del puntaje total de sus preguntas válidas con calificación oficial.
 				</p>
 				<TablaRanking filas={premios.gratificacion} />
@@ -330,7 +330,7 @@ function SeccionPremios({ premios, onElegir }: { premios: Premios; onElegir: (n:
 
 			<section className="pnl-bloque" aria-labelledby="t-dias">
 				<h2 id="t-dias">Participación por día</h2>
-				<p className="pnl-sub" style={{ marginBottom: 12 }}>
+				<p className="pnl-sub pnl-mb">
 					Días en que cada participante hizo preguntas (no es la asistencia a las sesiones).
 				</p>
 				<div className="pnl-tabla-datos" role="region" aria-label="Tabla de participación por día" tabIndex={0}>
@@ -378,7 +378,7 @@ function Empatadas({ total, render }: { total: number; render: (n: number) => Re
 	return (
 		<>
 			<p className="pnl-nota" style={{ marginTop: 0 }}>
-				{cuantas(total, "pregunta empatada", "preguntas empatadas")} con el mismo Cv.
+				{cuantas(total, "pregunta empatada", "preguntas empatadas")} con el mismo valor de fondo.
 			</p>
 			{render(todas ? total : 5)}
 			{total > 5 ? (
@@ -459,7 +459,7 @@ function AvancePlazo({ resumen }: { resumen: ResumenEjercicio }) {
 		<section className="pnl-bloque" aria-labelledby="t-plazo">
 			<h2 id="t-plazo">Avance frente al plazo</h2>
 			{resumen.fin_evaluacion ? (
-				<p className="pnl-sub" style={{ marginBottom: 12 }}>
+				<p className="pnl-sub pnl-mb">
 					Semilleristas hasta el {diaLargo(resumen.fin_evaluacion)}; validación hasta el{" "}
 					{diaLargo(resumen.fin_validacion ?? resumen.fin_evaluacion)}. “Al día” es cuántas tendría que hacer cada día
 					para llegar.
@@ -493,12 +493,12 @@ function AvancePlazo({ resumen }: { resumen: ResumenEjercicio }) {
 				</table>
 			</div>
 			{validadores.length ? (
-				<div className="pnl-tabla-datos" role="region" aria-label="Avance de la validación" tabIndex={0} style={{ marginTop: 16 }}>
+				<div className="pnl-tabla-datos pnl-mt" role="region" aria-label="Avance de la validación" tabIndex={0}>
 					<table>
 						<caption>Validación jurídica</caption>
 						<thead>
 							<tr>
-								<th scope="col">Validadora</th>
+								<th scope="col">Quién valida</th>
 								<th scope="col">Sede</th>
 								<th scope="col" className="num">Evaluaciones</th>
 								<th scope="col" className="num">Validadas</th>
@@ -533,7 +533,7 @@ function Ganadores({ premios, cerrado }: { premios: Premios; cerrado: boolean })
 	return (
 		<section className="pnl-bloque" aria-labelledby="t-ganadores">
 			<h2 id="t-ganadores">Ganadores {cerrado ? "" : "(provisional)"}</h2>
-			<p className="pnl-sub" style={{ marginBottom: 12 }}>
+			<p className="pnl-sub pnl-mb">
 				{cerrado
 					? "El ejercicio está cerrado: estos son los resultados finales."
 					: "Cambia a medida que se validan evaluaciones; queda fijo al cerrar el ejercicio."}{" "}
@@ -549,7 +549,7 @@ function Ganadores({ premios, cerrado }: { premios: Premios; cerrado: boolean })
 								<>
 									<p className="pnl-ganador-quien">{r.ganadora.codigo}</p>
 									<p className="pnl-ganador-det">
-										Cv {r.ganadora.cv}: “{recortar(r.ganadora.texto, 140)}”
+										Valor de fondo {r.ganadora.cv}: “{recortar(r.ganadora.texto, 140)}”
 									</p>
 								</>
 							) : r.decide_comite ? (
@@ -592,7 +592,7 @@ function Concordancia({ resumen }: { resumen: ResumenEjercicio }) {
 	return (
 		<section className="pnl-bloque" aria-labelledby="t-conc">
 			<h2 id="t-conc">Acuerdo entre Santa Marta y Barranquilla</h2>
-			<p className="pnl-sub" style={{ marginBottom: 12 }}>
+			<p className="pnl-sub pnl-mb">
 				En {cuantas(c.pares, "pregunta", "preguntas")} con las dos evaluaciones. Kappa y alfa van de 0 (acuerdo por azar) a 1 (acuerdo
 				total); sobre 0,6 se considera bueno.
 			</p>
@@ -624,7 +624,7 @@ function Concordancia({ resumen }: { resumen: ResumenEjercicio }) {
 			</dl>
 			{c.alfa ? (
 				<p className="pnl-nota">
-					Alfa de Krippendorff (ordinal): F1 {v(c.alfa.f1)}, F2 {v(c.alfa.f2)}, F3 {v(c.alfa.f3)}, Cv {v(c.alfa.cv)}.
+					Qué tanto coinciden los semilleristas, de 0 a 1 (alfa de Krippendorff): F1 {v(c.alfa.f1)}, F2 {v(c.alfa.f2)}, F3 {v(c.alfa.f3)}, valor de fondo {v(c.alfa.cv)}.
 				</p>
 			) : null}
 		</section>

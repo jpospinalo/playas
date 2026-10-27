@@ -25,6 +25,18 @@
 	--p-bajo: #e6f2f3;
 	--p-riel: #e9eeef;
 	--p-gris: #6f7c80;
+	--p-verde-suave: #e6f2ec;
+
+	/* J6-A8: una sola escala de espacios para todo el panel. */
+	--p-esp-1: 4px;
+	--p-esp-2: 8px;
+	--p-esp-3: 12px;
+	--p-esp-4: 16px;
+	--p-esp-5: 24px;
+	--p-esp-6: 32px;
+	/* Texto → botón o bloque siguiente, y campo → botón. */
+	--p-esp-texto: var(--p-esp-4);
+	--p-esp-campo: var(--p-esp-3);
 
 	/* Las páginas viejas de /admin (Tailwind) usan estos tokens: aquí toman la
 	   paleta B, en claro y en oscuro (PQ-J3). */
@@ -78,6 +90,7 @@
 	--p-bajo: #162733;
 	--p-riel: #1a2a35;
 	--p-gris: #8c99a0;
+	--p-verde-suave: #14251d;
 }
 
 .pnl *,
@@ -88,6 +101,15 @@
 .pnl :focus-visible {
 	outline: 4px solid var(--p-marino);
 	outline-offset: 3px;
+}
+/* J6-A4: en los campos el anillo va por dentro (no crece hacia afuera), así
+   nunca toca ni tapa el botón de al lado ni cambia cómo se ve el espacio. */
+.pnl input:not([type="checkbox"], [type="radio"], [type="file"]):focus-visible,
+.pnl textarea:focus-visible,
+.pnl select:focus-visible {
+	outline: 3px solid var(--p-marino);
+	outline-offset: -3px;
+	border-color: var(--p-marino);
 }
 .pnl-pag a {
 	color: var(--p-marino);
@@ -304,7 +326,7 @@
 .pnl-controles {
 	display: flex;
 	align-items: flex-end;
-	gap: 14px;
+	gap: var(--p-esp-3);
 	flex-wrap: wrap;
 }
 .pnl-periodo {
@@ -715,11 +737,22 @@
 }
 
 /* ── Estados con ícono + texto ───────────────────────────────────────────── */
+/* J6-A5: todo estado es una etiqueta (chip) con el color de su significado y
+   siempre con texto: gris = sin empezar, azul = en proceso o esperando,
+   ámbar = necesita atención, verde = terminado o validado. */
 .pnl-estado {
 	display: inline-flex;
 	align-items: center;
 	gap: 6px;
-	font-weight: 400;
+	padding: 2px 10px;
+	border: 1px solid currentColor;
+	border-radius: 999px;
+	font-size: 16px;
+	font-weight: 600;
+	line-height: 1.4;
+	max-width: 100%;
+	vertical-align: middle;
+	background: var(--p-riel);
 }
 .pnl-estado svg {
 	width: 18px;
@@ -733,15 +766,36 @@
 }
 .pnl-estado.bien {
 	color: var(--p-verde);
+	background: var(--p-verde-suave);
 }
 .pnl-estado.mal {
 	color: var(--p-peligro);
+	background: var(--p-peligro-suave);
 }
 .pnl-estado.ojo {
 	color: var(--p-ambar-txt);
+	background: var(--p-ambar-suave);
 }
-.pnl-estado.neutro {
+.pnl-estado.espera {
+	color: var(--p-marino);
+	background: var(--p-bajo);
+}
+.pnl-estado.neutro,
+.pnl-estado.sin {
 	color: var(--p-tinta-2);
+	background: var(--p-riel);
+}
+/* Título con su estado al lado, con aire (no se lee como una sola frase). */
+.pnl-titulo-estado {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: var(--p-esp-2) var(--p-esp-3);
+	margin-bottom: var(--p-esp-3);
+}
+.pnl-titulo-estado h2,
+.pnl-titulo-estado h3 {
+	margin: 0;
 }
 
 /* ── Brechas ─────────────────────────────────────────────────────────────── */
@@ -1071,8 +1125,8 @@
 .pnl-acciones {
 	display: flex;
 	flex-wrap: wrap;
-	gap: 4px 20px;
-	margin-top: 6px;
+	gap: var(--p-esp-2) var(--p-esp-3);
+	margin-top: var(--p-esp-campo);
 }
 
 /* Fechas de los extremos: nunca se salen del gráfico. */
@@ -1565,12 +1619,16 @@
 	background: var(--p-bajo);
 	border-radius: 6px;
 }
+/* J6-A5: "Forma" y "Fondo" son subtítulos de la sección (más pequeños y con
+   aire), no un segundo título pegado al de arriba. */
 .pnl-planilla h3 {
-	margin: 18px 0 10px;
-	font-size: 22px;
+	margin: var(--p-esp-5) 0 var(--p-esp-2);
+	padding-top: var(--p-esp-3);
+	border-top: 1px solid var(--p-linea);
+	font-size: 20px;
 }
 .pnl-planilla h3:first-child {
-	margin-top: 0;
+	margin-top: var(--p-esp-3);
 }
 .pnl-criterio {
 	border: 0;
@@ -1751,8 +1809,8 @@ fieldset:disabled .pnl-opcion {
 	gap: 10px;
 }
 .pnl-confirmar {
-	margin-top: 12px;
-	padding: 12px 14px;
+	margin-top: var(--p-esp-3);
+	padding: var(--p-esp-3) var(--p-esp-4);
 	border: 2px solid var(--p-ambar);
 	border-radius: 6px;
 	background: var(--p-papel);
@@ -1901,7 +1959,7 @@ fieldset:disabled .pnl-opcion {
 }
 .pnl-hilo-form {
 	display: grid;
-	gap: 6px;
+	gap: var(--p-esp-2);
 	max-width: 640px;
 }
 .pnl-hilo-form label {
@@ -1919,6 +1977,7 @@ fieldset:disabled .pnl-opcion {
 }
 .pnl-hilo-form .pnl-btn-sec {
 	justify-self: start;
+	margin-top: var(--p-esp-1);
 }
 
 .pnl-ayuda-campo {
@@ -2039,7 +2098,14 @@ html:has(.pnl) {
 .pnl-bloque > div > .pnl-acciones,
 .pnl-confirmar .pnl-acciones,
 .pnl-aviso .pnl-acciones {
-	margin-top: 14px;
+	margin-top: var(--p-esp-texto);
+}
+/* J6-A8: márgenes de la escala (antes eran 8, 12, 14 o 18 px sueltos en cada pantalla). */
+.pnl .pnl-mt {
+	margin-top: var(--p-esp-texto);
+}
+.pnl .pnl-mb {
+	margin-bottom: var(--p-esp-texto);
 }
 /* J5-4: el ejemplo dentro del campo, legible (tinta secundaria: ≥ 4,5:1 en claro y oscuro). */
 .pnl input::placeholder,
@@ -2100,14 +2166,14 @@ html:has(.pnl) {
 .pnl-form-fila {
 	display: flex;
 	flex-direction: column;
-	gap: 12px;
-	padding-top: 12px;
+	gap: var(--p-esp-3);
+	padding-top: var(--p-esp-3);
 }
 .pnl-form-fila .pnl-form-campos {
 	display: flex;
 	flex-wrap: wrap;
 	align-items: flex-start;
-	gap: 14px;
+	gap: var(--p-esp-3);
 }
 .pnl-form-fila .pnl-acciones {
 	margin-top: 2px;
@@ -2118,4 +2184,69 @@ html:has(.pnl) {
 .pnl .pnl-acciones > .pnl-btn,
 .pnl .pnl-acciones > .pnl-btn-sec {
 	min-height: 48px;
+}
+
+/* J6-A1: el resultado junto al botón (✓ verde) y el error fijo debajo. */
+.pnl .pnl-resultado {
+	display: flex;
+	gap: var(--p-esp-2);
+	align-items: baseline;
+	margin: var(--p-esp-2) 0 0;
+	font-weight: 600;
+}
+.pnl .pnl-resultado.bien {
+	color: var(--p-verde);
+}
+.pnl .pnl-resultado.mal {
+	color: var(--p-peligro);
+}
+.pnl .pnl-resultado a {
+	font-weight: 600;
+}
+/* Aviso fijo abajo de la pantalla para lo que cambia lejos del botón. */
+.pnl-toasts {
+	position: fixed;
+	left: 50%;
+	bottom: var(--p-esp-5);
+	transform: translateX(-50%);
+	z-index: 50;
+	display: grid;
+	gap: var(--p-esp-2);
+	width: min(560px, calc(100vw - 32px));
+	pointer-events: none;
+}
+.pnl-toast {
+	pointer-events: auto;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--p-esp-3);
+	padding: var(--p-esp-3) var(--p-esp-4);
+	border-radius: 6px;
+	border: 2px solid var(--p-verde);
+	background: var(--p-papel);
+	color: var(--p-tinta);
+	box-shadow: 0 6px 24px rgb(0 0 0 / 0.18);
+	font-weight: 600;
+}
+.pnl-toast.mal {
+	border-color: var(--p-peligro);
+}
+.pnl-toast p {
+	margin: 0;
+}
+@media (prefers-reduced-motion: no-preference) {
+	.pnl-toast {
+		animation: pnl-toast 180ms ease-out both;
+	}
+	@keyframes pnl-toast {
+		from {
+			opacity: 0;
+			transform: translateY(8px);
+		}
+		to {
+			opacity: 1;
+			transform: none;
+		}
+	}
 }

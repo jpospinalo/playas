@@ -24,7 +24,9 @@ import {
 	type Sede,
 } from "@/lib/admin/cuentas";
 import { Aparece, useUltimo } from "@/components/admin/panel/Aparece";
+import { ResultadoJunto, textoBoton, useAccion } from "@/components/admin/panel/Resultado";
 import { IconoAviso } from "@/components/admin/panel/Estados";
+import { LimpiarFiltros } from "@/components/admin/panel/LimpiarFiltros";
 
 /**
  * Cuentas del ejercicio de validación (documento del profe): cada
@@ -148,6 +150,15 @@ export default function PaginaCuentas() {
 								))}
 							</select>
 						</div>
+						<LimpiarFiltros
+							activo={!!(buscar || filtroRol || filtroTipo)}
+							onLimpiar={() => {
+								setBuscar("");
+								setFiltroRol("");
+								setFiltroTipo("");
+								setPagina(1);
+							}}
+						/>
 					</div>
 				</div>
 
@@ -317,7 +328,7 @@ function CrearCuentas({ onCreadas }: { onCreadas: (c: Credencial[]) => void }) {
 	return (
 		<section className="pnl-bloque pnl-no-imprimir" aria-labelledby="t-crear">
 			<h2 id="t-crear">Crear cuentas</h2>
-			<p className="pnl-sub" style={{ marginBottom: 14 }}>
+			<p className="pnl-sub pnl-mb">
 				Una persona por renglón. Para participantes escriba “Nombre; tipo; organización” (el tipo es un número
 				del 1 al 5 o su nombre; la organización, institución o asociación es opcional). El número de
 				participante (P001, P002…) se asigna solo.
@@ -353,7 +364,7 @@ function CrearCuentas({ onCreadas }: { onCreadas: (c: Credencial[]) => void }) {
 					</Aparece>
 				</div>
 				<Aparece abierto={rol === "user"}>
-					<div className="pnl-campo" style={{ marginTop: 14 }}>
+					<div className="pnl-campo pnl-mt">
 						<label htmlFor="c-csv">Importar la lista de inscritos (CSV exportado de Forms)</label>
 						<input
 							id="c-csv"
@@ -379,7 +390,7 @@ function CrearCuentas({ onCreadas }: { onCreadas: (c: Credencial[]) => void }) {
 						) : null}
 					</div>
 				</Aparece>
-				<div className="pnl-campo" style={{ marginTop: 14 }}>
+				<div className="pnl-campo pnl-mt">
 					<label htmlFor="c-lista">{rol === "user" ? "Nombre; tipo; organización" : "Nombres"}</label>
 					<textarea
 						id="c-lista"
@@ -396,7 +407,7 @@ function CrearCuentas({ onCreadas }: { onCreadas: (c: Credencial[]) => void }) {
 					/>
 				</div>
 				<Aparece abierto={errores.length > 0}>
-					<div id="c-errores" className="pnl-error" role="alert" style={{ marginTop: 12 }}>
+					<div id="c-errores" className="pnl-error pnl-mt" role="alert">
 						<IconoAviso />
 						<div>
 							<b>Revise la lista.</b>
@@ -408,7 +419,7 @@ function CrearCuentas({ onCreadas }: { onCreadas: (c: Credencial[]) => void }) {
 						</div>
 					</div>
 				</Aparece>
-				<p style={{ marginTop: 14 }}>
+				<p className="pnl-mt">
 					<button type="submit" className="pnl-btn" disabled={enviando}>
 						{enviando ? "Creando…" : "Crear cuentas"}
 					</button>
@@ -481,65 +492,64 @@ function FilaCuenta({ cuenta, onCambiada }: { cuenta: Cuenta; onCambiada: (c: Cu
 	const pideSede = rol === "evaluador" || (rol === "comite" && validacion === "juridico");
 	const [practica, setPractica] = useState(cuenta.practica ?? false);
 	const [clave, setClave] = useState<string | null>(null);
-	const [error, setError] = useState<string | null>(null);
-	const [aviso, setAviso] = useState<string | null>(null);
 	const claveVista = useUltimo(clave);
-	const errorVisto = useUltimo(error);
-	const avisoVisto = useUltimo(aviso);
+	// J6-A1: el resultado de cada botón de la fila sale en la misma fila.
+	const acc = useAccion();
+	const nombre = cuenta.nombre || cuenta.correo;
 
 	// E1: sus preguntas sin evaluar pasan a otro semillerista de su sede.
 	async function reasignar() {
-		setError(null);
-		try {
-			const r = await reasignarPendientes(cuenta.uid);
-			setAviso(
-				r.reasignadas
+		await acc.correr(
+			async () => {
+				const r = await reasignarPendientes(cuenta.uid);
+				setPanel(null);
+				return r.reasignadas
 					? `${cuantas(r.reasignadas, "pregunta pasó", "preguntas pasaron")} a otro semillerista de su sede.`
-					: "No tenía preguntas pendientes.",
-			);
-			setPanel(null);
-		} catch (e) {
-			setError(mensajeError(e, "No se pudo reasignar."));
-		}
+					: "No tenía preguntas pendientes.";
+			},
+			{ error: "No se pudo reasignar." },
+		);
 	}
 	const activa = cuenta.activa !== false;
 	const id = cuenta.uid.slice(0, 8);
 
 	// CHECKLIST-FINAL c2: desactivar sin borrar el historial (y reactivar).
 	async function cambiarActiva(nueva: boolean) {
-		setError(null);
-		try {
-			onCambiada(await cambiarCuenta(cuenta.uid, { activa: nueva }));
-			setPanel(null);
-		} catch (e) {
-			setError(mensajeError(e, "No se pudo cambiar la cuenta."));
-		}
+		await acc.correr(
+			async () => {
+				onCambiada(await cambiarCuenta(cuenta.uid, { activa: nueva }));
+				setPanel(null);
+				return nueva ? `Cuenta de ${nombre} reactivada.` : `Cuenta de ${nombre} desactivada.`;
+			},
+			{ error: "No se pudo cambiar la cuenta.", lejos: true },
+		);
 	}
 
 	async function guardar() {
-		setError(null);
-		try {
-			const nueva = await cambiarCuenta(cuenta.uid, {
-				rol,
-				...(rol === "user" ? { tipo_playa: tipo } : {}),
-				...(pideSede ? { sede } : {}),
-				...(rol === "comite" ? { validacion } : {}),
-				practica,
-			});
-			onCambiada(nueva);
-			setPanel(null);
-		} catch (e) {
-			setError(mensajeError(e, "No se pudo guardar."));
-		}
+		await acc.correr(
+			async () => {
+				const nueva = await cambiarCuenta(cuenta.uid, {
+					rol,
+					...(rol === "user" ? { tipo_playa: tipo } : {}),
+					...(pideSede ? { sede } : {}),
+					...(rol === "comite" ? { validacion } : {}),
+					practica,
+				});
+				onCambiada(nueva);
+				setPanel(null);
+				return `Datos de ${nombre} guardados.`;
+			},
+			{ lejos: true },
+		);
 	}
 
 	async function restablecer() {
-		setError(null);
-		try {
-			setClave((await nuevaClave(cuenta.uid)).clave);
-		} catch (e) {
-			setError(mensajeError(e, "No se pudo generar la clave."));
-		}
+		await acc.correr(
+			async () => {
+				setClave((await nuevaClave(cuenta.uid)).clave);
+			},
+			{ error: "No se pudo generar la clave." },
+		);
 	}
 
 	return (
@@ -566,16 +576,7 @@ function FilaCuenta({ cuenta, onCambiada }: { cuenta: Cuenta; onCambiada: (c: Cu
 						Clave nueva: <b className="pnl-clave">{claveVista}</b> (solo se muestra ahora)
 					</p>
 				</Aparece>
-				<Aparece abierto={error !== null}>
-					<p className="pnl-error-linea" role="alert">
-						{errorVisto}
-					</p>
-				</Aparece>
-				<Aparece abierto={aviso !== null}>
-					<p className="pnl-ok" role="status">
-						{avisoVisto}
-					</p>
-				</Aparece>
+				<ResultadoJunto resultado={acc.resultado} />
 				<Aparece abierto={panel === "reasignar"} enfocar>
 					<div className="pnl-confirmar" role="group" aria-labelledby={`re-${id}`}>
 						<p id={`re-${id}`}>
@@ -664,8 +665,8 @@ function FilaCuenta({ cuenta, onCambiada }: { cuenta: Cuenta; onCambiada: (c: Cu
 							<span>Cuenta de práctica (no cuenta para resultados)</span>
 						</label>
 						<div className="pnl-acciones">
-							<button type="button" className="pnl-btn" onClick={guardar}>
-								Guardar
+							<button type="button" className="pnl-btn" disabled={acc.enviando} onClick={guardar}>
+								{textoBoton(acc.estado, { listo: "Guardar" })}
 							</button>
 							<button type="button" className="pnl-btn-sec" onClick={() => setPanel(null)}>
 								Cancelar
