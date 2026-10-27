@@ -92,6 +92,10 @@ ARCHITECTURE_ANALYSIS.md
 # 15) Carpeta temporal de sincronización usada por Claude para revisiones — no debe versionarse
 _claude_sync/
 
+# Estado local, vectores y cachés del pipeline offline
+.offline/
+.offline-venv/
+
 # 16) Binarios de terceros descargados (instaladores, plugins) — no deben versionarse
 *.deb
 session-manager-plugin.deb
