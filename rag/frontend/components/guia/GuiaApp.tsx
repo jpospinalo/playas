@@ -21,6 +21,7 @@ import { Respuesta, type Calificacion } from "@/components/guia/Respuesta";
 import { PantallaOpinion } from "@/components/guia/Opinion";
 import { ConPrivacidad } from "@/components/guia/Privacidad";
 import { VentanaParticipante } from "@/components/guia/Ventana";
+import { pedirEncuesta } from "@/lib/admin/calendario";
 import { detenerVoz } from "@/lib/voz";
 import type { Message, SourceGroup } from "@/lib/types";
 
@@ -206,6 +207,21 @@ function Flujo() {
 	const enfocarCaja = useRef(false);
 	const chat = useChat();
 	const { signOut } = useAuth();
+	// J5-5: si ya llenó la encuesta de percepción, no se le vuelve a ofrecer.
+	const [encuestaHecha, setEncuestaHecha] = useState(true);
+	useEffect(() => {
+		let vigente = true;
+		pedirEncuesta()
+			.then((r) => {
+				if (vigente) setEncuestaHecha(r.respondida);
+			})
+			.catch(() => {
+				if (vigente) setEncuestaHecha(false);
+			});
+		return () => {
+			vigente = false;
+		};
+	}, []);
 	const { messages, loading, error, stage, generationFinished, persistingMessageIds } = chat;
 
 	const [pregunta, setPregunta] = useState<PreguntaActual | null>(null);
@@ -471,7 +487,8 @@ function Flujo() {
 				}
 				onCalificar={(c) => calificar(mensaje.id, c)}
 				onOtraPregunta={otraPregunta}
-				onTerminar={() => ir(`opinion/${numero}`)}
+				onTerminar={encuestaHecha ? undefined : () => ir(`opinion/${numero}`)}
+				invitarEncuesta={!encuestaHecha && numero === 1}
 				onEscribirDeNuevo={() => {
 					setBorrador(vista.pregunta.texto);
 					irACaja(false);
@@ -494,6 +511,7 @@ function Flujo() {
 				onVolver={() => window.history.back()}
 				onOtraPregunta={otraPregunta}
 				onSalir={() => void signOut()}
+				onEnviada={() => setEncuestaHecha(true)}
 			/>
 		);
 	}

@@ -1,6 +1,7 @@
 "use client";
 
-import { type RefObject, useRef, useState } from "react";
+import { type RefObject, useEffect, useRef, useState } from "react";
+import { diaLargo, pedirVentana } from "@/lib/admin/calendario";
 import { submitConversationFeedback } from "@/lib/api";
 
 /**
@@ -36,9 +37,32 @@ interface OpinionProps {
 	onVolver: () => void;
 	onOtraPregunta: () => void;
 	onSalir: () => void;
+	/** J5-5: avisa que ya la llenó (no se vuelve a ofrecer). */
+	onEnviada?: () => void;
 }
 
-export function PantallaOpinion({ tituloRef, conversationId, onVolver, onOtraPregunta, onSalir }: OpinionProps) {
+export function PantallaOpinion({
+	tituloRef,
+	conversationId,
+	onVolver,
+	onOtraPregunta,
+	onSalir,
+	onEnviada,
+}: OpinionProps) {
+	const [hasta, setHasta] = useState<string | null>(null);
+	useEffect(() => {
+		let vigente = true;
+		pedirVentana()
+			.then((v) => {
+				if (vigente && v.dias_restantes >= 0) setHasta(diaLargo(v.ultimo_dia));
+			})
+			.catch(() => {
+				// Sin la fecha se usa el cierre general del ejercicio.
+			});
+		return () => {
+			vigente = false;
+		};
+	}, []);
 	const [notas, setNotas] = useState<Partial<Record<Clave, number>>>({});
 	const [comentario, setComentario] = useState("");
 	const [paso, setPaso] = useState<"llenar" | "enviando" | "gracias">("llenar");
@@ -66,6 +90,7 @@ export function PantallaOpinion({ tituloRef, conversationId, onVolver, onOtraPre
 				conversation_id: conversationId ?? undefined,
 			});
 			setPaso("gracias");
+			onEnviada?.();
 			requestAnimationFrame(() => graciasRef.current?.focus());
 		} catch {
 			setPaso("llenar");
@@ -79,13 +104,16 @@ export function PantallaOpinion({ tituloRef, conversationId, onVolver, onOtraPre
 				<h1 id="titulo-gracias" ref={graciasRef} tabIndex={-1}>
 					Gracias por su opinión
 				</h1>
-				<p>Quedó guardada. Ya puede salir, o hacer otra pregunta si lo desea.</p>
+				<p>
+					Gracias. Puede seguir preguntando cuando quiera, desde su casa, hasta el {hasta ?? "20 de noviembre"}, con el
+					mismo correo y clave. Quien participe más días puede ganar un bono.
+				</p>
 				<div className="guia-acciones">
-					<button type="button" className="guia-btn" onClick={onSalir}>
-						Salir de ATLAS
-					</button>
-					<button type="button" className="guia-btn-sec" onClick={onOtraPregunta}>
+					<button type="button" className="guia-btn" onClick={onOtraPregunta}>
 						Hacer otra pregunta
+					</button>
+					<button type="button" className="guia-btn-sec" onClick={onSalir}>
+						Salir de ATLAS
 					</button>
 				</div>
 			</section>

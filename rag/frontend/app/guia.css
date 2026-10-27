@@ -1188,3 +1188,15 @@ body:has(.guia) {
 	margin-top: 2px;
 	accent-color: var(--marino);
 }
+
+/* J5-5: invitación corta a la encuesta, debajo de "¿Le sirvió?". */
+.guia-invita {
+	margin-top: 16px;
+	padding: 14px 18px;
+	border: 2px dashed var(--borde-ctl);
+	border-radius: 6px;
+}
+.guia-invita p {
+	margin: 0 0 10px;
+	font-weight: 600;
+}

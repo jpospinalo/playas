@@ -58,6 +58,11 @@ export function cerrarEjercicio(cerrar: boolean): Promise<{ cerrado: boolean }> 
 	return llamar("/api/evaluacion/cierre", { method: "POST", body: JSON.stringify({ cerrar, confirmar: true }) });
 }
 
+/** J5-5: ¿ya llenó la encuesta de percepción? (se ofrece una sola vez). */
+export function pedirEncuesta(): Promise<{ respondida: boolean }> {
+	return llamar("/api/ejercicio/encuesta");
+}
+
 export function pedirVentana(): Promise<Ventana> {
 	return llamar("/api/ejercicio/ventana");
 }

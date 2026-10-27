@@ -27,7 +27,7 @@ from rag.api import ejercicio as ej
 from rag.api import panel_metricas as pm
 from rag.api.auth import get_current_user
 from rag.api.database import get_session
-from rag.api.models import Conversation, ExerciseSetting, Message
+from rag.api.models import Conversation, ExerciseSetting, Feedback, Message
 
 # clave → (fecha por defecto, texto)
 FECHAS: dict[str, tuple[str, str]] = {
@@ -253,3 +253,19 @@ async def cerrar(
     )
     await session.commit()
     return CierreOut(cerrado=payload.cerrar)
+
+
+class EncuestaOut(BaseModel):
+    respondida: bool
+
+
+@router.get("/api/ejercicio/encuesta", response_model=EncuestaOut)
+async def encuesta(
+    user: dict = Depends(get_current_user),
+    session: AsyncSession = Depends(get_session),
+) -> EncuestaOut:
+    """J5-5: la encuesta de percepción se ofrece una sola vez: ¿ya la llenó?"""
+    filas = (
+        await session.execute(select(Feedback.ratings).where(Feedback.user_id == user["sub"]))
+    ).scalars()
+    return EncuestaOut(respondida=any(isinstance(r, dict) and "clarity" in r for r in filas))

@@ -24,6 +24,8 @@ interface RespuestaProps {
 	onOtraPregunta: () => void;
 	/** Encuesta de percepción al terminar (momento 3 del ejercicio). */
 	onTerminar?: () => void;
+	/** J5-5: tras la primera respuesta, invitación corta a la encuesta. */
+	invitarEncuesta?: boolean;
 	onEscribirDeNuevo: () => void;
 	/** Lo escrito en la caja de seguimiento (vive afuera, como el borrador del inicio). */
 	seguimiento: string;
@@ -68,6 +70,7 @@ export function Respuesta({
 	onVolver,
 	onOtraPregunta,
 	onTerminar,
+	invitarEncuesta = false,
 	onEscribirDeNuevo,
 	seguimiento,
 	onCambioSeguimiento,
@@ -242,6 +245,14 @@ export function Respuesta({
 			) : (
 				<Sirvio puedeCalificar={puedeCalificar} onCalificar={onCalificar} />
 			)}
+			{invitarEncuesta && onTerminar ? (
+				<div className="guia-invita">
+					<p>¿Ya va a terminar por hoy? Cuéntenos cómo le fue (3 preguntas).</p>
+					<button type="button" className="guia-btn-sec" onClick={onTerminar}>
+						Dar mi opinión
+					</button>
+				</div>
+			) : null}
 
 			{/* Seguimiento: misma conversación, sin burbujas; la respuesta nueva
 			    reemplaza esta pantalla. Sin respuesta firme no hay "sobre esto". */}

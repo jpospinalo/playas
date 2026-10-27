@@ -886,3 +886,20 @@ def test_buscar_y_ordenar(cliente) -> None:
     r = c.get("/api/evaluacion/bandeja?estado=pendientes&orden=recientes", headers=COM).json()
     numeros = [i["numero"] for i in r["items"]]
     assert numeros == sorted(numeros, reverse=True)
+
+
+def test_encuesta_se_ofrece_una_vez(cliente) -> None:
+    """J5-5: tras llenar la encuesta de percepción (con claridad), ya no se ofrece."""
+    from rag.api.models import Feedback
+
+    c = cliente
+    USER = _hs()[5]  # noqa: N806
+    assert c.get("/api/ejercicio/encuesta", headers=USER).json() == {"respondida": False}
+    _en_bd(
+        c, Feedback(user_id="u1", ratings={"tone": 3, "length": 3, "usability": 4, "overall": 4})
+    )
+    assert c.get("/api/ejercicio/encuesta", headers=USER).json() == {
+        "respondida": False
+    }  # la del chat
+    _en_bd(c, Feedback(user_id="u1", ratings={"clarity": 5, "usability": 4, "overall": 5}))
+    assert c.get("/api/ejercicio/encuesta", headers=USER).json() == {"respondida": True}
