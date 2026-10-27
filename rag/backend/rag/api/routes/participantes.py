@@ -35,6 +35,7 @@ from rag.api.models import (
     Conversation,
     ExerciseProfile,
     Message,
+    PracticeAccount,
     User,
     ValidatorProfile,
 )
@@ -69,6 +70,8 @@ class PersonaNueva(BaseModel):
     # Comité (reunión del 20-oct, T3): "juridico" valida las evaluaciones de su
     # sede; "costero" revisa si las preguntas son del tema.
     validacion: Literal["juridico", "costero"] | None = None
+    # T7: cuenta de práctica (no cuenta para nada).
+    practica: bool = False
 
 
 class LoteRequest(BaseModel):
@@ -104,6 +107,7 @@ class Cuenta(BaseModel):
     creada: str
     activa: bool = True
     validacion: str | None = None
+    practica: bool = False
 
 
 class CuentasResponse(BaseModel):
@@ -121,6 +125,7 @@ class CambioCuenta(BaseModel):
     activa: bool | None = None
     # Tipo de validación del comité (T3); "ninguna" la quita.
     validacion: Literal["juridico", "costero", "ninguna"] | None = None
+    practica: bool | None = None
 
 
 class ClaveResponse(BaseModel):
@@ -178,6 +183,7 @@ async def listar(
     validaciones = dict(
         (await session.execute(select(ValidatorProfile.user_id, ValidatorProfile.tipo))).all()
     )
+    practica = set((await session.execute(select(PracticeAccount.user_id))).scalars().all())
     items = []
     for u, perfil in filas:
         if rol and u.role != rol:
@@ -200,6 +206,7 @@ async def listar(
                 creada=(u.created_at or datetime.now(UTC)).isoformat(),
                 activa=u.id not in inactivas,
                 validacion=validaciones.get(u.id),
+                practica=u.id in practica,
             )
         )
     items.sort(key=lambda c: (c.codigo is None, c.codigo or "", c.nombre or c.correo))
@@ -307,6 +314,8 @@ async def crear_lote(
         )
         if p.validacion:
             session.add(ValidatorProfile(user_id=uid, tipo=p.validacion))
+        if p.practica:
+            session.add(PracticeAccount(user_id=uid))
         creadas.append(
             Credencial(
                 uid=uid,
@@ -401,6 +410,20 @@ async def cambiar(
                 uid,
                 {"cambios": {"validacion": [anterior, nuevo]}},
             )
+    pr = await session.get(PracticeAccount, uid)
+    if payload.practica is not None and payload.practica != (pr is not None):
+        if payload.practica:
+            pr = PracticeAccount(user_id=uid)
+            session.add(pr)
+        else:
+            await session.delete(pr)
+            pr = None
+        auditoria.registrar(
+            session,
+            admin["sub"],
+            "marcar_practica" if payload.practica else "desmarcar_practica",
+            uid,
+        )
     estado = await session.get(AccountStatus, uid)
     activa = estado is None or estado.activa
     if payload.activa is not None and payload.activa != activa:
@@ -441,6 +464,7 @@ async def cambiar(
         creada=(user.created_at or datetime.now(UTC)).isoformat(),
         activa=activa,
         validacion=vp.tipo if vp else None,
+        practica=pr is not None,
     )
 
 

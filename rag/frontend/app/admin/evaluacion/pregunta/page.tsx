@@ -102,6 +102,7 @@ function Ficha_() {
 					<h1>Pregunta {ficha.numero}</h1>
 					<p className="pnl-fila-meta" style={{ marginBottom: 14 }}>
 						<span className="pnl-etq">{ficha.codigo}</span>
+						{ficha.practica ? <span className="pnl-practica">Práctica: no cuenta</span> : null}
 						<span>{ficha.tipo_playa_nombre ?? "Sin tipo"}</span>
 						<span>
 							{ficha.fecha}, {ficha.hora}

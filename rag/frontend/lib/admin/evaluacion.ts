@@ -62,6 +62,8 @@ export interface ItemBandeja {
 	pregunta: string;
 	evaluaciones: number;
 	evaluada_por_mi: boolean;
+	/** T7: de una cuenta de práctica (no cuenta para nada). */
+	practica?: boolean;
 	estado: EstadoPregunta;
 	oficial: Oficial;
 }
@@ -92,6 +94,7 @@ export interface CalificacionOut {
 }
 
 export interface Ficha {
+	practica?: boolean;
 	message_id: string;
 	numero: number;
 	codigo: string;
@@ -237,6 +240,21 @@ export function pedirPremios(): Promise<Premios> {
 
 export function elegirGanadora(nivel: Ct, messageId: string): Promise<Premios> {
 	return llamar(`/premios/${nivel}/ganadora`, { method: "PUT", body: JSON.stringify({ message_id: messageId }) });
+}
+
+export interface EstadoPractica {
+	cuentas: number;
+	preguntas: number;
+	archivada: boolean;
+}
+
+export function pedirPractica(): Promise<EstadoPractica> {
+	return llamar("/practica");
+}
+
+/** T7: el admin saca la práctica de todas las vistas antes del 2 nov (no borra nada). */
+export function archivarPractica(archivar: boolean): Promise<EstadoPractica> {
+	return llamar("/practica/archivar", { method: "POST", body: JSON.stringify({ archivar, confirmar: true }) });
 }
 
 /** E1: las asignadas sin evaluar de un semillerista pasan a otro de su sede. */

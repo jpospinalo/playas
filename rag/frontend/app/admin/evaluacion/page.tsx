@@ -7,10 +7,13 @@ import { mensajeError, numero, recortar } from "@/lib/admin/panel";
 import { TIPOS_PLAYA } from "@/lib/admin/cuentas";
 import {
 	NIVELES,
+	archivarPractica,
 	pedirBandeja,
+	pedirPractica,
 	rolComite,
 	type Bandeja,
 	type Ct,
+	type EstadoPractica,
 	type FiltroBandeja,
 } from "@/lib/admin/evaluacion";
 import { EstadoEval } from "@/components/admin/evaluacion/EstadoEval";
@@ -97,6 +100,7 @@ export default function PaginaBandeja() {
 				</div>
 			</div>
 			<SubNavEvaluacion />
+			{comite ? <Practica /> : null}
 
 			<section className="pnl-bloque" aria-labelledby="t-bandeja">
 				<div className="pnl-bloque-cab">
@@ -190,6 +194,7 @@ export default function PaginaBandeja() {
 									</Link>
 									<p className="pnl-fila-meta">
 										<span className="pnl-etq">{p.codigo}</span>
+										{p.practica ? <span className="pnl-practica">Práctica: no cuenta</span> : null}
 										<span>{p.tipo_playa_nombre ?? "Sin tipo"}</span>
 										<span>
 											{p.fecha}, {p.hora}
@@ -253,6 +258,85 @@ export default function PaginaBandeja() {
 				) : null}
 			</section>
 		</div>
+	);
+}
+
+/**
+ * T7 (reunión del 20-oct): la semana antes del 2 nov se prueba con cuentas de
+ * práctica. Sus preguntas no cuentan; el administrador las archiva al empezar.
+ */
+function Practica() {
+	const { role } = useAuth();
+	const esAdmin = role === "admin" || role === "super-admin";
+	const [estado, setEstado] = useState<EstadoPractica | null>(null);
+	const [confirmar, setConfirmar] = useState(false);
+	const [error, setError] = useState<string | null>(null);
+
+	useEffect(() => {
+		let vigente = true;
+		pedirPractica()
+			.then((e) => {
+				if (vigente) setEstado(e);
+			})
+			.catch(() => {
+				// Sin el estado de la práctica no se muestra el aviso.
+			});
+		return () => {
+			vigente = false;
+		};
+	}, []);
+
+	if (!estado || (!estado.cuentas && !estado.archivada)) return null;
+
+	async function cambiar(archivar: boolean) {
+		setError(null);
+		try {
+			setEstado(await archivarPractica(archivar));
+			setConfirmar(false);
+		} catch (e) {
+			setError(mensajeError(e, "No se pudo cambiar la práctica."));
+		}
+	}
+
+	return (
+		<section className="pnl-bloque" aria-labelledby="t-practica">
+			<h2 id="t-practica">Práctica</h2>
+			<p>
+				{estado.archivada
+					? "La práctica está archivada: sus preguntas ya no se ven en ninguna lista."
+					: `Hay ${numero(estado.cuentas)} cuentas de práctica con ${numero(estado.preguntas)} preguntas. Se evalúan y validan igual, pero no cuentan para el resumen, los premios ni el Excel.`}
+			</p>
+			{error ? (
+				<p className="pnl-error-linea" role="alert">
+					{error}
+				</p>
+			) : null}
+			{esAdmin ? (
+				confirmar ? (
+					<div className="pnl-confirmar" role="group" aria-labelledby="t-arch">
+						<p id="t-arch">
+							¿Archivar la práctica? Sus preguntas salen de todas las listas; no se borra nada y se puede deshacer.
+						</p>
+						<div className="pnl-acciones">
+							<button type="button" className="pnl-btn" onClick={() => cambiar(true)}>
+								Sí, archivar
+							</button>
+							<button type="button" className="pnl-btn-sec" onClick={() => setConfirmar(false)}>
+								Cancelar
+							</button>
+						</div>
+					</div>
+				) : estado.archivada ? (
+					<button type="button" className="pnl-btn-sec" onClick={() => cambiar(false)}>
+						Volver a mostrar la práctica
+					</button>
+				) : (
+					<button type="button" className="pnl-btn-sec" onClick={() => setConfirmar(true)}>
+						Archivar la práctica
+					</button>
+				)
+			) : null}
+		</section>
 	);
 }
 

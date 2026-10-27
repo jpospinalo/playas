@@ -1926,3 +1926,13 @@ fieldset:disabled .pnl-opcion {
 	font-size: 15px;
 	color: var(--p-tinta-2);
 }
+
+/* T7: etiqueta de práctica (texto, no solo color). */
+.pnl-practica {
+	display: inline-block;
+	padding: 0 8px;
+	border: 1px dashed var(--p-borde-ctl);
+	border-radius: 4px;
+	font-size: 15px;
+	color: var(--p-tinta-2);
+}

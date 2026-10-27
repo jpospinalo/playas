@@ -285,3 +285,27 @@ class PertinenceReview(Base):
     pertinente: Mapped[bool] = mapped_column(Boolean, nullable=False)
     comentario: Mapped[str | None] = mapped_column(Text)
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)
+
+
+class PracticeAccount(Base):
+    """Reunión del 20-oct (T7): cuenta de práctica (participante o semillerista
+    de prueba para la semana antes del 2 nov). Sus preguntas se evalúan para
+    practicar pero no cuentan para nada; un semillerista de práctica no recibe
+    preguntas reales (E5)."""
+
+    __tablename__ = "practice_account"
+
+    user_id: Mapped[str] = mapped_column(String, ForeignKey("users.id"), primary_key=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)
+
+
+class ExerciseSetting(Base):
+    """Ajustes del ejercicio que cambia el admin (práctica archivada, fechas del
+    calendario, días de la ventana del participante)."""
+
+    __tablename__ = "exercise_setting"
+
+    clave: Mapped[str] = mapped_column(String, primary_key=True)
+    valor: Mapped[str] = mapped_column(String, nullable=False)
+    updated_by: Mapped[str | None] = mapped_column(String)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)

@@ -31,6 +31,10 @@ ACCIONES = {
     "validar_lote": "Marcó de acuerdo varias evaluaciones",
     "elegir_ganadora": "Eligió la ganadora de un nivel",
     "reasignar_pendientes": "Reasignó preguntas pendientes",
+    "archivar_practica": "Archivó la práctica",
+    "desarchivar_practica": "Volvió a mostrar la práctica",
+    "marcar_practica": "Marcó una cuenta como de práctica",
+    "desmarcar_practica": "Quitó la marca de práctica",
 }
 
 

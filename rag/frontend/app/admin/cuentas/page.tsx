@@ -444,6 +444,7 @@ function FilaCuenta({ cuenta, onCambiada }: { cuenta: Cuenta; onCambiada: (c: Cu
 	const [sede, setSede] = useState<Sede>((cuenta.sede as Sede) ?? "Santa Marta");
 	const [validacion, setValidacion] = useState<"juridico" | "costero" | "ninguna">(cuenta.validacion ?? "ninguna");
 	const pideSede = rol === "evaluador" || (rol === "comite" && validacion === "juridico");
+	const [practica, setPractica] = useState(cuenta.practica ?? false);
 	const [clave, setClave] = useState<string | null>(null);
 	const [error, setError] = useState<string | null>(null);
 	const [confirmarBaja, setConfirmarBaja] = useState(false);
@@ -487,6 +488,7 @@ function FilaCuenta({ cuenta, onCambiada }: { cuenta: Cuenta; onCambiada: (c: Cu
 				...(rol === "user" ? { tipo_playa: tipo } : {}),
 				...(pideSede ? { sede } : {}),
 				...(rol === "comite" ? { validacion } : {}),
+				practica,
 			});
 			onCambiada(nueva);
 			setEditando(false);
@@ -510,7 +512,8 @@ function FilaCuenta({ cuenta, onCambiada }: { cuenta: Cuenta; onCambiada: (c: Cu
 				<p className="pnl-fila-titulo" style={{ margin: 0 }}>
 					{cuenta.codigo ? <span className="pnl-etq">{cuenta.codigo}</span> : null}
 					{cuenta.nombre || "Sin nombre"}
-					{activa ? null : <span className="pnl-inactiva"> · Desactivada</span>}
+					{activa ? null : <span className="pnl-inactiva">, desactivada</span>}
+					{cuenta.practica ? <span className="pnl-practica">Práctica</span> : null}
 				</p>
 				<p className="pnl-fila-meta">
 					<span>{textoRol(cuenta.rol)}</span>
@@ -618,6 +621,10 @@ function FilaCuenta({ cuenta, onCambiada }: { cuenta: Cuenta; onCambiada: (c: Cu
 								</select>
 							</div>
 						) : null}
+						<label className="pnl-check">
+							<input type="checkbox" checked={practica} onChange={(e) => setPractica(e.target.checked)} />
+							<span>Cuenta de práctica (no cuenta para resultados)</span>
+						</label>
 						<button type="button" className="pnl-btn" onClick={guardar}>
 							Guardar
 						</button>

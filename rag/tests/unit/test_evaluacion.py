@@ -660,3 +660,52 @@ def test_reasignar_pendientes_de_un_semillerista(cliente) -> None:
     assert r == {"reasignadas": len(antes_sm) - 1, "sin_destino": 0}
     assert numeros(SM) == {min(antes_sm)}  # solo la que ya evaluó
     assert numeros(SM2) == antes_sm2 | (antes_sm - {min(antes_sm)})
+
+
+def _en_bd(c: TestClient, *objetos) -> None:
+    """Inserta filas con la misma sesión de prueba de la API."""
+
+    async def _correr() -> None:
+        gen = c.app.dependency_overrides[get_session]()
+        s = await gen.__anext__()
+        for o in objetos:
+            s.add(o)
+        await s.commit()
+        await gen.aclose()
+
+    asyncio.run(_correr())
+
+
+def test_practica_no_cuenta_y_se_archiva(cliente) -> None:
+    """T7 (reunión del 20-oct): las preguntas de cuentas de práctica se evalúan
+    pero no cuentan; al archivar desaparecen; E5: un semillerista de práctica
+    no recibe preguntas reales."""
+    from rag.api.models import PracticeAccount
+
+    c = cliente
+    SM, SM2, BQ, SIN, COM, USER = _hs()  # noqa: N806
+    _en_bd(c, PracticeAccount(user_id="u2"))  # u2 hace q3
+    b = c.get("/api/evaluacion/bandeja?estado=todas", headers=COM).json()
+    assert {i["numero"]: i["practica"] for i in b["items"]} == {1: False, 2: False, 3: True}
+    assert c.get("/api/evaluacion/resumen", headers=COM).json()["preguntas_registradas"] == 2
+    estado = c.get("/api/evaluacion/practica", headers=COM).json()
+    assert estado == {"cuentas": 1, "preguntas": 1, "archivada": False}
+    # Solo el admin archiva.
+    cuerpo = {"archivar": True, "confirmar": True}
+    assert c.post("/api/evaluacion/practica/archivar", headers=COM, json=cuerpo).status_code == 403
+    _en_bd(c, User(id="adm", email="adm@x.co", password_hash="x", role="admin"))
+    ADM = _h("adm", "admin")  # noqa: N806
+    assert c.post("/api/evaluacion/practica/archivar", headers=ADM, json=cuerpo).json()["archivada"]
+    b = c.get("/api/evaluacion/bandeja?estado=todas", headers=COM).json()
+    assert [i["numero"] for i in b["items"]] == [2, 1]
+
+
+def test_semillerista_de_practica_no_recibe_preguntas_reales(cliente) -> None:
+    from rag.api.models import PracticeAccount
+
+    c = cliente
+    _en_bd(c, PracticeAccount(user_id="sm2"))
+    SM, SM2, *_ = _hs()  # noqa: N806
+    total = c.get("/api/evaluacion/bandeja?estado=todas", headers=SM2).json()["total"]
+    assert total == 0
+    assert c.get("/api/evaluacion/bandeja?estado=todas", headers=SM).json()["total"] == 3

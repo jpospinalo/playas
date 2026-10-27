@@ -54,6 +54,8 @@ export interface Cuenta {
 	activa?: boolean;
 	/** Comité: "juridico" (valida las evaluaciones de su sede) o "costero". */
 	validacion?: "juridico" | "costero" | null;
+	/** T7: cuenta de práctica (no cuenta para nada). */
+	practica?: boolean;
 }
 
 export interface PersonaNueva {
@@ -118,6 +120,7 @@ export function cambiarCuenta(
 		nombre?: string;
 		activa?: boolean;
 		validacion?: "juridico" | "costero" | "ninguna";
+		practica?: boolean;
 	},
 ): Promise<Cuenta> {
 	return llamar(`/${encodeURIComponent(uid)}`, { method: "PATCH", body: JSON.stringify(cambios) });

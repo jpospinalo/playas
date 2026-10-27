@@ -46,8 +46,10 @@ from rag.api.models import (
     EvaluationComment,
     EvaluationReview,
     ExerciseProfile,
+    ExerciseSetting,
     Message,
     PertinenceReview,
+    PracticeAccount,
     QuestionAssignment,
     QuestionEvaluation,
     QuestionNumber,
@@ -86,6 +88,8 @@ class _Pregunta:
     asignados: dict[str, str] = field(default_factory=dict)
     # Gestión costera (T3, E7): None = sin revisar; False = no es del tema.
     pertinente: bool | None = None
+    # T7: pregunta de una cuenta de práctica (no cuenta para nada).
+    practica: bool = False
 
     @property
     def oficial(self) -> ej.Oficial:
@@ -103,6 +107,7 @@ async def _cargar(session: AsyncSession) -> list[_Pregunta]:
                 Message.created_at,
                 ExerciseProfile.codigo,
                 ExerciseProfile.tipo_playa,
+                Conversation.user_id,
             )
             .join(Conversation, Conversation.id == Message.conversation_id)
             .join(ExerciseProfile, ExerciseProfile.user_id == Conversation.user_id)
@@ -110,8 +115,13 @@ async def _cargar(session: AsyncSession) -> list[_Pregunta]:
             .order_by(Message.created_at, Message.id)
         )
     ).all()
-    numeros = await _numerar(session, [mid for mid, *_ in filas])
-    asignados = await _asignar(session, [mid for mid, *_ in filas])
+    practica = await cuentas_practica(session)
+    if await practica_archivada(session):
+        # T7: después de archivar, la práctica desaparece de todas las vistas.
+        filas = [f for f in filas if f[-1] not in practica]
+    numeros = await _numerar(session, [f[0] for f in filas])
+    de_practica = {f[0] for f in filas if f[-1] in practica}
+    asignados = await _asignar(session, [f[0] for f in filas], de_practica)
     preguntas = [
         _Pregunta(
             numero=numeros[mid],
@@ -122,8 +132,9 @@ async def _cargar(session: AsyncSession) -> list[_Pregunta]:
             fecha=pm.a_utc(creado).astimezone(pm.HORA_COLOMBIA),
             texto=texto,
             asignados=asignados.get(mid, {}),
+            practica=uid in practica,
         )
-        for mid, cid, texto, creado, codigo, tipo in filas
+        for mid, cid, texto, creado, codigo, tipo, uid in filas
     ]
     por_id = {p.message_id: p for p in preguntas}
     for mid, pertinente in (
@@ -218,8 +229,25 @@ async def _numerar(
     return numeros
 
 
+async def cuentas_practica(session: AsyncSession) -> set[str]:
+    return set((await session.execute(select(PracticeAccount.user_id))).scalars().all())
+
+
+async def practica_archivada(session: AsyncSession) -> bool:
+    s = await session.get(ExerciseSetting, "practica_archivada")
+    return s is not None and s.valor == "si"
+
+
+def reales(preguntas: list[_Pregunta]) -> list[_Pregunta]:
+    """Sin las preguntas de práctica: lo que cuenta para resumen, premios y Excel."""
+    return [p for p in preguntas if not p.practica]
+
+
 async def _asignar(
-    session: AsyncSession, message_ids: list[str], _reintento: bool = False
+    session: AsyncSession,
+    message_ids: list[str],
+    de_practica: set[str] | None = None,
+    _reintento: bool = False,
 ) -> dict[str, dict[str, str]]:
     """Asigna las preguntas que aún no tienen semillerista en cada sede (T1).
 
@@ -260,6 +288,9 @@ async def _asignar(
     ).all():
         if uid not in inactivas and sede in por_sede:
             por_sede[sede].append(uid)
+    # E5: los semilleristas de práctica solo reciben preguntas de práctica.
+    evaluadores_practica = await cuentas_practica(session)
+    de_practica = de_practica or set()
     carga = {uid: 0 for uids in por_sede.values() for uid in uids}
     for porsede in actuales.values():
         for ev in porsede.values():
@@ -296,6 +327,8 @@ async def _asignar(
                 )
                 nuevos = True
                 continue
+            if mid not in de_practica:
+                uids = [u for u in uids if u not in evaluadores_practica]
             if not uids:
                 continue
             menor = min(carga[u] for u in uids)
@@ -319,7 +352,7 @@ async def _asignar(
             await session.rollback()
             if _reintento:
                 raise
-            return await _asignar(session, message_ids, _reintento=True)
+            return await _asignar(session, message_ids, de_practica, _reintento=True)
     return actuales
 
 
@@ -467,6 +500,7 @@ class BandejaItem(BaseModel):
     evaluada_por_mi: bool
     estado: str
     oficial: OficialOut
+    practica: bool = False
 
 
 class BandejaResponse(BaseModel):
@@ -497,6 +531,7 @@ class FichaResponse(BaseModel):
     puede_evaluar: bool
     motivo_no_puede: str | None
     es_comite: bool
+    practica: bool = False
     anterior: str | None
     siguiente: str | None
 
@@ -572,6 +607,54 @@ async def reasignar(
     return r
 
 
+class PracticaOut(BaseModel):
+    cuentas: int
+    preguntas: int
+    archivada: bool
+
+
+@router.get("/practica", response_model=PracticaOut)
+async def estado_practica(
+    _user: dict = Depends(require_comite),
+    session: AsyncSession = Depends(get_session),
+) -> PracticaOut:
+    """T7: cuántas cuentas y preguntas de práctica hay y si ya se archivó."""
+    cuentas = await cuentas_practica(session)
+    preguntas = [p for p in await _cargar(session) if p.practica]
+    return PracticaOut(
+        cuentas=len(cuentas), preguntas=len(preguntas), archivada=await practica_archivada(session)
+    )
+
+
+class ArchivarIn(BaseModel):
+    archivar: bool
+    confirmar: Literal[True]
+
+
+@router.post("/practica/archivar", response_model=PracticaOut)
+async def archivar_practica(
+    payload: ArchivarIn,
+    user: dict = Depends(require_comite),
+    session: AsyncSession = Depends(get_session),
+) -> PracticaOut:
+    """T7: antes del 2 nov, el admin archiva la práctica (sale de todas las
+    vistas; nada se borra). Se puede deshacer."""
+    if user["role"] not in ("admin", "super-admin"):
+        raise HTTPException(status.HTTP_403_FORBIDDEN, "Solo el administrador archiva la práctica.")
+    s = await session.get(ExerciseSetting, "practica_archivada")
+    if s is None:
+        s = ExerciseSetting(clave="practica_archivada", valor="no")
+        session.add(s)
+    s.valor = "si" if payload.archivar else "no"
+    s.updated_by = user["sub"]
+    s.updated_at = datetime.now(UTC)
+    auditoria.registrar(
+        session, user["sub"], "archivar_practica" if payload.archivar else "desarchivar_practica"
+    )
+    await session.commit()
+    return await estado_practica(user, session)
+
+
 @router.get("/catalogo")
 async def catalogo(_user: dict = Depends(require_evaluacion)) -> dict:
     return {
@@ -645,6 +728,7 @@ async def bandeja(
                 evaluada_por_mi=marcas[p.message_id]["mias"],
                 estado=p.oficial.estado,
                 oficial=_oficial_out(p.oficial),
+                practica=p.practica,
             )
             for p in pagina
         ],
@@ -706,6 +790,7 @@ async def _ficha(session: AsyncSession, message_id: str, user: dict) -> FichaRes
         puede_evaluar=motivo is None,
         motivo_no_puede=motivo,
         es_comite=es_comite,
+        practica=p.practica,
         anterior=preguntas[indice - 1].message_id if indice > 0 else None,
         siguiente=preguntas[indice + 1].message_id if indice + 1 < len(preguntas) else None,
     )
@@ -872,7 +957,7 @@ async def resumen(
     session: AsyncSession = Depends(get_session),
 ) -> dict:
     """Como la hoja "Resumen" de la planilla, más el avance por evaluador."""
-    preguntas = await _cargar(session)
+    preguntas = reales(await _cargar(session))
     estados = Counter(p.oficial.estado for p in preguntas)
     oficiales = _oficiales(preguntas)
     validas = [o for o in oficiales if o.oficial.valida]
@@ -971,7 +1056,7 @@ async def premios(
     """Los dos premios del documento (mejor pregunta por nivel y participación
     más constante), el puntaje acumulado para la gratificación y la
     participación por día."""
-    return await _premios(session, await _cargar(session))
+    return await _premios(session, reales(await _cargar(session)))
 
 
 class GanadoraIn(BaseModel):
@@ -986,7 +1071,7 @@ async def elegir_ganadora(
     session: AsyncSession = Depends(get_session),
 ) -> dict:
     """Con empate en Cv, el comité elige la mejor pregunta del nivel."""
-    preguntas = await _cargar(session)
+    preguntas = reales(await _cargar(session))
     actual = ej.mejores_por_nivel(_oficiales(preguntas))[nivel]
     if not actual["decide_comite"]:
         raise HTTPException(status.HTTP_409_CONFLICT, "En este nivel no hay empate que decidir.")
@@ -1018,7 +1103,7 @@ async def exportar(
 ) -> Response:
     """Planilla en Excel con las mismas columnas de la hoja "Evaluación", más
     "Calificaciones" (una fila por evaluador) y "Resumen"."""
-    preguntas = await _cargar(session)
+    preguntas = reales(await _cargar(session))
     hoja = [list(ej.COLUMNAS_PLANILLA)]
     for p in preguntas:
         o = p.oficial
