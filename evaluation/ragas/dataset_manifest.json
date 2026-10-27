@@ -1,6 +1,6 @@
 {
-  "version": "templates-1",
-  "dataset_sha256": "32b4a3c511ab430c3313d9b00c49e605ddc80c7280cad9e8ab12469211720141",
+  "version": "templates-2-balanced-identity",
+  "dataset_sha256": "d1f6d6de57729f31dd6951c067a6e4acb28e8fda19b3f81cca75aca857352973",
   "snapshot_sha256": "28b7a3076d1c7ad0aa3ef2a4394e31423cdd5358f691fdc6a6104f7e15712d2d",
   "fuentes_totales": 56,
   "fuentes_elegibles": 35,
@@ -9,6 +9,12 @@
     "contenido": 24,
     "identidad": 10,
     "multi_documento": 6
+  },
+  "identidad_subcategorias": {
+    "ponente": 3,
+    "radicado": 3,
+    "corporacion": 2,
+    "anio": 2
   },
   "api_calls": 0,
   "validado_por_abogado": false,

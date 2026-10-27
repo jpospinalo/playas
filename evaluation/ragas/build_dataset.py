@@ -11,7 +11,7 @@ import unicodedata
 from collections import Counter
 from pathlib import Path
 
-VERSION = "templates-1"
+VERSION = "templates-2-balanced-identity"
 
 
 def nfc(text):
@@ -123,18 +123,31 @@ def build(sources_dir, snapshot, output):
         (
             r"(?im)(?:magistrad[oa]|consejer[oa])\s+ponente\s*[:\-]?\s*[^\n\f]{5,100}",
             "¿Quién figura como ponente",
+            "ponente",
+            3,
         ),
         (
             r"(?im)(?:radicaci[oó]n|radicado|expediente)\s*(?:n[úu]mero|no\.?|n[º°])?\s*[:\-]?\s*[0-9][0-9 .\-()]{8,60}",
             "¿Qué radicado o expediente identifica",
+            "radicado",
+            3,
         ),
         (
             r"(?im)(?:CONSEJO DE ESTADO|CORTE CONSTITUCIONAL|TRIBUNAL ADMINISTRATIVO[^\n\f]{0,70})",
             "¿Qué corporación judicial se identifica en",
+            "corporacion",
+            2,
+        ),
+        (
+            r"(?m)^[^\n\f]{0,70}\b(?:19|20)\d{2}\b[^\n\f]{0,70}$",
+            "¿Qué año se menciona en la identificación de",
+            "anio",
+            2,
         ),
     ]
     used = set()
-    for pattern, question in identity_patterns:
+    for pattern, question, subtype, quota in identity_patterns:
+        selected_count = 0
         for source in ordered:
             match = re.search(pattern, source["text"][:12000], re.I)
             if not match or (source["key"], match.group()) in used:
@@ -145,10 +158,12 @@ def build(sources_dir, snapshot, output):
                 "identidad",
                 [evidence(source, match.group(), match.start())],
             )
-            if len(cases) == 34:
+            cases[-1]["subcategoria"] = subtype
+            selected_count += 1
+            if selected_count == quota:
                 break
-        if len(cases) == 34:
-            break
+        if selected_count != quota:
+            raise ValueError(f"Falta evidencia para el estrato de identidad {subtype}")
     if len(cases) != 34:
         raise ValueError("No hay diez preguntas de identidad con evidencia verificable")
     norms = groups["normativa"]
@@ -187,6 +202,9 @@ def build(sources_dir, snapshot, output):
         "fuentes_elegibles": len(eligible),
         "fuentes_muestreadas": len({e["source_id"] for c in cases for e in c["evidence"]}),
         "categorias": dict(Counter(c["categoria"] for c in cases)),
+        "identidad_subcategorias": dict(
+            Counter(c["subcategoria"] for c in cases if c["categoria"] == "identidad")
+        ),
         "api_calls": 0,
         "validado_por_abogado": False,
         "limitacion": "Plantillas y extracción digital; no se usan los 19 documentos con texto insuficiente para generar este dataset. Cobertura parcial del corpus.",

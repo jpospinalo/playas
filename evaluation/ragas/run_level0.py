@@ -34,7 +34,8 @@ def ranks(docs, case, k):
         if source not in seen:
             seen.append(source)
         if passage_rank is None and any(
-            canonical(e["quote"]) in canonical(doc.page_content) for e in case["evidence"]
+            source == e["document_key"] and canonical(e["quote"]) in canonical(doc.page_content)
+            for e in case["evidence"]
         ):
             passage_rank = position
     doc_rank = next((i for i, source in enumerate(seen, 1) if source in expected), None)
@@ -74,6 +75,7 @@ async def run(args):
         m["name"] == "embeddinggemma:latest" and m["digest"] == EXPECTED_DIGEST for m in models
     ), "Digest de embeddings distinto"
     config = {
+        "harness_version": "level0-2-source-constrained-passage",
         "k": 4,
         "k_candidates": 8,
         "query": "raw",

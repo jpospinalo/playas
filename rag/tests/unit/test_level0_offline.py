@@ -29,6 +29,12 @@ def test_evidence_uses_nfc_and_whitespace():
     assert level0.canonical("pública\n   playa") == level0.canonical("pública playa")
 
 
+def test_quote_from_another_source_is_not_a_passage_hit():
+    docs = [SimpleNamespace(metadata={"source": "otra.pdf"}, page_content="CONSEJO DE ESTADO")]
+    case = {"evidence": [{"document_key": "esperada", "quote": "CONSEJO DE ESTADO"}]}
+    assert level0.ranks(docs, case, 4)["passage_hit_at_k"] == 0.0
+
+
 def test_nonllm_ragas_runs_with_empty_keys_and_no_http(monkeypatch):
     import requests
 

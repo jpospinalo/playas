@@ -1,5 +1,6 @@
 {
   "config": {
+    "harness_version": "level0-2-source-constrained-passage",
     "k": 4,
     "k_candidates": 8,
     "query": "raw",
@@ -12,8 +13,8 @@
     "document_rank": "deduplicated source stem NFC casefold",
     "backend_sha256": "b1b1298e46520226eed6e289905b52c635f5f7642575ab44a91962b359ce31ce"
   },
-  "config_hash": "6d9291d1a71f3524d328ceaf7dff6324e91dae378dd9de517775fcbcb8afb250",
-  "dataset_sha256": "32b4a3c511ab430c3313d9b00c49e605ddc80c7280cad9e8ab12469211720141",
+  "config_hash": "c40b8b686d1cac61a5fe87a5ca48671bec19e3a48f23c2d1835ac36c16624a6a",
+  "dataset_sha256": "d1f6d6de57729f31dd6951c067a6e4acb28e8fda19b3f81cca75aca857352973",
   "collection": "atlas_v1",
   "validado_por_abogado": false
 }
