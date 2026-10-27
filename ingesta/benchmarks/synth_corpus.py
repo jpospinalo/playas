@@ -6,6 +6,7 @@ import argparse
 import hashlib
 import random
 import shutil
+import string
 from pathlib import Path
 
 from .common import emit, inside, output_dir, positive
@@ -38,11 +39,28 @@ def build_corpus(src, n, out, seed=0):
         with fitz.open(source) as pdf:
             if pdf.needs_pass or not len(pdf):
                 raise ValueError(f"PDF cifrado o vacío: {source}")
+            page_salts = []
             for page in pdf:
-                # Una línea corta conserva el umbral <80 en páginas escaneadas.
-                page.insert_text((4, 9), salt, fontsize=5, color=(0, 0, 0), overlay=True)
+                # La sal va en el cuerpo, entre dos líneas anteriores y dos
+                # posteriores. Palabras aleatorias por página evitan que el
+                # limpiador la confunda con mobiliario repetido (normaliza cifras).
+                # El bloque sigue bajo 80 caracteres sin espacios para no evitar
+                # el OCR de páginas escaneadas que antes lo necesitaban.
+                words = ["".join(generator.choices(string.ascii_lowercase, k=8)) for _ in range(5)]
+                page_salt = f"{salt} {words[2]}"
+                text = "\n".join([*words[:2], page_salt, *words[3:]])
+                rect = page.rect
+                fontsize = min(5, rect.width / 45, rect.height / 30)
+                page.insert_text(
+                    (rect.width * 0.15, rect.height * 0.45),
+                    text,
+                    fontsize=fontsize,
+                    color=(0, 0, 0),
+                    overlay=True,
+                )
                 if salt not in page.get_text():
                     raise ValueError(f"No se pudo insertar la sal en {source}")
+                page_salts.append(page_salt)
             pdf.save(target, garbage=4, deflate=True, no_new_id=True)
         copies.append(
             {
@@ -50,6 +68,7 @@ def build_corpus(src, n, out, seed=0):
                 "source": source.relative_to(src).as_posix(),
                 "file": target.relative_to(out).as_posix(),
                 "salt": salt,
+                "page_salts": page_salts,
                 "sha256": hashlib.sha256(target.read_bytes()).hexdigest(),
             }
         )
@@ -70,7 +89,7 @@ def build_corpus(src, n, out, seed=0):
             "metadata_csv": metadata,
             "warnings": [
                 "Se esperan duplicados/casi duplicados sintéticos.",
-                "La sal no garantiza chunks únicos: limpieza/OCR pueden omitirla y otros chunks no la contienen.",
+                "La sal del cuerpo usa palabras distintas por página y queda fuera de las primeras/últimas dos líneas; no garantiza chunks únicos porque otros chunks no la contienen y el OCR puede omitirla.",
                 "Los CSV se copian sin alterar: los nombres sintéticos pueden no coincidir con sus filas.",
             ],
         },

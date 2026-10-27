@@ -20,6 +20,7 @@ from benchmarks.run_pipeline import embedding_counts, latest_run
 from benchmarks.run_pipeline import main as pipeline_main
 from benchmarks.simhash_scaling import fit_exponent, near_duplicates
 from benchmarks.synth_corpus import build_corpus
+from ingest.offline.extract import clean_pages, read_document
 
 
 class BenchmarkTests(unittest.TestCase):
@@ -63,6 +64,41 @@ class BenchmarkTests(unittest.TestCase):
         self.assertEqual((out / "raw/metadata.csv").read_bytes(), originals["metadata.csv"])
         self.assertEqual(originals, {p.name: p.read_bytes() for p in src.iterdir()})
         self.assertTrue((out / "synth_corpus.json").exists())
+
+    @unittest.skipUnless(importlib.util.find_spec("fitz"), "PyMuPDF no está instalado")
+    def test_synthetic_body_salt_survives_real_extraction_and_cleaning(self):
+        import fitz
+
+        src = self.base / "source"
+        src.mkdir()
+        with fitz.open() as pdf:
+            for _ in range(4):
+                page = pdf.new_page()
+                page.insert_text((50, 40), "Cabecera repetida\nEncabezado repetido")
+                page.insert_text(
+                    (50, 150), "ANTECEDENTES\n" + "Las playas son de uso publico.\n" * 8
+                )
+                page.insert_text((50, 750), "Pie repetido\nReferencia repetida")
+            pdf.save(src / "caso.pdf")
+        out = self.base / "synth"
+        with redirect_stdout(io.StringIO()):
+            manifest = build_corpus(src, 2, out, seed=17)
+        cleaned_copies = []
+        for copy in manifest["copies"]:
+            document = read_document(out / copy["file"], self.base / "cache")
+            self.assertEqual(document["ocr_pages"], [])
+            cleaned = clean_pages(document["raw_pages"])
+            self.assertTrue(cleaned["removed_furniture_keys"])
+            self.assertNotIn("Cabecera repetida", cleaned["text"])
+            self.assertEqual(len(set(copy["page_salts"])), 4)
+            for raw, span, salt in zip(
+                document["raw_pages"], cleaned["pages"], copy["page_salts"], strict=True
+            ):
+                lines = raw.splitlines()
+                self.assertTrue(any(salt in line for line in lines[2:-2]))
+                self.assertIn(salt, cleaned["text"][span["clean_start"] : span["clean_end"]])
+            cleaned_copies.append(cleaned["text"])
+        self.assertNotEqual(*cleaned_copies)
 
     def test_extrapolate_linear_fit_and_status(self):
         rows = [{"documents": n, "wall_seconds": 5 + 2 * n} for n in (10, 20, 40)]
@@ -292,7 +328,11 @@ class BenchmarkTests(unittest.TestCase):
                                     "success": True,
                                     "resources": {"wall_seconds": size * (1 if fake else 10)},
                                     "pipeline": {"documents": size, "processed": size},
-                                    "stage_timings": {"extraction": {"seconds": 1, "calls": size}},
+                                    "embedding_cache_hit_rate": 0,
+                                    "stage_timings": {
+                                        "extraction": {"seconds": 1, "calls": size},
+                                        "embeddings": {"seconds": size, "calls": size},
+                                    },
                                 }
                             ],
                         },
@@ -314,11 +354,93 @@ class BenchmarkTests(unittest.TestCase):
         )
         markdown = render_report(results, [100], chunks_per_doc=3)
         self.assertEqual(markdown.count("**EXTRAPOLADA**"), 3)
-        self.assertIn("1000.0000", markdown)
+        self.assertIn("900.0000", markdown)
         self.assertIn("100.0000", markdown)
         self.assertIn("240.0000", markdown)
         self.assertIn("extraction", markdown)
         self.assertIn("NO medidos", markdown)
+
+    def test_report_excludes_cache_hits_and_projects_only_unique_throughput(self):
+        results = []
+        for size, hit_rate in ((10, 0), (20, 0.05), (30, 0.051), (40, 0.8)):
+            results.append(
+                (
+                    f"run_{size}.json",
+                    {
+                        "benchmark": "run_pipeline",
+                        "fake_embeddings": False,
+                        "preexisting_state": False,
+                        "preexisting_cache": False,
+                        "preexisting_layers": False,
+                        "runs": [
+                            {
+                                "label": "sync",
+                                "success": True,
+                                "resources": {"wall_seconds": size * 100},
+                                "pipeline": {"documents": size, "processed": size},
+                                "stage_timings": {
+                                    "embeddings": {"seconds": size * 90, "calls": size}
+                                },
+                                "embedding_cache_hit_rate": hit_rate,
+                                "embeddings_per_second": 99999,
+                            }
+                        ],
+                    },
+                )
+            )
+        markdown = render_report(results, [100], chunks_per_doc=3)
+        projection = markdown.split("## Proyecciones lineales")[1].split("## Interpretación")[0]
+        self.assertIn("run_10.json, run_20.json", projection)
+        self.assertNotIn("run_30.json", projection)
+        self.assertNotIn("run_40.json", projection)
+        self.assertIn("1000.0000", projection)
+        self.assertNotIn("Proyecciones de embeddings nuevos", markdown)
+        self.assertIn("0.0510 | excluido: hits >5%", markdown)
+        self.assertIn("0.8000 | excluido: hits >5%", markdown)
+        results.append(
+            (
+                "unique.json",
+                {
+                    "benchmark": "embed_throughput",
+                    "embeddings": 100,
+                    "batch": 10,
+                    "num_thread": 1,
+                    "wall_seconds": 50,
+                    "embeddings_per_second": 2,
+                    "chars_per_second": 1000,
+                },
+            )
+        )
+        projected = render_report(results, [100], chunks_per_doc=3).split(
+            "## Proyecciones de embeddings nuevos"
+        )[1]
+        self.assertIn("**EXTRAPOLADA** | 100 | 300 | 150.0000 | 2 | unique.json", projected)
+
+    def test_report_fake_embedding_times_and_rate_are_not_measured(self):
+        results = [
+            (
+                "fake.json",
+                {
+                    "benchmark": "run_pipeline",
+                    "fake_embeddings": True,
+                    "runs": [
+                        {
+                            "label": "sync",
+                            "success": True,
+                            "resources": {"wall_seconds": 1},
+                            "pipeline": {"documents": 1, "processed": 1},
+                            "embeddings_per_second": 98765,
+                            "stage_timings": {"embeddings": {"seconds": 12345, "calls": 1}},
+                        }
+                    ],
+                },
+            )
+        ]
+        markdown = render_report(results)
+        self.assertIn("ficticios: NO medido", markdown)
+        self.assertIn("embeddings | NO medido |", markdown)
+        self.assertNotIn("98765", markdown)
+        self.assertNotIn("12345", markdown)
 
 
 if __name__ == "__main__":

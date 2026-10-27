@@ -48,7 +48,7 @@ def extrapolate_embeddings(chunks, embeddings_per_second):
         "embeddings_per_second": embeddings_per_second,
         "extrapolated": True,
         "status": "EXTRAPOLADA",
-        "method": "chunks / embeddings por segundo medidos; supone todos nuevos",
+        "method": "chunks nuevos / emb/s de textos únicos medidos con embed_throughput",
     }
 
 
@@ -105,7 +105,16 @@ def render_report(results, extrapolate_sizes=(), chunks_per_doc=None):
                 resources = run["resources"]
                 docs = report.get("documents")
                 status = "MEDIDA" if run.get("success") else "FALLIDA"
-                mode = "ficticios: NO medidos" if item["fake_embeddings"] else "reales"
+                fake = item["fake_embeddings"]
+                mode = "ficticios: NO medido" if fake else "reales"
+                hit_rate = run.get("embedding_cache_hit_rate")
+                if hit_rate is None:
+                    hits, new = run.get("embedding_cache_hits"), run.get("new_embeddings")
+                    if hits is not None and new is not None and hits + new:
+                        hit_rate = hits / (hits + new)
+                fit_status = (
+                    "excluido: hits >5%" if hit_rate is not None and hit_rate > 0.05 else "—"
+                )
                 pipeline_rows.append(
                     [
                         source,
@@ -117,10 +126,11 @@ def render_report(results, extrapolate_sizes=(), chunks_per_doc=None):
                         resources["wall_seconds"],
                         run.get("docs_per_hour"),
                         run.get("chunks_per_second"),
-                        run.get("embeddings_per_second"),
+                        "NO medido" if fake else run.get("embeddings_per_second"),
                         run.get("embedding_cache_hits"),
                         run.get("new_embeddings"),
-                        run.get("embedding_cache_hit_rate"),
+                        hit_rate,
+                        fit_status,
                         run.get("embedding_pending_duplicates"),
                         resources.get("cpu_percent"),
                         resources.get("cpu_seconds"),
@@ -134,14 +144,15 @@ def render_report(results, extrapolate_sizes=(), chunks_per_doc=None):
                             run["label"],
                             docs,
                             stage,
-                            timing["seconds"],
+                            "NO medido" if fake and stage == "embeddings" else timing["seconds"],
                             timing["calls"],
                             status,
                         ]
                     )
                 for layer, count in run.get("disk_bytes", {}).items():
                     disks.append([source, run["label"], docs, layer, count])
-                # Solo sync completo, exitoso, frío y con documentos nuevos entra al ajuste.
+                # Directorios vacíos no bastan: también se reutilizan embeddings
+                # entre copias dentro del mismo sync. No ajustar esas ejecuciones.
                 if (
                     run["label"] == "sync"
                     and run.get("success")
@@ -151,12 +162,23 @@ def render_report(results, extrapolate_sizes=(), chunks_per_doc=None):
                     and not item.get("from_stage")
                     and docs
                     and report.get("processed") == docs
+                    and (fake or (hit_rate is not None and hit_rate <= 0.05))
                 ):
-                    key = (item["fake_embeddings"], item.get("chunker", "legacy"))
+                    embedding_seconds = (
+                        run.get("stage_timings", {}).get("embeddings", {}).get("seconds")
+                    )
+                    # El ajuste real solo modela el resto del pipeline; embeddings
+                    # se proyectan exclusivamente desde embed_throughput único.
+                    if not fake and embedding_seconds is None:
+                        continue
+                    seconds = resources["wall_seconds"] - (embedding_seconds if not fake else 0)
+                    if seconds <= 0:
+                        continue
+                    key = (fake, item.get("chunker", "legacy"))
                     groups.setdefault(key, []).append(
                         {
                             "documents": docs,
-                            "wall_seconds": resources["wall_seconds"],
+                            "wall_seconds": seconds,
                             "source": source,
                         }
                     )
@@ -239,6 +261,7 @@ def render_report(results, extrapolate_sizes=(), chunks_per_doc=None):
             "Hits",
             "Nuevos",
             "Hits/(hits+nuevos)",
+            "Ajuste",
             "Coalescidos",
             "CPU %",
             "CPU s",
@@ -297,7 +320,7 @@ def render_report(results, extrapolate_sizes=(), chunks_per_doc=None):
                     "**EXTRAPOLADA**",
                     count,
                     chunker,
-                    fake,
+                    "NO medido" if fake else "excluidos del ajuste",
                     row["wall_seconds"],
                     row["docs_per_hour"],
                     row["intercept_seconds"],
@@ -314,12 +337,12 @@ def render_report(results, extrapolate_sizes=(), chunks_per_doc=None):
                     ["**EXTRAPOLADA**", count, chunks, row["embedding_seconds"], speed, source]
                 )
     lines += table(
-        "Proyecciones lineales del pipeline",
+        "Proyecciones lineales del pipeline sin embeddings reales",
         [
             "Estado",
             "Docs",
             "Chunker",
-            "Embeddings ficticios",
+            "Embeddings",
             "s",
             "docs/h",
             "Intercepto s",
@@ -330,13 +353,22 @@ def render_report(results, extrapolate_sizes=(), chunks_per_doc=None):
     )
     lines += table(
         "Proyecciones de embeddings nuevos",
-        ["Estado", "Docs", "Chunks supuestos", "s embeddings", "emb/s medidos", "Fuente"],
+        [
+            "Estado",
+            "Docs",
+            "Chunks nuevos supuestos",
+            "s embeddings",
+            "emb/s únicos medidos",
+            "Fuente",
+        ],
         projected_embeddings,
     )
     lines += [
         "## Interpretación",
         "",
         "Las proyecciones suponen hardware, cachés, distribución de tamaños y configuración comparables; no son mediciones. El ajuste lineal no modela saturación, créditos CPU ni crecimiento del costo de duplicados. No se mezclan embeddings ficticios y reales ni chunkers distintos.",
+        "",
+        "El ajuste real resta la etapa embeddings y excluye runs con hits >5% o tasa desconocida. El tiempo de embeddings se proyecta SOLO como chunks nuevos / emb/s de textos únicos medidos por embed_throughput; --chunks-per-doc supone todos nuevos. Embeddings ficticios: NO medido, incluidos sus tiempos de etapa y proyecciones.",
         "",
         "Una sal por página no garantiza chunks distintos después de OCR/limpieza. Revisar hits y textos coalescidos antes de extrapolar embeddings. Los CSV sintéticos conservan sus nombres originales y pueden perder coincidencias de metadatos.",
         "",
