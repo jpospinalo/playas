@@ -1,3 +1,4 @@
+import pytest
 from langchain_core.documents import Document
 
 from ingest.legal_metadata import apply_overrides, extract_legal_metadata
@@ -29,6 +30,7 @@ def test_extracts_identity_and_preserves_references_before_cleaning():
 
 def test_manual_wins_and_invalid_evidence_is_explicit():
     metadata = extract_legal_metadata(TEXT)
+    metadata["conflictos"] = [{"campo": "magistrado_ponente", "valores": ["OTRO", "PÉREZ"]}]
     rows = [
         {"doc_id": "x", "campo": "magistrado_ponente", "valor": "PÉREZ", "evidencia": "JUAN PÉREZ"}
     ]
@@ -36,8 +38,31 @@ def test_manual_wins_and_invalid_evidence_is_explicit():
         apply_overrides(metadata, rows, "x", TEXT)["campos"]["magistrado_ponente"]["valor"]
         == "PÉREZ"
     )
+    assert not metadata["conflictos"] and metadata["conflictos_resueltos_manual"]
     rows[0]["evidencia"] = "inventada"
     assert (
         apply_overrides(metadata, rows, "x", TEXT)["campos"]["magistrado_ponente"]["razon"]
         == "override_sin_evidencia"
     )
+
+
+def test_manual_csv_values_are_nfc_without_nul():
+    metadata = extract_legal_metadata(TEXT)
+    rows = [
+        {
+            "doc_id": "x",
+            "campo": "magistrado_ponente",
+            "valor": "JUA\x00N PE\u0301REZ",
+            "evidencia": "JUAN PÉREZ",
+        }
+    ]
+    result = apply_overrides(metadata, rows, "x", TEXT)
+    assert result["campos"]["magistrado_ponente"]["valor"] == "JUAN PÉREZ"
+
+
+@pytest.mark.parametrize("value", [None, "  \t "])
+def test_blank_manual_csv_value_clears_field(value):
+    metadata = extract_legal_metadata(TEXT)
+    rows = [{"doc_id": "x", "campo": "magistrado_ponente", "valor": value, "evidencia": None}]
+    result = apply_overrides(metadata, rows, "x", TEXT)["campos"]["magistrado_ponente"]
+    assert result["valor"] is None and result["razon"] == "correccion_manual"

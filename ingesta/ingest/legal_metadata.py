@@ -163,8 +163,14 @@ def apply_overrides(metadata, rows, doc_id, original):
         field = row.get("campo")
         if field not in FIELDS:
             raise ValueError("Campo de override desconocido")
-        quote = unicodedata.normalize("NFC", row.get("evidencia", ""))
-        value = row.get("valor", "")
+        quote = unicodedata.normalize("NFC", row.get("evidencia") or "")
+        value = unicodedata.normalize("NFC", row.get("valor") or "")
+        value = "".join(
+            " " if c in "\n\r\t" else c
+            for c in value
+            if unicodedata.category(c) not in {"Cc", "Cf"} or c in "\n\r\t"
+        )
+        value = value.strip()
         if value and quote and quote in text:
             metadata["campos"][field] = {
                 "valor": value,
@@ -173,6 +179,10 @@ def apply_overrides(metadata, rows, doc_id, original):
                 "razon": None,
                 "origen": "manual",
             }
+            resolved = [c for c in metadata["conflictos"] if c["campo"] == field]
+            if resolved:
+                metadata.setdefault("conflictos_resueltos_manual", []).extend(resolved)
+                metadata["conflictos"] = [c for c in metadata["conflictos"] if c["campo"] != field]
         else:
             metadata["campos"][field] = empty(
                 "override_sin_evidencia" if value else "correccion_manual"
