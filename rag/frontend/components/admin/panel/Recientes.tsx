@@ -9,6 +9,7 @@ import {
 	numero,
 	pedirPreguntas,
 	recortar,
+	type FiltroPersona,
 	type FiltroResultado,
 	type Preguntas,
 } from "@/lib/admin/panel";
@@ -55,6 +56,7 @@ export function Recientes({
 	titulo = "Preguntas recientes",
 	descripcion = "Qué preguntó cada persona, cómo respondió ATLAS y si le sirvió.",
 	opciones = OPCIONES_PREGUNTAS,
+	persona,
 }: {
 	dias: number;
 	tema: string;
@@ -64,6 +66,7 @@ export function Recientes({
 	titulo?: string;
 	descripcion?: string;
 	opciones?: OpcionFiltro[];
+	persona?: FiltroPersona;
 }) {
 	const POR_PAGINA = usePorPagina();
 	const [pagina, setPagina] = useState(1);
@@ -73,7 +76,7 @@ export function Recientes({
 
 	useEffect(() => {
 		let vigente = true;
-		pedirPreguntas(dias, tema, resultado, pagina, POR_PAGINA)
+		pedirPreguntas(dias, tema, resultado, pagina, POR_PAGINA, persona)
 			.then((r) => {
 				if (!vigente) return;
 				setDatos(r);
@@ -85,7 +88,7 @@ export function Recientes({
 		return () => {
 			vigente = false;
 		};
-	}, [dias, tema, resultado, pagina, intento, POR_PAGINA]);
+	}, [dias, tema, resultado, pagina, intento, POR_PAGINA, persona]);
 
 	const total = datos?.total ?? 0;
 	const desde = total ? (pagina - 1) * POR_PAGINA + 1 : 0;
@@ -150,6 +153,7 @@ export function Recientes({
 									<span className="pnl-etq">{p.tema_titulo}</span>
 									{p.playa ? <span className="lugar">{p.playa}</span> : null}
 									<span>
+										{p.participante ? `${p.participante}: ` : ""}
 										{p.persona}, {fechaHora(p.fecha)}
 									</span>
 								</p>

@@ -18,7 +18,7 @@ const ENLACES = [
 	{ href: "/admin", texto: "Resumen" },
 	{ href: "/admin/message-feedback", texto: "Opiniones" },
 	{ href: "/admin/feedback", texto: "Encuestas" },
-	{ href: "/admin/usuarios", texto: "Usuarios" },
+	{ href: "/admin/cuentas", texto: "Cuentas" },
 ];
 
 // Título de la pestaña de las páginas viejas (las nuevas ponen el suyo): cada

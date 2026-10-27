@@ -105,6 +105,9 @@ export interface PreguntaItem {
 	calificacion: Calificacion | null;
 	esperaba: string | null;
 	persona: string;
+	/** Número de participante y tipo de usuario de playa (ejercicio de validación). */
+	participante?: string | null;
+	tipo_playa?: number | null;
 	conversation_id: string;
 }
 
@@ -220,8 +223,18 @@ async function pedir<T>(ruta: string): Promise<T> {
 	return (await res.json()) as T;
 }
 
-export function pedirResumen(dias: number, tema: string): Promise<Resumen> {
-	return pedir(`/resumen?${consulta({ dias, tema })}`);
+/** Filtro por persona del ejercicio: número de participante y tipo de playa. */
+export interface FiltroPersona {
+	participante?: string;
+	tipo?: number;
+}
+
+function paramsPersona(p?: FiltroPersona): Record<string, string | number | undefined> {
+	return { participante: p?.participante || undefined, tipo_playa: p?.tipo || undefined };
+}
+
+export function pedirResumen(dias: number, tema: string, persona?: FiltroPersona): Promise<Resumen> {
+	return pedir(`/resumen?${consulta({ dias, tema, ...paramsPersona(persona) })}`);
 }
 
 export function pedirPreguntas(
@@ -230,8 +243,11 @@ export function pedirPreguntas(
 	resultado: FiltroResultado,
 	page: number,
 	pageSize = 20,
+	persona?: FiltroPersona,
 ): Promise<Preguntas> {
-	return pedir(`/preguntas?${consulta({ dias, tema, resultado, page, page_size: pageSize })}`);
+	return pedir(
+		`/preguntas?${consulta({ dias, tema, resultado, page, page_size: pageSize, ...paramsPersona(persona) })}`,
+	);
 }
 
 export function pedirConversacion(id: string): Promise<Conversacion> {
@@ -248,9 +264,15 @@ export function pedirEncuestas(
 }
 
 /** Descarga el CSV con la sesión actual (el enlace directo no lleva el token). */
-export async function descargarCsv(dias: number, tema: string, resultado: FiltroResultado): Promise<void> {
+export async function descargarCsv(
+	dias: number,
+	tema: string,
+	resultado: FiltroResultado,
+	persona?: FiltroPersona,
+): Promise<void> {
 	const t = await token();
-	const res = await fetch(`${API_URL}/api/admin/panel/preguntas.csv?${consulta({ dias, tema, resultado })}`, {
+	const q = consulta({ dias, tema, resultado, ...paramsPersona(persona) });
+	const res = await fetch(`${API_URL}/api/admin/panel/preguntas.csv?${q}`, {
 		headers: { Authorization: `Bearer ${t}` },
 		signal: withRestTimeout(),
 	});

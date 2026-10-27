@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
@@ -19,9 +19,11 @@ import {
 	porcentaje,
 	textoPorcentaje,
 	tipoDocumento,
+	type FiltroPersona,
 	type FiltroResultado,
 	type Resumen,
 } from "@/lib/admin/panel";
+import { TIPOS_PLAYA } from "@/lib/admin/cuentas";
 import {
 	Barras,
 	Columnas,
@@ -62,11 +64,18 @@ const RESULTADOS_VALIDOS: readonly string[] = [
 
 /** Filtros en la URL (?dias=0&tema=obras&ver=no_le_sirvio): sobreviven a
  * recargar y a volver del detalle de una conversación (PQ-22). */
-function consultaFiltros(dias: number, tema: string, resultado: string): string {
+function consultaFiltros(
+	dias: number,
+	tema: string,
+	resultado: string,
+	persona: FiltroPersona = {},
+): string {
 	const q = new URLSearchParams();
 	if (dias !== 30) q.set("dias", String(dias));
 	if (tema) q.set("tema", tema);
 	if (resultado) q.set("ver", resultado);
+	if (persona.participante) q.set("part", persona.participante);
+	if (persona.tipo) q.set("tipo", String(persona.tipo));
 	return q.toString();
 }
 
@@ -85,11 +94,38 @@ function ResumenConFiltros() {
 		const r = sp.get("ver") ?? "";
 		return (RESULTADOS_VALIDOS.includes(r) ? r : "") as FiltroResultado;
 	});
-	const consulta = consultaFiltros(dias, tema, resultado);
+	// Filtro por persona del ejercicio (número de participante y tipo de playa).
+	const [participante, setParticipante] = useState<string>(() =>
+		(sp.get("part") ?? "").toUpperCase().slice(0, 20),
+	);
+	const [borradorPart, setBorradorPart] = useState(participante);
+	const [tipo, setTipo] = useState<number>(() => {
+		const n = Number(sp.get("tipo"));
+		return n >= 1 && n <= 5 ? n : 0;
+	});
+	const persona = useMemo<FiltroPersona>(
+		() => ({ participante: participante || undefined, tipo: tipo || undefined }),
+		[participante, tipo],
+	);
+	const consulta = consultaFiltros(dias, tema, resultado, persona);
 
-	function escribirUrl(d: number, t: string, r: string) {
-		const q = consultaFiltros(d, t, r);
+	function escribirUrl(d: number, t: string, r: string, p: FiltroPersona = persona) {
+		const q = consultaFiltros(d, t, r, p);
 		router.replace(q ? `/admin?${q}` : "/admin", { scroll: false });
+	}
+
+	function cambiarParticipante(valor: string) {
+		const limpio = valor.trim().toUpperCase().slice(0, 20);
+		if (limpio === participante) return;
+		setCargando(true);
+		setParticipante(limpio);
+		escribirUrl(dias, tema, resultado, { participante: limpio || undefined, tipo: tipo || undefined });
+	}
+
+	function cambiarTipo(n: number) {
+		setCargando(true);
+		setTipo(n);
+		escribirUrl(dias, tema, resultado, { participante: participante || undefined, tipo: n || undefined });
 	}
 	const [datos, setDatos] = useState<Resumen | null>(null);
 	const [error, setError] = useState<string | null>(null);
@@ -100,7 +136,7 @@ function ResumenConFiltros() {
 
 	useEffect(() => {
 		let vigente = true;
-		pedirResumen(dias, tema)
+		pedirResumen(dias, tema, persona)
 			.then((r) => {
 				if (!vigente) return;
 				setDatos(r);
@@ -116,7 +152,7 @@ function ResumenConFiltros() {
 		return () => {
 			vigente = false;
 		};
-	}, [dias, tema, intento]);
+	}, [dias, tema, intento, persona]);
 
 	function cambiarDias(d: number) {
 		setCargando(true);
@@ -138,7 +174,7 @@ function ResumenConFiltros() {
 	async function csv() {
 		setErrorCsv(null);
 		try {
-			await descargarCsv(dias, tema, "");
+			await descargarCsv(dias, tema, "", persona);
 		} catch (e) {
 			setErrorCsv(mensajeError(e, "No se pudo descargar el archivo."));
 		}
@@ -177,6 +213,35 @@ function ResumenConFiltros() {
 							{TEMAS_PANEL.map((t) => (
 								<option key={t.id} value={t.id}>
 									{t.titulo}
+								</option>
+							))}
+						</select>
+					</div>
+					<div className="pnl-campo">
+						<label htmlFor="pnl-part">Participante</label>
+						<input
+							id="pnl-part"
+							className="pnl-input"
+							value={borradorPart}
+							placeholder="P007"
+							onChange={(e) => setBorradorPart(e.target.value)}
+							onBlur={() => cambiarParticipante(borradorPart)}
+							onKeyDown={(e) => {
+								if (e.key === "Enter") cambiarParticipante(borradorPart);
+							}}
+							aria-describedby="pnl-part-ayuda"
+						/>
+						<span id="pnl-part-ayuda" className="sr">
+							Escriba el número y presione Enter. Vacío para ver a todos.
+						</span>
+					</div>
+					<div className="pnl-campo">
+						<label htmlFor="pnl-tipo">Tipo de usuario de playa</label>
+						<select id="pnl-tipo" value={tipo} onChange={(e) => cambiarTipo(Number(e.target.value))}>
+							<option value={0}>Todos</option>
+							{TIPOS_PLAYA.map((t) => (
+								<option key={t.id} value={t.id}>
+									{t.id}. {t.nombre}
 								</option>
 							))}
 						</select>
@@ -243,6 +308,7 @@ function ResumenConFiltros() {
 						resultado={resultado}
 						onResultado={cambiarResultado}
 						volver={consulta}
+						persona={persona}
 					/>
 				</div>
 			) : null}
@@ -267,6 +333,7 @@ function Contenido({
 	resultado,
 	onResultado,
 	volver,
+	persona,
 }: {
 	datos: Resumen;
 	dias: number;
@@ -274,6 +341,7 @@ function Contenido({
 	resultado: FiltroResultado;
 	onResultado: (r: FiltroResultado) => void;
 	volver: string;
+	persona: FiltroPersona;
 }) {
 	// El periodo que vale es el que respondió el servidor, no el del filtro
 	// mientras carga: así cifras y textos siempre describen lo mismo.
@@ -574,12 +642,13 @@ function Contenido({
 			</div>
 
 			<Recientes
-				key={`${diasFiltro}-${tema}`}
+				key={`${diasFiltro}-${tema}-${persona.participante ?? ""}-${persona.tipo ?? ""}`}
 				dias={diasFiltro}
 				tema={tema}
 				resultado={resultado}
 				onResultado={onResultado}
 				volver={volver}
+				persona={persona}
 			/>
 
 			<p className="pnl-pie">

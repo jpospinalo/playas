@@ -17,6 +17,8 @@ Uso (desde ``rag/``):
     DATABASE_URL=sqlite+aiosqlite:///./data/panel-demo.db make app
 
 Cuenta de administrador de la demo (solo local): admin@atlas.demo / panel-demo-2026
+Evaluadores: evaluador.sm1@atlas.demo, evaluador.bq1@atlas.demo (y sm2, bq2); comité:
+comite@atlas.demo. Todos con la misma clave de la demo.
 """
 
 from __future__ import annotations
@@ -37,6 +39,7 @@ from rag.api import panel_metricas as pm  # noqa: E402
 from rag.api.models import (  # noqa: E402
     Base,
     Conversation,
+    ExerciseProfile,
     Feedback,
     Message,
     MessageFeedback,
@@ -49,6 +52,14 @@ from rag.core import agent  # noqa: E402
 ADMIN_EMAIL = "admin@atlas.demo"
 ADMIN_PASSWORD = "panel-demo-2026"  # cuenta local de demostración, no es un secreto
 USUARIO_EMAIL = "persona@atlas.demo"  # usuario sin rol admin, para probar el 403
+# Ejercicio de validación: dos semilleristas por sede y el comité (misma clave).
+EVALUADORES = [
+    ("evaluador.sm1@atlas.demo", "Semillerista Santa Marta 1", "Santa Marta"),
+    ("evaluador.sm2@atlas.demo", "Semillerista Santa Marta 2", "Santa Marta"),
+    ("evaluador.bq1@atlas.demo", "Semillerista Barranquilla 1", "Barranquilla"),
+    ("evaluador.bq2@atlas.demo", "Semillerista Barranquilla 2", "Barranquilla"),
+]
+COMITE = [("comite@atlas.demo", "Comité de validación")]
 
 # ── Normas y sentencias (títulos reales del corpus) ──────────────────────────
 N_DIMAR = "decreto-2324-de-1984"
@@ -369,6 +380,37 @@ async def sembrar(
                 created_at=ahora,
             )
         )
+        # Otra secuencia aleatoria para lo del ejercicio: así las preguntas y
+        # calificaciones de la semilla no cambian al agregarlo.
+        rng_ej = random.Random(semilla + 1)
+
+        def uid_ej() -> str:
+            return str(uuid.UUID(int=rng_ej.getrandbits(128)))
+
+        for correo, nombre, sede in EVALUADORES:
+            e_id = uid_ej()
+            s.add(
+                User(
+                    id=e_id,
+                    email=correo,
+                    password_hash=hash_demo,
+                    display_name=nombre,
+                    role="evaluador",
+                    created_at=ahora - timedelta(days=dias + 30),
+                )
+            )
+            s.add(ExerciseProfile(user_id=e_id, sede=sede))
+        for correo, nombre in COMITE:
+            s.add(
+                User(
+                    id=uid_ej(),
+                    email=correo,
+                    password_hash=hash_demo,
+                    display_name=nombre,
+                    role="comite",
+                    created_at=ahora - timedelta(days=dias + 30),
+                )
+            )
         personas: list[tuple[str, float]] = []
         # 80 nombres distintos: los 40 de la lista y 40 cruzando nombre y apellido.
         cruzados = [
@@ -390,6 +432,14 @@ async def sembrar(
             # Peso de actividad: pocos preguntan mucho, la mayoría poco.
             personas.append((usuario.id, rng.paretovariate(1.6)))
             correos[usuario.id] = correo
+            # Número de participante y un solo tipo de usuario de playa (1-5).
+            s.add(
+                ExerciseProfile(
+                    user_id=usuario.id,
+                    codigo=f"P{len(personas):03d}",
+                    tipo_playa=rng_ej.choice((1, 2, 3, 3, 4, 5, 5)),
+                )
+            )
         conteo["usuarios"] = len(personas)
         ids, pesos = zip(*personas, strict=True)
 
