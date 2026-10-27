@@ -84,12 +84,11 @@ uv run python -m ingest.loaders             # bronze → silver (data/silver/)
 uv run python -m ingest.splitter_and_enrich # silver → gold enriched chunks (data/gold/)
 ```
 
-> `make pipeline` runs `scripts/run_pipeline.sh`, which chains all 5 stages: the 3 ingest
-> stages run with `ingesta/`'s venv, then indexing (`rag.core.vectorstore`) and the API
-> (`uvicorn`) run with `rag/`'s venv (`ingesta/` and `rag/` are separate uv workspaces, so
-> the script `cd`s into each directory for its respective steps). Use
-> `scripts/run_data_pipeline.sh` instead if you only want the 3 ingest-only stages without
-> touching ChromaDB or starting the API.
+> On `feat/ingesta-normalizacion`, `make pipeline COLLECTION=<new-local-collection>`
+> and both ingestion shell entrypoints delegate exclusively to `ingest.offline`.
+> They use `.offline-venv/bin/python` (or `OFFLINE_PYTHON`), clear provider keys,
+> and do not invoke S3, enrichment or the serving API. See `docs/INGESTA.md`.
+> The individual historical modules above remain available only for explicit use.
 
 ---
 

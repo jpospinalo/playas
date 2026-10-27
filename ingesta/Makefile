@@ -21,8 +21,11 @@ test-cov:  ## Ejecutar tests con informe de cobertura
 test-integration:  ## Ejecutar tests de integración (requiere servicios activos)
 	uv run pytest tests/integration/ -m integration
 
-pipeline:  ## Ejecutar el pipeline completo de ingesta
-	bash scripts/run_pipeline.sh
+COLLECTION ?= atlas_offline
+PIPELINE_ARGS ?= --collection $(COLLECTION) sync
+
+pipeline:  ## Sincronizar documentos locales sin LLM (ver docs/INGESTA.md)
+	bash scripts/run_pipeline.sh $(PIPELINE_ARGS)
 
 bucket-backup:  ## Descargar todos los objetos del bucket S3
 	PYTHONPATH=. uv run python -m utils.bucket_backup

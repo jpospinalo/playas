@@ -33,6 +33,13 @@ aborta. Todos los vectores deben tener768componentes numéricos finitos.
 
 ## Agregar y sincronizar
 
+`make -C ingesta pipeline COLLECTION=v2a` y ambos scripts históricos de
+`ingesta/scripts/` invocan ahora exclusivamente `ingest.offline`. No arrancan
+la API ni invocan el enriquecimiento. Aceptan los argumentos del CLI mediante
+`PIPELINE_ARGS` (Make) o argumentos posicionales (scripts). El intérprete por
+defecto es `.offline-venv/bin/python`; `OFFLINE_PYTHON` permite uno alternativo.
+Estas entradas vacían las claves de proveedores antes de ejecutar el lote.
+
 Ejemplos desde la raíz del repo, con documentos en `data/documents/raw/`:
 
 ```bash
@@ -157,5 +164,6 @@ reutilizar una colección con hash diferente.
 El snapshot exportado incluye manifiesto y checksums de registros/archivo.
 Vectores, cachés, manifiestos SQLite y snapshots generados no se versionan.
 `run_manifest.json` informa embeddings nuevos, llamadas LLM0 y CPU local por
-documento (incluido OCR hijo). CPU de Ollama remoto no está incluida: su latencia
-sí se mide. Una segunda corrida sin cambios debe producir0embeddings nuevos.
+documento (incluido OCR hijo). CPU del servicio Ollama, local o remoto, no está
+incluida en ese contador Python/OCR; su latencia sí se mide. Una segunda corrida
+sin cambios debe producir0embeddings nuevos.
