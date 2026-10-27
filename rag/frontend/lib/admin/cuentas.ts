@@ -47,6 +47,7 @@ export interface Cuenta {
 	tipo_playa: number | null;
 	tipo_playa_nombre: string | null;
 	sede: string | null;
+	organizacion?: string | null;
 	preguntas: number;
 	creada: string;
 }
@@ -57,6 +58,7 @@ export interface PersonaNueva {
 	tipo_playa?: number;
 	sede?: Sede;
 	codigo?: string;
+	organizacion?: string;
 }
 
 export interface Credencial {
@@ -116,9 +118,10 @@ export function nuevaClave(uid: string): Promise<{ correo: string; clave: string
 
 /**
  * Lee la lista pegada para crear cuentas: una persona por renglón,
- * "Nombre; tipo" (tipo = número 1-5 o el nombre, p. ej. "Pescadores").
- * Acepta también coma o tabulador (copiado de Excel). Devuelve las personas
- * y los errores por renglón.
+ * "Nombre; tipo; organización" (tipo = número 1-5 o el nombre, p. ej.
+ * "Pescadores"; la organización, institución o asociación es opcional).
+ * Acepta tabulador (copiado de Excel). Devuelve las personas y los errores
+ * por renglón.
  */
 export function leerLista(
 	texto: string,
@@ -132,7 +135,7 @@ export function leerLista(
 		.map((l) => l.trim())
 		.forEach((linea, i) => {
 			if (!linea) return;
-			const [nombreCrudo, tipoCrudo = ""] = linea.split(/[;\t,]/).map((x) => x.trim());
+			const [nombreCrudo, tipoCrudo = "", orgCruda = ""] = linea.split(/[;\t]/).map((x) => x.trim());
 			const nombre = nombreCrudo ?? "";
 			if (!nombre) {
 				errores.push(`Renglón ${i + 1}: falta el nombre.`);
@@ -153,7 +156,7 @@ export function leerLista(
 				errores.push(`Renglón ${i + 1} (${nombre}): falta el tipo de usuario de playa (1 a 5).`);
 				return;
 			}
-			personas.push({ nombre, rol, tipo_playa: tipo });
+			personas.push({ nombre, rol, tipo_playa: tipo, ...(orgCruda ? { organizacion: orgCruda } : {}) });
 		});
 	return { personas, errores };
 }

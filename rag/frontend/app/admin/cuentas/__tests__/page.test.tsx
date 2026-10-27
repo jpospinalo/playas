@@ -76,10 +76,12 @@ afterEach(() => {
 });
 
 describe("leerLista — lista pegada para crear cuentas", () => {
-	it("acepta número o nombre del tipo y separadores ; , o tabulador", () => {
-		const r = leerLista("María Pérez; 2\nJuan Ríos, Turistas\nRosa\tcomerciantes", "user");
+	it("acepta número o nombre del tipo, organización opcional y separador ; o tabulador", () => {
+		const r = leerLista("María Pérez; 2; Asopesca\nJuan Ríos; Turistas\nRosa\tcomerciantes", "user");
 		expect(r.errores).toEqual([]);
 		expect(r.personas.map((p) => p.tipo_playa)).toEqual([2, 5, 3]);
+		expect(r.personas[0].organizacion).toBe("Asopesca");
+		expect(r.personas[1].organizacion).toBeUndefined();
 	});
 
 	it("dice qué renglón está mal", () => {
@@ -112,7 +114,7 @@ describe("app/admin/cuentas", () => {
 	it("crea por lote y muestra las credenciales para imprimir", async () => {
 		render(<PaginaCuentas />);
 		await screen.findByText("Ana Gómez");
-		await userEvent.type(screen.getByLabelText("Nombre; tipo"), "María Pérez; 2");
+		await userEvent.type(screen.getByLabelText("Nombre; tipo; organización"), "María Pérez; 2");
 		await userEvent.click(screen.getByRole("button", { name: "Crear cuentas" }));
 		expect(await screen.findByText("Credenciales para entregar")).toBeInTheDocument();
 		expect(screen.getByText("ola-1234-faro")).toBeInTheDocument();
@@ -125,7 +127,7 @@ describe("app/admin/cuentas", () => {
 	it("no envía si la lista tiene errores", async () => {
 		render(<PaginaCuentas />);
 		await screen.findByText("Ana Gómez");
-		await userEvent.type(screen.getByLabelText("Nombre; tipo"), "Solo nombre");
+		await userEvent.type(screen.getByLabelText("Nombre; tipo; organización"), "Solo nombre");
 		await userEvent.click(screen.getByRole("button", { name: "Crear cuentas" }));
 		await waitFor(() => expect(screen.getByRole("alert")).toHaveTextContent("Renglón 1"));
 		expect(llamadas.some((l) => l.url.endsWith("/lote"))).toBe(false);

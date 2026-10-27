@@ -220,8 +220,9 @@ function CrearCuentas({ onCreadas }: { onCreadas: (c: Credencial[]) => void }) {
 		<section className="pnl-bloque pnl-no-imprimir" aria-labelledby="t-crear">
 			<h2 id="t-crear">Crear cuentas</h2>
 			<p className="pnl-sub" style={{ marginBottom: 14 }}>
-				Una persona por renglón. Para participantes escriba “Nombre; tipo” (el tipo es un número del 1 al 5 o
-				su nombre). El número de participante (P001, P002…) se asigna solo.
+				Una persona por renglón. Para participantes escriba “Nombre; tipo; organización” (el tipo es un número
+				del 1 al 5 o su nombre; la organización, institución o asociación es opcional). El número de
+				participante (P001, P002…) se asigna solo.
 			</p>
 			<ul className="pnl-tipos">
 				{TIPOS_PLAYA.map((t) => (
@@ -254,14 +255,18 @@ function CrearCuentas({ onCreadas }: { onCreadas: (c: Credencial[]) => void }) {
 					) : null}
 				</div>
 				<div className="pnl-campo" style={{ marginTop: 14 }}>
-					<label htmlFor="c-lista">{rol === "user" ? "Nombre; tipo" : "Nombres"}</label>
+					<label htmlFor="c-lista">{rol === "user" ? "Nombre; tipo; organización" : "Nombres"}</label>
 					<textarea
 						id="c-lista"
 						className="pnl-textarea"
 						rows={5}
 						value={texto}
 						onChange={(e) => setTexto(e.target.value)}
-						placeholder={rol === "user" ? "María Pérez; 2\nJuan Ríos; Turistas" : "Ana Gómez\nLuis Díaz"}
+						placeholder={
+							rol === "user"
+								? "María Pérez; 2; Asociación de pescadores de Taganga\nJuan Ríos; Turistas"
+								: "Ana Gómez\nLuis Díaz"
+						}
 						aria-describedby={errores.length ? "c-errores" : undefined}
 					/>
 				</div>
@@ -378,6 +383,7 @@ function FilaCuenta({ cuenta, onCambiada }: { cuenta: Cuenta; onCambiada: (c: Cu
 					<span>{textoRol(cuenta.rol)}</span>
 					{cuenta.tipo_playa ? <span>Tipo: {nombreTipo(cuenta.tipo_playa)}</span> : null}
 					{cuenta.sede ? <span>Sede: {cuenta.sede}</span> : null}
+					{cuenta.organizacion ? <span>Organización: {cuenta.organizacion}</span> : null}
 					<span>{cuenta.correo}</span>
 				</p>
 				{clave ? (
