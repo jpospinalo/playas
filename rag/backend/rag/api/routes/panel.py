@@ -648,7 +648,13 @@ async def conversacion(
     )
 
 
-_DIMENSIONES = {"general": "overall", "tono": "tone", "largo": "length", "facilidad": "usability"}
+_DIMENSIONES = {
+    "general": "overall",
+    "claridad": "clarity",
+    "tono": "tone",
+    "largo": "length",
+    "facilidad": "usability",
+}
 
 
 @router.get("/encuestas", response_model=PanelEncuestasResponse)
@@ -668,16 +674,20 @@ async def encuestas(
         stmt = stmt.where(Feedback.created_at >= periodo.inicio)
     filas = []
     for fb, nombre in (await session.execute(stmt)).all():
-        notas = {k: int((fb.ratings or {}).get(v, 0) or 0) for k, v in _DIMENSIONES.items()}
+        notas = {k: (fb.ratings or {}).get(v) for k, v in _DIMENSIONES.items()}
+        notas = {k: int(v) if isinstance(v, (int, float)) else None for k, v in notas.items()}
         filas.append((fb, nombre, notas))
-    promedios = {
-        k: round(sum(n[k] for _, _, n in filas) / len(filas), 1) if filas else 0.0
-        for k in _DIMENSIONES
-    }
+
+    def _promedio(k: str) -> float:
+        # Solo sobre las encuestas que traen esa nota (claridad es nueva).
+        valores = [n[k] for _, _, n in filas if n[k] is not None]
+        return round(sum(valores) / len(valores), 1) if valores else 0.0
+
+    promedios = {k: _promedio(k) for k in _DIMENSIONES}
     if filtro == "buenas":
-        filas = [x for x in filas if x[2]["general"] >= 4]
+        filas = [x for x in filas if (x[2]["general"] or 0) >= 4]
     elif filtro == "malas":
-        filas = [x for x in filas if x[2]["general"] <= 2]
+        filas = [x for x in filas if (x[2]["general"] or 0) <= 2]
     elif filtro == "con_comentario":
         filas = [x for x in filas if (x[0].comment or "").strip()]
     filas.sort(key=lambda x: (pm.a_utc(x[0].created_at), x[0].id), reverse=True)
@@ -691,7 +701,11 @@ async def encuestas(
                 titulo=fb.conversation_title,
                 conversation_id=fb.conversation_id,
                 comentario=(fb.comment or "").strip() or None,
-                **notas,
+                general=notas["general"] or 0,
+                claridad=notas["claridad"],
+                tono=notas["tono"] or 0,
+                largo=notas["largo"] or 0,
+                facilidad=notas["facilidad"] or 0,
             )
             for fb, nombre, notas in pagina
         ],

@@ -17,6 +17,7 @@ const ENCUESTAS = {
 			titulo: "Permiso para vender",
 			conversation_id: "c1",
 			general: 4,
+			claridad: 5,
 			tono: 5,
 			largo: 3,
 			facilidad: 4,
@@ -26,7 +27,7 @@ const ENCUESTAS = {
 	total: 1,
 	page: 1,
 	page_size: 10,
-	promedios: { general: 3.4, tono: 3.4, largo: 3.3, facilidad: 3.4 },
+	promedios: { general: 3.4, claridad: 0, tono: 3.4, largo: 3.3, facilidad: 3.4 },
 };
 
 beforeEach(() => {
@@ -45,9 +46,13 @@ describe("app/admin/feedback — encuestas de satisfacción", () => {
 		render(<PaginaEncuestas />);
 		expect(await screen.findByText("Permiso para vender")).toBeInTheDocument();
 		expect(screen.getAllByText("3,4").length).toBe(3);
-		expect(screen.getByText("3,3")).toBeInTheDocument();
+		// Claridad sin datos (encuestas viejas) y largo en palabras: 3 = adecuada.
+		expect(screen.getByText("Sin datos")).toBeInTheDocument();
+		expect(screen.getAllByText("Adecuada").length).toBe(2);
+		expect(screen.getByText(/Promedio 3,3/)).toBeInTheDocument();
 		expect(screen.getByText("Comentó: “Clara y con la norma, gracias.”")).toBeInTheDocument();
 		expect(screen.getAllByText("4 de 5").length).toBe(2);
+		expect(screen.getAllByText("5 de 5").length).toBe(2);
 		expect(screen.queryByText(/@/)).toBeNull();
 	});
 

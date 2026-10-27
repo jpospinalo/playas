@@ -446,7 +446,8 @@ def test_encuestas(cliente) -> None:
     h = _auth(**_ADMIN)
     r = c.get("/api/admin/panel/encuestas?dias=30", headers=h).json()
     assert r["total"] == 2
-    assert r["promedios"] == {"general": 3.0, "tono": 3.0, "largo": 3.0, "facilidad": 3.0}
+    assert r["promedios"] == {"general": 3.0, "claridad": 0.0, "tono": 3.0, "largo": 3.0, "facilidad": 3.0}
+    assert r["items"][0]["claridad"] is None  # encuesta vieja, sin claridad
     primera = r["items"][0]
     assert (
         primera["persona"] == "U1"

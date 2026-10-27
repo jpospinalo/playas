@@ -130,6 +130,9 @@ class RatingDimensions(BaseModel):
     length: int = Field(..., ge=1, le=5, description="Longitud de las respuestas")
     usability: int = Field(..., ge=1, le=5, description="Usabilidad del sistema")
     overall: int = Field(..., ge=1, le=5, description="Calificación general")
+    # Encuesta de percepción del ejercicio de validación: claridad de las
+    # respuestas. Opcional para no romper las encuestas guardadas antes.
+    clarity: int | None = Field(default=None, ge=1, le=5, description="Claridad de las respuestas")
 
 
 class RatingDimensionsFloat(BaseModel):
@@ -439,8 +442,9 @@ class PanelEncuestaItem(BaseModel):
     titulo: str | None
     conversation_id: str | None
     general: int
+    claridad: int | None = Field(default=None, description="Solo en encuestas nuevas")
     tono: int
-    largo: int
+    largo: int = Field(..., description="1 muy corta, 3 adecuada, 5 muy larga")
     facilidad: int
     comentario: str | None
 

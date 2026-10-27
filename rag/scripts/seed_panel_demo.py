@@ -532,6 +532,13 @@ async def sembrar(
                     k: max(1, min(5, base + rng.choice((-1, 0, 0, 1))))
                     for k in ("tone", "length", "usability")
                 }
+                # El largo va de 1 (muy corta) a 5 (muy larga) y 3 es lo ideal:
+                # si le sirvió, cerca de 3; si no, tirando a un extremo.
+                notas["length"] = 3 if util and notas["length"] >= 4 else notas["length"]
+                if not util:
+                    notas["length"] = rng_ej.choice((1, 2, 4, 5))
+                # Claridad de las respuestas (encuesta de percepción del ejercicio).
+                notas["clarity"] = max(1, min(5, base + rng_ej.choice((-1, 0, 0, 1))))
                 s.add(
                     Feedback(
                         id=uid(),

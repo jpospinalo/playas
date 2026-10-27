@@ -10,6 +10,7 @@ import {
 	mensajeError,
 	numero,
 	pedirEncuestas,
+	textoLargo,
 	type Encuestas,
 	type FiltroEncuesta,
 } from "@/lib/admin/panel";
@@ -26,8 +27,9 @@ const OPCIONES: { valor: FiltroEncuesta; texto: string }[] = [
 // Qué mide cada nota de la encuesta (1 = muy mal, 5 = muy bien), PQ-47.
 const DIMENSIONES = [
 	{ clave: "general", texto: "General", mide: "Qué tan bien le fue en general" },
+	{ clave: "claridad", texto: "Claridad", mide: "Qué tan claras fueron las respuestas" },
 	{ clave: "tono", texto: "Tono", mide: "Trato y lenguaje de la respuesta" },
-	{ clave: "largo", texto: "Largo", mide: "Si el largo de la respuesta fue el adecuado" },
+	{ clave: "largo", texto: "Largo", mide: "1 muy corta, 3 adecuada, 5 muy larga" },
 	{ clave: "facilidad", texto: "Facilidad", mide: "Qué tan fácil fue usar ATLAS" },
 ] as const;
 
@@ -105,19 +107,35 @@ export default function PaginaEncuestas() {
 			) : null}
 
 			{datos ? (
-				<dl className="pnl-cifras pnl-cifras-4">
-					{DIMENSIONES.map((d) => (
-						<div className="pnl-cifra" key={d.clave}>
-							<dt>{d.texto}</dt>
-							<dd>
-								<span className="pnl-valor num">
-									{total || filtro ? decimal(datos.promedios[d.clave]) : "—"}
-									<small>&nbsp;de 5</small>
-								</span>
-								<span className="pnl-det">{d.mide}</span>
-							</dd>
-						</div>
-					))}
+				<dl className="pnl-cifras pnl-cifras-5">
+					{DIMENSIONES.map((d) => {
+						const valor = datos.promedios[d.clave];
+						return (
+							<div className="pnl-cifra" key={d.clave}>
+								<dt>{d.texto}</dt>
+								<dd>
+									{!valor ? (
+										<span className="pnl-valor">
+											<small>Sin datos</small>
+										</span>
+									) : d.clave === "largo" ? (
+										// El largo no es "más es mejor": 3 es lo ideal (PQ-47).
+										<span className="pnl-valor">
+											<small>{textoLargo(valor)}</small>
+										</span>
+									) : (
+										<span className="pnl-valor num">
+											{decimal(valor)}
+											<small>&nbsp;de 5</small>
+										</span>
+									)}
+									<span className="pnl-det">
+										{d.clave === "largo" && valor ? `Promedio ${decimal(valor)}; ${d.mide}` : d.mide}
+									</span>
+								</dd>
+							</div>
+						);
+					})}
 				</dl>
 			) : null}
 
@@ -177,11 +195,11 @@ export default function PaginaEncuestas() {
 									)}
 								</div>
 								<dl className="pnl-fila-estado">
-									{DIMENSIONES.map((d) => (
+									{DIMENSIONES.filter((d) => e[d.clave] !== null).map((d) => (
 										<div key={d.clave}>
 											<dt>{d.texto}</dt>
 											<dd className={d.clave === "general" ? "pnl-veces" : undefined}>
-												{deCinco(e[d.clave])}
+												{d.clave === "largo" ? textoLargo(e.largo) : deCinco(e[d.clave] ?? 0)}
 											</dd>
 										</div>
 									))}

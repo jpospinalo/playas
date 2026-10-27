@@ -12,6 +12,7 @@ interface FeedbackModalProps {
 }
 
 interface DimensionState {
+	clarity: number;
 	tone: number;
 	length: number;
 	usability: number;
@@ -20,7 +21,10 @@ interface DimensionState {
 
 type DimensionKey = keyof DimensionState;
 
+// "Claridad de las respuestas" la pide la encuesta de percepción del ejercicio
+// de validación (documento del profe, p. 2).
 const DIMENSIONS: { key: DimensionKey; label: string }[] = [
+	{ key: "clarity", label: "Claridad de las respuestas" },
 	{ key: "tone", label: "Tono de las respuestas" },
 	{ key: "length", label: "Longitud de las respuestas" },
 	{ key: "usability", label: "Usabilidad del sistema" },
@@ -54,6 +58,7 @@ const LENGTH_LABELS: Record<number, string> = {
 };
 
 const DIMENSION_LABELS: Record<DimensionKey, Record<number, string>> = {
+	clarity: QUALITY_LABELS,
 	tone: QUALITY_LABELS,
 	length: LENGTH_LABELS,
 	usability: QUALITY_LABELS,
@@ -68,12 +73,14 @@ export function FeedbackModal({
 	onClose,
 }: FeedbackModalProps) {
 	const [selected, setSelected] = useState<DimensionState>({
+		clarity: 0,
 		tone: 0,
 		length: 0,
 		usability: 0,
 		overall: 0,
 	});
 	const [hovered, setHovered] = useState<DimensionState>({
+		clarity: 0,
 		tone: 0,
 		length: 0,
 		usability: 0,
@@ -87,8 +94,8 @@ export function FeedbackModal({
 	function handleClose() {
 		if (submitState === "loading") return;
 		if (submitState !== "success") {
-			setSelected({ tone: 0, length: 0, usability: 0, overall: 0 });
-			setHovered({ tone: 0, length: 0, usability: 0, overall: 0 });
+			setSelected({ clarity: 0, tone: 0, length: 0, usability: 0, overall: 0 });
+			setHovered({ clarity: 0, tone: 0, length: 0, usability: 0, overall: 0 });
 			setComment("");
 			setSubmitState("idle");
 		}
@@ -96,8 +103,8 @@ export function FeedbackModal({
 	}
 
 	function handleExited() {
-		setSelected({ tone: 0, length: 0, usability: 0, overall: 0 });
-		setHovered({ tone: 0, length: 0, usability: 0, overall: 0 });
+		setSelected({ clarity: 0, tone: 0, length: 0, usability: 0, overall: 0 });
+		setHovered({ clarity: 0, tone: 0, length: 0, usability: 0, overall: 0 });
 		setComment("");
 		setSubmitState("idle");
 	}

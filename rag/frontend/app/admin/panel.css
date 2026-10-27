@@ -1439,3 +1439,33 @@
 		display: block;
 	}
 }
+
+.pnl-cifras.pnl-cifras-5 {
+	grid-template-columns: repeat(5, minmax(0, 1fr));
+	margin-bottom: 22px;
+}
+.pnl-cifras-5 .pnl-cifra dt {
+	min-height: 0;
+}
+@media (max-width: 1000px) {
+	.pnl-cifras.pnl-cifras-5 {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+	}
+}
+@media (max-width: 600px) {
+	.pnl-cifras.pnl-cifras-5 {
+		grid-template-columns: 1fr 1fr;
+	}
+	.pnl-cifras.pnl-cifras-5 .pnl-cifra:nth-child(n) {
+		grid-column: auto;
+		border-left: 0;
+		border-top: 1px solid var(--p-linea);
+	}
+	.pnl-cifras.pnl-cifras-5 .pnl-cifra:first-child {
+		grid-column: 1 / -1;
+		border-top: 0;
+	}
+	.pnl-cifras.pnl-cifras-5 .pnl-cifra:nth-child(odd):not(:first-child) {
+		border-left: 1px solid var(--p-linea);
+	}
+}

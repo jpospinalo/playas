@@ -153,7 +153,10 @@ export interface Encuesta {
 	titulo: string | null;
 	conversation_id: string | null;
 	general: number;
+	/** Claridad de las respuestas: solo en las encuestas nuevas. */
+	claridad: number | null;
 	tono: number;
+	/** 1 muy corta, 3 adecuada, 5 muy larga (no es una escala de calidad). */
 	largo: number;
 	facilidad: number;
 	comentario: string | null;
@@ -164,7 +167,7 @@ export interface Encuestas {
 	total: number;
 	page: number;
 	page_size: number;
-	promedios: { general: number; tono: number; largo: number; facilidad: number };
+	promedios: { general: number; claridad: number; tono: number; largo: number; facilidad: number };
 }
 
 export type FiltroEncuesta = "" | "buenas" | "malas" | "con_comentario";
@@ -435,6 +438,23 @@ export function textoResultado(resultado: Resultado, fuentes?: number, sentencia
 /** Quita las marcas internas de cita ("[doc1]") de una respuesta (PQ-33). */
 export function sinMarcasDeCita(texto: string): string {
 	return texto.replace(/\s?\[doc\d+\]/g, "");
+}
+
+const LARGOS: Record<number, string> = {
+	1: "Muy corta",
+	2: "Corta",
+	3: "Adecuada",
+	4: "Larga",
+	5: "Muy larga",
+};
+
+/** Nota de largo (1 muy corta, 3 adecuada, 5 muy larga) en palabras. */
+export function textoLargo(n: number): string {
+	if (!n) return "—";
+	if (Number.isInteger(n)) return LARGOS[n] ?? "—";
+	if (n < 2.5) return "Tirando a corta";
+	if (n <= 3.5) return "Adecuada";
+	return "Tirando a larga";
 }
 
 /** "3.4" → "3,4 de 5" (PQ-37). */

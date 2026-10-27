@@ -12,6 +12,7 @@ const submitMock = submitConversationFeedback as unknown as ReturnType<typeof vi
 
 async function rateAll(user: ReturnType<typeof userEvent.setup>) {
 	for (const label of [
+		"Claridad de las respuestas",
 		"Tono de las respuestas",
 		"Longitud de las respuestas",
 		"Usabilidad del sistema",

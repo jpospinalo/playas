@@ -80,6 +80,8 @@ export interface FeedbackRequest {
 // ── Conversation-level rating dimensions ──
 
 export interface ConversationRatings {
+	/** Claridad de las respuestas (encuesta del ejercicio; las viejas no la traen). */
+	clarity?: number;
 	tone: number;
 	length: number;
 	usability: number;
