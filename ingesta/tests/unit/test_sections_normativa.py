@@ -11,7 +11,10 @@ from ingest.sections_normativa import split_by_articles
 
 # raíz del repo: tests/unit/ -> tests/ -> raíz
 _REPO_ROOT = Path(__file__).resolve().parents[2]
-_NORMATIVA_DIR = _REPO_ROOT / "archivos-normativa"
+_VERSIONED_NORMATIVA = _REPO_ROOT.parent / "data/documents/raw/normativa"
+_NORMATIVA_DIR = (
+    _VERSIONED_NORMATIVA if _VERSIONED_NORMATIVA.is_dir() else _REPO_ROOT / "archivos-normativa"
+)
 
 pytestmark = pytest.mark.skipif(
     not _NORMATIVA_DIR.is_dir(),
