@@ -26,8 +26,16 @@ from sqlalchemy.pool import StaticPool
 from rag.api import ejercicio as ej
 from rag.api.auth import create_access_token
 from rag.api.database import get_session
-from rag.api.models import Base, Conversation, ExerciseProfile, Message, User
+from rag.api.models import (
+    Base,
+    Conversation,
+    ExerciseProfile,
+    Message,
+    User,
+    ValidatorProfile,
+)
 from rag.api.routes.evaluacion import router as evaluacion_router
+from rag.api.routes.validacion import router as validacion_router
 
 # ── Reglas puras ─────────────────────────────────────────────────────────────
 
@@ -187,6 +195,9 @@ def cliente(monkeypatch: pytest.MonkeyPatch) -> Iterator[TestClient]:
                 ("bq", "evaluador", "Semillerista BQ"),
                 ("sin", "evaluador", "Sin sede"),
                 ("com", "comite", "Comité"),
+                ("ana", "comite", "Ana María Muelle"),
+                ("san", "comite", "Sandra Otero"),
+                ("cam", "comite", "Camilo Botero"),
             ]:
                 s.add(
                     User(
@@ -203,6 +214,12 @@ def cliente(monkeypatch: pytest.MonkeyPatch) -> Iterator[TestClient]:
             s.add(ExerciseProfile(user_id="sm", sede="Santa Marta"))
             s.add(ExerciseProfile(user_id="sm2", sede="Santa Marta"))
             s.add(ExerciseProfile(user_id="bq", sede="Barranquilla"))
+            # Reunión del 20-oct: validación jurídica por sede y gestión costera.
+            s.add(ExerciseProfile(user_id="ana", sede="Santa Marta"))
+            s.add(ExerciseProfile(user_id="san", sede="Barranquilla"))
+            s.add(ValidatorProfile(user_id="ana", tipo="juridico"))
+            s.add(ValidatorProfile(user_id="san", tipo="juridico"))
+            s.add(ValidatorProfile(user_id="cam", tipo="costero"))
             for i, (mid, uid, texto, dias) in enumerate(PREGUNTAS):
                 cid = f"c{i}"
                 cuando = _AHORA - timedelta(days=dias)
@@ -229,6 +246,7 @@ def cliente(monkeypatch: pytest.MonkeyPatch) -> Iterator[TestClient]:
 
     app = FastAPI()
     app.include_router(evaluacion_router)
+    app.include_router(validacion_router)
     app.dependency_overrides[get_session] = _sesion
     with TestClient(app) as c:
         yield c
@@ -257,6 +275,19 @@ def _sm(c: TestClient, mid: str) -> tuple[dict[str, str], dict[str, str]]:
     if c.get(f"/api/evaluacion/preguntas/{mid}", headers=SM).status_code == 200:
         return SM, SM2
     return SM2, SM
+
+
+def _validar_todas(c: TestClient, h: dict[str, str]) -> int:
+    """La validadora marca "de acuerdo" en lote todo lo de su sede."""
+    b = c.get("/api/evaluacion/validacion/bandeja?estado=por_validar&page_size=100", headers=h)
+    ids = [e["id"] for i in b.json()["items"] for e in i["evaluaciones"]]
+    if not ids:
+        return 0
+    r = c.post(
+        "/api/evaluacion/validacion/lote", headers=h, json={"evaluaciones": ids, "confirmar": True}
+    )
+    assert r.status_code == 200, r.text
+    return r.json()["validadas"]
 
 
 def _cal_json(ct: str, cv: int, f: int = 2, valida: bool = True, obs: str | None = None) -> dict:
@@ -353,18 +384,16 @@ def test_resumen_premios_y_excel(cliente) -> None:
     for q, ct, cv in [("q1", "S", 6), ("q3", "S", 6)]:
         c.put(f"/api/evaluacion/preguntas/{q}/mia", headers=_sm(c, q)[0], json=_cal_json(ct, cv))
         c.put(f"/api/evaluacion/preguntas/{q}/mia", headers=BQ, json=_cal_json(ct, cv))
-    # Decisión 9 (PQ-55): las concordantes no cuentan hasta que el comité las valide.
+    # Reunión del 20-oct (T2): nada cuenta hasta que la validación jurídica
+    # esté de acuerdo con las evaluaciones (4 = 2 preguntas x 2 sedes).
     antes = c.get("/api/evaluacion/premios", headers=COM).json()
-    assert antes["por_validar"] == 2 and antes["solo_revisadas"]
+    assert antes["por_validar"] == 4 and antes["solo_revisadas"]
     assert antes["mejor_pregunta"]["S"]["ganadora"] is None
     assert not antes["mejor_pregunta"]["S"]["empatadas"]
     assert c.get("/api/evaluacion/resumen", headers=SM).json()["evaluadas"] == 0
-    url = "/api/evaluacion/validar-concordantes"
-    si = {"confirmar": True}
-    assert c.post(url, headers=SM, json=si).status_code == 403
-    assert c.post(url, headers=COM, json={"confirmar": False}).status_code == 422
-    assert c.post(url, headers=COM, json=si).json() == {"validadas": 2, "por_validar": 0}
-    assert c.post(url, headers=COM, json=si).json()["validadas"] == 0
+    for v in ("ana", "san"):
+        _validar_todas(c, _h(v, "comite"))
+    assert c.get("/api/evaluacion/premios", headers=COM).json()["por_validar"] == 0
     res = c.get("/api/evaluacion/resumen", headers=SM).json()
     assert res["preguntas_registradas"] == 3 and res["evaluadas"] == 2
     assert res["por_nivel"] == {"S": 2, "I": 0, "A": 0} and res["promedio_total"] == 12
@@ -413,7 +442,7 @@ def test_resumen_premios_y_excel(cliente) -> None:
     inter = z.read("xl/worksheets/sheet5.xml").decode()
     for col in ("ID Usuario", "Categoría (Ct)", "Puntos (Puntaje Total)", "Puntaje acumulado"):
         assert col in inter
-    assert "Ana" not in inter
+    assert "Secreta" not in inter
     hoja = z.read("xl/worksheets/sheet1.xml").decode()
     for col in ("ID pregunta", "ID Usuario", "Fecha", "Hora", "Tipo de Usuario de Playa", "Revisó"):
         assert col in hoja
@@ -425,8 +454,11 @@ def test_resumen_premios_y_excel(cliente) -> None:
     assert 'conditionalFormatting sqref="L2:L' in hoja
     assert "<dxfs" in z.read("xl/styles.xml").decode()
     assert "Tipo 3. Comerciantes" in hoja and "S - Sencillo" in hoja
-    assert "Ana" not in hoja
-    assert re.search(r"Comité \(\d{4}-\d{2}-\d{2}\)", hoja)  # Revisó: quién y cuándo
+    assert "Secreta" not in hoja
+    # Revisó: la validadora jurídica de cada sede y la fecha.
+    assert re.search(
+        r"Ana María Muelle \(\d{4}-\d{2}-\d{2}\), Sandra Otero \(\d{4}", hoja
+    ) or re.search(r"Sandra Otero \(\d{4}-\d{2}-\d{2}\), Ana María Muelle \(\d{4}", hoja)
 
 
 def test_constancia_empate_total_lo_decide_el_comite() -> None:
@@ -543,3 +575,64 @@ def test_asignacion_simultanea_no_duplica(tmp_path) -> None:
 
     filas, distintas = asyncio.run(_correr())
     assert filas == distintas == 60  # 30 preguntas x 2 sedes, sin duplicados
+
+
+def test_validacion_juridica_conversacion_y_pertinencia(cliente) -> None:
+    """Reunión del 20-oct (T2-T4, E7): cada evaluación va a la validadora de
+    su sede; "No de acuerdo" abre la conversación; el semillerista corrige y
+    vuelve a validarse; Camilo marca pertinencia; "no pertinente" sale de
+    premios. Los participantes siguen anónimos."""
+    c = cliente
+    _, _, BQ, SIN, COM, USER = _hs()  # noqa: N806
+    SM, _ = _sm(c, "q1")  # noqa: N806
+    ANA, SAN, CAM = _h("ana", "comite"), _h("san", "comite"), _h("cam", "comite")  # noqa: N806
+    c.put("/api/evaluacion/preguntas/q1/mia", headers=SM, json=_cal_json("S", 4))
+    url_b = "/api/evaluacion/validacion/bandeja?estado=por_validar"
+    b = c.get(url_b, headers=ANA).json()
+    assert b["tipo"] == "juridico" and b["sede"] == "Santa Marta" and b["total"] == 1
+    assert "Secreta" not in str(b) and "@" not in str(b)
+    assert c.get(url_b, headers=SAN).json()["total"] == 0  # Barranquilla aún no evaluó
+    eid = b["items"][0]["evaluaciones"][0]["id"]
+    url = f"/api/evaluacion/validacion/evaluaciones/{eid}"
+    # Desacuerdo sin explicar: no.
+    assert c.put(url, headers=ANA, json={"de_acuerdo": False}).status_code == 422
+    # Otra sede, gestión costera, semillerista: no validan esta.
+    for h in (SAN, CAM, SM):
+        assert c.put(url, headers=h, json={"de_acuerdo": True}).status_code == 403
+    r = c.put(
+        url, headers=ANA, json={"de_acuerdo": False, "comentario": "Es intermedia: hay conflicto"}
+    )
+    assert r.json()["evaluacion"]["estado"] == "en_conversacion"
+    # El autor ve su conversación; el semillerista de la otra sede, no.
+    assert c.get(url, headers=SM).status_code == 200
+    assert c.get(url, headers=BQ).status_code == 403
+    c.post(f"{url}/comentarios", headers=SM, json={"texto": "Tiene razón, la corrijo"})
+    assert c.post(f"{url}/comentarios", headers=BQ, json={"texto": "x"}).status_code == 403
+    c.put("/api/evaluacion/preguntas/q1/mia", headers=SM, json=_cal_json("I", 8))
+    d = c.get(url, headers=SM).json()
+    assert [e["tipo"] for e in d["hilo"]] == ["desacuerdo", "comentario", "correccion"]
+    assert "Ct S → I" in d["hilo"][-1]["texto"] and "Cv 4 → 8" in d["hilo"][-1]["texto"]
+    assert d["evaluacion"]["estado"] == "por_validar"  # tras corregir, vuelve a validarse
+    assert (
+        c.put(url, headers=ANA, json={"de_acuerdo": True}).json()["evaluacion"]["estado"]
+        == "validada"
+    )
+    # Barranquilla evalúa igual y Sandra valida: la oficial queda "validada".
+    c.put("/api/evaluacion/preguntas/q1/mia", headers=BQ, json=_cal_json("I", 8))
+    _validar_todas(c, SAN)
+    ficha = c.get("/api/evaluacion/preguntas/q1", headers=COM).json()
+    assert ficha["oficial"]["estado"] == "validada" and ficha["oficial"]["total"] == 14
+    # Gestión costera: solo Camilo marca pertinencia; "no" la saca de premios.
+    url_p = "/api/evaluacion/validacion/preguntas/q1/pertinencia"
+    assert c.put(url_p, headers=ANA, json={"pertinente": False}).status_code == 403
+    assert c.get("/api/evaluacion/premios", headers=COM).json()["mejor_pregunta"]["I"]["ganadora"]
+    assert (
+        c.put(
+            url_p, headers=CAM, json={"pertinente": False, "comentario": "No es de playas"}
+        ).status_code
+        == 200
+    )
+    premios = c.get("/api/evaluacion/premios", headers=COM).json()
+    assert premios["mejor_pregunta"]["I"]["ganadora"] is None
+    costera = c.get("/api/evaluacion/validacion/bandeja?estado=todas", headers=CAM).json()
+    assert costera["tipo"] == "costero" and costera["items"][0]["pertinente"] is False

@@ -43,6 +43,7 @@ from rag.api.routes.feedback import router as feedback_router
 from rag.api.routes.panel import router as panel_router
 from rag.api.routes.participantes import router as participantes_router
 from rag.api.routes.privacidad import router as privacidad_router
+from rag.api.routes.validacion import router as validacion_router
 from rag.api.schemas import QueryRequest, QueryResponse
 from rag.config import (
     CONTEXT_LIMIT_TOKENS,
@@ -220,6 +221,7 @@ app.include_router(admin_router)
 app.include_router(panel_router)
 app.include_router(participantes_router)
 app.include_router(evaluacion_router)
+app.include_router(validacion_router)
 app.include_router(auditoria_router)
 app.include_router(privacidad_router)
 

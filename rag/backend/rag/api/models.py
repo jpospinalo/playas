@@ -227,3 +227,61 @@ class QuestionAssignment(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)
     # Si se reasignó (evaluador desactivado o reasignación del admin), de quién venía.
     reasignada_de: Mapped[str | None] = mapped_column(String)
+
+
+class ValidatorProfile(Base):
+    """Reunión del 20-oct (T3): tipo de validación de una cuenta del comité.
+    "juridico" (Ana María, Sandra) valida las evaluaciones de su sede
+    (exercise_profile.sede); "costero" (Camilo) revisa si cada pregunta es del
+    tema."""
+
+    __tablename__ = "validator_profile"
+
+    user_id: Mapped[str] = mapped_column(String, ForeignKey("users.id"), primary_key=True)
+    tipo: Mapped[str] = mapped_column(String, nullable=False)
+
+
+class EvaluationReview(Base):
+    """Validación jurídica de una evaluación (T2-T4): de acuerdo o no. Se
+    guardan todas; vale la última, y solo si es posterior a la última
+    corrección del semillerista."""
+
+    __tablename__ = "evaluation_review"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True, default=_uuid)
+    evaluation_id: Mapped[str] = mapped_column(
+        String, ForeignKey("question_evaluation.id"), nullable=False, index=True
+    )
+    validador_id: Mapped[str] = mapped_column(String, ForeignKey("users.id"), nullable=False)
+    de_acuerdo: Mapped[bool] = mapped_column(Boolean, nullable=False)
+    comentario: Mapped[str | None] = mapped_column(Text)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)
+
+
+class EvaluationComment(Base):
+    """Conversación entre validador y semillerista sobre una evaluación (T4).
+    tipo: "comentario", "desacuerdo", "acuerdo" o "correccion" (antes → después)."""
+
+    __tablename__ = "evaluation_comment"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True, default=_uuid)
+    evaluation_id: Mapped[str] = mapped_column(
+        String, ForeignKey("question_evaluation.id"), nullable=False, index=True
+    )
+    autor_id: Mapped[str] = mapped_column(String, ForeignKey("users.id"), nullable=False)
+    tipo: Mapped[str] = mapped_column(String, default="comentario", nullable=False)
+    texto: Mapped[str] = mapped_column(Text, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)
+
+
+class PertinenceReview(Base):
+    """Revisión de gestión costera (T3, E7): ¿la pregunta es del tema de
+    playas? "No pertinente" la saca de premios y gratificación."""
+
+    __tablename__ = "pertinence_review"
+
+    message_id: Mapped[str] = mapped_column(String, ForeignKey("messages.id"), primary_key=True)
+    validador_id: Mapped[str] = mapped_column(String, ForeignKey("users.id"), nullable=False)
+    pertinente: Mapped[bool] = mapped_column(Boolean, nullable=False)
+    comentario: Mapped[str | None] = mapped_column(Text)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)

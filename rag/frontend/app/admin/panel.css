@@ -1831,3 +1831,98 @@ fieldset:disabled .pnl-opcion {
 .pnl .pnl-fila-acciones .pnl-btn-sec {
 	font-weight: 500;
 }
+
+/* ── Validación (reunión del 20-oct) ─────────────────────────────────────── */
+.pnl-eval-val {
+	margin-top: 12px;
+	padding: 12px 14px;
+	border: 1px solid var(--p-linea);
+	border-radius: 6px;
+	background: var(--p-papel);
+}
+.pnl-eval-val p {
+	margin: 0 0 6px;
+}
+.pnl-eval-cab {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	gap: 6px 14px;
+}
+.pnl-eval-cab p {
+	flex: 1 1 320px;
+	margin: 0;
+}
+.pnl-elegir input {
+	width: 22px;
+	height: 22px;
+	accent-color: var(--p-marino);
+}
+.pnl-lote {
+	margin: 4px 0 12px;
+}
+.pnl-fila-val {
+	grid-template-columns: minmax(0, 1fr);
+}
+.pnl-hilo {
+	margin-top: 10px;
+}
+.pnl-hilo-lista {
+	list-style: none;
+	margin: 0 0 10px;
+	padding: 0;
+	display: grid;
+	gap: 8px;
+}
+.pnl-hilo-lista li {
+	padding: 8px 12px;
+	border-left: 3px solid var(--p-linea);
+	background: var(--p-bajo);
+	border-radius: 0 6px 6px 0;
+}
+.pnl-hilo-lista li.pnl-hilo-desacuerdo {
+	border-left-color: var(--p-ambar);
+}
+.pnl-hilo-lista li.pnl-hilo-acuerdo {
+	border-left-color: var(--p-verde);
+}
+.pnl-hilo-meta {
+	margin: 0;
+	font-size: 15px;
+	color: var(--p-tinta-2);
+}
+.pnl-hilo-meta b {
+	font-weight: 500;
+	color: var(--p-tinta);
+}
+.pnl-hilo-texto {
+	margin: 2px 0 0;
+	white-space: pre-wrap;
+}
+.pnl-hilo-form {
+	display: grid;
+	gap: 6px;
+	max-width: 640px;
+}
+.pnl-hilo-form label {
+	font-weight: 500;
+}
+.pnl-hilo-form textarea,
+.pnl-eval-val textarea {
+	min-height: 80px;
+	padding: 8px 10px;
+	border: 2px solid var(--p-borde-ctl);
+	border-radius: 6px;
+	background: var(--p-papel);
+	color: var(--p-tinta);
+	font: inherit;
+}
+.pnl-hilo-form .pnl-btn-sec {
+	justify-self: start;
+}
+
+.pnl-ayuda-campo {
+	margin: 4px 0 0 34px;
+	font-size: 15px;
+	color: var(--p-tinta-2);
+}

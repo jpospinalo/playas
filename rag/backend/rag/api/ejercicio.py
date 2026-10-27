@@ -164,6 +164,12 @@ class Calificacion:
     es_final: bool
     # Día de la calificación (hora de Colombia), para "Revisó: nombre (fecha)".
     fecha: str = ""
+    # Reunión del 20-oct (T2): id de la evaluación y si su validador jurídico
+    # está de acuerdo con la versión actual.
+    id: str = ""
+    validada: bool = False
+    # "Ana María Muelle (2026-11-05)": quién la validó y cuándo (para "Revisó").
+    validada_por: str = ""
 
 
 def hay_diferencia(a: Calificacion, b: Calificacion, umbral: int = UMBRAL_DIFERENCIA) -> bool:
@@ -171,7 +177,9 @@ def hay_diferencia(a: Calificacion, b: Calificacion, umbral: int = UMBRAL_DIFERE
     return a.ct != b.ct or a.valida != b.valida or abs(a.total - b.total) >= umbral
 
 
-ESTADOS = ("sin_evaluar", "una_evaluacion", "concordante", "con_diferencias", "final")
+# "concordante": las dos coinciden pero falta la validación jurídica de
+# alguna; "validada": coinciden y las dos están validadas (vale el promedio).
+ESTADOS = ("sin_evaluar", "una_evaluacion", "concordante", "validada", "con_diferencias", "final")
 
 
 @dataclass(frozen=True)
@@ -218,9 +226,12 @@ def calificacion_oficial(cals: list[Calificacion]) -> Oficial:
     f1, f2, f3 = _media(a.f1, b.f1), _media(a.f2, b.f2), _media(a.f3, b.f3)
     lo, hi = RANGOS_CV[a.ct]
     cv = min(hi, max(lo, _media(a.cv, b.cv)))
+    validada = a.validada and b.validada
+    if validada:
+        reviso = ", ".join(dict.fromkeys(x.validada_por for x in (a, b) if x.validada_por))
     return Oficial(
         # Concordantes: misma validez por definición (si no, habría diferencia).
-        "concordante",
+        "validada" if validada else "concordante",
         f1,
         f2,
         f3,
@@ -229,7 +240,7 @@ def calificacion_oficial(cals: list[Calificacion]) -> Oficial:
         puntaje_total(f1, f2, f3, cv),
         a.valida,
         evaluo,
-        "",
+        reviso if validada else "",
         obs,
     )
 

@@ -52,6 +52,8 @@ export interface Cuenta {
 	creada: string;
 	/** false = desactivada: no entra, pero su historial se conserva. */
 	activa?: boolean;
+	/** Comité: "juridico" (valida las evaluaciones de su sede) o "costero". */
+	validacion?: "juridico" | "costero" | null;
 }
 
 export interface PersonaNueva {
@@ -109,7 +111,14 @@ export function crearLote(personas: PersonaNueva[]): Promise<{ creadas: Credenci
 
 export function cambiarCuenta(
 	uid: string,
-	cambios: { rol?: Rol; tipo_playa?: number; sede?: Sede; nombre?: string; activa?: boolean },
+	cambios: {
+		rol?: Rol;
+		tipo_playa?: number;
+		sede?: Sede;
+		nombre?: string;
+		activa?: boolean;
+		validacion?: "juridico" | "costero" | "ninguna";
+	},
 ): Promise<Cuenta> {
 	return llamar(`/${encodeURIComponent(uid)}`, { method: "PATCH", body: JSON.stringify(cambios) });
 }

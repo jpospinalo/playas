@@ -20,6 +20,7 @@ Reglas en ``rag/api/ejercicio.py``. Sin IA.
 
 from __future__ import annotations
 
+import dataclasses
 import random
 from collections import Counter, defaultdict
 from dataclasses import dataclass, field
@@ -42,8 +43,11 @@ from rag.api.models import (
     AccountStatus,
     AwardDecision,
     Conversation,
+    EvaluationComment,
+    EvaluationReview,
     ExerciseProfile,
     Message,
+    PertinenceReview,
     QuestionAssignment,
     QuestionEvaluation,
     QuestionNumber,
@@ -80,6 +84,8 @@ class _Pregunta:
     cals: list[ej.Calificacion] = field(default_factory=list)
     # Semillerista asignado en cada sede (T1): {"Santa Marta": user_id, ...}.
     asignados: dict[str, str] = field(default_factory=dict)
+    # Gestión costera (T3, E7): None = sin revisar; False = no es del tema.
+    pertinente: bool | None = None
 
     @property
     def oficial(self) -> ej.Oficial:
@@ -120,6 +126,24 @@ async def _cargar(session: AsyncSession) -> list[_Pregunta]:
         for mid, cid, texto, creado, codigo, tipo in filas
     ]
     por_id = {p.message_id: p for p in preguntas}
+    for mid, pertinente in (
+        await session.execute(select(PertinenceReview.message_id, PertinenceReview.pertinente))
+    ).all():
+        if mid in por_id:
+            por_id[mid].pertinente = pertinente
+    # Última validación jurídica de cada evaluación (T2), con quién la hizo.
+    ultima: dict[str, EvaluationReview] = {}
+    validador: dict[str, str] = {}
+    for r, vnombre, vcorreo in (
+        await session.execute(
+            select(EvaluationReview, User.display_name, User.email)
+            .join(User, User.id == EvaluationReview.validador_id)
+            .order_by(EvaluationReview.created_at, EvaluationReview.id)
+        )
+    ).all():
+        ultima[r.evaluation_id] = r
+        dia = pm.a_utc(r.created_at).astimezone(pm.HORA_COLOMBIA).strftime("%Y-%m-%d")
+        validador[r.evaluation_id] = f"{(vnombre or vcorreo or '').strip()} ({dia})"
     evals = (
         await session.execute(
             select(QuestionEvaluation, User.display_name, User.email)
@@ -150,9 +174,20 @@ async def _cargar(session: AsyncSession) -> list[_Pregunta]:
                 .strftime("%Y-%m-%d")
                 if (e.updated_at or e.created_at)
                 else "",
+                id=e.id,
+                validada=_vigente(ultima.get(e.id), e),
+                validada_por=validador.get(e.id, ""),
             )
         )
     return preguntas
+
+
+def _vigente(r: EvaluationReview | None, e: QuestionEvaluation) -> bool:
+    """De acuerdo y posterior a la última corrección del semillerista."""
+    if r is None or not r.de_acuerdo:
+        return False
+    cambio = e.updated_at or e.created_at
+    return cambio is None or pm.a_utc(r.created_at) >= pm.a_utc(cambio)
 
 
 async def _numerar(
@@ -307,6 +342,7 @@ class CalificacionIn(BaseModel):
 
 
 class CalificacionOut(BaseModel):
+    id: str = ""
     evaluador: str
     sede: str | None
     f1: int
@@ -381,6 +417,7 @@ class FichaResponse(BaseModel):
 
 def _cal_out(c: ej.Calificacion) -> CalificacionOut:
     return CalificacionOut(
+        id=c.id,
         evaluador=c.evaluador,
         sede=c.sede,
         f1=c.f1,
@@ -452,7 +489,7 @@ def _estado_para_mi(p: _Pregunta, user_id: str, rol: str, sede: str | None) -> d
         "con_diferencias": oficial.estado == "con_diferencias",
         # Concordantes: tienen valor (promedio) pero falta que el comité las revise.
         "por_validar": oficial.estado == "concordante",
-        "finalizadas": oficial.estado == "final"
+        "finalizadas": oficial.estado in ("final", "validada")
         or (oficial.estado == "concordante" and not ej.PREMIOS_SOLO_REVISADAS),
         "todas": True,
     }
@@ -645,8 +682,40 @@ async def guardar_mia(
     motivo = _puede_evaluar(p, user["sub"], user["role"], sede)
     if motivo:
         raise HTTPException(status.HTTP_409_CONFLICT, motivo)
+    antes = next((c for c in p.cals if c.evaluador_id == user["sub"] and not c.es_final), None)
     await _guardar(session, message_id, user["sub"], sede, payload, final=False)
+    if antes is not None:
+        cambios = _diferencias(antes, payload)
+        if cambios:
+            session.add(
+                EvaluationComment(
+                    evaluation_id=antes.id,
+                    autor_id=user["sub"],
+                    tipo="correccion",
+                    texto="Corrigió: " + "; ".join(cambios),
+                    created_at=datetime.now(UTC),
+                )
+            )
+            await session.commit()
     return await _ficha(session, message_id, user)
+
+
+def _diferencias(antes: ej.Calificacion, nueva: CalificacionIn) -> list[str]:
+    """Qué cambió en una corrección, en texto ("Cv 5 → 8")."""
+    total = ej.puntaje_total(nueva.f1, nueva.f2, nueva.f3, nueva.cv)
+    pares = [
+        ("F1", antes.f1, nueva.f1),
+        ("F2", antes.f2, nueva.f2),
+        ("F3", antes.f3, nueva.f3),
+        ("Ct", antes.ct, nueva.ct),
+        ("Cv", antes.cv, nueva.cv),
+        ("total", antes.total, total),
+        ("válida", "sí" if antes.valida else "no", "sí" if nueva.valida else "no"),
+    ]
+    cambios = [f"{n} {a} → {d}" for n, a, d in pares if a != d]
+    if (antes.observaciones or "") != ((nueva.observaciones or "").strip()):
+        cambios.append("observaciones")
+    return cambios
 
 
 @router.put("/preguntas/{message_id}/final", response_model=FichaResponse)
@@ -672,66 +741,20 @@ async def guardar_final(
     return await _ficha(session, message_id, user)
 
 
-class ValidarLoteIn(BaseModel):
-    # Confirmación explícita: sin ella no se valida nada.
-    confirmar: Literal[True]
-
-
-class ValidarLoteOut(BaseModel):
-    validadas: int
-    por_validar: int
-
-
-@router.post("/validar-concordantes", response_model=ValidarLoteOut)
-async def validar_concordantes(
-    _payload: ValidarLoteIn,
-    user: dict = Depends(require_comite),
-    session: AsyncSession = Depends(get_session),
-) -> ValidarLoteOut:
-    """Decisión 9: el comité valida en lote las preguntas con dos calificaciones
-    concordantes. Cada una queda con su calificación final = la oficial (el
-    promedio) y "Revisó" = este miembro del comité, con la fecha. Las que
-    tienen diferencias no se tocan: esas se resuelven una por una."""
-    preguntas = await _cargar(session)
-    ahora = datetime.now(UTC)
-    n = 0
-    for p in preguntas:
-        o = p.oficial
-        if o.estado != "concordante":
-            continue
-        session.add(
-            QuestionEvaluation(
-                message_id=p.message_id,
-                evaluador_id=user["sub"],
-                es_final=True,
-                sede=None,
-                f1=o.f1,
-                f2=o.f2,
-                f3=o.f3,
-                ct=o.ct,
-                cv=o.cv,
-                total=o.total,
-                valida=o.valida,
-                observaciones=None,
-                created_at=ahora,
-                updated_at=ahora,
-            )
-        )
-        n += 1
-    if n:
-        auditoria.registrar(session, user["sub"], "validar_concordantes", detalle={"cantidad": n})
-        await session.commit()
-    return ValidarLoteOut(validadas=n, por_validar=0)
-
-
 # ── Resumen, premios y Excel ─────────────────────────────────────────────────
 
 
 def _oficiales(preguntas: list[_Pregunta]) -> list[ej.PreguntaOficial]:
     return [
-        ej.PreguntaOficial(p.message_id, p.codigo, p.fecha, p.texto, p.oficial)
+        ej.PreguntaOficial(
+            p.message_id,
+            p.codigo,
+            p.fecha,
+            p.texto,
+            dataclasses.replace(p.oficial, valida=False) if p.pertinente is False else p.oficial,
+        )
         for p in preguntas
-        if p.oficial.estado == "final"
+        if p.oficial.estado in ("final", "validada")
         or (p.oficial.estado == "concordante" and not ej.PREMIOS_SOLO_REVISADAS)
     ]
 
@@ -818,7 +841,10 @@ async def _premios(session: AsyncSession, preguntas: list[_Pregunta]) -> dict:
         "gratificacion": sorted(ranking, key=lambda f: (-f["puntaje"], f["codigo"])),
         "participacion_por_dia": _participacion(preguntas),
         # Concordantes que aún no cuentan porque el comité no las ha validado.
-        "por_validar": sum(p.oficial.estado == "concordante" for p in preguntas),
+        # Evaluaciones de semilleristas que esperan la validación jurídica (T2).
+        "por_validar": sum(
+            1 for p in preguntas for c in p.cals if not c.es_final and not c.validada
+        ),
         "solo_revisadas": ej.PREMIOS_SOLO_REVISADAS,
         "nota": (
             "Solo cuentan preguntas válidas validadas por el comité."
@@ -894,7 +920,8 @@ async def exportar(
             "sin_evaluar": "Sin evaluar",
             "una_evaluacion": "Falta una calificación",
             "con_diferencias": "Con diferencias: pendiente del comité",
-            "concordante": "Concordantes (promedio): pendiente de revisión del comité",
+            "concordante": "Concordantes: falta la validación jurídica",
+            "validada": "Validada (promedio de las dos evaluaciones)",
             "final": "Revisada por el comité",
         }[o.estado]
         obs = "; ".join(

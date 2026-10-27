@@ -11,7 +11,13 @@ import { throwIfSessionExpired } from "@/lib/api";
 import { expireAuthSession, getToken } from "@/lib/auth";
 
 export type Ct = "S" | "I" | "A";
-export type EstadoPregunta = "sin_evaluar" | "una_evaluacion" | "concordante" | "con_diferencias" | "final";
+export type EstadoPregunta =
+	| "sin_evaluar"
+	| "una_evaluacion"
+	| "concordante"
+	| "validada"
+	| "con_diferencias"
+	| "final";
 export type FiltroBandeja = "pendientes" | "mias" | "con_diferencias" | "por_validar" | "finalizadas" | "todas";
 
 export const NIVELES: Record<Ct, string> = { S: "Sencillo", I: "Intermedio", A: "Avanzado" };
@@ -20,7 +26,8 @@ export const RANGOS: Record<Ct, [number, number]> = { S: [3, 6], I: [7, 9], A: [
 export const TEXTO_ESTADO: Record<EstadoPregunta, string> = {
 	sin_evaluar: "Sin calificar",
 	una_evaluacion: "Falta una calificación",
-	concordante: "Concordantes (promedio): pendiente de revisión del comité",
+	concordante: "Concordantes: falta la validación jurídica",
+	validada: "Validada (promedio de las dos)",
 	con_diferencias: "Con diferencias: va al comité",
 	final: "Revisada por el comité",
 };
@@ -68,6 +75,8 @@ export interface Bandeja {
 }
 
 export interface CalificacionOut {
+	/** Id de la evaluación (para abrir su conversación de validación). */
+	id?: string;
 	evaluador: string;
 	sede: string | null;
 	f1: number;
@@ -228,11 +237,6 @@ export function pedirPremios(): Promise<Premios> {
 
 export function elegirGanadora(nivel: Ct, messageId: string): Promise<Premios> {
 	return llamar(`/premios/${nivel}/ganadora`, { method: "PUT", body: JSON.stringify({ message_id: messageId }) });
-}
-
-/** Decisión 9: el comité valida en lote las concordantes (quedan "Revisó: <su nombre> (fecha)"). */
-export function validarConcordantes(): Promise<{ validadas: number; por_validar: number }> {
-	return llamar("/validar-concordantes", { method: "POST", body: JSON.stringify({ confirmar: true }) });
 }
 
 export async function descargarPlanilla(): Promise<void> {

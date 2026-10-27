@@ -164,6 +164,11 @@ export function FormCalificacion({
 					<input type="checkbox" checked={!valida} onChange={(e) => setValida(!e.target.checked)} disabled={deshabilitado} />
 					<span>Esta pregunta no es válida (no cuenta para premios ni para la gratificación)</span>
 				</label>
+				{/* Reunión del 20-oct (Isabella 15:21): qué no es una pregunta válida. */}
+				<p className="pnl-ayuda-campo">
+					No es válida si no es una consulta (un saludo, “soy pescador”, una prueba) o si no tiene que ver con las
+					playas.
+				</p>
 			</div>
 			<div className="pnl-campo">
 				<label htmlFor={`${id}-obs`}>Observaciones</label>

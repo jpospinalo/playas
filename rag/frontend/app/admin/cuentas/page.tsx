@@ -441,6 +441,8 @@ function FilaCuenta({ cuenta, onCambiada }: { cuenta: Cuenta; onCambiada: (c: Cu
 	const [rol, setRol] = useState<Rol>((cuenta.rol === "super-admin" ? "admin" : cuenta.rol) as Rol);
 	const [tipo, setTipo] = useState<number>(cuenta.tipo_playa ?? 1);
 	const [sede, setSede] = useState<Sede>((cuenta.sede as Sede) ?? "Santa Marta");
+	const [validacion, setValidacion] = useState<"juridico" | "costero" | "ninguna">(cuenta.validacion ?? "ninguna");
+	const pideSede = rol === "evaluador" || (rol === "comite" && validacion === "juridico");
 	const [clave, setClave] = useState<string | null>(null);
 	const [error, setError] = useState<string | null>(null);
 	const [confirmarBaja, setConfirmarBaja] = useState(false);
@@ -464,7 +466,8 @@ function FilaCuenta({ cuenta, onCambiada }: { cuenta: Cuenta; onCambiada: (c: Cu
 			const nueva = await cambiarCuenta(cuenta.uid, {
 				rol,
 				...(rol === "user" ? { tipo_playa: tipo } : {}),
-				...(rol === "evaluador" ? { sede } : {}),
+				...(pideSede ? { sede } : {}),
+				...(rol === "comite" ? { validacion } : {}),
 			});
 			onCambiada(nueva);
 			setEditando(false);
@@ -494,6 +497,9 @@ function FilaCuenta({ cuenta, onCambiada }: { cuenta: Cuenta; onCambiada: (c: Cu
 					<span>{textoRol(cuenta.rol)}</span>
 					{cuenta.tipo_playa ? <span>Tipo: {nombreTipo(cuenta.tipo_playa)}</span> : null}
 					{cuenta.sede ? <span>Sede: {cuenta.sede}</span> : null}
+					{cuenta.validacion ? (
+						<span>Valida: {cuenta.validacion === "juridico" ? "lo jurídico de su sede" : "gestión costera"}</span>
+					) : null}
 					{cuenta.organizacion ? <span>Organización: {cuenta.organizacion}</span> : null}
 					<span>{cuenta.correo}</span>
 				</p>
@@ -547,7 +553,21 @@ function FilaCuenta({ cuenta, onCambiada }: { cuenta: Cuenta; onCambiada: (c: Cu
 								</select>
 							</div>
 						) : null}
-						{rol === "evaluador" ? (
+						{rol === "comite" ? (
+							<div className="pnl-campo">
+								<label htmlFor={`v-${id}`}>Qué valida</label>
+								<select
+									id={`v-${id}`}
+									value={validacion}
+									onChange={(e) => setValidacion(e.target.value as "juridico" | "costero" | "ninguna")}
+								>
+									<option value="ninguna">Nada (solo comité)</option>
+									<option value="juridico">Lo jurídico de su sede</option>
+									<option value="costero">Gestión costera (pertinencia)</option>
+								</select>
+							</div>
+						) : null}
+						{pideSede ? (
 							<div className="pnl-campo">
 								<label htmlFor={`s-${id}`}>Sede</label>
 								<select id={`s-${id}`} value={sede} onChange={(e) => setSede(e.target.value as Sede)}>

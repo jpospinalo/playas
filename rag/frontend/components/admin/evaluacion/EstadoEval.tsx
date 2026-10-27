@@ -5,7 +5,7 @@ export function EstadoEval({ estado }: { estado: EstadoPregunta }) {
 	const clase =
 		estado === "con_diferencias"
 			? "ojo"
-			: estado === "final"
+			: estado === "final" || estado === "validada"
 				? "bien"
 				: "neutro";
 	return <span className={`pnl-estado ${clase}`}>{TEXTO_ESTADO[estado]}</span>;

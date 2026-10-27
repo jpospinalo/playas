@@ -17,6 +17,8 @@ import {
 import { IconoAviso } from "@/components/admin/panel/Estados";
 import { EstadoEval } from "@/components/admin/evaluacion/EstadoEval";
 import { FormCalificacion, TarjetaCalificacion } from "@/components/admin/evaluacion/FormCalificacion";
+import { Hilo } from "@/components/admin/evaluacion/Hilo";
+import { pedirDetalle, TEXTO_VALIDACION, type DetalleEvaluacion } from "@/lib/admin/validacion";
 
 /** Ficha de una pregunta: calificar con la planilla o resolver como comité. */
 export default function PaginaFicha() {
@@ -191,6 +193,9 @@ function Ficha_() {
 							/>
 						</section>
 					)}
+					{!ficha.es_comite && ficha.mia?.id ? (
+						<MiValidacion key={`${ficha.mia.id}-${ficha.mia.total}-${ficha.mia.ct}`} evaluacionId={ficha.mia.id} />
+					) : null}
 
 					<nav className="pnl-pagin" aria-label="Otras preguntas">
 						<span />
@@ -212,3 +217,50 @@ function Ficha_() {
 		</>
 	);
 }
+
+/** Reunión del 20-oct (T4): qué dijo la validadora y la conversación. */
+function MiValidacion({ evaluacionId }: { evaluacionId: string }) {
+	const [detalle, setDetalle] = useState<DetalleEvaluacion | null>(null);
+	const [error, setError] = useState<string | null>(null);
+
+	useEffect(() => {
+		let vigente = true;
+		pedirDetalle(evaluacionId)
+			.then((d) => {
+				if (vigente) setDetalle(d);
+			})
+			.catch((e) => {
+				if (vigente) setError(mensajeError(e, "No se pudo cargar la validación."));
+			});
+		return () => {
+			vigente = false;
+		};
+	}, [evaluacionId]);
+
+	if (error) {
+		return (
+			<p className="pnl-error-linea" role="alert">
+				{error}
+			</p>
+		);
+	}
+	if (!detalle) return null;
+	const est = detalle.evaluacion.estado;
+	return (
+		<section className="pnl-bloque" aria-labelledby="t-validacion">
+			<h2 id="t-validacion">Validación de su calificación</h2>
+			<p>
+				<span className={`pnl-estado ${est === "validada" ? "bien" : est === "en_conversacion" ? "ojo" : "neutro"}`}>
+					{TEXTO_VALIDACION[est]}
+				</span>{" "}
+				{est === "en_conversacion"
+					? "La validadora no está de acuerdo. Lea su comentario, respóndale y, si corresponde, corrija la calificación arriba."
+					: est === "por_validar"
+						? "La validadora jurídica de su sede todavía no la revisa."
+						: "La validadora está de acuerdo."}
+			</p>
+			<Hilo detalle={detalle} onCambio={setDetalle} etiqueta="Responder a la validadora" />
+		</section>
+	);
+}
+

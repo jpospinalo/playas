@@ -30,7 +30,14 @@ from rag.api import auditoria
 from rag.api import ejercicio as ej
 from rag.api.auth import require_admin
 from rag.api.database import get_session
-from rag.api.models import AccountStatus, Conversation, ExerciseProfile, Message, User
+from rag.api.models import (
+    AccountStatus,
+    Conversation,
+    ExerciseProfile,
+    Message,
+    User,
+    ValidatorProfile,
+)
 from rag.api.passwords import hash_password_async
 from rag.api.routes.panel import DEMO_EMAIL
 
@@ -59,6 +66,9 @@ class PersonaNueva(BaseModel):
     codigo: str | None = Field(default=None, max_length=20, pattern=r"^[A-Za-z0-9-]+$")
     correo: str | None = Field(default=None, max_length=320)
     organizacion: str | None = Field(default=None, max_length=160)
+    # Comité (reunión del 20-oct, T3): "juridico" valida las evaluaciones de su
+    # sede; "costero" revisa si las preguntas son del tema.
+    validacion: Literal["juridico", "costero"] | None = None
 
 
 class LoteRequest(BaseModel):
@@ -93,6 +103,7 @@ class Cuenta(BaseModel):
     preguntas: int
     creada: str
     activa: bool = True
+    validacion: str | None = None
 
 
 class CuentasResponse(BaseModel):
@@ -108,6 +119,8 @@ class CambioCuenta(BaseModel):
     organizacion: str | None = Field(default=None, max_length=160)
     # Desactivar sin borrar el historial (c2); True la reactiva.
     activa: bool | None = None
+    # Tipo de validación del comité (T3); "ninguna" la quita.
+    validacion: Literal["juridico", "costero", "ninguna"] | None = None
 
 
 class ClaveResponse(BaseModel):
@@ -162,6 +175,9 @@ async def listar(
         .scalars()
         .all()
     )
+    validaciones = dict(
+        (await session.execute(select(ValidatorProfile.user_id, ValidatorProfile.tipo))).all()
+    )
     items = []
     for u, perfil in filas:
         if rol and u.role != rol:
@@ -183,6 +199,7 @@ async def listar(
                 preguntas=preguntas.get(u.id, 0),
                 creada=(u.created_at or datetime.now(UTC)).isoformat(),
                 activa=u.id not in inactivas,
+                validacion=validaciones.get(u.id),
             )
         )
     items.sort(key=lambda c: (c.codigo is None, c.codigo or "", c.nombre or c.correo))
@@ -223,6 +240,10 @@ async def crear_lote(
             )
         if p.rol == "evaluador" and p.sede is None:
             raise HTTPException(422, f"Fila {i}: un evaluador necesita su sede.")
+        if p.validacion == "juridico" and p.sede is None:
+            raise HTTPException(422, f"Fila {i}: la validación jurídica necesita su sede.")
+        if p.validacion and p.rol != "comite":
+            raise HTTPException(422, f"Fila {i}: solo el comité valida.")
         codigo = (p.codigo or "").upper() or None
         if p.rol == "user" and codigo is None:
             codigo = await siguiente_codigo(session, usados)
@@ -284,6 +305,8 @@ async def crear_lote(
                 organizacion=(p.organizacion or "").strip() or None,
             )
         )
+        if p.validacion:
+            session.add(ValidatorProfile(user_id=uid, tipo=p.validacion))
         creadas.append(
             Credencial(
                 uid=uid,
@@ -352,6 +375,32 @@ async def cambiar(
     cambios = {k: [antes[k], despues[k]] for k in antes if antes[k] != despues[k]}
     if cambios:
         auditoria.registrar(session, admin["sub"], "cambiar_cuenta", uid, {"cambios": cambios})
+    vp = await session.get(ValidatorProfile, uid)
+    if payload.validacion is not None:
+        nuevo = None if payload.validacion == "ninguna" else payload.validacion
+        if nuevo == "juridico" and not perfil.sede:
+            raise HTTPException(
+                422, "La validación jurídica necesita la sede (Santa Marta o Barranquilla)."
+            )
+        if nuevo and user.role != "comite":
+            raise HTTPException(422, "Solo el comité valida.")
+        anterior = vp.tipo if vp else None
+        if nuevo != anterior:
+            if vp is None and nuevo:
+                vp = ValidatorProfile(user_id=uid, tipo=nuevo)
+                session.add(vp)
+            elif vp is not None and nuevo:
+                vp.tipo = nuevo
+            elif vp is not None:
+                await session.delete(vp)
+                vp = None
+            auditoria.registrar(
+                session,
+                admin["sub"],
+                "cambiar_cuenta",
+                uid,
+                {"cambios": {"validacion": [anterior, nuevo]}},
+            )
     estado = await session.get(AccountStatus, uid)
     activa = estado is None or estado.activa
     if payload.activa is not None and payload.activa != activa:
@@ -386,6 +435,7 @@ async def cambiar(
         preguntas=n,
         creada=(user.created_at or datetime.now(UTC)).isoformat(),
         activa=activa,
+        validacion=vp.tipo if vp else None,
     )
 
 
