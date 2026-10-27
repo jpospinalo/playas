@@ -120,12 +120,13 @@ def test_auditoria_de_acciones_de_admin(cliente) -> None:
     acciones = [x["accion"] for x in r["items"]]
     assert acciones == ["desactivar_cuenta", "nueva_clave", "cambiar_cuenta", "crear_cuentas"]
     cambio = r["items"][2]
-    assert cambio["objetivo"] == "P001 · Ana" and cambio["detalle"]["cambios"]["tipo_playa"] == [
+    assert cambio["objetivo"] == "P001 (Ana)" and cambio["detalle"]["cambios"]["tipo_playa"] == [
         2,
         5,
     ]
     assert r["items"][3]["detalle"]["cantidad"] == 1
     assert clave not in str(r)  # la clave nunca queda en la auditoría
+    assert r["items"][0]["fecha"].endswith("+00:00")  # con zona: el front muestra hora de Colombia
 
 
 def test_aviso_de_privacidad_y_autorizacion_guardada(cliente) -> None:

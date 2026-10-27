@@ -14,6 +14,7 @@ from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from rag.api import panel_metricas as pm
 from rag.api.auth import require_admin
 from rag.api.database import get_session
 from rag.api.models import AdminAudit, ExerciseProfile, User
@@ -101,13 +102,14 @@ async def listar(
         nombre = nombres.get(uid)
         codigo = codigos.get(uid)
         if codigo and nombre:
-            return f"{codigo} · {nombre}"
+            return f"{codigo} ({nombre})"
         return codigo or nombre or uid
 
     return AuditoriaResponse(
         items=[
             EntradaAuditoria(
-                fecha=(f.created_at or datetime.now(UTC)).isoformat(),
+                # SQLite guarda sin zona: se marca UTC para que el front lo pase a Colombia (PQ-71).
+                fecha=pm.a_utc(f.created_at or datetime.now(UTC)).isoformat(),
                 quien=nombres.get(f.actor_id, f.actor_id),
                 accion=f.accion,
                 texto=ACCIONES.get(f.accion, f.accion),

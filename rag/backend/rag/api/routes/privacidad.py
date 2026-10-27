@@ -18,6 +18,7 @@ from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from rag.api import panel_metricas as pm
 from rag.api.auth import get_current_user
 from rag.api.database import get_session
 from rag.api.models import PrivacyConsent
@@ -39,7 +40,7 @@ PARRAFOS = [
     "Sus derechos (Ley 1581 de 2012, art. 8): conocer, actualizar y rectificar sus datos, "
     "pedir prueba de esta autorización, ser informado del uso de sus datos, presentar quejas "
     "ante la Superintendencia de Industria y Comercio, revocar la autorización y pedir que se "
-    f"supriman sus datos. Para ejercerlos, escriba a {CONTACTO}.",
+    f"supriman sus datos. Para ejercerlos, comuníquese con {CONTACTO}.",
     "Responder sobre datos sensibles es voluntario: no escriba en sus preguntas datos de "
     "salud, origen, creencias u otros datos sensibles.",
 ]
@@ -66,7 +67,7 @@ async def _estado(session: AsyncSession, user_id: str) -> PrivacidadResponse:
         version=VERSION,
         parrafos=PARRAFOS,
         aceptada=vigente,
-        fecha=c.aceptada_at.isoformat() if vigente and c and c.aceptada_at else None,
+        fecha=pm.a_utc(c.aceptada_at).isoformat() if vigente and c and c.aceptada_at else None,
     )
 
 
