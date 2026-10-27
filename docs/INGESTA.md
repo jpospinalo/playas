@@ -31,6 +31,10 @@ El modelo `embeddinggemma:latest` debe tener este digest exacto:
 Se comprueba por `/api/tags` antes de calcular vectores; un digest distinto
 aborta. Todos los vectores deben tener 768 componentes numéricos finitos.
 
+El job de tests de ingesta instala el extra `offline` y Tesseract en español:
+el fixture escaneado se ejecuta, no se omite por falta de OCR. La ejecución de
+GitHub Actions no se ha disparado: el trabajo permanece en ramas locales.
+
 ## Agregar y sincronizar
 
 `make -C ingesta pipeline COLLECTION=v2a` y ambos scripts históricos de
@@ -155,6 +159,12 @@ retomables; no hay una transacción distribuida Chroma+SQLite. No deben ejecutar
 dos escritores simultáneos sobre el mismo manifiesto/colección. Si cambia
 pipeline/modelo/configuración, usar otra colección Y otro estado: se rechaza
 reutilizar una colección con hash diferente.
+
+Las versiones son explícitas: al cambiar reglas de extracción, normalización,
+metadatos o chunking hay que incrementar su constante de versión antes de usar
+otra colección/estado. El hash de configuración no detecta por sí solo ediciones
+de código que mantengan esas constantes. Cambiar el CSV de overrides sí invalida
+solo los documentos afectados, sin pedir una colección nueva.
 
 ```bash
 .offline-venv/bin/python -m ingest.offline --collection v2a --chunker legacy \
