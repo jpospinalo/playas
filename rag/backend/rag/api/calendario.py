@@ -57,6 +57,17 @@ async def leer(session: AsyncSession) -> tuple[dict[str, date], int]:
     return fechas, dias
 
 
+_MESES = (
+    "enero", "febrero", "marzo", "abril", "mayo", "junio",
+    "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre",
+)  # fmt: skip
+
+
+def dia_largo(d: date) -> str:
+    """ "27 de noviembre", como el resto del panel (PQ-74)."""
+    return f"{d.day} de {_MESES[d.month - 1]}"
+
+
 def hoy() -> date:
     return datetime.now(pm.HORA_COLOMBIA).date()
 
@@ -80,7 +91,7 @@ async def exigir_plazo(session: AsyncSession, clave: str, que: str) -> None:
     if hoy() > limite:
         raise HTTPException(
             status.HTTP_409_CONFLICT,
-            f"El plazo para {que} terminó el {limite.isoformat()}. Si hace falta, el "
+            f"El plazo para {que} terminó el {dia_largo(limite)}. Si hace falta, el "
             "administrador puede ampliarlo en el calendario.",
         )
 
@@ -102,6 +113,7 @@ class CalendarioOut(BaseModel):
     mi_limite: str | None
     mi_limite_texto: str | None
     dias_restantes: int | None
+    cerrado: bool = False
 
 
 @router.get("/api/evaluacion/calendario", response_model=CalendarioOut)
@@ -123,6 +135,7 @@ async def ver(
         mi_limite=limite.isoformat(),
         mi_limite_texto=FECHAS[clave][1],
         dias_restantes=(limite - hoy()).days,
+        cerrado=await cerrado(session),
     )
 
 

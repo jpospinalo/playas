@@ -368,6 +368,12 @@ export function diaMesCalendario(fecha: string): string {
 	return sinPunto(fmtDiaMesUTC.format(new Date(`${fecha}T00:00:00Z`)));
 }
 
+/** Fecha "2026-10-14" y hora "08:49" ya en hora de Colombia → "14 oct, 8:49" (PQ-74). */
+export function diaHoraCalendario(fecha: string, hora: string): string {
+	const [h, m] = hora.split(":");
+	return `${diaMesCalendario(fecha)}, ${Number(h)}:${m}`;
+}
+
 /** Fecha ISO → "26 de octubre de 2026" en hora de Colombia. */
 export function fechaLarga(iso: string): string {
 	return fmtLargo.format(new Date(iso));

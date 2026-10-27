@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/components/providers/AuthProvider";
-import { mensajeError, numero, recortar } from "@/lib/admin/panel";
+import { diaHoraCalendario, mensajeError, numero, recortar } from "@/lib/admin/panel";
 import { TIPOS_PLAYA } from "@/lib/admin/cuentas";
 import {
 	NIVELES,
@@ -32,15 +32,7 @@ const POR_PAGINA = 20;
 export default function PaginaBandeja() {
 	const { role } = useAuth();
 	const comite = rolComite(role);
-	// "?estado=por_validar" (enlace desde "Faltan N por validar") abre esa pestaña.
-	// La bandeja solo se pinta en el navegador (tras confirmar la sesión).
-	const [estado, setEstado] = useState<FiltroBandeja>(() =>
-		comite && typeof window !== "undefined" && new URLSearchParams(window.location.search).get("estado") === "por_validar"
-			? "por_validar"
-			: comite
-				? "con_diferencias"
-				: "pendientes",
-	);
+	const [estado, setEstado] = useState<FiltroBandeja>(comite ? "con_diferencias" : "pendientes");
 	const [tipo, setTipo] = useState(0);
 	const [ct, setCt] = useState<Ct | "">("");
 	const [pagina, setPagina] = useState(1);
@@ -69,7 +61,7 @@ export default function PaginaBandeja() {
 	const pestanas: { valor: FiltroBandeja; texto: string }[] = comite
 		? [
 				{ valor: "con_diferencias", texto: "Con diferencias: por resolver" },
-				{ valor: "por_validar", texto: "Concordantes: por validar" },
+				{ valor: "en_conversacion", texto: "En conversación" },
 				{ valor: "finalizadas", texto: "Con calificación oficial" },
 				{ valor: "todas", texto: "Todas" },
 			]
@@ -77,6 +69,7 @@ export default function PaginaBandeja() {
 				// T1: el semillerista solo ve las preguntas que el sistema le asignó.
 				{ valor: "pendientes", texto: "Asignadas sin evaluar" },
 				{ valor: "mias", texto: "Ya evaluadas" },
+				{ valor: "en_conversacion", texto: "En conversación" },
 				{ valor: "con_diferencias", texto: "Con diferencias" },
 				{ valor: "finalizadas", texto: "Con calificación oficial" },
 				{ valor: "todas", texto: "Todas mis asignadas" },
@@ -197,9 +190,15 @@ export default function PaginaBandeja() {
 									<p className="pnl-fila-meta">
 										<span className="pnl-etq">{p.codigo}</span>
 										{p.practica ? <span className="pnl-practica">Práctica: no cuenta</span> : null}
+										{p.en_conversacion ? (
+											<span className="pnl-estado ojo">
+												<IconoAviso />
+												En conversación con la validadora
+											</span>
+										) : null}
 										<span>{p.tipo_playa_nombre ?? "Sin tipo"}</span>
 										<span>
-											{p.fecha}, {p.hora}
+											{diaHoraCalendario(p.fecha, p.hora)}
 										</span>
 									</p>
 								</div>

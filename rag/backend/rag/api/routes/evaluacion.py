@@ -189,9 +189,18 @@ async def _cargar(session: AsyncSession) -> list[_Pregunta]:
                 id=e.id,
                 validada=_vigente(ultima.get(e.id), e),
                 validada_por=validador.get(e.id, ""),
+                en_conversacion=_en_conversacion(ultima.get(e.id), e),
             )
         )
     return preguntas
+
+
+def _en_conversacion(r: EvaluationReview | None, e: QuestionEvaluation) -> bool:
+    """Desacuerdo de la validadora que el semillerista aún no corrigió."""
+    if r is None or r.de_acuerdo:
+        return False
+    cambio = e.updated_at or e.created_at
+    return cambio is None or pm.a_utc(cambio) <= pm.a_utc(r.created_at)
 
 
 def _vigente(r: EvaluationReview | None, e: QuestionEvaluation) -> bool:
@@ -502,6 +511,7 @@ class BandejaItem(BaseModel):
     estado: str
     oficial: OficialOut
     practica: bool = False
+    en_conversacion: bool = False
 
 
 class BandejaResponse(BaseModel):
@@ -583,7 +593,13 @@ def _puede_evaluar(p: _Pregunta, user_id: str, rol: str, sede: str | None) -> st
 
 
 ESTADOS_FILTRO = Literal[
-    "pendientes", "mias", "con_diferencias", "por_validar", "finalizadas", "todas"
+    "pendientes",
+    "mias",
+    "en_conversacion",
+    "con_diferencias",
+    "por_validar",
+    "finalizadas",
+    "todas",
 ]
 
 
@@ -677,6 +693,13 @@ def _estado_para_mi(p: _Pregunta, user_id: str, rol: str, sede: str | None) -> d
     return {
         "pendientes": pendiente,
         "mias": mia,
+        # PQ-80: la validadora no está de acuerdo con la suya (semillerista) o con
+        # alguna (comité): hay una conversación abierta.
+        "en_conversacion": any(
+            c.en_conversacion and (rol != "evaluador" or c.evaluador_id == user_id)
+            for c in p.cals
+            if not c.es_final
+        ),
         "con_diferencias": oficial.estado == "con_diferencias",
         # Concordantes: tienen valor (promedio) pero falta que el comité las revise.
         "por_validar": oficial.estado == "concordante",
@@ -730,6 +753,7 @@ async def bandeja(
                 estado=p.oficial.estado,
                 oficial=_oficial_out(p.oficial),
                 practica=p.practica,
+                en_conversacion=marcas[p.message_id]["en_conversacion"],
             )
             for p in pagina
         ],
@@ -973,8 +997,8 @@ async def resumen(
     # T6: avance de cada semillerista frente a su plazo (asignadas, hechas,
     # pendientes y cuántas al día le faltan para llegar).
     fechas, _ = await calendario.leer(session)
-    dias_eval = max(1, (fechas["fin_evaluacion"] - calendario.hoy()).days + 1)
-    dias_val = max(1, (fechas["fin_validacion"] - calendario.hoy()).days + 1)
+    dias_eval = max(1, (fechas["fin_evaluacion"] - calendario.hoy()).days)
+    dias_val = max(1, (fechas["fin_validacion"] - calendario.hoy()).days)
     nombres = dict(
         (
             await session.execute(

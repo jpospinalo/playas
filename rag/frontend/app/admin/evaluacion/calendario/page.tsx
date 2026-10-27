@@ -133,21 +133,23 @@ export default function PaginaCalendario() {
 					) : null}
 				</form>
 			) : null}
-			{cal && esAdmin ? <Cierre /> : null}
+			{cal && esAdmin ? <Cierre inicial={!!cal.cerrado} /> : null}
 		</div>
 	);
 }
 
 /** E6: al terminar la validación, el ejercicio se cierra y los resultados quedan congelados. */
-function Cierre() {
+function Cierre({ inicial }: { inicial: boolean }) {
 	const [confirmar, setConfirmar] = useState(false);
-	const [cerrado, setCerrado] = useState<boolean | null>(null);
+	const [cerrado, setCerrado] = useState(inicial);
+	const [cambiado, setCambiado] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 
 	async function cambiar(cerrar: boolean) {
 		setError(null);
 		try {
 			setCerrado((await cerrarEjercicio(cerrar)).cerrado);
+			setCambiado(true);
 			setConfirmar(false);
 		} catch (e) {
 			setError(mensajeError(e, "No se pudo cambiar."));
@@ -161,11 +163,10 @@ function Cierre() {
 				Al cerrar, nadie puede calificar, validar ni elegir ganadoras; el resumen, los ganadores y el Excel quedan
 				como están. Se puede reabrir.
 			</p>
-			{cerrado !== null ? (
-				<p className="pnl-ok" role="status">
-					{cerrado ? "El ejercicio quedó cerrado." : "El ejercicio quedó abierto."}
-				</p>
-			) : null}
+			{/* PQ-86: siempre se dice en qué estado está; solo se ofrece la acción que aplica. */}
+			<p className={cambiado ? "pnl-ok" : "pnl-plazo"} role="status">
+				{cerrado ? "Estado: el ejercicio está cerrado." : "Estado: el ejercicio está abierto."}
+			</p>
 			{error ? (
 				<p className="pnl-error-linea" role="alert">
 					{error}
@@ -185,12 +186,15 @@ function Cierre() {
 				</div>
 			) : (
 				<div className="pnl-acciones">
-					<button type="button" className="pnl-btn-sec" onClick={() => setConfirmar(true)}>
-						Cerrar el ejercicio
-					</button>
-					<button type="button" className="pnl-btn-sec" onClick={() => cambiar(false)}>
-						Reabrir
-					</button>
+					{cerrado ? (
+						<button type="button" className="pnl-btn-sec" onClick={() => cambiar(false)}>
+							Reabrir el ejercicio
+						</button>
+					) : (
+						<button type="button" className="pnl-btn-sec" onClick={() => setConfirmar(true)}>
+							Cerrar el ejercicio
+						</button>
+					)}
 				</div>
 			)}
 		</section>

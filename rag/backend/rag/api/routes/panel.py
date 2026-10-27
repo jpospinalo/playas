@@ -39,6 +39,7 @@ from rag.api.models import (
     Feedback,
     Message,
     MessageFeedback,
+    PracticeAccount,
     User,
 )
 from rag.api.schemas import (
@@ -130,6 +131,8 @@ async def _cargar_filas(session: AsyncSession, desde: datetime | None) -> list[_
     )
     if desde is not None:
         stmt = stmt.where(Message.created_at >= desde)
+    # PQ-82: las cuentas de práctica (T7) no cuentan en el panel.
+    stmt = stmt.where(Conversation.user_id.not_in(select(PracticeAccount.user_id)))
     filas: list[_Fila] = []
     previa: _Fila | None = None
     for mid, cid, role, texto, sources, creado, uid in (await session.execute(stmt)).all():

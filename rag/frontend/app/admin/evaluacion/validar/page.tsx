@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { mensajeError, numero } from "@/lib/admin/panel";
+import { diaMesCalendario, mensajeError, numero } from "@/lib/admin/panel";
 import { NIVELES } from "@/lib/admin/evaluacion";
 import {
 	TEXTO_VALIDACION,
@@ -255,7 +255,7 @@ function FilaValidacion({
 				<p className="pnl-fila-meta">
 					<span className="pnl-etq">{item.codigo}</span>
 					<span>{item.tipo_playa_nombre ?? "Sin tipo"}</span>
-					<span>{item.fecha}</span>
+					<span>{diaMesCalendario(item.fecha)}</span>
 					{item.pertinente === false ? <span>No es del tema (gestión costera)</span> : null}
 				</p>
 				{tipo === "costero" ? (

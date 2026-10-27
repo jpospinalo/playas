@@ -170,6 +170,8 @@ class Calificacion:
     validada: bool = False
     # "Ana María Muelle (2026-11-05)": quién la validó y cuándo (para "Revisó").
     validada_por: str = ""
+    # La validadora no está de acuerdo y el semillerista aún no corrige (T4).
+    en_conversacion: bool = False
 
 
 def hay_diferencia(a: Calificacion, b: Calificacion, umbral: int = UMBRAL_DIFERENCIA) -> bool:
@@ -237,7 +239,9 @@ def calificacion_oficial(cals: list[Calificacion]) -> Oficial:
         f3,
         a.ct,
         cv,
-        puntaje_total(f1, f2, f3, cv),
+        # PQ-79: el total es el promedio de los dos totales, redondeado una
+        # sola vez (redondear cada componente lo inflaba: 14 y 14 daban 15).
+        _media(a.total, b.total),
         a.valida,
         evaluo,
         reviso if validada else "",

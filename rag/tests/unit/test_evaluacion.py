@@ -801,3 +801,45 @@ def test_cerrar_el_ejercicio(cliente) -> None:
         c.put("/api/evaluacion/preguntas/q1/mia", headers=BQ, json=_cal_json("S", 4)).status_code
         == 200
     )
+
+
+def test_promedio_no_se_infla() -> None:
+    """PQ-79: dos evaluaciones con total 14 dan 14, no 15."""
+    a = _cal("a", "Santa Marta", "S", 5, f=3)  # 9 + 5 = 14
+    b = ej.Calificacion(
+        evaluador_id="b",
+        evaluador="b",
+        sede="Barranquilla",
+        f1=2,
+        f2=3,
+        f3=3,
+        ct="S",
+        cv=6,
+        total=14,
+        valida=True,
+        observaciones=None,
+        es_final=False,
+    )
+    assert a.total == b.total == 14
+    assert ej.calificacion_oficial([a, b]).total == 14
+    c = _cal("c", "Barranquilla", "S", 6, f=3)  # 15
+    assert ej.calificacion_oficial([a, c]).total == 15  # 14,5 se redondea una vez a 15
+
+
+def test_filtro_en_conversacion_del_semillerista(cliente) -> None:
+    """PQ-80: el semillerista ve cuáles tienen la conversación abierta."""
+    c = cliente
+    _, _, BQ, SIN, COM, USER = _hs()  # noqa: N806
+    SAN = _h("san", "comite")  # noqa: N806
+    c.put("/api/evaluacion/preguntas/q1/mia", headers=BQ, json=_cal_json("S", 4))
+    b = c.get("/api/evaluacion/validacion/bandeja", headers=SAN).json()
+    eid = b["items"][0]["evaluaciones"][0]["id"]
+    c.put(
+        f"/api/evaluacion/validacion/evaluaciones/{eid}",
+        headers=SAN,
+        json={"de_acuerdo": False, "comentario": "Revise F1"},
+    )
+    r = c.get("/api/evaluacion/bandeja?estado=en_conversacion", headers=BQ).json()
+    assert r["conteos"]["en_conversacion"] == 1 and r["items"][0]["en_conversacion"] is True
+    c.put("/api/evaluacion/preguntas/q1/mia", headers=BQ, json=_cal_json("S", 5))
+    assert c.get("/api/evaluacion/bandeja?estado=en_conversacion", headers=BQ).json()["total"] == 0

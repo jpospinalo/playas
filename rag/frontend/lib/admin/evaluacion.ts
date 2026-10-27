@@ -18,7 +18,14 @@ export type EstadoPregunta =
 	| "validada"
 	| "con_diferencias"
 	| "final";
-export type FiltroBandeja = "pendientes" | "mias" | "con_diferencias" | "por_validar" | "finalizadas" | "todas";
+export type FiltroBandeja =
+	| "pendientes"
+	| "mias"
+	| "en_conversacion"
+	| "con_diferencias"
+	| "por_validar"
+	| "finalizadas"
+	| "todas";
 
 export const NIVELES: Record<Ct, string> = { S: "Sencillo", I: "Intermedio", A: "Avanzado" };
 export const RANGOS: Record<Ct, [number, number]> = { S: [3, 6], I: [7, 9], A: [10, 12] };
@@ -64,6 +71,8 @@ export interface ItemBandeja {
 	evaluada_por_mi: boolean;
 	/** T7: de una cuenta de práctica (no cuenta para nada). */
 	practica?: boolean;
+	/** PQ-80: la validadora no está de acuerdo y falta responder o corregir. */
+	en_conversacion?: boolean;
 	estado: EstadoPregunta;
 	oficial: Oficial;
 }

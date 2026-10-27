@@ -1955,7 +1955,8 @@ fieldset:disabled .pnl-opcion {
 }
 .pnl-calendario li {
 	display: grid;
-	grid-template-columns: minmax(0, 1fr) 190px;
+	/* PQ-85: el campo de fecha muestra el año completo. */
+	grid-template-columns: minmax(0, 1fr) 210px;
 	gap: 6px 16px;
 	align-items: center;
 }
@@ -2002,4 +2003,8 @@ fieldset:disabled .pnl-opcion {
 	.pnl-ganadores {
 		grid-template-columns: minmax(0, 1fr);
 	}
+}
+
+.pnl-calendario input[type="date"] {
+	min-width: 190px;
 }

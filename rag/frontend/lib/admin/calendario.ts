@@ -21,6 +21,7 @@ export interface Calendario {
 	mi_limite: string | null;
 	mi_limite_texto: string | null;
 	dias_restantes: number | null;
+	cerrado?: boolean;
 }
 
 export interface Ventana {

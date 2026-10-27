@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/components/providers/AuthProvider";
-import { decimal, mensajeError, numero, recortar } from "@/lib/admin/panel";
+import { decimal, diaMesCalendario, mensajeError, numero, recortar } from "@/lib/admin/panel";
 import { diaLargo } from "@/lib/admin/calendario";
 import { nombreTipo } from "@/lib/admin/cuentas";
 import {
@@ -356,7 +356,7 @@ function SeccionPremios({ premios, onElegir }: { premios: Premios; onElegir: (n:
 									<td>{nombreTipo(f.tipo_playa)}</td>
 									<td className="num">{numero(f.preguntas)}</td>
 									<td className="num">{numero(f.dias.length)}</td>
-									<td>{f.dias.join(", ")}</td>
+									<td>{f.dias.map(diaMesCalendario).join(", ")}</td>
 								</tr>
 							))}
 						</tbody>
@@ -487,7 +487,7 @@ function AvancePlazo({ resumen }: { resumen: ResumenEjercicio }) {
 								<td className="num">{numero(a.asignadas ?? 0)}</td>
 								<td className="num">{numero(a.evaluadas)}</td>
 								<td className="num">{numero(a.pendientes ?? 0)}</td>
-								<td className="num">{decimal(a.por_dia ?? 0)}</td>
+								<td className="num">{unDecimal(a.por_dia ?? 0)}</td>
 							</tr>
 						))}
 					</tbody>
@@ -515,7 +515,7 @@ function AvancePlazo({ resumen }: { resumen: ResumenEjercicio }) {
 									<td className="num">{numero(v.evaluaciones)}</td>
 									<td className="num">{numero(v.validadas)}</td>
 									<td className="num">{numero(v.pendientes)}</td>
-									<td className="num">{decimal(v.por_dia)}</td>
+									<td className="num">{unDecimal(v.por_dia)}</td>
 								</tr>
 							))}
 						</tbody>
@@ -587,7 +587,9 @@ function Ganadores({ premios, cerrado }: { premios: Premios; cerrado: boolean })
 function Concordancia({ resumen }: { resumen: ResumenEjercicio }) {
 	const c = resumen.concordancia;
 	if (!c || !c.pares) return null;
-	const v = (x: number | null | undefined) => (x === null || x === undefined ? "—" : decimal(x));
+	// PQ-87: dos decimales (0,993 no debe verse como "1").
+	const v = (x: number | null | undefined) =>
+		x === null || x === undefined ? "—" : x.toLocaleString("es-CO", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 	return (
 		<section className="pnl-bloque" aria-labelledby="t-conc">
 			<h2 id="t-conc">Acuerdo entre Santa Marta y Barranquilla</h2>
@@ -628,5 +630,10 @@ function Concordancia({ resumen }: { resumen: ResumenEjercicio }) {
 			) : null}
 		</section>
 	);
+}
+
+/** PQ-88: "2,0" junto a "1,5", no "2". */
+function unDecimal(n: number): string {
+	return n.toLocaleString("es-CO", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 }
 

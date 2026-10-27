@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { mensajeError, sinMarcasDeCita } from "@/lib/admin/panel";
+import { diaHoraCalendario, mensajeError, sinMarcasDeCita } from "@/lib/admin/panel";
 import {
 	guardarCalificacion,
 	pedirFicha,
@@ -105,7 +105,7 @@ function Ficha_() {
 						{ficha.practica ? <span className="pnl-practica">Práctica: no cuenta</span> : null}
 						<span>{ficha.tipo_playa_nombre ?? "Sin tipo"}</span>
 						<span>
-							{ficha.fecha}, {ficha.hora}
+							{diaHoraCalendario(ficha.fecha, ficha.hora)}
 						</span>
 						<EstadoEval estado={ficha.estado} />
 					</p>
