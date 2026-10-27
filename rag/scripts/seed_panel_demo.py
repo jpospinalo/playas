@@ -33,8 +33,10 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "backend"))
 
+from sqlalchemy import select  # noqa: E402
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine  # noqa: E402
 
+from rag.api import ejercicio as ej  # noqa: E402
 from rag.api import panel_metricas as pm  # noqa: E402
 from rag.api.models import (  # noqa: E402
     Base,
@@ -43,6 +45,7 @@ from rag.api.models import (  # noqa: E402
     Feedback,
     Message,
     MessageFeedback,
+    QuestionEvaluation,
     User,
 )
 from rag.api.passwords import hash_password  # noqa: E402
@@ -621,8 +624,189 @@ async def sembrar(
                     )
             conteo["preguntas"] += 1
         await s.commit()
+        conteo["evaluaciones"] = await _evaluaciones(s, random.Random(semilla + 2), ahora)
+        await s.commit()
     await engine.dispose()
     return conteo
+
+
+# Ejemplos de preguntas del documento del ejercicio (tabla de complejidad).
+EJEMPLOS_DOCUMENTO = [
+    (
+        3,
+        "Trabajo vendiendo bebidas y snacks en la playa de manera informal e itinerante desde hace "
+        "un año. Un funcionario de la Alcaldía me dijo que necesito un permiso para poder continuar. "
+        "¿Qué requisitos debo cumplir para ejercer esta actividad de forma legal en la playa?",
+        "S",
+    ),
+    (
+        3,
+        "Tengo un negocio de alquiler de sombrillas frente a la playa desde hace varios años, pero un "
+        "hotel cercano instaló sillas y carpas que ocupan buena parte del área donde trabajo e impiden "
+        "el paso libre de las personas hacia el mar. ¿Ante qué autoridad puedo presentar una queja "
+        "para que las personas puedan llegar hasta mi zona de sombrillas?",
+        "I",
+    ),
+    (
+        1,
+        "Compré un apartamento frente en la playa, con la promesa que sería un área muy natural y con "
+        "exclusividad. Sin embargo, ahora la playa empezó a erosionarse y la empresa constructora me "
+        "dice que ellos ya entregaron los apartamentos y no tienen responsabilidad, pues tenían "
+        "permiso de la curaduría ¿Hay alguna regulación que exija que se cumpla la promesa de una "
+        "playa natural y amplia en frente de mí apartamento?",
+        "A",
+    ),
+]
+
+
+def _nivel_probable(texto: str, rng: random.Random) -> str:
+    """Nivel aproximado para la semilla: largo y palabras de conflicto."""
+    t = pm.normalizar(texto)
+    if any(p in t for p in ("erosion", "derechos colectivos", "varias entidades", "curaduria")):
+        return "A"
+    if len(t) > 140 or any(p in t for p in ("hotel", "impiden", "queja", "conflicto", "cerrar")):
+        return rng.choice(("I", "I", "S"))
+    return rng.choice(("S", "S", "S", "I"))
+
+
+async def _evaluaciones(s, rng: random.Random, ahora: datetime) -> int:
+    """Calificaciones de demostración con la planilla: dos semilleristas (una
+    sede cada uno) en ~70 % de las preguntas de participantes, algunas con
+    diferencias, finales del comité, unas no válidas y los 3 ejemplos del
+    documento con un empate en el nivel sencillo para mostrar que decide el
+    comité."""
+    evaluadores = {
+        sede: [
+            u
+            for (u,) in (
+                await s.execute(
+                    select(User.id)
+                    .join(ExerciseProfile, ExerciseProfile.user_id == User.id)
+                    .where(User.role == "evaluador", ExerciseProfile.sede == sede)
+                )
+            ).all()
+        ]
+        for sede in ej.SEDES
+    }
+    comite = (await s.execute(select(User.id).where(User.role == "comite"))).scalars().first()
+    filas = (
+        await s.execute(
+            select(Message.id, Message.text, Message.created_at, Conversation.user_id)
+            .join(Conversation, Conversation.id == Message.conversation_id)
+            .join(ExerciseProfile, ExerciseProfile.user_id == Conversation.user_id)
+            .where(Message.role == "user", ExerciseProfile.codigo.is_not(None))
+            .order_by(Message.created_at)
+        )
+    ).all()
+
+    # Los 3 ejemplos del documento, de tres participantes, hace pocos días.
+    participantes = sorted({uid for *_, uid in filas})
+    ejemplos: dict[str, str] = {}
+    for i, (dias, texto, ct) in enumerate(EJEMPLOS_DOCUMENTO):
+        uid = participantes[(i * 7) % len(participantes)]
+        cuando = ahora - timedelta(days=dias, hours=2 + i)
+        cid = str(uuid.UUID(int=rng.getrandbits(128)))
+        s.add(
+            Conversation(
+                id=cid, user_id=uid, thread_id=cid, title=_titulo(texto), created_at=cuando
+            )
+        )
+        mid = str(uuid.UUID(int=rng.getrandbits(128)))
+        s.add(Message(id=mid, conversation_id=cid, role="user", text=texto, created_at=cuando))
+        s.add(
+            Message(
+                id=str(uuid.UUID(int=rng.getrandbits(128))),
+                conversation_id=cid,
+                role="assistant",
+                text=_respuesta_con_fuente(_fuentes(rng, "hoteles")),
+                sources=_fuentes(rng, "hoteles"),
+                created_at=cuando + timedelta(seconds=20),
+            )
+        )
+        ejemplos[mid] = ct
+    await s.flush()
+
+    def calificar(
+        mid: str,
+        evaluador: str,
+        sede: str | None,
+        ct: str,
+        cv: int,
+        f: tuple,
+        final=False,
+        valida=True,
+    ):
+        s.add(
+            QuestionEvaluation(
+                message_id=mid,
+                evaluador_id=evaluador,
+                sede=sede,
+                f1=f[0],
+                f2=f[1],
+                f3=f[2],
+                ct=ct,
+                cv=cv,
+                total=sum(f) + cv,
+                valida=valida,
+                observaciones=None,
+                es_final=final,
+                created_at=ahora,
+                updated_at=ahora,
+            )
+        )
+
+    n = 0
+    # Ejemplos: S con Cv 6 dos veces (empate), I 9 y A 11 (como el documento).
+    calificar(list(ejemplos)[0], evaluadores["Santa Marta"][0], "Santa Marta", "S", 6, (3, 3, 3))
+    calificar(list(ejemplos)[0], evaluadores["Barranquilla"][0], "Barranquilla", "S", 6, (3, 3, 3))
+    calificar(list(ejemplos)[1], evaluadores["Santa Marta"][0], "Santa Marta", "I", 9, (3, 3, 3))
+    calificar(list(ejemplos)[1], evaluadores["Barranquilla"][0], "Barranquilla", "I", 9, (3, 3, 3))
+    calificar(list(ejemplos)[2], evaluadores["Santa Marta"][1], "Santa Marta", "A", 11, (3, 3, 3))
+    calificar(list(ejemplos)[2], evaluadores["Barranquilla"][1], "Barranquilla", "A", 12, (3, 3, 2))
+    n += 6
+
+    for mid, texto, _creado, _uid in filas:
+        if rng.random() > 0.7:
+            continue  # sin calificar todavía
+        ct = _nivel_probable(texto, rng)
+        lo, hi = ej.RANGOS_CV[ct]
+        f = (rng.randint(1, 3), rng.randint(2, 3), rng.randint(2, 3))
+        # El Cv máximo es raro (un caso "especialmente completo"): sesgo hacia abajo.
+        cv = hi if rng.random() < 0.02 else rng.randint(lo, hi - 1)
+        sm = rng.choice(evaluadores["Santa Marta"])
+        calificar(
+            mid, sm, "Santa Marta", ct, cv, f, valida=texto not in (*FUERA, *SALUDOS, *ACLARAR)
+        )
+        n += 1
+        if rng.random() < 0.18:
+            continue  # falta la de Barranquilla
+        r = rng.random()
+        if r < 0.15:
+            # Diferencia de nivel: va al comité.
+            ct2 = "I" if ct == "S" else "S"
+            cv2 = ej.RANGOS_CV[ct2][0] + 1
+            f2 = f
+        elif r < 0.22:
+            ct2, cv2, f2 = ct, cv, (1, 1, f[2])  # diferencia de puntaje
+        else:
+            tope = hi if cv == hi else hi - 1
+            ct2, cv2, f2 = ct, max(lo, min(tope, cv + rng.choice((-1, 0, 0, 1)))), f
+        # Saludos, preguntas fuera de tema o que piden aclarar no son válidas.
+        valida = texto not in (*FUERA, *SALUDOS, *ACLARAR)
+        calificar(
+            mid,
+            rng.choice(evaluadores["Barranquilla"]),
+            "Barranquilla",
+            ct2,
+            cv2,
+            f2,
+            valida=valida,
+        )
+        n += 1
+        if comite and r < 0.22 and rng.random() < 0.5:
+            calificar(mid, comite, None, ct, cv, f, final=True)
+            n += 1
+    return n
 
 
 def main() -> None:
@@ -646,7 +830,7 @@ def main() -> None:
         raise SystemExit("--db debe ser un archivo SQLite (.db, .sqlite o .sqlite3)")
     conteo = asyncio.run(sembrar(a.db, a.preguntas, a.semilla, a.reset, a.dias, a.casos_limite))
     print(
-        f"Semilla lista en {a.db}: {conteo['usuarios']} personas, {conteo['preguntas']} preguntas, {conteo['calificaciones']} calificaciones por respuesta, {conteo['conversaciones']} de conversación."
+        f"Semilla lista en {a.db}: {conteo['usuarios']} personas, {conteo['preguntas']} preguntas, {conteo['calificaciones']} calificaciones por respuesta, {conteo['conversaciones']} de conversación, {conteo.get('evaluaciones', 0)} evaluaciones de la planilla."
     )
     print(
         f"Administrador de la demo: {ADMIN_EMAIL} / {ADMIN_PASSWORD}  (sin rol admin: {USUARIO_EMAIL}, misma clave)"

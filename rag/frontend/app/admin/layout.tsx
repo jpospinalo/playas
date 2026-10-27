@@ -8,6 +8,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { useTheme } from "@/components/providers/ThemeProvider";
+import { rolEvalua } from "@/lib/admin/evaluacion";
 
 // Panel de administración con el diseño B del flujo guiado: encabezado
 // blanco con línea marino, navegación arriba (sin barra lateral), fuente del
@@ -19,7 +20,16 @@ const ENLACES = [
 	{ href: "/admin/message-feedback", texto: "Opiniones" },
 	{ href: "/admin/feedback", texto: "Encuestas" },
 	{ href: "/admin/cuentas", texto: "Cuentas" },
+	{ href: "/admin/evaluacion", texto: "Evaluación" },
 ];
+
+// Evaluadores (semilleristas) y comité solo entran a la evaluación: el resto
+// del panel lee datos de personas y es solo para administradores.
+const ENLACES_EVALUACION = [{ href: "/admin/evaluacion", texto: "Evaluación" }];
+
+function esAdministrador(rol: string | null | undefined): boolean {
+	return rol === "admin" || rol === "super-admin";
+}
 
 // Título de la pestaña de las páginas viejas (las nuevas ponen el suyo): cada
 // pantalla con su nombre, sin raya (PQ-21).
@@ -55,11 +65,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 	const router = useRouter();
 	const pathname = usePathname();
 
+	const soloEvaluacion = !esAdministrador(role) && rolEvalua(role);
+	const fueraDeEvaluacion = soloEvaluacion && !pathname.startsWith("/admin/evaluacion");
+
 	useEffect(() => {
 		if (!loading && !user) {
 			router.replace("/");
+		} else if (!loading && fueraDeEvaluacion) {
+			router.replace("/admin/evaluacion");
 		}
-	}, [user, loading, router]);
+	}, [user, loading, router, fueraDeEvaluacion]);
 
 	if (loading) {
 		return (
@@ -73,9 +88,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 		);
 	}
 
-	if (!user) return null;
+	if (!user || fueraDeEvaluacion) return null;
 
-	if (role !== "admin" && role !== "super-admin") {
+	if (!esAdministrador(role) && !soloEvaluacion) {
 		return (
 			<div className="pnl">
 				<main id="main-content" className="pnl-main pnl-pag">
@@ -109,7 +124,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 					</Link>
 					<nav className="pnl-nav-w" aria-label="Panel de administración">
 						<ul className="pnl-nav">
-							{ENLACES.map(({ href, texto }) => {
+							{(soloEvaluacion ? ENLACES_EVALUACION : ENLACES).map(({ href, texto }) => {
 								const activo =
 									href === "/admin"
 										? pathname === "/admin" || pathname.startsWith("/admin/conversacion")

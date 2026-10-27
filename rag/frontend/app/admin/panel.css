@@ -1469,3 +1469,258 @@
 		border-left: 1px solid var(--p-linea);
 	}
 }
+
+/* ── Evaluación del ejercicio ────────────────────────────────────────────── */
+.pnl-subnav {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	margin: 0 0 18px;
+	border-bottom: 2px solid var(--p-linea);
+}
+.pnl .pnl-subnav a {
+	display: inline-flex;
+	align-items: center;
+	min-height: 48px;
+	padding: 0 14px;
+	font-weight: 600;
+	color: var(--p-tinta);
+	text-decoration: none;
+	border-bottom: 3px solid transparent;
+	margin-bottom: -2px;
+}
+.pnl .pnl-subnav a[aria-current="page"] {
+	color: var(--p-marino);
+	border-bottom-color: var(--p-marino);
+}
+.pnl-pestanas {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	margin: 0 0 14px;
+}
+.pnl-pag .pnl-pestanas button {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	min-height: 44px;
+	padding: 0 14px;
+	border: 2px solid var(--p-borde-ctl);
+	border-radius: 6px;
+	background: var(--p-papel);
+	color: var(--p-tinta);
+	font-weight: 600;
+	cursor: pointer;
+}
+.pnl-pag .pnl-pestanas button[aria-pressed="true"] {
+	border-color: var(--p-marino);
+	background: var(--p-marino);
+	color: var(--p-sobre-marino);
+}
+.pnl-pestana-n {
+	min-width: 28px;
+	padding: 0 6px;
+	border-radius: 4px;
+	background: var(--p-bajo);
+	color: var(--p-marino);
+	font-size: 16px;
+	text-align: center;
+}
+.pnl-pestanas button[aria-pressed="true"] .pnl-pestana-n {
+	background: var(--p-sobre-marino);
+	color: var(--p-marino);
+}
+.pnl-num-preg {
+	color: var(--p-tinta-2);
+	font-weight: 700;
+}
+.pnl-pregunta-texto {
+	font-size: 20px;
+	line-height: 1.5;
+	margin: 0;
+	white-space: pre-wrap;
+	overflow-wrap: anywhere;
+}
+.pnl-plegable {
+	margin-top: 14px;
+	border-top: 1px solid var(--p-linea);
+	padding-top: 10px;
+}
+.pnl-plegable summary {
+	cursor: pointer;
+	min-height: 44px;
+	display: flex;
+	align-items: center;
+	font-weight: 600;
+	color: var(--p-marino);
+}
+.pnl-plegable .pnl-md {
+	margin-top: 8px;
+	padding: 12px 16px;
+	background: var(--p-bajo);
+	border-radius: 6px;
+}
+.pnl-planilla h3 {
+	margin: 18px 0 10px;
+	font-size: 22px;
+}
+.pnl-planilla h3:first-child {
+	margin-top: 0;
+}
+.pnl-criterio {
+	border: 0;
+	margin: 0 0 16px;
+	padding: 0;
+	min-width: 0;
+}
+.pnl-criterio legend {
+	font-weight: 700;
+	margin-bottom: 8px;
+	padding: 0;
+}
+.pnl-criterio-q {
+	display: block;
+	font-weight: 400;
+	color: var(--p-tinta-2);
+}
+.pnl-opciones {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+	gap: 8px;
+}
+.pnl-opcion {
+	display: flex;
+	gap: 10px;
+	align-items: flex-start;
+	padding: 10px 12px;
+	border: 2px solid var(--p-borde-ctl);
+	border-radius: 6px;
+	background: var(--p-papel);
+	cursor: pointer;
+	line-height: 1.35;
+}
+.pnl-opcion:has(input:checked) {
+	border-color: var(--p-marino);
+	background: var(--p-bajo);
+	box-shadow: inset 0 0 0 1px var(--p-marino);
+}
+.pnl-opcion input {
+	width: 22px;
+	height: 22px;
+	margin: 1px 0 0;
+	flex: none;
+	accent-color: var(--p-marino);
+}
+.pnl-opcion b {
+	margin-right: 4px;
+}
+fieldset:disabled .pnl-opcion {
+	cursor: default;
+	opacity: 0.75;
+}
+.pnl-subtotal,
+.pnl-total {
+	margin: 4px 0 16px;
+	font-size: 20px;
+}
+.pnl-total {
+	padding: 12px 16px;
+	background: var(--p-bajo);
+	border-left: 8px solid var(--p-marino);
+	border-radius: 6px;
+}
+.pnl-check {
+	display: flex;
+	gap: 10px;
+	align-items: flex-start;
+	min-height: 44px;
+	cursor: pointer;
+}
+.pnl-check input {
+	width: 22px;
+	height: 22px;
+	margin-top: 2px;
+	accent-color: var(--p-marino);
+}
+.pnl-ok {
+	padding: 12px 16px;
+	border-left: 8px solid var(--p-verde);
+	background: var(--p-bajo);
+	border-radius: 6px;
+	font-weight: 600;
+	margin: 0 0 18px;
+}
+.pnl-comparar {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+	gap: 14px;
+}
+.pnl-tarjeta-cal {
+	border: 2px solid var(--p-linea);
+	border-radius: 6px;
+	padding: 14px 16px;
+}
+.pnl-tarjeta-cal h3 {
+	margin: 0 0 4px;
+	font-size: 20px;
+}
+.pnl-tarjeta-cal dl {
+	margin: 10px 0 0;
+	display: grid;
+	gap: 4px;
+}
+.pnl-tarjeta-cal dl div {
+	display: grid;
+	grid-template-columns: 110px 1fr;
+	gap: 8px;
+}
+.pnl-tarjeta-cal dt {
+	color: var(--p-tinta-2);
+}
+.pnl-tarjeta-cal dd {
+	margin: 0;
+}
+.pnl-lista-simple {
+	list-style: none;
+	margin: 10px 0 0;
+	padding: 0;
+}
+.pnl-lista-simple li {
+	display: flex;
+	justify-content: space-between;
+	gap: 12px;
+	padding: 8px 0;
+	border-top: 1px solid var(--p-linea);
+}
+.pnl-sede {
+	display: block;
+	color: var(--p-tinta-2);
+	font-size: 16px;
+}
+.pnl-empatadas {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: grid;
+	gap: 12px;
+}
+.pnl-empatadas li {
+	padding: 10px 12px;
+	border: 2px dashed var(--p-ambar);
+	border-radius: 6px;
+}
+.pnl-primero td {
+	background: var(--p-bajo);
+}
+.pnl-aviso span {
+	margin: 0;
+}
+
+@media (max-width: 600px) {
+	.pnl-pagin div {
+		flex-wrap: wrap;
+	}
+	.pnl-pagin div .pnl-btn-sec {
+		flex: 1 1 140px;
+	}
+}
