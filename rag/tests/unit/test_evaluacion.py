@@ -25,6 +25,7 @@ from sqlalchemy.pool import StaticPool
 
 from rag.api import ejercicio as ej
 from rag.api.auth import create_access_token
+from rag.api.calendario import router as calendario_router
 from rag.api.database import get_session
 from rag.api.models import (
     Base,
@@ -247,6 +248,7 @@ def cliente(monkeypatch: pytest.MonkeyPatch) -> Iterator[TestClient]:
     app = FastAPI()
     app.include_router(evaluacion_router)
     app.include_router(validacion_router)
+    app.include_router(calendario_router)
     app.dependency_overrides[get_session] = _sesion
     with TestClient(app) as c:
         yield c
@@ -709,3 +711,44 @@ def test_semillerista_de_practica_no_recibe_preguntas_reales(cliente) -> None:
     total = c.get("/api/evaluacion/bandeja?estado=todas", headers=SM2).json()["total"]
     assert total == 0
     assert c.get("/api/evaluacion/bandeja?estado=todas", headers=SM).json()["total"] == 3
+
+
+def test_calendario_plazos_por_rol(cliente) -> None:
+    """T5: fechas de la reunión por defecto; el admin las cambia; vencido el
+    plazo de evaluar, el semillerista ya no guarda."""
+    from datetime import date as _date
+
+    c = cliente
+    SM, SM2, BQ, SIN, COM, USER = _hs()  # noqa: N806
+    cal = c.get("/api/evaluacion/calendario", headers=SM).json()
+    fechas = {f["clave"]: f["fecha"] for f in cal["fechas"]}
+    assert fechas["inicio"] == "2026-11-02" and fechas["fin_evaluacion"] == "2026-11-27"
+    assert cal["mi_limite"] == "2026-11-27" and cal["dias_participante"] == 14
+    assert c.get("/api/evaluacion/calendario", headers=COM).json()["mi_limite"] == "2026-12-04"
+    assert c.get("/api/evaluacion/calendario", headers=USER).status_code == 403
+    _en_bd(c, User(id="adm", email="adm@x.co", password_hash="x", role="admin"))
+    ADM = _h("adm", "admin")  # noqa: N806
+    pasado = {
+        "prueba_inicio": "2020-01-01",
+        "inicio": "2020-01-02",
+        "fin_presencial": "2020-01-03",
+        "fin_participacion": "2020-01-04",
+        "fin_evaluacion": "2020-01-05",
+    }
+    assert (
+        c.put("/api/evaluacion/calendario", headers=COM, json={"fechas": pasado}).status_code == 403
+    )
+    # El orden se respeta.
+    mal = {"fin_evaluacion": "2030-01-01"}
+    assert c.put("/api/evaluacion/calendario", headers=ADM, json={"fechas": mal}).status_code == 422
+    r = c.put(
+        "/api/evaluacion/calendario", headers=ADM, json={"fechas": pasado, "dias_participante": 7}
+    )
+    assert r.status_code == 200 and r.json()["dias_participante"] == 7
+    A, _ = _sm(c, "q1")  # noqa: N806
+    r = c.put("/api/evaluacion/preguntas/q1/mia", headers=A, json=_cal_json("S", 4))
+    assert r.status_code == 409 and "plazo para evaluar" in r.json()["detail"]
+    # La ventana del participante: primer día + días, sin pasar del cierre.
+    v = c.get("/api/ejercicio/ventana", headers=USER).json()
+    assert v["ultimo_dia"] == "2020-01-04" and v["dias_restantes"] < 0
+    assert _date.fromisoformat(v["primer_dia"]) <= _date.today()

@@ -34,7 +34,7 @@ from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from rag.api import auditoria
+from rag.api import auditoria, calendario
 from rag.api import ejercicio as ej
 from rag.api import panel_metricas as pm
 from rag.api.auth import get_current_user
@@ -875,6 +875,12 @@ async def guardar_mia(
     if motivo:
         raise HTTPException(status.HTTP_409_CONFLICT, motivo)
     antes = next((c for c in p.cals if c.evaluador_id == user["sub"] and not c.es_final), None)
+    # T5: evaluar hasta el cierre de la evaluación; corregir lo ya evaluado
+    # (por una conversación con la validadora) hasta el cierre de la validación.
+    if antes is None:
+        await calendario.exigir_plazo(session, "fin_evaluacion", "evaluar")
+    else:
+        await calendario.exigir_plazo(session, "fin_validacion", "corregir")
     await _guardar(session, message_id, user["sub"], sede, payload, final=False)
     if antes is not None:
         cambios = _diferencias(antes, payload)
@@ -923,6 +929,7 @@ async def guardar_final(
     p = next((x for x in preguntas if x.message_id == message_id), None)
     if p is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Pregunta no encontrada.")
+    await calendario.exigir_plazo(session, "fin_validacion", "validar")
     auditoria.registrar(
         session,
         user["sub"],

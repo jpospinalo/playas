@@ -1936,3 +1936,31 @@ fieldset:disabled .pnl-opcion {
 	font-size: 15px;
 	color: var(--p-tinta-2);
 }
+
+/* T5/T6: plazo y pendientes al entrar a Evaluación. */
+.pnl-plazo {
+	margin: 0 0 16px;
+	padding: 10px 14px;
+	border: 1px solid var(--p-linea);
+	border-radius: 6px;
+	background: var(--p-papel);
+}
+.pnl-calendario {
+	list-style: none;
+	margin: 0 0 12px;
+	padding: 0;
+	display: grid;
+	gap: 10px;
+	max-width: 680px;
+}
+.pnl-calendario li {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) 190px;
+	gap: 6px 16px;
+	align-items: center;
+}
+@media (max-width: 600px) {
+	.pnl-calendario li {
+		grid-template-columns: minmax(0, 1fr);
+	}
+}

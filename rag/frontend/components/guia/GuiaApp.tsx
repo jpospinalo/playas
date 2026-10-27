@@ -20,6 +20,7 @@ import {
 import { Respuesta, type Calificacion } from "@/components/guia/Respuesta";
 import { PantallaOpinion } from "@/components/guia/Opinion";
 import { ConPrivacidad } from "@/components/guia/Privacidad";
+import { VentanaParticipante } from "@/components/guia/Ventana";
 import { detenerVoz } from "@/lib/voz";
 import type { Message, SourceGroup } from "@/lib/types";
 
@@ -530,16 +531,19 @@ function Flujo() {
 	// Inicio (y cualquier dirección que ya no tiene datos, p. ej. al recargar
 	// en la pantalla de respuesta, o el antiguo `#escribir`: la caja está aquí).
 	return (
-		<PantallaInicio
-			tituloRef={tituloRef}
-			cajaRef={cajaRef}
-			borrador={borrador}
-			onCambio={setBorrador}
-			onPreguntar={(texto) => {
-				setBorrador(texto);
-				preguntar(texto, texto, null);
-			}}
-			onTema={(t) => ir(`tema/${t.id}`)}
-		/>
+		<>
+			<PantallaInicio
+				tituloRef={tituloRef}
+				cajaRef={cajaRef}
+				borrador={borrador}
+				onCambio={setBorrador}
+				onPreguntar={(texto) => {
+					setBorrador(texto);
+					preguntar(texto, texto, null);
+				}}
+				onTema={(t) => ir(`tema/${t.id}`)}
+			/>
+			<VentanaParticipante />
+		</>
 	);
 }

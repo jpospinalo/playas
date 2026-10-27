@@ -32,6 +32,7 @@ ACCIONES = {
     "elegir_ganadora": "Eligió la ganadora de un nivel",
     "reasignar_pendientes": "Reasignó preguntas pendientes",
     "archivar_practica": "Archivó la práctica",
+    "cambiar_calendario": "Cambió el calendario",
     "desarchivar_practica": "Volvió a mostrar la práctica",
     "marcar_practica": "Marcó una cuenta como de práctica",
     "desmarcar_practica": "Quitó la marca de práctica",

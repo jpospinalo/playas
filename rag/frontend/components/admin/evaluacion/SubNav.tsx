@@ -11,9 +11,13 @@ export function SubNavEvaluacion() {
 	const { role } = useAuth();
 	const enResumen = pathname.startsWith("/admin/evaluacion/resumen");
 	const enValidar = pathname.startsWith("/admin/evaluacion/validar");
+	const enCalendario = pathname.startsWith("/admin/evaluacion/calendario");
 	return (
 		<nav aria-label="Evaluación" className="pnl-subnav">
-			<Link href="/admin/evaluacion" aria-current={!enResumen && !enValidar ? "page" : undefined}>
+			<Link
+				href="/admin/evaluacion"
+				aria-current={!enResumen && !enValidar && !enCalendario ? "page" : undefined}
+			>
 				Preguntas para calificar
 			</Link>
 			{rolComite(role) ? (
@@ -24,6 +28,11 @@ export function SubNavEvaluacion() {
 			<Link href="/admin/evaluacion/resumen" aria-current={enResumen ? "page" : undefined}>
 				Resumen y premios
 			</Link>
+			{rolComite(role) ? (
+				<Link href="/admin/evaluacion/calendario" aria-current={enCalendario ? "page" : undefined}>
+					Calendario
+				</Link>
+			) : null}
 		</nav>
 	);
 }

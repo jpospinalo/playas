@@ -25,6 +25,7 @@ from fastapi.responses import JSONResponse, StreamingResponse
 from starlette.types import Receive, Scope, Send
 
 from rag.api.auditoria import router as auditoria_router
+from rag.api.calendario import router as calendario_router
 from rag.api.conversation_lock import ConversationLockRegistry
 from rag.api.query_support import (
     _build_graph_input,
@@ -222,6 +223,7 @@ app.include_router(panel_router)
 app.include_router(participantes_router)
 app.include_router(evaluacion_router)
 app.include_router(validacion_router)
+app.include_router(calendario_router)
 app.include_router(auditoria_router)
 app.include_router(privacidad_router)
 

@@ -19,6 +19,7 @@ import {
 import { EstadoEval } from "@/components/admin/evaluacion/EstadoEval";
 import { IconoAviso } from "@/components/admin/panel/Estados";
 import { SubNavEvaluacion } from "@/components/admin/evaluacion/SubNav";
+import { diaLargo, pedirCalendario, textoRestante, type Calendario } from "@/lib/admin/calendario";
 
 const POR_PAGINA = 20;
 
@@ -100,6 +101,7 @@ export default function PaginaBandeja() {
 				</div>
 			</div>
 			<SubNavEvaluacion />
+			<Plazo pendientes={datos ? (datos.conteos[comite ? "con_diferencias" : "pendientes"] ?? 0) : null} comite={comite} />
 			{comite ? <Practica /> : null}
 
 			<section className="pnl-bloque" aria-labelledby="t-bandeja">
@@ -337,6 +339,40 @@ function Practica() {
 				)
 			) : null}
 		</section>
+	);
+}
+
+/** T5 y T6: al entrar, cuántas le quedan y hasta cuándo tiene (reunión del 20-oct). */
+function Plazo({ pendientes, comite }: { pendientes: number | null; comite: boolean }) {
+	const [cal, setCal] = useState<Calendario | null>(null);
+	useEffect(() => {
+		let vigente = true;
+		pedirCalendario()
+			.then((c) => {
+				if (vigente) setCal(c);
+			})
+			.catch(() => {
+				// Sin calendario no se muestra el plazo.
+			});
+		return () => {
+			vigente = false;
+		};
+	}, []);
+	if (!cal?.mi_limite || cal.dias_restantes === null) return null;
+	const cuantas =
+		pendientes === null
+			? ""
+			: comite
+				? `${numero(pendientes)} preguntas con diferencias por resolver. `
+				: `Tiene ${numero(pendientes)} ${pendientes === 1 ? "pregunta asignada" : "preguntas asignadas"} sin evaluar. `;
+	return (
+		<p className={cal.dias_restantes < 0 ? "pnl-aviso" : "pnl-plazo"} role="status">
+			{cal.dias_restantes < 0 ? <IconoAviso /> : null}
+			<span>
+				{cuantas}
+				{cal.mi_limite_texto}: {diaLargo(cal.mi_limite)}. {textoRestante(cal.dias_restantes)}.
+			</span>
+		</p>
 	);
 }
 

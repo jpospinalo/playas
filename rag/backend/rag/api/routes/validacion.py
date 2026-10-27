@@ -23,7 +23,7 @@ from pydantic import BaseModel, Field
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from rag.api import auditoria
+from rag.api import auditoria, calendario
 from rag.api import ejercicio as ej
 from rag.api import panel_metricas as pm
 from rag.api.auth import get_current_user
@@ -345,6 +345,7 @@ async def validar(
 ) -> DetalleEvaluacion:
     """De acuerdo / No de acuerdo. El desacuerdo necesita un comentario: es
     lo que abre la conversación con el semillerista (T4)."""
+    await calendario.exigir_plazo(session, "fin_validacion", "validar")
     e = await _evaluacion(session, evaluation_id)
     await _exigir_juridico(session, user, e)
     comentario = (payload.comentario or "").strip() or None
@@ -391,6 +392,7 @@ async def de_acuerdo_en_lote(
     session: AsyncSession = Depends(get_session),
 ) -> LoteOut:
     """Atajo: "De acuerdo" con varias evaluaciones de su sede a la vez."""
+    await calendario.exigir_plazo(session, "fin_validacion", "validar")
     ahora = datetime.now(UTC)
     n = 0
     for eid in dict.fromkeys(payload.evaluaciones):
@@ -428,6 +430,7 @@ async def comentar(
     session: AsyncSession = Depends(get_session),
 ) -> DetalleEvaluacion:
     """Mensaje en la conversación: su validador jurídico o el semillerista autor."""
+    await calendario.exigir_plazo(session, "fin_validacion", "validar")
     e = await _evaluacion(session, evaluation_id)
     if e.evaluador_id != user["sub"]:
         await _exigir_juridico(session, user, e)
@@ -466,6 +469,7 @@ async def pertinencia(
     session: AsyncSession = Depends(get_session),
 ) -> PertinenciaOut:
     """¿La pregunta es del tema de playas? (Camilo). "No" la saca de premios."""
+    await calendario.exigir_plazo(session, "fin_validacion", "validar")
     tipo, _ = await _validador(session, user)
     if tipo != "costero":
         raise HTTPException(
