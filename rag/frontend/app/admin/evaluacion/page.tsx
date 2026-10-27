@@ -70,11 +70,12 @@ export default function PaginaBandeja() {
 				{ valor: "todas", texto: "Todas" },
 			]
 		: [
-				{ valor: "pendientes", texto: "Pendientes para mí" },
-				{ valor: "mias", texto: "Ya calificadas por mí" },
+				// T1: el semillerista solo ve las preguntas que el sistema le asignó.
+				{ valor: "pendientes", texto: "Asignadas sin evaluar" },
+				{ valor: "mias", texto: "Ya evaluadas" },
 				{ valor: "con_diferencias", texto: "Con diferencias" },
 				{ valor: "finalizadas", texto: "Con calificación oficial" },
-				{ valor: "todas", texto: "Todas" },
+				{ valor: "todas", texto: "Todas mis asignadas" },
 			];
 
 	const total = datos?.total ?? 0;
@@ -87,8 +88,11 @@ export default function PaginaBandeja() {
 				<div>
 					<h1>Evaluación de preguntas</h1>
 					<p className="pnl-sub">
-						Califique cada pregunta con la planilla: forma (F1, F2, F3) y fondo (Ct y Cv). Las preguntas
-						son anónimas: solo se ve el número del participante y su tipo de usuario de playa.
+						{comite
+							? "Cada pregunta la evalúan dos semilleristas, uno de Santa Marta y uno de Barranquilla, que el sistema asigna solo."
+							: "El sistema le asigna preguntas automáticamente, repartidas por igual entre los semilleristas de su sede."}{" "}
+						Califique con la planilla: forma (F1, F2, F3) y fondo (Ct y Cv). Las preguntas son anónimas: solo se
+						ve el número del participante y su tipo de usuario de playa.
 					</p>
 				</div>
 			</div>

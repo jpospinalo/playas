@@ -211,3 +211,19 @@ class PrivacyConsent(Base):
     user_id: Mapped[str] = mapped_column(String, ForeignKey("users.id"), primary_key=True)
     version: Mapped[str] = mapped_column(String, nullable=False)
     aceptada_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)
+
+
+class QuestionAssignment(Base):
+    """Reunión del 20-oct (T1): cada pregunta se asigna sola a un semillerista
+    de cada sede, repartiendo por igual. Una fila por pregunta y sede."""
+
+    __tablename__ = "question_assignment"
+
+    message_id: Mapped[str] = mapped_column(String, ForeignKey("messages.id"), primary_key=True)
+    sede: Mapped[str] = mapped_column(String, primary_key=True)
+    evaluador_id: Mapped[str] = mapped_column(
+        String, ForeignKey("users.id"), nullable=False, index=True
+    )
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)
+    # Si se reasignó (evaluador desactivado o reasignación del admin), de quién venía.
+    reasignada_de: Mapped[str | None] = mapped_column(String)

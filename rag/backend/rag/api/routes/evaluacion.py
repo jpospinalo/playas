@@ -20,6 +20,7 @@ Reglas en ``rag/api/ejercicio.py``. Sin IA.
 
 from __future__ import annotations
 
+import random
 from collections import Counter, defaultdict
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
@@ -37,10 +38,12 @@ from rag.api import panel_metricas as pm
 from rag.api.auth import get_current_user
 from rag.api.database import get_session
 from rag.api.models import (
+    AccountStatus,
     AwardDecision,
     Conversation,
     ExerciseProfile,
     Message,
+    QuestionAssignment,
     QuestionEvaluation,
     QuestionNumber,
     User,
@@ -74,6 +77,8 @@ class _Pregunta:
     fecha: datetime  # hora de Colombia
     texto: str
     cals: list[ej.Calificacion] = field(default_factory=list)
+    # Semillerista asignado en cada sede (T1): {"Santa Marta": user_id, ...}.
+    asignados: dict[str, str] = field(default_factory=dict)
 
     @property
     def oficial(self) -> ej.Oficial:
@@ -113,6 +118,7 @@ async def _cargar(session: AsyncSession) -> list[_Pregunta]:
             nuevos = True
     if nuevos:
         await session.commit()
+    asignados = await _asignar(session, [mid for mid, *_ in filas])
     preguntas = [
         _Pregunta(
             numero=numeros[mid],
@@ -122,6 +128,7 @@ async def _cargar(session: AsyncSession) -> list[_Pregunta]:
             tipo_playa=tipo,
             fecha=pm.a_utc(creado).astimezone(pm.HORA_COLOMBIA),
             texto=texto,
+            asignados=asignados.get(mid, {}),
         )
         for mid, cid, texto, creado, codigo, tipo in filas
     ]
@@ -159,6 +166,100 @@ async def _cargar(session: AsyncSession) -> list[_Pregunta]:
             )
         )
     return preguntas
+
+
+async def _asignar(session: AsyncSession, message_ids: list[str]) -> dict[str, dict[str, str]]:
+    """Asigna las preguntas que aún no tienen semillerista en cada sede (T1).
+
+    En orden de llegada, a quien menos asignadas tenga en su sede; si empatan,
+    al azar con una semilla fija por pregunta (siempre da lo mismo). Solo
+    cuentan los evaluadores con sede y cuenta activa. Se llama al leer
+    cualquier pantalla de evaluación, así que una pregunta nueva queda
+    asignada en cuanto alguien entra.
+    """
+    actuales: dict[str, dict[str, str]] = {}
+    for mid, sede, ev in (
+        await session.execute(
+            select(
+                QuestionAssignment.message_id,
+                QuestionAssignment.sede,
+                QuestionAssignment.evaluador_id,
+            )
+        )
+    ).all():
+        actuales.setdefault(mid, {})[sede] = ev
+    inactivas = set(
+        (
+            await session.execute(
+                select(AccountStatus.user_id).where(AccountStatus.activa.is_(False))
+            )
+        )
+        .scalars()
+        .all()
+    )
+    por_sede: dict[str, list[str]] = {s: [] for s in ej.SEDES}
+    for uid, sede in (
+        await session.execute(
+            select(User.id, ExerciseProfile.sede)
+            .join(ExerciseProfile, ExerciseProfile.user_id == User.id)
+            .where(User.role == "evaluador", ExerciseProfile.sede.is_not(None))
+            .order_by(User.id)
+        )
+    ).all():
+        if uid not in inactivas and sede in por_sede:
+            por_sede[sede].append(uid)
+    carga = {uid: 0 for uids in por_sede.values() for uid in uids}
+    for porsede in actuales.values():
+        for ev in porsede.values():
+            if ev in carga:
+                carga[ev] += 1
+    # Si alguien de esa sede ya la calificó (datos de antes de la asignación),
+    # se le asigna a esa persona: así nadie recibe una pregunta ya evaluada.
+    previas: dict[tuple[str, str], str] = {}
+    for mid, sede, ev in (
+        await session.execute(
+            select(
+                QuestionEvaluation.message_id,
+                QuestionEvaluation.sede,
+                QuestionEvaluation.evaluador_id,
+            ).where(QuestionEvaluation.es_final.is_(False), QuestionEvaluation.sede.is_not(None))
+        )
+    ).all():
+        previas.setdefault((mid, sede), ev)
+    ahora = datetime.now(UTC)
+    nuevos = False
+    for mid in message_ids:
+        ya = actuales.setdefault(mid, {})
+        for sede, uids in por_sede.items():
+            if sede in ya:
+                continue
+            previa = previas.get((mid, sede))
+            if previa is not None:
+                ya[sede] = previa
+                carga[previa] = carga.get(previa, 0) + 1
+                session.add(
+                    QuestionAssignment(
+                        message_id=mid, sede=sede, evaluador_id=previa, created_at=ahora
+                    )
+                )
+                nuevos = True
+                continue
+            if not uids:
+                continue
+            menor = min(carga[u] for u in uids)
+            candidatos = [u for u in uids if carga[u] == menor]
+            elegido = random.Random(f"{mid}|{sede}").choice(candidatos)
+            ya[sede] = elegido
+            carga[elegido] += 1
+            session.add(
+                QuestionAssignment(
+                    message_id=mid, sede=sede, evaluador_id=elegido, created_at=ahora
+                )
+            )
+            nuevos = True
+    if nuevos:
+        await session.commit()
+    return actuales
 
 
 async def _sede(session: AsyncSession, user_id: str) -> str | None:
@@ -281,6 +382,9 @@ def _puede_evaluar(p: _Pregunta, user_id: str, rol: str, sede: str | None) -> st
         return "Su cuenta es del comité: use la calificación final."
     if sede is None:
         return "Su cuenta no tiene sede. Pida al administrador que la asigne."
+    asignado = p.asignados.get(sede)
+    if asignado is not None and asignado != user_id:
+        return "Esta pregunta está asignada a otro semillerista de su sede."
     if any(c.es_final for c in p.cals):
         return "El comité ya fijó la calificación final de esta pregunta."
     propias = [c for c in p.cals if not c.es_final and c.evaluador_id == user_id]
@@ -343,6 +447,9 @@ async def bandeja(
     que tienen diferencias sin resolver."""
     sede = await _sede(session, user["sub"])
     preguntas = await _cargar(session)
+    if user["role"] == "evaluador":
+        # T1: cada semillerista ve solo las preguntas que le asignaron.
+        preguntas = [p for p in preguntas if p.asignados.get(sede or "") == user["sub"]]
     if tipo_playa:
         preguntas = [p for p in preguntas if p.tipo_playa == tipo_playa]
     if ct:
@@ -395,11 +502,18 @@ async def _respuesta(session: AsyncSession, p: _Pregunta) -> str | None:
 
 async def _ficha(session: AsyncSession, message_id: str, user: dict) -> FichaResponse:
     preguntas = await _cargar(session)
+    sede = await _sede(session, user["sub"])
+    if user["role"] == "evaluador":
+        existe = any(p.message_id == message_id for p in preguntas)
+        preguntas = [p for p in preguntas if p.asignados.get(sede or "") == user["sub"]]
+        if existe and not any(p.message_id == message_id for p in preguntas):
+            raise HTTPException(
+                status.HTTP_403_FORBIDDEN, "Esta pregunta no está asignada a usted."
+            )
     indice = next((i for i, p in enumerate(preguntas) if p.message_id == message_id), None)
     if indice is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Pregunta no encontrada.")
     p = preguntas[indice]
-    sede = await _sede(session, user["sub"])
     es_comite = user["role"] in ej.ROLES_COMITE
     mia = next((c for c in p.cals if c.evaluador_id == user["sub"] and not c.es_final), None)
     final = next((c for c in reversed(p.cals) if c.es_final), None)

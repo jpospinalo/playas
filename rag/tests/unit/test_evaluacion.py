@@ -251,6 +251,14 @@ def _hs() -> tuple[dict[str, str], ...]:
     )
 
 
+def _sm(c: TestClient, mid: str) -> tuple[dict[str, str], dict[str, str]]:
+    """(semillerista de Santa Marta asignado a la pregunta, el otro de Santa Marta)."""
+    SM, SM2, *_ = _hs()  # noqa: N806
+    if c.get(f"/api/evaluacion/preguntas/{mid}", headers=SM).status_code == 200:
+        return SM, SM2
+    return SM2, SM
+
+
 def _cal_json(ct: str, cv: int, f: int = 2, valida: bool = True, obs: str | None = None) -> dict:
     return {"f1": f, "f2": f, "f3": f, "ct": ct, "cv": cv, "valida": valida, "observaciones": obs}
 
@@ -273,14 +281,16 @@ def test_permisos(cliente) -> None:
 def test_bandeja_anonima_y_ficha_con_rubrica(cliente) -> None:
     c = cliente
     SM, SM2, BQ, SIN, COM, USER = _hs()  # noqa: N806
-    r = c.get("/api/evaluacion/bandeja?estado=pendientes", headers=SM).json()
-    assert [i["numero"] for i in r["items"]] == [1, 2, 3]  # las más antiguas primero
+    A, _ = _sm(c, "q1")  # noqa: N806
+    r = c.get("/api/evaluacion/bandeja?estado=pendientes", headers=A).json()
+    numeros = [i["numero"] for i in r["items"]]
+    assert numeros == sorted(numeros) and numeros[0] == 1  # las más antiguas primero
     assert (
         r["items"][0]["codigo"] == "P001" and r["items"][0]["tipo_playa_nombre"] == "Comerciantes"
     )
     texto = str(r)
     assert "Ana" not in texto and "@" not in texto
-    ficha = c.get("/api/evaluacion/preguntas/q1", headers=SM).json()
+    ficha = c.get("/api/evaluacion/preguntas/q1", headers=A).json()
     assert ficha["respuesta"] == "Respuesta 0" and ficha["puede_evaluar"] and ficha["otras"] is None
     cat = c.get("/api/evaluacion/catalogo", headers=SM).json()
     assert cat["rangos"] == {"S": [3, 6], "I": [7, 9], "A": [10, 12]}
@@ -289,7 +299,8 @@ def test_bandeja_anonima_y_ficha_con_rubrica(cliente) -> None:
 
 def test_rango_de_cv_y_una_por_sede(cliente) -> None:
     c = cliente
-    SM, SM2, BQ, SIN, COM, USER = _hs()  # noqa: N806
+    _, _, BQ, SIN, COM, USER = _hs()  # noqa: N806
+    SM, SM2 = _sm(c, "q1")  # noqa: N806  (asignado y el otro de Santa Marta)
     assert (
         c.put("/api/evaluacion/preguntas/q1/mia", headers=SM, json=_cal_json("S", 8)).status_code
         == 422
@@ -302,7 +313,7 @@ def test_rango_de_cv_y_una_por_sede(cliente) -> None:
     assert r.status_code == 200 and r.json()["mia"]["total"] == 10 and r.json()["mia"]["forma"] == 6
     # Otro evaluador de la misma sede ya no puede; el de la otra sede sí.
     segundo = c.put("/api/evaluacion/preguntas/q1/mia", headers=SM2, json=_cal_json("S", 4))
-    assert segundo.status_code == 409 and "Santa Marta" in segundo.json()["detail"]
+    assert segundo.status_code == 409 and "otro semillerista" in segundo.json()["detail"]
     # Corregir la propia sí se puede.
     assert (
         c.put("/api/evaluacion/preguntas/q1/mia", headers=SM, json=_cal_json("S", 5)).status_code
@@ -311,13 +322,14 @@ def test_rango_de_cv_y_una_por_sede(cliente) -> None:
     r2 = c.put("/api/evaluacion/preguntas/q1/mia", headers=BQ, json=_cal_json("S", 5))
     assert r2.json()["estado"] == "concordante"
     pend = c.get("/api/evaluacion/bandeja?estado=pendientes", headers=SM).json()
-    assert [i["numero"] for i in pend["items"]] == [2, 3]
+    assert 1 not in [i["numero"] for i in pend["items"]]
     assert c.get("/api/evaluacion/bandeja?estado=mias", headers=SM).json()["total"] == 1
 
 
 def test_diferencias_y_final_del_comite(cliente) -> None:
     c = cliente
     SM, SM2, BQ, SIN, COM, USER = _hs()  # noqa: N806
+    SM, _ = _sm(c, "q2")  # noqa: N806
     c.put("/api/evaluacion/preguntas/q2/mia", headers=SM, json=_cal_json("S", 6))
     r = c.put(
         "/api/evaluacion/preguntas/q2/mia", headers=BQ, json=_cal_json("I", 8, obs="Hay conflicto")
@@ -339,7 +351,7 @@ def test_resumen_premios_y_excel(cliente) -> None:
     c = cliente
     SM, SM2, BQ, SIN, COM, USER = _hs()  # noqa: N806
     for q, ct, cv in [("q1", "S", 6), ("q3", "S", 6)]:
-        c.put(f"/api/evaluacion/preguntas/{q}/mia", headers=SM, json=_cal_json(ct, cv))
+        c.put(f"/api/evaluacion/preguntas/{q}/mia", headers=_sm(c, q)[0], json=_cal_json(ct, cv))
         c.put(f"/api/evaluacion/preguntas/{q}/mia", headers=BQ, json=_cal_json(ct, cv))
     # Decisión 9 (PQ-55): las concordantes no cuentan hasta que el comité las valide.
     antes = c.get("/api/evaluacion/premios", headers=COM).json()
@@ -356,8 +368,10 @@ def test_resumen_premios_y_excel(cliente) -> None:
     res = c.get("/api/evaluacion/resumen", headers=SM).json()
     assert res["preguntas_registradas"] == 3 and res["evaluadas"] == 2
     assert res["por_nivel"] == {"S": 2, "I": 0, "A": 0} and res["promedio_total"] == 12
-    assert {a["evaluador"] for a in res["avance_evaluadores"]} == {
+    avance = {a["evaluador"] for a in res["avance_evaluadores"]}
+    assert "Semillerista BQ" in avance and avance <= {
         "Semillerista SM",
+        "Otro SM",
         "Semillerista BQ",
     }
 
@@ -429,7 +443,7 @@ def test_constancia_empate_total_lo_decide_el_comite() -> None:
 def test_concordantes_por_validar_del_comite(cliente) -> None:
     c = cliente
     SM, SM2, BQ, SIN, COM, USER = _hs()  # noqa: N806
-    c.put("/api/evaluacion/preguntas/q1/mia", headers=SM, json=_cal_json("S", 4))
+    c.put("/api/evaluacion/preguntas/q1/mia", headers=_sm(c, "q1")[0], json=_cal_json("S", 4))
     r = c.put("/api/evaluacion/preguntas/q1/mia", headers=BQ, json=_cal_json("S", 5))
     assert r.json()["estado"] == "concordante"
     b = c.get("/api/evaluacion/bandeja?estado=por_validar", headers=COM).json()
@@ -444,8 +458,30 @@ def test_id_de_pregunta_persistente(cliente) -> None:
     SM, SM2, BQ, SIN, COM, USER = _hs()  # noqa: N806
     antes = {
         i["message_id"]: i["numero"]
-        for i in c.get("/api/evaluacion/bandeja?estado=todas", headers=SM).json()["items"]
+        for i in c.get("/api/evaluacion/bandeja?estado=todas", headers=COM).json()["items"]
     }
     assert sorted(antes.values()) == list(range(1, len(antes) + 1))
     otra = c.get("/api/evaluacion/bandeja?estado=todas", headers=COM).json()["items"]
     assert {i["message_id"]: i["numero"] for i in otra} == antes
+
+
+def test_asignacion_automatica_balanceada(cliente) -> None:
+    """T1 (reunión del 20-oct): cada pregunta queda asignada a 1 semillerista de
+    cada sede, repartiendo por igual; cada uno ve solo las suyas."""
+    c = cliente
+    SM, SM2, BQ, SIN, COM, USER = _hs()  # noqa: N806
+
+    def numeros(h: dict[str, str]) -> set[int]:
+        r = c.get("/api/evaluacion/bandeja?estado=todas", headers=h).json()
+        return {i["numero"] for i in r["items"]}
+
+    sm1, sm2, bq = numeros(SM), numeros(SM2), numeros(BQ)
+    assert sm1 | sm2 == {1, 2, 3} and not sm1 & sm2  # Santa Marta: cada pregunta a uno solo
+    assert abs(len(sm1) - len(sm2)) <= 1  # repartido por igual
+    assert bq == {1, 2, 3}  # Barranquilla tiene un solo semillerista
+    assert numeros(SIN) == set()  # sin sede no recibe preguntas
+    # La que no le tocó no la puede abrir ni calificar.
+    ajena = "q1" if 1 in sm2 else ("q2" if 2 in sm2 else "q3")
+    assert c.get(f"/api/evaluacion/preguntas/{ajena}", headers=SM).status_code == 403
+    # La asignación es estable: otra lectura da lo mismo.
+    assert numeros(SM) == sm1
