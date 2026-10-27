@@ -789,6 +789,8 @@ async def bandeja(
     page_size: int = Query(default=20, ge=1, le=100),
     buscar: str | None = Query(default=None, max_length=200),
     orden: Literal["antiguas", "recientes"] | None = None,
+    # J6-B: desde el tablero, sin práctica, para que la lista dé el mismo número que la cifra.
+    reales_solo: bool = Query(default=False, alias="reales"),
     user: dict = Depends(require_evaluacion),
     session: AsyncSession = Depends(get_session),
 ) -> BandejaResponse:
@@ -797,6 +799,8 @@ async def bandeja(
     que tienen diferencias sin resolver."""
     sede = await _sede(session, user["sub"])
     preguntas = await _cargar(session)
+    if reales_solo:
+        preguntas = reales(preguntas)
     if user["role"] == "evaluador":
         # T1: cada semillerista ve solo las preguntas que le asignaron.
         preguntas = [p for p in preguntas if p.asignados.get(sede or "") == user["sub"]]

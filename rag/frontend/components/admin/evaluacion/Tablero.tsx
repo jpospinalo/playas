@@ -17,7 +17,8 @@ import { ChipEstado, IconoAviso } from "@/components/admin/panel/Estados";
  */
 
 const BANDEJA = "/admin/evaluacion";
-const lista = (q: string) => `${BANDEJA}?${q}`;
+// Sin práctica, igual que las cifras del resumen.
+const lista = (q: string) => `${BANDEJA}?${q}&reales=1`;
 
 /** El camino de una pregunta, de lo que falta a lo terminado. */
 const PASOS: { k: EstadoPregunta; texto: string; color: string; filtro: string }[] = [

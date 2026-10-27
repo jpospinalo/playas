@@ -290,8 +290,10 @@ export function pedirBandeja(
 	pageSize = 20,
 	buscar = "",
 	orden: "" | "antiguas" | "recientes" = "",
+	soloReales = false,
 ): Promise<Bandeja> {
 	const q = new URLSearchParams({ estado, page: String(page), page_size: String(pageSize) });
+	if (soloReales) q.set("reales", "1");
 	if (tipo) q.set("tipo_playa", String(tipo));
 	if (ct) q.set("ct", ct);
 	if (buscar.trim()) q.set("buscar", buscar.trim());

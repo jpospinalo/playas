@@ -56,6 +56,8 @@ function Bandeja_() {
 		const n = Number(sp.get("tipo"));
 		return n >= 1 && n <= 5 ? n : 0;
 	});
+	// Desde el tablero: sin práctica, para que la lista dé el mismo número que la cifra.
+	const [soloReales, setSoloReales] = useState(() => sp.get("reales") === "1");
 	const [ct, setCt] = useState<Ct | "">(() => {
 		const c = sp.get("ct");
 		return c === "S" || c === "I" || c === "A" ? c : "";
@@ -71,7 +73,7 @@ function Bandeja_() {
 
 	useEffect(() => {
 		let vigente = true;
-		pedirBandeja(estado, tipo, ct, pagina, POR_PAGINA, buscar, orden)
+		pedirBandeja(estado, tipo, ct, pagina, POR_PAGINA, buscar, orden, soloReales)
 			.then((r) => {
 				if (vigente) {
 					setDatos(r);
@@ -84,7 +86,7 @@ function Bandeja_() {
 		return () => {
 			vigente = false;
 		};
-	}, [estado, tipo, ct, pagina, intento, buscar, orden]);
+	}, [estado, tipo, ct, pagina, intento, buscar, orden, soloReales]);
 
 	// Comité: lo que debe resolver (diferencias); semillerista: lo que le toca.
 	const pestanas: { valor: FiltroBandeja; texto: string }[] = comite
@@ -233,11 +235,13 @@ function Bandeja_() {
 					<p className="pnl-filtro-activo">
 						Mostrando: <ChipEstado tono="espera">{TEXTO_FILTRO[estado]}</ChipEstado>{" "}
 						{datos ? <span className="num">({numero(datos.total)})</span> : null}
+						{soloReales ? <span>sin la práctica</span> : null}
 						<button
 							type="button"
 							className="pnl-enlace"
 							onClick={() => {
 								setEstado("todas");
+								setSoloReales(false);
 								setPagina(1);
 							}}
 						>
