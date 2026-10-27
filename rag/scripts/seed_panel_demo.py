@@ -17,9 +17,11 @@ Uso (desde ``rag/``):
     DATABASE_URL=sqlite+aiosqlite:///./data/panel-demo.db make app
 
 Cuenta de administrador de la demo (solo local): admin@atlas.demo / panel-demo-2026
-Evaluadores: evaluador.sm1@atlas.demo, evaluador.bq1@atlas.demo (y sm2, bq2); comité:
-comite@atlas.demo (Ana María Muelle), comite.otero@, comite.botero@ y comite.ospina@atlas.demo.
-Todos con la misma clave de la demo.
+Semilleristas (reunión del 20-oct): evaluador.sm1@ y sm2@ (Santa Marta), evaluador.bq1@ a bq4@
+(Barranquilla). Validación: comite@atlas.demo (Ana María Muelle, jurídica Santa Marta),
+comite.otero@ (Sandra Otero, jurídica Barranquilla), comite.botero@ (Camilo Botero, gestión
+costera); comite.ospina@ (Juan P. Ospina) es admin. Práctica: evaluador.practica@ y
+practica@atlas.demo (P900). Todos con la misma clave de la demo.
 """
 
 from __future__ import annotations
@@ -42,12 +44,17 @@ from rag.api import panel_metricas as pm  # noqa: E402
 from rag.api.models import (  # noqa: E402
     Base,
     Conversation,
+    EvaluationComment,
+    EvaluationReview,
     ExerciseProfile,
     Feedback,
     Message,
     MessageFeedback,
+    PertinenceReview,
+    PracticeAccount,
     QuestionEvaluation,
     User,
+    ValidatorProfile,
 )
 from rag.api.passwords import hash_password  # noqa: E402
 from rag.api.routes.panel import DEMO_EMAIL  # noqa: E402
@@ -57,20 +64,30 @@ ADMIN_EMAIL = "admin@atlas.demo"
 ADMIN_PASSWORD = "panel-demo-2026"  # cuenta local de demostración, no es un secreto
 USUARIO_EMAIL = "persona@atlas.demo"  # usuario sin rol admin, para probar el 403
 # Ejercicio de validación: dos semilleristas por sede y el comité (misma clave).
+# Reunión del 20-oct: 6 semilleristas, 4 de Barranquilla y 2 de Santa Marta.
 EVALUADORES = [
     ("evaluador.sm1@atlas.demo", "Semillerista Santa Marta 1", "Santa Marta"),
     ("evaluador.sm2@atlas.demo", "Semillerista Santa Marta 2", "Santa Marta"),
     ("evaluador.bq1@atlas.demo", "Semillerista Barranquilla 1", "Barranquilla"),
     ("evaluador.bq2@atlas.demo", "Semillerista Barranquilla 2", "Barranquilla"),
+    ("evaluador.bq3@atlas.demo", "Semillerista Barranquilla 3", "Barranquilla"),
+    ("evaluador.bq4@atlas.demo", "Semillerista Barranquilla 4", "Barranquilla"),
 ]
+# Cuentas de práctica (T7): un semillerista y un participante para la prueba
+# de la semana antes del 2 nov; no cuentan para nada.
+PRACTICA_EVALUADOR = ("evaluador.practica@atlas.demo", "Semillerista de práctica", "Santa Marta")
+PRACTICA_PARTICIPANTE = ("practica@atlas.demo", "Participante de práctica")
 # Comité de validación del documento (p. 8): una cuenta por persona, para que
 # "Revisó" diga quién revisó.
+# Reunión del 20-oct (T3): Ana María y Sandra validan lo jurídico (por sede,
+# como el PDF p. 8; supuesto por confirmar), Camilo la gestión costera y Juan
+# Pablo revisa la plataforma (admin, D2).
 COMITE = [
-    ("comite@atlas.demo", "Ana María Muelle"),
-    ("comite.otero@atlas.demo", "Sandra Otero"),
-    ("comite.botero@atlas.demo", "Camilo Botero"),
-    ("comite.ospina@atlas.demo", "Juan P. Ospina"),
+    ("comite@atlas.demo", "Ana María Muelle", "juridico", "Santa Marta"),
+    ("comite.otero@atlas.demo", "Sandra Otero", "juridico", "Barranquilla"),
+    ("comite.botero@atlas.demo", "Camilo Botero", "costero", None),
 ]
+JUAN_PABLO = ("comite.ospina@atlas.demo", "Juan P. Ospina")
 
 # ── Normas y sentencias (títulos reales del corpus) ──────────────────────────
 N_DIMAR = "decreto-2324-de-1984"
@@ -415,10 +432,11 @@ async def sembrar(
                 )
             )
             s.add(ExerciseProfile(user_id=e_id, sede=sede))
-        for correo, nombre in COMITE:
+        for correo, nombre, tipo, sede_v in COMITE:
+            c_id = uid_ej()
             s.add(
                 User(
-                    id=uid_ej(),
+                    id=c_id,
                     email=correo,
                     password_hash=hash_demo,
                     display_name=nombre,
@@ -426,6 +444,32 @@ async def sembrar(
                     created_at=ahora - timedelta(days=dias + 30),
                 )
             )
+            s.add(ValidatorProfile(user_id=c_id, tipo=tipo))
+            if sede_v:
+                s.add(ExerciseProfile(user_id=c_id, sede=sede_v))
+        s.add(
+            User(
+                id=uid_ej(),
+                email=JUAN_PABLO[0],
+                password_hash=hash_demo,
+                display_name=JUAN_PABLO[1],
+                role="admin",
+                created_at=ahora - timedelta(days=dias + 30),
+            )
+        )
+        pe_id = uid_ej()
+        s.add(
+            User(
+                id=pe_id,
+                email=PRACTICA_EVALUADOR[0],
+                password_hash=hash_demo,
+                display_name=PRACTICA_EVALUADOR[1],
+                role="evaluador",
+                created_at=ahora - timedelta(days=dias + 30),
+            )
+        )
+        s.add(ExerciseProfile(user_id=pe_id, sede=PRACTICA_EVALUADOR[2]))
+        s.add(PracticeAccount(user_id=pe_id))
         personas: list[tuple[str, float]] = []
         # 80 nombres distintos: los 40 de la lista y 40 cruzando nombre y apellido.
         cruzados = [
@@ -637,10 +681,161 @@ async def sembrar(
                     )
             conteo["preguntas"] += 1
         await s.commit()
+        await _practica(s, hash_demo, ahora)
+        await s.commit()
         conteo["evaluaciones"] = await _evaluaciones(s, random.Random(semilla + 2), ahora)
+        await s.commit()
+        conteo["validaciones"] = await _validaciones(s, random.Random(semilla + 3), ahora)
         await s.commit()
     await engine.dispose()
     return conteo
+
+
+async def _practica(s, hash_demo: str, ahora: datetime) -> None:
+    """T7: un participante de práctica (P900) con dos de los ejemplos del
+    documento, para la prueba de la semana antes; no cuenta para nada."""
+    p_id = str(uuid.UUID(int=900))
+    s.add(
+        User(
+            id=p_id,
+            email=PRACTICA_PARTICIPANTE[0],
+            password_hash=hash_demo,
+            display_name=PRACTICA_PARTICIPANTE[1],
+            role="user",
+            created_at=ahora - timedelta(days=3),
+        )
+    )
+    await s.flush()
+    s.add(ExerciseProfile(user_id=p_id, codigo="P900", tipo_playa=3))
+    s.add(PracticeAccount(user_id=p_id))
+    for i, (_dias, texto, _ct) in enumerate(EJEMPLOS_DOCUMENTO[:2]):
+        cid = str(uuid.UUID(int=901 + i))
+        cuando = ahora - timedelta(days=1, hours=3 - i)
+        s.add(
+            Conversation(
+                id=cid, user_id=p_id, thread_id=cid, title=_titulo(texto), created_at=cuando
+            )
+        )
+        s.add(
+            Message(
+                id=str(uuid.UUID(int=911 + i)),
+                conversation_id=cid,
+                role="user",
+                text=texto,
+                created_at=cuando,
+            )
+        )
+        s.add(
+            Message(
+                id=str(uuid.UUID(int=921 + i)),
+                conversation_id=cid,
+                role="assistant",
+                text="**Situación:** respuesta de práctica.",
+                created_at=cuando + timedelta(seconds=20),
+            )
+        )
+
+
+async def _validaciones(s, rng: random.Random, ahora: datetime) -> int:
+    """Reunión del 20-oct (T2-T4, E7): la validadora jurídica de cada sede está
+    de acuerdo con ~55 % de las evaluaciones, no está de acuerdo con ~6 % (con
+    conversación y a veces corrección) y el resto queda por validar. Camilo
+    revisa la pertinencia de la mitad de las preguntas evaluadas."""
+    validadoras = dict(
+        (
+            await s.execute(
+                select(ExerciseProfile.sede, User.id)
+                .join(User, User.id == ExerciseProfile.user_id)
+                .join(ValidatorProfile, ValidatorProfile.user_id == User.id)
+                .where(ValidatorProfile.tipo == "juridico")
+            )
+        ).all()
+    )
+    camilo = (
+        await s.execute(select(ValidatorProfile.user_id).where(ValidatorProfile.tipo == "costero"))
+    ).scalar_one()
+    evals = (
+        await s.execute(
+            select(QuestionEvaluation, Message.text)
+            .join(Message, Message.id == QuestionEvaluation.message_id)
+            .where(QuestionEvaluation.es_final.is_(False))
+            .order_by(QuestionEvaluation.message_id, QuestionEvaluation.sede)
+        )
+    ).all()
+    n = 0
+    revisadas: set[str] = set()
+    for e, texto in evals:
+        v = validadoras.get(e.sede)
+        if v is None:
+            continue
+        r = rng.random()
+        cuando = ahora + timedelta(minutes=5)
+        if r < 0.55:
+            s.add(
+                EvaluationReview(
+                    evaluation_id=e.id, validador_id=v, de_acuerdo=True, created_at=cuando
+                )
+            )
+            s.add(
+                EvaluationComment(
+                    evaluation_id=e.id,
+                    autor_id=v,
+                    tipo="acuerdo",
+                    texto="De acuerdo.",
+                    created_at=cuando,
+                )
+            )
+            n += 1
+        elif r < 0.61:
+            motivo = rng.choice(
+                [
+                    "Me parece intermedia: hay un conflicto entre dos actores.",
+                    "F1 es más bajo: no dice quién es ni qué actividad hace.",
+                    "El Cv es generoso para lo que plantea.",
+                ]
+            )
+            s.add(
+                EvaluationReview(
+                    evaluation_id=e.id,
+                    validador_id=v,
+                    de_acuerdo=False,
+                    comentario=motivo,
+                    created_at=cuando,
+                )
+            )
+            s.add(
+                EvaluationComment(
+                    evaluation_id=e.id,
+                    autor_id=v,
+                    tipo="desacuerdo",
+                    texto=f"No de acuerdo: {motivo}",
+                    created_at=cuando,
+                )
+            )
+            if rng.random() < 0.5:
+                s.add(
+                    EvaluationComment(
+                        evaluation_id=e.id,
+                        autor_id=e.evaluador_id,
+                        tipo="comentario",
+                        texto="Gracias, lo reviso.",
+                        created_at=cuando + timedelta(minutes=30),
+                    )
+                )
+            n += 1
+        if e.message_id not in revisadas and rng.random() < 0.5:
+            revisadas.add(e.message_id)
+            fuera = texto in (*FUERA, *SALUDOS)
+            s.add(
+                PertinenceReview(
+                    message_id=e.message_id,
+                    validador_id=camilo,
+                    pertinente=not fuera,
+                    comentario="No es del tema de playas." if fuera else None,
+                    updated_at=cuando,
+                )
+            )
+    return n
 
 
 # Ejemplos de preguntas del documento del ejercicio (tabla de complejidad).
@@ -695,7 +890,12 @@ async def _evaluaciones(s, rng: random.Random, ahora: datetime) -> int:
                 await s.execute(
                     select(User.id)
                     .join(ExerciseProfile, ExerciseProfile.user_id == User.id)
-                    .where(User.role == "evaluador", ExerciseProfile.sede == sede)
+                    .where(
+                        User.role == "evaluador",
+                        ExerciseProfile.sede == sede,
+                        # El semillerista de práctica no califica preguntas reales (E5).
+                        User.id.not_in(select(PracticeAccount.user_id)),
+                    )
                 )
             ).all()
         ]
@@ -713,6 +913,8 @@ async def _evaluaciones(s, rng: random.Random, ahora: datetime) -> int:
     ).all()
 
     # Los 3 ejemplos del documento, de tres participantes, hace pocos días.
+    practica = set((await s.execute(select(PracticeAccount.user_id))).scalars().all())
+    filas = [f for f in filas if f[-1] not in practica]
     participantes = sorted({uid for *_, uid in filas})
     ejemplos: dict[str, str] = {}
     for i, (dias, texto, ct) in enumerate(EJEMPLOS_DOCUMENTO):
