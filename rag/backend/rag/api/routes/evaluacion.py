@@ -1035,6 +1035,42 @@ async def guardar_final(
     return await _ficha(session, message_id, user)
 
 
+@router.delete("/preguntas/{message_id}/final", response_model=FichaResponse)
+async def quitar_final(
+    message_id: str,
+    user: dict = Depends(require_comite),
+    session: AsyncSession = Depends(get_session),
+) -> FichaResponse:
+    """PQ-107: quita la calificación final; vuelven a contar las de los semilleristas."""
+    if not await puede_fijar_final(session, user):
+        raise HTTPException(
+            status.HTTP_403_FORBIDDEN,
+            "La calificación final la quita la validación jurídica o el administrador.",
+        )
+    await calendario.exigir_plazo(session, "fin_validacion", "validar")
+    finales = (
+        (
+            await session.execute(
+                select(QuestionEvaluation).where(
+                    QuestionEvaluation.message_id == message_id,
+                    QuestionEvaluation.es_final.is_(True),
+                )
+            )
+        )
+        .scalars()
+        .all()
+    )
+    if not finales:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Esta pregunta no tiene calificación final.")
+    preguntas = await _cargar(session)
+    numero = next((x.numero for x in preguntas if x.message_id == message_id), None)
+    for f in finales:
+        await session.delete(f)
+    auditoria.registrar(session, user["sub"], "quitar_final", detalle={"id_pregunta": numero})
+    await session.commit()
+    return await _ficha(session, message_id, user)
+
+
 # ── Resumen, premios y Excel ─────────────────────────────────────────────────
 
 
@@ -1263,6 +1299,23 @@ async def elegir_ganadora(
     )
     await session.commit()
     return await _premios(session, preguntas)
+
+
+@router.delete("/premios/{nivel}/ganadora")
+async def quitar_ganadora(
+    nivel: Literal["S", "I", "A"],
+    user: dict = Depends(require_comite),
+    session: AsyncSession = Depends(get_session),
+) -> dict:
+    """PQ-107: deshace la elección; el nivel vuelve a quedar empatado por decidir."""
+    await calendario.exigir_plazo(session, "premios", "cambiar la ganadora")
+    decision = await session.get(AwardDecision, nivel)
+    if decision is None:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "En este nivel no hay ganadora elegida.")
+    await session.delete(decision)
+    auditoria.registrar(session, user["sub"], "quitar_ganadora", detalle={"nivel": nivel})
+    await session.commit()
+    return await _premios(session, reales(await _cargar(session)))
 
 
 @router.get("/exportar.xlsx")

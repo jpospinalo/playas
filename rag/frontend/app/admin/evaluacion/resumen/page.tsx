@@ -12,6 +12,7 @@ import {
 	TEXTO_ESTADO,
 	descargarPlanilla,
 	elegirGanadora,
+	quitarGanadora,
 	pedirPremios,
 	pedirResumenEjercicio,
 	rolComite,
@@ -20,8 +21,10 @@ import {
 	type Premios,
 	type ResumenEjercicio,
 } from "@/lib/admin/evaluacion";
-import { IconoAviso, IconoDescargar } from "@/components/admin/panel/Estados";
+import { ChipEstado, IconoAviso, IconoDescargar } from "@/components/admin/panel/Estados";
 import { CabezaPestana, EncabezadoEvaluacion } from "@/components/admin/evaluacion/SubNav";
+import { ResultadoJunto, useAccion } from "@/components/admin/panel/Resultado";
+import { Aparece } from "@/components/admin/panel/Aparece";
 
 /**
  * Resumen del ejercicio (como la hoja "Resumen" de la planilla), avance por
@@ -55,15 +58,6 @@ export default function PaginaResumenEjercicio() {
 		};
 	}, [comite]);
 
-
-	async function elegir(nivel: Ct, id: string) {
-		setErrorAccion(null);
-		try {
-			setPremios(await elegirGanadora(nivel, id));
-		} catch (e) {
-			setErrorAccion(mensajeError(e, "No se pudo guardar la ganadora."));
-		}
-	}
 
 	async function exportar() {
 		setErrorAccion(null);
@@ -201,7 +195,7 @@ export default function PaginaResumenEjercicio() {
 			{comite && resumen ? <AvancePlazo resumen={resumen} /> : null}
 			{comite && resumen ? <Concordancia resumen={resumen} /> : null}
 			{comite && premios ? <PorValidar premios={premios} /> : null}
-			{comite && premios ? <SeccionPremios premios={premios} onElegir={elegir} /> : null}
+			{comite && premios ? <SeccionPremios premios={premios} onCambio={setPremios} /> : null}
 			{!comite && resumen ? (
 				<p className="pnl-nota">Los premios y la descarga de la planilla los ve el comité.</p>
 			) : null}
@@ -237,7 +231,7 @@ function PorValidar({ premios }: { premios: Premios }) {
 	);
 }
 
-function SeccionPremios({ premios, onElegir }: { premios: Premios; onElegir: (n: Ct, id: string) => void }) {
+function SeccionPremios({ premios, onCambio }: { premios: Premios; onCambio: (p: Premios) => void }) {
 	const [verTodos, setVerTodos] = useState(false);
 	return (
 		<>
@@ -248,66 +242,9 @@ function SeccionPremios({ premios, onElegir }: { premios: Premios; onElegir: (n:
 					comité por pertinencia jurídica.
 				</p>
 				<ol className="pnl-filas">
-					{(Object.keys(NIVELES) as Ct[]).map((k) => {
-						const n = premios.mejor_pregunta[k];
-						return (
-							<li key={k} className="pnl-fila">
-								<div className="pnl-fila-q">
-									<p className="pnl-fila-titulo" style={{ margin: 0 }}>
-										Nivel {NIVELES[k].toLowerCase()}
-									</p>
-									{n.ganadora ? (
-										<>
-											<p style={{ margin: "6px 0 0" }}>
-												<span className="pnl-etq">{n.ganadora.codigo}</span>
-												{recortar(n.ganadora.texto, 240)}
-											</p>
-										</>
-									) : n.decide_comite ? (
-										<>
-											<p className="pnl-estado ojo" style={{ margin: "6px 0" }}>
-												<IconoAviso />
-												Empate: decide el comité
-											</p>
-											<Empatadas
-												total={n.empatadas.length}
-												render={(cuantas) => (
-											<ul className="pnl-empatadas">
-												{n.empatadas.slice(0, cuantas).map((f) => (
-													<li key={f.message_id}>
-														<p style={{ margin: 0 }}>
-															<span className="pnl-etq">{f.codigo}</span>
-															{recortar(f.texto, 200)}
-														</p>
-														<p style={{ margin: "6px 0 0" }}>
-															<Link href={`/admin/evaluacion/pregunta?id=${encodeURIComponent(f.message_id)}`}>
-																Leer la pregunta
-															</Link>{" "}
-															<button type="button" className="pnl-btn-sec" onClick={() => onElegir(k, f.message_id)}>
-																Elegir como ganadora<span className="sr"> del nivel {NIVELES[k]}</span>
-															</button>
-														</p>
-													</li>
-												))}
-											</ul>
-												)}
-											/>
-										</>
-									) : (
-										<p className="pnl-vacio">Todavía no hay preguntas válidas de este nivel.</p>
-									)}
-								</div>
-								<dl className="pnl-fila-estado">
-									<div>
-										<dt>Valor de fondo (Cv)</dt>
-										<dd className="pnl-veces num">
-											{n.ganadora?.cv ?? n.empatadas[0]?.cv ?? "—"} de {RANGOS[k][1]}
-										</dd>
-									</div>
-								</dl>
-							</li>
-						);
-					})}
+					{(Object.keys(NIVELES) as Ct[]).map((k) => (
+						<NivelPremio key={k} nivel={k} n={premios.mejor_pregunta[k]} onCambio={onCambio} />
+					))}
 				</ol>
 			</section>
 
@@ -636,3 +573,132 @@ function unDecimal(n: number): string {
 	return n.toLocaleString("es-CO", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 }
 
+/**
+ * Un nivel del premio. PQ-107: la elección del comité tiene su contraria
+ * ("Quitar la elección", con confirmación y registro en el historial); al
+ * quitarla, el nivel vuelve al empate y se puede elegir otra. J6-A1: el
+ * resultado sale junto al botón.
+ */
+function NivelPremio({
+	nivel: k,
+	n,
+	onCambio,
+}: {
+	nivel: Ct;
+	n: Premios["mejor_pregunta"][Ct];
+	onCambio: (p: Premios) => void;
+}) {
+	const acc = useAccion();
+	const [confirmar, setConfirmar] = useState(false);
+	const elegida = n.ganadora !== null && n.decide_comite;
+
+	async function elegir(id: string) {
+		await acc.correr(
+			async () => {
+				onCambio(await elegirGanadora(k, id));
+				return `Ganadora del nivel ${NIVELES[k].toLowerCase()} elegida.`;
+			},
+			{ error: "No se pudo guardar la ganadora." },
+		);
+	}
+
+	async function quitar() {
+		await acc.correr(
+			async () => {
+				onCambio(await quitarGanadora(k));
+				setConfirmar(false);
+				return "Elección quitada: puede elegir otra entre las empatadas.";
+			},
+			{ error: "No se pudo quitar la elección." },
+		);
+	}
+
+	return (
+		<li className="pnl-fila">
+			<div className="pnl-fila-q">
+				<div className="pnl-titulo-estado">
+					<p className="pnl-fila-titulo" style={{ margin: 0 }}>
+						Nivel {NIVELES[k].toLowerCase()}
+					</p>
+					{elegida ? (
+						<ChipEstado tono="bien">Elegida por el comité</ChipEstado>
+					) : n.decide_comite ? (
+						<ChipEstado tono="ojo">
+							<IconoAviso />
+							Empate: decide el comité
+						</ChipEstado>
+					) : null}
+				</div>
+				{n.ganadora ? (
+					<p style={{ margin: 0 }}>
+						<span className="pnl-etq">{n.ganadora.codigo}</span>
+						{recortar(n.ganadora.texto, 240)}
+					</p>
+				) : n.decide_comite ? (
+					<Empatadas
+						total={n.empatadas.length}
+						render={(cuantas) => (
+							<ul className="pnl-empatadas">
+								{n.empatadas.slice(0, cuantas).map((f) => (
+									<li key={f.message_id}>
+										<p style={{ margin: 0 }}>
+											<span className="pnl-etq">{f.codigo}</span>
+											{recortar(f.texto, 200)}
+										</p>
+										<p style={{ margin: "6px 0 0" }}>
+											<Link href={`/admin/evaluacion/pregunta?id=${encodeURIComponent(f.message_id)}`}>
+												Leer la pregunta
+											</Link>{" "}
+											<button
+												type="button"
+												className="pnl-btn-sec"
+												disabled={acc.enviando}
+												onClick={() => elegir(f.message_id)}
+											>
+												Elegir como ganadora<span className="sr"> del nivel {NIVELES[k]}</span>
+											</button>
+										</p>
+									</li>
+								))}
+							</ul>
+						)}
+					/>
+				) : (
+					<p className="pnl-vacio">Todavía no hay preguntas válidas de este nivel.</p>
+				)}
+				{elegida && !confirmar ? (
+					<div className="pnl-acciones">
+						<button type="button" className="pnl-btn-sec" onClick={() => setConfirmar(true)}>
+							Cambiar o quitar la elección<span className="sr"> del nivel {NIVELES[k]}</span>
+						</button>
+					</div>
+				) : null}
+				<Aparece abierto={confirmar} enfocar>
+					<div className="pnl-confirmar" role="group" aria-labelledby={`t-quitar-${k}`}>
+						<p id={`t-quitar-${k}`}>
+							¿Quitar la ganadora elegida del nivel {NIVELES[k].toLowerCase()}? El nivel vuelve al empate y podrá
+							elegir otra. Queda en el historial de cambios.
+						</p>
+						<div className="pnl-acciones">
+							<button type="button" className="pnl-btn" disabled={acc.enviando} onClick={quitar}>
+								Sí, quitar la elección
+							</button>
+							<button type="button" className="pnl-btn-sec" onClick={() => setConfirmar(false)}>
+								Cancelar
+							</button>
+						</div>
+					</div>
+				</Aparece>
+				<ResultadoJunto resultado={acc.resultado} />
+			</div>
+			<dl className="pnl-fila-estado">
+				<div>
+					<dt>Valor de fondo (Cv)</dt>
+					<dd className="pnl-veces num">
+						{n.ganadora?.cv ?? n.empatadas[0]?.cv ?? "—"} de {RANGOS[k][1]}
+					</dd>
+				</div>
+			</dl>
+		</li>
+	);
+}

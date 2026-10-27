@@ -231,14 +231,12 @@ export default function PaginaValidar() {
 										Seleccionar las {numero(datos.items.length)} de esta página
 									</button>
 								)}
-								<button
-									type="button"
-									className="pnl-btn"
-									disabled={!elegidas.size}
-									onClick={() => setConfirmar(true)}
-								>
-									De acuerdo con las seleccionadas ({numero(elegidas.size)})
-								</button>
+								{/* PQ-109: sin selección no se ofrece la acción en lote. */}
+								{elegidas.size ? (
+									<button type="button" className="pnl-btn" onClick={() => setConfirmar(true)}>
+										De acuerdo con las seleccionadas ({numero(elegidas.size)})
+									</button>
+								) : null}
 							</div>
 						)}
 						<ResultadoJunto resultado={accLote.resultado} />
@@ -414,6 +412,12 @@ function Evaluacion({
 			</AparecerSi>
 			<Aparece abierto={puedeValidar && modo === "desacuerdo"} enfocar>
 				<div className="pnl-campo pnl-mt">
+					{e.estado === "validada" ? (
+						<p className="pnl-nota" style={{ marginTop: 0 }}>
+							Hoy está validada. Si cambia a “No de acuerdo”, vuelve a la conversación con {e.evaluador} y el cambio
+							queda en el historial.
+						</p>
+					) : null}
 					<label htmlFor={`d-${id}`}>¿Por qué no está de acuerdo? (lo verá {e.evaluador})</label>
 					<textarea id={`d-${id}`} value={comentario} maxLength={2000} onChange={(ev) => setComentario(ev.target.value)} />
 					<div className="pnl-acciones">
@@ -436,6 +440,12 @@ function Evaluacion({
 							No de acuerdo<span className="sr"> con la evaluación de {e.evaluador}</span>
 						</button>
 					</>
+				) : null}
+				{/* PQ-107: un "De acuerdo" ya dado se puede cambiar (queda en el historial). */}
+				{puedeValidar && e.estado === "validada" && modo === "nada" ? (
+					<button type="button" className="pnl-btn-sec" onClick={() => setModo("desacuerdo")}>
+						Cambiar a “No de acuerdo”<span className="sr"> en la evaluación de {e.evaluador}</span>
+					</button>
 				) : null}
 				<button type="button" className="pnl-enlace" aria-expanded={abierta} onClick={abrir}>
 					{abierta ? "Ocultar conversación" : `Ver conversación${e.comentarios ? ` (${e.comentarios})` : ""}`}

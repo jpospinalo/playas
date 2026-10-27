@@ -354,6 +354,22 @@ async def validar(
     if not payload.de_acuerdo and not comentario:
         raise HTTPException(422, "Si no está de acuerdo, explique por qué en el comentario.")
     ahora = datetime.now(UTC)
+    # PQ-107: cambiar una validación ya hecha queda en el historial de cambios.
+    previa = (
+        await session.execute(
+            select(EvaluationReview.id)
+            .where(EvaluationReview.evaluation_id == evaluation_id)
+            .limit(1)
+        )
+    ).scalar_one_or_none()
+    if previa is not None:
+        auditoria.registrar(
+            session,
+            user["sub"],
+            "cambiar_validacion",
+            objetivo_id=e.evaluador_id,
+            detalle={"de_acuerdo": payload.de_acuerdo},
+        )
     session.add(
         EvaluationReview(
             evaluation_id=evaluation_id,

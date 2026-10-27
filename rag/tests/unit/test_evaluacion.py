@@ -382,6 +382,12 @@ def test_diferencias_y_final_del_comite(cliente) -> None:
         c.put("/api/evaluacion/preguntas/q2/mia", headers=SM, json=_cal_json("S", 3)).status_code
         == 409
     )
+    # PQ-107: la final se puede quitar (solo jurídica o admin) y vuelve a "con diferencias".
+    url = "/api/evaluacion/preguntas/q2/final"
+    assert c.delete(url, headers=COM).status_code == 403
+    q = c.delete(url, headers=_h("san", "comite"))
+    assert q.status_code == 200 and q.json()["estado"] == "con_diferencias"
+    assert c.delete(url, headers=_h("san", "comite")).status_code == 404
 
 
 def test_resumen_premios_y_excel(cliente) -> None:
@@ -432,6 +438,13 @@ def test_resumen_premios_y_excel(cliente) -> None:
         "/api/evaluacion/premios/S/ganadora", headers=COM, json={"message_id": "q3"}
     ).json()
     assert elegido["mejor_pregunta"]["S"]["ganadora"]["message_id"] == "q3"
+    # PQ-107: la elección se puede quitar; el nivel vuelve a quedar por decidir.
+    quitada = c.delete("/api/evaluacion/premios/S/ganadora", headers=COM)
+    assert quitada.status_code == 200
+    assert quitada.json()["mejor_pregunta"]["S"]["ganadora"] is None
+    assert quitada.json()["mejor_pregunta"]["S"]["decide_comite"]
+    assert c.delete("/api/evaluacion/premios/S/ganadora", headers=COM).status_code == 404
+    c.put("/api/evaluacion/premios/S/ganadora", headers=COM, json={"message_id": "q3"})
 
     x = c.get("/api/evaluacion/exportar.xlsx", headers=COM)
     assert x.headers["content-type"].startswith("application/vnd.openxmlformats")
@@ -642,6 +655,9 @@ def test_validacion_juridica_conversacion_y_pertinencia(cliente) -> None:
     assert premios["mejor_pregunta"]["I"]["ganadora"] is None
     costera = c.get("/api/evaluacion/validacion/bandeja?estado=todas", headers=CAM).json()
     assert costera["tipo"] == "costero" and costera["items"][0]["pertinente"] is False
+    # PQ-107: un "De acuerdo" se puede cambiar después.
+    cambio = c.put(url, headers=ANA, json={"de_acuerdo": False, "comentario": "Lo revisé otra vez"})
+    assert cambio.json()["evaluacion"]["estado"] == "en_conversacion"
 
 
 def test_reasignar_pendientes_de_un_semillerista(cliente) -> None:

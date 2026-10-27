@@ -18,6 +18,7 @@ import {
 import { IconoAviso, IconoDescargar } from "@/components/admin/panel/Estados";
 import { Periodo } from "@/components/admin/panel/Periodo";
 import { AparecerSi } from "@/components/admin/panel/Aparece";
+import { LimpiarFiltros } from "@/components/admin/panel/LimpiarFiltros";
 
 const OPCIONES: { valor: FiltroEncuesta; texto: string }[] = [
 	{ valor: "", texto: "Todas las encuestas" },
@@ -175,6 +176,7 @@ export default function PaginaEncuestas() {
 						<h2 id="t-encuestas">Encuestas</h2>
 						<p>{datos ? `${numero(total)} en el periodo con este filtro` : " "}</p>
 					</div>
+					<div className="pnl-controles">
 					<div className="pnl-campo">
 						<label htmlFor="pnl-filtro-encuesta">Mostrar</label>
 						<select
@@ -191,6 +193,14 @@ export default function PaginaEncuestas() {
 								</option>
 							))}
 						</select>
+					</div>
+					<LimpiarFiltros
+						activo={filtro !== ""}
+						onLimpiar={() => {
+							setFiltro("");
+							setPagina(1);
+						}}
+					/>
 					</div>
 				</div>
 

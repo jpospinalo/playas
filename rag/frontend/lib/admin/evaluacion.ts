@@ -288,6 +288,16 @@ export function elegirGanadora(nivel: Ct, messageId: string): Promise<Premios> {
 	return llamar(`/premios/${nivel}/ganadora`, { method: "PUT", body: JSON.stringify({ message_id: messageId }) });
 }
 
+/** PQ-107: deshace la elección del comité; el nivel vuelve al empate. */
+export function quitarGanadora(nivel: Ct): Promise<Premios> {
+	return llamar(`/premios/${nivel}/ganadora`, { method: "DELETE" });
+}
+
+/** PQ-107: quita la calificación final del comité. */
+export function quitarFinal(messageId: string): Promise<Ficha> {
+	return llamar(`/preguntas/${encodeURIComponent(messageId)}/final`, { method: "DELETE" });
+}
+
 export interface EstadoPractica {
 	cuentas: number;
 	preguntas: number;

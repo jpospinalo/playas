@@ -41,6 +41,7 @@ import {
 import { Brechas } from "@/components/admin/panel/Brechas";
 import { Recientes } from "@/components/admin/panel/Recientes";
 import { AparecerSi } from "@/components/admin/panel/Aparece";
+import { LimpiarFiltros } from "@/components/admin/panel/LimpiarFiltros";
 
 /**
  * Resumen del panel: qué se pregunta, sobre qué temas y normas, qué tan bien
@@ -169,6 +170,17 @@ function ResumenConFiltros() {
 		escribirUrl(dias, t, resultado);
 	}
 
+	// PQ-108: la contraria de los filtros (el periodo se queda como está).
+	function limpiarFiltros() {
+		setCargando(true);
+		setTema("");
+		setResultado("");
+		setParticipante("");
+		setBorradorPart("");
+		setTipo(0);
+		escribirUrl(dias, "", "", {});
+	}
+
 	function cambiarResultado(r: FiltroResultado) {
 		setResultado(r);
 		escribirUrl(dias, tema, r);
@@ -254,6 +266,7 @@ function ResumenConFiltros() {
 						<IconoDescargar />
 						Descargar CSV
 					</button>
+					<LimpiarFiltros activo={!!(tema || resultado || participante || borradorPart || tipo)} onLimpiar={limpiarFiltros} />
 				</div>
 			</div>
 

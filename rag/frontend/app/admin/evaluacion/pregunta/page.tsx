@@ -10,6 +10,7 @@ import {
 	guardarCalificacion,
 	pedirFicha,
 	pedirRubrica,
+	quitarFinal,
 	type CalificacionIn,
 	type Ficha,
 	type Rubrica,
@@ -19,7 +20,8 @@ import { EstadoEval } from "@/components/admin/evaluacion/EstadoEval";
 import { FormCalificacion, TarjetaCalificacion } from "@/components/admin/evaluacion/FormCalificacion";
 import { Hilo } from "@/components/admin/evaluacion/Hilo";
 import { pedirDetalle, TEXTO_VALIDACION, type DetalleEvaluacion } from "@/lib/admin/validacion";
-import { AparecerSi } from "@/components/admin/panel/Aparece";
+import { Aparece, AparecerSi } from "@/components/admin/panel/Aparece";
+import { ResultadoJunto, useAccion } from "@/components/admin/panel/Resultado";
 
 /** Ficha de una pregunta: calificar con la planilla o resolver como comité. */
 export default function PaginaFicha() {
@@ -164,7 +166,11 @@ function Ficha_() {
 										textoBoton={ficha.final ? "Actualizar la calificación final" : "Guardar la calificación final"}
 										onGuardar={(c) => guardar(c, true)}
 									/>
-								) : (
+								) : null}
+								{ficha.puede_fijar_final && ficha.final ? (
+									<QuitarFinal id={id} onCambio={setFicha} />
+								) : null}
+								{ficha.puede_fijar_final && ficha.otras?.length ? null : (
 									<p className="pnl-vacio">
 										{ficha.puede_fijar_final
 											? "Se podrá fijar cuando los semilleristas la califiquen."
@@ -267,3 +273,46 @@ function MiValidacion({ evaluacionId }: { evaluacionId: string }) {
 	);
 }
 
+/** PQ-107: la final del comité tiene su contraria (con confirmación y registro). */
+function QuitarFinal({ id, onCambio }: { id: string; onCambio: (f: Ficha) => void }) {
+	const [confirmar, setConfirmar] = useState(false);
+	const acc = useAccion();
+
+	async function quitar() {
+		await acc.correr(
+			async () => {
+				onCambio(await quitarFinal(id));
+				setConfirmar(false);
+				return "Calificación final quitada: vuelven a contar las de los semilleristas.";
+			},
+			{ error: "No se pudo quitar la calificación final." },
+		);
+	}
+
+	return (
+		<div className="pnl-mt">
+			{confirmar ? null : (
+				<button type="button" className="pnl-btn-sec" onClick={() => setConfirmar(true)}>
+					Quitar la calificación final
+				</button>
+			)}
+			<Aparece abierto={confirmar} enfocar>
+				<div className="pnl-confirmar" role="group" aria-labelledby="t-quitar-final">
+					<p id="t-quitar-final">
+						¿Quitar la calificación final del comité? Vuelven a contar las calificaciones de los semilleristas. Queda
+						en el historial de cambios.
+					</p>
+					<div className="pnl-acciones">
+						<button type="button" className="pnl-btn" disabled={acc.enviando} onClick={quitar}>
+							Sí, quitarla
+						</button>
+						<button type="button" className="pnl-btn-sec" onClick={() => setConfirmar(false)}>
+							Cancelar
+						</button>
+					</div>
+				</div>
+			</Aparece>
+			<ResultadoJunto resultado={acc.resultado} />
+		</div>
+	);
+}

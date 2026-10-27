@@ -2250,3 +2250,14 @@ html:has(.pnl) {
 		}
 	}
 }
+
+/* J6-A9/A4: "Limpiar filtros" guarda su lugar aunque no haya filtros. */
+.pnl .pnl-limpiar-oculto {
+	visibility: hidden;
+}
+@media (max-width: 600px) {
+	/* En el celular los controles van uno debajo del otro: no hace falta guardar el lugar. */
+	.pnl .pnl-limpiar-oculto {
+		display: none;
+	}
+}
