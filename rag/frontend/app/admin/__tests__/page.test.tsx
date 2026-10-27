@@ -93,7 +93,9 @@ describe("app/admin/page — resumen del panel", () => {
 		render(<PanelResumen />);
 		expect(await screen.findByText("Datos de demostración.")).toBeInTheDocument();
 		expect(screen.getByText("482")).toBeInTheDocument();
-		expect(screen.getByText(/312 de 385 respuestas/)).toBeInTheDocument();
+		// J6-B: la cifra con su contexto, "312 de 385 (81 %)".
+		expect(screen.getByText("312")).toBeInTheDocument();
+		expect(screen.getAllByText(/de 385 \(81 %\)/).length).toBeGreaterThan(0);
 		expect(screen.getByText(/Subió 12/)).toBeInTheDocument();
 		// "Le sirvió" usa las respuestas como base (PQ-01): 141 / 385 = 37 %.
 		expect(screen.getByText(/Calificaron el 37/)).toBeInTheDocument();
