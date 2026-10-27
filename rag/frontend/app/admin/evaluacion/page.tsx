@@ -20,6 +20,7 @@ import { EstadoEval } from "@/components/admin/evaluacion/EstadoEval";
 import { IconoAviso } from "@/components/admin/panel/Estados";
 import { CabezaPestana, EncabezadoEvaluacion } from "@/components/admin/evaluacion/SubNav";
 import { diaLargo, pedirCalendario, textoRestante, type Calendario } from "@/lib/admin/calendario";
+import { Aparece, AparecerSi } from "@/components/admin/panel/Aparece";
 
 const POR_PAGINA = 20;
 
@@ -191,18 +192,20 @@ export default function PaginaBandeja() {
 					))}
 				</div>
 
-				{error ? (
-					<div className="pnl-error" role="alert">
-						<IconoAviso />
-						<div>
-							<b>No se pudieron cargar las preguntas.</b>
-							<p>{error}</p>
-							<button type="button" className="pnl-btn-sec" onClick={() => setIntento((n) => n + 1)}>
-								Intentar otra vez
-							</button>
+				<AparecerSi valor={error}>
+					{(error) => (
+						<div className="pnl-error" role="alert">
+							<IconoAviso />
+							<div>
+								<b>No se pudieron cargar las preguntas.</b>
+								<p>{error}</p>
+								<button type="button" className="pnl-btn-sec" onClick={() => setIntento((n) => n + 1)}>
+									Intentar otra vez
+								</button>
+							</div>
 						</div>
-					</div>
-				) : null}
+					)}
+				</AparecerSi>
 				{!datos && !error ? <p className="pnl-cargando">Cargando preguntas…</p> : null}
 				{datos && datos.items.length === 0 ? (
 					<p className="pnl-vacio">
@@ -342,27 +345,30 @@ function Practica() {
 					? "La práctica está archivada: sus preguntas ya no se ven en ninguna lista."
 					: `Hay ${cuantas(estado.cuentas, "cuenta", "cuentas")} de práctica con ${cuantas(estado.preguntas, "pregunta", "preguntas")}. Se evalúan y validan igual, pero no cuentan para el resumen, los premios ni el Excel.`}
 			</p>
-			{error ? (
-				<p className="pnl-error-linea" role="alert">
-					{error}
-				</p>
-			) : null}
-			{esAdmin ? (
-				confirmar ? (
-					<div className="pnl-confirmar" role="group" aria-labelledby="t-arch">
-						<p id="t-arch">
-							¿Archivar la práctica? Sus preguntas salen de todas las listas; no se borra nada y se puede deshacer.
-						</p>
-						<div className="pnl-acciones">
-							<button type="button" className="pnl-btn" onClick={() => cambiar(true)}>
-								Sí, archivar
-							</button>
-							<button type="button" className="pnl-btn-sec" onClick={() => setConfirmar(false)}>
-								Cancelar
-							</button>
-						</div>
+			<AparecerSi valor={error}>
+				{(error) => (
+					<p className="pnl-error-linea" role="alert">
+						{error}
+					</p>
+				)}
+			</AparecerSi>
+			<Aparece abierto={esAdmin && confirmar} enfocar>
+				<div className="pnl-confirmar" role="group" aria-labelledby="t-arch">
+					<p id="t-arch">
+						¿Archivar la práctica? Sus preguntas salen de todas las listas; no se borra nada y se puede deshacer.
+					</p>
+					<div className="pnl-acciones">
+						<button type="button" className="pnl-btn" onClick={() => cambiar(true)}>
+							Sí, archivar
+						</button>
+						<button type="button" className="pnl-btn-sec" onClick={() => setConfirmar(false)}>
+							Cancelar
+						</button>
 					</div>
-				) : estado.archivada ? (
+				</div>
+			</Aparece>
+			{esAdmin ? (
+				confirmar ? null : estado.archivada ? (
 					<button type="button" className="pnl-btn-sec" onClick={() => cambiar(false)}>
 						Volver a mostrar la práctica
 					</button>

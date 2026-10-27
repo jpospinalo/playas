@@ -40,6 +40,7 @@ import {
 } from "@/components/admin/panel/Estados";
 import { Brechas } from "@/components/admin/panel/Brechas";
 import { Recientes } from "@/components/admin/panel/Recientes";
+import { AparecerSi } from "@/components/admin/panel/Aparece";
 
 /**
  * Resumen del panel: qué se pregunta, sobre qué temas y normas, qué tan bien
@@ -260,15 +261,17 @@ function ResumenConFiltros() {
 				{cargando ? "Cargando cifras…" : anuncio}
 			</p>
 
-			{errorCsv ? (
-				<div className="pnl-error" role="alert">
-					<IconoAviso />
-					<div>
-						<b>No se pudo descargar el CSV.</b>
-						<p>{errorCsv} Intente de nuevo en un momento.</p>
+			<AparecerSi valor={errorCsv}>
+				{(errorCsv) => (
+					<div className="pnl-error" role="alert">
+						<IconoAviso />
+						<div>
+							<b>No se pudo descargar el CSV.</b>
+							<p>{errorCsv} Intente de nuevo en un momento.</p>
+						</div>
 					</div>
-				</div>
-			) : null}
+				)}
+			</AparecerSi>
 
 			{datos?.demo ? (
 				<div className="pnl-aviso" role="note">
@@ -280,25 +283,27 @@ function ResumenConFiltros() {
 				</div>
 			) : null}
 
-			{error ? (
-				<div className="pnl-error" role="alert">
-					<IconoAviso />
-					<div>
-						<b>No se pudieron cargar las cifras.</b>
-						<p>{error}</p>
-						<button
-							type="button"
-							className="pnl-btn-sec"
-							onClick={() => {
-								setCargando(true);
-								setIntento((n) => n + 1);
-							}}
-						>
-							Intentar otra vez
-						</button>
+			<AparecerSi valor={error}>
+				{(error) => (
+					<div className="pnl-error" role="alert">
+						<IconoAviso />
+						<div>
+							<b>No se pudieron cargar las cifras.</b>
+							<p>{error}</p>
+							<button
+								type="button"
+								className="pnl-btn-sec"
+								onClick={() => {
+									setCargando(true);
+									setIntento((n) => n + 1);
+								}}
+							>
+								Intentar otra vez
+							</button>
+						</div>
 					</div>
-				</div>
-			) : null}
+				)}
+			</AparecerSi>
 
 			{!datos && cargando ? <p className="pnl-cargando">Cargando cifras…</p> : null}
 

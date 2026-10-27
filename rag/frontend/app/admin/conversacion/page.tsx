@@ -15,6 +15,7 @@ import {
 	type Conversacion,
 } from "@/lib/admin/panel";
 import { EstadoCalificacion, EstadoResultado, IconoAviso } from "@/components/admin/panel/Estados";
+import { AparecerSi } from "@/components/admin/panel/Aparece";
 
 /** Una conversación completa, para leer el caso desde el panel (solo lectura). */
 export default function PaginaConversacion() {
@@ -67,15 +68,17 @@ function Detalle() {
 				{datos ? `Conversación de ${datos.persona}: panel de ATLAS` : "Conversación: panel de ATLAS"}
 			</title>
 			<h1>Conversación</h1>
-			{error ? (
-				<div className="pnl-error" role="alert" style={{ marginTop: 18 }}>
-					<IconoAviso />
-					<div>
-						<b>No se pudo abrir la conversación.</b>
-						<p>{error} Vuelva al resumen y elíjala de nuevo.</p>
+			<AparecerSi valor={error}>
+				{(error) => (
+					<div className="pnl-error" role="alert" style={{ marginTop: 18 }}>
+						<IconoAviso />
+						<div>
+							<b>No se pudo abrir la conversación.</b>
+							<p>{error} Vuelva al resumen y elíjala de nuevo.</p>
+						</div>
 					</div>
-				</div>
-			) : null}
+				)}
+			</AparecerSi>
 			{!datos && !error ? <p className="pnl-cargando">Cargando conversación…</p> : null}
 			{datos ? (
 				<>

@@ -11,6 +11,7 @@ import {
 	type Ct,
 	type Rubrica,
 } from "@/lib/admin/evaluacion";
+import { AparecerSi } from "@/components/admin/panel/Aparece";
 
 /**
  * Formulario de la planilla: F1, F2 y F3 (1 a 3) con la rúbrica del
@@ -181,11 +182,13 @@ export function FormCalificacion({
 					disabled={deshabilitado}
 				/>
 			</div>
-			{faltan ? (
-				<p id={`${id}-faltan`} className="pnl-error-linea" role="alert">
-					{faltan}
-				</p>
-			) : null}
+			<AparecerSi valor={faltan}>
+				{(faltan) => (
+					<p id={`${id}-faltan`} className="pnl-error-linea" role="alert">
+						{faltan}
+					</p>
+				)}
+			</AparecerSi>
 			<p style={{ marginTop: 14 }}>
 				<button type="submit" className="pnl-btn" disabled={deshabilitado || enviando}>
 					{enviando ? "Guardando…" : textoBoton}

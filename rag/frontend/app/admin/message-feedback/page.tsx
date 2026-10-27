@@ -13,6 +13,7 @@ import {
 import { IconoAviso } from "@/components/admin/panel/Estados";
 import { Periodo } from "@/components/admin/panel/Periodo";
 import { Recientes, type OpcionFiltro } from "@/components/admin/panel/Recientes";
+import { AparecerSi } from "@/components/admin/panel/Aparece";
 
 const OPCIONES: OpcionFiltro[] = [
 	{ valor: "calificadas", texto: "Todas las opiniones" },
@@ -65,15 +66,17 @@ export default function PaginaOpiniones() {
 				</div>
 			</div>
 
-			{error ? (
-				<div className="pnl-error" role="alert">
-					<IconoAviso />
-					<div>
-						<b>No se pudieron cargar las cifras.</b>
-						<p>{error}</p>
+			<AparecerSi valor={error}>
+				{(error) => (
+					<div className="pnl-error" role="alert">
+						<IconoAviso />
+						<div>
+							<b>No se pudieron cargar las cifras.</b>
+							<p>{error}</p>
+						</div>
 					</div>
-				</div>
-			) : null}
+				)}
+			</AparecerSi>
 
 			{c ? (
 				<dl className="pnl-cifras pnl-cifras-4">

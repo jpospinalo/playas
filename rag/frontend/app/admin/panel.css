@@ -2051,3 +2051,71 @@ html:has(.pnl) {
 	width: 100%;
 	min-width: 260px;
 }
+
+/* J5-6: lo que aparece o desaparece entra y sale con altura + opacidad
+   (180 ms ease-out al abrir, 140 ms al cerrar); solo empuja hacia abajo. */
+.pnl-aparece {
+	display: grid;
+	grid-template-rows: 1fr;
+}
+.pnl-aparece-in {
+	min-height: 0;
+	min-width: 0;
+}
+@media (prefers-reduced-motion: no-preference) {
+	.pnl-aparece {
+		animation: pnl-abre 180ms ease-out both;
+	}
+	.pnl-aparece.pnl-aparece-cierra {
+		animation: pnl-cierra 140ms ease-in both;
+	}
+	.pnl-aparece > .pnl-aparece-in {
+		overflow: clip;
+		overflow-clip-margin: 6px;
+	}
+}
+@keyframes pnl-abre {
+	from {
+		grid-template-rows: 0fr;
+		opacity: 0;
+	}
+	to {
+		grid-template-rows: 1fr;
+		opacity: 1;
+	}
+}
+@keyframes pnl-cierra {
+	from {
+		grid-template-rows: 1fr;
+		opacity: 1;
+	}
+	to {
+		grid-template-rows: 0fr;
+		opacity: 0;
+	}
+}
+
+/* J5-6: formulario de una fila (Cuentas > Cambiar): campos en una fila, la
+   casilla en la suya y los botones en la suya, alineados arriba y de igual alto. */
+.pnl-form-fila {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	padding-top: 12px;
+}
+.pnl-form-fila .pnl-form-campos {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: flex-start;
+	gap: 14px;
+}
+.pnl-form-fila .pnl-acciones {
+	margin-top: 2px;
+}
+.pnl-acciones {
+	align-items: flex-start;
+}
+.pnl .pnl-acciones > .pnl-btn,
+.pnl .pnl-acciones > .pnl-btn-sec {
+	min-height: 48px;
+}

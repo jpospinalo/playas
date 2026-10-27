@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { fechaHora, mensajeError } from "@/lib/admin/panel";
 import { comentar, type DetalleEvaluacion, type EntradaHilo } from "@/lib/admin/validacion";
+import { AparecerSi } from "@/components/admin/panel/Aparece";
 
 const TIPO: Record<EntradaHilo["tipo"], string> = {
 	comentario: "Comentario",
@@ -64,11 +65,13 @@ export function Hilo({
 			<form onSubmit={enviar} className="pnl-hilo-form">
 				<label htmlFor={`hilo-${id}`}>{etiqueta}</label>
 				<textarea id={`hilo-${id}`} value={texto} maxLength={2000} onChange={(e) => setTexto(e.target.value)} />
-				{error ? (
-					<p className="pnl-error-linea" role="alert">
-						{error}
-					</p>
-				) : null}
+				<AparecerSi valor={error}>
+					{(error) => (
+						<p className="pnl-error-linea" role="alert">
+							{error}
+						</p>
+					)}
+				</AparecerSi>
 				<button type="submit" className="pnl-btn-sec" disabled={enviando || !texto.trim()}>
 					{enviando ? "Enviando…" : "Enviar mensaje"}
 				</button>

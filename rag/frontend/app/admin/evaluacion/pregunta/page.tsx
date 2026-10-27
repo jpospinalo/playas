@@ -19,6 +19,7 @@ import { EstadoEval } from "@/components/admin/evaluacion/EstadoEval";
 import { FormCalificacion, TarjetaCalificacion } from "@/components/admin/evaluacion/FormCalificacion";
 import { Hilo } from "@/components/admin/evaluacion/Hilo";
 import { pedirDetalle, TEXTO_VALIDACION, type DetalleEvaluacion } from "@/lib/admin/validacion";
+import { AparecerSi } from "@/components/admin/panel/Aparece";
 
 /** Ficha de una pregunta: calificar con la planilla o resolver como comité. */
 export default function PaginaFicha() {
@@ -87,15 +88,17 @@ function Ficha_() {
 					Volver a las preguntas
 				</Link>
 			</p>
-			{error ? (
-				<div className="pnl-error" role="alert">
-					<IconoAviso />
-					<div>
-						<b>No se pudo abrir la pregunta.</b>
-						<p>{error}</p>
+			<AparecerSi valor={error}>
+				{(error) => (
+					<div className="pnl-error" role="alert">
+						<IconoAviso />
+						<div>
+							<b>No se pudo abrir la pregunta.</b>
+							<p>{error}</p>
+						</div>
 					</div>
-				</div>
-			) : null}
+				)}
+			</AparecerSi>
 			{!ficha && !error ? <p className="pnl-cargando">Cargando pregunta…</p> : null}
 			{ficha && rubrica ? (
 				<>
@@ -132,25 +135,29 @@ function Ficha_() {
 						) : null}
 					</section>
 
-					{aviso ? (
-						<p className="pnl-ok" role="status">
-							{aviso}{" "}
-							{ficha.siguiente ? (
-								<Link href={`/admin/evaluacion/pregunta?id=${encodeURIComponent(ficha.siguiente)}`}>
-									Ir a la siguiente pregunta
-								</Link>
-							) : null}
-						</p>
-					) : null}
-					{errorGuardar ? (
-						<div className="pnl-error" role="alert">
-							<IconoAviso />
-							<div>
-								<b>No se pudo guardar.</b>
-								<p>{errorGuardar}</p>
+					<AparecerSi valor={aviso}>
+						{(aviso) => (
+							<p className="pnl-ok" role="status">
+								{aviso}{" "}
+								{ficha.siguiente ? (
+									<Link href={`/admin/evaluacion/pregunta?id=${encodeURIComponent(ficha.siguiente)}`}>
+										Ir a la siguiente pregunta
+									</Link>
+								) : null}
+							</p>
+						)}
+					</AparecerSi>
+					<AparecerSi valor={errorGuardar}>
+						{(errorGuardar) => (
+							<div className="pnl-error" role="alert">
+								<IconoAviso />
+								<div>
+									<b>No se pudo guardar.</b>
+									<p>{errorGuardar}</p>
+								</div>
 							</div>
-						</div>
-					) : null}
+						)}
+					</AparecerSi>
 
 					{ficha.es_comite ? (
 						<>

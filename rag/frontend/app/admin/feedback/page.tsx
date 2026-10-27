@@ -17,6 +17,7 @@ import {
 } from "@/lib/admin/panel";
 import { IconoAviso, IconoDescargar } from "@/components/admin/panel/Estados";
 import { Periodo } from "@/components/admin/panel/Periodo";
+import { AparecerSi } from "@/components/admin/panel/Aparece";
 
 const OPCIONES: { valor: FiltroEncuesta; texto: string }[] = [
 	{ valor: "", texto: "Todas las encuestas" },
@@ -108,28 +109,32 @@ export default function PaginaEncuestas() {
 				</div>
 			</div>
 
-			{errorCsv ? (
-				<div className="pnl-error" role="alert">
-					<IconoAviso />
-					<div>
-						<b>No se pudo descargar el CSV.</b>
-						<p>{errorCsv} Intente de nuevo en un momento.</p>
+			<AparecerSi valor={errorCsv}>
+				{(errorCsv) => (
+					<div className="pnl-error" role="alert">
+						<IconoAviso />
+						<div>
+							<b>No se pudo descargar el CSV.</b>
+							<p>{errorCsv} Intente de nuevo en un momento.</p>
+						</div>
 					</div>
-				</div>
-			) : null}
+				)}
+			</AparecerSi>
 
-			{error ? (
-				<div className="pnl-error" role="alert">
-					<IconoAviso />
-					<div>
-						<b>No se pudieron cargar las encuestas.</b>
-						<p>{error}</p>
-						<button type="button" className="pnl-btn-sec" onClick={() => setIntento((n) => n + 1)}>
-							Intentar otra vez
-						</button>
+			<AparecerSi valor={error}>
+				{(error) => (
+					<div className="pnl-error" role="alert">
+						<IconoAviso />
+						<div>
+							<b>No se pudieron cargar las encuestas.</b>
+							<p>{error}</p>
+							<button type="button" className="pnl-btn-sec" onClick={() => setIntento((n) => n + 1)}>
+								Intentar otra vez
+							</button>
+						</div>
 					</div>
-				</div>
-			) : null}
+				)}
+			</AparecerSi>
 
 			{datos ? (
 				<dl className="pnl-cifras pnl-cifras-5">

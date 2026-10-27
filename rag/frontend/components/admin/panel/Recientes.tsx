@@ -15,6 +15,7 @@ import {
 	type Preguntas,
 } from "@/lib/admin/panel";
 import { EstadoCalificacion, EstadoResultado, IconoAviso } from "@/components/admin/panel/Estados";
+import { AparecerSi } from "@/components/admin/panel/Aparece";
 
 export type OpcionFiltro = { valor: FiltroResultado; texto: string };
 
@@ -122,18 +123,20 @@ export function Recientes({
 				</div>
 			</div>
 
-			{error ? (
-				<div className="pnl-error" role="alert">
-					<IconoAviso />
-					<div>
-						<b>No se pudieron cargar las preguntas.</b>
-						<p>{error}</p>
-						<button type="button" className="pnl-btn-sec" onClick={() => setIntento((n) => n + 1)}>
-							Intentar otra vez
-						</button>
+			<AparecerSi valor={error}>
+				{(error) => (
+					<div className="pnl-error" role="alert">
+						<IconoAviso />
+						<div>
+							<b>No se pudieron cargar las preguntas.</b>
+							<p>{error}</p>
+							<button type="button" className="pnl-btn-sec" onClick={() => setIntento((n) => n + 1)}>
+								Intentar otra vez
+							</button>
+						</div>
 					</div>
-				</div>
-			) : null}
+				)}
+			</AparecerSi>
 
 			{datos && datos.items.length === 0 ? (
 				<p className="pnl-vacio">

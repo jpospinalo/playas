@@ -1200,3 +1200,23 @@ body:has(.guia) {
 	margin: 0 0 10px;
 	font-weight: 600;
 }
+
+/* J5-6: lo que aparece (avisos, invitación a la encuesta, "¿Le sirvió?",
+   aviso de datos, gracias) entra suave: opacidad, 180 ms ease-out. */
+@media (prefers-reduced-motion: no-preference) {
+	.guia-sirvio > *,
+	.guia-error,
+	.guia-invita,
+	.guia-privacidad,
+	section[aria-labelledby="titulo-gracias"] {
+		animation: guia-aparece 180ms ease-out both;
+	}
+	@keyframes guia-aparece {
+		from {
+			opacity: 0;
+		}
+		to {
+			opacity: 1;
+		}
+	}
+}

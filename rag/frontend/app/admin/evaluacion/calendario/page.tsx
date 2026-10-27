@@ -12,6 +12,7 @@ import {
 } from "@/lib/admin/calendario";
 import { IconoAviso } from "@/components/admin/panel/Estados";
 import { CabezaPestana, EncabezadoEvaluacion } from "@/components/admin/evaluacion/SubNav";
+import { Aparece, AparecerSi } from "@/components/admin/panel/Aparece";
 
 /**
  * Calendario del ejercicio (reunión del 20-oct, T5): las fechas que dijo
@@ -65,15 +66,17 @@ export default function PaginaCalendario() {
 				Fechas acordadas en la reunión del 20 de octubre. Al vencer un plazo, los semilleristas (o el comité) ya no
 				pueden guardar; para ampliarlo, cambie la fecha aquí.
 			</CabezaPestana>
-			{error ? (
-				<div className="pnl-error" role="alert">
-					<IconoAviso />
-					<div>
-						<b>Algo salió mal.</b>
-						<p>{error}</p>
+			<AparecerSi valor={error}>
+				{(error) => (
+					<div className="pnl-error" role="alert">
+						<IconoAviso />
+						<div>
+							<b>Algo salió mal.</b>
+							<p>{error}</p>
+						</div>
 					</div>
-				</div>
-			) : null}
+				)}
+			</AparecerSi>
 			{!cal && !error ? <p className="pnl-cargando">Cargando calendario…</p> : null}
 			{cal ? (
 				<form className="pnl-bloque" onSubmit={guardar} aria-labelledby="t-cal">
@@ -116,11 +119,13 @@ export default function PaginaCalendario() {
 						Por confirmar con el profesor Camilo: en la reunión se dijo “2 semanas desde el primer día” y luego “una
 						semana más”.
 					</p>
-					{aviso ? (
-						<p className="pnl-ok" role="status">
-							{aviso}
-						</p>
-					) : null}
+					<AparecerSi valor={aviso}>
+						{(aviso) => (
+							<p className="pnl-ok" role="status">
+								{aviso}
+							</p>
+						)}
+					</AparecerSi>
 					{esAdmin ? (
 						<button type="submit" className="pnl-btn">
 							Guardar el calendario
@@ -162,12 +167,14 @@ function Cierre({ inicial }: { inicial: boolean }) {
 			<p className={cambiado ? "pnl-ok" : "pnl-plazo"} role="status">
 				{cerrado ? "Estado: el ejercicio está cerrado." : "Estado: el ejercicio está abierto."}
 			</p>
-			{error ? (
-				<p className="pnl-error-linea" role="alert">
-					{error}
-				</p>
-			) : null}
-			{confirmar ? (
+			<AparecerSi valor={error}>
+				{(error) => (
+					<p className="pnl-error-linea" role="alert">
+						{error}
+					</p>
+				)}
+			</AparecerSi>
+			<Aparece abierto={confirmar} enfocar>
 				<div className="pnl-confirmar" role="group" aria-labelledby="t-conf-cierre">
 					<p id="t-conf-cierre">¿Cerrar el ejercicio ahora?</p>
 					<div className="pnl-acciones">
@@ -179,7 +186,8 @@ function Cierre({ inicial }: { inicial: boolean }) {
 						</button>
 					</div>
 				</div>
-			) : (
+			</Aparece>
+			{confirmar ? null : (
 				<div className="pnl-acciones">
 					{cerrado ? (
 						<button type="button" className="pnl-btn-sec" onClick={() => cambiar(false)}>

@@ -19,6 +19,7 @@ import {
 import { IconoAviso } from "@/components/admin/panel/Estados";
 import { CabezaPestana, EncabezadoEvaluacion } from "@/components/admin/evaluacion/SubNav";
 import { Hilo } from "@/components/admin/evaluacion/Hilo";
+import { Aparece, AparecerSi } from "@/components/admin/panel/Aparece";
 
 const POR_PAGINA = 20;
 
@@ -164,24 +165,28 @@ export default function PaginaValidar() {
 					))}
 				</div>
 
-				{aviso ? (
-					<p className="pnl-ok" role="status">
-						{aviso}
-					</p>
-				) : null}
-				{error ? (
-					<div className="pnl-error" role="alert">
-						<IconoAviso />
-						<div>
-							<b>Algo salió mal.</b>
-							<p>{error}</p>
+				<AparecerSi valor={aviso}>
+					{(aviso) => (
+						<p className="pnl-ok" role="status">
+							{aviso}
+						</p>
+					)}
+				</AparecerSi>
+				<AparecerSi valor={error}>
+					{(error) => (
+						<div className="pnl-error" role="alert">
+							<IconoAviso />
+							<div>
+								<b>Algo salió mal.</b>
+								<p>{error}</p>
+							</div>
 						</div>
-					</div>
-				) : null}
+					)}
+				</AparecerSi>
 
 				{tipo === "juridico" && estado === "por_validar" && datos?.items.length ? (
 					<div className="pnl-lote">
-						{confirmar ? (
+						<Aparece abierto={confirmar} enfocar>
 							<div className="pnl-confirmar" role="group" aria-labelledby="t-lote">
 								<p id="t-lote">
 									¿Marcar “De acuerdo” en {elegidas.size === 1 ? "la evaluación seleccionada" : `las ${numero(elegidas.size)} evaluaciones seleccionadas`}? Quedan
@@ -196,7 +201,8 @@ export default function PaginaValidar() {
 									</button>
 								</div>
 							</div>
-						) : (
+						</Aparece>
+						{confirmar ? null : (
 							<div className="pnl-acciones">
 								<button
 									type="button"
@@ -376,12 +382,14 @@ function Evaluacion({
 				</span>
 			</div>
 			{e.observaciones ? <p className="pnl-esperaba">Observaciones: “{e.observaciones}”</p> : null}
-			{error ? (
-				<p className="pnl-error-linea" role="alert">
-					{error}
-				</p>
-			) : null}
-			{puedeValidar && modo === "desacuerdo" ? (
+			<AparecerSi valor={error}>
+				{(error) => (
+					<p className="pnl-error-linea" role="alert">
+						{error}
+					</p>
+				)}
+			</AparecerSi>
+			<Aparece abierto={puedeValidar && modo === "desacuerdo"} enfocar>
 				<div className="pnl-campo" style={{ marginTop: 8 }}>
 					<label htmlFor={`d-${id}`}>¿Por qué no está de acuerdo? (lo verá el semillerista)</label>
 					<textarea id={`d-${id}`} value={comentario} maxLength={2000} onChange={(ev) => setComentario(ev.target.value)} />
@@ -394,7 +402,7 @@ function Evaluacion({
 						</button>
 					</div>
 				</div>
-			) : null}
+			</Aparece>
 			<div className="pnl-acciones">
 				{puedeValidar && e.estado !== "validada" && modo === "nada" ? (
 					<>
@@ -410,9 +418,9 @@ function Evaluacion({
 					{abierta ? "Ocultar conversación" : `Ver conversación${e.comentarios ? ` (${e.comentarios})` : ""}`}
 				</button>
 			</div>
-			{abierta && detalle ? (
-				<Hilo detalle={detalle} onCambio={setDetalle} etiqueta="Escribir al semillerista" />
-			) : null}
+			<Aparece abierto={abierta && detalle !== null}>
+				{detalle ? <Hilo detalle={detalle} onCambio={setDetalle} etiqueta="Escribir al semillerista" /> : null}
+			</Aparece>
 		</div>
 	);
 }
@@ -445,11 +453,13 @@ function Pertinencia({ item, onCambio }: { item: ItemValidacion; onCambio: () =>
 				<label htmlFor={`p-${id}`}>Comentario (opcional)</label>
 				<textarea id={`p-${id}`} value={comentario} maxLength={2000} onChange={(e) => setComentario(e.target.value)} />
 			</div>
-			{error ? (
-				<p className="pnl-error-linea" role="alert">
-					{error}
-				</p>
-			) : null}
+			<AparecerSi valor={error}>
+				{(error) => (
+					<p className="pnl-error-linea" role="alert">
+						{error}
+					</p>
+				)}
+			</AparecerSi>
 			<div className="pnl-acciones">
 				<button type="button" className="pnl-btn-sec" onClick={() => marcar(true)} aria-pressed={item.pertinente === true}>
 					Es del tema<span className="sr">: pregunta {item.numero}</span>
