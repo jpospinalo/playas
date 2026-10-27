@@ -22,18 +22,27 @@ const lista = (q: string) => `${BANDEJA}?${q}&reales=1`;
 
 /** El camino de una pregunta, de lo que falta a lo terminado. */
 const PASOS: { k: EstadoPregunta; texto: string; color: string; filtro: string }[] = [
-	{ k: "sin_evaluar", texto: "Sin calificar", color: "var(--p-gris)", filtro: "sin_calificar" },
-	{ k: "una_evaluacion", texto: "Falta una calificación", color: "var(--p-azul-claro)", filtro: "una_calificacion" },
-	{ k: "concordante", texto: "Coinciden: esperan la validación", color: "var(--p-azul)", filtro: "por_validar" },
-	{ k: "con_diferencias", texto: "Con diferencias: las revisa el comité", color: "var(--p-ambar)", filtro: "con_diferencias" },
-	{ k: "validada", texto: "Validadas", color: "var(--p-verde)", filtro: "validadas" },
-	{ k: "final", texto: "Revisadas por el comité", color: "var(--p-verde-osc)", filtro: "revisadas" },
+	{ k: "sin_evaluar", texto: "Sin calificar", color: "var(--p-c1)", filtro: "sin_calificar" },
+	{ k: "una_evaluacion", texto: "Falta una calificación", color: "var(--p-c2)", filtro: "una_calificacion" },
+	{ k: "concordante", texto: "Coinciden: esperan la validación", color: "var(--p-c3)", filtro: "por_validar" },
+	{ k: "con_diferencias", texto: "Con diferencias: las revisa el comité", color: "var(--p-c4)", filtro: "con_diferencias" },
+	{ k: "validada", texto: "Validadas", color: "var(--p-c5)", filtro: "validadas" },
+	{ k: "final", texto: "Revisadas por el comité", color: "var(--p-c6)", filtro: "revisadas" },
 ];
 
 /** Color propio y fijo de cada nivel en todo el panel. */
 export const COLOR_NIVEL: Record<Ct, string> = { S: "var(--p-n-s)", I: "var(--p-n-i)", A: "var(--p-n-a)" };
 
-export function Tablero({ resumen, comite }: { resumen: ResumenEjercicio; comite: boolean }) {
+export function Tablero({
+	resumen,
+	comite,
+	ganadores,
+}: {
+	resumen: ResumenEjercicio;
+	comite: boolean;
+	/** PQ-113: los ganadores van dentro de "Resultados". */
+	ganadores?: ReactNode;
+}) {
 	const e = resumen.estados;
 	const total = resumen.preguntas_registradas;
 	const pctOficial = porcentaje(resumen.evaluadas, total) ?? 0;
@@ -128,6 +137,7 @@ export function Tablero({ resumen, comite }: { resumen: ResumenEjercicio; comite
 						/>
 					</section>
 				</div>
+				{ganadores ? <div className="pnl-ganadores-w">{ganadores}</div> : null}
 			</Grupo>
 
 			<PorPersona resumen={resumen} />
@@ -312,9 +322,10 @@ function PorPersona({ resumen }: { resumen: ResumenEjercicio }) {
 	return (
 		<Grupo id="g-personas" titulo="Por persona" sub="Lo hecho frente a lo asignado">
 			<p className="pnl-sub pnl-mb">
+				{/* PQ-114: la raya se explica solo cuando se ve. */}
 				{eSem === 0 && eVal === 0
-					? "El ejercicio todavía no empieza: nadie va atrasado. La raya oscura marcará dónde debería ir cada uno según el calendario."
-					: `Según el calendario, hoy deberían llevar el ${Math.round(eSem * 100)} % (semilleristas) y el ${Math.round(eVal * 100)} % (validación). En ámbar, quien va por debajo.`}
+					? "El ejercicio todavía no empieza: nadie va atrasado."
+					: `Según el calendario, hoy deberían llevar el ${Math.round(eSem * 100)} % (semilleristas) y el ${Math.round(eVal * 100)} % (validación): es la raya oscura de cada barra. En ámbar, quien va por debajo.`}
 			</p>
 			<div className="pnl-tb-dos">
 				{sem.length ? (

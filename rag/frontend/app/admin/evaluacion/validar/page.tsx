@@ -16,7 +16,7 @@ import {
 	type FiltroValidacion,
 	type ItemValidacion,
 } from "@/lib/admin/validacion";
-import { ChipEstado, IconoAviso } from "@/components/admin/panel/Estados";
+import { ChipNivel, ChipEstado, IconoAviso } from "@/components/admin/panel/Estados";
 import { ResultadoJunto, useAccion } from "@/components/admin/panel/Resultado";
 import { CabezaPestana, EncabezadoEvaluacion } from "@/components/admin/evaluacion/SubNav";
 import { Hilo } from "@/components/admin/evaluacion/Hilo";
@@ -396,7 +396,7 @@ function Evaluacion({
 					</label>
 				) : null}
 				<p>
-					<b>{e.evaluador}</b> ({e.sede}): {NIVELES[e.ct]}, forma {e.forma} (F {e.f1}-{e.f2}-{e.f3}), valor de fondo {e.cv} (Cv),
+					<b>{e.evaluador}</b> ({e.sede}): <ChipNivel ct={e.ct} texto={NIVELES[e.ct]} /> forma {e.forma} (F {e.f1}-{e.f2}-{e.f3}), valor de fondo {e.cv} (Cv),
 					total {e.total}
 					{e.valida ? "" : ", marcada no válida"}
 				</p>

@@ -176,3 +176,16 @@ export function ChipEstado({
 }) {
 	return <span className={`pnl-estado ${tono}`}>{children}</span>;
 }
+
+/**
+ * J6-B2 (PQ-115): el nivel del caso con su color fijo en todo el panel
+ * (sencillo, intermedio, avanzado), siempre con el texto.
+ */
+export function ChipNivel({ ct, texto }: { ct: "S" | "I" | "A"; texto: string }) {
+	return (
+		<span className={`pnl-nivel nivel-${ct}`}>
+			<i aria-hidden="true" />
+			{texto}
+		</span>
+	);
+}

@@ -35,6 +35,15 @@
 	--p-n-i: #6b4fa3;
 	--p-n-a: #a23a6a;
 	--p-uno: var(--p-marino);
+	/* PQ-112: los 6 pasos del camino, distinguibles, ≥ 3:1 contra la tarjeta y
+	   con el mismo orden de tonos en claro y oscuro (2 más claro que 3; 6 más
+	   oscuro que 5). */
+	--p-c1: #6f7c80;
+	--p-c2: #5b8fc4;
+	--p-c3: #1f4f86;
+	--p-c4: #b07d00;
+	--p-c5: #2e8b57;
+	--p-c6: #0b4f30;
 
 	/* J6-A8: una sola escala de espacios para todo el panel. */
 	--p-esp-1: 4px;
@@ -113,6 +122,12 @@
 	--p-n-i: #a690d6;
 	--p-n-a: #d784a9;
 	--p-uno: var(--p-marino);
+	--p-c1: #8c99a0;
+	--p-c2: #a9c8e8;
+	--p-c3: #5f97d1;
+	--p-c4: #d2a73c;
+	--p-c5: #8fd1ab;
+	--p-c6: #3f8f63;
 }
 
 .pnl *,
@@ -2600,4 +2615,53 @@ html:has(.pnl) {
 }
 .pnl-tb-prog.ojo i {
 	background: var(--p-ambar);
+}
+
+/* PQ-113: tarjetas del tablero con su alto natural y 20 px entre grupos. */
+.pnl-tb-dos {
+	align-items: start;
+}
+.pnl-tb-grupo {
+	margin-bottom: var(--p-esp-tarjetas);
+}
+.pnl-tb-grupo .pnl-ganadores-w {
+	margin-top: var(--p-esp-tarjetas);
+}
+/* PQ-114: cifra y "de N (p %)" en una sola línea; el rango del nivel debajo. */
+.pnl-tb-valor {
+	font-size: 40px;
+	white-space: nowrap;
+}
+.pnl-tb-valor small {
+	font-size: 17px;
+}
+.pnl .pnl-tb-cifra {
+	padding: var(--p-esp-4);
+}
+.pnl-tb-barras small {
+	display: block;
+}
+
+/* PQ-115: el nivel del caso con su color fijo, siempre con el texto. */
+.pnl-nivel {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	font-weight: 600;
+	white-space: nowrap;
+}
+.pnl-nivel i {
+	width: 12px;
+	height: 12px;
+	border-radius: 3px;
+	flex: none;
+}
+.pnl-nivel.nivel-S i {
+	background: var(--p-n-s);
+}
+.pnl-nivel.nivel-I i {
+	background: var(--p-n-i);
+}
+.pnl-nivel.nivel-A i {
+	background: var(--p-n-a);
 }

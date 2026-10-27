@@ -13,6 +13,7 @@ import {
 } from "@/lib/admin/evaluacion";
 import { AparecerSi } from "@/components/admin/panel/Aparece";
 import { ResultadoJunto, textoBoton as textoSegun, useAccion } from "@/components/admin/panel/Resultado";
+import { ChipNivel } from "@/components/admin/panel/Estados";
 
 /**
  * Formulario de la planilla: F1, F2 y F3 (1 a 3) con la rúbrica del
@@ -119,7 +120,7 @@ export function FormCalificacion({
 							/>
 							<span>
 								<b>
-									{k}: {NIVELES[k]} (valor de fondo {RANGOS[k][0]} a {RANGOS[k][1]})
+									<ChipNivel ct={k} texto={`${k}: ${NIVELES[k]}`} /> (valor de fondo {RANGOS[k][0]} a {RANGOS[k][1]})
 								</b>{" "}
 								{rubrica.fondo[k].como}
 							</span>
@@ -215,7 +216,7 @@ export function TarjetaCalificacion({ c, titulo }: { c: CalificacionOut; titulo:
 				<div>
 					<dt>Nivel</dt>
 					<dd>
-						{c.ct}: {NIVELES[c.ct]}
+						<ChipNivel ct={c.ct} texto={`${c.ct}: ${NIVELES[c.ct]}`} />
 					</dd>
 				</div>
 				<div>

@@ -20,7 +20,7 @@ import {
 	type FiltroBandeja,
 } from "@/lib/admin/evaluacion";
 import { EstadoEval } from "@/components/admin/evaluacion/EstadoEval";
-import { ChipEstado, IconoAviso } from "@/components/admin/panel/Estados";
+import { ChipNivel, ChipEstado, IconoAviso } from "@/components/admin/panel/Estados";
 import { CabezaPestana, EncabezadoEvaluacion } from "@/components/admin/evaluacion/SubNav";
 import { diaLargo, pedirCalendario, textoRestante, type Calendario } from "@/lib/admin/calendario";
 import { Aparece, AparecerSi } from "@/components/admin/panel/Aparece";
@@ -318,7 +318,11 @@ function Bandeja_() {
 										<div>
 											<dt>Oficial</dt>
 											<dd className="pnl-veces">
-												{p.oficial.ct ? `${NIVELES[p.oficial.ct]}, ` : ""}
+												{p.oficial.ct ? (
+													<>
+														<ChipNivel ct={p.oficial.ct} texto={NIVELES[p.oficial.ct]} />{" "}
+													</>
+												) : null}
 												{p.oficial.total} puntos
 												{p.oficial.valida === false ? " (no válida)" : ""}
 											</dd>

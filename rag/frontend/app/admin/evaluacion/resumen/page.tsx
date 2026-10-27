@@ -18,7 +18,7 @@ import {
 	type Premios,
 	type ResumenEjercicio,
 } from "@/lib/admin/evaluacion";
-import { ChipEstado, IconoAviso, IconoDescargar } from "@/components/admin/panel/Estados";
+import { ChipNivel, ChipEstado, IconoAviso, IconoDescargar } from "@/components/admin/panel/Estados";
 import { CabezaPestana, EncabezadoEvaluacion } from "@/components/admin/evaluacion/SubNav";
 import { ResultadoJunto, useAccion } from "@/components/admin/panel/Resultado";
 import { Aparece } from "@/components/admin/panel/Aparece";
@@ -95,11 +95,15 @@ export default function PaginaResumenEjercicio() {
 			) : null}
 			{!resumen && !error ? <p className="pnl-cargando">Cargando resumen…</p> : null}
 
-			{resumen ? <Tablero resumen={resumen} comite={comite} /> : null}
+			{resumen ? (
+				<Tablero
+					resumen={resumen}
+					comite={comite}
+					ganadores={comite && premios ? <Ganadores premios={premios} cerrado={!!resumen.cerrado} /> : null}
+				/>
+			) : null}
 
-			{comite && premios ? <Ganadores premios={premios} cerrado={!!resumen?.cerrado} /> : null}
 			{comite && resumen ? <Concordancia resumen={resumen} /> : null}
-			{comite && premios ? <PorValidar premios={premios} /> : null}
 			{comite && premios ? <SeccionPremios premios={premios} onCambio={setPremios} /> : null}
 			{!comite && resumen ? (
 				<p className="pnl-nota">Los premios y la descarga de la planilla los ve el comité.</p>
@@ -108,33 +112,6 @@ export default function PaginaResumenEjercicio() {
 	);
 }
 
-/**
- * Reunión del 20-oct (T2): nada cuenta para premios hasta que la validación
- * jurídica esté de acuerdo con las dos evaluaciones de la pregunta.
- */
-function PorValidar({ premios }: { premios: Premios }) {
-	const n = premios.por_validar;
-	if (!premios.solo_revisadas || n === 0) return null;
-	return (
-		<section className="pnl-aviso" aria-labelledby="t-por-validar">
-			<IconoAviso />
-			<div>
-				<h2 id="t-por-validar" className="pnl-aviso-titulo">
-					{n === 1 ? "Falta 1 evaluación" : `Faltan ${numero(n)} evaluaciones`} por validar
-				</h2>
-				<p>
-					Todavía no cuentan para los premios: según el documento del ejercicio, el comité valida todas las
-					evaluaciones.
-				</p>
-				<div className="pnl-acciones">
-					<a className="pnl-btn-sec" href="/admin/evaluacion/validar">
-						Ir a validar
-					</a>
-				</div>
-			</div>
-		</section>
-	);
-}
 
 function SeccionPremios({ premios, onCambio }: { premios: Premios; onCambio: (p: Premios) => void }) {
 	const [verTodos, setVerTodos] = useState(false);
@@ -309,7 +286,9 @@ function Ganadores({ premios, cerrado }: { premios: Premios; cerrado: boolean })
 					const r = premios.mejor_pregunta[n];
 					return (
 						<li key={n}>
-							<p className="pnl-ganador-tit">Mejor pregunta: nivel {NIVELES[n].toLowerCase()}</p>
+							<p className="pnl-ganador-tit">
+								Mejor pregunta: <ChipNivel ct={n} texto={`nivel ${NIVELES[n].toLowerCase()}`} />
+							</p>
 							{r.ganadora ? (
 								<>
 									<p className="pnl-ganador-quien">{r.ganadora.codigo}</p>
@@ -365,7 +344,7 @@ function Concordancia({ resumen }: { resumen: ResumenEjercicio }) {
 				<div className="pnl-cifra">
 					<dt>Mismo nivel</dt>
 					<dd>
-						<span className="pnl-valor num">{c.mismo_nivel}%</span>
+						<span className="pnl-valor num">{c.mismo_nivel}&nbsp;%</span>
 					</dd>
 				</div>
 				<div className="pnl-cifra">
@@ -383,7 +362,7 @@ function Concordancia({ resumen }: { resumen: ResumenEjercicio }) {
 				<div className="pnl-cifra">
 					<dt>Misma validez</dt>
 					<dd>
-						<span className="pnl-valor num">{c.misma_validez}%</span>
+						<span className="pnl-valor num">{c.misma_validez}&nbsp;%</span>
 					</dd>
 				</div>
 			</dl>
@@ -441,7 +420,7 @@ function NivelPremio({
 			<div className="pnl-fila-q">
 				<div className="pnl-titulo-estado">
 					<p className="pnl-fila-titulo" style={{ margin: 0 }}>
-						Nivel {NIVELES[k].toLowerCase()}
+						<ChipNivel ct={k} texto={`Nivel ${NIVELES[k].toLowerCase()}`} />
 					</p>
 					{elegida ? (
 						<ChipEstado tono="bien">Elegida por el comité</ChipEstado>
