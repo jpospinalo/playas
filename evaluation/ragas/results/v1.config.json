@@ -1,0 +1,19 @@
+{
+  "config": {
+    "k": 4,
+    "k_candidates": 8,
+    "query": "raw",
+    "doc_types": null,
+    "ragas": "0.4.3",
+    "ragas_threshold": 0.5,
+    "embedding_model": "embeddinggemma:latest",
+    "embedding_digest": "85462619ee721b466c5927d109d4cb765861907d5417b9109caebc4e614679f1",
+    "evidence_matching": "NFC + whitespace",
+    "document_rank": "deduplicated source stem NFC casefold",
+    "backend_sha256": "b1b1298e46520226eed6e289905b52c635f5f7642575ab44a91962b359ce31ce"
+  },
+  "config_hash": "6d9291d1a71f3524d328ceaf7dff6324e91dae378dd9de517775fcbcb8afb250",
+  "dataset_sha256": "32b4a3c511ab430c3313d9b00c49e605ddc80c7280cad9e8ab12469211720141",
+  "collection": "atlas_v1",
+  "validado_por_abogado": false
+}

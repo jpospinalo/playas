@@ -1,4 +1,9 @@
-# Preparación de evaluación de ingesta — detenida por presupuesto
+# Archivo histórico de preparación
+
+**Estado actual:** el diseño anterior con LLM fue sustituido por evaluación
+offline sin LLM. La línea base está ejecutada y congelada en `results/v1.jsonl`.
+Instrucciones actuales: [NIVEL_0.md](NIVEL_0.md). El texto siguiente documenta
+únicamente la preparación anterior, no el estado vigente del experimento.
 
 **No validado por abogados.** Las métricas futuras medirán fidelidad y mejora
 relativa; no demostrarán corrección jurídica. No hay resultados RAGAS nuevos.
