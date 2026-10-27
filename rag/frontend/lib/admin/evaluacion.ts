@@ -239,6 +239,11 @@ export function elegirGanadora(nivel: Ct, messageId: string): Promise<Premios> {
 	return llamar(`/premios/${nivel}/ganadora`, { method: "PUT", body: JSON.stringify({ message_id: messageId }) });
 }
 
+/** E1: las asignadas sin evaluar de un semillerista pasan a otro de su sede. */
+export function reasignarPendientes(evaluadorId: string): Promise<{ reasignadas: number; sin_destino: number }> {
+	return llamar("/reasignar", { method: "POST", body: JSON.stringify({ evaluador_id: evaluadorId, confirmar: true }) });
+}
+
 export async function descargarPlanilla(): Promise<void> {
 	const t = getToken();
 	if (!t) throw new Error("Su sesión se cerró. Vuelva a entrar.");

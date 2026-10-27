@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { fechaHora, mensajeError, numero } from "@/lib/admin/panel";
+import { reasignarPendientes } from "@/lib/admin/evaluacion";
 import {
 	ROLES,
 	SEDES,
@@ -446,6 +447,24 @@ function FilaCuenta({ cuenta, onCambiada }: { cuenta: Cuenta; onCambiada: (c: Cu
 	const [clave, setClave] = useState<string | null>(null);
 	const [error, setError] = useState<string | null>(null);
 	const [confirmarBaja, setConfirmarBaja] = useState(false);
+	const [confirmarReasignar, setConfirmarReasignar] = useState(false);
+	const [aviso, setAviso] = useState<string | null>(null);
+
+	// E1: sus preguntas sin evaluar pasan a otro semillerista de su sede.
+	async function reasignar() {
+		setError(null);
+		try {
+			const r = await reasignarPendientes(cuenta.uid);
+			setAviso(
+				r.reasignadas
+					? `${numero(r.reasignadas)} preguntas pasaron a otro semillerista de su sede.`
+					: "No tenía preguntas pendientes.",
+			);
+			setConfirmarReasignar(false);
+		} catch (e) {
+			setError(mensajeError(e, "No se pudo reasignar."));
+		}
+	}
 	const activa = cuenta.activa !== false;
 	const id = cuenta.uid.slice(0, 8);
 
@@ -513,11 +532,33 @@ function FilaCuenta({ cuenta, onCambiada }: { cuenta: Cuenta; onCambiada: (c: Cu
 						{error}
 					</p>
 				) : null}
+				{aviso ? (
+					<p className="pnl-ok" role="status">
+						{aviso}
+					</p>
+				) : null}
+				{confirmarReasignar ? (
+					<div className="pnl-confirmar" role="group" aria-labelledby={`re-${id}`}>
+						<p id={`re-${id}`}>
+							¿Pasar las preguntas sin evaluar de {cuenta.nombre || cuenta.correo} a los demás semilleristas de{" "}
+							{cuenta.sede ?? "su sede"}? Lo que ya evaluó se queda con su nombre.
+						</p>
+						<div className="pnl-acciones">
+							<button type="button" className="pnl-btn" onClick={reasignar}>
+								Sí, reasignar
+							</button>
+							<button type="button" className="pnl-btn-sec" onClick={() => setConfirmarReasignar(false)}>
+								Cancelar
+							</button>
+						</div>
+					</div>
+				) : null}
 				{confirmarBaja ? (
 					<div className="pnl-confirmar" role="group" aria-labelledby={`baja-${id}`}>
 						<p id={`baja-${id}`}>
 							¿Desactivar la cuenta de {cuenta.nombre || cuenta.correo}? No podrá entrar a ATLAS; sus preguntas y
 							calificaciones se conservan y se puede reactivar.
+							{cuenta.rol === "evaluador" ? " Las preguntas que tenía sin evaluar pasan a otro semillerista de su sede." : ""}
 						</p>
 						<div className="pnl-acciones">
 							<button type="button" className="pnl-btn" onClick={() => cambiarActiva(false)}>
@@ -605,6 +646,16 @@ function FilaCuenta({ cuenta, onCambiada }: { cuenta: Cuenta; onCambiada: (c: Cu
 					<button type="button" className="pnl-btn-sec" onClick={restablecer}>
 						Nueva clave<span className="sr"> para {cuenta.nombre || cuenta.correo}</span>
 					</button>
+					{cuenta.rol === "evaluador" && activa ? (
+						<button
+							type="button"
+							className="pnl-btn-sec"
+							onClick={() => setConfirmarReasignar(true)}
+							aria-expanded={confirmarReasignar}
+						>
+							Reasignar pendientes<span className="sr"> de {cuenta.nombre || cuenta.correo}</span>
+						</button>
+					) : null}
 					{activa ? (
 						<button
 							type="button"

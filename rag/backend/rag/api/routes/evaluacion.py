@@ -323,6 +323,92 @@ async def _asignar(
     return actuales
 
 
+async def reasignar_pendientes(
+    session: AsyncSession, evaluador_id: str, actor_id: str
+) -> dict[str, int]:
+    """E1: las asignadas de ``evaluador_id`` que aún no evaluó pasan a otro
+    semillerista activo de su misma sede (al de menos carga). Lo llama
+    Cuentas al desactivar una cuenta y el admin desde Evaluación. No hace
+    commit: lo hace quien llama. Devuelve {"reasignadas": n, "sin_destino": m}."""
+    filas = (
+        await session.execute(
+            select(QuestionAssignment).where(QuestionAssignment.evaluador_id == evaluador_id)
+        )
+    ).scalars()
+    filas = list(filas)
+    if not filas:
+        return {"reasignadas": 0, "sin_destino": 0}
+    evaluadas = {
+        mid
+        for (mid,) in (
+            await session.execute(
+                select(QuestionEvaluation.message_id).where(
+                    QuestionEvaluation.evaluador_id == evaluador_id
+                )
+            )
+        ).all()
+    }
+    con_final = {
+        mid
+        for (mid,) in (
+            await session.execute(
+                select(QuestionEvaluation.message_id).where(QuestionEvaluation.es_final.is_(True))
+            )
+        ).all()
+    }
+    pendientes = [
+        a for a in filas if a.message_id not in evaluadas and a.message_id not in con_final
+    ]
+    inactivas = set(
+        (
+            await session.execute(
+                select(AccountStatus.user_id).where(AccountStatus.activa.is_(False))
+            )
+        )
+        .scalars()
+        .all()
+    ) | {evaluador_id}
+    carga: dict[str, int] = {}
+    destinos: dict[str, list[str]] = {}
+    for uid, sede in (
+        await session.execute(
+            select(User.id, ExerciseProfile.sede)
+            .join(ExerciseProfile, ExerciseProfile.user_id == User.id)
+            .where(User.role == "evaluador", ExerciseProfile.sede.is_not(None))
+            .order_by(User.id)
+        )
+    ).all():
+        if uid not in inactivas:
+            destinos.setdefault(sede, []).append(uid)
+            carga[uid] = 0
+    for (ev,) in (await session.execute(select(QuestionAssignment.evaluador_id))).all():
+        if ev in carga:
+            carga[ev] += 1
+    n = sin = 0
+    for a in pendientes:
+        candidatos = destinos.get(a.sede, [])
+        if not candidatos:
+            sin += 1
+            continue
+        menor = min(carga[u] for u in candidatos)
+        elegido = random.Random(f"{a.message_id}|{a.sede}|re").choice(
+            [u for u in candidatos if carga[u] == menor]
+        )
+        a.reasignada_de = evaluador_id
+        a.evaluador_id = elegido
+        carga[elegido] += 1
+        n += 1
+    if n:
+        auditoria.registrar(
+            session,
+            actor_id,
+            "reasignar_pendientes",
+            evaluador_id,
+            {"cantidad": n, "sin_destino": sin},
+        )
+    return {"reasignadas": n, "sin_destino": sin}
+
+
 async def _sede(session: AsyncSession, user_id: str) -> str | None:
     perfil = await session.get(ExerciseProfile, user_id)
     return perfil.sede if perfil else None
@@ -463,6 +549,27 @@ def _puede_evaluar(p: _Pregunta, user_id: str, rol: str, sede: str | None) -> st
 ESTADOS_FILTRO = Literal[
     "pendientes", "mias", "con_diferencias", "por_validar", "finalizadas", "todas"
 ]
+
+
+class ReasignarIn(BaseModel):
+    evaluador_id: str
+    confirmar: Literal[True]
+
+
+@router.post("/reasignar")
+async def reasignar(
+    payload: ReasignarIn,
+    user: dict = Depends(require_comite),
+    session: AsyncSession = Depends(get_session),
+) -> dict[str, int]:
+    """E1: el admin o el comité pasan las pendientes de un semillerista (que
+    no ha podido evaluar) a los demás de su sede."""
+    ev = await session.get(User, payload.evaluador_id)
+    if ev is None or ev.role != "evaluador":
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Semillerista no encontrado.")
+    r = await reasignar_pendientes(session, payload.evaluador_id, user["sub"])
+    await session.commit()
+    return r
 
 
 @router.get("/catalogo")

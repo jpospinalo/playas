@@ -414,6 +414,11 @@ async def cambiar(
         auditoria.registrar(
             session, admin["sub"], "activar_cuenta" if activa else "desactivar_cuenta", uid
         )
+        if not activa and user.role == "evaluador":
+            # E1: sus preguntas sin evaluar pasan a los demás de su sede.
+            from rag.api.routes.evaluacion import reasignar_pendientes
+
+            await reasignar_pendientes(session, uid, admin["sub"])
     await session.commit()
     n = (
         await session.execute(

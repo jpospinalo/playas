@@ -636,3 +636,27 @@ def test_validacion_juridica_conversacion_y_pertinencia(cliente) -> None:
     assert premios["mejor_pregunta"]["I"]["ganadora"] is None
     costera = c.get("/api/evaluacion/validacion/bandeja?estado=todas", headers=CAM).json()
     assert costera["tipo"] == "costero" and costera["items"][0]["pertinente"] is False
+
+
+def test_reasignar_pendientes_de_un_semillerista(cliente) -> None:
+    """E1: las asignadas sin evaluar de un semillerista pasan al otro de su
+    sede; lo ya evaluado se queda con quien lo evaluó."""
+    c = cliente
+    SM, SM2, BQ, SIN, COM, USER = _hs()  # noqa: N806
+
+    def numeros(h: dict[str, str]) -> set[int]:
+        r = c.get("/api/evaluacion/bandeja?estado=todas", headers=h).json()
+        return {i["numero"] for i in r["items"]}
+
+    antes_sm, antes_sm2 = numeros(SM), numeros(SM2)
+    assert antes_sm  # tiene alguna
+    mid = {1: "q1", 2: "q2", 3: "q3"}[min(antes_sm)]
+    c.put(f"/api/evaluacion/preguntas/{mid}/mia", headers=SM, json=_cal_json("S", 4))
+    url = "/api/evaluacion/reasignar"
+    cuerpo = {"evaluador_id": "sm", "confirmar": True}
+    assert c.post(url, headers=SM2, json=cuerpo).status_code == 403
+    assert c.post(url, headers=COM, json={"evaluador_id": "sm"}).status_code == 422
+    r = c.post(url, headers=COM, json=cuerpo).json()
+    assert r == {"reasignadas": len(antes_sm) - 1, "sin_destino": 0}
+    assert numeros(SM) == {min(antes_sm)}  # solo la que ya evaluó
+    assert numeros(SM2) == antes_sm2 | (antes_sm - {min(antes_sm)})

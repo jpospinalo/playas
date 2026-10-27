@@ -30,6 +30,7 @@ ACCIONES = {
     "validar_concordantes": "Validó concordantes en lote",
     "validar_lote": "Marcó de acuerdo varias evaluaciones",
     "elegir_ganadora": "Eligió la ganadora de un nivel",
+    "reasignar_pendientes": "Reasignó preguntas pendientes",
 }
 
 
