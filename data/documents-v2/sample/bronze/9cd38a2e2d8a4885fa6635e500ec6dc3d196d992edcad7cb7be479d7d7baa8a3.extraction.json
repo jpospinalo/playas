@@ -1,0 +1,16 @@
+{
+  "chars_per_page": [
+    933
+  ],
+  "doc_id": "9cd38a2e2d8a4885fa6635e500ec6dc3d196d992edcad7cb7be479d7d7baa8a3",
+  "errors": [],
+  "extractor": "PyMuPDF",
+  "extractor_library_version": "1.26.5",
+  "extractor_version": "pymupdf-tesseract-spa-2",
+  "ocr_confidence": {},
+  "ocr_engine": null,
+  "ocr_failed_pages": [],
+  "ocr_pages": [],
+  "original_file": "9cd38a2e2d8a4885fa6635e500ec6dc3d196d992edcad7cb7be479d7d7baa8a3.pdf",
+  "sha256": "9cd38a2e2d8a4885fa6635e500ec6dc3d196d992edcad7cb7be479d7d7baa8a3"
+}

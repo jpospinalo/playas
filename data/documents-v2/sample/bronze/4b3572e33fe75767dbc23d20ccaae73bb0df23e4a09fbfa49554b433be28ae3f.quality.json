@@ -1,0 +1,65 @@
+{
+  "chars_per_page": {
+    "bandera": "verde",
+    "umbral": {
+      "amarillo": 40,
+      "direccion": "min",
+      "verde": 80
+    },
+    "valor": 1349
+  },
+  "extracted_chars": {
+    "bandera": "verde",
+    "umbral": {
+      "amarillo": 80,
+      "direccion": "min",
+      "verde": 200
+    },
+    "valor": 7542
+  },
+  "extraction_errors": {
+    "bandera": "verde",
+    "umbral": {
+      "amarillo": 0,
+      "direccion": "max",
+      "verde": 0
+    },
+    "valor": 0
+  },
+  "near_empty_pct": {
+    "bandera": "verde",
+    "umbral": {
+      "amarillo": 20,
+      "direccion": "max",
+      "verde": 5
+    },
+    "valor": 0.0
+  },
+  "ocr_confidence": {
+    "bandera": "no medido",
+    "umbral": {
+      "amarillo": 60,
+      "direccion": "min",
+      "verde": 85
+    },
+    "valor": null
+  },
+  "ocr_pct": {
+    "bandera": "verde",
+    "umbral": {
+      "amarillo": 75,
+      "direccion": "max",
+      "verde": 25
+    },
+    "valor": 0.0
+  },
+  "pages": {
+    "bandera": "verde",
+    "umbral": {
+      "amarillo": 1,
+      "direccion": "min",
+      "verde": 1
+    },
+    "valor": 3
+  }
+}

@@ -1,0 +1,261 @@
+{
+  "cleaned": {
+    "normalizer_version": "nfc-mapped-1",
+    "offset_map": [
+      {
+        "clean_end": 22,
+        "clean_start": 0,
+        "source_end": 34,
+        "source_start": 12
+      },
+      {
+        "clean_end": 39,
+        "clean_start": 22,
+        "source_end": 78,
+        "source_start": 61
+      },
+      {
+        "clean_end": 117,
+        "clean_start": 39,
+        "source_end": 157,
+        "source_start": 79
+      },
+      {
+        "clean_end": 217,
+        "clean_start": 117,
+        "source_end": 288,
+        "source_start": 188
+      },
+      {
+        "clean_end": 219,
+        "clean_start": 217,
+        "source_end": 292,
+        "source_start": 290
+      },
+      {
+        "clean_end": 228,
+        "clean_start": 219,
+        "source_end": 303,
+        "source_start": 294
+      },
+      {
+        "clean_end": 231,
+        "clean_start": 228,
+        "source_end": 308,
+        "source_start": 305
+      },
+      {
+        "clean_end": 240,
+        "clean_start": 231,
+        "source_end": 319,
+        "source_start": 310
+      },
+      {
+        "clean_end": 244,
+        "clean_start": 240,
+        "source_end": 325,
+        "source_start": 321
+      },
+      {
+        "clean_end": 255,
+        "clean_start": 244,
+        "source_end": 338,
+        "source_start": 327
+      },
+      {
+        "clean_end": 259,
+        "clean_start": 255,
+        "source_end": 344,
+        "source_start": 340
+      },
+      {
+        "clean_end": 347,
+        "clean_start": 259,
+        "source_end": 434,
+        "source_start": 346
+      },
+      {
+        "clean_end": 779,
+        "clean_start": 347,
+        "source_end": 892,
+        "source_start": 460
+      },
+      {
+        "clean_end": 786,
+        "clean_start": 779,
+        "source_end": 900,
+        "source_start": 893
+      },
+      {
+        "clean_end": 793,
+        "clean_start": 786,
+        "source_end": 908,
+        "source_start": 901
+      },
+      {
+        "clean_end": 800,
+        "clean_start": 793,
+        "source_end": 916,
+        "source_start": 909
+      },
+      {
+        "clean_end": 802,
+        "clean_start": 800,
+        "source_end": 919,
+        "source_start": 917
+      },
+      {
+        "clean_end": 817,
+        "clean_start": 802,
+        "source_end": 935,
+        "source_start": 920
+      },
+      {
+        "clean_end": 826,
+        "clean_start": 817,
+        "source_end": 945,
+        "source_start": 936
+      },
+      {
+        "clean_end": 830,
+        "clean_start": 826,
+        "source_end": 950,
+        "source_start": 946
+      },
+      {
+        "clean_end": 833,
+        "clean_start": 830,
+        "source_end": 954,
+        "source_start": 951
+      },
+      {
+        "clean_end": 1049,
+        "clean_start": 833,
+        "source_end": 1171,
+        "source_start": 955
+      },
+      {
+        "clean_end": 1111,
+        "clean_start": 1049,
+        "source_end": 1274,
+        "source_start": 1212
+      },
+      {
+        "clean_end": 1133,
+        "clean_start": 1111,
+        "source_end": 1349,
+        "source_start": 1327
+      }
+    ],
+    "pages": [
+      {
+        "clean_end": 1133,
+        "clean_start": 0,
+        "page": 1,
+        "source_end": 1349,
+        "source_start": 0
+      }
+    ],
+    "removed_furniture_keys": [],
+    "text": "DECRETO 4440 DE 2008\n (noviembre 25)\n\n por el cual se modifica el artículo 16 del Decreto 3888 del 10 de octubre de\n 2007.\n\nEl Presidente de la República de Colombia, en ejercicio de sus atribuciones\nconstitucionales y legales, en especial las conferidas por los\nartículos 189 numeral 11 de la Constitución Política y 7° del Decreto 93 de 1998,\n\n DECRETA:\n\nArtículo 1°. Modifícase el artículo 16 del Decreto 3888 del 10 de octubre de 2007,\nel cual quedará así:\n\n“Artículo 16. Escenarios no permitidos. No se permitirá la realización de eventos\nde afluencia masiva de público en estructuras ecológicas que cumplan una\nfinalidad ambiental pasiva y paisajística o que sirvan como corredores verdes\nurbanos, como las rondas de ríos y canales y las reservas forestales. El uso de\nlas playas estará sujeto a reglamentación expedida por la respectiva\nadministración local y/o la capitanía de puerto”.\n\nArtículo 2°. El presente decreto rige a partir de su publicación.\n\nPublíquese, comuníquese y cúmplase.\n\nDado en Bogotá, D. C, a 25 de noviembre de 2008\n\n ÁLVARO URIBE VÉLEZ\n\nEl Ministro del Interior y de Justicia,\n\n Fabio Valencia Cossio."
+  },
+  "doc_type": "normativa",
+  "metadata": {
+    "campos": {
+      "ambito": {
+        "confianza": 0.0,
+        "evidencia": null,
+        "razon": "sin_evidencia",
+        "valor": null
+      },
+      "anio": {
+        "confianza": 0.9,
+        "evidencia": "DECRETO 4440 DE 2008",
+        "razon": null,
+        "valor": 2008
+      },
+      "clase": {
+        "confianza": 0.0,
+        "evidencia": null,
+        "razon": "sin_evidencia",
+        "valor": null
+      },
+      "corporacion": {
+        "confianza": 0.0,
+        "evidencia": null,
+        "razon": "sin_evidencia",
+        "valor": null
+      },
+      "fecha_iso": {
+        "confianza": 0.85,
+        "evidencia": "10 de octubre de\n                                2007",
+        "razon": null,
+        "valor": "2007-10-10"
+      },
+      "magistrado_ponente": {
+        "confianza": 0.0,
+        "evidencia": null,
+        "razon": "sin_evidencia",
+        "valor": null
+      },
+      "municipio": {
+        "confianza": 0.0,
+        "evidencia": null,
+        "razon": "sin_evidencia",
+        "valor": null
+      },
+      "normas_citadas": {
+        "confianza": 0.8,
+        "evidencia": [
+          "DECRETO 4440 DE 2008",
+          "artículo 16",
+          "Decreto 3888",
+          "Decreto 93 de 1998",
+          "Artículo 1",
+          "Artículo 16.",
+          "Artículo 2"
+        ],
+        "razon": null,
+        "valor": [
+          "DECRETO 4440 DE 2008",
+          "artículo 16",
+          "Decreto 3888",
+          "Decreto 93 de 1998",
+          "Artículo 1",
+          "Artículo 16.",
+          "Artículo 2"
+        ]
+      },
+      "numero": {
+        "confianza": 0.9,
+        "evidencia": "DECRETO 4440 DE 2008",
+        "razon": null,
+        "valor": "4440"
+      },
+      "radicado": {
+        "confianza": 0.0,
+        "evidencia": null,
+        "razon": "sin_evidencia",
+        "valor": null
+      },
+      "sala": {
+        "confianza": 0.0,
+        "evidencia": null,
+        "razon": "sin_evidencia",
+        "valor": null
+      },
+      "tipo_documento": {
+        "confianza": 0.9,
+        "evidencia": "DECRETO 4440 DE 2008",
+        "razon": null,
+        "valor": "Decreto"
+      }
+    },
+    "cobertura_csv": {},
+    "conflictos": [],
+    "metadata_curada": {},
+    "origen_csv": {},
+    "schema_version": "legal-metadata-2"
+  },
+  "source_path": "normativa/Por el cual se modifica el artículo 16 del Decreto 3888 del 10 de octubre de 2007.pdf"
+}

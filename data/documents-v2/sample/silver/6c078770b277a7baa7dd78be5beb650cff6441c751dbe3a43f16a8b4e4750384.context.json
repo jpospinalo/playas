@@ -1,0 +1,337 @@
+{
+  "cleaned": {
+    "normalizer_version": "nfc-mapped-1",
+    "offset_map": [
+      {
+        "clean_end": 369,
+        "clean_start": 0,
+        "source_end": 371,
+        "source_start": 2
+      },
+      {
+        "clean_end": 513,
+        "clean_start": 369,
+        "source_end": 516,
+        "source_start": 372
+      },
+      {
+        "clean_end": 523,
+        "clean_start": 513,
+        "source_end": 552,
+        "source_start": 542
+      },
+      {
+        "clean_end": 535,
+        "clean_start": 523,
+        "source_end": 590,
+        "source_start": 578
+      },
+      {
+        "clean_end": 568,
+        "clean_start": 535,
+        "source_end": 641,
+        "source_start": 608
+      },
+      {
+        "clean_end": 918,
+        "clean_start": 568,
+        "source_end": 993,
+        "source_start": 643
+      },
+      {
+        "clean_end": 927,
+        "clean_start": 918,
+        "source_end": 1004,
+        "source_start": 995
+      },
+      {
+        "clean_end": 940,
+        "clean_start": 927,
+        "source_end": 1018,
+        "source_start": 1005
+      },
+      {
+        "clean_end": 943,
+        "clean_start": 940,
+        "source_end": 1022,
+        "source_start": 1019
+      },
+      {
+        "clean_end": 958,
+        "clean_start": 943,
+        "source_end": 1038,
+        "source_start": 1023
+      },
+      {
+        "clean_end": 967,
+        "clean_start": 958,
+        "source_end": 1048,
+        "source_start": 1039
+      },
+      {
+        "clean_end": 981,
+        "clean_start": 967,
+        "source_end": 1063,
+        "source_start": 1049
+      },
+      {
+        "clean_end": 1098,
+        "clean_start": 981,
+        "source_end": 1181,
+        "source_start": 1064
+      },
+      {
+        "clean_end": 1366,
+        "clean_start": 1098,
+        "source_end": 1450,
+        "source_start": 1182
+      },
+      {
+        "clean_end": 1396,
+        "clean_start": 1366,
+        "source_end": 1481,
+        "source_start": 1451
+      },
+      {
+        "clean_end": 1400,
+        "clean_start": 1396,
+        "source_end": 1486,
+        "source_start": 1482
+      },
+      {
+        "clean_end": 1426,
+        "clean_start": 1400,
+        "source_end": 1513,
+        "source_start": 1487
+      },
+      {
+        "clean_end": 1501,
+        "clean_start": 1426,
+        "source_end": 1589,
+        "source_start": 1514
+      },
+      {
+        "clean_end": 1609,
+        "clean_start": 1501,
+        "source_end": 1699,
+        "source_start": 1591
+      },
+      {
+        "clean_end": 1634,
+        "clean_start": 1609,
+        "source_end": 1725,
+        "source_start": 1700
+      },
+      {
+        "clean_end": 1776,
+        "clean_start": 1634,
+        "source_end": 1868,
+        "source_start": 1726
+      },
+      {
+        "clean_end": 1785,
+        "clean_start": 1776,
+        "source_end": 1879,
+        "source_start": 1870
+      },
+      {
+        "clean_end": 1802,
+        "clean_start": 1785,
+        "source_end": 1897,
+        "source_start": 1880
+      },
+      {
+        "clean_end": 1819,
+        "clean_start": 1802,
+        "source_end": 1915,
+        "source_start": 1898
+      },
+      {
+        "clean_end": 1981,
+        "clean_start": 1819,
+        "source_end": 2078,
+        "source_start": 1916
+      },
+      {
+        "clean_end": 1994,
+        "clean_start": 1981,
+        "source_end": 2117,
+        "source_start": 2104
+      },
+      {
+        "clean_end": 2045,
+        "clean_start": 1994,
+        "source_end": 2176,
+        "source_start": 2125
+      },
+      {
+        "clean_end": 2054,
+        "clean_start": 2045,
+        "source_end": 2187,
+        "source_start": 2178
+      },
+      {
+        "clean_end": 2068,
+        "clean_start": 2054,
+        "source_end": 2202,
+        "source_start": 2188
+      },
+      {
+        "clean_end": 2084,
+        "clean_start": 2068,
+        "source_end": 2219,
+        "source_start": 2203
+      },
+      {
+        "clean_end": 2087,
+        "clean_start": 2084,
+        "source_end": 2223,
+        "source_start": 2220
+      },
+      {
+        "clean_end": 2113,
+        "clean_start": 2087,
+        "source_end": 2250,
+        "source_start": 2224
+      },
+      {
+        "clean_end": 2300,
+        "clean_start": 2113,
+        "source_end": 2438,
+        "source_start": 2251
+      },
+      {
+        "clean_end": 2474,
+        "clean_start": 2300,
+        "source_end": 2613,
+        "source_start": 2439
+      },
+      {
+        "clean_end": 2651,
+        "clean_start": 2474,
+        "source_end": 2791,
+        "source_start": 2614
+      },
+      {
+        "clean_end": 2835,
+        "clean_start": 2651,
+        "source_end": 2976,
+        "source_start": 2792
+      },
+      {
+        "clean_end": 2990,
+        "clean_start": 2835,
+        "source_end": 3133,
+        "source_start": 2978
+      }
+    ],
+    "pages": [
+      {
+        "clean_end": 2990,
+        "clean_start": 0,
+        "page": 1,
+        "source_end": 3133,
+        "source_start": 0
+      }
+    ],
+    "removed_furniture_keys": [],
+    "text": "Que se hace necesario establecer un procedimiento ágil, eficaz, sencillo y\noportuno a fin de conjurarla problemática portuaria de la isla y sus alrededores,\nque le permita evitar el deterioro total de las instalaciones portuarias existentes\npor falta de mantenimiento y lograr un funcionamiento continuo y eficiente de\nlos puertos de este territorio insular del país;\n Por lo anterior el Gobierno Nacional debe regular la actividad portuaria del\nmuelle departamental de San Andrés, Providencia y Santa Catalina,\n DECRETA:\n CAPITULO I\n Oferta oficiosa de la concesión\n Artículo 1°.Oferta pública. La Gobernación del Departamento Archipiélago de\nSan Andrés, Providencia y Santa Catalina, ofrecerá públicamente la concesión\nportuaria sobre el denominado muelle departamental construido en terrenos\nconsolidados de propiedad del departamento y la correspondiente zona de uso\npúblico, denominada zona accesoria al muelle.\n Artículo 2°.Solicitud de concesión. Las personas jurídicas que deseen\nparticipar para obtener la concesión portuaria para la operación, administración,\nconservación y mejoramiento del muelle departamental del departamento\nArchipiélago de San Andrés, Providencia y Santa Catalina y zonas accesorias de\nuso público, para prestar servicio público de comercio exterior y nacional, de\ncargue, descargue y almacenamiento de mercancías, deberán presentar la\nsolicitud de concesión con los requisitos que establezca el departamento\nArchipiélago de San Andrés, Providencia y Santa Catalina.\n Artículo 3°.La sociedad y sus socios. Las sociedades que deseen participar en\nel proceso de otorgamiento de la concesión deben tener las calidades y\ncondiciones que fije en los términos de referencia el departamento Archipiélago\nde San Andrés, Providencia y Santa Catalina.\n Artículo 4°.Participación del departamento archipiélago. El departamento\npodrá tener en la sociedad que se seleccione y a la cual se le otorgue la\nconcesión, un aporte hasta de un 40% del capital social.\n CAPITULO II\n Trámite de otorgamiento de la concesión portuaria\n Artículo 5°.Análisis y conveniencia de la solicitud. La Gobernación del\nDepartamento Archipiélago de San Andrés, Providencia y Santa Catalina una vez\nseleccione la sociedad, deberá remitir copia de la solicitud y sus anexos a las\nsiguientes autoridades:\n Corporación Ambiental Coralina, a la Dirección General Marítima, Dimar y a la\nDirección Nacional de Impuestos Nacionales, para que se pronuncien sobre lo de\nsu competencia.\n Parágrafo 1º. Las autoridades antes enunciadas, tendrán un plazo de diez\n(10) días hábiles, contados a partir del envío de la documentación, para que\nhagan su pronunciamiento.\n Parágrafo 2º. En el evento que haya observaciones por parte de alguna de las\nentidades, la gobernación las analizará y si no hay lugar a ellas continuará con\nel trámite de concesión.\n Artículo 6°.Negación de la concesión. En el evento de que las ofertas resulten\ncontrarias a la ley, al plan de expansión portuaria, o que tengan un impacto"
+  },
+  "doc_type": "normativa",
+  "metadata": {
+    "campos": {
+      "ambito": {
+        "confianza": 0.6,
+        "evidencia": "Dirección General Marítima",
+        "razon": null,
+        "valor": "nacional"
+      },
+      "anio": {
+        "confianza": 0.0,
+        "evidencia": null,
+        "razon": "sin_evidencia",
+        "valor": null
+      },
+      "clase": {
+        "confianza": 0.0,
+        "evidencia": null,
+        "razon": "sin_evidencia",
+        "valor": null
+      },
+      "corporacion": {
+        "confianza": 0.85,
+        "evidencia": "Dirección General Marítima",
+        "razon": null,
+        "valor": "Dirección General Marítima"
+      },
+      "fecha_iso": {
+        "confianza": 0.0,
+        "evidencia": null,
+        "razon": "sin_evidencia",
+        "valor": null
+      },
+      "magistrado_ponente": {
+        "confianza": 0.0,
+        "evidencia": null,
+        "razon": "sin_evidencia",
+        "valor": null
+      },
+      "municipio": {
+        "confianza": 0.0,
+        "evidencia": null,
+        "razon": "sin_evidencia",
+        "valor": null
+      },
+      "normas_citadas": {
+        "confianza": 0.8,
+        "evidencia": [
+          "Artículo 1",
+          "Artículo  2",
+          "Artículo 3",
+          "Artículo  4",
+          "Artículo  5",
+          "Artículo 6"
+        ],
+        "razon": null,
+        "valor": [
+          "Artículo 1",
+          "Artículo  2",
+          "Artículo 3",
+          "Artículo  4",
+          "Artículo  5",
+          "Artículo 6"
+        ]
+      },
+      "numero": {
+        "confianza": 0.0,
+        "evidencia": null,
+        "razon": "sin_evidencia",
+        "valor": null
+      },
+      "radicado": {
+        "confianza": 0.0,
+        "evidencia": null,
+        "razon": "sin_evidencia",
+        "valor": null
+      },
+      "sala": {
+        "confianza": 0.0,
+        "evidencia": null,
+        "razon": "sin_evidencia",
+        "valor": null
+      },
+      "tipo_documento": {
+        "confianza": 0.0,
+        "evidencia": null,
+        "razon": "sin_evidencia",
+        "valor": null
+      }
+    },
+    "cobertura_csv": {},
+    "conflictos": [],
+    "metadata_curada": {},
+    "origen_csv": {},
+    "schema_version": "legal-metadata-2"
+  },
+  "source_path": "normativa/Por el cual se reglamenta parcialmente la Ley 47 del 19 de febrero de 1993.pdf"
+}
