@@ -38,7 +38,7 @@ export default function PaginaBandeja() {
 	// PQ-91: buscar por ID o participante y ver primero las más recientes.
 	const [borrador, setBorrador] = useState("");
 	const [buscar, setBuscar] = useState("");
-	const [orden, setOrden] = useState<"antiguas" | "recientes">("antiguas");
+	const [orden, setOrden] = useState<"antiguas" | "recientes">("recientes");
 	const [pagina, setPagina] = useState(1);
 	const [datos, setDatos] = useState<Bandeja | null>(null);
 	const [error, setError] = useState<string | null>(null);

@@ -39,7 +39,7 @@ export default function PaginaValidar() {
 	// PQ-91: buscar y ver primero las más recientes.
 	const [borrador, setBorrador] = useState("");
 	const [buscar, setBuscar] = useState("");
-	const [orden, setOrden] = useState<"antiguas" | "recientes">("antiguas");
+	const [orden, setOrden] = useState<"antiguas" | "recientes">("recientes");
 
 	useEffect(() => {
 		let vigente = true;
