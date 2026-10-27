@@ -68,7 +68,19 @@ export function textoBoton(
 
 /** El resultado junto al botón: ✓ texto, o el error fijo hasta corregirlo. */
 export function ResultadoJunto({ resultado, id }: { resultado: Resultado | null; id?: string }) {
+	// PQ-116: si el botón está al pie de la pantalla, el resultado se trae a la
+	// vista (lo justo, sin saltar arriba), cuando ya terminó de abrirse.
+	const caja = useRef<HTMLDivElement>(null);
+	useEffect(() => {
+		if (!resultado) return;
+		const t = setTimeout(() => {
+			const reducido = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+			caja.current?.scrollIntoView?.({ block: "nearest", behavior: reducido ? "auto" : "smooth" });
+		}, 200);
+		return () => clearTimeout(t);
+	}, [resultado]);
 	return (
+		<div ref={caja} className="pnl-resultado-w">
 		<AparecerSi valor={resultado}>
 			{(r) =>
 				r.tipo === "ok" ? (
@@ -82,6 +94,7 @@ export function ResultadoJunto({ resultado, id }: { resultado: Resultado | null;
 				)
 			}
 		</AparecerSi>
+		</div>
 	);
 }
 

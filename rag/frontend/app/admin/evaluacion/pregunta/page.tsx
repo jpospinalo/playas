@@ -160,7 +160,7 @@ function Ficha_() {
 								{/* PQ-93: la fija la validación jurídica o el admin, cuando ya hay calificaciones. */}
 								{ficha.puede_fijar_final && ficha.otras?.length ? (
 									<FormCalificacion
-										key={`final-${ficha.final ? "si" : "no"}`}
+										key={`final-${ficha.numero}`}
 										rubrica={rubrica}
 										inicial={ficha.final ?? ficha.otras?.[0] ?? null}
 										textoBoton={ficha.final ? "Actualizar la calificación final" : "Guardar la calificación final"}
@@ -189,7 +189,7 @@ function Ficha_() {
 								</p>
 							) : null}
 							<FormCalificacion
-								key={`mia-${ficha.mia ? "si" : "no"}`}
+								key={`mia-${ficha.numero}`}
 								rubrica={rubrica}
 								inicial={ficha.mia}
 								textoBoton={ficha.mia ? "Guardar cambios" : "Guardar calificación"}
