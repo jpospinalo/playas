@@ -46,6 +46,15 @@ export function Brechas({ datos, volver }: { datos: Resumen; volver: string }) {
 				</div>
 			) : null}
 			{lista.length ? (
+				<div className="pnl-filas-cab" aria-hidden="true">
+					<span>Pregunta</span>
+					<span className="lado">
+						<span>Veces</span>
+						<span>Problema</span>
+					</span>
+				</div>
+			) : null}
+			{lista.length ? (
 				<ol className="pnl-filas" aria-label="Preguntas donde falla ATLAS">
 					{lista.map((b) => (
 						<li key={`${b.conversation_id}-${b.pregunta}`} className="pnl-fila">
@@ -59,7 +68,7 @@ export function Brechas({ datos, volver }: { datos: Resumen; volver: string }) {
 								</p>
 								{b.esperaba ? <p className="pnl-esperaba">Esperaba: “{b.esperaba}”</p> : null}
 							</div>
-							<dl className="pnl-fila-estado">
+							<dl className="pnl-fila-estado pnl-dos">
 								<div>
 									<dt>Se repitió</dt>
 									<dd className="pnl-veces">

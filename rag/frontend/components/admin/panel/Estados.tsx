@@ -34,23 +34,6 @@ function IconoMal() {
 	);
 }
 
-function IconoNorma() {
-	return (
-		<svg viewBox="0 0 24 24" aria-hidden="true">
-			<path d="M4 6h16M4 12h16M4 18h10" />
-		</svg>
-	);
-}
-
-function IconoNeutro() {
-	return (
-		<svg viewBox="0 0 24 24" aria-hidden="true">
-			<circle cx="12" cy="12" r="9" />
-			<path d="M8 12h8" />
-		</svg>
-	);
-}
-
 export function IconoDescargar() {
 	return (
 		<svg
@@ -79,7 +62,6 @@ export function EstadoResultado({
 	if (resultado === "con_fuente") {
 		return (
 			<span className="pnl-estado bien">
-				<IconoNorma />
 				{textoResultado(resultado, fuentes, sentencias)}
 			</span>
 		);
@@ -92,19 +74,13 @@ export function EstadoResultado({
 			</span>
 		);
 	}
-	return (
-		<span className="pnl-estado neutro">
-			<IconoNeutro />
-			{textoResultado(resultado)}
-		</span>
-	);
+	return <span className="pnl-estado neutro">{textoResultado(resultado)}</span>;
 }
 
 export function EstadoCalificacion({ calificacion }: { calificacion: Calificacion | null }) {
 	if (calificacion === "util") {
 		return (
 			<span className="pnl-estado bien">
-				<IconoBien />
 				{ETIQUETA_CALIFICACION.util}
 			</span>
 		);
@@ -119,7 +95,6 @@ export function EstadoCalificacion({ calificacion }: { calificacion: Calificacio
 	}
 	return (
 		<span className="pnl-estado neutro">
-			<IconoNeutro />
 			{calificacion ? ETIQUETA_CALIFICACION[calificacion] : "No calificó"}
 		</span>
 	);

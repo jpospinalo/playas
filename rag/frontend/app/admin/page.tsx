@@ -511,7 +511,7 @@ function Contenido({
 			</div>
 
 			<div className="pnl-grid">
-				<section className="pnl-bloque pnl-c4" aria-labelledby="t-temas">
+				<section className="pnl-bloque pnl-c7" aria-labelledby="t-temas">
 					<div className="pnl-bloque-cab">
 						<div>
 							<h2 id="t-temas">Temas más preguntados</h2>
@@ -563,7 +563,8 @@ function Contenido({
 					</VerComoTabla>
 				</section>
 
-				<section className="pnl-bloque pnl-c4" aria-labelledby="t-normas">
+				<div className="pnl-pila">
+				<section className="pnl-bloque" aria-labelledby="t-normas">
 					<div className="pnl-bloque-cab">
 						<div>
 							<h2 id="t-normas">Normas y sentencias más citadas</h2>
@@ -622,7 +623,7 @@ function Contenido({
 					) : null}
 				</section>
 
-				<section className="pnl-bloque pnl-c4" aria-labelledby="t-playas">
+				<section className="pnl-bloque" aria-labelledby="t-playas">
 					<div className="pnl-bloque-cab">
 						<div>
 							<h2 id="t-playas">Playas mencionadas</h2>
@@ -646,6 +647,7 @@ function Contenido({
 						nombran ninguna playa.
 					</p>
 				</section>
+				</div>
 			</div>
 
 			<Recientes

@@ -142,6 +142,15 @@ export function Recientes({
 			) : null}
 
 			{datos && datos.items.length ? (
+				<div className="pnl-filas-cab" aria-hidden="true">
+					<span>Pregunta</span>
+					<span className="lado">
+						<span>Respuesta de ATLAS</span>
+						<span>¿Le sirvió?</span>
+					</span>
+				</div>
+			) : null}
+			{datos && datos.items.length ? (
 				<ol className="pnl-filas" aria-label={`Preguntas ${numero(desde)} a ${numero(hasta)} de ${numero(total)}`}>
 					{datos.items.map((p) => (
 						<li key={p.id} className="pnl-fila">
@@ -159,7 +168,7 @@ export function Recientes({
 								</p>
 								{p.esperaba ? <p className="pnl-esperaba">Esperaba: “{p.esperaba}”</p> : null}
 							</div>
-							<dl className="pnl-fila-estado">
+							<dl className="pnl-fila-estado pnl-dos">
 								<div>
 									<dt>ATLAS</dt>
 									<dd>
