@@ -6,6 +6,7 @@ Usage:
     python3 import_to_chromadb.py <file.jsonl.gz> [--host HOST] [--port PORT]
                                   [--collection NAME] [--batch-size N]
 """
+
 import argparse
 import gzip
 import json
@@ -15,19 +16,35 @@ from pathlib import Path
 
 import chromadb
 
-
 BATCH_SIZE = 100
 
 
-def parse_args():
+def positive_int(value):
+    parsed = int(value)
+    if parsed <= 0:
+        raise argparse.ArgumentTypeError("debe ser mayor que cero")
+    return parsed
+
+
+def parse_args(argv=None):
     parser = argparse.ArgumentParser(description="Import JSONL.GZ into ChromaDB")
     parser.add_argument("file", help="Path to the .jsonl.gz export file")
     parser.add_argument("--host", default=None, help="ChromaDB host (overrides manifest)")
     parser.add_argument("--port", type=int, default=None, help="ChromaDB port (overrides manifest)")
     parser.add_argument("--collection", default=None, help="Collection name (overrides manifest)")
-    parser.add_argument("--batch-size", type=int, default=BATCH_SIZE, help=f"Upsert batch size (default {BATCH_SIZE})")
-    parser.add_argument("--recreate", action="store_true", help="Delete and recreate the collection before importing")
-    return parser.parse_args()
+    parser.add_argument(
+        "--batch-size",
+        type=positive_int,
+        default=BATCH_SIZE,
+        help=f"Upsert batch size (default {BATCH_SIZE})",
+    )
+    parser.add_argument("--attempts", type=positive_int, choices=(1, 2), default=2)
+    parser.add_argument(
+        "--recreate",
+        action="store_true",
+        help="Delete and recreate the collection before importing",
+    )
+    return parser.parse_args(argv)
 
 
 def load_records(path: Path):
@@ -59,8 +76,39 @@ def upsert_batch(collection, batch):
     )
 
 
-def main():
-    args = parse_args()
+def import_records(collection, records, batch_size=BATCH_SIZE, attempts=2):
+    """Upsert idempotente, reintentos acotados y conciliación de IDs/conteo."""
+    if batch_size <= 0 or attempts not in (1, 2):
+        raise ValueError("batch-size positivo y attempts 1 o 2 requeridos")
+    ids = [r["id"] for r in records]
+    if len(set(ids)) != len(ids):
+        raise ValueError("IDs duplicados en el snapshot")
+    before = collection.count()
+    present = set()
+    for offset in range(0, len(ids), batch_size):
+        present.update(collection.get(ids=ids[offset : offset + batch_size], include=[])["ids"])
+    for offset in range(0, len(records), batch_size):
+        for attempt in range(attempts):
+            try:
+                upsert_batch(collection, records[offset : offset + batch_size])
+                break
+            except Exception:
+                if attempt + 1 == attempts:
+                    raise RuntimeError(
+                        f"Falló lote en posición {offset}; {attempts} intentos"
+                    ) from None
+                time.sleep(0.5)
+    observed = set()
+    for offset in range(0, len(ids), batch_size):
+        observed.update(collection.get(ids=ids[offset : offset + batch_size], include=[])["ids"])
+    expected = before + len(set(ids) - present)
+    if observed != set(ids) or collection.count() != expected:
+        raise RuntimeError("No concuerdan IDs o conteo final del snapshot")
+    return expected
+
+
+def main(argv=None):
+    args = parse_args(argv)
     path = Path(args.file)
 
     if not path.exists():
@@ -71,7 +119,7 @@ def main():
     manifest, records = load_records(path)
 
     if manifest:
-        print(f"  Manifest: {manifest}")
+        print("  Manifest leído (valores no impresos)")
 
     host = args.host or (manifest or {}).get("chroma_host", "localhost")
     port = args.port or (manifest or {}).get("chroma_port", 8000)
@@ -88,11 +136,8 @@ def main():
         sys.exit(1)
 
     if args.recreate:
-        print(f"  Deleting collection '{collection_name}' …")
-        try:
-            client.delete_collection(collection_name)
-        except Exception:
-            pass
+        print("ERROR: --recreate deshabilitado; usa un nombre de colección nuevo", file=sys.stderr)
+        return 1
 
     collection = client.get_or_create_collection(
         name=collection_name,
@@ -104,27 +149,18 @@ def main():
     total = len(records)
     print(f"\nImporting {total} documents in batches of {args.batch_size} …\n")
 
-    imported = 0
-    errors = 0
     start = time.time()
-
-    for i in range(0, total, args.batch_size):
-        batch = records[i : i + args.batch_size]
-        try:
-            upsert_batch(collection, batch)
-            imported += len(batch)
-        except Exception as e:
-            errors += len(batch)
-            print(f"  ERROR on batch {i}–{i+len(batch)}: {e}", file=sys.stderr)
-
-        pct = imported / total * 100
-        elapsed = time.time() - start
-        rate = imported / elapsed if elapsed > 0 else 0
-        print(f"\r  {imported}/{total} ({pct:.1f}%)  {rate:.0f} docs/s  errors={errors}", end="", flush=True)
-
-    print(f"\n\nDone. {imported} imported, {errors} errors in {time.time()-start:.1f}s")
-    print(f"Collection '{collection_name}' now has {collection.count()} documents.")
+    try:
+        final = import_records(collection, records, args.batch_size, args.attempts)
+    except Exception as exc:
+        print(
+            f"ERROR: importación incompleta ({type(exc).__name__}); no reconciliada",
+            file=sys.stderr,
+        )
+        return 1
+    print(f"Done. {total} reconciliados; conteo final {final}; {time.time() - start:.1f}s")
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())
