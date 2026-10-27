@@ -452,6 +452,22 @@ async def reasignar_pendientes(
     return {"reasignadas": n, "sin_destino": sin}
 
 
+async def _nombres(session: AsyncSession) -> dict[str, str]:
+    return {
+        uid: (nombre or correo or "").strip()
+        for uid, nombre, correo in (
+            await session.execute(
+                select(User.id, User.display_name, User.email).where(User.role == "evaluador")
+            )
+        ).all()
+    }
+
+
+def _asignada_a(p: _Pregunta, nombres: dict[str, str]) -> list[str]:
+    """ "Semillerista Barranquilla 3 (Barranquilla)" por sede, en orden fijo."""
+    return [f"{nombres.get(uid, uid)} ({sede})" for sede, uid in sorted(p.asignados.items())]
+
+
 async def _sede(session: AsyncSession, user_id: str) -> str | None:
     perfil = await session.get(ExerciseProfile, user_id)
     return perfil.sede if perfil else None
@@ -512,6 +528,8 @@ class BandejaItem(BaseModel):
     oficial: OficialOut
     practica: bool = False
     en_conversacion: bool = False
+    # PQ-90: a quién quedó asignada (solo lo ven el comité y el admin).
+    asignada_a: list[str] | None = None
 
 
 class BandejaResponse(BaseModel):
@@ -542,6 +560,8 @@ class FichaResponse(BaseModel):
     puede_evaluar: bool
     motivo_no_puede: str | None
     es_comite: bool
+    # PQ-90: a quién quedó asignada (solo comité y admin).
+    asignada_a: list[str] | None = None
     practica: bool = False
     anterior: str | None
     siguiente: str | None
@@ -732,6 +752,7 @@ async def bandeja(
     if ct:
         preguntas = [p for p in preguntas if p.oficial.ct == ct]
     marcas = {p.message_id: _estado_para_mi(p, user["sub"], user["role"], sede) for p in preguntas}
+    nombres = await _nombres(session) if user["role"] != "evaluador" else {}
     conteos = {k: sum(m[k] for m in marcas.values()) for k in ESTADOS_FILTRO.__args__}  # type: ignore[attr-defined]
     elegidas = [p for p in preguntas if marcas[p.message_id][estado]]
     # Pendientes: las más antiguas primero (orden de llegada); el resto, recientes primero.
@@ -754,6 +775,7 @@ async def bandeja(
                 oficial=_oficial_out(p.oficial),
                 practica=p.practica,
                 en_conversacion=marcas[p.message_id]["en_conversacion"],
+                asignada_a=_asignada_a(p, nombres) if user["role"] != "evaluador" else None,
             )
             for p in pagina
         ],
@@ -815,6 +837,7 @@ async def _ficha(session: AsyncSession, message_id: str, user: dict) -> FichaRes
         puede_evaluar=motivo is None,
         motivo_no_puede=motivo,
         es_comite=es_comite,
+        asignada_a=_asignada_a(p, await _nombres(session)) if es_comite else None,
         practica=p.practica,
         anterior=preguntas[indice - 1].message_id if indice > 0 else None,
         siguiente=preguntas[indice + 1].message_id if indice + 1 < len(preguntas) else None,

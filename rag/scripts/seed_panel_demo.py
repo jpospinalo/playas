@@ -94,7 +94,7 @@ N_DIMAR = "decreto-2324-de-1984"
 N_PLAYAS_SM = (
     "Por medio del cual se reglamenta el uso, zonificación y horario de las playas con vocación "
     "turística del Distrito Turístico, Cultural e Histórico de Santa Marta, aptas para la "
-    "realización de activiades de aprovech"
+    "realización de actividades de aprovech"
 )
 N_RODADERO = (
     "Por medio de la cual se reglamenta el área de playa en el Balneario Turístico El Rodadero"

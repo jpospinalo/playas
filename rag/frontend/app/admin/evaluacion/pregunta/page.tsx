@@ -109,6 +109,11 @@ function Ficha_() {
 						</span>
 						<EstadoEval estado={ficha.estado} />
 					</p>
+					{ficha.asignada_a?.length ? (
+						<p className="pnl-sub" style={{ marginBottom: 14 }}>
+							Asignada a: {ficha.asignada_a.join(" y ")}
+						</p>
+					) : null}
 
 					<section className="pnl-bloque" aria-labelledby="t-preg">
 						<h2 id="t-preg" className="sr">

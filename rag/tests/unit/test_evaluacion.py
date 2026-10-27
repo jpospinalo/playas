@@ -843,3 +843,14 @@ def test_filtro_en_conversacion_del_semillerista(cliente) -> None:
     assert r["conteos"]["en_conversacion"] == 1 and r["items"][0]["en_conversacion"] is True
     c.put("/api/evaluacion/preguntas/q1/mia", headers=BQ, json=_cal_json("S", 5))
     assert c.get("/api/evaluacion/bandeja?estado=en_conversacion", headers=BQ).json()["total"] == 0
+
+
+def test_comite_ve_a_quien_quedo_asignada(cliente) -> None:
+    """PQ-90: el comité y el admin ven los semilleristas asignados; el semillerista no."""
+    c = cliente
+    SM, SM2, BQ, SIN, COM, USER = _hs()  # noqa: N806
+    f = c.get("/api/evaluacion/preguntas/q1", headers=COM).json()
+    assert len(f["asignada_a"]) == 2 and "Semillerista BQ (Barranquilla)" in f["asignada_a"]
+    b = c.get("/api/evaluacion/bandeja?estado=todas", headers=COM).json()
+    assert all(len(i["asignada_a"]) == 2 for i in b["items"])
+    assert c.get("/api/evaluacion/preguntas/q1", headers=BQ).json()["asignada_a"] is None

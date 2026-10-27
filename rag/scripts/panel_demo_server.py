@@ -74,6 +74,7 @@ def _respuesta_de_demostracion(api) -> None:
     from fastapi.routing import APIRoute
     from sqlalchemy import select
 
+    from rag.api import panel_metricas as pm
     from rag.api.database import async_session_factory
     from rag.api.models import Message
     from rag.api.rate_limit import get_query_user
@@ -93,7 +94,11 @@ def _respuesta_de_demostracion(api) -> None:
                 if f
             ]
         n = int(hashlib.sha256(request.question.encode()).hexdigest(), 16)
-        fuentes = (todas[n % len(todas)] if todas else [])[:2]
+        # PQ-89: títulos largos del corpus cortados en palabra completa con "…".
+        fuentes = [
+            {**g, "title": pm._legible(g.get("title", ""))}
+            for g in (todas[n % len(todas)] if todas else [])[:2]
+        ]
         nombres = "; ".join(g.get("title", "") for g in fuentes) or "las normas de la semilla"
         texto = (
             "**Respuesta de demostración.** En esta presentación ATLAS no está conectado a su "

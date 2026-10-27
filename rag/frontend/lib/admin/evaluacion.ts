@@ -73,6 +73,8 @@ export interface ItemBandeja {
 	practica?: boolean;
 	/** PQ-80: la validadora no está de acuerdo y falta responder o corregir. */
 	en_conversacion?: boolean;
+	/** PQ-90: semilleristas asignados (solo comité y admin). */
+	asignada_a?: string[] | null;
 	estado: EstadoPregunta;
 	oficial: Oficial;
 }
@@ -104,6 +106,7 @@ export interface CalificacionOut {
 
 export interface Ficha {
 	practica?: boolean;
+	asignada_a?: string[] | null;
 	message_id: string;
 	numero: number;
 	codigo: string;

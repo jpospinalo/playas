@@ -190,6 +190,7 @@ export default function PaginaBandeja() {
 									<p className="pnl-fila-meta">
 										<span className="pnl-etq">{p.codigo}</span>
 										{p.practica ? <span className="pnl-practica">Práctica: no cuenta</span> : null}
+										{p.asignada_a?.length ? <span>Asignada a: {p.asignada_a.join(" y ")}</span> : null}
 										{p.en_conversacion ? (
 											<span className="pnl-estado ojo">
 												<IconoAviso />
