@@ -15,6 +15,7 @@ es opcional). Los días son configurables: falta confirmarlos con Camilo
 from __future__ import annotations
 
 from datetime import UTC, date, datetime, timedelta
+from typing import Literal
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, Field
@@ -60,8 +61,20 @@ def hoy() -> date:
     return datetime.now(pm.HORA_COLOMBIA).date()
 
 
+async def cerrado(session: AsyncSession) -> bool:
+    """E6: el admin cerró el ejercicio; todo queda en solo lectura."""
+    s = await session.get(ExerciseSetting, "ejercicio_cerrado")
+    return s is not None and s.valor == "si"
+
+
 async def exigir_plazo(session: AsyncSession, clave: str, que: str) -> None:
-    """409 si ya pasó el día límite (incluido el día mismo, hora de Colombia)."""
+    """409 si el ejercicio está cerrado o ya pasó el día límite (incluido el
+    día mismo, hora de Colombia)."""
+    if await cerrado(session):
+        raise HTTPException(
+            status.HTTP_409_CONFLICT,
+            "El ejercicio está cerrado: los resultados quedaron congelados.",
+        )
     fechas, _ = await leer(session)
     limite = fechas[clave]
     if hoy() > limite:
@@ -193,3 +206,37 @@ async def ventana(
         ultimo_dia=ultimo.isoformat(),
         dias_restantes=(ultimo - hoy()).days,
     )
+
+
+class CierreIn(BaseModel):
+    cerrar: bool
+    confirmar: Literal[True]
+
+
+class CierreOut(BaseModel):
+    cerrado: bool
+
+
+@router.post("/api/evaluacion/cierre", response_model=CierreOut)
+async def cerrar(
+    payload: CierreIn,
+    user: dict = Depends(get_current_user),
+    session: AsyncSession = Depends(get_session),
+) -> CierreOut:
+    """E6: al terminar la validación, el admin cierra el ejercicio: nadie
+    califica, valida ni elige ganadoras; el Excel sigue disponible. Se puede
+    reabrir."""
+    if user["role"] not in ("admin", "super-admin"):
+        raise HTTPException(status.HTTP_403_FORBIDDEN, "Solo el administrador cierra el ejercicio.")
+    s = await session.get(ExerciseSetting, "ejercicio_cerrado")
+    if s is None:
+        s = ExerciseSetting(clave="ejercicio_cerrado", valor="no")
+        session.add(s)
+    s.valor = "si" if payload.cerrar else "no"
+    s.updated_by = user["sub"]
+    s.updated_at = datetime.now(UTC)
+    auditoria.registrar(
+        session, user["sub"], "cerrar_ejercicio" if payload.cerrar else "reabrir_ejercicio"
+    )
+    await session.commit()
+    return CierreOut(cerrado=payload.cerrar)

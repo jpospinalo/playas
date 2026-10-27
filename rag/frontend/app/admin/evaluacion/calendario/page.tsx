@@ -3,7 +3,13 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { mensajeError } from "@/lib/admin/panel";
-import { diaLargo, guardarCalendario, pedirCalendario, type Calendario } from "@/lib/admin/calendario";
+import {
+	cerrarEjercicio,
+	diaLargo,
+	guardarCalendario,
+	pedirCalendario,
+	type Calendario,
+} from "@/lib/admin/calendario";
 import { IconoAviso } from "@/components/admin/panel/Estados";
 import { SubNavEvaluacion } from "@/components/admin/evaluacion/SubNav";
 
@@ -127,6 +133,67 @@ export default function PaginaCalendario() {
 					) : null}
 				</form>
 			) : null}
+			{cal && esAdmin ? <Cierre /> : null}
 		</div>
 	);
 }
+
+/** E6: al terminar la validación, el ejercicio se cierra y los resultados quedan congelados. */
+function Cierre() {
+	const [confirmar, setConfirmar] = useState(false);
+	const [cerrado, setCerrado] = useState<boolean | null>(null);
+	const [error, setError] = useState<string | null>(null);
+
+	async function cambiar(cerrar: boolean) {
+		setError(null);
+		try {
+			setCerrado((await cerrarEjercicio(cerrar)).cerrado);
+			setConfirmar(false);
+		} catch (e) {
+			setError(mensajeError(e, "No se pudo cambiar."));
+		}
+	}
+
+	return (
+		<section className="pnl-bloque" aria-labelledby="t-cierre">
+			<h2 id="t-cierre">Cerrar el ejercicio</h2>
+			<p>
+				Al cerrar, nadie puede calificar, validar ni elegir ganadoras; el resumen, los ganadores y el Excel quedan
+				como están. Se puede reabrir.
+			</p>
+			{cerrado !== null ? (
+				<p className="pnl-ok" role="status">
+					{cerrado ? "El ejercicio quedó cerrado." : "El ejercicio quedó abierto."}
+				</p>
+			) : null}
+			{error ? (
+				<p className="pnl-error-linea" role="alert">
+					{error}
+				</p>
+			) : null}
+			{confirmar ? (
+				<div className="pnl-confirmar" role="group" aria-labelledby="t-conf-cierre">
+					<p id="t-conf-cierre">¿Cerrar el ejercicio ahora?</p>
+					<div className="pnl-acciones">
+						<button type="button" className="pnl-btn" onClick={() => cambiar(true)}>
+							Sí, cerrar
+						</button>
+						<button type="button" className="pnl-btn-sec" onClick={() => setConfirmar(false)}>
+							Cancelar
+						</button>
+					</div>
+				</div>
+			) : (
+				<div className="pnl-acciones">
+					<button type="button" className="pnl-btn-sec" onClick={() => setConfirmar(true)}>
+						Cerrar el ejercicio
+					</button>
+					<button type="button" className="pnl-btn-sec" onClick={() => cambiar(false)}>
+						Reabrir
+					</button>
+				</div>
+			)}
+		</section>
+	);
+}
+

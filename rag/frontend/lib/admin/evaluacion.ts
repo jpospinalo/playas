@@ -160,6 +160,16 @@ export interface ResumenEjercicio {
 	}[];
 	fin_evaluacion?: string;
 	fin_validacion?: string;
+	/** E2: acuerdo entre la evaluación de Santa Marta y la de Barranquilla. */
+	concordancia?: {
+		pares: number;
+		mismo_nivel?: number;
+		misma_validez?: number;
+		diferencia_media_total?: number;
+		kappa_nivel?: number | null;
+		alfa?: Record<"f1" | "f2" | "f3" | "cv", number | null>;
+	};
+	cerrado?: boolean;
 	umbral_diferencia: number;
 	/** Decisión 9: solo cuentan las validadas por el comité. */
 	solo_revisadas: boolean;

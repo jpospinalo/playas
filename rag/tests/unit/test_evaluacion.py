@@ -767,3 +767,37 @@ def test_avance_frente_al_plazo(cliente) -> None:
     san = next(v for v in r["avance_validadores"] if v["sede"] == "Barranquilla")
     assert san["validador"] == "Sandra Otero" and san["pendientes"] == 1
     assert r["fin_evaluacion"] == "2026-11-27"
+
+
+def test_concordancia_estadisticos() -> None:
+    """E2: kappa ponderada (S<I<A) y alfa ordinal de Krippendorff."""
+    assert ej.kappa_ponderada([(0, 0), (1, 1), (2, 2)], 3) == 1.0
+    # Un desacuerdo S↔I castiga menos que uno S↔A.
+    cerca = ej.kappa_ponderada([(0, 0), (1, 1), (2, 2), (0, 1)], 3)
+    lejos = ej.kappa_ponderada([(0, 0), (1, 1), (2, 2), (0, 2)], 3)
+    assert cerca > lejos
+    assert ej.alfa_krippendorff_ordinal([(1, 1), (2, 2), (3, 3)]) == 1.0
+    assert ej.alfa_krippendorff_ordinal([(1, 1), (1, 1)]) is None  # sin variación
+    sm = _cal("a", "Santa Marta", "S", 4)
+    bq = _cal("b", "Barranquilla", "I", 8)
+    r = ej.concordancia([(sm, bq), (sm, sm)])
+    assert r["pares"] == 2 and r["mismo_nivel"] == 50 and r["diferencia_media_total"] == 2.0
+
+
+def test_cerrar_el_ejercicio(cliente) -> None:
+    """E6: cerrado, nadie califica ni valida; se puede reabrir."""
+    c = cliente
+    SM, SM2, BQ, SIN, COM, USER = _hs()  # noqa: N806
+    _en_bd(c, User(id="adm", email="adm@x.co", password_hash="x", role="admin"))
+    ADM = _h("adm", "admin")  # noqa: N806
+    cuerpo = {"cerrar": True, "confirmar": True}
+    assert c.post("/api/evaluacion/cierre", headers=COM, json=cuerpo).status_code == 403
+    assert c.post("/api/evaluacion/cierre", headers=ADM, json=cuerpo).json() == {"cerrado": True}
+    r = c.put("/api/evaluacion/preguntas/q1/mia", headers=BQ, json=_cal_json("S", 4))
+    assert r.status_code == 409 and "cerrado" in r.json()["detail"]
+    assert c.get("/api/evaluacion/resumen", headers=COM).json()["cerrado"] is True
+    c.post("/api/evaluacion/cierre", headers=ADM, json={"cerrar": False, "confirmar": True})
+    assert (
+        c.put("/api/evaluacion/preguntas/q1/mia", headers=BQ, json=_cal_json("S", 4)).status_code
+        == 200
+    )

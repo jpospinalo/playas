@@ -1052,6 +1052,16 @@ async def resumen(
             avance.values(), key=lambda f: (f["sede"] or "", -f["evaluadas"], f["evaluador"])
         ),
         "avance_validadores": sorted(validadoras, key=lambda f: f["sede"] or ""),
+        # E2: acuerdo entre las dos sedes en las preguntas con ambas evaluaciones.
+        "concordancia": ej.concordancia(
+            [
+                (sm, bq)
+                for p in preguntas
+                for sm in [c for c in p.cals if not c.es_final and c.sede == "Santa Marta"][:1]
+                for bq in [c for c in p.cals if not c.es_final and c.sede == "Barranquilla"][:1]
+            ]
+        ),
+        "cerrado": await calendario.cerrado(session),
         "fin_evaluacion": fechas["fin_evaluacion"].isoformat(),
         "fin_validacion": fechas["fin_validacion"].isoformat(),
         "umbral_diferencia": ej.UMBRAL_DIFERENCIA,
@@ -1135,6 +1145,7 @@ async def elegir_ganadora(
     session: AsyncSession = Depends(get_session),
 ) -> dict:
     """Con empate en Cv, el comité elige la mejor pregunta del nivel."""
+    await calendario.exigir_plazo(session, "premios", "elegir la ganadora")
     preguntas = reales(await _cargar(session))
     actual = ej.mejores_por_nivel(_oficiales(preguntas))[nivel]
     if not actual["decide_comite"]:

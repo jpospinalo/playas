@@ -52,6 +52,11 @@ export function guardarCalendario(fechas: Record<string, string>, diasParticipan
 	});
 }
 
+/** E6: cerrar (o reabrir) el ejercicio; todo queda en solo lectura. */
+export function cerrarEjercicio(cerrar: boolean): Promise<{ cerrado: boolean }> {
+	return llamar("/api/evaluacion/cierre", { method: "POST", body: JSON.stringify({ cerrar, confirmar: true }) });
+}
+
 export function pedirVentana(): Promise<Ventana> {
 	return llamar("/api/ejercicio/ventana");
 }

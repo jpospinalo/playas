@@ -257,6 +257,78 @@ class PreguntaOficial:
     oficial: Oficial
 
 
+# ── Concordancia entre sedes (E2, investigación) ─────────────────────────────
+
+
+def kappa_ponderada(pares: list[tuple[int, int]], k: int) -> float | None:
+    """Kappa de Cohen con pesos lineales para categorías ordenadas 0..k-1 (p. ej.
+    S < I < A): no castiga igual S↔I que S↔A. None si no hay pares o no hay
+    variación."""
+    n = len(pares)
+    if n == 0:
+        return None
+    obs = [[0] * k for _ in range(k)]
+    for a, b in pares:
+        obs[a][b] += 1
+    fa = [sum(obs[i]) for i in range(k)]
+    fb = [sum(obs[i][j] for i in range(k)) for j in range(k)]
+    peso = [[abs(i - j) / (k - 1) for j in range(k)] for i in range(k)]
+    d_obs = sum(peso[i][j] * obs[i][j] for i in range(k) for j in range(k)) / n
+    d_esp = sum(peso[i][j] * fa[i] * fb[j] for i in range(k) for j in range(k)) / (n * n)
+    if d_esp == 0:
+        return None
+    return round(1 - d_obs / d_esp, 3)
+
+
+def alfa_krippendorff_ordinal(pares: list[tuple[int, int]]) -> float | None:
+    """Alfa de Krippendorff ordinal para dos evaluadores sin datos faltantes
+    (F1-F3, Cv). None si no hay pares o no hay variación."""
+    if len(pares) < 2:
+        return None
+    valores = sorted({v for p in pares for v in p})
+    idx = {v: i for i, v in enumerate(valores)}
+    m = len(valores)
+    o = [[0.0] * m for _ in range(m)]
+    for a, b in pares:  # matriz de coincidencias: cada par cuenta en las dos direcciones
+        o[idx[a]][idx[b]] += 1
+        o[idx[b]][idx[a]] += 1
+    nc = [sum(fila) for fila in o]
+    n = sum(nc)
+
+    def delta(c: int, k: int) -> float:
+        lo, hi = min(c, k), max(c, k)
+        return (sum(nc[lo : hi + 1]) - (nc[lo] + nc[hi]) / 2) ** 2
+
+    d_obs = sum(o[c][k] * delta(c, k) for c in range(m) for k in range(m))
+    d_esp = sum(nc[c] * nc[k] * delta(c, k) for c in range(m) for k in range(m))
+    if d_esp == 0:
+        return None
+    return round(1 - (n - 1) * d_obs / d_esp, 3)
+
+
+def concordancia(pares: list[tuple[Calificacion, Calificacion]]) -> dict:
+    """Acuerdo entre la evaluación de Santa Marta y la de Barranquilla de cada
+    pregunta (GUIA-QA §10.4): % mismo nivel, diferencia media de puntaje,
+    kappa ponderada del nivel y alfa ordinal de F1-F3 y Cv."""
+    orden = {"S": 0, "I": 1, "A": 2}
+    n = len(pares)
+    if n == 0:
+        return {"pares": 0}
+    return {
+        "pares": n,
+        "mismo_nivel": round(100 * sum(a.ct == b.ct for a, b in pares) / n),
+        "misma_validez": round(100 * sum(a.valida == b.valida for a, b in pares) / n),
+        "diferencia_media_total": round(sum(abs(a.total - b.total) for a, b in pares) / n, 2),
+        "kappa_nivel": kappa_ponderada([(orden[a.ct], orden[b.ct]) for a, b in pares], 3),
+        "alfa": {
+            campo: alfa_krippendorff_ordinal(
+                [(getattr(a, campo), getattr(b, campo)) for a, b in pares]
+            )
+            for campo in ("f1", "f2", "f3", "cv")
+        },
+    }
+
+
 def mejores_por_nivel(
     preguntas: list[PreguntaOficial], elegidas: dict[str, str] | None = None, top: int = 3
 ) -> dict[str, dict]:

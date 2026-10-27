@@ -33,7 +33,8 @@ from rag.api.main import app
 # evaluación (5 rutas, 6 operaciones): 44 rutas, 50 operaciones. Reasignar
 # pendientes (E1) suma 1: 45 rutas, 51 operaciones. Práctica (T7): estado y
 # archivar, 2 rutas: 47 rutas, 53 operaciones. Calendario (T5): GET/PUT del
-# calendario y la ventana del participante: 49 rutas, 56 operaciones.
+# calendario y la ventana del participante: 49 rutas, 56 operaciones. Cierre del
+# ejercicio (E6): 50 rutas, 57 operaciones.
 _EXPECTED_ROUTES: dict[str, set[str]] = {
     "/api/admin/feedback": {"get"},
     "/api/admin/auditoria": {"get"},
@@ -51,6 +52,7 @@ _EXPECTED_ROUTES: dict[str, set[str]] = {
     "/api/evaluacion/reasignar": {"post"},
     "/api/evaluacion/practica": {"get"},
     "/api/evaluacion/calendario": {"get", "put"},
+    "/api/evaluacion/cierre": {"post"},
     "/api/ejercicio/ventana": {"get"},
     "/api/evaluacion/practica/archivar": {"post"},
     "/api/evaluacion/validacion/bandeja": {"get"},
@@ -99,7 +101,7 @@ def test_route_and_operation_count_matches_expected_contract() -> None:
     assert actual_routes == _EXPECTED_ROUTES
 
     operation_count = sum(len(methods) for methods in paths.values())
-    assert operation_count == 56
+    assert operation_count == 57
 
 
 def test_query_stream_declares_text_event_stream_and_not_json() -> None:

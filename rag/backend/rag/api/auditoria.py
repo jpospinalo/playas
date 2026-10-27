@@ -33,6 +33,8 @@ ACCIONES = {
     "reasignar_pendientes": "Reasignó preguntas pendientes",
     "archivar_practica": "Archivó la práctica",
     "cambiar_calendario": "Cambió el calendario",
+    "cerrar_ejercicio": "Cerró el ejercicio",
+    "reabrir_ejercicio": "Reabrió el ejercicio",
     "desarchivar_practica": "Volvió a mostrar la práctica",
     "marcar_practica": "Marcó una cuenta como de práctica",
     "desmarcar_practica": "Quitó la marca de práctica",

@@ -1964,3 +1964,42 @@ fieldset:disabled .pnl-opcion {
 		grid-template-columns: minmax(0, 1fr);
 	}
 }
+
+/* T8: ganadores para el evento. */
+.pnl-ganadores {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: grid;
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+	gap: 12px;
+}
+.pnl-ganadores li {
+	padding: 12px 14px;
+	border: 1px solid var(--p-linea);
+	border-radius: 6px;
+}
+.pnl-ganador-tit {
+	margin: 0;
+	font-size: 15px;
+	color: var(--p-tinta-2);
+}
+.pnl-ganador-quien {
+	margin: 4px 0;
+	font-size: 26px;
+	font-weight: 700;
+}
+.pnl-ganador-det {
+	margin: 0;
+	font-size: 15px;
+}
+@media (max-width: 1000px) {
+	.pnl-ganadores {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+@media (max-width: 600px) {
+	.pnl-ganadores {
+		grid-template-columns: minmax(0, 1fr);
+	}
+}

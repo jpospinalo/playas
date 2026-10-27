@@ -198,7 +198,9 @@ export default function PaginaResumenEjercicio() {
 				</>
 			) : null}
 
+			{comite && premios ? <Ganadores premios={premios} cerrado={!!resumen?.cerrado} /> : null}
 			{comite && resumen ? <AvancePlazo resumen={resumen} /> : null}
+			{comite && resumen ? <Concordancia resumen={resumen} /> : null}
 			{comite && premios ? <PorValidar premios={premios} /> : null}
 			{comite && premios ? <SeccionPremios premios={premios} onElegir={elegir} /> : null}
 			{!comite && resumen ? (
@@ -519,6 +521,110 @@ function AvancePlazo({ resumen }: { resumen: ResumenEjercicio }) {
 						</tbody>
 					</table>
 				</div>
+			) : null}
+		</section>
+	);
+}
+
+/** T8 (reunión del 20-oct): los 4 ganadores, listos para el evento del 11 dic. */
+function Ganadores({ premios, cerrado }: { premios: Premios; cerrado: boolean }) {
+	const niveles: Ct[] = ["S", "I", "A"];
+	const constante = premios.participacion_constante;
+	const empateConstancia = constante.filter((f) => (f as { empate?: boolean }).empate).length > 1;
+	return (
+		<section className="pnl-bloque" aria-labelledby="t-ganadores">
+			<h2 id="t-ganadores">Ganadores {cerrado ? "" : "(provisional)"}</h2>
+			<p className="pnl-sub" style={{ marginBottom: 12 }}>
+				{cerrado
+					? "El ejercicio está cerrado: estos son los resultados finales."
+					: "Cambia a medida que se validan evaluaciones; queda fijo al cerrar el ejercicio."}{" "}
+				Bono de $150.000 cada uno.
+			</p>
+			<ol className="pnl-ganadores">
+				{niveles.map((n) => {
+					const r = premios.mejor_pregunta[n];
+					return (
+						<li key={n}>
+							<p className="pnl-ganador-tit">Mejor pregunta: nivel {NIVELES[n].toLowerCase()}</p>
+							{r.ganadora ? (
+								<>
+									<p className="pnl-ganador-quien">{r.ganadora.codigo}</p>
+									<p className="pnl-ganador-det">
+										Cv {r.ganadora.cv}: “{recortar(r.ganadora.texto, 140)}”
+									</p>
+								</>
+							) : r.decide_comite ? (
+								<p className="pnl-ganador-det">Empate: decide el comité ({r.empatadas.length} preguntas)</p>
+							) : (
+								<p className="pnl-ganador-det">Todavía no hay preguntas válidas validadas.</p>
+							)}
+						</li>
+					);
+				})}
+				<li>
+					<p className="pnl-ganador-tit">Participación más constante</p>
+					{constante.length ? (
+						empateConstancia ? (
+							<p className="pnl-ganador-det">Empate: decide el comité</p>
+						) : (
+							<>
+								<p className="pnl-ganador-quien">{constante[0].codigo}</p>
+								<p className="pnl-ganador-det">
+									{constante[0].dias} días con preguntas válidas, {constante[0].preguntas_validas} preguntas
+								</p>
+							</>
+						)
+					) : (
+						<p className="pnl-ganador-det">Todavía no hay preguntas válidas validadas.</p>
+					)}
+				</li>
+			</ol>
+		</section>
+	);
+}
+
+/** E2: qué tanto coinciden las dos sedes (resultado para el informe del ejercicio). */
+function Concordancia({ resumen }: { resumen: ResumenEjercicio }) {
+	const c = resumen.concordancia;
+	if (!c || !c.pares) return null;
+	const v = (x: number | null | undefined) => (x === null || x === undefined ? "—" : decimal(x));
+	return (
+		<section className="pnl-bloque" aria-labelledby="t-conc">
+			<h2 id="t-conc">Acuerdo entre Santa Marta y Barranquilla</h2>
+			<p className="pnl-sub" style={{ marginBottom: 12 }}>
+				En {numero(c.pares)} preguntas con las dos evaluaciones. Kappa y alfa van de 0 (acuerdo por azar) a 1 (acuerdo
+				total); sobre 0,6 se considera bueno.
+			</p>
+			<dl className="pnl-cifras pnl-cifras-4">
+				<div className="pnl-cifra">
+					<dt>Mismo nivel</dt>
+					<dd>
+						<span className="pnl-valor num">{c.mismo_nivel}%</span>
+					</dd>
+				</div>
+				<div className="pnl-cifra">
+					<dt>Kappa ponderada del nivel</dt>
+					<dd>
+						<span className="pnl-valor num">{v(c.kappa_nivel)}</span>
+					</dd>
+				</div>
+				<div className="pnl-cifra">
+					<dt>Diferencia media de puntaje</dt>
+					<dd>
+						<span className="pnl-valor num">{v(c.diferencia_media_total)}</span>
+					</dd>
+				</div>
+				<div className="pnl-cifra">
+					<dt>Misma validez</dt>
+					<dd>
+						<span className="pnl-valor num">{c.misma_validez}%</span>
+					</dd>
+				</div>
+			</dl>
+			{c.alfa ? (
+				<p className="pnl-nota">
+					Alfa de Krippendorff (ordinal): F1 {v(c.alfa.f1)}, F2 {v(c.alfa.f2)}, F3 {v(c.alfa.f3)}, Cv {v(c.alfa.cv)}.
+				</p>
 			) : null}
 		</section>
 	);
