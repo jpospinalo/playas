@@ -3,13 +3,11 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/components/providers/AuthProvider";
-import { cuantas, decimal, diaMesCalendario, mensajeError, numero, recortar } from "@/lib/admin/panel";
-import { diaLargo } from "@/lib/admin/calendario";
+import { cuantas, diaMesCalendario, mensajeError, numero, recortar } from "@/lib/admin/panel";
 import { nombreTipo } from "@/lib/admin/cuentas";
 import {
 	NIVELES,
 	RANGOS,
-	TEXTO_ESTADO,
 	descargarPlanilla,
 	elegirGanadora,
 	quitarGanadora,
@@ -17,7 +15,6 @@ import {
 	pedirResumenEjercicio,
 	rolComite,
 	type Ct,
-	type EstadoPregunta,
 	type Premios,
 	type ResumenEjercicio,
 } from "@/lib/admin/evaluacion";
@@ -25,6 +22,7 @@ import { ChipEstado, IconoAviso, IconoDescargar } from "@/components/admin/panel
 import { CabezaPestana, EncabezadoEvaluacion } from "@/components/admin/evaluacion/SubNav";
 import { ResultadoJunto, useAccion } from "@/components/admin/panel/Resultado";
 import { Aparece } from "@/components/admin/panel/Aparece";
+import { Tablero } from "@/components/admin/evaluacion/Tablero";
 
 /**
  * Resumen del ejercicio (como la hoja "Resumen" de la planilla), avance por
@@ -83,7 +81,7 @@ export default function PaginaResumenEjercicio() {
 					) : null
 				}
 			>
-				Avance de la evaluación con las cifras de la hoja “Resumen” de la planilla.
+				Avance de la evaluación con las cifras de la hoja “Resumen” de la planilla. Toque cualquier número para ver esas preguntas.
 			</CabezaPestana>
 
 			{error || errorAccion ? (
@@ -97,102 +95,9 @@ export default function PaginaResumenEjercicio() {
 			) : null}
 			{!resumen && !error ? <p className="pnl-cargando">Cargando resumen…</p> : null}
 
-			{resumen ? (
-				<>
-					<dl className="pnl-cifras pnl-cifras-5">
-						<div className="pnl-cifra">
-							<dt>Preguntas registradas</dt>
-							<dd>
-								<span className="pnl-valor num">{numero(resumen.preguntas_registradas)}</span>
-								<span className="pnl-det">Hechas por los participantes del ejercicio</span>
-							</dd>
-						</div>
-						<div className="pnl-cifra">
-							<dt>Con calificación oficial</dt>
-							<dd>
-								<span className="pnl-valor num">{numero(resumen.evaluadas)}</span>
-								<span className="pnl-det">
-									{resumen.solo_revisadas
-										? "Validadas por el comité"
-										: "Final del comité, o dos calificaciones que coinciden y esperan la validación"}
-								</span>
-							</dd>
-						</div>
-						<div className="pnl-cifra">
-							<dt>Con diferencias</dt>
-							<dd>
-								<span className="pnl-valor num">{numero(resumen.estados.con_diferencias)}</span>
-								<span className="pnl-det">
-									Las dos calificaciones no coinciden ({resumen.umbral_diferencia} puntos o más, o distinto nivel): las revisa el comité
-								</span>
-							</dd>
-						</div>
-						<div className="pnl-cifra">
-							<dt>Promedio puntaje total</dt>
-							<dd>
-								<span className="pnl-valor num">{decimal(resumen.promedio_total)}</span>
-								<span className="pnl-det">Solo preguntas válidas, de 6 a 21</span>
-							</dd>
-						</div>
-						<div className="pnl-cifra">
-							<dt>No válidas</dt>
-							<dd>
-								<span className="pnl-valor num">{numero(resumen.no_validas)}</span>
-								<span className="pnl-det">No cuentan para premios</span>
-							</dd>
-						</div>
-					</dl>
-
-					<div className="pnl-grid">
-						<section className="pnl-bloque pnl-c4" aria-labelledby="t-niveles">
-							<h2 id="t-niveles">Casos por nivel</h2>
-							<p className="pnl-sub">Preguntas válidas con calificación oficial</p>
-							<ul className="pnl-lista-simple">
-								{(Object.keys(NIVELES) as Ct[]).map((k) => (
-									<li key={k}>
-										<span>
-											Casos {NIVELES[k].toLowerCase()}s (valor de fondo {RANGOS[k][0]} a {RANGOS[k][1]})
-										</span>
-										<b className="num">{numero(resumen.por_nivel[k])}</b>
-									</li>
-								))}
-							</ul>
-						</section>
-						<section className="pnl-bloque pnl-c4" aria-labelledby="t-estados">
-							<h2 id="t-estados">Estado de la evaluación</h2>
-							<ul className="pnl-lista-simple">
-								{(Object.keys(TEXTO_ESTADO) as EstadoPregunta[]).map((k) => (
-									<li key={k}>
-										<span>{TEXTO_ESTADO[k]}</span>
-										<b className="num">{numero(resumen.estados[k])}</b>
-									</li>
-								))}
-							</ul>
-						</section>
-						<section className="pnl-bloque pnl-c4" aria-labelledby="t-avance">
-							<h2 id="t-avance">Avance por semillerista</h2>
-							{resumen.avance_evaluadores.length ? (
-								<ul className="pnl-lista-simple">
-									{resumen.avance_evaluadores.map((a) => (
-										<li key={`${a.evaluador}-${a.sede}`}>
-											<span>
-												{a.evaluador}
-												{a.sede ? <small className="pnl-sede"> {a.sede}</small> : null}
-											</span>
-											<b className="num">{numero(a.evaluadas)}</b>
-										</li>
-									))}
-								</ul>
-							) : (
-								<p className="pnl-vacio">Todavía nadie ha calificado.</p>
-							)}
-						</section>
-					</div>
-				</>
-			) : null}
+			{resumen ? <Tablero resumen={resumen} comite={comite} /> : null}
 
 			{comite && premios ? <Ganadores premios={premios} cerrado={!!resumen?.cerrado} /> : null}
-			{comite && resumen ? <AvancePlazo resumen={resumen} /> : null}
 			{comite && resumen ? <Concordancia resumen={resumen} /> : null}
 			{comite && premios ? <PorValidar premios={premios} /> : null}
 			{comite && premios ? <SeccionPremios premios={premios} onCambio={setPremios} /> : null}
@@ -384,83 +289,6 @@ function TablaRanking({
 	);
 }
 
-/**
- * T6 (reunión del 20-oct: "cada 2 días, media hora"): quién va al día y
- * cuántas por día le faltan para llegar a su plazo.
- */
-function AvancePlazo({ resumen }: { resumen: ResumenEjercicio }) {
-	const evaluadores = resumen.avance_evaluadores.filter((a) => a.asignadas !== undefined);
-	const validadores = resumen.avance_validadores ?? [];
-	if (!evaluadores.length && !validadores.length) return null;
-	return (
-		<section className="pnl-bloque" aria-labelledby="t-plazo">
-			<h2 id="t-plazo">Avance frente al plazo</h2>
-			{resumen.fin_evaluacion ? (
-				<p className="pnl-sub pnl-mb">
-					Semilleristas hasta el {diaLargo(resumen.fin_evaluacion)}; validación hasta el{" "}
-					{diaLargo(resumen.fin_validacion ?? resumen.fin_evaluacion)}. “Al día” es cuántas tendría que hacer cada día
-					para llegar.
-				</p>
-			) : null}
-			<div className="pnl-tabla-datos" role="region" aria-label="Avance de los semilleristas" tabIndex={0}>
-				<table>
-					<caption>Semilleristas</caption>
-					<thead>
-						<tr>
-							<th scope="col">Semillerista</th>
-							<th scope="col">Sede</th>
-							<th scope="col" className="num">Asignadas</th>
-							<th scope="col" className="num">Evaluadas</th>
-							<th scope="col" className="num">Sin evaluar</th>
-							<th scope="col" className="num">Al día</th>
-						</tr>
-					</thead>
-					<tbody>
-						{evaluadores.map((a) => (
-							<tr key={`${a.evaluador}-${a.sede}`}>
-								<td>{a.evaluador}</td>
-								<td>{a.sede ?? "—"}</td>
-								<td className="num">{numero(a.asignadas ?? 0)}</td>
-								<td className="num">{numero(a.evaluadas)}</td>
-								<td className="num">{numero(a.pendientes ?? 0)}</td>
-								<td className="num">{unDecimal(a.por_dia ?? 0)}</td>
-							</tr>
-						))}
-					</tbody>
-				</table>
-			</div>
-			{validadores.length ? (
-				<div className="pnl-tabla-datos pnl-mt" role="region" aria-label="Avance de la validación" tabIndex={0}>
-					<table>
-						<caption>Validación jurídica</caption>
-						<thead>
-							<tr>
-								<th scope="col">Quién valida</th>
-								<th scope="col">Sede</th>
-								<th scope="col" className="num">Evaluaciones</th>
-								<th scope="col" className="num">Validadas</th>
-								<th scope="col" className="num">Por validar</th>
-								<th scope="col" className="num">Al día</th>
-							</tr>
-						</thead>
-						<tbody>
-							{validadores.map((v) => (
-								<tr key={v.validador}>
-									<td>{v.validador}</td>
-									<td>{v.sede ?? "—"}</td>
-									<td className="num">{numero(v.evaluaciones)}</td>
-									<td className="num">{numero(v.validadas)}</td>
-									<td className="num">{numero(v.pendientes)}</td>
-									<td className="num">{unDecimal(v.por_dia)}</td>
-								</tr>
-							))}
-						</tbody>
-					</table>
-				</div>
-			) : null}
-		</section>
-	);
-}
 
 /** T8 (reunión del 20-oct): los 4 ganadores, listos para el evento del 11 dic. */
 function Ganadores({ premios, cerrado }: { premios: Premios; cerrado: boolean }) {
@@ -566,11 +394,6 @@ function Concordancia({ resumen }: { resumen: ResumenEjercicio }) {
 			) : null}
 		</section>
 	);
-}
-
-/** PQ-88: "2,0" junto a "1,5", no "2". */
-function unDecimal(n: number): string {
-	return n.toLocaleString("es-CO", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 }
 
 /**

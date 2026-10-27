@@ -652,6 +652,12 @@ ESTADOS_FILTRO = Literal[
     "con_diferencias",
     "por_validar",
     "finalizadas",
+    # J6-B: cada cifra del tablero lleva a su lista.
+    "sin_calificar",
+    "una_calificacion",
+    "validadas",
+    "revisadas",
+    "no_validas",
     "todas",
 ]
 
@@ -760,6 +766,16 @@ def _estado_para_mi(p: _Pregunta, user_id: str, rol: str, sede: str | None) -> d
         "por_validar": oficial.estado == "concordante",
         "finalizadas": oficial.estado in ("final", "validada")
         or (oficial.estado == "concordante" and not ej.PREMIOS_SOLO_REVISADAS),
+        "sin_calificar": oficial.estado == "sin_evaluar",
+        "una_calificacion": oficial.estado == "una_evaluacion",
+        "validadas": oficial.estado == "validada",
+        "revisadas": oficial.estado == "final",
+        # Igual que en el resumen: con calificación oficial y no válida o fuera del tema.
+        "no_validas": (
+            oficial.estado in ("final", "validada")
+            or (oficial.estado == "concordante" and not ej.PREMIOS_SOLO_REVISADAS)
+        )
+        and (oficial.valida is False or p.pertinente is False),
         "todas": True,
     }
 

@@ -25,7 +25,41 @@ export type FiltroBandeja =
 	| "con_diferencias"
 	| "por_validar"
 	| "finalizadas"
+	| "sin_calificar"
+	| "una_calificacion"
+	| "validadas"
+	| "revisadas"
+	| "no_validas"
 	| "todas";
+
+/** J6-B: nombre de los filtros a los que llevan las cifras del tablero. */
+export const TEXTO_FILTRO: Partial<Record<FiltroBandeja, string>> = {
+	sin_calificar: "Sin calificar",
+	una_calificacion: "Falta una calificación",
+	por_validar: "Coinciden: esperan la validación",
+	validadas: "Validadas",
+	revisadas: "Revisadas por el comité",
+	no_validas: "No válidas",
+};
+
+const FILTROS: FiltroBandeja[] = [
+	"pendientes",
+	"mias",
+	"en_conversacion",
+	"con_diferencias",
+	"por_validar",
+	"finalizadas",
+	"sin_calificar",
+	"una_calificacion",
+	"validadas",
+	"revisadas",
+	"no_validas",
+	"todas",
+];
+
+export function esFiltroBandeja(v: string | null): v is FiltroBandeja {
+	return v !== null && (FILTROS as string[]).includes(v);
+}
 
 export const NIVELES: Record<Ct, string> = { S: "Sencillo", I: "Intermedio", A: "Avanzado" };
 export const RANGOS: Record<Ct, [number, number]> = { S: [3, 6], I: [7, 9], A: [10, 12] };

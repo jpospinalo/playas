@@ -1,11 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { cuantas, diaHoraCalendario, mensajeError, numero, recortar } from "@/lib/admin/panel";
 import { TIPOS_PLAYA } from "@/lib/admin/cuentas";
 import {
+	esFiltroBandeja,
+	TEXTO_FILTRO,
 	NIVELES,
 	archivarPractica,
 	pedirBandeja,
@@ -17,7 +20,7 @@ import {
 	type FiltroBandeja,
 } from "@/lib/admin/evaluacion";
 import { EstadoEval } from "@/components/admin/evaluacion/EstadoEval";
-import { IconoAviso } from "@/components/admin/panel/Estados";
+import { ChipEstado, IconoAviso } from "@/components/admin/panel/Estados";
 import { CabezaPestana, EncabezadoEvaluacion } from "@/components/admin/evaluacion/SubNav";
 import { diaLargo, pedirCalendario, textoRestante, type Calendario } from "@/lib/admin/calendario";
 import { Aparece, AparecerSi } from "@/components/admin/panel/Aparece";
@@ -33,11 +36,30 @@ const POR_PAGINA = 20;
  * tienen diferencias sin resolver.
  */
 export default function PaginaBandeja() {
+	return (
+		<Suspense fallback={<p className="pnl-cargando">Cargando preguntas…</p>}>
+			<Bandeja_ />
+		</Suspense>
+	);
+}
+
+function Bandeja_() {
 	const { role } = useAuth();
 	const comite = rolComite(role);
-	const [estado, setEstado] = useState<FiltroBandeja>(comite ? "con_diferencias" : "pendientes");
-	const [tipo, setTipo] = useState(0);
-	const [ct, setCt] = useState<Ct | "">("");
+	// J6-B: las cifras del tablero abren esta lista ya filtrada (?estado=, ?ct=, ?tipo=).
+	const sp = useSearchParams();
+	const [estado, setEstado] = useState<FiltroBandeja>(() => {
+		const e = sp.get("estado");
+		return esFiltroBandeja(e) ? e : comite ? "con_diferencias" : "pendientes";
+	});
+	const [tipo, setTipo] = useState(() => {
+		const n = Number(sp.get("tipo"));
+		return n >= 1 && n <= 5 ? n : 0;
+	});
+	const [ct, setCt] = useState<Ct | "">(() => {
+		const c = sp.get("ct");
+		return c === "S" || c === "I" || c === "A" ? c : "";
+	});
 	// PQ-91: buscar por ID o participante y ver primero las más recientes.
 	const [borrador, setBorrador] = useState("");
 	const [buscar, setBuscar] = useState("");
@@ -206,6 +228,23 @@ export default function PaginaBandeja() {
 						</button>
 					))}
 				</div>
+				{/* J6-B: si se llegó desde una cifra del tablero, el filtro se dice y se puede quitar. */}
+				{TEXTO_FILTRO[estado] && !pestanas.some((p) => p.valor === estado) ? (
+					<p className="pnl-filtro-activo">
+						Mostrando: <ChipEstado tono="espera">{TEXTO_FILTRO[estado]}</ChipEstado>{" "}
+						{datos ? <span className="num">({numero(datos.total)})</span> : null}
+						<button
+							type="button"
+							className="pnl-enlace"
+							onClick={() => {
+								setEstado("todas");
+								setPagina(1);
+							}}
+						>
+							Ver todas
+						</button>
+					</p>
+				) : null}
 
 				<AparecerSi valor={error}>
 					{(error) => (

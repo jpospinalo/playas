@@ -408,6 +408,11 @@ def test_resumen_premios_y_excel(cliente) -> None:
     assert c.get("/api/evaluacion/premios", headers=COM).json()["por_validar"] == 0
     res = c.get("/api/evaluacion/resumen", headers=SM).json()
     assert res["preguntas_registradas"] == 3 and res["evaluadas"] == 2
+    # J6-B: cada cifra del tablero lleva a su lista con el mismo número.
+    b = c.get("/api/evaluacion/bandeja?estado=todas", headers=COM).json()["conteos"]
+    assert b["validadas"] + b["revisadas"] == res["evaluadas"]
+    assert b["sin_calificar"] == res["estados"]["sin_evaluar"]
+    assert b["no_validas"] == res["no_validas"]
     assert res["por_nivel"] == {"S": 2, "I": 0, "A": 0} and res["promedio_total"] == 12
     avance = {a["evaluador"] for a in res["avance_evaluadores"]}
     assert "Semillerista BQ" in avance and avance <= {

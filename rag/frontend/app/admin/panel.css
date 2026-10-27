@@ -26,6 +26,15 @@
 	--p-riel: #e9eeef;
 	--p-gris: #6f7c80;
 	--p-verde-suave: #e6f2ec;
+	/* J6-B: colores con significado del tablero (iguales en todo el panel) y
+	   color propio de cada nivel (sencillo, intermedio, avanzado). */
+	--p-azul: #1f5f9e;
+	--p-azul-claro: #8db6dc;
+	--p-verde-osc: #025c3c;
+	--p-n-s: #007c88;
+	--p-n-i: #6b4fa3;
+	--p-n-a: #a23a6a;
+	--p-uno: var(--p-marino);
 
 	/* J6-A8: una sola escala de espacios para todo el panel. */
 	--p-esp-1: 4px;
@@ -97,6 +106,13 @@
 	--p-riel: #1a2a35;
 	--p-gris: #8c99a0;
 	--p-verde-suave: #14251d;
+	--p-azul: #6f9fd0;
+	--p-azul-claro: #3d5f80;
+	--p-verde-osc: #93d1ae;
+	--p-n-s: #4fb3bd;
+	--p-n-i: #a690d6;
+	--p-n-a: #d784a9;
+	--p-uno: var(--p-marino);
 }
 
 .pnl *,
@@ -2274,4 +2290,297 @@ html:has(.pnl) {
    también dentro de cada evaluación de Validar. */
 .pnl .pnl-eval-val > .pnl-acciones {
 	margin-top: var(--p-esp-texto);
+}
+
+/* ── J6-B: tablero (Resumen y premios, Resumen del admin) ──────────────────── */
+.pnl-tb-grupo {
+	margin-top: var(--p-esp-6);
+}
+.pnl-tb-grupo > header {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	gap: var(--p-esp-1) var(--p-esp-3);
+	margin-bottom: var(--p-esp-3);
+	padding-bottom: var(--p-esp-2);
+	border-bottom: 2px solid var(--p-linea);
+}
+.pnl-tb-grupo > header h2 {
+	margin: 0;
+}
+.pnl-tb-grupo > header span {
+	color: var(--p-tinta-2);
+	font-size: 16px;
+}
+.pnl-tb-grupo h3 {
+	margin: 0 0 var(--p-esp-1);
+	font-size: 20px;
+}
+.pnl-tb-grupo .pnl-sub {
+	margin: 0;
+}
+.pnl-tb-cifras {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+	gap: var(--p-esp-tarjetas);
+	margin-bottom: var(--p-esp-tarjetas);
+}
+.pnl .pnl-tb-cifra {
+	display: flex;
+	flex-direction: column;
+	gap: var(--p-esp-1);
+	padding: var(--p-esp-4) var(--p-esp-5);
+	background: var(--p-papel);
+	border: 1px solid var(--p-linea);
+	border-radius: 8px;
+	color: inherit;
+	text-decoration: none;
+}
+.pnl .pnl-tb-cifra:hover .pnl-tb-valor {
+	text-decoration: underline;
+}
+.pnl-tb-titulo {
+	display: flex;
+	gap: var(--p-esp-2);
+	align-items: center;
+	color: var(--p-tinta-2);
+	font-weight: 600;
+}
+.pnl-tb-titulo svg {
+	width: 20px;
+	height: 20px;
+	flex: none;
+}
+.pnl-tb-valor {
+	font-size: 44px;
+	font-weight: 700;
+	line-height: 1.1;
+}
+.pnl-tb-valor small {
+	font-size: 20px;
+	font-weight: 600;
+	color: var(--p-tinta-2);
+}
+.pnl-tb-det {
+	font-size: 16px;
+	color: var(--p-tinta-2);
+}
+.pnl-tb-ir {
+	font-weight: 600;
+	color: var(--p-marino);
+}
+.pnl-tb-prog {
+	display: block;
+	height: 10px;
+	border-radius: 99px;
+	background: var(--p-riel);
+	overflow: hidden;
+	margin-top: var(--p-esp-1);
+}
+.pnl-tb-prog i {
+	display: block;
+	height: 100%;
+	background: var(--p-verde);
+	border-radius: 99px;
+}
+.pnl .pnl-tb-cifra.ojo {
+	border: 2px solid var(--p-ambar);
+	background: var(--p-ambar-suave);
+}
+.pnl-tb-cifra.ojo .pnl-tb-titulo,
+.pnl-tb-cifra.ojo .pnl-tb-det {
+	color: var(--p-ambar-txt);
+}
+.pnl-tb-apilada {
+	display: flex;
+	gap: 2px;
+	height: 40px;
+	margin-top: var(--p-esp-3);
+	border-radius: 6px;
+	overflow: hidden;
+}
+.pnl-tb-apilada span {
+	display: block;
+	min-width: 4px;
+	height: 100%;
+}
+.pnl-tb-leyenda {
+	list-style: none;
+	margin: var(--p-esp-3) 0 0;
+	padding: 0;
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+	gap: var(--p-esp-2) var(--p-esp-6);
+}
+.pnl .pnl-tb-leyenda a {
+	display: flex;
+	gap: var(--p-esp-3);
+	align-items: center;
+	min-height: 44px;
+	color: inherit;
+	text-decoration: none;
+}
+.pnl .pnl-tb-leyenda a:hover b {
+	text-decoration: underline;
+}
+.pnl-tb-leyenda .paso {
+	width: 1.4em;
+	flex: none;
+	color: var(--p-tinta-2);
+	font-size: 15px;
+}
+.pnl-tb-leyenda .muestra {
+	width: 18px;
+	height: 18px;
+	flex: none;
+	border-radius: 4px;
+}
+.pnl-tb-leyenda b {
+	margin-left: auto;
+}
+.pnl-tb-atencion {
+	list-style: none;
+	display: grid;
+	gap: var(--p-esp-3);
+}
+.pnl-tb-atencion li {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--p-esp-2) var(--p-esp-4);
+}
+.pnl-tb-atencion .que {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: var(--p-esp-2) var(--p-esp-3);
+}
+.pnl-tb-atencion .que b {
+	font-size: 30px;
+	min-width: 3ch;
+}
+.pnl-tb-dos {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: var(--p-esp-tarjetas);
+}
+.pnl-tb-dos > .pnl-bloque {
+	margin: 0;
+}
+.pnl-tb-barras {
+	list-style: none;
+	margin: var(--p-esp-3) 0 0;
+	padding: 0;
+	display: grid;
+	gap: var(--p-esp-2);
+}
+.pnl .pnl-tb-barras a {
+	display: grid;
+	grid-template-columns: minmax(140px, 36%) 1fr auto;
+	gap: var(--p-esp-3);
+	align-items: center;
+	min-height: 44px;
+	color: inherit;
+	text-decoration: none;
+}
+.pnl .pnl-tb-barras a:hover b {
+	text-decoration: underline;
+}
+.pnl-tb-barras small {
+	color: var(--p-tinta-2);
+	font-size: 15px;
+}
+.pnl-tb-barras .riel,
+.pnl-tb-persona .riel {
+	position: relative;
+	display: block;
+	height: 20px;
+	background: var(--p-riel);
+	border-radius: 4px;
+	overflow: hidden;
+}
+.pnl-tb-barras .riel i,
+.pnl-tb-persona .riel i {
+	display: block;
+	height: 100%;
+	border-radius: 4px;
+}
+.pnl-tb-barras b {
+	min-width: 3ch;
+	text-align: right;
+}
+.pnl .pnl-tb-persona {
+	display: grid;
+	grid-template-columns: minmax(170px, 32%) 1fr minmax(150px, auto);
+	gap: var(--p-esp-2) var(--p-esp-4);
+	align-items: center;
+	padding: var(--p-esp-3) 0;
+	border-top: 1px solid var(--p-linea);
+	color: inherit;
+	text-decoration: none;
+}
+.pnl-tb-persona .nom {
+	font-weight: 600;
+}
+.pnl-tb-persona .nom small {
+	display: block;
+	font-weight: 400;
+	font-size: 15px;
+	color: var(--p-tinta-2);
+}
+.pnl-tb-persona .riel {
+	overflow: visible;
+}
+.pnl-tb-persona .riel i {
+	background: var(--p-azul);
+}
+.pnl-tb-persona.tarde .riel i {
+	background: var(--p-ambar);
+}
+.pnl-tb-persona.lista .riel i {
+	background: var(--p-verde);
+}
+.pnl-tb-persona .meta {
+	position: absolute;
+	top: -3px;
+	bottom: -3px;
+	width: 3px;
+	border-radius: 2px;
+	background: var(--p-tinta);
+}
+.pnl-tb-persona .cuanto {
+	text-align: right;
+}
+.pnl-tb-persona .cuanto small {
+	display: block;
+	font-size: 15px;
+	color: var(--p-tinta-2);
+}
+.pnl-filtro-activo {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: var(--p-esp-2) var(--p-esp-3);
+	margin: 0 0 var(--p-esp-3);
+}
+@media (max-width: 760px) {
+	.pnl-tb-dos {
+		grid-template-columns: 1fr;
+	}
+	.pnl-tb-valor {
+		font-size: 36px;
+	}
+	.pnl .pnl-tb-barras a,
+	.pnl .pnl-tb-persona {
+		grid-template-columns: 1fr auto;
+	}
+	.pnl-tb-barras .riel,
+	.pnl-tb-persona .riel {
+		grid-column: 1 / -1;
+		grid-row: 2;
+	}
+	.pnl-tb-leyenda {
+		grid-template-columns: 1fr;
+	}
 }
