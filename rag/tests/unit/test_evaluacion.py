@@ -341,6 +341,18 @@ def test_resumen_premios_y_excel(cliente) -> None:
     for q, ct, cv in [("q1", "S", 6), ("q3", "S", 6)]:
         c.put(f"/api/evaluacion/preguntas/{q}/mia", headers=SM, json=_cal_json(ct, cv))
         c.put(f"/api/evaluacion/preguntas/{q}/mia", headers=BQ, json=_cal_json(ct, cv))
+    # Decisión 9 (PQ-55): las concordantes no cuentan hasta que el comité las valide.
+    antes = c.get("/api/evaluacion/premios", headers=COM).json()
+    assert antes["por_validar"] == 2 and antes["solo_revisadas"]
+    assert antes["mejor_pregunta"]["S"]["ganadora"] is None
+    assert not antes["mejor_pregunta"]["S"]["empatadas"]
+    assert c.get("/api/evaluacion/resumen", headers=SM).json()["evaluadas"] == 0
+    url = "/api/evaluacion/validar-concordantes"
+    si = {"confirmar": True}
+    assert c.post(url, headers=SM, json=si).status_code == 403
+    assert c.post(url, headers=COM, json={"confirmar": False}).status_code == 422
+    assert c.post(url, headers=COM, json=si).json() == {"validadas": 2, "por_validar": 0}
+    assert c.post(url, headers=COM, json=si).json()["validadas"] == 0
     res = c.get("/api/evaluacion/resumen", headers=SM).json()
     assert res["preguntas_registradas"] == 3 and res["evaluadas"] == 2
     assert res["por_nivel"] == {"S": 2, "I": 0, "A": 0} and res["promedio_total"] == 12
@@ -400,6 +412,7 @@ def test_resumen_premios_y_excel(cliente) -> None:
     assert "<dxfs" in z.read("xl/styles.xml").decode()
     assert "Tipo 3. Comerciantes" in hoja and "S - Sencillo" in hoja
     assert "Ana" not in hoja
+    assert re.search(r"Comité \(\d{4}-\d{2}-\d{2}\)", hoja)  # Revisó: quién y cuándo
 
 
 def test_constancia_empate_total_lo_decide_el_comite() -> None:

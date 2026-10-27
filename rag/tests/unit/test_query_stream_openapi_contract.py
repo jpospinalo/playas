@@ -26,7 +26,8 @@ from rag.api.main import app
 # El ejercicio de validación (routes/participantes.py) agregó 5 rutas y 5
 # operaciones: 27 rutas, 31 operaciones. La evaluación (routes/evaluacion.py)
 # agregó 9 rutas y 9 operaciones: 36 rutas, 40 operaciones. El CSV de encuestas
-# del panel suma 1: 37 rutas, 41 operaciones.
+# del panel suma 1: 37 rutas, 41 operaciones. Validar concordantes en lote
+# (decisión 9 del orquestador) suma 1: 38 rutas, 42 operaciones.
 _EXPECTED_ROUTES: dict[str, set[str]] = {
     "/api/admin/feedback": {"get"},
     "/api/admin/message-feedback": {"get"},
@@ -39,6 +40,7 @@ _EXPECTED_ROUTES: dict[str, set[str]] = {
     "/api/admin/participantes": {"get"},
     "/api/evaluacion/bandeja": {"get"},
     "/api/evaluacion/catalogo": {"get"},
+    "/api/evaluacion/validar-concordantes": {"post"},
     "/api/evaluacion/exportar.xlsx": {"get"},
     "/api/evaluacion/premios": {"get"},
     "/api/evaluacion/premios/{nivel}/ganadora": {"put"},
@@ -80,7 +82,7 @@ def test_route_and_operation_count_matches_expected_contract() -> None:
     assert actual_routes == _EXPECTED_ROUTES
 
     operation_count = sum(len(methods) for methods in paths.values())
-    assert operation_count == 41
+    assert operation_count == 42
 
 
 def test_query_stream_declares_text_event_stream_and_not_json() -> None:

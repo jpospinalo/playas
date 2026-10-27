@@ -131,6 +131,8 @@ export interface ResumenEjercicio {
 	por_tipo_playa: { tipo: number; nombre: string; preguntas: number }[];
 	avance_evaluadores: { evaluador: string; sede: string | null; evaluadas: number }[];
 	umbral_diferencia: number;
+	/** Decisión 9: solo cuentan las validadas por el comité. */
+	solo_revisadas: boolean;
 }
 
 export interface FilaPremio {
@@ -157,6 +159,9 @@ export interface Premios {
 		dias_validos: number;
 		puntaje: number;
 	}[];
+	/** Concordantes que aún no cuentan porque el comité no las ha validado. */
+	por_validar: number;
+	solo_revisadas: boolean;
 	nota: string;
 }
 
@@ -223,6 +228,11 @@ export function pedirPremios(): Promise<Premios> {
 
 export function elegirGanadora(nivel: Ct, messageId: string): Promise<Premios> {
 	return llamar(`/premios/${nivel}/ganadora`, { method: "PUT", body: JSON.stringify({ message_id: messageId }) });
+}
+
+/** Decisión 9: el comité valida en lote las concordantes (quedan "Revisó: <su nombre> (fecha)"). */
+export function validarConcordantes(): Promise<{ validadas: number; por_validar: number }> {
+	return llamar("/validar-concordantes", { method: "POST", body: JSON.stringify({ confirmar: true }) });
 }
 
 export async function descargarPlanilla(): Promise<void> {

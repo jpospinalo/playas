@@ -1735,3 +1735,24 @@ fieldset:disabled .pnl-opcion {
 .pnl-cred-como b {
 	color: var(--p-tinta);
 }
+
+/* Decisión 9: aviso "Faltan N por validar" con confirmación en el mismo lugar. */
+.pnl-aviso .pnl-aviso-titulo {
+	margin: 0 0 4px;
+	font-size: 20px;
+	color: var(--p-ambar-txt);
+}
+.pnl-aviso .pnl-acciones {
+	margin-top: 12px;
+	gap: 10px;
+}
+.pnl-confirmar {
+	margin-top: 12px;
+	padding: 12px 14px;
+	border: 2px solid var(--p-ambar);
+	border-radius: 6px;
+	background: var(--p-papel);
+}
+.pnl-confirmar b {
+	color: var(--p-tinta);
+}

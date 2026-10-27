@@ -28,7 +28,15 @@ const POR_PAGINA = 20;
 export default function PaginaBandeja() {
 	const { role } = useAuth();
 	const comite = rolComite(role);
-	const [estado, setEstado] = useState<FiltroBandeja>(comite ? "con_diferencias" : "pendientes");
+	// "?estado=por_validar" (enlace desde "Faltan N por validar") abre esa pestaña.
+	// La bandeja solo se pinta en el navegador (tras confirmar la sesión).
+	const [estado, setEstado] = useState<FiltroBandeja>(() =>
+		comite && typeof window !== "undefined" && new URLSearchParams(window.location.search).get("estado") === "por_validar"
+			? "por_validar"
+			: comite
+				? "con_diferencias"
+				: "pendientes",
+	);
 	const [tipo, setTipo] = useState(0);
 	const [ct, setCt] = useState<Ct | "">("");
 	const [pagina, setPagina] = useState(1);

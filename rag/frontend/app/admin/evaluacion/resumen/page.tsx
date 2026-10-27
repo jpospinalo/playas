@@ -12,6 +12,7 @@ import {
 	descargarPlanilla,
 	elegirGanadora,
 	pedirPremios,
+	validarConcordantes,
 	pedirResumenEjercicio,
 	rolComite,
 	type Ct,
@@ -35,6 +36,8 @@ export default function PaginaResumenEjercicio() {
 	const [premios, setPremios] = useState<Premios | null>(null);
 	const [error, setError] = useState<string | null>(null);
 	const [errorAccion, setErrorAccion] = useState<string | null>(null);
+	const [recarga, setRecarga] = useState(0);
+	const [validadas, setValidadas] = useState<number | null>(null);
 
 	useEffect(() => {
 		let vigente = true;
@@ -52,7 +55,18 @@ export default function PaginaResumenEjercicio() {
 		return () => {
 			vigente = false;
 		};
-	}, [comite]);
+	}, [comite, recarga]);
+
+	async function validar() {
+		setErrorAccion(null);
+		try {
+			const r = await validarConcordantes();
+			setValidadas(r.validadas);
+			setRecarga((n) => n + 1);
+		} catch (e) {
+			setErrorAccion(mensajeError(e, "No se pudieron validar las preguntas."));
+		}
+	}
 
 	async function elegir(nivel: Ct, id: string) {
 		setErrorAccion(null);
@@ -116,7 +130,11 @@ export default function PaginaResumenEjercicio() {
 							<dt>Con calificación oficial</dt>
 							<dd>
 								<span className="pnl-valor num">{numero(resumen.evaluadas)}</span>
-								<span className="pnl-det">Final del comité, o dos concordantes aún por validar</span>
+								<span className="pnl-det">
+									{resumen.solo_revisadas
+										? "Validadas por el comité"
+										: "Final del comité, o dos concordantes aún por validar"}
+								</span>
 							</dd>
 						</div>
 						<div className="pnl-cifra">
@@ -192,11 +210,88 @@ export default function PaginaResumenEjercicio() {
 				</>
 			) : null}
 
+			{comite && premios ? <PorValidar premios={premios} validadas={validadas} onValidar={validar} /> : null}
 			{comite && premios ? <SeccionPremios premios={premios} onElegir={elegir} /> : null}
 			{!comite && resumen ? (
 				<p className="pnl-nota">Los premios y la descarga de la planilla los ve el comité.</p>
 			) : null}
 		</div>
+	);
+}
+
+/**
+ * Decisión 9 (PQ-55): solo cuentan las calificaciones validadas por el
+ * comité. Las concordantes (dos semilleristas de acuerdo) se validan en lote,
+ * con confirmación; las que tienen diferencias se resuelven una por una.
+ */
+function PorValidar({
+	premios,
+	validadas,
+	onValidar,
+}: {
+	premios: Premios;
+	validadas: number | null;
+	onValidar: () => Promise<void>;
+}) {
+	const [confirmar, setConfirmar] = useState(false);
+	const [enviando, setEnviando] = useState(false);
+	const n = premios.por_validar;
+	if (!premios.solo_revisadas) return null;
+	if (n === 0) {
+		return validadas ? (
+			<p className="pnl-ok" role="status">
+				Listo: {numero(validadas)} preguntas validadas. Ya cuentan para los premios.
+			</p>
+		) : null;
+	}
+	return (
+		<section className="pnl-aviso" aria-labelledby="t-por-validar">
+			<IconoAviso />
+			<div>
+				<h2 id="t-por-validar" className="pnl-aviso-titulo">
+					Faltan {numero(n)} preguntas por validar
+				</h2>
+				<p>
+					Los dos semilleristas coincidieron en ellas, pero todavía no cuentan para los premios: según el
+					documento del ejercicio, el comité valida todas las evaluaciones.
+				</p>
+				{confirmar ? (
+					<div className="pnl-confirmar" role="group" aria-labelledby="t-confirmar-validar">
+						<p id="t-confirmar-validar">
+							<b>¿Validar las {numero(n)} preguntas concordantes?</b> Quedan con la calificación acordada
+							(el promedio) y en la planilla “Revisó” dirá su nombre y la fecha de hoy.
+						</p>
+						<div className="pnl-acciones">
+							<button
+								type="button"
+								className="pnl-btn"
+								disabled={enviando}
+								onClick={async () => {
+									setEnviando(true);
+									await onValidar();
+									setEnviando(false);
+									setConfirmar(false);
+								}}
+							>
+								{enviando ? "Validando…" : `Sí, validar ${numero(n)}`}
+							</button>
+							<button type="button" className="pnl-btn-sec" onClick={() => setConfirmar(false)}>
+								Cancelar
+							</button>
+						</div>
+					</div>
+				) : (
+					<div className="pnl-acciones">
+						<button type="button" className="pnl-btn" onClick={() => setConfirmar(true)}>
+							Validar concordantes ({numero(n)})
+						</button>
+						<a className="pnl-btn-sec" href="/admin/evaluacion?estado=por_validar">
+							Revisarlas una por una
+						</a>
+					</div>
+				)}
+			</div>
+		</section>
 	);
 }
 

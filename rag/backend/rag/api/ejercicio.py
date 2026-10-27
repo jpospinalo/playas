@@ -56,10 +56,11 @@ UMBRAL_DIFERENCIA = int(os.getenv("EVAL_UMBRAL_DIFERENCIA", "2"))
 
 # El documento dice que el comité valida todas las evaluaciones. Con dos
 # calificaciones concordantes, la planilla ya tiene un valor (el promedio),
-# pero queda "pendiente de revisión del comité". Si esta variable es "true",
-# solo cuentan para resumen y premios las que el comité revisó (decisión de
-# Juan, PQ-55); por defecto cuentan también las concordantes.
-PREMIOS_SOLO_REVISADAS = os.getenv("EVAL_PREMIOS_SOLO_REVISADAS", "false").lower() == "true"
+# pero queda "pendiente de revisión del comité". Decisión 9 del orquestador
+# (PQ-55): por defecto ("true") solo cuentan para resumen y premios las que
+# el comité validó; el comité valida las concordantes en lote. Con "false"
+# cuentan también las concordantes sin revisar.
+PREMIOS_SOLO_REVISADAS = os.getenv("EVAL_PREMIOS_SOLO_REVISADAS", "true").lower() == "true"
 
 # Rúbrica de la hoja "Instructivo", para mostrarla en la ficha de evaluación.
 RUBRICA_FORMA = {
@@ -161,6 +162,8 @@ class Calificacion:
     valida: bool
     observaciones: str | None
     es_final: bool
+    # Día de la calificación (hora de Colombia), para "Revisó: nombre (fecha)".
+    fecha: str = ""
 
 
 def hay_diferencia(a: Calificacion, b: Calificacion, umbral: int = UMBRAL_DIFERENCIA) -> bool:
@@ -201,8 +204,9 @@ def calificacion_oficial(cals: list[Calificacion]) -> Oficial:
     obs = " | ".join(c.observaciones for c in cals if c.observaciones)
     if finales:
         f = finales[-1]
+        reviso = f"{f.evaluador} ({f.fecha})" if f.fecha else f.evaluador
         return Oficial(
-            "final", f.f1, f.f2, f.f3, f.ct, f.cv, f.total, f.valida, evaluo, f.evaluador, obs
+            "final", f.f1, f.f2, f.f3, f.ct, f.cv, f.total, f.valida, evaluo, reviso, obs
         )
     if len(evals) < 2:
         return Oficial(

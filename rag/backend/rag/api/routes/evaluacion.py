@@ -150,6 +150,11 @@ async def _cargar(session: AsyncSession) -> list[_Pregunta]:
                 valida=e.valida,
                 observaciones=e.observaciones,
                 es_final=e.es_final,
+                fecha=pm.a_utc(e.updated_at or e.created_at)
+                .astimezone(pm.HORA_COLOMBIA)
+                .strftime("%Y-%m-%d")
+                if (e.updated_at or e.created_at)
+                else "",
             )
         )
     return preguntas
@@ -316,7 +321,8 @@ def _estado_para_mi(p: _Pregunta, user_id: str, rol: str, sede: str | None) -> d
         "con_diferencias": oficial.estado == "con_diferencias",
         # Concordantes: tienen valor (promedio) pero falta que el comité las revise.
         "por_validar": oficial.estado == "concordante",
-        "finalizadas": oficial.estado in ("final", "concordante"),
+        "finalizadas": oficial.estado == "final"
+        or (oficial.estado == "concordante" and not ej.PREMIOS_SOLO_REVISADAS),
         "todas": True,
     }
 
@@ -518,6 +524,57 @@ async def guardar_final(
     return await _ficha(session, message_id, user)
 
 
+class ValidarLoteIn(BaseModel):
+    # Confirmación explícita: sin ella no se valida nada.
+    confirmar: Literal[True]
+
+
+class ValidarLoteOut(BaseModel):
+    validadas: int
+    por_validar: int
+
+
+@router.post("/validar-concordantes", response_model=ValidarLoteOut)
+async def validar_concordantes(
+    _payload: ValidarLoteIn,
+    user: dict = Depends(require_comite),
+    session: AsyncSession = Depends(get_session),
+) -> ValidarLoteOut:
+    """Decisión 9: el comité valida en lote las preguntas con dos calificaciones
+    concordantes. Cada una queda con su calificación final = la oficial (el
+    promedio) y "Revisó" = este miembro del comité, con la fecha. Las que
+    tienen diferencias no se tocan: esas se resuelven una por una."""
+    preguntas = await _cargar(session)
+    ahora = datetime.now(UTC)
+    n = 0
+    for p in preguntas:
+        o = p.oficial
+        if o.estado != "concordante":
+            continue
+        session.add(
+            QuestionEvaluation(
+                message_id=p.message_id,
+                evaluador_id=user["sub"],
+                es_final=True,
+                sede=None,
+                f1=o.f1,
+                f2=o.f2,
+                f3=o.f3,
+                ct=o.ct,
+                cv=o.cv,
+                total=o.total,
+                valida=o.valida,
+                observaciones=None,
+                created_at=ahora,
+                updated_at=ahora,
+            )
+        )
+        n += 1
+    if n:
+        await session.commit()
+    return ValidarLoteOut(validadas=n, por_validar=0)
+
+
 # ── Resumen, premios y Excel ─────────────────────────────────────────────────
 
 
@@ -611,8 +668,16 @@ async def _premios(session: AsyncSession, preguntas: list[_Pregunta]) -> dict:
         "participacion_constante": ranking[:10],
         "gratificacion": sorted(ranking, key=lambda f: (-f["puntaje"], f["codigo"])),
         "participacion_por_dia": _participacion(preguntas),
-        "nota": "Solo cuentan preguntas válidas con calificación final del comité o con dos "
-        "calificaciones concordantes. Si en un nivel hay empate en Cv, decide el comité.",
+        # Concordantes que aún no cuentan porque el comité no las ha validado.
+        "por_validar": sum(p.oficial.estado == "concordante" for p in preguntas),
+        "solo_revisadas": ej.PREMIOS_SOLO_REVISADAS,
+        "nota": (
+            "Solo cuentan preguntas válidas validadas por el comité."
+            if ej.PREMIOS_SOLO_REVISADAS
+            else "Solo cuentan preguntas válidas con calificación final del comité o con dos "
+            "calificaciones concordantes."
+        )
+        + " Si en un nivel hay empate en Cv, decide el comité.",
     }
 
 
