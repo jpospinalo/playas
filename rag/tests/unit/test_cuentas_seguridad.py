@@ -136,6 +136,8 @@ def test_aviso_de_privacidad_y_autorizacion_guardada(cliente) -> None:
     r = c.get("/api/privacidad", headers=ana).json()
     assert r["aceptada"] is False and r["fecha"] is None
     assert any("Ley 1581" in p for p in r["parrafos"])
+    # PQ-110: sin correo configurado no hay contacto de relleno.
+    assert r["correo"] is None and not any("comuníquese" in p for p in r["parrafos"])
     assert c.post("/api/privacidad", headers=ana, json={"acepto": False}).status_code == 422
     ok = c.post("/api/privacidad", headers=ana, json={"acepto": True}).json()
     assert ok["aceptada"] is True and ok["fecha"]

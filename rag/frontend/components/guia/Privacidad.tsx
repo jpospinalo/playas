@@ -95,6 +95,13 @@ export function ConPrivacidad({
 				{estado.parrafos.map((p) => (
 					<p key={p.slice(0, 40)}>{p}</p>
 				))}
+				{/* PQ-110: correo para revocar la autorización; sin correo configurado no se inventa uno. */}
+				{estado.correo ? (
+					<p>
+						Para revocar esta autorización o ejercer sus derechos, escriba a{" "}
+						<a href={`mailto:${estado.correo}`}>{estado.correo}</a>.
+					</p>
+				) : null}
 			</div>
 			<label className="guia-casilla">
 				<input type="checkbox" checked={acepto} onChange={(e) => setAcepto(e.target.checked)} />

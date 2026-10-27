@@ -11,6 +11,8 @@ import { getToken } from "@/lib/auth";
 export interface Privacidad {
 	version: string;
 	parrafos: string[];
+	/** PQ-110: correo para revocar la autorización (null si no está configurado). */
+	correo?: string | null;
 	aceptada: boolean;
 	fecha: string | null;
 }

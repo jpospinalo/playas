@@ -57,4 +57,20 @@ describe("ConPrivacidad — aviso y autorización en el primer ingreso", () => {
 		await userEvent.click(await screen.findByRole("button", { name: "No autorizo, salir" }));
 		expect(onSalir).toHaveBeenCalled();
 	});
+
+	it("PQ-110: con correo configurado da el enlace para revocar; sin correo no inventa uno", async () => {
+		vi.mocked(pedirPrivacidad).mockResolvedValue({ ...AVISO, correo: "datos@ejemplo.edu.co" });
+		const { unmount } = render(
+			<ConPrivacidad tituloRef={{ current: null }} onSalir={vi.fn()}>
+				<p>Flujo</p>
+			</ConPrivacidad>,
+		);
+		const enlace = await screen.findByRole("link", { name: "datos@ejemplo.edu.co" });
+		expect(enlace).toHaveAttribute("href", "mailto:datos@ejemplo.edu.co");
+		unmount();
+		vi.mocked(pedirPrivacidad).mockResolvedValue(AVISO);
+		pintar();
+		await screen.findByRole("heading", { name: "Antes de empezar: sus datos" });
+		expect(screen.queryByText(/Para revocar esta autorización/)).toBeNull();
+	});
 });

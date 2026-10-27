@@ -4,8 +4,10 @@ ingreso y la autorización queda guardada con su fecha y la versión del texto,
 como prueba.
 
 El texto es un borrador para el ejercicio de validación: el responsable y el
-contacto se configuran con ``PRIVACIDAD_RESPONSABLE`` y
-``PRIVACIDAD_CONTACTO``, y el equipo jurídico debe revisarlo antes de usarlo.
+correo de contacto se configuran con ``PRIVACIDAD_RESPONSABLE`` y
+``PRIVACIDAD_CORREO``, y el equipo jurídico debe revisarlo antes de usarlo.
+PQ-110 (decisión de Juan): para revocar la autorización se da un correo, no un
+botón; si el correo no está configurado no se muestra ningún texto de relleno.
 """
 
 from __future__ import annotations
@@ -24,9 +26,9 @@ from rag.api.database import get_session
 from rag.api.models import PrivacyConsent
 
 # Cambiar la versión cuando cambie el texto: se vuelve a pedir la autorización.
-VERSION = "2026-10-27"
+VERSION = "2026-10-27b"
 RESPONSABLE = os.getenv("PRIVACIDAD_RESPONSABLE", "el equipo del proyecto ATLAS")
-CONTACTO = os.getenv("PRIVACIDAD_CONTACTO", "el equipo organizador del ejercicio")
+CORREO = os.getenv("PRIVACIDAD_CORREO", "").strip() or None
 
 PARRAFOS = [
     f"Responsable del tratamiento: {RESPONSABLE}.",
@@ -40,7 +42,7 @@ PARRAFOS = [
     "Sus derechos (Ley 1581 de 2012, art. 8): conocer, actualizar y rectificar sus datos, "
     "pedir prueba de esta autorización, ser informado del uso de sus datos, presentar quejas "
     "ante la Superintendencia de Industria y Comercio, revocar la autorización y pedir que se "
-    f"supriman sus datos. Para ejercerlos, comuníquese con {CONTACTO}.",
+    "supriman sus datos.",
     "Responder sobre datos sensibles es voluntario: no escriba en sus preguntas datos de "
     "salud, origen, creencias u otros datos sensibles.",
 ]
@@ -52,6 +54,8 @@ router = APIRouter(prefix="/api/privacidad", tags=["privacidad"])
 class PrivacidadResponse(BaseModel):
     version: str
     parrafos: list[str]
+    # PQ-110: correo para revocar la autorización o ejercer los derechos (None si no está configurado).
+    correo: str | None = None
     aceptada: bool
     fecha: str | None
 
@@ -66,6 +70,7 @@ async def _estado(session: AsyncSession, user_id: str) -> PrivacidadResponse:
     return PrivacidadResponse(
         version=VERSION,
         parrafos=PARRAFOS,
+        correo=CORREO,
         aceptada=vigente,
         fecha=pm.a_utc(c.aceptada_at).isoformat() if vigente and c and c.aceptada_at else None,
     )
