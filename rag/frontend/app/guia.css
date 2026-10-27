@@ -1158,3 +1158,33 @@ body:has(.guia) {
 		padding-top: 18px;
 	}
 }
+
+/* Aviso de privacidad del primer ingreso (Ley 1581 / Decreto 1377). */
+.guia-aviso-texto {
+	margin-top: 16px;
+	padding: 16px 18px;
+	border: 2px solid var(--linea);
+	border-radius: 6px;
+	background: var(--papel);
+}
+.guia-aviso-texto p {
+	margin: 0 0 12px;
+}
+.guia-aviso-texto p:last-child {
+	margin-bottom: 0;
+}
+.guia-casilla {
+	display: flex;
+	gap: 14px;
+	align-items: flex-start;
+	margin-top: 20px;
+	font-size: 20px;
+	cursor: pointer;
+}
+.guia-casilla input {
+	flex: none;
+	width: 28px;
+	height: 28px;
+	margin-top: 2px;
+	accent-color: var(--marino);
+}

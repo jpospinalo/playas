@@ -1,19 +1,22 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { mensajeError, numero } from "@/lib/admin/panel";
+import { fechaHora, mensajeError, numero } from "@/lib/admin/panel";
 import {
 	ROLES,
 	SEDES,
 	TIPOS_PLAYA,
 	cambiarCuenta,
 	crearLote,
+	detalleAuditoria,
 	leerLista,
 	listarCuentas,
 	nombreTipo,
 	nuevaClave,
+	pedirAuditoria,
 	textoRol,
 	type Credencial,
+	type EntradaAuditoria,
 	type Cuenta,
 	type Rol,
 	type Sede,
@@ -204,7 +207,76 @@ export default function PaginaCuentas() {
 					</nav>
 				) : null}
 			</section>
+			<Historial />
 		</div>
+	);
+}
+
+/** CHECKLIST-FINAL c7: quién creó cuentas, cambió roles, generó claves o validó en lote. */
+function Historial() {
+	const [abierto, setAbierto] = useState(false);
+	const [datos, setDatos] = useState<{ items: EntradaAuditoria[]; total: number } | null>(null);
+	const [error, setError] = useState<string | null>(null);
+
+	async function abrir() {
+		const nuevo = !abierto;
+		setAbierto(nuevo);
+		if (!nuevo) return;
+		setError(null);
+		try {
+			setDatos(await pedirAuditoria(100));
+		} catch (e) {
+			setError(mensajeError(e, "No se pudo cargar el historial."));
+		}
+	}
+
+	return (
+		<section className="pnl-bloque pnl-no-imprimir" aria-labelledby="t-historial">
+			<div className="pnl-bloque-cab">
+				<div>
+					<h2 id="t-historial">Historial de cambios</h2>
+					<p>Quién creó cuentas, cambió datos, generó claves, desactivó cuentas o validó calificaciones.</p>
+				</div>
+				<button type="button" className="pnl-btn-sec" onClick={abrir} aria-expanded={abierto}>
+					{abierto ? "Ocultar" : "Ver historial"}
+				</button>
+			</div>
+			{abierto && error ? (
+				<p className="pnl-error-linea" role="alert">
+					{error}
+				</p>
+			) : null}
+			{abierto && !datos && !error ? <p className="pnl-cargando">Cargando historial…</p> : null}
+			{abierto && datos && datos.items.length === 0 ? (
+				<p className="pnl-vacio">Todavía no hay cambios registrados.</p>
+			) : null}
+			{abierto && datos && datos.items.length ? (
+				<div className="pnl-tabla-datos" role="region" aria-label="Historial de cambios" tabIndex={0}>
+					<table>
+						<thead>
+							<tr>
+								<th scope="col">Fecha</th>
+								<th scope="col">Quién</th>
+								<th scope="col">Qué hizo</th>
+								<th scope="col">A quién</th>
+								<th scope="col">Detalle</th>
+							</tr>
+						</thead>
+						<tbody>
+							{datos.items.map((e, i) => (
+								<tr key={`${e.fecha}-${i}`}>
+									<td>{fechaHora(e.fecha)}</td>
+									<td>{e.quien}</td>
+									<td>{e.texto}</td>
+									<td>{e.objetivo ?? "—"}</td>
+									<td>{detalleAuditoria(e) || "—"}</td>
+								</tr>
+							))}
+						</tbody>
+					</table>
+				</div>
+			) : null}
+		</section>
 	);
 }
 
@@ -371,7 +443,20 @@ function FilaCuenta({ cuenta, onCambiada }: { cuenta: Cuenta; onCambiada: (c: Cu
 	const [sede, setSede] = useState<Sede>((cuenta.sede as Sede) ?? "Santa Marta");
 	const [clave, setClave] = useState<string | null>(null);
 	const [error, setError] = useState<string | null>(null);
+	const [confirmarBaja, setConfirmarBaja] = useState(false);
+	const activa = cuenta.activa !== false;
 	const id = cuenta.uid.slice(0, 8);
+
+	// CHECKLIST-FINAL c2: desactivar sin borrar el historial (y reactivar).
+	async function cambiarActiva(nueva: boolean) {
+		setError(null);
+		try {
+			onCambiada(await cambiarCuenta(cuenta.uid, { activa: nueva }));
+			setConfirmarBaja(false);
+		} catch (e) {
+			setError(mensajeError(e, "No se pudo cambiar la cuenta."));
+		}
+	}
 
 	async function guardar() {
 		setError(null);
@@ -398,11 +483,12 @@ function FilaCuenta({ cuenta, onCambiada }: { cuenta: Cuenta; onCambiada: (c: Cu
 	}
 
 	return (
-		<li className="pnl-fila">
+		<li className={activa ? "pnl-fila" : "pnl-fila pnl-fila-inactiva"}>
 			<div className="pnl-fila-q">
 				<p className="pnl-fila-titulo" style={{ margin: 0 }}>
 					{cuenta.codigo ? <span className="pnl-etq">{cuenta.codigo}</span> : null}
 					{cuenta.nombre || "Sin nombre"}
+					{activa ? null : <span className="pnl-inactiva"> · Desactivada</span>}
 				</p>
 				<p className="pnl-fila-meta">
 					<span>{textoRol(cuenta.rol)}</span>
@@ -420,6 +506,22 @@ function FilaCuenta({ cuenta, onCambiada }: { cuenta: Cuenta; onCambiada: (c: Cu
 					<p className="pnl-error-linea" role="alert">
 						{error}
 					</p>
+				) : null}
+				{confirmarBaja ? (
+					<div className="pnl-confirmar" role="group" aria-labelledby={`baja-${id}`}>
+						<p id={`baja-${id}`}>
+							¿Desactivar la cuenta de {cuenta.nombre || cuenta.correo}? No podrá entrar a ATLAS; sus preguntas y
+							calificaciones se conservan y se puede reactivar.
+						</p>
+						<div className="pnl-acciones">
+							<button type="button" className="pnl-btn" onClick={() => cambiarActiva(false)}>
+								Sí, desactivar
+							</button>
+							<button type="button" className="pnl-btn-sec" onClick={() => setConfirmarBaja(false)}>
+								Cancelar
+							</button>
+						</div>
+					</div>
 				) : null}
 				{editando ? (
 					<div className="pnl-controles" style={{ marginTop: 10 }}>
@@ -483,6 +585,20 @@ function FilaCuenta({ cuenta, onCambiada }: { cuenta: Cuenta; onCambiada: (c: Cu
 					<button type="button" className="pnl-btn-sec" onClick={restablecer}>
 						Nueva clave<span className="sr"> para {cuenta.nombre || cuenta.correo}</span>
 					</button>
+					{activa ? (
+						<button
+							type="button"
+							className="pnl-btn-sec"
+							onClick={() => setConfirmarBaja(true)}
+							aria-expanded={confirmarBaja}
+						>
+							Desactivar<span className="sr"> la cuenta de {cuenta.nombre || cuenta.correo}</span>
+						</button>
+					) : (
+						<button type="button" className="pnl-btn-sec" onClick={() => cambiarActiva(true)}>
+							Reactivar<span className="sr"> la cuenta de {cuenta.nombre || cuenta.correo}</span>
+						</button>
+					)}
 				</div>
 			</div>
 		</li>

@@ -144,6 +144,16 @@ describe("app/admin/cuentas", () => {
 		});
 	});
 
+	it("desactiva con confirmación (CHECKLIST-FINAL c2)", async () => {
+		render(<PaginaCuentas />);
+		await screen.findByText("Ana Gómez");
+		await userEvent.click(screen.getByRole("button", { name: "Desactivar la cuenta de Ana Gómez" }));
+		expect(screen.getByText(/sus preguntas y calificaciones se conservan/)).toBeInTheDocument();
+		await userEvent.click(screen.getByRole("button", { name: "Sí, desactivar" }));
+		const patch = llamadas.find((l) => l.init?.method === "PATCH");
+		expect(JSON.parse(String(patch?.init?.body))).toEqual({ activa: false });
+	});
+
 	it("no envía si la lista tiene errores", async () => {
 		render(<PaginaCuentas />);
 		await screen.findByText("Ana Gómez");

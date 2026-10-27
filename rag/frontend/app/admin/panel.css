@@ -1756,3 +1756,12 @@ fieldset:disabled .pnl-opcion {
 .pnl-confirmar b {
 	color: var(--p-tinta);
 }
+
+/* CHECKLIST-FINAL c2: cuenta desactivada (texto, no solo color). */
+.pnl-fila-inactiva .pnl-fila-titulo {
+	color: var(--p-tinta-2);
+}
+.pnl-inactiva {
+	font-weight: 400;
+	color: var(--p-tinta-2);
+}

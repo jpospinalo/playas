@@ -19,6 +19,7 @@ import {
 } from "@/components/guia/Pantallas";
 import { Respuesta, type Calificacion } from "@/components/guia/Respuesta";
 import { PantallaOpinion } from "@/components/guia/Opinion";
+import { ConPrivacidad } from "@/components/guia/Privacidad";
 import { detenerVoz } from "@/lib/voz";
 import type { Message, SourceGroup } from "@/lib/types";
 
@@ -29,7 +30,7 @@ import type { Message, SourceGroup } from "@/lib/types";
  * conversación propia.
  */
 export function GuiaApp() {
-	const { user, loading } = useAuth();
+	const { user, loading, signOut } = useAuth();
 	const tituloRef = useRef<HTMLHeadingElement>(null);
 	const router = useRouter();
 	// Semilleristas y comité solo evalúan: al entrar van directo a Evaluación (PQ-62).
@@ -51,7 +52,10 @@ export function GuiaApp() {
 						Abriendo Evaluación…
 					</p>
 				) : user ? (
-					<Flujo key={user.user_id} />
+					// Primer ingreso: aviso de privacidad y autorización (Ley 1581).
+					<ConPrivacidad key={user.user_id} tituloRef={tituloRef} onSalir={() => void signOut()}>
+						<Flujo />
+					</ConPrivacidad>
 				) : (
 					<Entrar tituloRef={tituloRef} />
 				)}

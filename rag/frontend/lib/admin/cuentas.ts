@@ -50,6 +50,8 @@ export interface Cuenta {
 	organizacion?: string | null;
 	preguntas: number;
 	creada: string;
+	/** false = desactivada: no entra, pero su historial se conserva. */
+	activa?: boolean;
 }
 
 export interface PersonaNueva {
@@ -107,9 +109,50 @@ export function crearLote(personas: PersonaNueva[]): Promise<{ creadas: Credenci
 
 export function cambiarCuenta(
 	uid: string,
-	cambios: { rol?: Rol; tipo_playa?: number; sede?: Sede; nombre?: string },
+	cambios: { rol?: Rol; tipo_playa?: number; sede?: Sede; nombre?: string; activa?: boolean },
 ): Promise<Cuenta> {
 	return llamar(`/${encodeURIComponent(uid)}`, { method: "PATCH", body: JSON.stringify(cambios) });
+}
+
+export interface EntradaAuditoria {
+	fecha: string;
+	quien: string;
+	accion: string;
+	texto: string;
+	objetivo: string | null;
+	detalle: Record<string, unknown>;
+}
+
+/** Historial de acciones de administración y del comité (quién, qué, cuándo). */
+export async function pedirAuditoria(limite = 100): Promise<{ items: EntradaAuditoria[]; total: number }> {
+	const t = getToken();
+	if (!t) {
+		expireAuthSession(null);
+		throw new Error("Su sesión se cerró. Vuelva a entrar.");
+	}
+	const res = await fetch(`${API_URL}/api/admin/auditoria?limite=${limite}`, {
+		headers: { Authorization: `Bearer ${t}` },
+		signal: withRestTimeout(),
+	});
+	await throwIfSessionExpired(res, t);
+	if (!res.ok) throw new Error(`El servidor respondió con un error (${res.status}).`);
+	return (await res.json()) as { items: EntradaAuditoria[]; total: number };
+}
+
+/** Detalle legible de una entrada: qué cambió o cuántas fueron. */
+export function detalleAuditoria(e: EntradaAuditoria): string {
+	const d = e.detalle ?? {};
+	const partes: string[] = [];
+	if (typeof d.cantidad === "number") partes.push(`${d.cantidad} en total`);
+	if (typeof d.id_pregunta === "number") partes.push(`pregunta ${d.id_pregunta}`);
+	if (typeof d.nivel === "string") partes.push(`nivel ${d.nivel}`);
+	const cambios = d.cambios as Record<string, [unknown, unknown]> | undefined;
+	if (cambios) {
+		for (const [campo, [antes, despues]] of Object.entries(cambios)) {
+			partes.push(`${campo.replace("_", " ")}: ${antes ?? "—"} → ${despues ?? "—"}`);
+		}
+	}
+	return partes.join("; ");
 }
 
 export function nuevaClave(uid: string): Promise<{ correo: string; clave: string }> {
