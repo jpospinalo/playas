@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import {
+	cuantas,
 	mensajeError,
 	numero,
 	pedirResumen,
@@ -81,7 +82,7 @@ export default function PaginaOpiniones() {
 						<dd>
 							<span className="pnl-valor num">{numero(c.calificaciones)}</span>
 							<span className="pnl-det">
-								De {numero(c.respuestas)} respuestas ({textoPorcentaje(c.calificaciones, c.respuestas)})
+								De {cuantas(c.respuestas, "respuesta", "respuestas")} ({textoPorcentaje(c.calificaciones, c.respuestas)})
 							</span>
 						</dd>
 					</div>

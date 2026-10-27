@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/components/providers/AuthProvider";
-import { diaHoraCalendario, mensajeError, numero, recortar } from "@/lib/admin/panel";
+import { cuantas, diaHoraCalendario, mensajeError, numero, recortar } from "@/lib/admin/panel";
 import { TIPOS_PLAYA } from "@/lib/admin/cuentas";
 import {
 	NIVELES,
@@ -18,7 +18,7 @@ import {
 } from "@/lib/admin/evaluacion";
 import { EstadoEval } from "@/components/admin/evaluacion/EstadoEval";
 import { IconoAviso } from "@/components/admin/panel/Estados";
-import { SubNavEvaluacion } from "@/components/admin/evaluacion/SubNav";
+import { CabezaPestana, EncabezadoEvaluacion } from "@/components/admin/evaluacion/SubNav";
 import { diaLargo, pedirCalendario, textoRestante, type Calendario } from "@/lib/admin/calendario";
 
 const POR_PAGINA = 20;
@@ -85,19 +85,14 @@ export default function PaginaBandeja() {
 	return (
 		<div className="pnl-pag">
 			<title>Evaluación de preguntas: panel de ATLAS</title>
-			<div className="pnl-cabeza">
-				<div>
-					<h1>Evaluación de preguntas</h1>
-					<p className="pnl-sub">
-						{comite
-							? "Cada pregunta la evalúan dos semilleristas, uno de Santa Marta y uno de Barranquilla, que el sistema asigna solo."
-							: "El sistema le asigna preguntas automáticamente, repartidas por igual entre los semilleristas de su sede."}{" "}
-						Califique con la planilla: forma (F1, F2, F3) y fondo (Ct y Cv). Las preguntas son anónimas: solo se
-						ve el número del participante y su tipo de usuario de playa.
-					</p>
-				</div>
-			</div>
-			<SubNavEvaluacion />
+			<EncabezadoEvaluacion />
+			<CabezaPestana titulo="Preguntas para calificar">
+				{comite
+					? "Cada pregunta la evalúan dos semilleristas, uno de Santa Marta y uno de Barranquilla, que el sistema asigna solo."
+					: "El sistema le asigna preguntas automáticamente, repartidas por igual entre los semilleristas de su sede."}{" "}
+				Califique con la planilla: forma (F1, F2, F3) y fondo (Ct y Cv). Solo se ve el número del participante y su
+				tipo de usuario de playa.
+			</CabezaPestana>
 			<Plazo pendientes={datos ? (datos.conteos[comite ? "con_diferencias" : "pendientes"] ?? 0) : null} comite={comite} />
 			{comite ? <Practica /> : null}
 
@@ -106,11 +101,12 @@ export default function PaginaBandeja() {
 					<h2 id="t-bandeja">Preguntas</h2>
 					<div className="pnl-controles">
 						<div className="pnl-campo">
-							<label htmlFor="b-buscar">Buscar (ID de pregunta, participante o texto)</label>
+							<label htmlFor="b-buscar">Buscar</label>
 							<input
 								id="b-buscar"
 								type="search"
-								className="pnl-input"
+								placeholder="Ej.: 486, P081 o kiosco"
+								className="pnl-input pnl-input-ancho"
 								value={borrador}
 								onChange={(e) => setBorrador(e.target.value)}
 								onBlur={() => {
@@ -344,7 +340,7 @@ function Practica() {
 			<p>
 				{estado.archivada
 					? "La práctica está archivada: sus preguntas ya no se ven en ninguna lista."
-					: `Hay ${numero(estado.cuentas)} cuentas de práctica con ${numero(estado.preguntas)} preguntas. Se evalúan y validan igual, pero no cuentan para el resumen, los premios ni el Excel.`}
+					: `Hay ${cuantas(estado.cuentas, "cuenta", "cuentas")} de práctica con ${cuantas(estado.preguntas, "pregunta", "preguntas")}. Se evalúan y validan igual, pero no cuentan para el resumen, los premios ni el Excel.`}
 			</p>
 			{error ? (
 				<p className="pnl-error-linea" role="alert">
@@ -397,17 +393,17 @@ function Plazo({ pendientes, comite }: { pendientes: number | null; comite: bool
 		};
 	}, []);
 	if (!cal?.mi_limite || cal.dias_restantes === null) return null;
-	const cuantas =
+	const frase =
 		pendientes === null
 			? ""
 			: comite
-				? `${numero(pendientes)} preguntas con diferencias por resolver. `
+				? `${cuantas(pendientes, "pregunta", "preguntas")} con diferencias por resolver. `
 				: `Tiene ${numero(pendientes)} ${pendientes === 1 ? "pregunta asignada" : "preguntas asignadas"} sin evaluar. `;
 	return (
 		<p className={cal.dias_restantes < 0 ? "pnl-aviso" : "pnl-plazo"} role="status">
 			{cal.dias_restantes < 0 ? <IconoAviso /> : null}
 			<span>
-				{cuantas}
+				{frase}
 				{cal.mi_limite_texto}: {diaLargo(cal.mi_limite)}. {textoRestante(cal.dias_restantes)}.
 			</span>
 		</p>

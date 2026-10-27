@@ -341,6 +341,11 @@ export function decimal(n: number): string {
 	return fmtDecimal.format(n);
 }
 
+/** "1 pregunta" / "3 preguntas": singular y plural correctos (J5-2). */
+export function cuantas(n: number, uno: string, varios: string): string {
+	return `${numero(n)} ${n === 1 ? uno : varios}`;
+}
+
 /** Porcentaje entero, o `null` si no hay base. */
 export function porcentaje(parte: number, total: number): number | null {
 	if (!total) return null;

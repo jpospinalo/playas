@@ -6,6 +6,7 @@ import {
 	enlaceConversacion,
 	fechaHora,
 	mensajeError,
+	cuantas,
 	numero,
 	pedirPreguntas,
 	recortar,
@@ -194,7 +195,7 @@ export function Recientes({
 			{datos && total > 0 ? (
 				<nav className="pnl-pagin" aria-label="Páginas de preguntas">
 					<span>
-						{numero(desde)} a {numero(hasta)} de {numero(total)} preguntas
+						{numero(desde)} a {numero(hasta)} de {cuantas(total, "pregunta", "preguntas")}
 					</span>
 					{total > POR_PAGINA ? (
 						<div>

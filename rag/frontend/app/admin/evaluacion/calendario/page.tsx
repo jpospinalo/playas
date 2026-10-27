@@ -11,7 +11,7 @@ import {
 	type Calendario,
 } from "@/lib/admin/calendario";
 import { IconoAviso } from "@/components/admin/panel/Estados";
-import { SubNavEvaluacion } from "@/components/admin/evaluacion/SubNav";
+import { CabezaPestana, EncabezadoEvaluacion } from "@/components/admin/evaluacion/SubNav";
 
 /**
  * Calendario del ejercicio (reunión del 20-oct, T5): las fechas que dijo
@@ -60,16 +60,11 @@ export default function PaginaCalendario() {
 	return (
 		<div className="pnl-pag">
 			<title>Calendario: evaluación de ATLAS</title>
-			<div className="pnl-cabeza">
-				<div>
-					<h1>Calendario del ejercicio</h1>
-					<p className="pnl-sub">
-						Fechas acordadas en la reunión del 20 de octubre. Al vencer un plazo, los semilleristas (o el comité) ya no
-						pueden guardar; para ampliarlo, cambie la fecha aquí.
-					</p>
-				</div>
-			</div>
-			<SubNavEvaluacion />
+			<EncabezadoEvaluacion />
+			<CabezaPestana titulo="Calendario del ejercicio">
+				Fechas acordadas en la reunión del 20 de octubre. Al vencer un plazo, los semilleristas (o el comité) ya no
+				pueden guardar; para ampliarlo, cambie la fecha aquí.
+			</CabezaPestana>
 			{error ? (
 				<div className="pnl-error" role="alert">
 					<IconoAviso />

@@ -10,6 +10,7 @@ import {
 	cambioConteo,
 	mensajeError,
 	cambioTasa,
+	cuantas,
 	decimal,
 	descargarCsv,
 	diaMes,
@@ -142,7 +143,7 @@ function ResumenConFiltros() {
 				if (!vigente) return;
 				setDatos(r);
 				setError(null);
-				setAnuncio(`${textoPeriodo(dias)}: ${numero(r.cifras.preguntas)} preguntas.`);
+				setAnuncio(`${textoPeriodo(dias)}: ${cuantas(r.cifras.preguntas, "pregunta", "preguntas")}.`);
 			})
 			.catch((e) => {
 				if (vigente) setError(mensajeError(e, "No se pudieron cargar las cifras."));
@@ -219,9 +220,10 @@ function ResumenConFiltros() {
 						</select>
 					</div>
 					<div className="pnl-campo">
-						<label htmlFor="pnl-part">Participante (ej. P007)</label>
+						<label htmlFor="pnl-part">Participante</label>
 						<input
 							id="pnl-part"
+							placeholder="Ej.: P007"
 							className="pnl-input"
 							value={borradorPart}
 							onChange={(e) => setBorradorPart(e.target.value)}
@@ -414,7 +416,7 @@ function Contenido({
 							{pFuente !== null ? <small>&nbsp;%</small> : null}
 						</span>
 						<span className="pnl-det">
-							{numero(c.con_fuente)} de {numero(c.respuestas)} respuestas.{" "}
+							{numero(c.con_fuente)} de {cuantas(c.respuestas, "respuesta", "respuestas")}.{" "}
 							{a ? (
 								<Delta
 									cambio={cambioTasa(pFuente, pFuenteAnt)}
@@ -460,7 +462,7 @@ function Contenido({
 							{pSinResp !== null ? <small>&nbsp;%</small> : null}
 						</span>
 						<span className="pnl-det">
-							{numero(c.sin_respuesta_segura)} de {numero(c.respuestas)} respuestas.{" "}
+							{numero(c.sin_respuesta_segura)} de {cuantas(c.respuestas, "respuesta", "respuestas")}.{" "}
 							{a ? (
 								<Delta
 									cambio={cambioTasa(pSinResp, pSinRespAnt)}
@@ -503,7 +505,7 @@ function Contenido({
 					<div className="pnl-bloque-cab">
 						<div>
 							<h2 id="t-quien">Quién pregunta</h2>
-							<p>{numero(datos.personas.activas)} personas en el periodo</p>
+							<p>{cuantas(datos.personas.activas, "persona", "personas")} en el periodo</p>
 						</div>
 					</div>
 					<Personas datos={datos} dias={dias} />
@@ -568,7 +570,7 @@ function Contenido({
 					<div className="pnl-bloque-cab">
 						<div>
 							<h2 id="t-normas">Normas y sentencias más citadas</h2>
-							<p>Respuestas que la usan como fuente</p>
+							<p>Cuántas respuestas citan cada norma o sentencia</p>
 						</div>
 					</div>
 					<div>
@@ -596,7 +598,7 @@ function Contenido({
 							)}
 						/>
 					) : (
-						<p className="pnl-vacio">Ninguna respuesta citó normas en este periodo.</p>
+						<p className="pnl-vacio">Todavía ninguna respuesta cita una norma o sentencia en este periodo.</p>
 					)}
 					</div>
 					{datos.normas.length ? (
@@ -627,7 +629,7 @@ function Contenido({
 					<div className="pnl-bloque-cab">
 						<div>
 							<h2 id="t-playas">Playas mencionadas</h2>
-							<p>Preguntas que nombran una playa</p>
+							<p>Cuántas preguntas nombran cada playa</p>
 						</div>
 					</div>
 					{datos.playas.length ? (
@@ -640,12 +642,18 @@ function Contenido({
 							}))}
 						/>
 					) : (
-						<p className="pnl-vacio">Ninguna pregunta nombra una playa en este periodo.</p>
+						<p className="pnl-vacio">
+							Todavía ninguna pregunta nombra una playa (0 de {numero(c.preguntas)}).
+						</p>
 					)}
-					<p className="pnl-nota">
-						{numero(datos.sin_playa)} preguntas ({textoPorcentaje(datos.sin_playa, c.preguntas)}) no
-						nombran ninguna playa.
-					</p>
+					{datos.playas.length ? (
+						<p className="pnl-nota">
+							{datos.sin_playa === 1
+								? "1 pregunta no nombra ninguna playa"
+								: `${numero(datos.sin_playa)} preguntas no nombran ninguna playa`}{" "}
+							({textoPorcentaje(datos.sin_playa, c.preguntas)}).
+						</p>
+					) : null}
 				</section>
 				</div>
 			</div>
@@ -674,7 +682,7 @@ function desglose(c: Resumen["cifras"]): string {
 	if (c.fuera_de_tema) partes.push(`${numero(c.fuera_de_tema)} fuera de tema`);
 	if (c.pide_aclarar) partes.push(`${numero(c.pide_aclarar)} en que pidió aclarar`);
 	const ultima = partes.pop();
-	let texto = `${numero(c.respuestas)} respuestas: ${partes.join(", ")} y ${ultima}.`;
+	let texto = `${cuantas(c.respuestas, "respuesta", "respuestas")}: ${partes.join(", ")} y ${ultima}.`;
 	const aparte: string[] = [];
 	if (c.saludos) aparte.push(`${numero(c.saludos)} ${c.saludos === 1 ? "saludo" : "saludos"}`);
 	if (c.sin_respuesta_guardada) aparte.push(`${numero(c.sin_respuesta_guardada)} sin respuesta guardada`);
@@ -701,7 +709,7 @@ function Personas({ datos, dias }: { datos: Resumen; dias: number }) {
 	if (dias === 0) {
 		return (
 			<p>
-				En todo el tiempo preguntaron {numero(p.activas)} personas, con{" "}
+				En todo el tiempo {p.activas === 1 ? "preguntó" : "preguntaron"} {cuantas(p.activas, "persona", "personas")}, con{" "}
 				{decimal(p.preguntas_por_persona)} preguntas por persona en promedio.
 			</p>
 		);

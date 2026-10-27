@@ -36,3 +36,45 @@ export function SubNavEvaluacion() {
 		</nav>
 	);
 }
+
+/**
+ * J5-1: el mismo encabezado en Preguntas, Validar, Resumen y Calendario, para
+ * que las pestañas no cambien de lugar al pasar de una a otra. Lo propio de
+ * cada pestaña (descripción, botones, avisos) va debajo con
+ * ``CabezaPestana``.
+ */
+export function EncabezadoEvaluacion() {
+	return (
+		<>
+			<div className="pnl-cabeza">
+				<div>
+					<h1>Evaluación de preguntas</h1>
+					<p className="pnl-sub">Ejercicio de validación de ATLAS: evaluar, validar y ver resultados.</p>
+				</div>
+			</div>
+			<SubNavEvaluacion />
+		</>
+	);
+}
+
+/** Título, descripción y acciones de una pestaña, debajo del menú. */
+export function CabezaPestana({
+	titulo,
+	children,
+	acciones,
+}: {
+	titulo: string;
+	children?: React.ReactNode;
+	acciones?: React.ReactNode;
+}) {
+	return (
+		<div className="pnl-cabeza-pestana">
+			<div>
+				<h2>{titulo}</h2>
+				{children ? <p className="pnl-sub">{children}</p> : null}
+			</div>
+			{acciones ? <div className="pnl-controles">{acciones}</div> : null}
+		</div>
+	);
+}
+

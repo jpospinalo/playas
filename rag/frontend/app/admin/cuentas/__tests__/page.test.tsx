@@ -154,11 +154,11 @@ describe("app/admin/cuentas", () => {
 	it("busca por número, nombre o correo (PQ-53)", async () => {
 		render(<PaginaCuentas />);
 		await screen.findByText("Ana Gómez");
-		await userEvent.type(screen.getByLabelText("Buscar (número, nombre o correo)"), "p001");
+		await userEvent.type(screen.getByLabelText("Buscar"), "p001");
 		expect(screen.getByText("Ana Gómez")).toBeInTheDocument();
 		expect(screen.queryByText("Luis Díaz")).not.toBeInTheDocument();
-		await userEvent.clear(screen.getByLabelText("Buscar (número, nombre o correo)"));
-		await userEvent.type(screen.getByLabelText("Buscar (número, nombre o correo)"), "díaz");
+		await userEvent.clear(screen.getByLabelText("Buscar"));
+		await userEvent.type(screen.getByLabelText("Buscar"), "díaz");
 		expect(screen.getByText("Luis Díaz")).toBeInTheDocument();
 		expect(screen.queryByText("Ana Gómez")).not.toBeInTheDocument();
 	});

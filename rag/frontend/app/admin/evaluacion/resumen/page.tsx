@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/components/providers/AuthProvider";
-import { decimal, diaMesCalendario, mensajeError, numero, recortar } from "@/lib/admin/panel";
+import { cuantas, decimal, diaMesCalendario, mensajeError, numero, recortar } from "@/lib/admin/panel";
 import { diaLargo } from "@/lib/admin/calendario";
 import { nombreTipo } from "@/lib/admin/cuentas";
 import {
@@ -21,7 +21,7 @@ import {
 	type ResumenEjercicio,
 } from "@/lib/admin/evaluacion";
 import { IconoAviso, IconoDescargar } from "@/components/admin/panel/Estados";
-import { SubNavEvaluacion } from "@/components/admin/evaluacion/SubNav";
+import { CabezaPestana, EncabezadoEvaluacion } from "@/components/admin/evaluacion/SubNav";
 
 /**
  * Resumen del ejercicio (como la hoja "Resumen" de la planilla), avance por
@@ -77,21 +77,20 @@ export default function PaginaResumenEjercicio() {
 	return (
 		<div className="pnl-pag">
 			<title>Resumen del ejercicio: evaluación de ATLAS</title>
-			<div className="pnl-cabeza">
-				<div>
-					<h1>Resumen del ejercicio</h1>
-					<p className="pnl-sub">Avance de la evaluación con las cifras de la hoja “Resumen” de la planilla.</p>
-				</div>
-				{comite ? (
-					<div className="pnl-controles">
+			<EncabezadoEvaluacion />
+			<CabezaPestana
+				titulo="Resumen y premios"
+				acciones={
+					comite ? (
 						<button type="button" className="pnl-btn-sec" onClick={exportar}>
 							<IconoDescargar />
 							Descargar planilla en Excel
 						</button>
-					</div>
-				) : null}
-			</div>
-			<SubNavEvaluacion />
+					) : null
+				}
+			>
+				Avance de la evaluación con las cifras de la hoja “Resumen” de la planilla.
+			</CabezaPestana>
 
 			{error || errorAccion ? (
 				<div className="pnl-error" role="alert">
@@ -222,7 +221,7 @@ function PorValidar({ premios }: { premios: Premios }) {
 			<IconoAviso />
 			<div>
 				<h2 id="t-por-validar" className="pnl-aviso-titulo">
-					Faltan {numero(n)} evaluaciones por validar
+					{n === 1 ? "Falta 1 evaluación" : `Faltan ${numero(n)} evaluaciones`} por validar
 				</h2>
 				<p>
 					Todavía no cuentan para los premios: según el documento del ejercicio, el comité valida todas las
@@ -379,7 +378,7 @@ function Empatadas({ total, render }: { total: number; render: (n: number) => Re
 	return (
 		<>
 			<p className="pnl-nota" style={{ marginTop: 0 }}>
-				{numero(total)} preguntas empatadas con el mismo Cv.
+				{cuantas(total, "pregunta empatada", "preguntas empatadas")} con el mismo Cv.
 			</p>
 			{render(todas ? total : 5)}
 			{total > 5 ? (
@@ -594,7 +593,7 @@ function Concordancia({ resumen }: { resumen: ResumenEjercicio }) {
 		<section className="pnl-bloque" aria-labelledby="t-conc">
 			<h2 id="t-conc">Acuerdo entre Santa Marta y Barranquilla</h2>
 			<p className="pnl-sub" style={{ marginBottom: 12 }}>
-				En {numero(c.pares)} preguntas con las dos evaluaciones. Kappa y alfa van de 0 (acuerdo por azar) a 1 (acuerdo
+				En {cuantas(c.pares, "pregunta", "preguntas")} con las dos evaluaciones. Kappa y alfa van de 0 (acuerdo por azar) a 1 (acuerdo
 				total); sobre 0,6 se considera bueno.
 			</p>
 			<dl className="pnl-cifras pnl-cifras-4">

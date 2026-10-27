@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { diaMesCalendario, mensajeError, numero } from "@/lib/admin/panel";
+import { cuantas, diaMesCalendario, mensajeError, numero } from "@/lib/admin/panel";
 import { NIVELES } from "@/lib/admin/evaluacion";
 import {
 	TEXTO_VALIDACION,
@@ -17,7 +17,7 @@ import {
 	type ItemValidacion,
 } from "@/lib/admin/validacion";
 import { IconoAviso } from "@/components/admin/panel/Estados";
-import { SubNavEvaluacion } from "@/components/admin/evaluacion/SubNav";
+import { CabezaPestana, EncabezadoEvaluacion } from "@/components/admin/evaluacion/SubNav";
 import { Hilo } from "@/components/admin/evaluacion/Hilo";
 
 const POR_PAGINA = 20;
@@ -82,7 +82,7 @@ export default function PaginaValidar() {
 		setAviso(null);
 		try {
 			const r = await deAcuerdoEnLote([...elegidas]);
-			setAviso(`Listo: de acuerdo con ${numero(r.validadas)} evaluaciones.`);
+			setAviso(`Listo: de acuerdo con ${cuantas(r.validadas, "evaluación", "evaluaciones")}.`);
 			setElegidas(new Set());
 			setConfirmar(false);
 			recargar();
@@ -102,13 +102,8 @@ export default function PaginaValidar() {
 	return (
 		<div className="pnl-pag">
 			<title>Validar evaluaciones: evaluación de ATLAS</title>
-			<div className="pnl-cabeza">
-				<div>
-					<h1>Validar evaluaciones</h1>
-					<p className="pnl-sub">{descripcion}</p>
-				</div>
-			</div>
-			<SubNavEvaluacion />
+			<EncabezadoEvaluacion />
+			<CabezaPestana titulo="Validar evaluaciones">{descripcion}</CabezaPestana>
 
 			<section className="pnl-bloque" aria-labelledby="t-val">
 				<h2 id="t-val" className="sr">
@@ -116,11 +111,12 @@ export default function PaginaValidar() {
 				</h2>
 				<div className="pnl-controles" style={{ marginBottom: 12 }}>
 						<div className="pnl-campo">
-							<label htmlFor="b-buscar">Buscar (ID de pregunta, participante o texto)</label>
+							<label htmlFor="b-buscar">Buscar</label>
 							<input
 								id="b-buscar"
 								type="search"
-								className="pnl-input"
+								placeholder="Ej.: 486, P081 o kiosco"
+								className="pnl-input pnl-input-ancho"
 								value={borrador}
 								onChange={(e) => setBorrador(e.target.value)}
 								onBlur={() => {
@@ -188,7 +184,7 @@ export default function PaginaValidar() {
 						{confirmar ? (
 							<div className="pnl-confirmar" role="group" aria-labelledby="t-lote">
 								<p id="t-lote">
-									¿Marcar “De acuerdo” en las {numero(elegidas.size)} evaluaciones seleccionadas? Quedan
+									¿Marcar “De acuerdo” en {elegidas.size === 1 ? "la evaluación seleccionada" : `las ${numero(elegidas.size)} evaluaciones seleccionadas`}? Quedan
 									validadas con su nombre y la fecha de hoy.
 								</p>
 								<div className="pnl-acciones">

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { fechaHora, mensajeError, numero } from "@/lib/admin/panel";
+import { cuantas, fechaHora, mensajeError, numero } from "@/lib/admin/panel";
 import { reasignarPendientes } from "@/lib/admin/evaluacion";
 import {
 	ROLES,
@@ -106,11 +106,12 @@ export default function PaginaCuentas() {
 					</div>
 					<div className="pnl-controles">
 						<div className="pnl-campo">
-							<label htmlFor="f-buscar">Buscar (número, nombre o correo)</label>
+							<label htmlFor="f-buscar">Buscar</label>
 							<input
 								id="f-buscar"
 								type="search"
-								className="pnl-input"
+								placeholder="Ej.: P007, Ana o correo"
+								className="pnl-input pnl-input-ancho"
 								value={buscar}
 								onChange={(e) => {
 									setBuscar(e.target.value);
@@ -487,7 +488,7 @@ function FilaCuenta({ cuenta, onCambiada }: { cuenta: Cuenta; onCambiada: (c: Cu
 			const r = await reasignarPendientes(cuenta.uid);
 			setAviso(
 				r.reasignadas
-					? `${numero(r.reasignadas)} preguntas pasaron a otro semillerista de su sede.`
+					? `${cuantas(r.reasignadas, "pregunta pasó", "preguntas pasaron")} a otro semillerista de su sede.`
 					: "No tenía preguntas pendientes.",
 			);
 			setConfirmarReasignar(false);

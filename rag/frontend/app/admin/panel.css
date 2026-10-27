@@ -2008,3 +2008,46 @@ fieldset:disabled .pnl-opcion {
 .pnl-calendario input[type="date"] {
 	min-width: 190px;
 }
+
+/* ── Ronda J5 (revisión de Juan) ─────────────────────────────────────────── */
+/* J5-1: la barra de desplazamiento siempre reserva su espacio, así el
+   contenido (y los menús) no se corren de lado al cambiar de página. */
+html:has(.pnl) {
+	scrollbar-gutter: stable;
+}
+/* J5-1: lo propio de cada pestaña va debajo del menú, no encima. */
+.pnl-cabeza-pestana {
+	display: flex;
+	align-items: flex-end;
+	justify-content: space-between;
+	gap: 12px 20px;
+	flex-wrap: wrap;
+	margin: 0 0 18px;
+}
+.pnl-cabeza-pestana h2 {
+	margin: 0 0 4px;
+}
+.pnl-cabeza-pestana .pnl-sub {
+	margin: 0;
+	max-width: 72ch;
+}
+
+/* J5-3: el mismo aire entre un texto y el botón que le sigue, en todas las tarjetas. */
+.pnl-bloque > .pnl-btn,
+.pnl-bloque > .pnl-btn-sec,
+.pnl-bloque > .pnl-acciones,
+.pnl-bloque > div > .pnl-acciones,
+.pnl-confirmar .pnl-acciones,
+.pnl-aviso .pnl-acciones {
+	margin-top: 14px;
+}
+/* J5-4: el ejemplo dentro del campo, legible (tinta secundaria: ≥ 4,5:1 en claro y oscuro). */
+.pnl input::placeholder,
+.pnl textarea::placeholder {
+	color: var(--p-tinta-2);
+	opacity: 1;
+}
+.pnl .pnl-input-ancho {
+	width: 100%;
+	min-width: 260px;
+}
