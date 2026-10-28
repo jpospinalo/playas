@@ -58,6 +58,10 @@ def test_ignora_articulos_cortos_porque_son_ambiguos_entre_normas():
     assert referencias_legales("el artículo 15 dispone") == set()
 
 
+def test_ignora_numeros_decimales_y_numerales_de_dos_niveles():
+    assert referencias_legales("una franja de 2.5 metros, según el numeral 4.1") == set()
+
+
 # ── norma_local ──────────────────────────────────────────────────────────────
 
 
@@ -160,6 +164,14 @@ def test_resumir_ignora_los_casos_donde_la_metrica_no_aplica():
     assert resumen["mrr_doc_20"] == {"n": 2, "valor": 0.5}
 
 
+def test_mrr_es_el_inverso_de_la_posicion_en_el_top_20():
+    fila = metricas_recuperacion(_caso(), [_frag("Otro")], ["Otro", "Otro 2", REMAC])
+    assert fila["posicion_doc_20"] == 3
+    assert fila["mrr_doc_20"] == pytest.approx(1 / 3)
+    assert fila["acierto_doc_20"] is True
+    assert fila["acierto_doc_4"] is False
+
+
 def test_mrr_es_cero_si_el_documento_no_esta_en_el_top_20():
     fila = metricas_recuperacion(_caso(), [_frag("Otro")], ["Otro"])
     assert fila["acierto_doc_20"] is False
@@ -170,6 +182,10 @@ def test_doc_recall_con_dos_documentos_esperados():
     caso = _caso(documentos_esperados=[REMAC, "AP X VS DIMAR"])
     fila = metricas_recuperacion(caso, [_frag(REMAC), _frag("Otro")], [REMAC])
     assert fila["doc_recall_4"] == pytest.approx(0.5)
+    ambos = metricas_recuperacion(
+        caso, [_frag("Otro"), _frag(REMAC), _frag("Otro"), _frag("AP X VS DIMAR")], []
+    )
+    assert ambos["doc_recall_4"] == pytest.approx(1.0)
 
 
 def test_clase_del_documento_esperado():
@@ -238,6 +254,31 @@ def test_dentro_del_intervalo_es_igual_aunque_cambien_casos():
     assert (c["casos_peor"], c["casos_mejor"]) == (["r1"], ["r2"])
 
 
+def test_empeorar_dentro_del_margen_se_marca_aunque_no_sea_regresion():
+    base = _base(0.6, [0.4, 0.8], {"r1": 1.0, "r2": 1.0})
+    filas = [{"case_id": "r1", "acierto_doc_4": False}, {"case_id": "r2", "acierto_doc_4": True}]
+    c = comparar({"acierto_doc_4": {"valor": 0.5, "n": 2}}, filas, base)["acierto_doc_4"]
+    assert c["estado"] == "peor_en_margen"
+    assert c["casos_peor"] == ["r1"]
+
+
+def test_mejorar_dentro_del_margen():
+    base = _base(0.5, [0.3, 0.7], {"r1": 0.0, "r2": 1.0})
+    filas = [{"case_id": "r1", "acierto_doc_4": True}, {"case_id": "r2", "acierto_doc_4": True}]
+    c = comparar({"acierto_doc_4": {"valor": 0.6, "n": 2}}, filas, base)["acierto_doc_4"]
+    assert c["estado"] == "mejor_en_margen"
+
+
+def test_un_caso_inestable_conocido_no_cuenta_como_cambio():
+    base = _base(0.5, [0.3, 0.7], {"r1": 1.0, "r2": 0.0})
+    base["inestables"] = {"acierto_doc_4": ["r1"]}
+    filas = [{"case_id": "r1", "acierto_doc_4": False}, {"case_id": "r2", "acierto_doc_4": False}]
+    c = comparar({"acierto_doc_4": {"valor": 0.45, "n": 2}}, filas, base)["acierto_doc_4"]
+    assert c["estado"] == "igual"
+    assert c["casos_peor"] == []
+    assert c["casos_inestables"] == ["r1"]
+
+
 def test_en_metricas_donde_menos_es_mejor_subir_es_regresion():
     base = {"global": {"fuga_territorial_4": {"valor": 0.05, "n": 2, "ic95": [0.0, 0.1]}}}
     c = comparar({"fuga_territorial_4": {"valor": 0.3, "n": 2}}, [], base)
@@ -269,6 +310,12 @@ def _reporte() -> dict:
     }
 
 
+def test_linea_base_conserva_los_casos_inestables():
+    base = linea_base(_reporte(), inestables={"mrr_doc_20": ["registro-058"]})
+    assert base["inestables"] == {"mrr_doc_20": ["registro-058"]}
+    assert linea_base(_reporte())["inestables"] == {}
+
+
 def test_linea_base_guarda_global_y_valores_por_caso():
     base = linea_base(_reporte())
     assert base["global"]["acierto_doc_4"]["valor"] == pytest.approx(0.5)
@@ -294,3 +341,90 @@ def test_reporte_markdown_compara_contra_la_linea_base():
     md = reporte_markdown(reporte)
     assert "| Línea base |" in md
     assert "igual" in md
+
+
+# ── línea de comandos de punta a punta (sin ChromaDB) ───────────────────────
+
+
+def _cli(monkeypatch, tmp_path, cache_filas: list[dict], *args: str) -> dict:
+    import json
+    import sys
+
+    import evaluation.metricas_sin_llm as m
+
+    casos = [_caso(id=f"registro-{i:03d}") for i in range(1, 41)]
+    cache = tmp_path / "cache.jsonl"
+    cache.write_text("\n".join(json.dumps(f) for f in cache_filas), encoding="utf-8")
+    monkeypatch.setattr(m, "load_ground_truth_v02", lambda: casos)
+    monkeypatch.setattr(m, "git_state", lambda: {"commit": "abc1234", "dirty": False})
+    monkeypatch.setattr(m, "REPORT_PATH", tmp_path / "reporte.json")
+    argv = ["metricas_sin_llm", "--sin-recuperacion", "--cache", str(cache)]
+    argv += ["--linea-base", str(tmp_path / "base.json"), *args]
+    monkeypatch.setattr(sys, "argv", argv)
+    assert m.main() == 0
+    return json.loads((tmp_path / "reporte.json").read_text(encoding="utf-8"))
+
+
+def _respuestas(inventadas: int) -> list[dict]:
+    return [
+        {
+            "case_id": f"registro-{i:03d}",
+            "answer": ("La Ley 99 de 1993 [doc1]." if i <= inventadas else "Según [doc1]."),
+            "contexts": ["texto"],
+            "context_titles": [REMAC],
+        }
+        for i in range(1, 41)
+    ]
+
+
+def test_cli_guarda_linea_base_y_detecta_una_regresion(monkeypatch, tmp_path, capsys):
+    _cli(monkeypatch, tmp_path, _respuestas(inventadas=2), "--guardar-linea-base")
+    assert (tmp_path / "base.json").exists()
+    assert (tmp_path / "reporte.md").exists()
+
+    igual = _cli(monkeypatch, tmp_path, _respuestas(inventadas=2))
+    assert igual["comparacion"]["respuestas_con_refs_sin_respaldo"]["estado"] == "igual"
+
+    capsys.readouterr()
+    peor = _cli(monkeypatch, tmp_path, _respuestas(inventadas=20))
+    c = peor["comparacion"]["respuestas_con_refs_sin_respaldo"]
+    assert c["estado"] == "regresion"
+    assert len(c["casos_peor"]) == 18
+    assert "REGRESIÓN frente a la línea base" in capsys.readouterr().out
+    assert "Empeoran en `respuestas_con_refs_sin_respaldo`" in (tmp_path / "reporte.md").read_text(
+        encoding="utf-8"
+    )
+
+
+def test_cli_al_guardar_otra_linea_base_conserva_los_inestables(monkeypatch, tmp_path):
+    import json
+
+    _cli(monkeypatch, tmp_path, _respuestas(inventadas=2), "--guardar-linea-base")
+    ruta = tmp_path / "base.json"
+    base = json.loads(ruta.read_text(encoding="utf-8"))
+    base["inestables"] = {"citas_validas": ["registro-001"]}
+    ruta.write_text(json.dumps(base), encoding="utf-8")
+    _cli(monkeypatch, tmp_path, _respuestas(inventadas=2), "--guardar-linea-base")
+    assert json.loads(ruta.read_text(encoding="utf-8"))["inestables"] == {
+        "citas_validas": ["registro-001"]
+    }
+
+
+def test_cli_sin_linea_base_no_compara(monkeypatch, tmp_path):
+    reporte = _cli(monkeypatch, tmp_path, _respuestas(inventadas=0))
+    assert "comparacion" not in reporte
+    assert reporte["respuesta"]["global"]["citas_validas"]["valor"] == 1.0
+
+
+def test_cli_rechaza_una_etiqueta_invalida_antes_de_correr(monkeypatch):
+    import sys
+
+    import evaluation.metricas_sin_llm as m
+
+    def no_debe_correr():
+        raise AssertionError("corrió los casos con una etiqueta inválida")
+
+    monkeypatch.setattr(m, "load_ground_truth_v02", no_debe_correr)
+    monkeypatch.setattr(sys, "argv", ["metricas_sin_llm", "--tag", "MAL tag"])
+    with pytest.raises(ValueError, match="Etiqueta"):
+        m.main()

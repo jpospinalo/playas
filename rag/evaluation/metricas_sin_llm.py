@@ -292,45 +292,68 @@ def comparar(
     filas_actuales: list[dict[str, Any]],
     base: dict[str, Any],
 ) -> dict[str, dict[str, Any]]:
-    """Compara contra la línea base. ``estado``: ``regresion`` o ``mejora`` si
-    el valor sale del intervalo de la línea base en esa dirección, si no
-    ``igual``; ``casos_peor`` y ``casos_mejor`` cuentan los casos que cambian."""
+    """Compara contra la línea base, métrica por métrica.
+
+    ``casos_peor`` y ``casos_mejor`` son los casos cuyo valor cambió. Los casos
+    que la línea base marca como ``inestables`` para esa métrica (cambian
+    entre reinicios de ChromaDB por la búsqueda aproximada HNSW, sin que
+    cambie el sistema) van aparte, en ``casos_inestables``, y no cuentan.
+
+    ``estado``:
+
+    - ``igual``: ningún caso estable cambió, o los cambios se compensan.
+    - ``regresion`` / ``mejora``: el valor sale del IC 95 % de la línea base
+      en esa dirección.
+    - ``peor_en_margen`` / ``mejor_en_margen``: cambió dentro del intervalo.
+      Es un cambio real (todo es determinista), pero no se puede afirmar que
+      generalice más allá de estos casos.
+    """
     por_caso = {f["case_id"]: f for f in filas_actuales}
+    inestables = base.get("inestables", {})
     resultado: dict[str, dict[str, Any]] = {}
     for clave, b in base["global"].items():
         a = actual.get(clave)
         if a is None or a["valor"] is None or b["valor"] is None:
             continue
         sentido = SENTIDO.get(clave, 0)
-        estado = "igual"
-        if sentido and b.get("ic95"):
-            bajo, alto = b["ic95"]
-            if a["valor"] < bajo:
-                estado = "regresion" if sentido > 0 else "mejora"
-            elif a["valor"] > alto:
-                estado = "mejora" if sentido > 0 else "regresion"
-        peor, mejor = [], []
+        peor, mejor, ruido = [], [], []
         for case_id, vb in base.get("casos", {}).get(clave, {}).items():
             va = por_caso.get(case_id, {}).get(clave)
-            if va is None or vb is None or not sentido:
+            if va is None or vb is None or float(va) == vb:
                 continue
-            if sentido * (float(va) - vb) < 0:
+            if case_id in inestables.get(clave, ()):
+                ruido.append(case_id)
+            elif sentido * (float(va) - vb) < 0:
                 peor.append(case_id)
             elif sentido * (float(va) - vb) > 0:
                 mejor.append(case_id)
+        delta = a["valor"] - b["valor"]
+        estado = "igual"
+        # Sin valores por caso en la línea base, se decide solo por el global.
+        cambio = bool(peor or mejor) if clave in base.get("casos", {}) else True
+        if sentido and cambio and delta:
+            empeora = sentido * delta < 0
+            estado = "peor_en_margen" if empeora else "mejor_en_margen"
+            if b.get("ic95") and not b["ic95"][0] <= a["valor"] <= b["ic95"][1]:
+                estado = "regresion" if empeora else "mejora"
         resultado[clave] = {
             "base": b["valor"],
             "actual": a["valor"],
-            "delta": a["valor"] - b["valor"],
+            "delta": delta,
             "estado": estado,
             "casos_peor": sorted(peor),
             "casos_mejor": sorted(mejor),
+            "casos_inestables": sorted(ruido),
         }
     return resultado
 
 
-def linea_base(reporte: dict[str, Any]) -> dict[str, Any]:
-    """Resumen global y valores por caso de un reporte, para versionar."""
+def linea_base(
+    reporte: dict[str, Any], inestables: dict[str, list[str]] | None = None
+) -> dict[str, Any]:
+    """Resumen global y valores por caso de un reporte, para versionar.
+    ``inestables``: casos por métrica que cambian entre reinicios de ChromaDB
+    (medidos aparte; se conservan al guardar una nueva línea base)."""
     global_: dict[str, Any] = {}
     casos: dict[str, dict[str, float | None]] = {}
     for seccion in ("recuperacion", "respuesta"):
@@ -347,6 +370,7 @@ def linea_base(reporte: dict[str, Any]) -> dict[str, Any]:
         "fecha": reporte["fecha"],
         "git": reporte["git"],
         "cache": reporte.get("respuesta", {}).get("cache"),
+        "inestables": inestables or {},
         "global": global_,
         "casos": casos,
     }
@@ -440,6 +464,11 @@ def reporte_markdown(reporte: dict[str, Any]) -> str:
             lineas.append(
                 f"- Empeoran en `{clave}` frente a la línea base: {_ids(c['casos_peor'])}"
             )
+        if c["casos_inestables"]:
+            lineas.append(
+                f"- Cambian en `{clave}` casos inestables conocidos (ruido de ChromaDB, "
+                f"no cuentan): {_ids(c['casos_inestables'])}"
+            )
     return "\n".join(lineas) + "\n"
 
 
@@ -496,6 +525,7 @@ def main() -> int:
         help="guardar esta corrida como la nueva línea base (versionada)",
     )
     args = parser.parse_args()
+    ruta = tagged(REPORT_PATH, args.tag)  # valida la etiqueta antes de correr
 
     casos = load_ground_truth_v02()
     por_id = {c["id"]: c for c in casos}
@@ -519,8 +549,14 @@ def main() -> int:
         reporte["respuesta"] = {"cache": str(args.cache), **_seccion(filas_r)}
 
     if args.guardar_linea_base:
+        previa = (
+            json.loads(args.linea_base.read_text(encoding="utf-8"))
+            if args.linea_base.exists()
+            else {}
+        )
+        nueva = linea_base(reporte, previa.get("inestables"))
         args.linea_base.write_text(
-            json.dumps(linea_base(reporte), ensure_ascii=False, indent=2) + "\n",
+            json.dumps(nueva, ensure_ascii=False, indent=2) + "\n",
             encoding="utf-8",
         )
         print(f"Línea base guardada: {args.linea_base}")
@@ -533,7 +569,6 @@ def main() -> int:
             filas.setdefault(f["case_id"], {}).update(f)
         reporte["comparacion"] = comparar(actual, list(filas.values()), base)
 
-    ruta = tagged(REPORT_PATH, args.tag)
     ruta.parent.mkdir(parents=True, exist_ok=True)
     ruta.write_text(json.dumps(reporte, ensure_ascii=False, indent=2), encoding="utf-8")
     ruta_md = ruta.with_suffix(".md")
@@ -547,6 +582,11 @@ def main() -> int:
     ]
     if regresiones:
         print(f"REGRESIÓN frente a la línea base: {', '.join(regresiones)}")
+    en_margen = [
+        k for k, c in reporte.get("comparacion", {}).items() if c["estado"] == "peor_en_margen"
+    ]
+    if en_margen:
+        print(f"Empeora dentro del margen (revisar casos): {', '.join(en_margen)}")
     print(f"Reporte: {ruta} y {ruta_md}")
     return 0
 
