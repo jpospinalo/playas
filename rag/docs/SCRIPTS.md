@@ -206,6 +206,27 @@ Cada corrida real escribe un JSON reproducible con, entre otros campos:
   del dataset y la metadata real del corpus indexado en ChromaDB).
 - `summary`, `errors` — agregados derivados de `cases`/`metric_results`.
 
+### Métricas fijas sin LLM (correr siempre)
+
+Se corren después de **cualquier** cambio en la ingesta, el retriever o los
+prompts, antes de gastar en el juez. No llaman a ningún modelo generador ni
+juez (0 tokens), dan el mismo resultado en cada corrida y tardan ~20 s.
+Necesitan el ChromaDB y el Ollama de embeddings (los del proyecto o los
+locales de la sección [Comparar con un modelo local](#comparar-con-un-modelo-local-sin-aws-ni-costo-de-generación)).
+
+```bash
+export CHROMA_HOST=<ip-chromadb> OLLAMA_BASE_URL=http://<ip-ollama>:11434
+make eval-sin-llm                  # = uv run python -m evaluation.metricas_sin_llm
+
+# Solo las métricas de respuesta, sobre una caché ya generada (sin ChromaDB)
+uv run python -m evaluation.metricas_sin_llm --sin-recuperacion --cache <caché.jsonl>
+```
+
+Escribe `evaluation/results/metricas-sin-llm-v0.2[-<tag>].json`. Qué mide
+cada métrica y cómo leerla: [`evaluation/README.md` § Métricas fijas sin LLM](../evaluation/README.md#métricas-fijas-sin-llm).
+El juez RAGAS (fase 4) se reserva para los hitos, porque es el único que
+dice si la respuesta es jurídicamente correcta.
+
 ### Línea base sobre `legal-ground-truth-v0.2`
 
 Evaluación por fases sobre los 66 casos del ground truth v0.2. Resultados,
@@ -239,6 +260,7 @@ uv run python -m evaluation.baseline_report
 |---|---|---|
 | `ground_truth_v02.py` | `evaluation/data/legal-ground-truth-v0.2.json` (sí versionado) | ninguno |
 | `retrieval_baseline.py` | `retrieval-baseline-v0.2.json` | ninguno |
+| `metricas_sin_llm.py` | `metricas-sin-llm-v0.2.json` | ninguno |
 | `generation_cache.py` | `generation-cache-v0.2.jsonl` | ~0,0035 USD por caso |
 | `ragas_v02.py` | `ragas-v0.2.jsonl` | ~0,008 USD por caso |
 | `baseline_report.py` | `linea-base-v0.2.md` | ninguno |
@@ -256,7 +278,7 @@ de contenedores, `ollama` y una GPU de ~4 GB para `gemma4:e2b`.
 ```bash
 # 1. ChromaDB 1.3.5 (misma versión que en AWS) con la colección exacta del repo
 podman run -d --name atlas-chroma -p 127.0.0.1:8000:8000 \
-  -v ~/.local/share/atlas-chroma:/chroma/chroma:Z -e IS_PERSISTENT=TRUE \
+  -v ~/.local/share/atlas-chroma:/data:Z -e IS_PERSISTENT=TRUE \
   docker.io/chromadb/chroma:1.3.5
 uv run python ../data/import_to_chromadb.py \
   ../data/chroma-rag_playas_magdalena-20260731-135720.jsonl.gz \

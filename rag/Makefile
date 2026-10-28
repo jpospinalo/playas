@@ -1,4 +1,4 @@
-.PHONY: install lint format format-check typecheck test test-cov test-integration \
+.PHONY: install lint format format-check typecheck test test-cov test-integration eval-sin-llm \
 	frontend-lint frontend-typecheck frontend-test frontend-build quality app frontend clean help
 
 install:  ## Instalar dependencias de todo el workspace (incluidas las de desarrollo)
@@ -24,6 +24,9 @@ test-cov:  ## Ejecutar tests con informe de cobertura
 
 test-integration:  ## Ejecutar tests de integración (requiere servicios activos)
 	uv run pytest tests/integration/ -m integration
+
+eval-sin-llm:  ## Métricas fijas sin LLM, 0 tokens (requiere ChromaDB y Ollama de embeddings)
+	uv run python -m evaluation.metricas_sin_llm
 
 frontend-lint:  ## Lint del frontend (eslint)
 	cd frontend && bun run lint
