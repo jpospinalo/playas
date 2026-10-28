@@ -227,6 +227,135 @@ def _sanitize_articulo(articulo: object) -> str:
     return re.sub(r"[^0-9A-Za-z]+", "-", str(articulo)).strip("-")
 
 
+def _table_budget(splitter: RecursiveCharacterTextSplitter) -> int | None:
+    """La biblioteca expone tamaño y medida solo como atributos privados.
+
+    Centralizar ese acceso y conservar la ruta anterior para otras medidas.
+    """
+    size = getattr(splitter, "_chunk_size", None)
+    if type(size) is not int or size <= 0 or getattr(splitter, "_length_function", None) is not len:
+        return None
+    return size
+
+
+def _table_cells(line: str) -> list[str] | None:
+    literal = line.rstrip("\r\n").rstrip(" \t")
+    if not literal.startswith("|") or not literal.endswith("|"):
+        return None
+    cells = literal[1:-1].split("|")
+    return cells if len(cells) >= 2 else None
+
+
+def _table_separator(cells: list[str] | None) -> bool:
+    return cells is not None and all(
+        re.fullmatch(r"[ \t]*:?-{3,}:?[ \t]*", cell) is not None for cell in cells
+    )
+
+
+def _normativa_table_texts(
+    text: str, splitter: RecursiveCharacterTextSplitter
+) -> tuple[list[str] | None, str | None]:
+    """Proponer cortes de tablas simples; None conserva toda la sección anterior.
+
+    Los intervalos preservan la prosa; solo se repite el contexto literal de
+    cada tabla. Ninguna propuesta sale hasta validar todas sus filas.
+    """
+    budget = _table_budget(splitter)
+    if budget is None or len(text) <= budget:
+        return None, None
+
+    lines = text.splitlines(keepends=True)
+    offsets = [0]
+    for line in lines:
+        offsets.append(offsets[-1] + len(line))
+    units: list[tuple[int, int, list[str]]] = []
+    caption: int | None = None
+    fence: tuple[str, int] | None = None
+    i = 0
+    while i < len(lines):
+        line = lines[i]
+        bare = line.rstrip("\r\n")
+        if fence is not None:
+            closing = r" {0,3}" + re.escape(fence[0]) + "{" + str(fence[1]) + r",}[ \t]*"
+            if re.fullmatch(closing, bare):
+                fence = None
+            i += 1
+            continue
+        opening = re.fullmatch(r" {0,3}(`{3,}|~{3,})(.*)", bare)
+        if opening and (opening[1][0] == "~" or "`" not in opening[2]):
+            fence = (opening[1][0], len(opening[1]))
+            caption = None
+            i += 1
+            continue
+
+        header = _table_cells(line)
+        separator = _table_cells(lines[i + 1]) if i + 1 < len(lines) else None
+        if header is not None and separator is not None and _table_separator(separator):
+            if len(header) != len(separator) or "`" in line or "\\|" in line:
+                return None, "candidato malformado"
+            j = i + 2
+            rows: list[str] = []
+            while j < len(lines) and lines[j].lstrip(" \t").startswith("|"):
+                row = lines[j]
+                cells = _table_cells(row)
+                next_cells = _table_cells(lines[j + 1]) if j + 1 < len(lines) else None
+                if (
+                    cells is None
+                    or len(cells) != len(header)
+                    or _table_separator(cells)
+                    or _table_separator(next_cells)
+                    or "`" in row
+                    or "\\|" in row
+                ):
+                    return None, "candidato malformado o ambiguo"
+                rows.append(row)
+                j += 1
+            if not rows:
+                return None, "tabla sin filas"
+
+            start = offsets[i] if caption is None else caption
+            context = text[start : offsets[i + 2]]
+            chunks: list[str] = []
+            group: list[str] = []
+            length = len(context)
+            for row in rows:
+                row_length = len(row.rstrip("\r\n"))
+                if len(context) + row_length > budget:
+                    return None, "presupuesto insuficiente"
+                if group and length + row_length > budget:
+                    chunks.append(context + "".join(group).rstrip("\r\n"))
+                    group = []
+                    length = len(context)
+                group.append(row)
+                length += len(row)
+            chunks.append(context + "".join(group).rstrip("\r\n"))
+            units.append((start, offsets[j], chunks))
+            caption = None
+            i = j
+            continue
+
+        if re.match(r"#{1,6}(?:[ \t]+|$)", bare):
+            caption = offsets[i]
+        elif (
+            line.startswith(("    ", "\t"))
+            or _table_cells(line.lstrip(" \t")) is not None
+            or re.match(r" {0,3}(?:>|[-+*][ \t]+|[0-9]+[.)][ \t]+)", bare)
+        ):
+            caption = None
+        i += 1
+
+    if not units:
+        return None, None
+    texts: list[str] = []
+    end = 0
+    for start, stop, chunks in units:
+        texts.extend(splitter.split_text(text[end:start]))
+        texts.extend(chunks)
+        end = stop
+    texts.extend(splitter.split_text(text[end:]))
+    return texts, None
+
+
 def _chunk_section(doc: Document, splitter: RecursiveCharacterTextSplitter) -> list[Document]:
     """Divide un Document seccional en chunks preservando y extendiendo sus metadatos."""
     base_meta = dict(doc.metadata)
@@ -244,7 +373,23 @@ def _chunk_section(doc: Document, splitter: RecursiveCharacterTextSplitter) -> l
     else:
         chunk_id_prefix = f"{stem}_s{section_idx}_c"
 
-    raw_chunks = splitter.split_documents([doc])
+    texts, rejection = (
+        _normativa_table_texts(doc.page_content, splitter)
+        if base_meta.get("doc_type") == "normativa"
+        else (None, None)
+    )
+    if rejection is not None:
+        logger.warning(
+            "Tabla no conservada: %s (fuente=%s, sección=%s); ruta anterior.",
+            rejection,
+            source,
+            section_idx,
+        )
+    raw_chunks = (
+        splitter.split_documents([doc])
+        if texts is None
+        else [Document(page_content=text) for text in texts]
+    )
     total = len(raw_chunks)
 
     result: list[Document] = []
