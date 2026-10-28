@@ -2878,3 +2878,37 @@ html:has(.pnl) {
 	font-style: normal;
 	white-space: nowrap;
 }
+
+/* PQ-147: rótulo y cifra en la misma grilla para toda la fila (subgrid): la
+   cifra empieza a la misma altura aunque un rótulo o una nota ocupen más
+   renglones. Reemplaza el "margin-top: auto" de PQ-124. */
+.pnl-cifras > .pnl-cifra {
+	display: grid;
+	grid-row: span 2;
+	grid-template-rows: subgrid;
+	row-gap: 6px;
+	align-content: start;
+}
+.pnl-cifras > .pnl-cifra > dd {
+	margin-top: 0;
+	align-self: start;
+}
+
+/* PQ-146: la matriz de acuerdo cabe en celular: rótulos cortos (S / I / A)
+   y la explicación fuera del área con desplazamiento. */
+.pnl-matriz th .corto {
+	display: none;
+}
+@media (max-width: 600px) {
+	.pnl-matriz th .largo {
+		display: none;
+	}
+	.pnl-matriz th .corto {
+		display: inline;
+	}
+	.pnl-matriz th,
+	.pnl-matriz td {
+		padding-left: 8px;
+		padding-right: 8px;
+	}
+}

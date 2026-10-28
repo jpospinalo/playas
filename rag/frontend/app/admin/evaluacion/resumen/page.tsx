@@ -423,35 +423,52 @@ function Concordancia({ resumen }: { resumen: ResumenEjercicio }) {
 				</div>
 			</dl>
 			{c.matriz_nivel ? (
-				<div className="pnl-tabla-datos" role="region" aria-label="Nivel según cada sede" tabIndex={0}>
-					<table>
-						<caption className="pnl-sub" style={{ textAlign: "left", captionSide: "top" }}>
-							Nivel según cada sede: filas Santa Marta, columnas Barranquilla. En la diagonal, coinciden.
-						</caption>
-						<thead>
-							<tr>
-								<th scope="col">Santa Marta ↓ · Barranquilla →</th>
-								{niveles.map((k) => (
-									<th key={k} scope="col" className="num">
-										{NIVELES[k]}
+				<>
+					<p id="t-matriz" className="pnl-sub" style={{ margin: "0 0 8px" }}>
+						Nivel según cada sede: filas Santa Marta (SM), columnas Barranquilla (BQ). En la diagonal, coinciden.
+					</p>
+					<div className="pnl-tabla-datos pnl-matriz" role="region" aria-labelledby="t-matriz" tabIndex={0}>
+						<table>
+							<thead>
+								<tr>
+									<th scope="col">
+										<span className="sr">Santa Marta en filas, Barranquilla en columnas</span>
+										<span aria-hidden="true">SM ↓ BQ →</span>
 									</th>
-								))}
-							</tr>
-						</thead>
-						<tbody>
-							{niveles.map((f, i) => (
-								<tr key={f}>
-									<th scope="row">{NIVELES[f]}</th>
-									{niveles.map((k, j) => (
-										<td key={k} className="num">
-											{i === j ? <b>{numero(c.matriz_nivel?.[i]?.[j] ?? 0)}</b> : numero(c.matriz_nivel?.[i]?.[j] ?? 0)}
-										</td>
+									{niveles.map((k) => (
+										<th key={k} scope="col" className="num">
+											<span className="largo">{NIVELES[k]}</span>
+											<abbr className="corto" title={NIVELES[k]}>
+												{k}
+											</abbr>
+										</th>
 									))}
 								</tr>
-							))}
-						</tbody>
-					</table>
-				</div>
+							</thead>
+							<tbody>
+								{niveles.map((f, i) => (
+									<tr key={f}>
+										<th scope="row">
+											<span className="largo">{NIVELES[f]}</span>
+											<abbr className="corto" title={NIVELES[f]}>
+												{f}
+											</abbr>
+										</th>
+										{niveles.map((k, j) => (
+											<td key={k} className="num">
+												{i === j ? (
+													<b>{numero(c.matriz_nivel?.[i]?.[j] ?? 0)}</b>
+												) : (
+													numero(c.matriz_nivel?.[i]?.[j] ?? 0)
+												)}
+											</td>
+										))}
+									</tr>
+								))}
+							</tbody>
+						</table>
+					</div>
+				</>
 			) : null}
 			{c.alfa ? (
 				<p className="pnl-nota">
