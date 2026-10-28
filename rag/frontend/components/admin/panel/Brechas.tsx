@@ -13,7 +13,18 @@ const VISIBLES = 6;
  * ordenadas por las veces que se repitieron. Es la lista de trabajo de los
  * abogados: qué contenido falta en la base.
  */
-export function Brechas({ datos, volver }: { datos: Resumen; volver: string }) {
+export function Brechas({
+	datos,
+	volver,
+	tema = "",
+	onTema,
+}: {
+	datos: Resumen;
+	volver: string;
+	/** A11: el tema del filtro de arriba; tocar un tema filtra todo el resumen. */
+	tema?: string;
+	onTema?: (t: string) => void;
+}) {
 	const [todas, setTodas] = useState(false);
 	const lista = todas ? datos.brechas : datos.brechas.slice(0, VISIBLES);
 	const porTema = datos.temas.filter((t) => t.brechas > 0).sort((a, b) => b.brechas - a.brechas);
@@ -33,16 +44,34 @@ export function Brechas({ datos, volver }: { datos: Resumen; volver: string }) {
 			{porTema.length ? (
 				<div className="pnl-chips-w">
 					<p id="brechas-tema" className="pnl-chips-tit">
-						Por tema
+						{onTema ? "Por tema (toque uno para filtrar)" : "Por tema"}
 					</p>
-					<ul className="pnl-chips" aria-labelledby="brechas-tema">
+					<ul className={onTema ? "pnl-chips pnl-chips-filtro" : "pnl-chips"} aria-labelledby="brechas-tema">
 						{porTema.map((t) => (
 							<li key={t.id}>
-								{t.titulo}
-								<b className="num">{numero(t.brechas)}</b>
+								{onTema ? (
+									<button
+										type="button"
+										aria-pressed={tema === t.id}
+										onClick={() => onTema(tema === t.id ? "" : t.id)}
+									>
+										{t.titulo}
+										<b className="num">{numero(t.brechas)}</b>
+									</button>
+								) : (
+									<>
+										{t.titulo}
+										<b className="num">{numero(t.brechas)}</b>
+									</>
+								)}
 							</li>
 						))}
 					</ul>
+					{onTema && tema ? (
+						<button type="button" className="pnl-enlace" onClick={() => onTema("")}>
+							Quitar filtro de tema
+						</button>
+					) : null}
 				</div>
 			) : null}
 			{lista.length ? (

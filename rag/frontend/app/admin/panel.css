@@ -2714,3 +2714,59 @@ html:has(.pnl) {
 	text-align: left;
 	height: auto;
 }
+
+/* A11: lo que parece botón se puede tocar; lo que no, se ve como dato.
+   Temas de "Dónde falla ATLAS": botones que filtran (mismo filtro Tema de
+   arriba). Sin filtro disponible, son texto sin borde. */
+.pnl-chips li {
+	border: 0;
+	padding: 0;
+}
+.pnl-chips:not(.pnl-chips-filtro) li:not(:last-child)::after {
+	content: " ·";
+	color: var(--p-tinta-2);
+}
+.pnl-chips-filtro button {
+	display: inline-flex;
+	align-items: baseline;
+	min-height: 44px;
+	padding: 6px 12px;
+	border: 2px solid var(--p-borde-ctl);
+	border-radius: 6px;
+	background: var(--p-papel);
+	color: var(--p-marino);
+	font: inherit;
+	font-weight: 600;
+	text-align: left;
+	overflow-wrap: anywhere;
+	cursor: pointer;
+}
+.pnl-chips-filtro button:hover {
+	border-color: var(--p-marino);
+	text-decoration: underline;
+	text-underline-offset: 3px;
+}
+.pnl-chips-filtro button[aria-pressed="true"] {
+	border-color: var(--p-marino);
+	background: var(--p-marino);
+	color: var(--p-papel);
+}
+.pnl-chips-filtro button[aria-pressed="true"] b {
+	color: inherit;
+}
+.pnl-chips-filtro button:focus-visible {
+	outline: var(--p-foco) solid var(--p-marino);
+	outline-offset: 2px;
+}
+/* Etiquetas que solo informan (tema de la fila, estados): fondo suave, sin
+   borde de botón ni mano. */
+.pnl-etq,
+.pnl-etq.ley {
+	border-color: transparent;
+	background: var(--p-riel);
+	cursor: default;
+}
+.pnl-estado {
+	border-color: transparent;
+	cursor: default;
+}

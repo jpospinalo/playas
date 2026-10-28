@@ -327,6 +327,7 @@ function ResumenConFiltros() {
 						datos={datos}
 						dias={dias}
 						tema={tema}
+						onTema={cambiarTema}
 						resultado={resultado}
 						onResultado={cambiarResultado}
 						volver={consulta}
@@ -352,6 +353,7 @@ function Contenido({
 	datos,
 	dias: diasFiltro,
 	tema,
+	onTema,
 	resultado,
 	onResultado,
 	volver,
@@ -360,6 +362,7 @@ function Contenido({
 	datos: Resumen;
 	dias: number;
 	tema: string;
+	onTema: (t: string) => void;
 	resultado: FiltroResultado;
 	onResultado: (r: FiltroResultado) => void;
 	volver: string;
@@ -539,7 +542,7 @@ function Contenido({
 			</Grupo>
 
 			<Grupo id="g-atencion" titulo="¿Qué necesita atención?" sub="Dónde ATLAS no respondió bien">
-				<Brechas datos={datos} volver={volver} />
+				<Brechas datos={datos} volver={volver} tema={tema} onTema={onTema} />
 			</Grupo>
 
 			<Grupo id="g-resultados" titulo="Resultados" sub="De qué preguntan y qué responde ATLAS">
