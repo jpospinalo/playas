@@ -414,6 +414,10 @@ def test_resumen_premios_y_excel(cliente) -> None:
     assert b["sin_calificar"] == res["estados"]["sin_evaluar"]
     assert b["no_validas"] == res["no_validas"]
     assert res["por_nivel"] == {"S": 2, "I": 0, "A": 0} and res["promedio_total"] == 12
+    # PQ-125: cada nivel abre solo sus válidas, con el mismo número.
+    for ct, n in res["por_nivel"].items():
+        v = c.get(f"/api/evaluacion/bandeja?estado=validas&ct={ct}&reales=1", headers=COM).json()
+        assert v["total"] == n
     avance = {a["evaluador"] for a in res["avance_evaluadores"]}
     assert "Semillerista BQ" in avance and avance <= {
         "Semillerista SM",

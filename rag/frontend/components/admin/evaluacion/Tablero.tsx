@@ -131,7 +131,7 @@ export function Tablero({
 								ayuda: `valor de fondo ${RANGOS[k][0]} a ${RANGOS[k][1]}`,
 								n: resumen.por_nivel[k],
 								color: COLOR_NIVEL[k],
-								href: lista(`estado=finalizadas&ct=${k}`),
+								href: lista(`estado=validas&ct=${k}`),
 							}))}
 						/>
 					</section>

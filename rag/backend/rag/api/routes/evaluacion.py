@@ -658,6 +658,8 @@ ESTADOS_FILTRO = Literal[
     "validadas",
     "revisadas",
     "no_validas",
+    # PQ-125: "Casos por nivel" cuenta solo las válidas con calificación oficial.
+    "validas",
     "todas",
 ]
 
@@ -776,6 +778,13 @@ def _estado_para_mi(p: _Pregunta, user_id: str, rol: str, sede: str | None) -> d
             or (oficial.estado == "concordante" and not ej.PREMIOS_SOLO_REVISADAS)
         )
         and (oficial.valida is False or p.pertinente is False),
+        # PQ-125: las que cuentan para resultados y premios (como el resumen).
+        "validas": (
+            oficial.estado in ("final", "validada")
+            or (oficial.estado == "concordante" and not ej.PREMIOS_SOLO_REVISADAS)
+        )
+        and bool(oficial.valida)
+        and p.pertinente is not False,
         "todas": True,
     }
 

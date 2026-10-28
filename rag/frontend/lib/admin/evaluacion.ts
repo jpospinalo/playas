@@ -30,6 +30,7 @@ export type FiltroBandeja =
 	| "validadas"
 	| "revisadas"
 	| "no_validas"
+	| "validas"
 	| "todas";
 
 /** J6-B: nombre de los filtros a los que llevan las cifras del tablero. */
@@ -40,6 +41,7 @@ export const TEXTO_FILTRO: Partial<Record<FiltroBandeja, string>> = {
 	validadas: "Validadas",
 	revisadas: "Revisadas por el comité",
 	no_validas: "No válidas",
+	validas: "Válidas con calificación oficial",
 };
 
 const FILTROS: FiltroBandeja[] = [
@@ -54,6 +56,7 @@ const FILTROS: FiltroBandeja[] = [
 	"validadas",
 	"revisadas",
 	"no_validas",
+	"validas",
 	"todas",
 ];
 

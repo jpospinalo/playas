@@ -2810,3 +2810,12 @@ html:has(.pnl) {
 .pnl div.pnl-tb-cifra.ojo:hover {
 	border-color: var(--p-ambar);
 }
+
+/* PQ-126: el aviso de la tarjeta es el mismo ⚠ de contorno ámbar de los chips. */
+.pnl-tb-titulo svg {
+	fill: none;
+	stroke: currentColor;
+	stroke-width: 2.4;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+}

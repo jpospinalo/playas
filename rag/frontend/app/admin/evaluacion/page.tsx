@@ -236,6 +236,7 @@ function Bandeja_() {
 						Mostrando:{" "}
 						<ChipEstado tono="espera">
 							{TEXTO_FILTRO[estado] ?? pestanas.find((p) => p.valor === estado)?.texto ?? "Todas"}
+							{ct ? ` · ${NIVELES[ct]}` : ""}
 						</ChipEstado>{" "}
 						{datos ? <span className="num">({numero(datos.total)})</span> : null}
 						{soloReales ? <span>sin la práctica</span> : null}
