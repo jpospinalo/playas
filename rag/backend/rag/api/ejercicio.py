@@ -264,10 +264,11 @@ class PreguntaOficial:
 # ── Concordancia entre sedes (E2, investigación) ─────────────────────────────
 
 
-def kappa_ponderada(pares: list[tuple[int, int]], k: int) -> float | None:
-    """Kappa de Cohen con pesos lineales para categorías ordenadas 0..k-1 (p. ej.
-    S < I < A): no castiga igual S↔I que S↔A. None si no hay pares o no hay
-    variación."""
+def kappa_ponderada(pares: list[tuple[int, int]], k: int, cuadratica: bool = True) -> float | None:
+    """Kappa de Cohen ponderada para categorías ordenadas 0..k-1 (p. ej.
+    S < I < A): no castiga igual S↔I que S↔A. Pesos cuadráticos por defecto
+    (PQ-131: lo usual para escalas ordinales; GUIA-QA §10.4). Puede ser
+    negativa (menos acuerdo que el azar). None si no hay pares o variación."""
     n = len(pares)
     if n == 0:
         return None
@@ -276,7 +277,9 @@ def kappa_ponderada(pares: list[tuple[int, int]], k: int) -> float | None:
         obs[a][b] += 1
     fa = [sum(obs[i]) for i in range(k)]
     fb = [sum(obs[i][j] for i in range(k)) for j in range(k)]
-    peso = [[abs(i - j) / (k - 1) for j in range(k)] for i in range(k)]
+    peso = [
+        [(abs(i - j) / (k - 1)) ** (2 if cuadratica else 1) for j in range(k)] for i in range(k)
+    ]
     d_obs = sum(peso[i][j] * obs[i][j] for i in range(k) for j in range(k)) / n
     d_esp = sum(peso[i][j] * fa[i] * fb[j] for i in range(k) for j in range(k)) / (n * n)
     if d_esp == 0:
@@ -310,6 +313,16 @@ def alfa_krippendorff_ordinal(pares: list[tuple[int, int]]) -> float | None:
     return round(1 - (n - 1) * d_obs / d_esp, 3)
 
 
+def wilson(x: int, n: int, z: float = 1.96) -> tuple[float, float]:
+    """Intervalo de Wilson al 95 % para una proporción x/n."""
+    if n == 0:
+        return (0.0, 0.0)
+    p = x / n
+    centro = (p + z * z / (2 * n)) / (1 + z * z / n)
+    margen = z * ((p * (1 - p) / n + z * z / (4 * n * n)) ** 0.5) / (1 + z * z / n)
+    return (max(0.0, centro - margen), min(1.0, centro + margen))
+
+
 def concordancia(pares: list[tuple[Calificacion, Calificacion]]) -> dict:
     """Acuerdo entre la evaluación de Santa Marta y la de Barranquilla de cada
     pregunta (GUIA-QA §10.4): % mismo nivel, diferencia media de puntaje,
@@ -318,9 +331,19 @@ def concordancia(pares: list[tuple[Calificacion, Calificacion]]) -> dict:
     n = len(pares)
     if n == 0:
         return {"pares": 0}
+    mismos = sum(a.ct == b.ct for a, b in pares)
+    ic_bajo, ic_alto = wilson(mismos, n)
     return {
         "pares": n,
-        "mismo_nivel": round(100 * sum(a.ct == b.ct for a, b in pares) / n),
+        "mismo_nivel": round(100 * mismos / n),
+        # PQ-131: intervalo de confianza del acuerdo exacto, matriz S/I/A
+        # (fila = Santa Marta, columna = Barranquilla) y pares sin diferencia.
+        "mismo_nivel_ic": [round(100 * ic_bajo), round(100 * ic_alto)],
+        "matriz_nivel": [
+            [sum(a.ct == f and b.ct == c for a, b in pares) for c in ("S", "I", "A")]
+            for f in ("S", "I", "A")
+        ],
+        "sin_diferencia_total": sum(a.total == b.total for a, b in pares),
         "misma_validez": round(100 * sum(a.valida == b.valida for a, b in pares) / n),
         "diferencia_media_total": round(sum(abs(a.total - b.total) for a, b in pares) / n, 2),
         "kappa_nivel": kappa_ponderada([(orden[a.ct], orden[b.ct]) for a, b in pares], 3),

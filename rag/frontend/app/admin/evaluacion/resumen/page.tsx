@@ -338,12 +338,35 @@ function Ganadores({ premios, cerrado }: { premios: Premios; cerrado: boolean })
 }
 
 /** E2: qué tanto coinciden las dos sedes (resultado para el informe del ejercicio). */
+/** PQ-131: escalas de referencia (no son verdad, son convenciones). */
+function escalaKappa(k: number): string {
+	if (k < 0) return "peor que el azar";
+	if (k <= 0.2) return "leve";
+	if (k <= 0.4) return "aceptable";
+	if (k <= 0.6) return "moderado";
+	if (k <= 0.8) return "sustancial";
+	return "casi perfecto";
+}
+
+function escalaAlfa(a: number): string {
+	if (a >= 0.8) return "fiable";
+	if (a >= 0.667) return "tentativo";
+	return "bajo: revisar la guía";
+}
+
+/** Por debajo de 30 pares, kappa y alfa varían demasiado para leerlos. */
+const MINIMO_PARES = 30;
+
 function Concordancia({ resumen }: { resumen: ResumenEjercicio }) {
 	const c = resumen.concordancia;
 	if (!c || !c.pares) return null;
 	// PQ-87: dos decimales (0,993 no debe verse como "1").
 	const v = (x: number | null | undefined) =>
 		x === null || x === undefined ? "—" : x.toLocaleString("es-CO", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+	const pocos = c.pares < MINIMO_PARES;
+	const alfa = (x: number | null | undefined) =>
+		x === null || x === undefined ? "—" : `${v(x)} (${escalaAlfa(x)})`;
+	const niveles = ["S", "I", "A"] as const;
 	return (
 		<section className="pnl-bloque" aria-labelledby="t-conc">
 			<h2 id="t-conc">Acuerdo entre Santa Marta y Barranquilla</h2>
@@ -356,18 +379,40 @@ function Concordancia({ resumen }: { resumen: ResumenEjercicio }) {
 					<dt>Mismo nivel</dt>
 					<dd>
 						<span className="pnl-valor num">{c.mismo_nivel}&nbsp;%</span>
+						{c.mismo_nivel_ic ? (
+							<span className="pnl-det">
+								IC 95 %: {c.mismo_nivel_ic[0]} a {c.mismo_nivel_ic[1]}&nbsp;%
+							</span>
+						) : null}
 					</dd>
 				</div>
 				<div className="pnl-cifra">
-					<dt>Kappa ponderada del nivel</dt>
+					<dt>Kappa ponderada (cuadrática) del nivel</dt>
 					<dd>
-						<span className="pnl-valor num">{v(c.kappa_nivel)}</span>
+						{pocos ? (
+							<span className="pnl-valor">
+								<small>Pocos datos</small>
+							</span>
+						) : (
+							<>
+								<span className="pnl-valor num">{v(c.kappa_nivel)}</span>
+								{c.kappa_nivel !== null && c.kappa_nivel !== undefined ? (
+									<span className="pnl-det">Acuerdo {escalaKappa(c.kappa_nivel)}</span>
+								) : null}
+							</>
+						)}
 					</dd>
 				</div>
 				<div className="pnl-cifra">
 					<dt>Diferencia media de puntaje</dt>
 					<dd>
 						<span className="pnl-valor num">{v(c.diferencia_media_total)}</span>
+						<span className="pnl-det">
+							puntos (escala 6 a 21)
+							{c.sin_diferencia_total !== undefined
+								? `; ${numero(c.sin_diferencia_total)} de ${numero(c.pares)} sin diferencia`
+								: ""}
+						</span>
 					</dd>
 				</div>
 				<div className="pnl-cifra">
@@ -377,9 +422,44 @@ function Concordancia({ resumen }: { resumen: ResumenEjercicio }) {
 					</dd>
 				</div>
 			</dl>
+			{c.matriz_nivel ? (
+				<div className="pnl-tabla-datos" role="region" aria-label="Nivel según cada sede" tabIndex={0}>
+					<table>
+						<caption className="pnl-sub" style={{ textAlign: "left", captionSide: "top" }}>
+							Nivel según cada sede: filas Santa Marta, columnas Barranquilla. En la diagonal, coinciden.
+						</caption>
+						<thead>
+							<tr>
+								<th scope="col">Santa Marta ↓ · Barranquilla →</th>
+								{niveles.map((k) => (
+									<th key={k} scope="col" className="num">
+										{NIVELES[k]}
+									</th>
+								))}
+							</tr>
+						</thead>
+						<tbody>
+							{niveles.map((f, i) => (
+								<tr key={f}>
+									<th scope="row">{NIVELES[f]}</th>
+									{niveles.map((k, j) => (
+										<td key={k} className="num">
+											{i === j ? <b>{numero(c.matriz_nivel?.[i]?.[j] ?? 0)}</b> : numero(c.matriz_nivel?.[i]?.[j] ?? 0)}
+										</td>
+									))}
+								</tr>
+							))}
+						</tbody>
+					</table>
+				</div>
+			) : null}
 			{c.alfa ? (
 				<p className="pnl-nota">
-					Qué tanto coinciden los semilleristas, de 0 a 1 (alfa de Krippendorff): F1 {v(c.alfa.f1)}, F2 {v(c.alfa.f2)}, F3 {v(c.alfa.f3)}, valor de fondo {v(c.alfa.cv)}.
+					{pocos
+						? `Con menos de ${MINIMO_PARES} preguntas evaluadas por las dos sedes, kappa y alfa varían demasiado: pocos datos.`
+						: `Qué tanto coinciden los semilleristas (alfa de Krippendorff, ordinal): F1 ${alfa(c.alfa.f1)}, F2 ${alfa(c.alfa.f2)}, F3 ${alfa(c.alfa.f3)}, valor de fondo ${alfa(c.alfa.cv)}.`}{" "}
+					Referencias, no verdades: Landis y Koch para kappa (0,41-0,60 moderado; 0,61-0,80 sustancial); Krippendorff
+					para alfa (0,80 o más fiable; 0,667 a 0,80 tentativo). Kappa puede ser negativa si coinciden menos que al azar.
 				</p>
 			) : null}
 		</section>

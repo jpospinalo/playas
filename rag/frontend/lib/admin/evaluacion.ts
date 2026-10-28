@@ -221,6 +221,10 @@ export interface ResumenEjercicio {
 		diferencia_media_total?: number;
 		kappa_nivel?: number | null;
 		alfa?: Record<"f1" | "f2" | "f3" | "cv", number | null>;
+		/** PQ-131: IC 95 % del acuerdo exacto, matriz S/I/A y pares sin diferencia. */
+		mismo_nivel_ic?: [number, number];
+		matriz_nivel?: number[][];
+		sin_diferencia_total?: number;
 	};
 	cerrado?: boolean;
 	umbral_diferencia: number;

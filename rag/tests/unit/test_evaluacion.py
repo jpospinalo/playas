@@ -816,6 +816,11 @@ def test_concordancia_estadisticos() -> None:
     bq = _cal("b", "Barranquilla", "I", 8)
     r = ej.concordancia([(sm, bq), (sm, sm)])
     assert r["pares"] == 2 and r["mismo_nivel"] == 50 and r["diferencia_media_total"] == 2.0
+    # PQ-131: matriz S/I/A (fila Santa Marta, columna Barranquilla), IC y cuadrática.
+    assert r["matriz_nivel"] == [[1, 1, 0], [0, 0, 0], [0, 0, 0]]
+    assert r["sin_diferencia_total"] == 1 and r["mismo_nivel_ic"][0] < 50 < r["mismo_nivel_ic"][1]
+    lineal = ej.kappa_ponderada([(0, 0), (1, 1), (2, 2), (0, 1)], 3, cuadratica=False)
+    assert cerca is not None and lineal is not None and cerca > lineal
 
 
 def test_cerrar_el_ejercicio(cliente) -> None:
