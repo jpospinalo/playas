@@ -342,6 +342,9 @@ class PanelPunto(BaseModel):
     desde: str = Field(..., description="Primer día del bloque dentro del periodo")
     hasta: str = Field(..., description="Último día del bloque dentro del periodo")
     parcial: bool = Field(..., description="Semana cortada por el inicio o el fin del periodo")
+    en_curso: bool = Field(
+        False, description="Bloque de hoy: cuenta solo hasta la hora de la consulta"
+    )
     preguntas: int
     sin_respuesta_segura: int
 

@@ -252,7 +252,13 @@ def _serie(filas: list[_Fila], periodo: pm.Periodo) -> tuple[str, list[PanelPunt
     domingo, en hora de Colombia. Solo cuenta preguntas del periodo; una
     semana que el periodo corta por un lado queda marcada ``parcial`` con
     los días que sí cubre (``desde``/``hasta``)."""
-    agrupacion: Literal["dia", "semana"] = "dia" if 0 < periodo.dias <= 14 else "semana"
+    inicio = periodo.inicio or (min(f.fecha for f in filas) if filas else periodo.fin)
+    primer_dia = date.fromisoformat(pm.clave_dia(inicio))
+    ultimo_dia = date.fromisoformat(pm.clave_dia(periodo.fin))
+    # PQ-134: por día mientras el rango con datos quepa en un mes (también con
+    # "Todo"): las semanas parciales no se comparan bien con las completas.
+    por_dia = (ultimo_dia - primer_dia).days + 1 <= 31
+    agrupacion: Literal["dia", "semana"] = "dia" if por_dia else "semana"
     clave = pm.clave_dia if agrupacion == "dia" else pm.clave_semana
     preguntas: Counter[str] = Counter()
     brechas: Counter[str] = Counter()
@@ -260,9 +266,6 @@ def _serie(filas: list[_Fila], periodo: pm.Periodo) -> tuple[str, list[PanelPunt
         k = clave(f.fecha)
         preguntas[k] += 1
         brechas[k] += f.resultado in pm.BRECHAS
-    inicio = periodo.inicio or (min(f.fecha for f in filas) if filas else periodo.fin)
-    primer_dia = date.fromisoformat(pm.clave_dia(inicio))
-    ultimo_dia = date.fromisoformat(pm.clave_dia(periodo.fin))
     largo = timedelta(days=1 if agrupacion == "dia" else 7)
     # Todos los días/semanas del periodo, también los que no tienen preguntas.
     puntos: list[PanelPunto] = []
@@ -279,6 +282,8 @@ def _serie(filas: list[_Fila], periodo: pm.Periodo) -> tuple[str, list[PanelPunt
                 parcial=agrupacion == "semana" and (desde != actual or hasta != fin_bloque),
                 preguntas=preguntas[k],
                 sin_respuesta_segura=brechas[k],
+                # PQ-134: el bloque de hoy va a medias (hasta la hora de la consulta).
+                en_curso=desde <= ultimo_dia <= hasta,
             )
         )
         actual += largo

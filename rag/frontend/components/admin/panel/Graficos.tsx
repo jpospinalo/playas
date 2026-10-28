@@ -58,12 +58,12 @@ export function etiquetaPunto(p: Punto, agrupacion: Agrupacion): string {
 }
 
 function descripcionPunto(p: Punto, agrupacion: Agrupacion): string {
-	if (agrupacion === "dia") return diaMesCalendario(p.fecha);
+	if (agrupacion === "dia") return `${diaMesCalendario(p.fecha)}${p.en_curso ? " (hoy, a medias)" : ""}`;
 	const rango =
 		p.desde === p.hasta
 			? diaMesCalendario(p.desde)
 			: `${diaMesCalendario(p.desde)} al ${diaMesCalendario(p.hasta)}`;
-	return p.parcial ? `${rango} (semana incompleta)` : rango;
+	return p.parcial || p.en_curso ? `${rango} (semana incompleta)` : rango;
 }
 
 /** Cada cuántas columnas se escribe la fecha para que no se pisen. */
@@ -74,7 +74,6 @@ export function pasoEtiquetas(n: number, maximo: number): number {
 export function Columnas({ serie, agrupacion }: { serie: Punto[]; agrupacion: Agrupacion }) {
 	const max = Math.max(0, ...serie.map((p) => p.preguntas));
 	const t = tope(max);
-	const iMax = serie.findIndex((p) => p.preguntas === max);
 	const ultimo = serie.length - 1;
 	// Fechas visibles: hasta 8 en PC y 4 en celular, siempre la última.
 	const pasoPc = pasoEtiquetas(serie.length, 8);
@@ -94,13 +93,14 @@ export function Columnas({ serie, agrupacion }: { serie: Punto[]; agrupacion: Ag
 				<span style={{ top: "100%" }}>0</span>
 			</div>
 			<div className="pnl-plot" aria-hidden="true">
-				{serie.map((p, i) => {
+				{serie.map((p) => {
 					const alto = (p.preguntas / t) * 100;
-					// Etiqueta directa solo en la máxima y la última.
-					const conEtiqueta = max > 0 && (i === iMax || i === ultimo);
+					// PQ-134: cifra en todas las columnas o en ninguna (con muchas, se leen
+					// en "Ver como tabla"); hoy y las semanas cortadas llevan trama.
+					const conEtiqueta = max > 0 && serie.length <= 14;
 					return (
 						<div className="pnl-col" key={p.fecha}>
-							<i className={p.parcial ? "parcial" : undefined} style={{ height: `${alto}%` }}>
+							<i className={p.parcial || p.en_curso ? "parcial" : undefined} style={{ height: `${alto}%` }}>
 								{conEtiqueta ? <b className="num">{numero(p.preguntas)}</b> : null}
 							</i>
 						</div>

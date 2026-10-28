@@ -270,15 +270,20 @@ def test_resumen_cifras(cliente) -> None:
 
     assert sum(p["preguntas"] for p in r["serie"]) == 7
     assert sum(p["sin_respuesta_segura"] for p in r["serie"]) == 2
-    assert r["periodo"]["agrupacion"] == "semana"
-    # Semanas de lunes a domingo, recortadas al periodo (PQ-02/03).
+    # PQ-134: hasta 31 días se cuenta por día y el día de hoy va marcado.
+    assert r["periodo"]["agrupacion"] == "dia"
+    assert len(r["serie"]) == 30 and r["serie"][-1]["en_curso"]
+    assert not any(p["en_curso"] for p in r["serie"][:-1])
+    # Más de un mes: semanas de lunes a domingo, recortadas al periodo (PQ-02/03).
     from datetime import date as _date
 
-    for p in r["serie"]:
+    r90 = c.get("/api/admin/panel/resumen?dias=90", headers=_auth(**_ADMIN)).json()
+    assert r90["periodo"]["agrupacion"] == "semana"
+    for p in r90["serie"]:
         assert _date.fromisoformat(p["fecha"]).weekday() == 0
         assert p["fecha"] <= p["desde"] <= p["hasta"]
-    assert r["serie"][0]["parcial"] or r["serie"][0]["desde"] == r["serie"][0]["fecha"]
-    assert r["serie"][-1]["hasta"] == pm.clave_dia(_AHORA)
+    assert r90["serie"][0]["parcial"] or r90["serie"][0]["desde"] == r90["serie"][0]["fecha"]
+    assert r90["serie"][-1]["hasta"] == pm.clave_dia(_AHORA)
 
     temas = {t["id"]: t for t in r["temas"]}
     assert sum(t["preguntas"] for t in r["temas"]) == 7

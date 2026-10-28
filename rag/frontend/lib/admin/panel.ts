@@ -38,6 +38,8 @@ export interface Punto {
 	desde: string;
 	hasta: string;
 	parcial: boolean;
+	/** PQ-134: bloque de hoy, que cuenta solo hasta la hora de la consulta. */
+	en_curso?: boolean;
 	preguntas: number;
 	sin_respuesta_segura: number;
 }

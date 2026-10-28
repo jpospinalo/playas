@@ -758,13 +758,30 @@ function desglose(c: Resumen["cifras"]): string {
 function NotaSerie({ datos }: { datos: Resumen }) {
 	const s = datos.serie;
 	if (!s.length) return null;
-	const max = s.reduce((m, p) => (p.preguntas > m.preguntas ? p : m), s[0]);
 	const brechas = s.reduce((n, p) => n + p.sin_respuesta_segura, 0);
-	const unidad = datos.periodo.agrupacion === "dia" ? "El día" : "La semana";
+	const dia = datos.periodo.agrupacion === "dia";
+	// PQ-134: hoy va a medias y no compite; las semanas se comparan por día.
+	const largo = (p: Resumen["serie"][number]) =>
+		Math.round((Date.parse(`${p.hasta}T12:00:00Z`) - Date.parse(`${p.desde}T12:00:00Z`)) / 86_400_000) + 1;
+	const completas = s.filter((p) => !p.en_curso);
+	const base = completas.length ? completas : s;
+	const max = base.reduce((m, p) =>
+		(dia ? p.preguntas : p.preguntas / largo(p)) > (dia ? m.preguntas : m.preguntas / largo(m)) ? p : m,
+	);
+	const hoy = s.find((p) => p.en_curso);
+	const hora = new Date(datos.periodo.hasta).toLocaleTimeString("es-CO", {
+		hour: "2-digit",
+		minute: "2-digit",
+		hour12: false,
+		timeZone: "America/Bogota",
+	});
 	return (
 		<p className="pnl-nota">
-			{unidad} con más preguntas: {datos.periodo.agrupacion === "dia" ? diaMes(`${max.fecha}T12:00:00-05:00`) : `la del ${diaMes(`${max.desde}T12:00:00-05:00`)}`}{" "}
-			({numero(max.preguntas)}). Sin respuesta segura en el periodo: {numero(brechas)}.
+			{dia
+				? `El día con más preguntas: ${diaMes(`${max.fecha}T12:00:00-05:00`)} (${numero(max.preguntas)}).`
+				: `La semana con más preguntas por día: la del ${diaMes(`${max.desde}T12:00:00-05:00`)} (${numero(max.preguntas)} en ${cuantas(largo(max), "día", "días")}, ${decimal(max.preguntas / largo(max))} por día).`}{" "}
+			{hoy ? `La columna con trama es ${dia ? "hoy" : "la semana en curso"}: cuenta hasta las ${hora}. ` : null}
+			Sin respuesta segura en el periodo: {numero(brechas)}.
 		</p>
 	);
 }
