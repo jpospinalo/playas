@@ -44,6 +44,7 @@ _EXPECTED_ROUTES: dict[str, set[str]] = {
     "/api/admin/panel/conversaciones/{conversation_id}": {"get"},
     "/api/admin/panel/preguntas": {"get"},
     "/api/admin/panel/preguntas.csv": {"get"},
+    "/api/admin/panel/demo": {"get"},
     "/api/admin/panel/resumen": {"get"},
     "/api/admin/panel/encuestas": {"get"},
     "/api/admin/panel/encuestas.csv": {"get"},
@@ -103,7 +104,7 @@ def test_route_and_operation_count_matches_expected_contract() -> None:
     assert actual_routes == _EXPECTED_ROUTES
 
     operation_count = sum(len(methods) for methods in paths.values())
-    assert operation_count == 60
+    assert operation_count == 61
 
 
 def test_query_stream_declares_text_event_stream_and_not_json() -> None:

@@ -3,13 +3,15 @@
 import "./panel.css";
 import "./panel-legado.css";
 
-import { useEffect, useSyncExternalStore } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { useTheme } from "@/components/providers/ThemeProvider";
 import { rolEvalua } from "@/lib/admin/evaluacion";
 import { AvisosProvider } from "@/components/admin/panel/Resultado";
+import { IconoAviso } from "@/components/admin/panel/Estados";
+import { pedirDemo } from "@/lib/admin/panel";
 
 // Panel de administración con el diseño B del flujo guiado: encabezado
 // blanco con línea marino, navegación arriba (sin barra lateral), fuente del
@@ -58,6 +60,32 @@ function BotonTema() {
 		>
 			Modo oscuro
 		</button>
+	);
+}
+
+/** PQ-133: con la base de demostración, cada pantalla del panel lo dice (el
+ * Resumen ya trae el suyo). Si la consulta falla, no se muestra nada. */
+function AvisoDemo({ pathname }: { pathname: string }) {
+	const [demo, setDemo] = useState(false);
+	useEffect(() => {
+		let vigente = true;
+		pedirDemo()
+			.then((d) => {
+				if (vigente) setDemo(d);
+			})
+			.catch(() => {});
+		return () => {
+			vigente = false;
+		};
+	}, []);
+	if (!demo || pathname === "/admin") return null;
+	return (
+		<div className="pnl-aviso pnl-aviso-demo" role="note">
+			<IconoAviso />
+			<p>
+				<b>Datos de demostración.</b> Estas cifras salen de preguntas de prueba, no de personas reales.
+			</p>
+		</div>
 	);
 }
 
@@ -155,6 +183,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 			<AvisosProvider>
 				<main id="main-content" className="pnl-main">
 					{TITULOS[pathname] ? <title>{TITULOS[pathname]}</title> : null}
+					<AvisoDemo pathname={pathname} />
 					{children}
 				</main>
 			</AvisosProvider>

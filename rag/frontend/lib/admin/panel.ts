@@ -228,6 +228,11 @@ async function pedir<T>(ruta: string): Promise<T> {
 	return (await res.json()) as T;
 }
 
+/** PQ-133: si la base es la de demostración (para avisarlo en todo /admin). */
+export async function pedirDemo(): Promise<boolean> {
+	return (await pedir<{ demo: boolean }>("/demo")).demo;
+}
+
 /** Filtro por persona del ejercicio: número de participante y tipo de playa. */
 export interface FiltroPersona {
 	participante?: string;

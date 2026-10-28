@@ -353,6 +353,10 @@ def test_resumen_periodo_vacio(cliente) -> None:
 def test_aviso_demo(cliente) -> None:
     c, _ = cliente
     assert c.get("/api/admin/panel/resumen", headers=_auth(**_ADMIN)).json()["demo"] is True
+    # PQ-133: el aviso también sale para todo /admin y en la primera fila del CSV.
+    assert c.get("/api/admin/panel/demo", headers=_auth(**_ADMIN)).json() == {"demo": True}
+    csv_txt = c.get("/api/admin/panel/preguntas.csv", headers=_auth(**_ADMIN)).text
+    assert csv_txt.lstrip('\ufeff"').startswith("Datos de demostración")
 
 
 def test_preguntas_filtros_y_paginas(cliente) -> None:

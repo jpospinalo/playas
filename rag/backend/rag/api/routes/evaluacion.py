@@ -56,6 +56,8 @@ from rag.api.models import (
     User,
     ValidatorProfile,
 )
+from rag.api.routes.panel import AVISO_DEMO
+from rag.api.routes.panel import _es_demo as es_demo
 
 router = APIRouter(prefix="/api/evaluacion", tags=["evaluacion"])
 
@@ -1547,9 +1549,15 @@ async def exportar(
                 ESTADO_PLANILLA[o.oficial.estado],
             ]
         )
+    controles = ej.controles_planilla(len(hoja))
+    # PQ-133: con la base de demostración, cada hoja lo dice al final (sin
+    # mover las columnas de la planilla).
+    if await es_demo(session):
+        for filas in (hoja, individuales, resumen_hoja, premios_hoja, interacciones):
+            filas += [[], [AVISO_DEMO]]
     contenido = ej.libro_xlsx(
         [
-            ("Evaluación", hoja, ej.ANCHOS_PLANILLA, ej.controles_planilla(len(hoja))),
+            ("Evaluación", hoja, ej.ANCHOS_PLANILLA, controles),
             ("Calificaciones", individuales, [12, 12, 28, 14, 6, 6, 6, 16, 16, 6, 14, 8, 16, 40]),
             ("Resumen", resumen_hoja, [40, 14]),
             ("Premios y participación", premios_hoja, [26, 14, 24, 60, 26]),

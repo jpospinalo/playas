@@ -359,7 +359,10 @@ function PorPersona({ resumen }: { resumen: ResumenEjercicio }) {
 			<p className="pnl-sub pnl-mb">
 				{/* PQ-114: la raya se explica solo cuando se ve. */}
 				{eSem === 0 && eVal === 0
-					? "El ejercicio todavía no empieza: nadie va atrasado."
+					? // PQ-136: si ya hay avance antes del inicio, se dice con la fecha (no "no empieza").
+						cal?.inicio && sem.some((a) => a.evaluadas > 0)
+						? `El calendario empieza el ${diaLargo(cal.inicio)}: el avance de abajo es anterior a esa fecha y nadie va atrasado todavía.`
+						: "El ejercicio todavía no empieza: nadie va atrasado."
 					: `Según el calendario, hoy deberían llevar el ${Math.round(eSem * 100)} % (semilleristas) y el ${Math.round(eVal * 100)} % (validación): es la raya oscura de cada barra. En ámbar, quien va por debajo.`}
 			</p>
 			<div className="pnl-tb-dos">

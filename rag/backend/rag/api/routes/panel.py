@@ -31,7 +31,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from rag.api import ejercicio as ej
 from rag.api import panel_metricas as pm
-from rag.api.auth import require_admin
+from rag.api.auth import get_current_user, require_admin
 from rag.api.database import get_session
 from rag.api.models import (
     Conversation,
@@ -190,6 +190,19 @@ async def _primeras_preguntas(session: AsyncSession) -> dict[str, datetime]:
 async def _es_demo(session: AsyncSession) -> bool:
     stmt = select(User.id).where(User.email == DEMO_EMAIL).limit(1)
     return (await session.execute(stmt)).first() is not None
+
+
+# PQ-133: el aviso "datos de demostración" va en todo /admin y en las descargas.
+AVISO_DEMO = "Datos de demostración: preguntas de prueba, no de personas reales."
+
+
+@router.get("/demo")
+async def demo(
+    _user: dict = Depends(get_current_user),
+    session: AsyncSession = Depends(get_session),
+) -> dict:
+    """Si la base es la de demostración (cualquier cuenta del panel lo ve)."""
+    return {"demo": await _es_demo(session)}
 
 
 def _en(filas: list[_Fila], desde: datetime | None, hasta: datetime | None) -> list[_Fila]:
@@ -563,6 +576,8 @@ async def preguntas_csv(
     perfiles = await _perfiles(session)
     salida = io.StringIO()
     escritor = csv.writer(salida)
+    if await _es_demo(session):
+        escritor.writerow([AVISO_DEMO])
     escritor.writerow(
         [
             "Fecha (hora de Colombia)",
@@ -757,6 +772,8 @@ async def encuestas_csv(
     perfiles = await _perfiles(session)
     salida = io.StringIO()
     escritor = csv.writer(salida)
+    if await _es_demo(session):
+        escritor.writerow([AVISO_DEMO])
     escritor.writerow(
         [
             "Fecha (hora de Colombia)",

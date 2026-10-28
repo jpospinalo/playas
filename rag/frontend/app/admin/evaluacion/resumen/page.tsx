@@ -348,8 +348,8 @@ function Concordancia({ resumen }: { resumen: ResumenEjercicio }) {
 		<section className="pnl-bloque" aria-labelledby="t-conc">
 			<h2 id="t-conc">Acuerdo entre Santa Marta y Barranquilla</h2>
 			<p className="pnl-sub pnl-mb">
-				En {cuantas(c.pares, "pregunta", "preguntas")} con las dos evaluaciones. Kappa y alfa van de 0 (acuerdo por azar) a 1 (acuerdo
-				total); sobre 0,6 se considera bueno.
+				En {cuantas(c.pares, "pregunta", "preguntas")} con las dos evaluaciones, con la calificación vigente de cada
+				semillerista (si corrigió después de hablar con la validadora, cuenta la corregida).
 			</p>
 			<dl className="pnl-cifras pnl-cifras-4">
 				<div className="pnl-cifra">
