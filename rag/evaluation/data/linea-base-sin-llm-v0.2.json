@@ -1,11 +1,16 @@
 {
   "dataset": "legal-ground-truth-v0.2",
-  "fecha": "2026-10-28T08:19:37.867241+00:00",
+  "fecha": "2026-10-28T08:34:16.472481+00:00",
   "git": {
-    "commit": "a29ffc34bb58dfaaedc9060b3006769126426314",
+    "commit": "dc21e78f5d8c160ae2402426c89a1a59e722a265",
     "dirty": false
   },
   "cache": "evaluation/results/generation-cache-v0.2.jsonl",
+  "inestables": {
+    "mrr_doc_20": [
+      "registro-058"
+    ]
+  },
   "global": {
     "acierto_doc_4": {
       "n": 58,
@@ -25,10 +30,10 @@
     },
     "mrr_doc_20": {
       "n": 58,
-      "valor": 0.5578076926454208,
+      "valor": 0.5563709110362254,
       "ic95": [
-        0.43441208892527355,
-        0.6726965394308193
+        0.432414424655804,
+        0.6720383065210652
       ]
     },
     "doc_recall_4": {
@@ -294,7 +299,7 @@
       "registro-055": 0.0,
       "registro-056": 0.0,
       "registro-057": 1.0,
-      "registro-058": 0.25,
+      "registro-058": 0.16666666666666666,
       "registro-059": 1.0,
       "registro-060": 1.0,
       "registro-061": 0.0,

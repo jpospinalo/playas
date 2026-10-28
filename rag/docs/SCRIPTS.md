@@ -229,7 +229,8 @@ Escribe `evaluation/results/metricas-sin-llm-v0.2[-<tag>].json` (detalle por
 caso) y `.md` (tablas con IC 95 %, desgloses y casos a revisar). Si existe
 `evaluation/data/linea-base-sin-llm-v0.2.json`, compara contra ella e imprime
 `REGRESIÓN frente a la línea base: …` cuando una métrica sale del intervalo
-de la línea base en la dirección mala. Qué mide
+de la línea base en la dirección mala, y `Empeora dentro del margen (revisar
+casos): …` cuando empeoran casos sin salir del intervalo. Qué mide
 cada métrica y cómo leerla: [`evaluation/README.md` § Métricas fijas sin LLM](../evaluation/README.md#métricas-fijas-sin-llm).
 El juez RAGAS (fase 4) se reserva para los hitos, porque es el único que
 dice si la respuesta es jurídicamente correcta.

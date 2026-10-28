@@ -34,7 +34,7 @@ Comandos, variables de entorno y forma del reporte: [`docs/SCRIPTS.md` § Evalua
 Se corren **siempre** que se cambie la ingesta, el retriever o los prompts
 (`make eval-sin-llm`, ~20 s). No usan gpt-5-nano ni ningún otro modelo
 generador o juez: 0 tokens, y la misma entrada da exactamente el mismo
-resultado (verificado: dos corridas seguidas dan Δ = 0 en todo). Comparan
+resultado (ver [Verificación](#verificación-de-las-métricas)). Comparan
 contra lo que escribió el equipo jurídico en el ground truth v0.2 (documento
 esperado, respuesta y `ubicacion_evidencia`).
 
@@ -79,15 +79,28 @@ genera respuestas nuevas):
   `sin documento`).
 - **Comparación con la línea base.** Si existe
   [`data/linea-base-sin-llm-v0.2.json`](data/linea-base-sin-llm-v0.2.json)
-  (versionada), cada corrida se compara contra ella. `Estado` es
-  **regresión** o **mejora** solo si el valor sale del IC 95 % de la línea
-  base en esa dirección; si no, es `igual`. `Casos peor / mejor` cuenta los
-  casos que cambian: como todo es determinista, **cualquier caso que cambia es
-  un cambio real** del sistema y se lista por id en «Casos a revisar», aunque
-  el global siga `igual`.
+  (versionada), cada corrida se compara contra ella caso por caso. `Estado`:
+
+  | Estado | Significa | Qué hacer |
+  |---|---|---|
+  | `igual` | Ningún caso cambió (o los cambios se compensan) | Nada |
+  | `peor_en_margen` / `mejor_en_margen` | Cambiaron casos, pero el global sigue dentro del IC 95 % de la línea base | Es un cambio **real** del sistema (todo es determinista): revisar los casos listados. No se puede afirmar que generalice |
+  | `regresion` / `mejora` | El global sale del IC 95 % en esa dirección | Una regresión no se acepta sin explicarla |
+
+  La consola imprime `REGRESIÓN frente a la línea base: …` y
+  `Empeora dentro del margen (revisar casos): …`; el `.md` lista los casos
+  por id en «Casos a revisar».
+- **Ruido conocido de ChromaDB.** La búsqueda vectorial de ChromaDB es
+  aproximada (HNSW) y el índice se carga distinto en cada arranque del
+  servidor: con los mismos datos, el orden de algún caso puede cambiar entre
+  reinicios (dentro de una misma sesión es estable). Medido en 9 corridas
+  completas tras reiniciar ChromaDB: solo cambia `registro-058` en `mrr_doc_20` (posición 4 o 6 del documento
+  esperado, ±0,002 en el global); el resto de métricas es idéntico. Ese caso
+  está en `inestables` de la línea base y sus cambios se reportan aparte, sin
+  contar. Afecta igual al ChromaDB de AWS; no es un error de las métricas.
 - **Actualizar la línea base.** Cuando un cambio se acepta,
   `uv run python -m evaluation.metricas_sin_llm --guardar-linea-base` y se
-  versiona el JSON en el mismo commit.
+  versiona el JSON en el mismo commit (los `inestables` se conservan).
 
 ### Qué no miden
 
@@ -99,10 +112,12 @@ muestran:
   documento esperado (*answer accuracy* 0,71 frente a 0,70), porque otros
   documentos pueden respaldar la respuesta.
 - Con la caché del modelo local `gemma4:e2b`, que el juez calificó mucho peor
-  (32 de 65 respuestas correctas frente a 51), estas métricas quedan
-  `igual`: `acierto_doc_4_grafo` 0,579, `respuestas_con_refs_sin_respaldo`
-  0,015. El modelo local no inventa más referencias ni recupera peor; lo que
-  falla es la redacción de la respuesta, y eso solo lo ve el juez.
+  (32 de 65 respuestas correctas frente a 51), estas métricas no muestran
+  ninguna regresión: `acierto_doc_4_grafo` 0,579 y
+  `respuestas_con_refs_sin_respaldo` 0,015 (`mejor_en_margen`); solo
+  `refs_esperadas_en_respuesta` baja dentro del margen (0,058). El modelo
+  local no inventa más referencias ni recupera peor; lo que falla es la
+  redacción de la respuesta, y eso solo lo ve el juez.
 
 Estas métricas miden otra cosa: si el sistema llega a las **mismas fuentes**
 que usa el equipo jurídico y si cita algo que no tiene respaldo.
@@ -114,17 +129,17 @@ porque son ambiguos entre normas.
 
 ### Línea base de estas métricas
 
-Sistema actual (código de `a29ffc3`, ChromaDB 1.3.5 con la colección del repo
+Sistema actual (código de `dc21e78`, ChromaDB 1.3.5 con la colección del repo
 y `embeddinggemma` con el mismo digest que en AWS; caché de gpt-5-nano del
 2026-10-08). Es el contenido de `data/linea-base-sin-llm-v0.2.json`:
 
 | Métrica | Valor | IC 95 % | Casos |
 |---|---|---|---|
 | `acierto_doc_4` | 0,603 | 0,48 – 0,72 | 58 |
-| `acierto_doc_20` | 0,741 | 0,62 – 0,85 | 58 |
-| `mrr_doc_20` | 0,558 | 0,43 – 0,67 | 58 |
+| `acierto_doc_20` | 0,741 | 0,62 – 0,84 | 58 |
+| `mrr_doc_20` | 0,556 | 0,43 – 0,67 | 58 |
 | `doc_recall_4` | 0,534 | 0,41 – 0,65 | 58 |
-| `articulos_4` | 0,071 | 0,02 – 0,14 | 39 |
+| `articulos_4` | 0,071 | 0,01 – 0,14 | 39 |
 | `docs_distintos_4` | 2,27 | 2,02 – 2,52 | 66 |
 | `fuga_territorial_4` | 0,061 (4 casos) | 0,02 – 0,12 | 66 |
 | `acierto_doc_4_grafo` | 0,561 | 0,42 – 0,68 | 57 |
@@ -154,6 +169,35 @@ Lo que muestran los desgloses:
 `acierto_doc_4` (0,603) es la tasa de los fragmentos que llegan al modelo. El
 `hit_at_4` de `retrieval_baseline.py` (0,569) se calcula sobre el ranking de
 20 y por eso es distinto.
+
+### Verificación de las métricas
+
+Comprobado el 2026-10-28 con ChromaDB y Ollama locales:
+
+- **Determinismo.** Corridas repetidas en la misma sesión de ChromaDB dan
+  Δ = 0 en las 12 métricas; entre reinicios, solo el caso inestable de arriba.
+- **Detectan cambios reales.** Se perturbó el retriever a propósito y se
+  comparó contra la línea base:
+
+  | Cambio provocado | Lo que reporta |
+  |---|---|
+  | Ninguno | todo `igual` |
+  | 2 fragmentos en vez de 4 | `peor_en_margen` en `acierto_doc_4` (0,569), `doc_recall_4` y `articulos_4`; `mejor_en_margen` en `fuga_territorial_4` |
+  | 8 fragmentos en vez de 4 | `mejor_en_margen` en `acierto_doc_4` (0,638) y `doc_recall_4`; `mejora` en `articulos_4` (0,154) |
+  | Solo BM25 (sin búsqueda vectorial) | `peor_en_margen` en `mrr_doc_20` (0,477) y `articulos_4`; `acierto_doc_4` igual |
+  | Ranking invertido (sistema roto) | **`regresion`** en `mrr_doc_20` (0,304); `peor_en_margen` en `acierto_doc_4` (0,483), `doc_recall_4`, `articulos_4` y `fuga_territorial_4` |
+
+- **Valores correctos.** Revisados a mano contra el texto: las 3 referencias
+  sin respaldo (003 cita el Decreto 2324 de 1984, 045 el artículo 5.3.2.5 y
+  052 el 5.3.3.3, y ninguno aparece en sus fragmentos ni en la pregunta) y las
+  4 fugas (005 y 008 reciben el reglamento de Cartagena sin mencionarla; 013
+  es de Cartagena y recibe la zonificación de Santa Marta; 015 es de El
+  Rodadero y recibe el de Cartagena).
+- **Pruebas unitarias.** 41 en `tests/unit/test_metricas_sin_llm.py`,
+  incluida la línea de comandos de punta a punta (guardar línea base,
+  detectar una regresión, conservar los inestables). Se probaron con 21
+  mutaciones del código (invertir un signo, quitar un filtro, cambiar un
+  percentil…): las pruebas fallan con las 21.
 
 ## Resultados sobre el ground truth v0.2
 
