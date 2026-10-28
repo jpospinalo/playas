@@ -1264,8 +1264,12 @@ async def _premios(session: AsyncSession, preguntas: list[_Pregunta]) -> dict:
     ranking = ej.ranking_participantes(oficiales)
     return {
         "mejor_pregunta": ej.mejores_por_nivel(oficiales, await _elegidas(session)),
-        "participacion_constante": ranking[:10],
-        "gratificacion": sorted(ranking, key=lambda f: (-f["puntaje"], f["codigo"])),
+        "participacion_constante": ej.con_puesto(
+            ranking, lambda f: (f["dias"], f["preguntas_validas"], f["puntaje"])
+        )[:10],
+        "gratificacion": ej.con_puesto(
+            sorted(ranking, key=lambda f: (-f["puntaje"], f["codigo"])), lambda f: f["puntaje"]
+        ),
         "participacion_por_dia": _participacion(preguntas),
         # Concordantes que aún no cuentan porque el comité no las ha validado.
         # Evaluaciones de semilleristas que esperan la validación jurídica (T2).
@@ -1423,7 +1427,9 @@ async def exportar(
                     ej.celda_segura(c.observaciones or ""),
                 ]
             )
-    validas = [p for p in preguntas if p.oficial.total is not None and p.oficial.valida]
+    # PQ-127: la misma regla que la pantalla y los premios (_oficiales: solo
+    # calificación oficial, y las no pertinentes no cuentan como válidas).
+    validas = [o for o in _oficiales(preguntas) if o.oficial.valida]
     resumen_hoja = [
         ["Indicador", "Resultado"],
         ["Preguntas registradas", len(preguntas)],
@@ -1478,8 +1484,10 @@ async def exportar(
             "Puntaje acumulado",
         ]
     )
-    for i, f in enumerate(datos["participacion_constante"], 1):
-        premios_hoja.append([i, f["codigo"], f["dias"], f["preguntas_validas"], f["puntaje"]])
+    for f in datos["participacion_constante"]:
+        premios_hoja.append(
+            [f["puesto"], f["codigo"], f["dias"], f["preguntas_validas"], f["puntaje"]]
+        )
     premios_hoja += [[], ["Participación por día (no es asistencia física)"]]
     premios_hoja.append(
         ["ID Usuario", "Tipo de Usuario de Playa", "Preguntas", "Días con preguntas", "Fechas"]

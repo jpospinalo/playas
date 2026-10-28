@@ -15,6 +15,7 @@ import {
 	pedirResumenEjercicio,
 	rolComite,
 	type Ct,
+	type FilaRanking,
 	type Premios,
 	type ResumenEjercicio,
 } from "@/lib/admin/evaluacion";
@@ -121,7 +122,7 @@ function SeccionPremios({ premios, onCambio }: { premios: Premios; onCambio: (p:
 				<h2 id="t-mejor">Premio: mejor pregunta del ejercicio</h2>
 				<p className="pnl-sub pnl-mb">
 					Mayor puntaje de fondo (Cv) en cada nivel, solo preguntas válidas. Si hay empate en el valor de fondo, decide el
-					comité por pertinencia jurídica.
+					comité por pertinencia jurídica y utilidad para la validación.
 				</p>
 				<ol className="pnl-filas">
 					{(Object.keys(NIVELES) as Ct[]).map((k) => (
@@ -216,7 +217,7 @@ function TablaRanking({
 	filas,
 	destacar,
 }: {
-	filas: { codigo: string; dias: number; preguntas_validas: number; puntaje: number; empate?: boolean }[];
+	filas: FilaRanking[];
 	destacar?: boolean;
 }) {
 	if (!filas.length) return <p className="pnl-vacio">Todavía no hay preguntas válidas con calificación oficial.</p>;
@@ -251,7 +252,14 @@ function TablaRanking({
 				<tbody>
 					{filas.slice(0, 10).map((f, i) => (
 						<tr key={f.codigo} className={destacar && i === 0 ? "pnl-primero" : undefined}>
-							<td className="num">{i + 1}</td>
+							<td className="num">
+								{/* PQ-137: quienes empatan comparten puesto ("5 =", "5 =", luego 7). */}
+								{f.puesto ?? i + 1}
+								{f.puesto !== undefined &&
+								filas.some((g) => g !== f && g.puesto === f.puesto)
+									? " ="
+									: null}
+							</td>
 							<td>
 								{f.codigo}
 								{destacar && f.empate ? <b> (empatado en el primer puesto)</b> : null}
@@ -434,6 +442,11 @@ function NivelPremio({
 						</ChipEstado>
 					) : null}
 				</div>
+				{n.candidatas ? (
+					<p className="pnl-sub" style={{ margin: 0 }}>
+						Entre {cuantas(n.candidatas, "pregunta válida", "preguntas válidas")} del nivel.
+					</p>
+				) : null}
 				{n.ganadora ? (
 					<p style={{ margin: 0 }}>
 						<span className="pnl-etq">{n.ganadora.codigo}</span>

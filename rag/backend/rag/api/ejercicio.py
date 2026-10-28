@@ -355,6 +355,7 @@ def mejores_por_nivel(
                 "empatadas": [],
                 "siguientes": [],
                 "decide_comite": False,
+                "candidatas": 0,
             }
             continue
         mejor_cv = candidatas[0].oficial.cv
@@ -375,6 +376,7 @@ def mejores_por_nivel(
         elif elegidas.get(ct) in {p.message_id for p in empatadas}:
             ganadora = fila(next(p for p in empatadas if p.message_id == elegidas[ct]))
         salida[ct] = {
+            "candidatas": len(candidatas),
             "ganadora": ganadora,
             "empatadas": [fila(p) for p in empatadas] if len(empatadas) > 1 else [],
             "decide_comite": len(empatadas) > 1,
@@ -409,6 +411,19 @@ def ranking_participantes(preguntas: list[PreguntaOficial]) -> list[dict]:
         for f in filas:
             f["empate"] = len(empatados) > 1 and f in empatados
     return filas
+
+
+def con_puesto(filas: list[dict], clave) -> list[dict]:
+    """PQ-137: puesto de competencia (1, 2, 2, 4): quienes empatan en todos los
+    criterios comparten puesto; el código solo ordena la tabla. Copia las filas
+    para que dos rankings distintos no se pisen el puesto."""
+    salida = [dict(f) for f in filas]
+    for i, f in enumerate(salida):
+        if i and clave(f) == clave(salida[i - 1]):
+            f["puesto"] = salida[i - 1]["puesto"]
+        else:
+            f["puesto"] = i + 1
+    return salida
 
 
 # ── Excel (.xlsx) sin dependencias ───────────────────────────────────────────

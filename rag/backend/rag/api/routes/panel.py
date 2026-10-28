@@ -529,7 +529,11 @@ _ETIQUETAS_RESULTADO = {
     pm.SALUDO: "Saludo",
     pm.SIN_RESPUESTA: "Sin respuesta guardada",
 }
-_ETIQUETAS_CALIFICACION = {pm.UTIL: "Le sirvió", pm.NO_UTIL: "No le sirvió", pm.NEUTRA: "Regular"}
+_ETIQUETAS_CALIFICACION = {
+    pm.UTIL: "Le sirvió",
+    pm.NO_UTIL: "No le sirvió",
+    pm.NEUTRA: "Le sirvió a medias",
+}  # PQ-138: igual que la pantalla
 
 
 def _tipo_texto(tipo: int | None) -> str:
@@ -684,6 +688,8 @@ async def encuestas(
     de registro en vez de correo y promedios del periodo (PQ-28, PQ-37)."""
     periodo = pm.calcular_periodo(dias)
     stmt = select(Feedback, User.display_name).join(User, User.id == Feedback.user_id, isouter=True)
+    # PQ-139: sin cuentas de práctica, como el resto de las cifras (PQ-82).
+    stmt = stmt.where(Feedback.user_id.not_in(select(PracticeAccount.user_id)))
     if periodo.inicio is not None:
         stmt = stmt.where(Feedback.created_at >= periodo.inicio)
     filas = []
@@ -740,6 +746,8 @@ async def encuestas_csv(
     informe final: "observaciones y comentarios de los participantes", PDF p. 9)."""
     periodo = pm.calcular_periodo(dias)
     stmt = select(Feedback, User.display_name).join(User, User.id == Feedback.user_id, isouter=True)
+    # PQ-139: sin cuentas de práctica, como el resto de las cifras (PQ-82).
+    stmt = stmt.where(Feedback.user_id.not_in(select(PracticeAccount.user_id)))
     if periodo.inicio is not None:
         stmt = stmt.where(Feedback.created_at >= periodo.inicio)
     filas = sorted(

@@ -234,13 +234,30 @@ export interface FilaPremio {
 	total: number;
 }
 
+export interface FilaRanking {
+	codigo: string;
+	dias: number;
+	preguntas_validas: number;
+	puntaje: number;
+	empate?: boolean;
+	puesto?: number;
+}
+
 export interface Premios {
 	mejor_pregunta: Record<
 		Ct,
-		{ ganadora: FilaPremio | null; empatadas: FilaPremio[]; decide_comite: boolean; siguientes: FilaPremio[] }
+		{
+			ganadora: FilaPremio | null;
+			empatadas: FilaPremio[];
+			decide_comite: boolean;
+			siguientes: FilaPremio[];
+			/** PQ-140: preguntas válidas del nivel entre las que se elige. */
+			candidatas?: number;
+		}
 	>;
-	participacion_constante: { codigo: string; dias: number; preguntas_validas: number; puntaje: number }[];
-	gratificacion: { codigo: string; dias: number; preguntas_validas: number; puntaje: number }[];
+	/** PQ-137: `puesto` compartido cuando empatan (1, 2, 2, 4). */
+	participacion_constante: FilaRanking[];
+	gratificacion: FilaRanking[];
 	participacion_por_dia: {
 		codigo: string;
 		tipo_playa: number | null;

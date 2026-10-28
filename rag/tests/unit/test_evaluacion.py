@@ -483,6 +483,11 @@ def test_resumen_premios_y_excel(cliente) -> None:
     assert "<dxfs" in z.read("xl/styles.xml").decode()
     assert "Tipo 3. Comerciantes" in hoja and "S - Sencillo" in hoja
     assert "Secreta" not in hoja
+    # PQ-127: la hoja Resumen cuenta lo mismo que la pantalla (solo oficiales válidas).
+    por_nivel = c.get("/api/evaluacion/resumen", headers=COM).json()["por_nivel"]
+    res_hoja = z.read("xl/worksheets/sheet3.xml").decode()
+    for fila, ct in ((3, "S"), (4, "I"), (5, "A")):
+        assert f'<c r="B{fila}"><v>{por_nivel[ct]}</v></c>' in res_hoja
     # Revisó: la validadora jurídica de cada sede y la fecha.
     assert re.search(
         r"Ana María Muelle \(\d{4}-\d{2}-\d{2}\), Sandra Otero \(\d{4}", hoja
@@ -928,3 +933,10 @@ def test_encuesta_se_ofrece_una_vez(cliente) -> None:
     }  # la del chat
     _en_bd(c, Feedback(user_id="u1", ratings={"clarity": 5, "usability": 4, "overall": 5}))
     assert c.get("/api/ejercicio/encuesta", headers=USER).json() == {"respondida": True}
+
+
+def test_con_puesto_comparte_el_puesto_en_empate() -> None:
+    """PQ-137: empatados comparten puesto y el siguiente salta (1, 2, 2, 4)."""
+    filas = [{"p": 9}, {"p": 7}, {"p": 7}, {"p": 3}]
+    assert [f["puesto"] for f in ej.con_puesto(filas, lambda f: f["p"])] == [1, 2, 2, 4]
+    assert "puesto" not in filas[0]
