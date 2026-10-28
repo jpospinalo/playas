@@ -168,7 +168,8 @@ export default function PaginaEncuestas() {
 					<h1>Encuestas de satisfacción</h1>
 					<p className="pnl-sub">
 						Lo que respondió cada persona al terminar una conversación. Cada nota va de 1 (muy mal) a 5 (muy
-						bien); arriba, el promedio del periodo.
+						bien); arriba, la cifra grande es el porcentaje que puso 4 o 5 (en Largo, cuántas la vieron
+						adecuada), con las notas de 1 a 5 debajo.
 					</p>
 				</div>
 				<div className="pnl-controles">
