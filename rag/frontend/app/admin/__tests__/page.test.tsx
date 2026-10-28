@@ -158,9 +158,11 @@ describe("app/admin/page — resumen del panel", () => {
 	it("los filtros van a la URL y se leen de ella (PQ-22)", async () => {
 		parametros = new URLSearchParams("dias=0&tema=obras");
 		render(<PanelResumen />);
+		const reemplazar = vi.spyOn(window.history, "replaceState");
 		await screen.findByText("482");
 		expect(vi.mocked(fetch).mock.calls.some(([u]) => String(u).includes("/resumen?dias=0&tema=obras"))).toBe(true);
 		await userEvent.click(screen.getByRole("radio", { name: "7 días" }));
-		expect(replaceMock).toHaveBeenCalledWith("/admin?dias=7&tema=obras", { scroll: false });
+		expect(reemplazar).toHaveBeenCalledWith(null, "", "/admin?dias=7&tema=obras");
+		reemplazar.mockRestore();
 	});
 });

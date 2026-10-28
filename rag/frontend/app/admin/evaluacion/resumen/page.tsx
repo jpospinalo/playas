@@ -174,7 +174,10 @@ function SeccionPremios({ premios, onCambio }: { premios: Premios; onCambio: (p:
 									<td>{nombreTipo(f.tipo_playa)}</td>
 									<td className="num">{numero(f.preguntas)}</td>
 									<td className="num">{numero(f.dias.length)}</td>
-									<td>{f.dias.map(diaMesCalendario).join(", ")}</td>
+									<td>
+										{/* PQ-121: cada fecha entera en su renglón ("22 oct", no "22 / oct"). */}
+										{f.dias.map((d) => diaMesCalendario(d).replace(/ /g, "\u00a0")).join(", ")}
+									</td>
 								</tr>
 							))}
 						</tbody>
@@ -447,10 +450,10 @@ function NivelPremio({
 											<span className="pnl-etq">{f.codigo}</span>
 											{recortar(f.texto, 200)}
 										</p>
-										<p style={{ margin: "6px 0 0" }}>
+										<p className="pnl-acciones-fila">
 											<Link href={`/admin/evaluacion/pregunta?id=${encodeURIComponent(f.message_id)}`}>
 												Leer la pregunta
-											</Link>{" "}
+											</Link>
 											<button
 												type="button"
 												className="pnl-btn-sec"

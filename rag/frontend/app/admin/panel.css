@@ -2770,3 +2770,35 @@ html:has(.pnl) {
 	border-color: transparent;
 	cursor: default;
 }
+
+/* PQ-118: el botón de tema no se subraya (ni activo ni con hover). */
+.pnl-chips-filtro button:hover {
+	text-decoration: none;
+}
+/* PQ-120: "Práctica: no cuenta" informa, no se toca: sin borde de botón. */
+.pnl-practica {
+	border: 0;
+	background: var(--p-riel);
+}
+/* PQ-122: 5 tarjetas en anchos intermedios van 3 + 2, nunca 4 + 1 sola. */
+@media (min-width: 600px) and (max-width: 1099px) {
+	.pnl-tb-cifras:has(> :nth-child(5):last-child) {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+	}
+}
+/* PQ-123: enlace y botón de la misma fila con aire entre ellos. */
+.pnl-acciones-fila {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: var(--p-esp-3) var(--p-esp-4);
+	margin: 6px 0 0;
+}
+/* PQ-124: la cifra al pie de su casilla aunque el rótulo ocupe 2 renglones. */
+.pnl-cifra {
+	display: flex;
+	flex-direction: column;
+}
+.pnl-cifra > dd {
+	margin-top: auto;
+}

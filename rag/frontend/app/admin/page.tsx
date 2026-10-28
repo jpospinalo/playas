@@ -2,7 +2,7 @@
 
 import { Suspense, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import {
 	MINIMO_PARA_PORCENTAJE,
 	PERIODOS,
@@ -86,7 +86,6 @@ function consultaFiltros(
 
 function ResumenConFiltros() {
 	const sp = useSearchParams();
-	const router = useRouter();
 	const [dias, setDias] = useState<number>(() => {
 		const d = Number(sp.get("dias"));
 		return sp.has("dias") && DIAS_VALIDOS.includes(d) ? d : 0;
@@ -116,7 +115,9 @@ function ResumenConFiltros() {
 
 	function escribirUrl(d: number, t: string, r: string, p: FiltroPersona = persona) {
 		const q = consultaFiltros(d, t, r, p);
-		router.replace(q ? `/admin?${q}` : "/admin", { scroll: false });
+		// PQ-119: replaceState (Next lo sincroniza con useSearchParams) no vuelve a
+		// resolver los metadatos, así el título del Resumen no se pierde.
+		window.history.replaceState(null, "", q ? `/admin?${q}` : "/admin");
 	}
 
 	function cambiarParticipante(valor: string) {

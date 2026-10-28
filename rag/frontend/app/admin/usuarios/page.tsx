@@ -27,7 +27,7 @@ function RoleBadge({ role }: { role: string }) {
   const label = ROLE_LABELS[role] ?? role;
   return (
     <span
-      className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-[11px] font-medium ${style}`}
+      className={`inline-flex items-center rounded px-2 py-0.5 text-[11px] font-medium ${style}`}
     >
       {label}
     </span>
@@ -152,7 +152,7 @@ export default function UsuariosPage() {
                 {visibles.map((u) => (
                   <tr key={u.uid} className="transition-colors hover:bg-surface/40">
                     <td data-l="Correo" className="px-4 py-3 text-xs text-foreground">
-                      <span className="font-mono">{u.email}</span>
+                      <span className="font-mono break-all">{u.email}</span>
                     </td>
                     <td data-l="Nombre" className="px-4 py-3 text-xs text-muted">
                       {u.displayName ?? <span className="italic text-subtle">—</span>}
@@ -163,7 +163,7 @@ export default function UsuariosPage() {
                     <td data-l="Registro" className="whitespace-nowrap px-4 py-3 text-xs text-muted tabular-nums">
                       {formatDate(u.createdAt)}
                     </td>
-                    <td className="whitespace-nowrap px-4 py-3 text-right">
+                    <td className="px-4 py-3 text-right">
                       <button
                         type="button"
                         onClick={() => setPwdTarget(u)}
