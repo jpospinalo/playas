@@ -1078,7 +1078,8 @@
       "coverage": "not_verified",
       "doc_type": "normativa",
       "export_metadata_differences": {
-        "entities": 1
+        "entities": 2,
+        "summary": 1
       },
       "export_records_matched_by_id": 27,
       "export_text_mismatches": 2,
@@ -1103,7 +1104,9 @@
       "bytes": 130226,
       "coverage": "not_verified",
       "doc_type": "normativa",
-      "export_metadata_differences": {},
+      "export_metadata_differences": {
+        "summary": 1
+      },
       "export_records_matched_by_id": 27,
       "export_text_mismatches": 0,
       "format": ".pdf",
@@ -1677,7 +1680,7 @@
     },
     {
       "code": "records_with_metadata_differences",
-      "detail": "3888 registros; diferencia de snapshots, no autorización para reemplazar datos",
+      "detail": "3891 registros; diferencia de snapshots, no autorización para reemplazar datos",
       "path": "data/chroma-rag_playas_magdalena-20260731-135720.jsonl.gz",
       "severity": "warning"
     },
@@ -2038,19 +2041,19 @@
         "articulo_titulo": 136,
         "capitulo": 66,
         "chunk_index": 1363,
-        "entities": 406,
+        "entities": 407,
         "keywords": 318,
         "keywords_str": 319,
         "section_heading": 1072,
         "section_index": 953,
         "section_name": 946,
-        "summary": 325,
+        "summary": 327,
         "titulo": 32,
         "total_chunks_in_section": 3655
       },
       "path": "data/chroma-rag_playas_magdalena-20260731-135720.jsonl.gz",
       "records": 5888,
-      "records_with_metadata_differences": 3888,
+      "records_with_metadata_differences": 3891,
       "sha256": "28b7a3076d1c7ad0aa3ef2a4394e31423cdd5358f691fdc6a6104f7e15712d2d",
       "sources": [
         {
@@ -3783,14 +3786,14 @@
         "sha256": "c52c23d7441deb86f6ae49a769f942a32ad54c7b212a33d9829bc0e5dfdbbc43"
       },
       {
-        "bytes": 57693,
+        "bytes": 57730,
         "path": "data/documents/gold/normativa/Por el cual se reglamenta el funcionamiento de los Comités Locales para la  organización de las Playas de que trata el artículo 12 de la Ley 1558 de 2012.jsonl",
-        "sha256": "692d1b94ce0959b895978fb7048105524080747d3668ab6fbe624d76b93d99e4"
+        "sha256": "d0fe50dea4af986da3aad6e1eb38d489fb9c78527fa435821b7ceec29b4a49fb"
       },
       {
-        "bytes": 52466,
+        "bytes": 52574,
         "path": "data/documents/gold/normativa/Por el cual se reglamenta el funcionamiento de los comités locales para la organización de las playas.jsonl",
-        "sha256": "bcec6d3e818b2ff78f32b99246097c62a3421183e033304d13b58225a1e7d79b"
+        "sha256": "4e3f923fce9bd4baef18eb543b0fdf2df84edf815321880114f4f2f3c6434e11"
       },
       {
         "bytes": 22167,

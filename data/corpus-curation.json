@@ -1523,12 +1523,29 @@
           "reference": "diagnostic",
           "locator": "Duplicados y representaciones que no deben confundirse / Decreto 1766 de 2013",
           "role": "conflict"
+        },
+        {
+          "reference": "raw",
+          "locator": "PDF, página 3, cierre «Dado en Bogotá, D.C., a los 16 días del mes de agosto del año 2013»",
+          "role": "conflict"
+        },
+        {
+          "reference": "raw",
+          "locator": "PDF, página 4, nota de publicación en Diario Oficial 48884 de 16 agosto de 2013",
+          "role": "identity"
+        },
+        {
+          "reference": "normativa_legacy",
+          "locator": "Nacional!E1:F1, encabezados «Fecha Expedición» y «Última modificación»; valores ya localizados en Nacional!E16:F16",
+          "role": "conflict"
         }
       ],
       "notes": [
         "Estado local vigente al 27-10-2026: 12 secciones Silver y 27 fragmentos Gold. Frente al inicio de este cierre se conservan 27 IDs, se retiran 0 y se añaden 0. Los IDs e índices conservados son históricos; los contadores indican la cardinalidad actual de su grupo. Las restituciones y los límites revisados se apoyan en pasajes de la fuente Raw; Bronze, Silver y Gold incorporan las correcciones literales y de atribución verificadas, sin ampliar la selección jurídica. La limpieza técnica de entities retiró 1 objetos que solo expresaban ausencia o puntuación, conservando el resto de objetos, tipos y orden; no se generaron sustitutos. Se mantienen la identidad y selección declaradas, las ambigüedades de fuente y las representaciones duplicadas. Este estado local no certifica fidelidad integral palabra por palabra, vigencia o validación jurídica, ni sincroniza el índice remoto.",
         "Nacional es el ámbito declarado en el Excel, no una certificación de aplicabilidad o vigencia del texto.",
-        "Dos copias no idénticas tienen fechas de encabezado 13 y 16 de agosto de 2013. Nacional!E16:F16 conserva también las dos fechas; edición y fecha pendientes. No se elige copia preferida ni se fusionan."
+        "Dos copias no idénticas tienen fechas de encabezado 13 y 16 de agosto de 2013. Nacional!E16:F16 conserva también las dos fechas; edición y fecha pendientes. No se elige copia preferida ni se fusionan.",
+        "Verificación documental local del 28-10-2026: esta copia conserva «Agosto 13» en el encabezado de Raw, página 1; su cierre, en la página 3, dice «a los 16 días del mes de agosto del año 2013» y la página 4 contiene una nota de publicación en el Diario Oficial 48884 de 16 agosto de 2013. La discordancia entre encabezado y cierre es interna a esta copia, además de la diferencia entre encabezados de ambas representaciones. Se conservan esos literales sin corregir uno con otro, elegir una edición preferente o resolver una fecha única.",
+        "Precisión de los localizadores heredados, cotejados el 28-10-2026: Nacional!E1 es «Fecha Expedición» y Nacional!F1 es «Última modificación»; Nacional!E16 contiene «16 de agosto 2013» y Nacional!F16 contiene «13 de agosto 2013». Son valores textuales de campos distintos: F16 no está encabezado como publicación ni como otra fecha de expedición. Se conservan ambos literales sin inferir el significado jurídico de «Última modificación», una modificación normativa efectiva o una fecha única preferente."
       ]
     },
     {
@@ -1581,11 +1598,28 @@
           "reference": "diagnostic",
           "locator": "Duplicados y representaciones que no deben confundirse / Decreto 1766 de 2013",
           "role": "conflict"
+        },
+        {
+          "reference": "raw",
+          "locator": "PDF, página 6, cierre «Dado en Bogotá, D. C., a 16 de agosto de 2013»",
+          "role": "identity"
+        },
+        {
+          "reference": "raw",
+          "locator": "PDF, página 1, referencia de publicación «D. O. 48.884 DE 2013»",
+          "role": "identity"
+        },
+        {
+          "reference": "normativa_legacy",
+          "locator": "Nacional!E1:F1, encabezados «Fecha Expedición» y «Última modificación»; valores ya localizados en Nacional!E16:F16",
+          "role": "conflict"
         }
       ],
       "notes": [
         "Nacional es el ámbito declarado en el Excel, no una certificación de aplicabilidad o vigencia del texto.",
-        "Dos copias no idénticas tienen fechas de encabezado 13 y 16 de agosto de 2013. Nacional!E16:F16 conserva también las dos fechas; edición y fecha pendientes. No se elige copia preferida ni se fusionan."
+        "Dos copias no idénticas tienen fechas de encabezado 13 y 16 de agosto de 2013. Nacional!E16:F16 conserva también las dos fechas; edición y fecha pendientes. No se elige copia preferida ni se fusionan.",
+        "Verificación documental local del 28-10-2026: esta copia conserva «16 de Agosto de 2013» en el encabezado de Raw, página 1, y «Dado en Bogotá, D. C., a 16 de agosto de 2013» en el cierre de la página 6. La página 1 muestra por separado «D. O. 48.884 DE 2013». Hay concordancia literal entre encabezado y cierre de esta representación; ello no elige una edición preferente, no corrige la otra copia ni resuelve por sí solo una fecha única autoritativa.",
+        "Precisión de los localizadores heredados, cotejados el 28-10-2026: Nacional!E1 es «Fecha Expedición» y Nacional!F1 es «Última modificación»; Nacional!E16 contiene «16 de agosto 2013» y Nacional!F16 contiene «13 de agosto 2013». Son valores textuales de campos distintos: F16 no está encabezado como publicación ni como otra fecha de expedición. Se conservan ambos literales sin inferir el significado jurídico de «Última modificación», una modificación normativa efectiva o una fecha única preferente."
       ]
     },
     {
@@ -1860,13 +1894,34 @@
           "reference": "raw",
           "locator": "PDF, página 1, título y Subtipo: DECRETO REGLAMENTARIO",
           "role": "conflict"
+        },
+        {
+          "reference": "raw",
+          "locator": "PDF, página 1, fecha «(junio 13)» bajo el título «DECRETO 1436 DE 1984»",
+          "role": "identity"
+        },
+        {
+          "reference": "raw",
+          "locator": "PDF, página 3, cierre «Dado en Bogotá, D. E., a 13 de junio de 1984»",
+          "role": "identity"
+        },
+        {
+          "reference": "raw",
+          "locator": "PDF, página 1, referencia de publicación «DIARIO OFICIAL AÑO. CXXI. N. 36671. 29, JUNIO, 1984. PAG. 1426»",
+          "role": "identity"
+        },
+        {
+          "reference": "normativa_legacy",
+          "locator": "Nacional!E1 y Nacional!E5, encabezado «Fecha Expedición» y valor «13 de junio de 1984»",
+          "role": "identity"
         }
       ],
       "notes": [
         "Nacional es el ámbito declarado en el Excel, no una certificación de aplicabilidad o vigencia del texto.",
         "Nacional!C5 declara Decreto-Ley; Raw, página 1, lo rotula Decreto y subtipo Decreto Reglamentario. kind permanece null, sin resolver la clasificación jurídica.",
         "La representación heredada conservaba los artículos 1–3 dentro de una sección Silver y seis fragmentos Gold atribuidos a Preámbulo. La reparación local documentada deja cuatro secciones Silver (Preámbulo y artículos 1, 2 y 3) y ocho fragmentos Gold; el cierre se conserva junto al artículo 3 como convención de representación. Se mantienen las 17 filas de coordenadas y sus 102 celdas, con 18 ocurrencias Gold por el solapamiento de la fila 12→13. Se corrigen únicamente las capas persistidas y el contexto literal de las tablas, sin atribuir ese estado heredado a un fallo actual del parser ni ejecutar nuevamente la ingesta. No implica validación jurídica, fidelidad textual integral ni actualización del índice vivo.",
-        "La identidad de los fragmentos es histórica y opaca. Se conservan los cuatro IDs originales con sufijos _s1_c0, _s1_c2, _s1_c3 y _s1_c4; se retiran los dos mixtos _s1_c1 y _s1_c5. Cada retirado da lugar a dos IDs nuevos que añaden literalmente __part1 y __part2 al ID padre completo, sin reciclar su cadena original ni regenerar la nomenclatura canónica. Los dos hijos de _s1_c1 contienen respectivamente 178 caracteres de preámbulo y 563 de introducción del artículo 1; los de _s1_c5 contienen 280 del artículo 2 y 319 del artículo 3 con cierre. La secuencia Gold queda en dos fragmentos de preámbulo, cuatro del artículo 1, uno del artículo 2 y uno del artículo 3. Los IDs retenidos de las tres tablas cambian solo en contexto literal y metadata estructural: el rótulo Costa Atlántica se traslada del final del fragmento pacífico al inicio del primer fragmento atlántico y se repite junto con columnas/separador en su continuación; no se alteran ni deduplican filas. Los solapamientos de 178, 18 y 114 caracteres se preservan como intervalos compartidos de fuente, y se añaden 173 caracteres de contexto repetido al último fragmento atlántico. La entidad LOCATION/Costa Atlántica se traslada íntegra al primer fragmento atlántico, conservando el orden de sus diez entidades anteriores; no se crean entidades para la continuación. Solo el hijo de introducción del artículo 1 reutiliza íntegros el summary y las diez keywords del padre; los otros tres hijos tienen summary vacío y keywords vacías, y los cuatro hijos tienen entities vacías. Este es enriquecimiento parcial pendiente, sin LLM nuevo ni herencia de FECHA/«—» o campos mixtos. El enriquecimiento de los cuatro IDs retenidos se conserva salvo la entidad trasladada; no es certificación jurídica. Raw/Bronze, identidad provisional con kind sin resolver, selección whole_declared y representación extent_unverified permanecen intactos, incluidas sus diferencias editoriales preexistentes. Las bajas/altas son locales; una sincronización remota posterior deberá retirar los padres, actualizar los retenidos y añadir los hijos expresamente. No se modifica el indexador ni se opera AWS."
+        "La identidad de los fragmentos es histórica y opaca. Se conservan los cuatro IDs originales con sufijos _s1_c0, _s1_c2, _s1_c3 y _s1_c4; se retiran los dos mixtos _s1_c1 y _s1_c5. Cada retirado da lugar a dos IDs nuevos que añaden literalmente __part1 y __part2 al ID padre completo, sin reciclar su cadena original ni regenerar la nomenclatura canónica. Los dos hijos de _s1_c1 contienen respectivamente 178 caracteres de preámbulo y 563 de introducción del artículo 1; los de _s1_c5 contienen 280 del artículo 2 y 319 del artículo 3 con cierre. La secuencia Gold queda en dos fragmentos de preámbulo, cuatro del artículo 1, uno del artículo 2 y uno del artículo 3. Los IDs retenidos de las tres tablas cambian solo en contexto literal y metadata estructural: el rótulo Costa Atlántica se traslada del final del fragmento pacífico al inicio del primer fragmento atlántico y se repite junto con columnas/separador en su continuación; no se alteran ni deduplican filas. Los solapamientos de 178, 18 y 114 caracteres se preservan como intervalos compartidos de fuente, y se añaden 173 caracteres de contexto repetido al último fragmento atlántico. La entidad LOCATION/Costa Atlántica se traslada íntegra al primer fragmento atlántico, conservando el orden de sus diez entidades anteriores; no se crean entidades para la continuación. Solo el hijo de introducción del artículo 1 reutiliza íntegros el summary y las diez keywords del padre; los otros tres hijos tienen summary vacío y keywords vacías, y los cuatro hijos tienen entities vacías. Este es enriquecimiento parcial pendiente, sin LLM nuevo ni herencia de FECHA/«—» o campos mixtos. El enriquecimiento de los cuatro IDs retenidos se conserva salvo la entidad trasladada; no es certificación jurídica. Raw/Bronze, identidad provisional con kind sin resolver, selección whole_declared y representación extent_unverified permanecen intactos, incluidas sus diferencias editoriales preexistentes. Las bajas/altas son locales; una sincronización remota posterior deberá retirar los padres, actualizar los retenidos y añadir los hijos expresamente. No se modifica el indexador ni se opera AWS.",
+        "Verificación documental local del 28-10-2026: Raw, página 1, conserva «DECRETO 1436 DE 1984», «(junio 13)» y «Subtipo: DECRETO REGLAMENTARIO»; la página 3 contiene el cierre «Dado en Bogotá, D. E., a 13 de junio de 1984». La referencia de publicación de la página 1 es Diario Oficial 36671, 29 de junio de 1984, distinta del cierre. El Excel de la huella heredada confirma Nacional!C5=«Decreto-Ley» y Nacional!E1/E5=«Fecha Expedición»/«13 de junio de 1984». Se documentan rótulos y fechas en sus ubicaciones respectivas, sin resolver el conflicto de tipo ni certificar integridad, vigencia o clasificación jurídica; decision_date permanece null."
       ]
     },
     {
