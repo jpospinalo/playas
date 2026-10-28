@@ -52,7 +52,12 @@ export function Tablero({
 		<>
 			<Grupo id="g-vamos" titulo="¿Cuánto vamos?" sub="Lo principal, de un vistazo">
 				<div className="pnl-tb-cifras">
-					<Cifra href={lista("estado=todas")} titulo="Preguntas registradas" det="Hechas por los participantes del ejercicio">
+					<Cifra
+						href={lista("estado=todas")}
+						titulo="Preguntas registradas"
+						det="Hechas por los participantes del ejercicio"
+						ir="Ver todas →"
+					>
 						{numero(total)}
 					</Cifra>
 					<Cifra
@@ -61,22 +66,28 @@ export function Tablero({
 						det={resumen.solo_revisadas ? "Validadas por el comité" : "Final del comité o calificaciones que coinciden"}
 						de={`de ${numero(total)} (${pctOficial} %)`}
 						progreso={pctOficial}
+						ir="Ver cuáles →"
 					>
 						{numero(resumen.evaluadas)}
 					</Cifra>
 					<Cifra
-						href={lista("estado=con_diferencias")}
 						titulo="Con diferencias"
 						det={`Las dos calificaciones no coinciden (${resumen.umbral_diferencia} puntos o más, o distinto nivel)`}
-						ojo={resumen.estados.con_diferencias > 0}
+						ojo={e.con_diferencias > 0}
+						href={e.con_diferencias > 0 ? lista("estado=con_diferencias") : undefined}
 						ir="Ver cuáles →"
 					>
 						{numero(e.con_diferencias)}
 					</Cifra>
-					<Cifra href={lista("estado=finalizadas")} titulo="Promedio del puntaje total" det="Solo preguntas válidas" de="de 21">
+					<Cifra titulo="Promedio del puntaje total" det="Solo preguntas válidas" de="de 21">
 						{decimal(resumen.promedio_total)}
 					</Cifra>
-					<Cifra href={lista("estado=no_validas")} titulo="No válidas" det="No cuentan para premios">
+					<Cifra
+						href={resumen.no_validas > 0 ? lista("estado=no_validas") : undefined}
+						titulo="No válidas"
+						det="No cuentan para premios"
+						ir="Ver cuáles →"
+					>
 						{numero(resumen.no_validas)}
 					</Cifra>
 				</div>
@@ -167,7 +178,8 @@ function Cifra({
 	ir,
 	children,
 }: {
-	href: string;
+	/** Sin href la tarjeta solo informa (A12: un promedio no abre una lista). */
+	href?: string;
 	titulo: string;
 	det: string;
 	de?: string;
@@ -176,8 +188,9 @@ function Cifra({
 	ir?: string;
 	children: ReactNode;
 }) {
-	return (
-		<Link href={href} className={ojo ? "pnl-tb-cifra ojo" : "pnl-tb-cifra"}>
+	const clase = ojo ? "pnl-tb-cifra ojo" : "pnl-tb-cifra";
+	const cuerpo = (
+		<>
 			<span className="pnl-tb-titulo">
 				{ojo ? <IconoAviso /> : null}
 				{titulo}
@@ -192,8 +205,15 @@ function Cifra({
 				</span>
 			) : null}
 			<span className="pnl-tb-det">{det}</span>
-			{ir ? <span className="pnl-tb-ir">{ir}</span> : null}
+			{href && ir ? <span className="pnl-tb-ir">{ir}</span> : null}
+		</>
+	);
+	return href ? (
+		<Link href={href} className={clase}>
+			{cuerpo}
 		</Link>
+	) : (
+		<div className={clase}>{cuerpo}</div>
 	);
 }
 

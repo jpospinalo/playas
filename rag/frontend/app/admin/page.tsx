@@ -463,24 +463,30 @@ function Contenido({
 					>
 						{numero(c.con_fuente)}
 					</CifraBoton>
+					{/* A12: título, cifra, color y botón dicen lo mismo; la cifra grande
+					    es la que abre el botón ("No le sirvió" → esas respuestas). */}
 					{c.calificaciones < MINIMO_PARA_PORCENTAJE ? (
 						<CifraBoton
-							titulo="Le sirvió"
+							titulo="No le sirvió"
 							det={`Solo ${cuantas(c.calificaciones, "calificación", "calificaciones")}: pocos datos para un porcentaje`}
 						>
 							<small>Pocos datos</small>
 						</CifraBoton>
 					) : (
 						<CifraBoton
-							titulo="Le sirvió"
-							tono={(porcentaje(c.le_sirvio, c.calificaciones) ?? 0) < 60 ? "ojo" : "bien"}
-							de={`de ${numero(c.calificaciones)} (${porcentaje(c.le_sirvio, c.calificaciones)} %)`}
-							progreso={porcentaje(c.le_sirvio, c.calificaciones) ?? 0}
-							onVer={() => ver("no_le_sirvio")}
-							verTexto="Ver a quién no le sirvió →"
-							det={`Calificaron el ${textoPorcentaje(c.calificaciones, c.respuestas)} de las respuestas`}
+							titulo="No le sirvió"
+							tono={c.no_le_sirvio > 0 ? "ojo" : "neutro"}
+							de={`de ${numero(c.calificaciones)} (${porcentaje(c.no_le_sirvio, c.calificaciones)} %)`}
+							progreso={porcentaje(c.no_le_sirvio, c.calificaciones) ?? 0}
+							onVer={c.no_le_sirvio > 0 ? () => ver("no_le_sirvio") : undefined}
+							verTexto="Ver cuáles →"
+							det={`A ${numero(c.le_sirvio)} sí les sirvió${
+								c.calificaciones - c.le_sirvio - c.no_le_sirvio > 0
+									? ` y a ${numero(c.calificaciones - c.le_sirvio - c.no_le_sirvio)} a medias`
+									: ""
+							}. Calificaron el ${textoPorcentaje(c.calificaciones, c.respuestas)} de las respuestas.`}
 						>
-							{numero(c.le_sirvio)}
+							{numero(c.no_le_sirvio)}
 						</CifraBoton>
 					)}
 					<CifraBoton

@@ -2802,3 +2802,11 @@ html:has(.pnl) {
 .pnl-cifra > dd {
 	margin-top: auto;
 }
+
+/* A12: la tarjeta que solo informa (sin enlace) no reacciona al pasar. */
+.pnl div.pnl-tb-cifra:hover {
+	border-color: var(--p-linea);
+}
+.pnl div.pnl-tb-cifra.ojo:hover {
+	border-color: var(--p-ambar);
+}
