@@ -2827,3 +2827,40 @@ html:has(.pnl) {
 	font-weight: 400;
 	color: var(--p-tinta-2);
 }
+
+/* PQ-130: barras 1 a 5 de cada dimensión de la encuesta, con su conteo. */
+.pnl-escala {
+	display: grid;
+	grid-template-columns: repeat(5, minmax(0, 1fr));
+	gap: 4px;
+	align-items: end;
+	height: 76px;
+	margin-top: var(--p-esp-2);
+}
+.pnl-escala-col {
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-end;
+	align-items: center;
+	height: 100%;
+	min-width: 0;
+}
+.pnl-escala-col i {
+	display: block;
+	width: 70%;
+	min-height: 2px;
+	background: var(--p-marino);
+	border-radius: 3px 3px 0 0;
+}
+.pnl-escala-col b {
+	font-size: 13px;
+	font-weight: 600;
+	color: var(--p-tinta-2);
+}
+.pnl-escala-col small {
+	font-size: 13px;
+	color: var(--p-tinta-2);
+	border-top: 1px solid var(--p-linea);
+	width: 100%;
+	text-align: center;
+}

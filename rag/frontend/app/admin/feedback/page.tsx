@@ -3,14 +3,18 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
+	cuantas,
 	deCinco,
 	decimal,
+	medianaEscala,
+	MINIMO_PARA_PORCENTAJE,
 	descargarEncuestasCsv,
 	enlaceConversacion,
 	fechaHora,
 	mensajeError,
 	numero,
 	pedirEncuestas,
+	porcentaje,
 	textoLargo,
 	type Encuestas,
 	type FiltroEncuesta,
@@ -37,6 +41,82 @@ const DIMENSIONES = [
 ] as const;
 
 const POR_PAGINA = 10;
+
+/**
+ * PQ-130: una dimensión de la encuesta. Cifra principal: % que puso 4 o 5
+ * (Largo: adecuada / corta / larga), con la mediana y las barras 1 a 5 con su
+ * conteo; el promedio queda como dato secundario. Sin conteos (API vieja), el
+ * promedio como antes.
+ */
+function CifraEncuesta({
+	texto,
+	mide,
+	largo,
+	promedio,
+	conteos,
+}: {
+	texto: string;
+	mide: string;
+	largo: boolean;
+	promedio: number;
+	conteos?: number[];
+}) {
+	const n = conteos ? conteos.reduce((a, b) => a + b, 0) : 0;
+	let principal: React.ReactNode;
+	let det: string = mide;
+	if (!conteos) {
+		if (largo && promedio) det = `Promedio ${decimal(promedio)}; ${mide}`;
+		principal = !promedio ? (
+			<small>Sin datos</small>
+		) : largo ? (
+			<small>{textoLargo(promedio)}</small>
+		) : (
+			<>
+				{decimal(promedio)}
+				<small>&nbsp;de 5</small>
+			</>
+		);
+	} else if (!n) {
+		principal = <small>Sin datos</small>;
+	} else if (n < MINIMO_PARA_PORCENTAJE) {
+		principal = <small>Pocos datos</small>;
+		det = `${cuantas(n, "encuesta", "encuestas")}; ${mide}`;
+	} else if (largo) {
+		const [c1, c2, c3, c4, c5] = conteos;
+		principal = (
+			<>
+				{porcentaje(c3, n)}&nbsp;%<small>&nbsp;adecuada</small>
+			</>
+		);
+		det = `${porcentaje(c1 + c2, n)} % corta · ${porcentaje(c4 + c5, n)} % larga, de ${numero(n)}. Promedio ${decimal(promedio)}.`;
+	} else {
+		const altas = conteos[3] + conteos[4];
+		const med = medianaEscala(conteos);
+		principal = <>{porcentaje(altas, n)}&nbsp;%</>;
+		det = `de ${numero(n)} puso 4 o 5. Mediana ${med === null ? "—" : decimal(med)}; promedio ${decimal(promedio)}.`;
+	}
+	const max = conteos ? Math.max(1, ...conteos) : 1;
+	return (
+		<div className="pnl-cifra">
+			<dt>{texto}</dt>
+			<dd>
+				<span className="pnl-valor num">{principal}</span>
+				<span className="pnl-det">{det}</span>
+				{conteos && n ? (
+					<span className="pnl-escala" role="img" aria-label={`Notas de 1 a 5: ${conteos.join(", ")}`}>
+						{conteos.map((c, i) => (
+							<span key={i} className="pnl-escala-col">
+								<i style={{ height: `${Math.round((c / max) * 40)}px` }} />
+								<b className="num">{numero(c)}</b>
+								<small>{i + 1}</small>
+							</span>
+						))}
+					</span>
+				) : null}
+			</dd>
+		</div>
+	);
+}
 
 /**
  * Encuestas que se llenan al terminar una conversación (tono, largo,
@@ -139,35 +219,24 @@ export default function PaginaEncuestas() {
 
 			{datos ? (
 				<dl className="pnl-cifras pnl-cifras-5">
-					{DIMENSIONES.map((d) => {
-						const valor = datos.promedios[d.clave];
-						return (
-							<div className="pnl-cifra" key={d.clave}>
-								<dt>{d.texto}</dt>
-								<dd>
-									{!valor ? (
-										<span className="pnl-valor">
-											<small>Sin datos</small>
-										</span>
-									) : d.clave === "largo" ? (
-										// El largo no es "más es mejor": 3 es lo ideal (PQ-47).
-										<span className="pnl-valor">
-											<small>{textoLargo(valor)}</small>
-										</span>
-									) : (
-										<span className="pnl-valor num">
-											{decimal(valor)}
-											<small>&nbsp;de 5</small>
-										</span>
-									)}
-									<span className="pnl-det">
-										{d.clave === "largo" && valor ? `Promedio ${decimal(valor)}; ${d.mide}` : d.mide}
-									</span>
-								</dd>
-							</div>
-						);
-					})}
+					{DIMENSIONES.map((d) => (
+						<CifraEncuesta
+							key={d.clave}
+							texto={d.texto}
+							mide={d.mide}
+							largo={d.clave === "largo"}
+							promedio={datos.promedios[d.clave]}
+							conteos={datos.distribucion?.[d.clave]}
+						/>
+					))}
 				</dl>
+			) : null}
+			{datos?.distribucion ? (
+				<p className="pnl-nota">
+					La cifra grande es el porcentaje que puso 4 o 5 (en Largo, cuántas la vieron adecuada, corta o larga); el
+					promedio va aparte porque esconde respuestas opuestas. Con menos de {MINIMO_PARA_PORCENTAJE} encuestas se
+					muestra el conteo. Sin cuentas de práctica.
+				</p>
 			) : null}
 
 			<section className="pnl-bloque" aria-labelledby="t-encuestas">

@@ -183,6 +183,8 @@ export interface Encuestas {
 	page: number;
 	page_size: number;
 	promedios: { general: number; claridad: number; tono: number; largo: number; facilidad: number };
+	/** PQ-130: cuántas pusieron 1, 2, 3, 4 y 5 en cada dimensión. */
+	distribucion?: Record<"general" | "claridad" | "tono" | "largo" | "facilidad", number[]>;
 }
 
 export type FiltroEncuesta = "" | "buenas" | "malas" | "con_comentario";
@@ -559,6 +561,21 @@ export function textoLargo(n: number): string {
 	if (n < 2.5) return "Tirando a corta";
 	if (n <= 3.5) return "Adecuada";
 	return "Tirando a larga";
+}
+
+/** PQ-130: mediana de una escala 1-5 a partir de los conteos de cada nota. */
+export function medianaEscala(conteos: number[]): number | null {
+	const n = conteos.reduce((a, b) => a + b, 0);
+	if (!n) return null;
+	const valor = (pos: number) => {
+		let acumulado = 0;
+		for (let i = 0; i < conteos.length; i++) {
+			acumulado += conteos[i];
+			if (pos < acumulado) return i + 1;
+		}
+		return conteos.length;
+	};
+	return n % 2 ? valor((n - 1) / 2) : (valor(n / 2 - 1) + valor(n / 2)) / 2;
 }
 
 /** "3.4" → "3,4 de 5" (PQ-37). */

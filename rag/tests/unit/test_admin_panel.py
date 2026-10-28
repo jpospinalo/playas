@@ -473,6 +473,9 @@ def test_encuestas(cliente) -> None:
         "largo": 3.0,
         "facilidad": 3.0,
     }
+    # PQ-130: una puso 5 y otra 1: el promedio 3 lo esconde, la distribución no.
+    assert r["distribucion"]["general"] == [1, 0, 0, 0, 1]
+    assert r["distribucion"]["claridad"] == [0, 0, 0, 0, 0]
     assert r["items"][0]["claridad"] is None  # encuesta vieja, sin claridad
     primera = r["items"][0]
     assert (

@@ -471,6 +471,10 @@ class PanelEncuestasResponse(BaseModel):
     promedios: dict[str, float] = Field(
         ..., description="Promedio de 1 a 5 por dimensión (general, tono, largo, facilidad)"
     )
+    # PQ-130: el promedio esconde respuestas polarizadas: conteo de cada nota 1-5.
+    distribucion: dict[str, list[int]] = Field(
+        default_factory=dict, description="Cuántas encuestas pusieron 1, 2, 3, 4 y 5 por dimensión"
+    )
 
 
 class PanelConversacionResponse(BaseModel):

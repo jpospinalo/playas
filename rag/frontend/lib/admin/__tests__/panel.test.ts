@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
 	cambioConteo,
 	cambioTasa,
+	medianaEscala,
 	decimal,
 	diaMesCalendario,
 	fechaHora,
@@ -70,5 +71,14 @@ describe("recortar", () => {
 		const r = recortar(largo, 280);
 		expect(r.length).toBeLessThanOrEqual(281);
 		expect(r.endsWith("palabra…")).toBe(true);
+	});
+});
+
+describe("mediana de una escala 1 a 5 (PQ-130)", () => {
+	it("sale de los conteos de cada nota", () => {
+		// General 12/8/13/11/22 (n 66): mediana 3,5.
+		expect(medianaEscala([12, 8, 13, 11, 22])).toBe(3.5);
+		expect(medianaEscala([0, 0, 1, 0, 0])).toBe(3);
+		expect(medianaEscala([0, 0, 0, 0, 0])).toBeNull();
 	});
 });

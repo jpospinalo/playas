@@ -744,6 +744,9 @@ async def encuestas(
         return round(sum(valores) / len(valores), 1) if valores else 0.0
 
     promedios = {k: _promedio(k) for k in _DIMENSIONES}
+    distribucion = {
+        k: [sum(n[k] == v for _, _, n in filas) for v in range(1, 6)] for k in _DIMENSIONES
+    }
     if filtro == "buenas":
         filas = [x for x in filas if (x[2]["general"] or 0) >= 4]
     elif filtro == "malas":
@@ -773,6 +776,7 @@ async def encuestas(
         page=page,
         page_size=page_size,
         promedios=promedios,
+        distribucion=distribucion,
     )
 
 
