@@ -2665,3 +2665,52 @@ html:has(.pnl) {
 .pnl-nivel.nivel-A i {
 	background: var(--p-n-a);
 }
+
+/* J7 (A10): ningún texto se sale de su caja en anchos intermedios.
+   La cifra baja "de N (p %)" a la línea siguiente como un bloque, en vez de
+   salirse de la tarjeta; el tamaño se ajusta al ancho con clamp. */
+.pnl .pnl-tb-cifra {
+	min-width: 0;
+}
+.pnl-tb-valor {
+	white-space: normal;
+	font-size: clamp(30px, 1.6vw + 16px, 40px);
+	overflow-wrap: anywhere;
+}
+.pnl-tb-valor small {
+	display: inline-block;
+	white-space: nowrap;
+	max-width: 100%;
+}
+.pnl-tb-titulo,
+.pnl-tb-det,
+.pnl-tb-persona .nom,
+.pnl-tb-persona .cuanto {
+	min-width: 0;
+	overflow-wrap: anywhere;
+}
+/* El subrayado partido (cifra grande y "de N" chico) se cambia por el borde
+   de la tarjeta; solo "Ver …" se subraya. */
+.pnl .pnl-tb-cifra:hover .pnl-tb-valor,
+.pnl button.pnl-tb-cifra:hover .pnl-tb-valor {
+	text-decoration: none;
+}
+.pnl .pnl-tb-cifra:hover {
+	border-color: var(--p-marino);
+}
+.pnl .pnl-tb-cifra.ojo:hover {
+	border-color: var(--p-ambar-txt);
+}
+.pnl .pnl-tb-cifra:hover .pnl-tb-ir {
+	text-decoration: underline;
+	text-underline-offset: 3px;
+}
+/* Chips de varias líneas: radio moderado (no píldora) y el texto parte. */
+.pnl-estado {
+	border-radius: 14px;
+	min-width: 0;
+	white-space: normal;
+	overflow-wrap: anywhere;
+	text-align: left;
+	height: auto;
+}

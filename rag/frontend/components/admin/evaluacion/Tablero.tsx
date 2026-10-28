@@ -184,7 +184,7 @@ function Cifra({
 			</span>
 			<span className="pnl-tb-valor num">
 				{children}
-				{de ? <small> {de}</small> : null}
+				{de ? <>{" "}<small>{de}</small></> : null}
 			</span>
 			{progreso !== undefined ? (
 				<span className="pnl-tb-prog" aria-hidden="true">
@@ -459,7 +459,7 @@ export function CifraBoton({
 			</span>
 			<span className="pnl-tb-valor num">
 				{children}
-				{de ? <small> {de}</small> : null}
+				{de ? <>{" "}<small>{de}</small></> : null}
 			</span>
 			{progreso !== undefined ? (
 				<span className={tono === "ojo" ? "pnl-tb-prog ojo" : "pnl-tb-prog"} aria-hidden="true">
