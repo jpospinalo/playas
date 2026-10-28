@@ -37,13 +37,19 @@ describe("cambio frente al periodo anterior", () => {
 		expect(cambioConteo(10, null)).toBeNull();
 	});
 
-	it("conteos en %, tasas en puntos", () => {
-		expect(cambioConteo(482, 430)).toEqual({ direccion: "sube", texto: "12 %" });
-		expect(cambioConteo(50, 100)).toEqual({ direccion: "baja", texto: "50 %" });
-		expect(cambioConteo(5, 5)).toEqual({ direccion: "igual", texto: "igual" });
-		expect(cambioTasa(81, 78)).toEqual({ direccion: "sube", texto: "3 puntos" });
-		expect(cambioTasa(8, 9)).toEqual({ direccion: "baja", texto: "1 punto" });
-		expect(cambioTasa(null, 9)).toBeNull();
+	it("conteos por día y tasas en puntos, solo si superan el margen (PQ-128)", () => {
+		expect(cambioConteo(500, 300, 7, 7)).toEqual({ direccion: "sube", texto: "67 % por día" });
+		expect(cambioConteo(100, 300, 7, 7)).toEqual({ direccion: "baja", texto: "67 % por día" });
+		expect(cambioConteo(50, 50)).toEqual({ direccion: "igual", texto: "igual" });
+		// 244 en 6,4 días contra 225 en 7: dentro del margen.
+		expect(cambioConteo(244, 225, 6.4, 7)).toEqual({ direccion: "incierto", texto: "sin cambio claro" });
+		// Menos de 30 casos: nunca se afirma un cambio.
+		expect(cambioConteo(25, 5, 7, 7)?.direccion).toBe("incierto");
+		expect(cambioTasa(300, 400, 200, 400)).toEqual({ direccion: "sube", texto: "25 puntos" });
+		// 36/236 (15 %) contra 41/222 (18 %): p ≈ 0,36, sin cambio claro.
+		expect(cambioTasa(36, 236, 41, 222)).toEqual({ direccion: "incierto", texto: "sin cambio claro" });
+		expect(cambioTasa(13, 19, 13, 22)?.direccion).toBe("incierto");
+		expect(cambioTasa(5, 10, null, null)).toBeNull();
 	});
 });
 

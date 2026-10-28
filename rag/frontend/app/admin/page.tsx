@@ -8,6 +8,7 @@ import {
 	PERIODOS,
 	TEMAS_PANEL,
 	cambioConteo,
+	diasTranscurridos,
 	mensajeError,
 	cambioTasa,
 	cuantas,
@@ -18,6 +19,7 @@ import {
 	numero,
 	pedirResumen,
 	porcentaje,
+	tasaConBase,
 	textoPorcentaje,
 	tipoDocumento,
 	type FiltroPersona,
@@ -374,10 +376,15 @@ function Contenido({
 	const dias = datos.periodo.dias;
 	const c = datos.cifras;
 	const a = datos.anterior;
-	const pFuente = porcentaje(c.con_fuente, c.respuestas);
+	// PQ-129: el % solo con base suficiente; si no, el conteo y "pocos datos".
+	const pFuente = tasaConBase(c.con_fuente, c.respuestas);
 	const pFuenteAnt = a ? porcentaje(a.con_fuente, a.respuestas) : null;
-	const pSinResp = porcentaje(c.sin_respuesta_segura, c.respuestas);
+	const pSinResp = tasaConBase(c.sin_respuesta_segura, c.respuestas);
 	const pSinRespAnt = a ? porcentaje(a.sin_respuesta_segura, a.respuestas) : null;
+	const pNoSirvio = tasaConBase(c.no_le_sirvio, c.calificaciones);
+	const deBase = (n: number, p: number | null) => `de ${numero(n)}${p !== null ? ` (${p} %)` : n ? " · pocos datos" : ""}`;
+	// PQ-128: el periodo actual puede ir a medias; los conteos se comparan por día.
+	const diasActual = datos.periodo.dias ? (diasTranscurridos(datos.periodo.desde, datos.periodo.hasta) ?? dias) : dias;
 	const antes = `los ${dias} días anteriores`;
 
 	// J6-B: cada cifra abre su lista (la de "Pregunta por pregunta", ya filtrada).
@@ -421,7 +428,7 @@ function Contenido({
 						det={
 							a ? (
 								<Delta
-									cambio={cambioConteo(c.preguntas, a.preguntas)}
+									cambio={cambioConteo(c.preguntas, a.preguntas, diasActual, dias)}
 									mejorSiSube
 									sufijo={`${antes} (${numero(a.preguntas)})`}
 								/>
@@ -445,14 +452,14 @@ function Contenido({
 					<CifraBoton
 						titulo="Respondidas con fuente citada"
 						tono="bien"
-						de={`de ${numero(c.respuestas)}${pFuente !== null ? ` (${pFuente} %)` : ""}`}
-						progreso={pFuente ?? 0}
+						de={deBase(c.respuestas, pFuente)}
+						progreso={pFuente ?? undefined}
 						onVer={() => ver("con_fuente")}
 						verTexto="Ver cuáles →"
 						det={
 							a ? (
 								<Delta
-									cambio={cambioTasa(pFuente, pFuenteAnt)}
+									cambio={cambioTasa(c.con_fuente, c.respuestas, a.con_fuente, a.respuestas)}
 									mejorSiSube
 									sufijo={pFuenteAnt === null ? "antes" : `${pFuenteAnt} % antes`}
 								/>
@@ -465,40 +472,31 @@ function Contenido({
 					</CifraBoton>
 					{/* A12: título, cifra, color y botón dicen lo mismo; la cifra grande
 					    es la que abre el botón ("No le sirvió" → esas respuestas). */}
-					{c.calificaciones < MINIMO_PARA_PORCENTAJE ? (
-						<CifraBoton
-							titulo="No le sirvió"
-							det={`Solo ${cuantas(c.calificaciones, "calificación", "calificaciones")}: pocos datos para un porcentaje`}
-						>
-							<small>Pocos datos</small>
-						</CifraBoton>
-					) : (
-						<CifraBoton
-							titulo="No le sirvió"
-							tono={c.no_le_sirvio > 0 ? "ojo" : "neutro"}
-							de={`de ${numero(c.calificaciones)} (${porcentaje(c.no_le_sirvio, c.calificaciones)} %)`}
-							progreso={porcentaje(c.no_le_sirvio, c.calificaciones) ?? 0}
-							onVer={c.no_le_sirvio > 0 ? () => ver("no_le_sirvio") : undefined}
-							verTexto="Ver cuáles →"
-							det={`A ${numero(c.le_sirvio)} sí les sirvió${
-								c.calificaciones - c.le_sirvio - c.no_le_sirvio > 0
-									? ` y a ${numero(c.calificaciones - c.le_sirvio - c.no_le_sirvio)} a medias`
-									: ""
-							}. Calificaron el ${textoPorcentaje(c.calificaciones, c.respuestas)} de las respuestas.`}
-						>
-							{numero(c.no_le_sirvio)}
-						</CifraBoton>
-					)}
+					<CifraBoton
+						titulo="No le sirvió"
+						tono={c.no_le_sirvio > 0 ? "ojo" : "neutro"}
+						de={deBase(c.calificaciones, pNoSirvio)}
+						progreso={pNoSirvio ?? undefined}
+						onVer={c.no_le_sirvio > 0 ? () => ver("no_le_sirvio") : undefined}
+						verTexto="Ver cuáles →"
+						det={`A ${numero(c.le_sirvio)} sí les sirvió${
+							c.calificaciones - c.le_sirvio - c.no_le_sirvio > 0
+								? ` y a ${numero(c.calificaciones - c.le_sirvio - c.no_le_sirvio)} a medias`
+								: ""
+						}. Calificaron ${numero(c.calificaciones)} de ${numero(c.respuestas)} respuestas.`}
+					>
+						{numero(c.no_le_sirvio)}
+					</CifraBoton>
 					<CifraBoton
 						titulo="Sin respuesta segura"
 						tono={c.sin_respuesta_segura > 0 ? "ojo" : "neutro"}
-						de={`de ${numero(c.respuestas)}${pSinResp !== null ? ` (${pSinResp} %)` : ""}`}
+						de={deBase(c.respuestas, pSinResp)}
 						onVer={c.sin_respuesta_segura > 0 ? () => ver("sin_respuesta_segura") : undefined}
 						verTexto="Ver cuáles →"
 						det={
 							a ? (
 								<Delta
-									cambio={cambioTasa(pSinResp, pSinRespAnt)}
+									cambio={cambioTasa(c.sin_respuesta_segura, c.respuestas, a.sin_respuesta_segura, a.respuestas)}
 									mejorSiSube={false}
 									sufijo={pSinRespAnt === null ? "antes" : `${pSinRespAnt} % antes`}
 								/>
@@ -513,6 +511,13 @@ function Contenido({
 			<p className="pnl-desglose">
 				{desglose(c)}
 			</p>
+			{a ? (
+				<p className="pnl-nota">
+					Las flechas solo aparecen si el cambio supera el margen de error (95 %) y cada periodo tiene al menos 30
+					casos; las preguntas se comparan por día porque el periodo actual puede ir a medias. Los porcentajes se
+					muestran desde 20 casos.
+				</p>
+			) : null}
 
 
 			<div className="pnl-grid">

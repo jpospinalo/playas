@@ -191,6 +191,8 @@ export interface ResumenEjercicio {
 	no_validas: number;
 	por_nivel: Record<Ct, number>;
 	promedio_total: number;
+	/** PQ-135: promedio del total por nivel, con cuántas preguntas válidas. */
+	promedio_por_nivel?: Record<Ct, { n: number; promedio: number | null }>;
 	por_tipo_playa: { tipo: number; nombre: string; preguntas: number }[];
 	avance_evaluadores: {
 		evaluador: string;

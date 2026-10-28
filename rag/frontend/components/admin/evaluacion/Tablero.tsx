@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { type ReactNode, useEffect, useState } from "react";
-import { decimal, numero, porcentaje } from "@/lib/admin/panel";
+import { decimal, MINIMO_PARA_PORCENTAJE, numero, porcentaje } from "@/lib/admin/panel";
 import { NIVELES, RANGOS, type Ct, type EstadoPregunta, type ResumenEjercicio } from "@/lib/admin/evaluacion";
 import { TIPOS_PLAYA } from "@/lib/admin/cuentas";
 import { diaLargo, pedirCalendario } from "@/lib/admin/calendario";
@@ -79,12 +79,14 @@ export function Tablero({
 					>
 						{numero(e.con_diferencias)}
 					</Cifra>
-					<Cifra titulo="Promedio del puntaje total" det="Solo preguntas válidas" de="de 21">
+					{/* PQ-135: el total va de 6 a 21 y mezcla niveles: escala visible y promedio por nivel. */}
+					<Cifra titulo="Promedio del puntaje total" det={promedioPorNivel(resumen)} de="(escala 6 a 21)">
 						{decimal(resumen.promedio_total)}
 					</Cifra>
 					<Cifra
 						href={resumen.no_validas > 0 ? lista("estado=no_validas") : undefined}
 						titulo="No válidas"
+						de={`de ${numero(resumen.evaluadas)}`}
 						det="No cuentan para premios"
 						ir="Ver cuáles →"
 					>
@@ -120,11 +122,11 @@ export function Tablero({
 				</ul>
 			</Grupo>
 
-			<Grupo id="g-resultados" titulo="Resultados" sub="Solo preguntas válidas con calificación oficial">
+			<Grupo id="g-resultados" titulo="Resultados" sub="Cada gráfico dice sobre qué preguntas cuenta">
 				<div className="pnl-tb-dos">
 					<section className="pnl-bloque" aria-labelledby="t-niveles">
 						<h3 id="t-niveles">Casos por nivel</h3>
-						<p className="pnl-sub">Cada nivel con su color, el mismo en todo el panel.</p>
+						<p className="pnl-sub">Solo preguntas válidas con calificación oficial. Cada nivel con su color.</p>
 						<Barras
 							filas={(Object.keys(NIVELES) as Ct[]).map((k) => ({
 								texto: `Casos ${NIVELES[k].toLowerCase()}s`,
@@ -166,6 +168,19 @@ export function Grupo({ id, titulo, sub, children }: { id: string; titulo: strin
 			{children}
 		</section>
 	);
+}
+
+/** PQ-135: "Sencillo 11,2 (61) · Intermedio 14,0 (31) · Avanzado: pocos datos (3)". */
+function promedioPorNivel(resumen: ResumenEjercicio): string {
+	const pn = resumen.promedio_por_nivel;
+	if (!pn) return "Solo preguntas válidas";
+	const partes = (Object.keys(NIVELES) as Ct[]).map((k) => {
+		const { n, promedio } = pn[k];
+		if (!n) return `${NIVELES[k]}: sin preguntas`;
+		if (n < MINIMO_PARA_PORCENTAJE || promedio === null) return `${NIVELES[k]}: pocos datos (${numero(n)})`;
+		return `${NIVELES[k]} ${decimal(promedio)} (${numero(n)})`;
+	});
+	return `Solo válidas. Por nivel: ${partes.join(" · ")}`;
 }
 
 function Cifra({

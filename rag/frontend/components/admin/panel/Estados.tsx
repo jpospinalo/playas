@@ -100,7 +100,8 @@ export function EstadoCalificacion({ calificacion }: { calificacion: Calificacio
 	);
 }
 
-/** "Le sirvió" de un grupo: % con ícono, o "pocos datos" si hay menos de 5. */
+/** "Le sirvió" de un grupo con su base visible: "54 % de 181" o, con menos
+ * de `minimo`, el conteo "3 de 9 · pocos datos" (PQ-129). */
 export function EstadoSatisfaccion({
 	leSirvio,
 	calificaciones,
@@ -114,7 +115,7 @@ export function EstadoSatisfaccion({
 	if (calificaciones < minimo) {
 		return (
 			<span className="pnl-estado neutro">
-				Pocos datos: {calificaciones} {calificaciones === 1 ? "calificación" : "calificaciones"}
+				Le sirvió a {leSirvio} de {calificaciones}: pocos datos
 			</span>
 		);
 	}
@@ -123,7 +124,7 @@ export function EstadoSatisfaccion({
 	return (
 		<span className={`pnl-estado ${bajo ? "ojo" : "bien"}`}>
 			{bajo ? <IconoAviso /> : <IconoBien />}
-			{p}&nbsp;% le sirvió <span className="sr">de {calificaciones} calificaciones</span>
+			{p}&nbsp;% le sirvió, de {calificaciones}
 		</span>
 	);
 }
@@ -144,6 +145,8 @@ export function Delta({
 	// Sin periodo anterior (p. ej. "Todo") no se compara: no se muestra nada (PQ-69).
 	if (!cambio) return null;
 	if (cambio.direccion === "igual") return <>Igual que {sufijo}</>;
+	// PQ-128: dentro del margen de error no hay flecha ni color.
+	if (cambio.direccion === "incierto") return <>Sin cambio claro frente a {sufijo}</>;
 	const bueno = (cambio.direccion === "sube") === mejorSiSube;
 	return (
 		<>

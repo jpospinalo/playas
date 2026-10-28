@@ -1205,6 +1205,14 @@ async def resumen(
         "promedio_total": round(sum(o.oficial.total or 0 for o in validas) / len(validas), 1)
         if validas
         else 0,
+        # PQ-135: el promedio global mezcla niveles; va también por nivel con su n.
+        "promedio_por_nivel": {
+            ct: {
+                "n": len(xs := [o.oficial.total or 0 for o in validas if o.oficial.ct == ct]),
+                "promedio": round(sum(xs) / len(xs), 1) if xs else None,
+            }
+            for ct in ej.RANGOS_CV
+        },
         "por_tipo_playa": [
             {"tipo": t, "nombre": ej.TIPOS_PLAYA[t], "preguntas": por_tipo.get(t, 0)}
             for t in ej.TIPOS_PLAYA

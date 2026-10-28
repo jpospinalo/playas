@@ -7,6 +7,7 @@ import {
 	numero,
 	pedirResumen,
 	textoPorcentaje,
+	textoTasa,
 	type FiltroResultado,
 	type Resumen,
 } from "@/lib/admin/panel";
@@ -93,14 +94,14 @@ export default function PaginaOpiniones() {
 						<dt>Le sirvió</dt>
 						<dd>
 							<span className="pnl-valor num">{numero(c.le_sirvio)}</span>
-							<span className="pnl-det">{textoPorcentaje(c.le_sirvio, c.calificaciones)} de las opiniones</span>
+							<span className="pnl-det">{textoTasa(c.le_sirvio, c.calificaciones)} de las opiniones</span>
 						</dd>
 					</div>
 					<div className="pnl-cifra">
 						<dt>No le sirvió</dt>
 						<dd>
 							<span className="pnl-valor num">{numero(c.no_le_sirvio)}</span>
-							<span className="pnl-det">{textoPorcentaje(c.no_le_sirvio, c.calificaciones)} de las opiniones</span>
+							<span className="pnl-det">{textoTasa(c.no_le_sirvio, c.calificaciones)} de las opiniones</span>
 						</dd>
 					</div>
 					{/* Estrellas del chat del equipo con nota 3: así las tres partes suman el total (PQ-43). */}
@@ -111,7 +112,7 @@ export default function PaginaOpiniones() {
 								{numero(c.calificaciones - c.le_sirvio - c.no_le_sirvio)}
 							</span>
 							<span className="pnl-det">
-								{textoPorcentaje(c.calificaciones - c.le_sirvio - c.no_le_sirvio, c.calificaciones)} de
+								{textoTasa(c.calificaciones - c.le_sirvio - c.no_le_sirvio, c.calificaciones)} de
 								las opiniones
 							</span>
 						</dd>

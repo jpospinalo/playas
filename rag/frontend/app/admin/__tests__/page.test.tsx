@@ -96,17 +96,20 @@ describe("app/admin/page — resumen del panel", () => {
 		// J6-B: la cifra con su contexto, "312 de 385 (81 %)".
 		expect(screen.getByText("312")).toBeInTheDocument();
 		expect(screen.getAllByText(/de 385 \(81 %\)/).length).toBeGreaterThan(0);
-		expect(screen.getByText(/Subió 12/)).toBeInTheDocument();
-		// "Le sirvió" usa las respuestas como base (PQ-01): 141 / 385 = 37 %.
-		expect(screen.getByText(/Calificaron el 37/)).toBeInTheDocument();
+		// PQ-128: conteo por día (482 en 29,4 días contra 430 en 30) supera el margen;
+		// las tasas (81 % contra 78 %, 9 % contra 7 %) no: "sin cambio claro".
+		expect(screen.getByText(/Subió 14 % por día/)).toBeInTheDocument();
+		expect(screen.getAllByText(/Sin cambio claro/)).toHaveLength(2);
+		// "No le sirvió" dice cuántas respuestas se calificaron (PQ-01).
+		expect(screen.getByText(/Calificaron 141 de 385 respuestas/)).toBeInTheDocument();
 		// Desglose que suma (PQ-04).
 		expect(screen.getByText(/385 respuestas: 312 con fuente citada, 35 sin respuesta segura, 30 fuera de tema y 8 en que pidió aclarar/)).toBeInTheDocument();
 	});
 
-	it("con menos de 5 calificaciones dice 'pocos datos' en vez de un %", async () => {
+	it("con menos de 20 calificaciones dice el conteo y 'pocos datos' en vez de un % (PQ-129)", async () => {
 		render(<PanelResumen />);
 		const temas = await screen.findByRole("list", { name: "Preguntas por tema" });
-		expect(within(temas).getByText(/Pocos datos: 4 calificaciones/)).toBeInTheDocument();
+		expect(within(temas).getByText(/de 4: pocos datos/)).toBeInTheDocument();
 	});
 
 	it("muestra el texto de las preguntas como texto plano", async () => {

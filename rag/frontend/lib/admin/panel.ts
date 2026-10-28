@@ -192,8 +192,10 @@ export const TEMAS_PANEL = [
 
 export const SIN_RESPUESTA_SEGURA: Resultado[] = ["sin_evidencia", "sin_cita_valida", "sin_fuente_otro"];
 
-/** Por debajo de este número de casos un % engaña: se dice "pocos datos". */
-export const MINIMO_PARA_PORCENTAJE = 5;
+/** PQ-129: por debajo de este número de casos un % engaña (con 9 casos el
+ * margen va de 12 a 65 %): se muestra el conteo y "pocos datos". Único para
+ * todas las tasas del panel. */
+export const MINIMO_PARA_PORCENTAJE = 20;
 
 // ── Llamadas ───────────────────────────────────────────────────────────────
 
@@ -363,6 +365,17 @@ export function textoPorcentaje(parte: number, total: number): string {
 	return p === null ? "—" : `${p} %`;
 }
 
+/** PQ-129: el % solo con base suficiente; si no, "pocos datos". */
+export function tasaConBase(parte: number, total: number): number | null {
+	return total >= MINIMO_PARA_PORCENTAJE ? porcentaje(parte, total) : null;
+}
+
+/** `"54 %"` con base suficiente; `"pocos datos"` si no (PQ-129). */
+export function textoTasa(parte: number, total: number): string {
+	const p = tasaConBase(parte, total);
+	return p === null ? (total ? "pocos datos" : "—") : `${p} %`;
+}
+
 /** "25 de oct." → "25 oct": día y mes abreviado, sin "de" ni punto. */
 function sinPunto(s: string): string {
 	return s.replace(/\./g, "").replace(/ de /, " ");
@@ -396,28 +409,64 @@ export function fechaHora(iso: string): string {
 }
 
 export interface Cambio {
-	direccion: "sube" | "baja" | "igual";
+	/** "incierto": la diferencia cabe en el margen de error (PQ-128). */
+	direccion: "sube" | "baja" | "igual" | "incierto";
 	texto: string;
 }
 
+/** PQ-128: base mínima de cada periodo para afirmar un cambio. */
+export const MINIMO_PARA_COMPARAR = 30;
+/** |z| de una prueba bilateral al 95 %. */
+const Z_95 = 1.96;
+
 /**
- * Cambio frente al periodo anterior. Para conteos: porcentaje ("12 %"); para
- * tasas: puntos ("3 puntos"). Sin base anterior: `null` (se dice "sin datos
- * antes", nunca "+100 %").
+ * Cambio en un conteo frente al periodo anterior, comparando **promedio por
+ * día** (el periodo actual puede ir a medias: 6,4 días contra 7). Solo hay
+ * flecha si los dos conteos llegan a 30 y la diferencia supera el margen
+ * (prueba de razón de Poisson al 95 %); si no, "sin cambio claro".
  */
-export function cambioConteo(actual: number, anterior: number | null | undefined): Cambio | null {
-	if (anterior === null || anterior === undefined || anterior === 0) return null;
-	const p = Math.round(((actual - anterior) / anterior) * 100);
+export function cambioConteo(
+	actual: number,
+	anterior: number | null | undefined,
+	diasActual = 1,
+	diasAnterior = 1,
+): Cambio | null {
+	if (anterior === null || anterior === undefined || anterior === 0 || diasActual <= 0 || diasAnterior <= 0)
+		return null;
+	const ra = actual / diasActual;
+	const rb = anterior / diasAnterior;
+	const p = Math.round(((ra - rb) / rb) * 100);
 	if (p === 0) return { direccion: "igual", texto: "igual" };
-	return { direccion: p > 0 ? "sube" : "baja", texto: `${Math.abs(p)} %` };
+	const ee = Math.sqrt(actual / diasActual ** 2 + anterior / diasAnterior ** 2);
+	if (actual < MINIMO_PARA_COMPARAR || anterior < MINIMO_PARA_COMPARAR || Math.abs(ra - rb) <= Z_95 * ee)
+		return { direccion: "incierto", texto: "sin cambio claro" };
+	return { direccion: p > 0 ? "sube" : "baja", texto: `${Math.abs(p)} % por día` };
 }
 
-export function cambioTasa(actual: number | null, anterior: number | null): Cambio | null {
-	if (actual === null || anterior === null) return null;
-	const d = actual - anterior;
+/**
+ * Cambio en una tasa (x de n) frente al periodo anterior, en puntos. Flecha
+ * solo si las dos bases llegan a 30 y la prueba de dos proporciones da
+ * p < 0,05; si no, "sin cambio claro" (PQ-128).
+ */
+export function cambioTasa(xa: number, na: number, xb: number | null, nb: number | null): Cambio | null {
+	if (!na || xb === null || !nb) return null;
+	const pa = xa / na;
+	const pb = xb / nb;
+	const d = Math.round(pa * 100) - Math.round(pb * 100);
 	if (d === 0) return { direccion: "igual", texto: "igual" };
+	const pp = (xa + xb) / (na + nb);
+	const ee = Math.sqrt(pp * (1 - pp) * (1 / na + 1 / nb));
+	if (na < MINIMO_PARA_COMPARAR || nb < MINIMO_PARA_COMPARAR || !ee || Math.abs(pa - pb) <= Z_95 * ee)
+		return { direccion: "incierto", texto: "sin cambio claro" };
 	const n = Math.abs(d);
-	return { direccion: d > 0 ? "sube" : "baja", texto: `${n} ${n === 1 ? "punto" : "puntos"}` };
+	return { direccion: d > 0 ? "sube" : "baja", texto: `${n} ${n === 1 ? "punto" : "puntos"}` };
+}
+
+/** Días transcurridos de un periodo que puede ir a medias (hasta = ahora). */
+export function diasTranscurridos(desde: string | null, hasta: string): number | null {
+	if (!desde) return null;
+	const d = (new Date(hasta).getTime() - new Date(desde).getTime()) / 86_400_000;
+	return Number.isFinite(d) && d > 0 ? d : null;
 }
 
 /**
