@@ -1,4 +1,4 @@
-## DECRETO 1431 (octubre de 2024)
+## DECRETO 1431 (octubre 15 de 2024)
 
 "POR MEDIO DEL CUAL SE IMPLEMENTA EL REGLAMENTO DE PLAYAS DEL DISTRITO PORTUARIO, LOGÍSTICO, INDUSTRIAL, TURISTICO Y COMERCIAL DE TURBO- ANTIOQUIA"
 
@@ -30,7 +30,7 @@ Que Nuestra Carta Magna anuncia en el Artículo 211 que, "La ley señalará las 
 
 Que el Artículo 29º de la ley 1551. Modifica el artículo 91 de la Ley 136 de 1994, el cual quedará así: "Artículo 91. Funciones. Los alcaldes ejercerán las funciones que les asigna la Constitución, la ley, las ordenanzas, los acuerdos y las que le fueren delegadas por el Presidente de la República o gobernador respectivo". Además de las contenidas en el mencionado artículo.
 
-Que la Ley 1617 del febrero de 2013 por la cual se expide el Régimen para los Distritos Especiales establece:
+Que la Ley 1617 del 05 de febrero de 2013 por la cual se expide el Régimen para los Distritos Especiales establece:
 
 "Artículo 78. Atribuciones especiales. (...) A los distritos corresponderán las atribuciones de carácter especial y diferenciado en lo relacionado con el manejo, uso, preservación, recuperación, control y aprovechamiento de tales recursos y de los bienes de uso público o que forman parte del espacio público o estén afectados al uso público dentro del territorio de su respectiva jurisdicción, conforme a la Constitución y a la ley.
 
@@ -40,7 +40,7 @@ Artículo 128. Competencias en materia de playas. La atribución para otorgar pe
 
 Artículo 129. Atribuciones para su reglamentación, control y vigilancia. De acuerdo con las políticas y regulaciones de orden superior, las autoridades distritales tendrán atribuciones para reglamentar, dirigir y establecer los usos y actividades que podrán adelantarse en los caños, lagunas interiores, playas turísticas existentes dentro de la jurisdicción territorial."
 
-LEY 1883 DE 2018 (enero) por medio del cual se otorga la categoría de Distrito Portuario, Logístico, Industrial, Turístico y Comercial a Turbo -Antioquia.
+LEY 1883 DE 2018 (enero 24) por medio del cual se otorga la categoría de Distrito Portuario, Logístico, Industrial, Turístico y Comercial a Turbo -Antioquia.
 
 Que el artículo 12 de la Ley 1558 de 2012 le da autoridad a los Comités locales para la Organización de las Playas, integrados por el funcionario designado por cada una de las siguientes entidades: el Ministerio de Comercio, Industria y Turismo, Dirección General Marítima - DIMAR y la respectiva autoridad distrital o municipal, quienes tendrán como función la de establecer franjas en las zonas de playas destinadas al baño, al descanso, a la recreación, a las ventas de bienes de consumo por parte de los turistas y a la prestación de otros servicios relacionados con las actividades de aprovechamiento del tiempo libre que desarrollen los usuarios de las playas.
 
@@ -104,28 +104,28 @@ En lo referente a la delegación para celebrar y ejecutar contratos, esta se reg
 
 Que el Distrito Portuario, Logístico, Industrial, Turístico y Comercial de Turbo- Antioquia, es una entidad Distrital autónoma que establece las políticas y estrategias para promover el desarrollo y la productividad con ética pública, transparencia, satisfaciendo las necesidades básicas de sus ciudadanos para generar una mejor calidad de vida, garantizar los intereses y velar por la conveniencia de la población en su territorio.
 
-Que el Doctor Alejandro Abuchar González fue electo Alcalde Distrital de Turbo, el pasado de octubre 2023 por la mayoría de los "Turbeños" , para el Periodo Constitucional 2024 - 2027 y se posesiono el día de diciembre del año 2023, mediante Acta de Posesión de la misma fecha, tal como consta en el acta de la misma fecha emanada por la Notaria Unica del Distrito de Turbo.
+Que el Doctor Alejandro Abuchar González fue electo Alcalde Distrital de Turbo, el pasado 29 de octubre 2023 por la mayoría de los "Turbeños" , para el Periodo Constitucional 2024 - 2027 y se posesiono el día 30 de diciembre del año 2023, mediante Acta de Posesión de la misma fecha, tal como consta en el acta de la misma fecha emanada por la Notaria Unica del Distrito de Turbo.
 
-Que, en el marco del Plan de Desarrollo Distrital, "Turbo, Puerto de Esperanza y Vida" adoptado mediante el Acuerdo No. 014 del de mayo, busca a través de su capítulo Estratégico, Economías Fuertes, Turismo y Puertos del sector Estratégico Desarrollo Económico sostenible del programa Turbo de Cara al Mar.
+Que, en el marco del Plan de Desarrollo Distrital, "Turbo, Puerto de Esperanza y Vida" adoptado mediante el Acuerdo No. 014 del 31 de mayo, busca a través de su capítulo Estratégico, Economías Fuertes, Turismo y Puertos del sector Estratégico Desarrollo Económico sostenible del programa Turbo de Cara al Mar.
 
-LEY 1558 DE 2012 (Julio) Por la cual se modifica la Ley 300 de 1996 -Ley General de Turismo, la Ley 1101 de 2006 y se dictan otras disposiciones.
+LEY 1558 DE 2012 (Julio 10) Por la cual se modifica la Ley 300 de 1996 -Ley General de Turismo, la Ley 1101 de 2006 y se dictan otras disposiciones.
 
 Artículo 12. Créanse los Comités locales para la Organización de las Playas, integrados por el funcionario designado por cada una de las siguientes entidades: el Ministerio de Comercio, Industria y Turismo, Dirección General Marítima - Dimar, y la respectiva autoridad distrital o municipal, quienes tendrán como función la de establecer franjas en las zonas de playas destinadas al baño, al descanso, a la recreación, a las ventas de bienes de consumo por parte de los turistas y a la prestación de otros servicios relacionados con las actividades de aprovechamiento del tiempo libre que desarrollen los usuarios de las playas.
 
 El Gobierno Nacional reglamentará el funcionamiento de estos Comités.
 
-Que el Decreto 1766 del de agosto de 2013 por el cual se reglamenta el funcionamiento de los Comités Locales para la Organización de las Playas de que trata el artículo 12 de la Ley 1558 de 2012. Establece: ARTÍCULO 2. "IDENTIFICACIÓN DE LAS ZONAS DE PLAYAS. Para la organización de las playas, el Comité deberá identificar y delimitar previamente las siguientes zonas, de acuerdo con las características de cada playa.
+Que el Decreto 1766 del 16 de agosto de 2013 por el cual se reglamenta el funcionamiento de los Comités Locales para la Organización de las Playas de que trata el artículo 12 de la Ley 1558 de 2012. Establece: ARTÍCULO 2. "IDENTIFICACIÓN DE LAS ZONAS DE PLAYAS. Para la organización de las playas, el Comité deberá identificar y delimitar previamente las siguientes zonas, de acuerdo con las características de cada playa.
 
 En mérito de lo anterior este despacho,
 
 ## DECRETA:
 
-## CAPITULO.
+## CAPITULO 1.
 OBJETO, FINALIDAD, PRINCIPIOS Y ÁMBITO DE APLICACIÓN
 
 Artículo 1. Objeto: Este Decreto tiene como objeto regular el uso turístico y comercial de las playas del Distrito de Turbo - Antioquia, implementando medidas de coordinación y control de las actividades relacionadas con la recreación y ocio, las actividades económicas, el horario de uso de las zonas de aguas y playas marítimas, afianzando los procedimientos y medidas adoptadas para garantizar estándares de seguridad marítima integral de acuerdo con la normatividad vigente, la seguridad de la vida humana en el mar, la protección, la preservación de los litorales y la prevención de la contaminación del medio ambiente marino costero.
 
-Artículo 2. Finalidad: La finalidad de este decreto es organizar económicas y las relacionadas con la recreación, ocio y de esparcimiento, así como las actividades de protección, la integridad del espacio público, por su destinación al uso común, el cual prevalece sobre el interés particular en las playas del Distrito de Turbo - Antioquia, regulando la utilización del suelo en defensa del interés común, implementado medidas que garanticen la protección y la prevención contaminación de los litorales.
+Artículo 2. Finalidad: La finalidad de este decreto es organizar las actividades económicas y las relacionadas con la recreación, ocio y de esparcimiento, así como las actividades de protección, la integridad del espacio público, por su destinación al uso común, el cual prevalece sobre el interés particular en las playas del Distrito de Turbo - Antioquia, regulando la utilización del suelo en defensa del interés común, implementado medidas que garanticen la protección y la prevención contaminación de los litorales.
 
 ## Artículo 3.
 Principios Rectores:
@@ -134,25 +134,35 @@ Principios Rectores:
 - 3.2. Principio de Alineación: Todos los actores vinculados o conexos a la realización de actividades de recreación, ocio y económicas en las playas del Distrito de TurboAntioquia, propenderán por el logro de los objetivos propuestos en el artículo 1 del presente Decreto; la integración y la sinergia operativa se convertirá entonces en una sinergia estratégica, donde las autoridades competentes en cabeza de la Administración Distrital, el sector privado, la academia y las comunidades mismas, potencializaran el desarrollo sostenible de las playas, la conservación, preservación, protección del medio ambiente marino-costero, y los estándares de seguridad integral marítima
 - 3.3. Principio de Sinergia: Una vez lograda la integración, la alineación, la acción conjunta de cada uno de los actores desde sus propias responsabilidades y roles, generará un resultado superior al que cada uno por separado puede lograr, apuntando a la sincronización organizacional que fomente el cumplimiento de altos estándares de calidad desde el control y la regulación.
 
-Artículo 4. Ámbito de aplicación: Este Decreto se aplicará a todas las playas del Distrito Portuario, Logístico, Industrial, Turístico y Comercial de Turbo- Antioquia, con el objetivo proyectos turísticos sustentables y sostenibles, para el fortalecimiento del turismo en las siguientes playas:
+Artículo 4. Ámbito de aplicación: Este Decreto se aplicará a todas las playas del Distrito Portuario, Logístico, Industrial, Turístico y Comercial de Turbo- Antioquia, con el objetivo de realizar proyectos turísticos sustentables y sostenibles, para el fortalecimiento del turismo en las siguientes playas:
+
+- Playa Dulce – Urbana
+- Playa Punta Yarumal – Rural
+- Playa Piedrecitas - Rural
+- Playa Camerún - Rural
+- Playa La Martina - Rural
+- Playa Punta de Piedra - Rural
+- Playa Tie – Rural
+- Playa Puerto Cesar - Rural
+- Playa Puerto Voy - Rural
 
 ## CAPITULO II REQUISITOS DE SOSTENIBILIDAD
 
-Artículo 5. Requisitos legales: El Comité Local para la Organización de las Playas (CLOP) del Distrito Portuario, Logístico, Industrial, Turístico y Comercial de TurboAntioquia, implementará y mantendrá un procedimiento documentado de cada playa tener acceso a la información, identificar y evaluar periódicamente el cumplimiento de la legislación que le sea en los aspectos turísticos, ambientales, socioculturales, económicos y de seguridad.
+Artículo 5. Requisitos legales: El Comité Local para la Organización de las Playas (CLOP) del Distrito Portuario, Logístico, Industrial, Turístico y Comercial de TurboAntioquia, implementará y mantendrá un procedimiento documentado de cada playa tener acceso a la información, identificar y evaluar periódicamente el cumplimiento de la legislación que le sea aplicable, en los aspectos turísticos, ambientales, socioculturales, económicos y de seguridad.
 
 Artículo 6. Sistema de Gestión para la Sostenibilidad: El Comité Local para la Organización de las Playas del Distrito Portuario, Logístico, Industrial, Turístico y Comercial de Turbo - Antioquia, gestionará el diseño e implementación de un plan de sostenibilidad en cada una de las playas para promover el equilibrio entre el desarrollo económico, la conservación del medio ambiente y la participación social, cumpliendo los requisitos mínimos establecidos por la ley manteniendo evidencia para demostrar el cumplimiento de los mismos.
 
-- 6.1. Política de sostenibilidad: Se contará con una política de sostenibilidad, la cual estará diseñada de manera participativa y sin restricciones de disponibilidad al público en general, la cual será divulgada a las organizaciones públicas, privadas y la
-- 6.2. Programas de gestión para la sostenibilidad: Se diseñarán, implementarán y mantendrán programas definan como mínimo objetivos, recursos, responsables, Plazos e indicadores para su logro y seguimiento, teniendo en cuenta lo siguiente:
-- Identificar cuáles de sus actividades y servicios pueden generar impactos ambientales, socioculturales o económicos significativos y realizar una evaluación que permita determinar las prioridades de actuación, en el diseño de los programas.
+- 6.1. Política de sostenibilidad: Se contará con una política de sostenibilidad, la cual estará diseñada de manera participativa y sin restricciones de disponibilidad al público en general, la cual será divulgada a las organizaciones públicas, privadas y la comunidad local.
+- 6.2. Programas de gestión para la sostenibilidad: Se diseñarán, implementarán y mantendrán programas que definan como mínimo objetivos, actividades, metas, recursos, responsables, Plazos e indicadores para su logro y seguimiento, teniendo en cuenta lo siguiente:
+- 6.2.1. Identificar cuáles de sus actividades y servicios pueden generar impactos ambientales, socioculturales o económicos significativos y realizar una evaluación que permita determinar las prioridades de actuación, en el diseño de los programas.
 - 6.2.2. Basado en esta información, diseñar, implementar y mantener objetivos y metas cuantificables, alcanzables y coherentes con la política de sostenibilidad.
 - 6.2.3. Prevenir impactos negativos y maximizar los positivos, sin comprometer la sostenibilidad de las playas y los ecosistemas marinos en el Distrito de Turbo-Antioquia.
 - 6.2.4. Diseñar un sistema de monitoreo y seguimiento para los programas, objetivos y metas.
 
-- 6.3. Información y sensibilización: Se diseñará, implementará y mantendrá de información y sensibilización para visitantes y turistas, orientado a ejecutar, promover y difundir en ellos prácticas adecuadas que contribuyan con el logro de la política de sostenibilidad, los objetivos y las metas. Esta información debe estar disponible, al menos en español e inglés y desplegada en señalización, a través de comunicación, o al menos en medios electrónicos ya sea página web o aplicativo móvil y sistema braille.
+- 6.3. Información y sensibilización: Se diseñará, implementará y mantendrá un programa de información y sensibilización para visitantes y turistas, orientado a ejecutar, promover y difundir en ellos prácticas adecuadas que contribuyan con el logro de la política de sostenibilidad, los objetivos y las metas. Esta información debe estar disponible, al menos en español e inglés y desplegada en señalización, a través de medios de comunicación, o al menos en medios electrónicos ya sea página web o aplicativo móvil y sistema braille.
 - 6.4. Documentación: La documentación incluirá la política, los objetivos, las metas y los programas de sostenibilidad, así como los procedimientos y registros requeridos en esta norma. Esta información debe estar codificada e incluir como mínimo: fecha, tipo, programa y criterio de la norma al que corresponde, puede estar en cualquier formato o tipo de medio.
-- 6.5. Mejora continua: El plan de sostenibilidad se evaluará semestralmente, planear, ejecutar, implementar, mantener acciones estratégicas encaminadas a su mantenimiento y mejoramiento, identificando los factores que han impedido el alcance de los objetivos.
-- 6.6. Capacitación y entrenamiento: las personas, organizaciones y entidades involucradas y seguimiento del plan de sostenibilidad, recibirán la capacitación y el entrenamiento necesarios para garantizar el buen desempeño de este sistema. Se deben mantener registros de las actividades de capacitación.
+- 6.5. Mejora continua: El plan de sostenibilidad se evaluará semestralmente, para planear, ejecutar, implementar, mantener acciones estratégicas encaminadas a su mantenimiento y mejoramiento, identificando los factores que han impedido el alcance de los objetivos.
+- 6.6. Capacitación y entrenamiento: las personas, organizaciones y entidades involucradas en la formulación, funcionamiento y seguimiento del plan de sostenibilidad, recibirán la capacitación y el entrenamiento necesarios para garantizar el buen desempeño de este sistema. Se deben mantener registros de las actividades de capacitación.
 
 ## CAPÍTULO III.
 CRITERIOS PARA LA ZONIFICACIÓN
@@ -175,11 +185,11 @@ Parágrafo 1°: En esta zona queda prohibida la práctica de actividades subacu�
 
 Parágrafo 2°: Se puede prescindir de esta zona en los sectores que se restrinja el uso para deportes náuticos sin motor.
 
-7.5. Áreas de acceso para naves. Las áreas de acceso para naves y/o embarcaciones en cada una de las playas serán las habilitadas y autorizadas por la Capitanía de Puerto de Urabá y del Darién - CP.
+7.5. Áreas de acceso para naves. Las áreas de acceso para naves y/o embarcaciones en cada una de las playas serán las habilitadas y autorizadas por la Capitanía de Puerto de Urabá y del Darién - CP08.
 
-Parágrafo 1°: Se podrán suprimir los canales públicos de ingreso y salida de naves y/o embarcaciones en las playas que cuenten con embarcaderos habilitados Autoridad Marítima Nacional.
+Parágrafo 1°: Se podrán suprimir los canales públicos de ingreso y salida de naves y/o embarcaciones en las playas que cuenten con embarcaderos habilitados por la Autoridad Marítima Nacional.
 
-Artículo 8. Zonificación de playas: Para establecer y delimitar las franjas a las que hace referencia el artículo 2 del Decreto 1766 del de agosto de 2013 en las zonas de playa destinadas al baño, al descanso, a la recreación, a las ventas de bienes de consumo por parte de los turistas, y a la prestación de otros servicios relacionados con las actividades turísticas, de recreación, ocio y económicas que desarrollen los usuarios en cada una de las playas del Distrito Portuario, Logístico, Industrial, Turístico y Comercial de Turbo- Antioquia, se dará cumplimiento a las medidas particulares que sean adoptadas por consenso en el Comité Local para la Organización de las Playas del Distrito Portuario, Logístico. Industrial, Turístico y Comercial de Turbo- Antioquia consignadas en las actas correspondientes, y buscando, en la medida de lo posible, establecer las siguientes zonas:
+Artículo 8. Zonificación de playas: Para establecer y delimitar las franjas a las que hace referencia el artículo 2 del Decreto 1766 del 16 de agosto de 2013 en las zonas de playa destinadas al baño, al descanso, a la recreación, a las ventas de bienes de consumo por parte de los turistas, y a la prestación de otros servicios relacionados con las actividades turísticas, de recreación, ocio y económicas que desarrollen los usuarios en cada una de las playas del Distrito Portuario, Logístico, Industrial, Turístico y Comercial de Turbo- Antioquia, se dará cumplimiento a las medidas particulares que sean adoptadas por consenso en el Comité Local para la Organización de las Playas del Distrito Portuario, Logístico. Industrial, Turístico y Comercial de Turbo- Antioquia consignadas en las actas correspondientes, y buscando, en la medida de lo posible, establecer las siguientes zonas:
 
 8.1. Zona de Servicios Turísticos: Franja inmediata y paralela a la zona de transición, ubicada en la zona de material consolidado destinada al uso comercial y de servicios supeditada a que el área y espacio disponible lo permitan, según sea aplicable.
 
@@ -187,10 +197,12 @@ Artículo 8. Zonificación de playas: Para establecer y delimitar las franjas a 
 - 8.3. Zona de transición: Franja inmediata y paralela a la zona de reposo, en suelo no consolidado, tierra adentro. Existe solo si las condiciones y dimensiones de la playa lo permiten. En esta zona solo se permiten actividades temporales, deportivas y culturales y está supeditada a que el área y espacio disponible lo permitan. Se pueden instalar mobiliarios removibles que faciliten la práctica deportiva y la realización de eventos turísticos, deportivos, recreativos y culturales.
 - 8.4. Zona de reposo: Franja inmediata y paralela a la zona activa, en suelo no consolidado, tierra adentro. Dedicada al reposo de los bañistas, exclusivamente. Se permitirá mobiliario apto para la comodidad, seguridad y descanso de los bañistas.
 - 8.5. Zona activa: Franja de arena más próxima a la orilla de la playa, en suelo no consolidado, tierra adentro. Dedicada para la circulación de los bañistas, exclusivamente. Esa zona debe permanecer libre en toda su longitud para favorecer la cómoda inmersión y la circulación longitudinal de los bañistas.
-- 8.6. Zona de bañista: Franja inmediata y paralela a la zona activa, que se inicia desde la línea de marea más alta sobre la playa, hasta el límite en distancia y profundidad mar adentro, que garantice la seguridad de los bañistas. Dedicada exclusivamente para nada y permanencia de los bañistas dentro del mar. El destino turístico de playa debe delimitar y sustentar las extensiones asignadas a esta zona, de manera que se garantice la seguridad de los bañistas, teniendo en cuenta las condiciones propias de cada playa tales como profundidad, longitud, ecosistemas marino-costeros, corrientes, obras de ingeniería oceánica, artefactos hundidos, entre otros. Debe estar delimitada
+- 8.6. Zona de bañista: Franja inmediata y paralela a la zona activa, que se inicia desde la línea de marea más alta sobre la playa, hasta el límite en distancia y profundidad mar adentro, que garantice la seguridad de los bañistas. Dedicada exclusivamente para nada y permanencia de los bañistas dentro del mar. El destino turístico de playa debe delimitar y sustentar las extensiones asignadas a esta zona, de manera que se garantice la seguridad de los bañistas, teniendo en cuenta las condiciones propias de cada playa tales como profundidad, longitud, ecosistemas marino-costeros, corrientes, obras de ingeniería oceánica, artefactos hundidos, entre otros. Debe estar delimitada por boyas.
 - 8.7. Área de acceso para naves: Espacio longitudinal ubicado en la zona activa, del mismo ancho de esta, destinado al ingreso y salida de naves utilizadas para la práctica de deportes náuticos, pudiendo existir más de una sobre una misma playa. El Comité Local para la Organización de Playas, identificará la longitud y cantidad de áreas de acceso requeridas por cada playa.
 - 8.8. Zona para deportes náuticos: Franja inmediata y paralela a la zona de bañistas, mar adentro, destinado para la práctica de actividades acuáticas donde el usuario tiene contacto permanente con el agua, tales como motonáutica, gusanos, surf, kayak, buceo a pulmón, buceo autónomo entre otros. En el destino turístico de playa se deben definir los deportes náuticos que se pueden practicar en esta zona, teniendo en cuenta las condiciones propias de cada playa, tales como profundidad, longitud, ecosistemas marino-costeros, corrientes, obras de ingeniería costera, artefactos hundidos, tipo de equipos de la práctica deportiva (con motor y sin motor), entre otros, de manera que se garantice la seguridad de los usuarios. Debe estar delimitada por boyas.
 - 8.9. Zona de tránsito de embarcaciones: Franja inmediata y paralela a la zona de deportes náuticos, mar adentro, destinada para el tránsito de embarcaciones No se permite el uso de esta zona por parte de bañistas, ni la práctica de deportes náuticos.
+
+![Image](<./Por medio del cual se implementa el Reglamento de Playas del Distrito Portuario, Logístico, Industrial, Turístico y Comercial de Turbo – Antioquia/assets/image_000032_c1eb91a7f63ae78b3bfb6d6a8dc3fff839947407a8e94379bed532ffe36377b0.png>)
 
 Ordenamiento de playas (Tomado de la Norma Ténica Sectorial NTS-TS 001-2)
 
@@ -201,9 +213,19 @@ IDENTIFICACIÓN Y DELIMITACIÓN DE PLAYAS DE USO TURISTICO.
 
 Articulo 9. Definición, identificación y delimitación de playas de uso turistico: Las playas con vocación turística del Distrito son las identificadas y adoptadas por consenso en las reuniones celebradas por el Comité Local para la Organización de las Playas de Turbo, de acuerdo a lo consignado en las actas correspondientes.
 
-Artículo 10. Playa de uso turístico: Se entiende como playas de uso turístico, aquellas que sean identificadas y adoptadas por consenso en las reuniones que celebre el Comité Local para la Organización de las Playas del Distrito Portuario, Logístico, Industrial, Turístico y Comercial de Turbo- Antioquia con posterioridad a la entrada en vigencia del presente Decreto, decisión que deberá quedar consignada y soportada en la respectiva acta, de acuerdo a lo establecido en el artículo 7º del Decreto 1766 del de agosto de 2013. Estas se adoptarán luego de los estudios ténicos que den muestra de dicha vocación.
+Artículo 10. Playa de uso turístico: Se entiende como playas de uso turístico, aquellas que sean identificadas y adoptadas por consenso en las reuniones que celebre el Comité Local para la Organización de las Playas del Distrito Portuario, Logístico, Industrial, Turístico y Comercial de Turbo- Antioquia con posterioridad a la entrada en vigencia del presente Decreto, decisión que deberá quedar consignada y soportada en la respectiva acta, de acuerdo a lo establecido en el artículo 7º del Decreto 1766 del 16 de agosto de 2013. Estas se adoptarán luego de los estudios ténicos que den muestra de dicha vocación.
 
 Artículo 11. Playas Turísticas del Distrito Portuario, Logístico, Industrial, Turístico y Comercial de Turbo- Antioquia: Las playas del Distrito Portuario, Industrial, Turístico y Comercial de Turbo- Antioquia que han sido adoptadas e identificadas inicialmente como prioritarias para la implementación a corto plazo del ordenamiento requerido para la realización de actividades turísticas, recreativas, ocio y económicas son:
+
+- Playa Dulce - Urbana
+- Playa Punta Yarumal - Rural
+- Playa Piedrecitas - Rural
+- Playa Camerún - Rural
+- Playa La Martina - Rural
+- Playa Punta de Piedra - Rural
+- Playa Tie – Rural
+- Playa Puerto Cesar - Rural
+- Playa Puerto voy - Rural
 
 Parágrafo 1 °: La inclusión de nuevas playas se hará de manera gradual conforme al ordenamiento territorial y según su identificación por parte del Comité Local para la Organización de Playas.
 
@@ -266,7 +288,7 @@ Parágrafo 2°- horario: en las zonas de playa: Activas, Reposo y Transición pa
 
 De 10:00 a 22:00 horas.
 
-Parágrafo 3° para los establecimientos de comercio que no estén inmersos dentro de las zonas de playa: Activas, Reposo y Transición se regirá por el decreto 009 del de enero de 2024.
+Parágrafo 3° para los establecimientos de comercio que no estén inmersos dentro de las zonas de playa: Activas, Reposo y Transición se regirá por el decreto 009 del 01 de enero de 2024.
 
 Parágrafo 4 °: Horario especial: Se tendrá en consideración un horario especial para los eventos masivos - el cual será determinado por la Secretaría de Gobierno,
 
@@ -301,16 +323,16 @@ Las actividades de preparación de cualquier tipo de alimento, según lo definid
 
 Según la zonificación de las playas se establecen las siguientes prohibiciones:
 
-- a. Zona de servicios turísticos: Realización de actividades comerciales por personas ajenas a las vinculadas en las agremiaciones legalmente constituidas y de acuerdo a y concesiones otorgados por las autoridades competentes; parqueo de automotores; procesamiento, preparación y comercialización de pescados y cualquier tipo de alimento; actividades deportivas, recreativas o culturales.
-- b. Zona de transición: Instalación de mobiliarios permanentes; ventas ambulantes, actividades de reposo; parqueo automotores; servicios turísticos; procesamiento, preparación y comercialización de pescados y cualquier tipo de alimento.
+- a. Zona de servicios turísticos: Realización de actividades comerciales por personas ajenas a las vinculadas en las agremiaciones legalmente constituidas y de acuerdo a los permisos y concesiones otorgados por las autoridades competentes; parqueo de automotores; procesamiento, preparación y comercialización de pescados y cualquier tipo de alimento; actividades deportivas, recreativas o culturales.
+- b. Zona de transición: Instalación de mobiliarios permanentes; ventas ambulantes, actividades de reposo; parqueo de automotores; servicios turísticos; procesamiento, preparación y comercialización de pescados y cualquier tipo de alimento.
 - c. Zona de reposo: Cualquier actividad distinta al reposo de los bañistas; parqueo de automotores; circulación e instalación de mobiliarios permanentes; actividades deportivas, recreativas o culturales; procesamiento, preparación y comercialización de pescados y cualquier tipo de alimento.
 - d. Zona activa: Colocación de cualquier tipo de elemento, independiente de sus características o cual fuere la finalidad de su colocación; venta de productos o servicios; consumo de alimentos y bebidas; amueblamiento o infraestructura en la totalidad de su longitud; parqueo de automotores; actividades deportivas, recreativas o culturales;
 
 procesamiento, preparación y comercialización de pescados y cualquier tipo de alimento.
 
-- Zona de bañistas: Cualquier actividad distinta al nado y permanencia de los mar; tránsito y permanencia cualquier de embarcaciones/artefactos navales como lanchas, kayaks, estructuras inflables con fines de explotación comercial, bicicletas marinas, motos marinas, lanchas, gusanos; reparación, tanqueo y/o mantenimiento de embarcaciones/artefactos navales.
-- Zona de acceso para naves: Cualquier actividad distinta al ingreso y salida de naves, uso por parte de bañistas y práctica de deportes náuticos
-- Zona de deportes náuticos: Presencia de bañistas y cualquier otra actividad distinta a las relacionadas con recreación náutica; nado y permanencia de bañistas; reparación, tanqueo y/o mantenimiento de embarcaciones/artefactos navales.
+- e. Zona de bañistas: Cualquier actividad distinta al nado y permanencia de los bañistas dentro del mar; tránsito y permanencia de cualquier tipo de embarcaciones/artefactos navales como lanchas, kayaks, estructuras inflables con fines de explotación comercial, bicicletas marinas, motos marinas, lanchas, gusanos; reparación, tanqueo y/o mantenimiento de embarcaciones/artefactos navales.
+- f. Zona de acceso para naves: Cualquier actividad distinta al ingreso y salida de naves, uso por parte de bañistas y práctica de deportes náuticos
+- g. Zona de deportes náuticos: Presencia de bañistas y cualquier otra actividad distinta a las relacionadas con recreación náutica; nado y permanencia de bañistas; reparación, tanqueo y/o mantenimiento de embarcaciones/artefactos navales.
 - h. Zona para el tránsito de embarcaciones: Cualquier actividad distinta al tránsito de embarcaciones, tales como el uso por parte de bañistas y práctica de deportes náuticos.
 
 ## CAPÍTULO VI.
@@ -333,7 +355,7 @@ Se deberá diseñar para cada playa turística un plan de monitoreo para evaluar
 - g. La Alcaldía del Distrito de Turbo en articulación con la autoridad ambiental implementarán acciones para el mantenimiento de la calidad del material constitutivo de la playa, que incluya mediciones puntuales antes y después de las temporadas de invierno, para cuantificar los posibles contaminantes en la playa, de acuerdo a lo establecido en la normativa legal vigente o normas técnicas sectoriales existentes. (Corpourabá)
 - h. En caso de existir descargas puntuales de contaminación o aguas pluviales, que puedan generar impactos negativos en las áreas adyacentes a la playa, las autoridades de competencia en la playa, identificarán s ubicación y su caracterización, promoviendo ante los responsables las acciones para su control.
 - i. Las autoridades competentes, en cabeza de la Alcaldía de Turbo-Antioquia, deberán diseñar e implementar acciones para la prevención y mitigación de impactos ambientales sobre los ecosistemas marino-costeros, de acuerdo a la normatividad legal vigente o normas técnicas sectoriales existentes.
-5. jEn la playa no se deberá elaborar, comercializar ni consumir especies o productos derivados de flora y fauna amenazados o vedados por la ley, así como tampoco ejecutar o apoyar actividades encaminadas a la colección y tráfico de especies animales o vegetales que no cuenten con los permisos y licencias respectivas otorgadas por las autoridades ambientales competentes.
+- j. En la playa no se deberá elaborar, comercializar ni consumir especies o productos derivados de flora y fauna amenazados o vedados por la ley, así como tampoco ejecutar o apoyar actividades encaminadas a la colección y tráfico de especies animales o vegetales que no cuenten con los permisos y licencias respectivas otorgadas por las autoridades ambientales competentes.
 - k. El abastecimiento de combustible, mantenimiento y limpieza para los equipos motorizados acuáticos se debe realizar en las zonas autorizadas por la Dirección General Marítima - DIMAR, cumpliendo las medidas de seguridad establecidas para el manejo de estas sustancias.
 - I. Número de usuarios: en cada playa la Alcaldía de Turbo deberá determinar la capacidad de carga turística y adelantar acciones para su cumplimiento.
 
@@ -344,46 +366,46 @@ Se deberá diseñar para cada playa turística un plan de monitoreo para evaluar
 - C. Prevención de riesgos sociales: La Alcaldía de Turbo-Antioquia en articulación con las organizaciones y autoridades competentes adelantarán campañas para la prevención y erradicación de impactos socioculturales negativos como: mendicidad, narco dependencia y la explotación sexual comercial de niños, niñas y adolescentes Así mismo, se deberán liderar y adelantar acciones para realizar campañas para la prevención y erradicación de explotación laboral de niños, niñas y adolescentes con las organizaciones y entidades competentes y las demás que establezca la alcaldía.
 - d. Banderas de señalización: Las banderas son instrumentos a través de los cuales se informa a los usuarios de las playas su situación en cuanto a las medidas de seguridad que se adoptan. Estas banderas permanecerán expuestas por el tiempo de la situación que afecta el orden, en lugares de fácil visibilidad por los usuarios. Según las condiciones que presente el mar, la Alcaldía de Turbo-Antioquia y las autoridades de socorro evaluarán e indicarán, respectivamente, el color de la bandera que se colocará atendiendo al código de conducta de cada playa y acorde a los convenios internacionales ratificados por Colombia
 - e. Código de conducta y reglamento: En las playas del Distrito Portuario, Logístico, Industrial, Turístico y Comercial de Turbo- Antioquia, se aplicará el código de conducta diseñado para estas, de acuerdo a las características propias de cada playa.
-5. EI CLOP evaluará el código de conducta diseñado por la Alcaldía de Turbo para cada playa del Distrito.
-6. Accesibilidad: La Alcaldía Distrital de Turbo-Antioquia deberá gestionar todo el equipamiento necesario que garantice el acceso de las personas en condición de discapacidad al goce y disfrute de la playa y el mar, así como los servicios que en ella se ofrecen, tales como pasarelas, sillas anfibias, rampas, baños adecuados, etc.
+El CLOP evaluará el código de conducta diseñado por la Alcaldía de Turbo para cada playa del Distrito.
+f. Accesibilidad: La Alcaldía Distrital de Turbo-Antioquia deberá gestionar todo el equipamiento necesario que garantice el acceso de las personas en condición de discapacidad al goce y disfrute de la playa y el mar, así como los servicios que en ella se ofrecen, tales como pasarelas, sillas anfibias, rampas, baños adecuados, etc.
 - g. Amoblamiento: La playa debe estar amoblada con elementos de bajo impacto visual y ambiental, que se mimeticen con el ambiente, cumpliendo con los requisitos definidos por las autoridades competentes.
 - h. Plan de gestión del riesgo o plan de emergencia y contingencias: La Alcaldía Distrital de Turbo-Antioquia deberá diseñar un plan de gestión del riesgo o plan de emergencia y contingencia para las playas del Distrito. Este plan de gestión podrá ser general o particular, según lo estime el Comité Local de Organización de Playas. El plan de gestión del riesgo deberá articularse dentro del plan de gestión de la ciudad y será de conocimiento de todas las autoridades pertinentes, socializándose adecuadamente con la comunidad de la playa.
 
 ## 17.3. Requisitos de servicios turísticos
 
-- a. Capacitación: En las playas turísticas del Distrito, la Alcaldía Distrital de Turbogestionará las capacitaciones necesarias dirigida a los actores y prestadores de servicios turísticos, en relación a temas de servicio al cliente, manipulación de alimento (en los casos que sea aplicable), calidad y sostenibilidad ambiental de las playas.
+- a. Capacitación: En las playas turísticas del Distrito, la Alcaldía Distrital de Turbo-Antioquia gestionará las capacitaciones necesarias dirigida a los actores y prestadores de servicios turísticos, en relación a temas de servicio al cliente, manipulación de alimento (en los casos que sea aplicable), calidad y sostenibilidad ambiental de las playas.
 - b. Manipulación y manejo higiénico de alimentos: En cada playa turística la Alcaldía Distrital de Turbo-Antioquia y las autoridades competentes realizarán, inspección
 
 vigilancia y control en la aplicación de medidas preventivas necesarias para garantizar la inocuidad y la calidad de los alimentos que se ofrecen.
 
 ## 17.4. Requisitos económicos
 
-- a. Gestión de recursos para amoblamiento: La Alcaldía Distrital de TurboAntioquia, en coordinación con los demás miembros del Comité Local de Playas, podrá gestionar con el sector privado, sector público y de cooperación internacional, la dotación de elementos para el amoblamiento, equipamiento acuerdo con sus usos y la capacidad de carga de las playas turísticas, incluyendo los necesarios para la señalización de las playas, la infraestructura adecuada, personal capacitado en salvamento acuático y primeros auxilios, destinados a la observación y seguridad de los usuarios.
-- b. Permisos temporales para eventos: se debe dar cumplimiento a lo establecido en la Resolución 0884-2019 MD-DIMAR-SUBDEMAR-ALIT de octubre de 2019, Titulo, Artículo 5.3.6.7. en donde se estipulan "los criterios y procedimientos para el trámite de permisos temporales en aguas marítimas, playas marítimas y/o terrenos de bajamar bajo jurisdicción de Dimar" , las personas naturales o jurídicas que cumplan con los realizar eventos en estas, deberán contribuir a la dotación y con los recursos que se amoblamiento, los cuales serán reglamentados por la Secretaría de Gobierno, Planeación, Hacienda. Desarrollo Económico y la Oficina del Gestión del Riesgo de Desastres Del Distrito d Turbo.
-3. Presentación de vendedores: Todas las personas que brinden servicios en las playas deben estar identificados a través de un distintivo y portar el permiso otorgado por la Alcaldía Distrital de Turbo-Antioquia o quien haga sus veces. El carnet debe estar en un lugar visible y mantenerse en óptimas condiciones de presentación.
+- a. Gestión de recursos para amoblamiento: La Alcaldía Distrital de TurboAntioquia, en coordinación con los demás miembros del Comité Local de Playas, podrá gestionar con el sector privado, sector público y de cooperación internacional, la dotación de elementos para el amoblamiento, equipamiento e infraestructura de acuerdo con sus usos y la capacidad de carga de las playas turísticas, incluyendo los necesarios para la señalización de las playas, la infraestructura adecuada, personal capacitado en salvamento acuático y primeros auxilios, destinados a la observación y seguridad de los usuarios.
+- b. Permisos temporales para eventos: se debe dar cumplimiento a lo establecido en la Resolución 0884-2019 MD-DIMAR-SUBDEMAR-ALIT 1 de octubre de 2019, Titulo 6, Artículo 5.3.6.7. en donde se estipulan "los criterios y procedimientos para el trámite de permisos temporales en aguas marítimas, playas marítimas y/o terrenos de bajamar bajo jurisdicción de Dimar" , las personas naturales o jurídicas que cumplan con los requisito y quieran realizar eventos en estas, deberán contribuir a la dotación y mantenimiento de la misma, con los recursos que se necesiten para su amoblamiento, los cuales serán reglamentados por la Secretaría de Gobierno, Planeación, Hacienda. Desarrollo Económico y la Oficina del Gestión del Riesgo de Desastres Del Distrito d Turbo.
+c. Presentación de vendedores: Todas las personas que brinden servicios en las playas deben estar identificados a través de un distintivo y portar el permiso otorgado por la Alcaldía Distrital de Turbo-Antioquia o quien haga sus veces. El carnet debe estar en un lugar visible y mantenerse en óptimas condiciones de presentación.
 - d. Actividades lucrativas: Queda prohibido establecerse en el área de playa para realizar tatuajes permanentes o temporales, pinturas, masajes, peinados o cualquier tipo de presentación musical o actividad que genere lucro sin la debida autorización expedida por parte de la Alcaldía Distrital de Turbo-Antioquia.
 - e. Suspensión de permisos: En caso de que se presenten situaciones en las cuales se incumpla lo establecido en este Reglamento o normativas legales vigentes, a nivel local, departamental o nacional, como la Ley 1801 de 2016, se podrá realizar la suspensión de los permisos obtenidos. Así mismo, los vendedores autorizados por la Alcaldía Distrital de Turbo-Antioquia que se encuentren en estado de embriaguez o bajo el efecto de sustancias alucinógenas serán retirados y se le suspenderá el respectivo permiso temporal. De igual forma serán suspendidas las personas que promuevan o sean parte de riñas o discusiones en el lugar de trabajo o incumplan lo establecido en este Reglamento. En caso de persistencia, se podrá realizar la revocatoria definitiva del permiso.
-6. Organización de carpas y sillas: el número de carpas será determinado en consenso con la Capitanía de Puerto de Urabá y del Darién - CP y la Secretaría de Desarrollo Económico, de acuerdo con la zonificación y la capacidad de carga que presenten cada una de las playas del Distrito. El número de carpas se presenta en el Anexo y es parte integral del presente Decreto.
+f. Organización de carpas y sillas: el número de carpas será determinado en consenso con la Capitanía de Puerto de Urabá y del Darién - CP08 y la Secretaría de Desarrollo Económico, de acuerdo con la zonificación y la capacidad de carga que presenten cada una de las playas del Distrito. El número de carpas se presenta en el Anexo y es parte integral del presente Decreto.
 
 Tipo de carpas: las carpas seguirán las especificaciones determinadas por la Alcaldía Distrital de Turbo-Antioquia, dependiendo la necesidad del área a ocupar para los eventos. En el caso de las carpas estáticas de los vendedores o carperos, estas contarán con dimensiones de máximo 4 m de largo por 2 m de ancho, y una altura uniforme de 1,8 m por modulo; el color de las carpas estipulado será los colores de la bandera del Distrito de Turbo. Se sugiere marcarlas con el nombre de establecimiento comercial en las partes laterales de la carpa, las letras deben ser estéticas, de tamaño medio y en color negro preferiblemente.
 
-No se podrán instalar carpas que no sean previamente aprobadas por las autoridades carpas por playas dependerá de las características de esta y se buscará en lo posible, siempre que las dimensiones de la playa lo permitan.
+No se podrán instalar carpas que no sean previamente aprobadas por las autoridades competentes. El máximo de bloques de carpas por playas dependerá de las características de esta y se buscará en lo posible, siempre que las dimensiones de la playa lo permitan.
 
 Las carpas deberán ser cambiadas cuando se encuentren en estado de deterioro Cualquier mobiliario que se encuentre en estado de deterioro o no cumpla con estas especificaciones no se le permitirá la instalación.
 
-Tipos de sillas: acuerdo con lo autorizado, únicamente se permitirá el alquiler de sillas en material plástico de color blanco; se deberá facilitar los medios y espacios para la comodidad de los adultos mayores y personas de discapacidad.
+Tipos de sillas: acuerdo con lo autorizado, únicamente se permitirá el alquiler de sillas en material plástico de color blanco; se deberá facilitar los medios y espacios para la comodidad de los adultos mayores y personas con situación de discapacidad.
 
 CAPÍTULO VII. REQUISITOS PARA LA EXPEDICIÓN DE PERMISOS TEMPORALES Y DESARROLLO DE ACTIVIDADES EN LOS ESPACIOS DE PLAYA
 
 ## PLAYA URBANA
 
-Artículo 18. Requisitos para la obtención de permisos temporales y desarrollo de actividades en los espacios de playa urbana del Distrito de Turbo - Antioquia; las personas que deseen realizar algún tipo de actividad comercial relacionada con el expendio de alimentos, bebidas, servicios de carpas, masajes, etc., deberá contar con un permiso expedido por la autoridad competente (Secretaria de Planeación y Capitanía de Puerto de Urabá y del Darién - CP, unidad regional de la Dirección General Marítima - Dimar).
+Artículo 18. Requisitos para la obtención de permisos temporales y desarrollo de actividades en los espacios de playa urbana del Distrito de Turbo - Antioquia; las personas que deseen realizar algún tipo de actividad comercial relacionada con el expendio de alimentos, bebidas, servicios de carpas, masajes, etc., deberá contar con un permiso expedido por la autoridad competente (Secretaria de Planeación y Capitanía de Puerto de Urabá y del Darién - CP08, unidad regional de la Dirección General Marítima - Dimar).
 
 Para su trámite deberá presentar cada uno de los siguientes requisitos:
 
 - a. Solicitud formal dirigida a la Alcaldía Distrital de Turbo - Antioquia (Secretaria de Planeación), en donde se detallen los elementos que se pretenden instalar, objetivo, alcance y áreas a ocupar (dimensiones en largo y ancho o diámetro de cada elemento requerido).
 - b. Plano del sector o área objeto de la solicitud y la ubicación proyectada para los elementos a instalar en el Marco Geocéntrico Nacional de Referencia (MAGNASIRGAS), Datum Oficial de Colombia. (aportar coordenadas del área de la solicitud).
-- C. Concepto Técnico de Viabilidad expedido por la Capitanía de Puerto de Urabá y del Darién - CP. (NOTA: Para esta solicitud se debe presentar los mismos requisitos enunciados en los literales a. y b., dirigidos al Capitán de Puerto, anexando adicionalmente la Fotocopia de la Cedula de Ciudadanía del solicitante y el recibo de pago correspondiente al valor del concepto que defina la Dirección General Maritima en aplicación a la Ley 1115 de 2006).
+- C. Concepto Técnico de Viabilidad expedido por la Capitanía de Puerto de Urabá y del Darién - CP08. (NOTA: Para esta solicitud se debe presentar los mismos requisitos enunciados en los literales a. y b., dirigidos al Capitán de Puerto, anexando adicionalmente la Fotocopia de la Cedula de Ciudadanía del solicitante y el recibo de pago correspondiente al valor del concepto que defina la Dirección General Maritima en aplicación a la Ley 1115 de 2006).
 - d. Recibo y/o soporte de pago correspondiente al valor del trámite de permiso temporal en playas urbanas y Rural será el establecido en el Estatuto Tributario Vigente del Distrito de Turbo.
 
 Parágrafo 1°: en los casos en que agremiaciones pretendan desarrollar diversas actividades económicas, el permiso deberá ser solicitado por su Representante Legal o por su delegado. Para tal efecto además de la documentación mencionada con anterioridad, deberá presentar la información siguiente:
@@ -396,11 +418,11 @@ Parágrafo 2°: El termino para resolver los trámites de permiso temporal en pl
 
 ## PLAYA RURAL
 
-Artículo 19. Requisitos para la obtención de permisos temporales y desarrollo de actividades en los espacios de playa rural del Distrito de Turbo - Antioquia; las personas que deseen realizar algún tipo de actividad comercial relacionada expendio de alimentos, bebidas, servicios de carpas, masajes, etc., debera contar con un permiso expedido por la Capitanía de Puerto de Urabá y del Darién - CP, unidad regional de la Dirección General Marítima - Dimar).
+Artículo 19. Requisitos para la obtención de permisos temporales y desarrollo de actividades en los espacios de playa rural del Distrito de Turbo - Antioquia; las personas que deseen realizar algún tipo de actividad comercial relacionada con el expendio de alimentos, bebidas, servicios de carpas, masajes, etc., debera contar con un permiso expedido por la Capitanía de Puerto de Urabá y del Darién - CP08, unidad regional de la Dirección General Marítima - Dimar).
 
-Para su trámite deberá presentar cada uno de los requisitos estipulados Resolución 0884-2019 MD-DIMAR-SUBDEMAR-ALIT de octubre de 2019, por medio de la cual se establecen los "Criterios y procedimientos para el trámite de permisos temporales en aguas marítimas, playas marítimas y/o terrenos de bajamar bajo jurisdicción de Dimar"
+Para su trámite deberá presentar cada uno de los requisitos estipulados en la Resolución 0884-2019 MD-DIMAR-SUBDEMAR-ALIT 1 de octubre de 2019, por medio de la cual se establecen los "Criterios y procedimientos para el trámite de permisos temporales en aguas marítimas, playas marítimas y/o terrenos de bajamar bajo jurisdicción de Dimar"
 
-- a) Solicitud formal dirigida al señor Capitán de Puerto de Urabá y del Darién CP, la cual puede ser presentada por un particular y/o entidad pública.
+- a) Solicitud formal dirigida al señor Capitán de Puerto de Urabá y del Darién CP08, la cual puede ser presentada por un particular y/o entidad pública.
 - b) Descripción detallada del proyecto, especificando el objeto y alcance del permiso solicitado, tipos de elementos y áreas a ocupar (dimensiones en largo y ancho o diámetro de cada elemento requerido).
 - c) Plano del sector o área objeto de la solicitud y la ubicación proyectada para los elementos a instalar en el Marco Geocéntrico Nacional de Referencia (MAGNASIRGAS), Datum Oficial de Colombia.
 - d) Concepto emitido por la autoridad distrital, municipal o el Departamento de Antioquia, según corresponda, en el que se indique si el proyecto está de acuerdo con las normas que sobre usos del suelo haya definido el municipio o distrito en su Plan de Ordenamiento Territorial.
@@ -412,13 +434,13 @@ Para su trámite deberá presentar cada uno de los requisitos estipulados Resolu
 
 Parágrafo 1°: Requisitos para la obtención de permisos temporales y desarrollo de actividades en los espacios de playa rural del Distrito de Turbo - Antioquia para eventos masivos. Si el permiso temporal tiene por objeto la realización de un evento catalogado como masivo, es decir, aquellos que se caracterizan por una elevada afluencia de público concentrado en un mismo lugar, se deberá aportar adicionalmente a la solicitud y a los requisitos establecidos en el artículo anterior los siguientes documentos:
 
-1. Póliza de seguro de responsabilidad civil extracontractual. Plan de contingencia y emergencias. Certificado en el que se garantiza la Atención Prehospitalaria por una IPS que tenga este servicio habilitado en el municipio y/o Distrito. Mapas del sitio con vías de evacuación. Carta de autorización del Cuerpo de Bomberos. Certificación de favorabilidad emitida por la Defensa Civil para el desarrollo del evento. Documento que contenga las medidas de seguridad establecidas con la Policia Nacional.
-8. En caso de que el permiso solicitado contemple la emisión de sonidos, deberá presentar el permiso correspondiente otorgado por la autoridad competente en la jurisdicción, donde se autorice el sonido (decibeles permitidos).
+1. Póliza de seguro de responsabilidad civil extracontractual. 2. Plan de contingencia y emergencias. 3. Certificado en el que se garantiza la Atención Prehospitalaria por una IPS que tenga este servicio habilitado en el municipio y/o Distrito. 4. Mapas del sitio con vías de evacuación. 5. Carta de autorización del Cuerpo de Bomberos. 6. Certificación de favorabilidad emitida por la Defensa Civil para el desarrollo del evento. 7. Documento que contenga las medidas de seguridad establecidas con la Policia Nacional.
+8. En caso de que el permiso solicitado contemple la emisión de sonidos, deberá presentar el permiso correspondiente otorgado por la autoridad ambiental competente en la jurisdicción, donde se autorice el sonido (decibeles permitidos).
 9. Autorización para hacer uso de la música (Derechos de Autor) emitido por la Organización Sayco &amp; ACINPRO
 
-Parágrafo 2°. Una vez allegados la totalidad de los requisitos, la Capitanía de Puerto de Urabá y del Darién - CP, tendrá 15 días hábiles para resolver las solicitudes de permisos temporales en aguas marítimas, playas marítimas y/o terrenos de bajamar bajo jurisdicción de Dimar.
+Parágrafo 2°. Una vez allegados la totalidad de los requisitos, la Capitanía de Puerto de Urabá y del Darién - CP08, tendrá 15 días hábiles para resolver las solicitudes de permisos temporales en aguas marítimas, playas marítimas y/o terrenos de bajamar bajo jurisdicción de Dimar.
 
-Artículo 20. Concesiones marítimas: El trámite de concesiones marítimas de terrenos de bajamar, playas y aguas marítimas, estará a cargo en la jurisdicción del Distrito de Turbo - Antioquia, la Capitanía de Puerto de Urabá y del Darién - CP, unidad regional de la General Marítima - Dimar; el cual se dispuesto Decreto 2106 de 2019 "Por el cual se dictan normas para simplificar, suprimir y reformar trámites, procesos y procedimientos innecesarios existentes en la administración pública"; TITULO III Disposiciones Especiales, Capitulo IV Defensa Nacional, Artículo 65. Requisitos para otorgar las concesiones marítimas.
+Artículo 20. Concesiones marítimas: El trámite de concesiones marítimas de terrenos de bajamar, playas y aguas marítimas, estará a cargo en la jurisdicción del Distrito de Turbo - Antioquia, la Capitanía de Puerto de Urabá y del Darién - CP08, unidad regional de la Dirección General Marítima - Dimar; el cual se adelantará conforme a lo dispuesto Decreto 2106 de 2019 "Por el cual se dictan normas para simplificar, suprimir y reformar trámites, procesos y procedimientos innecesarios existentes en la administración pública"; TITULO III Disposiciones Especiales, Capitulo IV Defensa Nacional, Artículo 65. Requisitos para otorgar las concesiones marítimas.
 
 ## CAPÍTULO VIII.
 DISPOSICIONES GENERALES Y MEDIDAS DE PROTECCIÓN AL ECOSISTEMA MARINO-COSTERO
@@ -437,11 +459,11 @@ Artículo 25. Siembra de especies vegetales: Se prohíbe la siembra de especies 
 
 Artículo 26. Captación ilegal de recursos naturales: Se prohíbe la extracción de arena y/o material constitutivo de las playas, fuera del ecosistema marino costero, sin importar su destinación y/o uso. Para la captación de agua de mar se deberá contar con el permiso y/o licencia de la Autoridad Ambiental competente.
 
-Articulo 27. Restricción de navegación por contaminación en el medio marino: Cuando se presenten eventos que impacten al medio ambiente marino como derrames o vertimientos de hidrocarburos y sus derivados, sustancias químicas y potencialmente peligrosas, carga rotulada como contaminantes del mar, escapes de gases naturales (carácter geológico) o antrópicos, se restringirá la navegación en las afectadas, y el tránsito de embarcaciones de la distancia que las autoridades competentes determinen, exceptuando las salvamento, asistencia médica y control a emergencias; igualmente se restringirá el a las playas que sean denominadas de sacrificio o utilizadas para dirigir y cualquier sustancia o producto potencialmente
+Articulo 27. Restricción de navegación por contaminación en el medio marino: Cuando se presenten eventos que impacten al medio ambiente marino como derrames o vertimientos de hidrocarburos y sus derivados, sustancias químicas y potencialmente peligrosas, carga rotulada como contaminantes del mar, escapes de gases naturales (carácter geológico) o antrópicos, se restringirá la navegación en las áreas afectadas, y el tránsito de embarcaciones de la distancia que las autoridades competentes determinen, exceptuando las embarcaciones de Guardacostas, salvamento, asistencia médica y control a emergencias; igualmente se restringirá el acceso a las playas que sean denominadas de sacrificio o utilizadas para dirigir y recoger el derrame generado de cualquier sustancia o producto potencialmente contaminante.
 
 Artículo 28. Responsabilidad del usuario en el uso de la playa: Los usuarios de las playas serán responsables por cualquier elemento que ingresen a la playa para su uso recreativo personal, dejando en claro que dichos elementos deben reducirse al espacio que cada persona requiera para su confort, el cual no sobrepasará un área de dos metros cuadrados (2m2), así mismo, se depositarán aquellos residuos que se generen durante la visita en las diferentes cestas o canecas para basuras ubicadas en el sector.
 
-Artículo 29. Visitas de inspección y control: La Secretaria de Gobierno deberá realizar inspecciones periódicas, para verificar el cumplimiento del presente Reglamento. En caso de encontrarse algún incumplimiento a los permisos o licencias se procederá al inicio de las investigaciones respectivas por presunto incumplimiento y se debe notificar a la Capitanía de Puerto de Urabá y del Darién - CP, con quienes se articularán las acciones a seguir.
+Artículo 29. Visitas de inspección y control: La Secretaria de Gobierno deberá realizar inspecciones periódicas, para verificar el cumplimiento del presente Reglamento. En caso de encontrarse algún incumplimiento a los permisos o licencias se procederá al inicio de las investigaciones respectivas por presunto incumplimiento y se debe notificar a la Capitanía de Puerto de Urabá y del Darién - CP08, con quienes se articularán las acciones a seguir.
 
 Artículo 30. Vigilancia: La vigilancia que se da en las playas urbanas y rurales del Distrito de Turbo-Antioquia estará a cargo de la Policía Nacional de Turismo, así como
 
@@ -449,7 +471,7 @@ las demás autoridades competentes (Alcaldía Distrital de Turbo - Antioquia y D
 
 Artículo 31. Sanciones: Las personas que incumplan lo dispuesto en este Reglamento serán objeto de las siguientes sanciones:
 
-Articulo 31.1. El incumplimiento del buen uso de los espacios asignados a través de permisos temporales dará amonestaciones y llamados de respectivos, en los casos de reiteración de faltas se podrá realizar sanciones monetarias acuerdo lo establecido en la Ley 1801 de 2016 "Código Nacional de Seguridad y Convivencia Ciudadana" y se podrá llegar a la cancelación del respectivo permiso otorgado acuerdo a las competencias de la Dimar y la Alcaldía Distrital de Turbo Antioquia.
+Articulo 31.1. El incumplimiento del buen uso de los espacios asignados a través de permisos temporales dará lugar a las amonestaciones y llamados de atención respectivos, en los casos de reiteración de faltas se podrá realizar sanciones monetarias acuerdo lo establecido en la Ley 1801 de 2016 "Código Nacional de Seguridad y Convivencia Ciudadana" y se podrá llegar a la cancelación del respectivo permiso otorgado acuerdo a las competencias de la Dimar y la Alcaldía Distrital de Turbo Antioquia.
 
 Articulo 32. Delegación: delegase a la Secretaria de Desarrollo Económico, como dependencia encargada del Plan de Desarrollo Turistico del Distrito de Turbo.
 
@@ -457,13 +479,13 @@ Articulo 32. Delegación: delegase a la Secretaria de Desarrollo Económico, com
 
 Parágrafo. La Administración Distrital creará el mecanismo de articulación entre sus dependencias para realizar las acciones de vigilancia y control del presente decreto a través de la Mesa Ténica Distrital de Playa.
 
-Articulo 33. Periodo De Transición y Obligatoriedad De Cumplimiento: se adoptará medidas de transición para el cumplimiento de lo estipulado en el presente Decreto de Playas, el tiempo estipulado para su ejecución cabal será de (120) días calendario, durante este periodo la Alcaldía Distrital de Turbo - Antioquia se compromete a realizar los trabajos de socialización y pedagogía para comprensión de todos los involucrados, la Capitanía de Puerto de Urabá y del Darién - CP, acompañará los procesos.
+Articulo 33. Periodo De Transición y Obligatoriedad De Cumplimiento: se adoptará medidas de transición para el cumplimiento de lo estipulado en el presente Decreto de Playas, el tiempo estipulado para su ejecución cabal será de (120) días calendario, durante este periodo la Alcaldía Distrital de Turbo - Antioquia se compromete a realizar los trabajos de socialización y pedagogía para comprensión de todos los involucrados, la Capitanía de Puerto de Urabá y del Darién - CP08, acompañará los procesos.
 
 Articulo 33.1. Incorpórese al presente decreto los estudios ténicos y levantamientos topográficos como parte complementaria y esencial.
 
 ## PUBLÍQUESE Y CÚMPLASE,
 
-Dado en el despacho de la Alcaldía Distrital de Turbo Antioquia a los días del mes de octubre 2024
+Dado en el despacho de la Alcaldía Distrital de Turbo Antioquia a los 15 días del mes de octubre 2024
 
 ALEJANDRO ABUCHAR GONZÁLEZ ALCALDE DEL DISTRITO PORTUARIO, LOGÍSTICO, INDUSTRIAL, TURÍSTICO Y
 

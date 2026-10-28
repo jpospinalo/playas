@@ -1,6 +1,6 @@
 RESPONSABILIDAD  DEL  ESTADO  Presupuestos /  FALLA  EN  EL  SERVICIO  /  NOCIÓN  DE  LAS  PLAYAS COMO BIENES DE USO PÚBLICO Normatividad relacionada con el turismo en Colombia y el uso de las playas públicas / CULPA EXCLUSIVA DE LA VÍCTIMA -
 
-Síntesis del caso: Le correspondió a la Sala determinar si la muerte de los miembros de la familia xxxx, ocurrida el de enero de 2013 en las playas del municipio de Arboletes, es atribuible a dicho municipio, al Departamento de Antioquia, al Ministerio de Industria y Comercio y al Ministerio de Defensa - Armada Nacional DIMAR, a título de falla en el servicio.
+Síntesis del caso: Le correspondió a la Sala determinar si la muerte de los miembros de la familia xxxx, ocurrida el 12 de enero de 2013 en las playas del municipio de Arboletes, es atribuible a dicho municipio, al Departamento de Antioquia, al Ministerio de Industria y Comercio y al Ministerio de Defensa - Armada Nacional DIMAR, a título de falla en el servicio.
 
 Extracto: (...)  Dado su carácter de bienes de uso público y al ser de propiedad exclusiva de la Nación, le compete a ésta regular el transporte fluvial, el asentamiento de poblaciones, la utilización de las playas y aguas  para  la  recreación,  además  de  la  gestión  del  riesgo.  No  obstante,  debe  precisarse  que  al  mismo tiempo  las  playas  son  áreas  de  suelo  que  físicamente  se  encuentran  dentro  de  la  jurisdicción  de  los respectivos municipios sobre los cuales los entes territoriales ejercen autoridad. En esa medida, forman parte del suelo del municipio y, por ende, sobre ellas se extiende la función reglamentaria de los usos del suelo,  que  comprende  identificar  y  delimitar  las  zonas  de  riesgos  que  el  artículo  313-7  constitucional asigna  a  los  concejos  municipales  y  distritales.  (...)  Para  la  Sala  estas  disposiciones  relacionadas  con  el riesgo  y  su  sistema  de  prevención  resultan  aplicables  a  las  autoridades  que  tienen  a  su  cargo  la administración  de  los  ríos  y  aguas  públicas,  más  cuando  éstas  son  usadas  con  fines  recreativos  y  de turismo, pues en sí mismo, traen implícito un riesgo que debe ser controlado en procura de la protección de la vida e integridad de la población. (...) De acuerdo a lo anterior, el ordenamiento impone a la Nación y los  municipios  el  deber  de  agotar  medidas  de  seguridad  relativas  a  la  identificación,  señalización, mitigación y prevención del riesgo, las cuales resultan aplicables en el acceso y uso de las aguas públicas. (...) Es importante destacar que el análisis de esta causal eximente de responsabilidad no pone en duda la ilegalidad del daño en absoluto. Sin embargo, sí implica reconocer que el daño puede atribuirse a la propia víctima cuando, debido a su actuar intencionado y negligente, es decir, cuando incumple los deberes de conducta que le eran exigibles, se expone a la realización del daño.  (...) Para la Sala, los señores XXX y XXX, materializaron el riesgo que ocasionó el daño pues tuvieron la posibilidad de evitar su producción, contaron  con  la  facultad  de  decisión,  elección,  control  o  realización  y,  pese  a  la  advertencia  verbal realizada, decidieron asumir el riesgo que implicaba nadar en dichas playas con sus tres hijos menores de edad.
 
@@ -88,7 +88,7 @@ En favor de la menor XXX, por las sumas dejadas de percibir por la muerte de sus
 
 ## HECHOS.
 
-Se narra en la demanda que los señores XXX y XXX eran esposos y padres de los menores XXX, XXX y XXX. Que el de enero de.013 la familia se dirigió al municipio de Arboletes a disfrutar de sus vacaciones en el mar de la localidad, área  que  el  municipio  protegió  y  adecuó  mediante  espolones  para  evitar  la erosión y atraer turistas.
+Se narra en la demanda que los señores XXX y XXX eran esposos y padres de los menores XXX, XXX y XXX. Que el 12 de enero de 2.013 la familia se dirigió al municipio de Arboletes a disfrutar de sus vacaciones en el mar de la localidad, área  que  el  municipio  protegió  y  adecuó  mediante  espolones  para  evitar  la erosión y atraer turistas.
 
 Que encontrándose en las playas y haciendo uso de un neumático alquilado, la familia fue arrastrada por las fuertes olas y bruscamente golpeados contra la parte exterior de los espolones. En dicho suceso fallecieron los adultos y dos menores,  XXX  y  XXX.  La  niña  XXX  fue  encontrada  con  vida  aferrada  a  las piedras que componen el espolón.
 
@@ -96,9 +96,9 @@ Que en ninguna parte de la playa se encontraba aviso alguno que advirtiera sobre
 
 ## SENTENCIA OBJETO DE IMPUGNACIÓN.
 
-El Juzgado Primero Administrativo del Circuito de Turbo, en sentencia del de diciembre de.018, negó las pretensiones de la demanda, indicando que:
+El Juzgado Primero Administrativo del Circuito de Turbo, en sentencia del 12 de diciembre de 2.018, negó las pretensiones de la demanda, indicando que:
 
-Está probado que existió un daño con el fallecimiento de miembros de la misma familia; los señores XXX, su esposa XXX y sus hijos XXX y XXX, el cual ocurrió el de enero de.013, mientras se encontraban disfrutando de las playas en el municipio de Arboletes - Antioquia.
+Está probado que existió un daño con el fallecimiento de miembros de la misma familia; los señores XXX, su esposa XXX y sus hijos XXX y XXX, el cual ocurrió el 12 de enero de 2.013, mientras se encontraban disfrutando de las playas en el municipio de Arboletes - Antioquia.
 
 En cuanto a las circunstancias que rodearon su trágica muerte, concluyó que los testimonios  recibidos  en  las  audiencias  y  de  los  documentos  allegados  como pruebas se tiene que las playas del Municipio de Arboletes fueron intervenidas en el año.012 como parte de un contrato estatal 2099-00-20-363 denominado ' Construcción de obras de protección para la recuperación de una parte del litoral caribe, Municipio de Arboletes, Departamento de Antioquia y por el Municipio de los  Córdobas,  Departamento  de  Córdoba '.  Que  dicha  construcción,  si  bien generó un beneficio  para  el  municipio  de  Arboletes  en  materia  de  turismo  y recuperación de playas, también generó un riesgo adicional a los bañistas pues no era seguro nadar y tampoco ingresar sobre los tómbolos y espolones y que, si bien luego  de  su  construcción  se  colocaron  unas  vallas informativas advirtiendo el riesgo que generaban esas medidas, no fueron efectivas, puesto que se fueron deteriorando con el paso del tiempo.
 
@@ -298,14 +298,14 @@ En el asunto que se estudia, la parte actora señala que el daño antijurídico 
 
 Lo anterior se acreditó con la siguiente prueba que obra en el expediente:
 
-- -Registros Civiles de Defunción (visibles a folios 49-52 del cuaderno principal),  en  el  que  se  consignó  que  los  miembros  de  la  familia fallecieron  el  de  enero  de.013,  en  el  municipio  de  Arboletes, Antioquia.
+- -Registros Civiles de Defunción (visibles a folios 49-52 del cuaderno principal),  en  el  que  se  consignó  que  los  miembros  de  la  familia fallecieron  el  12 de  enero  de 2.013,  en  el  municipio  de  Arboletes, Antioquia.
 - -Inspección Técnica de los cadáveres (visibles a folios 73-100).
 
 ## 6.2. Material probatorio.
 
 Para efectos de analizar si se encuentra acreditado el nexo causal entre el daño y las omisiones señaladas en la demanda y además si le asiste razón al juez de primera instancia al declarar la excepción de culpa exclusiva de la víctima, habrá de  analizarse  el  siguiente  material  acreditativo  que  se  encuentra  en  el expediente:
 
-1. Informe pericial de toxicología forense de de octubre de 2023, realizado por el Instituto Nacional de Medicina Legal y Ciencia Forense, al señor XXX en el que se concluyó:
+1. Informe pericial de toxicología forense de 22 de octubre de 2023, realizado por el Instituto Nacional de Medicina Legal y Ciencia Forense, al señor XXX en el que se concluyó:
 
 ' en  la  muestra  de  sangre  analizada  como  perteneciente  a  XXX  se detectó la presencia de etanol. '. Oficio de febrero de.015, suscrito por la Directora de Asuntos legales de la Secretaría de Infraestructura del Departamento de Antioquia, en el que se indica:
 
@@ -325,11 +325,11 @@ Jornadas lúdicas y educativas. Entrega de cartilla de socialización del proyec
 
 Por lo anterior la gobernación de Antioquia -Secretaria de Infraestructura Física en su calidad de ejecutor del proyecto , no solo acompañó a la administración Municipal, sino a la comunidad en general, en todos los asuntos relacionados con la prevención,  control  y  demás  asuntos  relacionados  con  la salvaguarda  de  los  playistas  en  el  Municipio  de  Arboletes ' (Negrilla para resaltar).
 
-3. A folios 157 del cuaderno de primera instancia, se observa Oficio CSAS -5200116-12  de  de  octubre  de  2012,  suscrito  por  la  directora  de  la  Obra Conalvias, a través del cual le informa al Consorcio las Américas, las medidas de seguridad estructuradas dentro del proyecto 'construcción de obras de protección para la construcción de una parte del litoral caribe, contrato de obra No 2099-oo-20-363', en el que consta:
+3. A folios 157 del cuaderno de primera instancia, se observa Oficio CSAS -5200116-12  de  09 de  octubre  de  2012,  suscrito  por  la  directora  de  la  Obra Conalvias, a través del cual le informa al Consorcio las Américas, las medidas de seguridad estructuradas dentro del proyecto 'construcción de obras de protección para la construcción de una parte del litoral caribe, contrato de obra No 2099-oo-20-363', en el que consta:
 
 'Con el fin de dar respuesta a su comunicado, nosotros Conalvias SAS, hasta la fecha  ha  venido  implementando  campañas  informativas  de  los  peligros  de ingresar a las estructuras.
 
-Mediante el comité No se establece que a partir del día de agosto.012 y hasta la fecha se están realizando jornadas los días sábados y domingos a partir de las:00 AM hasta las:00 Pm concientizando y entregando  volantes  a  turista  y  la  comunidad  de  Arboletes,  entre  el Tómbolo N°4 y el tómbolo N°5 para ello se dispone un trabajador de Conalvias SAS para realizar dicha función.
+Mediante el comité No 31 se establece que a partir del día 04 de agosto 2.012 y hasta la fecha se están realizando jornadas los días sábados y domingos a partir de las 9:00 AM hasta las 4:00 Pm concientizando y entregando  volantes  a  turista  y  la  comunidad  de  Arboletes,  entre  el Tómbolo N°4 y el tómbolo N°5 para ello se dispone un trabajador de Conalvias SAS para realizar dicha función.
 
 Así  mismo dando cumplimiento al desarrollo del área socio ambiental se  han realizado jornadas lúdicas y educativas a visitantes y comunidad .
 
@@ -343,7 +343,7 @@ Arboletes, sector casco urbano, en el que constan las recomendaciones dadas a la
 
 Señor  padre  de  familia,  usted  es  parte  importante  de  la prevención. Informe a sus hijos de los peligros que corren al acercarse y lanzarse desde las estructuras de rosa .' (Negrilla para resaltar).
 
-5. Oficio del de febrero de.015, suscrito por la directora del DAPARD, en el que se informa:
+5. Oficio del 26 de febrero de 2.015, suscrito por la directora del DAPARD, en el que se informa:
 
 ' El  Departamento  de  Antioquia  no  es  el  responsable  de  la  protección, señalización,  mantenimiento  y  conservación  de  la  salvaguarda  de  los bañistas ni en el estado de las playas. La Ley 1523 de.012 en su artículo 14 reza textualmente : 'los alcaldes del sistema nacional. Los alcaldes  como jefes de  la  administración  local  representan  al  sistema  nacional  en  el  distrito  y  el municipio.  El  alcalde,  como  conductor  del  desarrollo  local, es  el  responsable directo de la implementación de los procesos de gestión del riesgo en el distrito o municipio , incluyendo el conocimiento y la reducción y el manejo de desastres en el área de su jurisdicción. Parágrafo: los alcaldes y la administración municipal  o  distrital,  deberán  integrar  en  la  planificación  del  desarrollo  local, acciones estratégicas y prioritarias en materia de gestión del riesgo de desastre, especialmente a través de los planes de ordenamiento territorial,  de  desarrollo municipal o distrital y demás instrumentos de gestión pública.
 
@@ -437,13 +437,13 @@ Si bien es cierto para la época de los hechos, en dicha playa no existía perso
 
 Tampoco se desconoce que luego de este suceso las playas del municipio de Arboletes  fueron  organizadas  con  garitas,  personal  salvavidas  y  avisos  de advertencia, sin embargo, reitera la Sala, estas omisiones no fueron la causa determinante del daño, sino el actuar imprudente de los adultos garantes que decidieron exponer no solo sus vidas sino la de sus menores hijos.
 
-Teniendo en cuenta que no se acreditó la falla endilgada, la Sala CONFIRMARÁ la  sentencia  del  de  diciembre  de.018  proferida  por  el  Juzgado  Primero Administrativo  del  Circuito  de  Turbo,  por  medio  de  la  cual  se  negaron  las pretensiones de la demanda.
+Teniendo en cuenta que no se acreditó la falla endilgada, la Sala CONFIRMARÁ la  sentencia  del  12 de  diciembre  de 2.018  proferida  por  el  Juzgado  Primero Administrativo  del  Circuito  de  Turbo,  por  medio  de  la  cual  se  negaron  las pretensiones de la demanda.
 
 ## Condena en costas en segunda instancia.
 
 En los términos de los arts. 188 del CPACA  y 365-8 del CGP , la condena en costas se encuentra supeditada, de un lado, a un aspecto volitivo, en tanto se impone establecer que la demanda haya sido presentada con manifiesta carencia de fundamento legal y, de otro, comprobar su causación.
 
-A ello se debe agregar que según lo definido por la Subsección A de la Sección Segunda del Órgano de cierre de esta jurisdicción en decisión del de abril de 2016 , el Código de Procedimiento Administrativo y de lo Contencioso Administrativo introdujo una modificación en el sentido de cambiar el criterio subjetivo contenido en el Código Contencioso Administrativo - Decreto 01 de 1984, a un criterio objetivo - valorativo. Objetivo en tanto en toda sentencia se dispondrá sobre la condena en costas, bien sea total o parcial o con abstención, según  las  reglas  del  Código  General  del  proceso.  Y  valorativo,  en  tanto  se requiere que el fallador verifique si éstas se causaron,  como ocurre con el pago de gastos ordinarios del proceso y con la actividad profesional realizada dentro del mismo, sin que en esa valoración se incluya la mala fe o temeridad de las partes.
+A ello se debe agregar que según lo definido por la Subsección A de la Sección Segunda del Órgano de cierre de esta jurisdicción en decisión del 7 de abril de 2016 , el Código de Procedimiento Administrativo y de lo Contencioso Administrativo introdujo una modificación en el sentido de cambiar el criterio subjetivo contenido en el Código Contencioso Administrativo - Decreto 01 de 1984, a un criterio objetivo - valorativo. Objetivo en tanto en toda sentencia se dispondrá sobre la condena en costas, bien sea total o parcial o con abstención, según  las  reglas  del  Código  General  del  proceso.  Y  valorativo,  en  tanto  se requiere que el fallador verifique si éstas se causaron,  como ocurre con el pago de gastos ordinarios del proceso y con la actividad profesional realizada dentro del mismo, sin que en esa valoración se incluya la mala fe o temeridad de las partes.
 
 En los anteriores términos la Sala se abstendrá de condenar en costas en esta instancia,  por  cuanto  no  se  observa  que  sea  manifiesta  una  carencia  de fundamentación  legal  o  actuación  temeraria  que  cause  tal  condena  y,  por  el contrario, pese a no asistirle razón a la recurrente, presentó argumentos de peso para consolidar su postura.
 

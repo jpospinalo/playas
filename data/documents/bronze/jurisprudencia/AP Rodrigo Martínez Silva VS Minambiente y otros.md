@@ -144,7 +144,7 @@ Aseguró que, al momento de instalar las luminarias sobre la playa, la obra era 
 
 Considerando esa situación, estimó que no se le puede atribuir responsabilidad por el detrimento patrimonial indicado en la demanda.
 
-También propuso la excepción de falta de legitimación en la causa por pasiva, con ocasión de que tuvo a su cargo la prestación del servicio de alumbrado público en la ciudad de Santa Marta hasta el de diciembre de 2017, cuando expiró la prórroga del contrato de concesión No. 19 de febrero de 1997.
+También propuso la excepción de falta de legitimación en la causa por pasiva, con ocasión de que tuvo a su cargo la prestación del servicio de alumbrado público en la ciudad de Santa Marta hasta el 31 de diciembre de 2017, cuando expiró la prórroga del contrato de concesión No. 19 de febrero de 1997.
 
 ## 2.5. El Ministerio del Medio Ambiente y de Desarrollo Sostenible (páginas 325 a 351 archivo PDF, cuaderno principal)
 
@@ -176,14 +176,14 @@ Puso de presente la existencia de otra acción popular que también se tramitaba
 
 Solicitó la vinculación de la Gobernación del Magdalena, porque, en su criterio, es la entidad territorial encargada de la gestión del riesgo.
 
-- 2.7. Departamento del Magdalena (vinculado mediante auto del de diciembre de 2018 - páginas 295 a 301 archivo PDF, cuaderno principal)
+- 2.7. Departamento del Magdalena (vinculado mediante auto del 13 de diciembre de 2018 - páginas 295 a 301 archivo PDF, cuaderno principal)
 
 Propuso la excepción de falta de legitimación en la causa por pasiva, dado que quienes deben responder directamente por la vulneración de los derechos colectivos alegados son las autoridades o entidades encargadas de la conservación y preservación de los recursos naturales, que son las responsables del deterioro del sector de playa salguero, con ocasión de lo cual propuso la de inexistencia de la obligación.
 
 Así mismo, alegó la excepción de inexistencia de vulneración de los derechos colectivos invocados, puesto que no tuvo ninguna participación, por acción ni por omisión, en la causación de la afectación por la que aquí se demandó.
 
 ## 2.8. Policía Nacional (páginas a 18 archivo PDF, cuaderno principal.
-Vinculada mediante auto del de marzo de 2020)
+Vinculada mediante auto del 13 de marzo de 2020)
 
 Propuso las excepciones de falta de legitimación en la causa por pasiva e inexistencia de la obligación, con fundamento en que no se demostró la ocurrencia de alguna omisión en el cumplimento de sus funciones y mucho menos que con ella se haya contribuido a la afectación de los derechos colectivos invocados y a la grave afectación de la cuenca del rio Gaira, en el sector de Playa Salguero.
 
@@ -199,11 +199,11 @@ pág. 9
 
 Propuso la excepción de falta de legitimación en la causa por pasiva, por estimar que ni el actual curador ni su antecesor otorgaron licencia alguna en favor de la propiedad horizontal Edificio Reserva del Mar, avalando el desvío del cauce del río Gaira o la construcción sobre la jurisdicción marítima de la DIMAR.
 
-Afirmó que la licencia de construcción No.053 y la licencia de Urbanismo No. 007 fueron otorgada el de julio de 2012 por la entonces Curadora, Sara Uribe Salas.
+Afirmó que la licencia de construcción No.053 y la licencia de Urbanismo No. 007 fueron otorgada el 25 de julio de 2012 por la entonces Curadora, Sara Uribe Salas.
 
 También propuso la excepción genérica, es decir, la que el juez encuentre acreditada.
 
-- 2.10. Constructora AR (Vinculada mediante auto del de noviembre de 2020 - páginas a 34 del archivo PDF 75, cuaderno principal).
+- 2.10. Constructora AR (Vinculada mediante auto del 12 de noviembre de 2020 - páginas a 34 del archivo PDF 75, cuaderno principal).
 
 Afirmó que el diseño urbanístico del proyecto Reserva del Mar fue aprobado por la Curaduría Urbana de Santa Marta y avalado por la Secretaría de Planeación Distrital y, por tratarse de un proyecto de construcción para uso residencial, no requería de licencia ni plan de manejo ambiental.
 
@@ -211,18 +211,18 @@ Sostuvo que las respectivas licencias y permisos (licencia de construcción No. 
 
 Aportó la siguiente documentación, con base en la cual considera que actuó de manera legítima:
 
-- Resolución 204 del de julio de 2012, Curaduría Urbana N° 2 otorga Licencia de Urbanismo N° 007 y Licencia de Construcción N° 053 en Modalidad de Obra Nueva.
-- Resolución N° 385 del de septiembre de 2014, otorga Modificación a la Resolución N° 204 del de julio de 2012.
-- Resolución 595 del de diciembre de 2015, otorga Modificación de Licencia Vigente a la Resolución 204 del de julio de 2012.
-- Resolución 424 del de julio de 2015, otorga prorroga a la Resolución 204 del de julio de 2012. - Resolución 262 del de agosto de 2016, otorga segunda prórroga a la Licencia de Construcción y Urbanismo.
-- -Resolución 482 del de diciembre de 2016 otorga modificación de licencia vigente.
-- Resolución 292 del de septiembre de 2017 otorga revalidación a la licencia de Urbanismo y Construcción.
+- Resolución 204 del 25 de julio de 2012, Curaduría Urbana N° 2 otorga Licencia de Urbanismo N° 007 y Licencia de Construcción N° 053 en Modalidad de Obra Nueva.
+- Resolución N° 385 del 08 de septiembre de 2014, otorga Modificación a la Resolución N° 204 del 25 de julio de 2012.
+- Resolución 595 del 16 de diciembre de 2015, otorga Modificación de Licencia Vigente a la Resolución 204 del 25 de julio de 2012.
+- Resolución 424 del 24 de julio de 2015, otorga prorroga a la Resolución 204 del 25 de julio de 2012. - Resolución 262 del 3 de agosto de 2016, otorga segunda prórroga a la Licencia de Construcción y Urbanismo.
+- -Resolución 482 del 22 de diciembre de 2016 otorga modificación de licencia vigente.
+- Resolución 292 del 12 de septiembre de 2017 otorga revalidación a la licencia de Urbanismo y Construcción.
 
 2 Obrante en archivo PDF 58, cuaderno principal.
 
-- Resolución 411 del de diciembre de 2017 otorga modificación a licencia vigente.
-- Resolución 022 de de enero de 2018, otorga aclaratoria a la Resolución 411 de de diciembre de 2017.
-- Resolución N° 001 de abril de 2019 otorga aclaratoria a la Resolución 411 de diciembre de 2017. - Resolución 47001-2-19-0411 de de enero de 2020 otorga modificación a la licencia de construcción vigente.
+- Resolución 411 del 13 de diciembre de 2017 otorga modificación a licencia vigente.
+- Resolución 022 de 24 de enero de 2018, otorga aclaratoria a la Resolución 411 de 13 de diciembre de 2017.
+- Resolución N° 001 de abril de 2019 otorga aclaratoria a la Resolución 411 de diciembre de 2017. - Resolución 47001-2-19-0411 de 20 de enero de 2020 otorga modificación a la licencia de construcción vigente.
 - Un (1) plano A-001 Planta de localización y cuadro de áreas donde se evidencia el área de protección ambiental respetada por el proyecto.
 - -Certificados de Disponibilidad y Viabilidad de Servicios Públicos de Acueducto y Alcantarillado Sanitario, expedidos por las Empresas de Servicios Públicos del Distrito de Santa Marta METROAGUA S.A. E.S.P. de fecha de agosto de 2014, 25 de enero de 2016 y por la ESSMAR E.S.P. Rad. 500-978-19".
 
@@ -241,9 +241,9 @@ Destacó que la entidad nada tiene que ver con las graves afectaciones que ocurr
 
 - 3.2. La Unión Temporal DISELECSA - Eléctricas De Medellín S.A., Concesión para el Alumbrado Público de Santa Marta (archivo PDF 90, cuaderno principal).
 
-3 Esta etapa procesal se agotó con la realización de las diligencias llevadas a cabo los días de febrero de 2018 y 22 de mayo de 2019, cuando se declaró fallida (ver páginas 230 a 232, archivo PDF, cuaderno principal y 28 a 33, archivo PDF, cuaderno principal).
+3 Esta etapa procesal se agotó con la realización de las diligencias llevadas a cabo los días 7 de febrero de 2018 y 22 de mayo de 2019, cuando se declaró fallida (ver páginas 230 a 232, archivo PDF, cuaderno principal y 28 a 33, archivo PDF, cuaderno principal).
 
-4 Ver auto del de julio de 2021 (archivo PDF 87, cuaderno principal).
+4 Ver auto del 12 de julio de 2021 (archivo PDF 87, cuaderno principal).
 
 Reiteró los argumentos expuestos en la contestación de la demanda.
 
@@ -279,7 +279,7 @@ Reiteró lo expuesto en la contestación de la demanda y dijo también que la pa
 
 - 3.9. EL concepto del Ministerio Público (archivo PDF 92, cuaderno principal)
 
-El Procurador Judicial II Ambiental y Agrario del Magdalena pidió declarar el agotamiento de jurisdicción respecto de las pretensiones relacionadas con el fenómeno de la erosión costera en Playa Salguero, en virtud de la sentencia del de junio de 2016, dictada por este Tribunal.
+El Procurador Judicial II Ambiental y Agrario del Magdalena pidió declarar el agotamiento de jurisdicción respecto de las pretensiones relacionadas con el fenómeno de la erosión costera en Playa Salguero, en virtud de la sentencia del 15 de junio de 2016, dictada por este Tribunal.
 
 Solicitó acceder a las pretensiones de la demanda que guardan relación con la efectiva prestación del servicio público de alcantarillado en el sector, dada la contaminación microbiológica del agua costera que proviene directamente de la insuficiente prestación de ese servicio público.
 
@@ -312,15 +312,15 @@ Luego de efectuadas las actuaciones procesales pertinentes, se debe determinar s
 
 ## 4.4. Del agotamiento de jurisdicción (archivo PDF 92 cuaderno principal)
 
-En el concepto del Ministerio Público, el Procurador Judicial II Ambiental y Agrario del Magdalena solicitó la declaratoria del agotamiento de jurisdicción respecto de las pretensiones relacionadas con el fenómeno de la erosión costera en Playa Salguero, en virtud de la sentencia del de junio de 2016, dictada por este Tribunal en el proceso 2011-8425AP.
+En el concepto del Ministerio Público, el Procurador Judicial II Ambiental y Agrario del Magdalena solicitó la declaratoria del agotamiento de jurisdicción respecto de las pretensiones relacionadas con el fenómeno de la erosión costera en Playa Salguero, en virtud de la sentencia del 15 de junio de 2016, dictada por este Tribunal en el proceso 2011-8425AP.
 
-Sin embargo, se advierte que una solicitud en ese sentido fue negada por el Despacho mediante auto del de agosto de 2019, por considerar que si bien existe similitud entre los hechos de las demandas de procesos analizados (2016-482, 2016-014, 2011-079 y 2011-8425), estos no persiguen las mismas pretensiones.
+Sin embargo, se advierte que una solicitud en ese sentido fue negada por el Despacho mediante auto del 27 de agosto de 2019, por considerar que si bien existe similitud entre los hechos de las demandas de procesos analizados (2016-482, 2016-014, 2011-079 y 2011-8425), estos no persiguen las mismas pretensiones.
 
 En ese orden de ideas, esta Sala se atiene a lo decidido en esa providencia en cuanto a la negativa del agotamiento de jurisdicción.
 
 ## 4.5. De lo probado en el proceso
 
-Con el acta de visita realizada el de agosto de 2016, por el Departamento Administrativo Distrital del Medio Ambiente - DADMA al sector de Playa Salguero, con ocasión de una queja presentada por el demandante, se evidenció la problemática que aqueja al sector, en los siguientes términos:
+Con el acta de visita realizada el 2 de agosto de 2016, por el Departamento Administrativo Distrital del Medio Ambiente - DADMA al sector de Playa Salguero, con ocasión de una queja presentada por el demandante, se evidenció la problemática que aqueja al sector, en los siguientes términos:
 
 - "- Durante la visita se evidenció cómo el sistema de marea de la línea costera de Playa Salguero se ha llevado todo el mangle que anteriormente se presentaba en el sector. Más de 100m sembrado por los pescadores.
 - Ha ocurrido vertimiento de aguas negras producto de pozas sépticas en las casas vecinas al sector.
@@ -335,7 +335,7 @@ Radicación número: 47-001-2333-000-2016-0482-00
 
 ## - Los postes de luminaria han dejado restos de estructuras en toda la línea costera del sector".
 
-Luego de realizar una visita al sector de Playa Salguero, el de octubre de 2016, CORPAMAG emitió el siguiente concepto:
+Luego de realizar una visita al sector de Playa Salguero, el 28 de octubre de 2016, CORPAMAG emitió el siguiente concepto:
 
 "Con base a la inspección ocular, se evidenció el alto grado de erosión costera en la Playa Salguero, infraestructura de iluminación en mal estado dentro de la superficie marina, afectación a la zona de manglares, la colocación de bultos de arenas utilizadas como protección para evitar que la acción del mar siga afectando sus viviendas por parte de sus propietarios" (subrayas de la Sala).
 
@@ -343,7 +343,7 @@ En el informe técnico de avance de la "Investigación para la gestión y protec
 
 "La dinámica estacional de playa Salguero (PF) al sur del espolón muestra una tendencia erosiva dominante. En la comparación de los meses de mayo y agosto de 2019 con los meses de años anteriores, es notable el déficit de los aportes de sedimentos, que se generaliza a lo largo de km de la playa, y el incremento de estos procesos por la influencia del espolón. Estas condiciones no le han permitido a la playa obtener su estabilidad natural, que le permita un balance estacional y su recuperación en los últimos años, destacándose como uno de los sitios críticos por erosión costera del departamento ... Alerta por erosión: la pérdida de la playa entre 2015-2019 ha sido de hasta - 25m, equivalentes a -6m/año, estos procesos pueden acelerar si no se toman medidas de mitigación acordes con dinámica geofísica y ambiental del sector. Se recomienda realizar inicialmente los estudios de alternativas de actuación y manejo relacionados con los efectos del espolón"10 (subrayas de la Sala).
 
-Del concepto técnico rendido por CORPAMAG, el de diciembre de 201911, fundamentado en los informes técnicos elaborados por INVEMAR, en virtud de los convenios entre ambas instituciones, se destaca:
+Del concepto técnico rendido por CORPAMAG, el 10 de diciembre de 201911, fundamentado en los informes técnicos elaborados por INVEMAR, en virtud de los convenios entre ambas instituciones, se destaca:
 
 "De acuerdo con las mediciones topográficas realizadas a lo largo de la zona costera durante los meses de marzo, mayo, julio y noviembre los perfiles con mayor variación morfológica asociados a procesos erosivos corresponden a los levantados a ... Playa Salguero (PF), este último presenta un retroceso acelerado y es una de las zonas identificadas
 
@@ -371,7 +371,7 @@ Tal como se puede observar la problemática presente en el sector de playa Salgu
 
 En este orden de ideas de acuerdo a los informes desarrollados por el INVEMAR, el área objeto de desarrollo del presente concepto se encuentra erosionada, presentado distintas tendencias en las dos épocas climáticas (periodo seco y lluvioso), señala el informe que con la construcción del espolón se ha presentado mayor erosión de la parte sur del espolón (espolón y punta gloria). Señala de manera análoga que se presenta acreción en las inmediaciones de la desembocadura del río Gaira, pero en síntesis señala que se presenta mayor erosión que acreción, no obstante de evidenciar mejorías es necesario realizar el análisis que permita desarrollar propuestas para lograr un equilibrio de dicha playa, en este contexto se hace necesario inicialmente revisar las dinámicas surgidas en Radicación número: 47-001-2333-000-2016-0482-00 Actor: Rodrigo Martínez Silva y otro virtud de la construcción del espolón en el año 2016"12 (subrayas de la Sala).
 
-Sobre toda esta situación en Playa Salguero, la señora Rita De Luque Fernández (habitante del sector) rindió testimonio el de enero de 2020, del que se destaca:
+Sobre toda esta situación en Playa Salguero, la señora Rita De Luque Fernández (habitante del sector) rindió testimonio el 27 de enero de 2020, del que se destaca:
 
 "Ya que usted dice que vive ahí al frente y que conoce la problemática, qué quisiera ilustrar al despacho con respecto al tema de la erosión y del espolón que se construyó.
 
@@ -387,7 +387,7 @@ Después de eso apareció el dichoso espolón, apareció de la noche a la mañan
 
 Gracias a ese espolón fue que nosotros hicimos playa, o sea, después de que se construye el espolón es que empezamos hacer... mejoró, no y de aquel lado se comió porque eso es lo que hace el espolón, el de un lado llena y del otro lado come. Entonces de este lado, de la a la, se ha recuperado un poco, un poco no todo, un poco de playa ... llevábamos de sequía muchos años y a partir del 2018 empezaron nuevamente las lluvias y eso ayudó hacer playa y ayudó también el dichoso espolón ese que apareció y eso también ayudó hacer un poco de playa, porque no había, no había nada, nada es nada y decía mi papá esto nunca había pasado, nosotros vivimos ahí hace cuarenta años y el mar se comía y el mar volvía y se cogía y se retiraba y dejaba su playa, era la primera vez que se comía y no se regresaba al mar. Y entonces mi papá discutía mucho con los de Reserva del Mar, ustedes fueron los que con el entorpecimiento que le hicieron a la naturaleza de ese río es que nos tienen aquí esta erosión que está ocasionando que nosotros nos vamos a desaparecer" (Minuto 58:10 - 1:02:50)..
 
-También obra la versión de un ingeniero de INVEMAR, quien en la diligencia de inspección judicial realizada el de febrero de 202014 indicó que:
+También obra la versión de un ingeniero de INVEMAR, quien en la diligencia de inspección judicial realizada el 14 de febrero de 202014 indicó que:
 
 pág. 19
 
@@ -395,7 +395,7 @@ pág. 19
 
 ¿Es cierto que se desvió el río? Lo que hemos visto en fotografías es que el río, las fotografías aéreas vienen desde los años, fotografías que produce el IGAC, y lo que hemos visto es que el cauce final siempre ha estado saliendo al norte, desde los años hasta acá, son 70 años más o menos, siempre ha estado saliendo al norte; lo que sí se vio por el edificio Reserva del Mar, ellos construyeron muy cerca del cauce de la zona de que tenía que tener de distancia al río, al construir tan cerca ellos ... el río ya no podía migrar en la parte final si no una parte más hacia adentro, hacia donde está el puente, construyeron un jarillón para poder mantener la distancia del río hacia su construcción, los metros legales que les exigen ¿Es una manera de desviar? Es una manera de controlar el cauce, de controlarlo, porque de todas maneras el río siempre ha estado pasando de un lado al otro, en este momento este río no puede tomar hacia el sur porque ya estaría afectando la propiedad, ellos aprovecharon el momento en el cual el río estaba hacia el costado norte para poder hacer el jarillón ... El río qué hace? El río cuando aumenta sus caudales erosiona las orillas, las orillas más inestables, que es a donde empieza a moverse; empieza a buscar salir ... ¿Eso puede
 
-Radicación número: 47-001-2333-000-2016-0482-00 Actor: Rodrigo Martínez Silva y otro estar afectando? si puede estar afectando, tampoco lo hemos medido, esta es una problemática que se discutió en la mesa técnica del de febrero, en el cual había que observar, ya con detalle, qué es lo que está pasando entre al menos entre el puente del río Gaira en la avenida Tamacá hacía acá, hacia la playa (minuto' -16:30').
+Radicación número: 47-001-2333-000-2016-0482-00 Actor: Rodrigo Martínez Silva y otro estar afectando? si puede estar afectando, tampoco lo hemos medido, esta es una problemática que se discutió en la mesa técnica del 3 de febrero, en el cual había que observar, ya con detalle, qué es lo que está pasando entre al menos entre el puente del río Gaira en la avenida Tamacá hacía acá, hacia la playa (minuto' -16:30').
 
 En la mesa técnica de agosto empezamos de hablar de quitar el espolón, una de las ideas era que se pasaran propuestas de investigación, y el CIOH, a través de Capitanía de Puerto presentó una propuesta en la cual se planteaba hacer el modelo de dispersión de sedimento, que iba a ocurrir si se empezaba a quitar el espolón, a ver si se podía quitar de la misma manera que se instaló, de un día para otro, o si teniamos que hacer un trabajo previo, en ese caso sería hacer un trasbase de arena, es decir pasar la arenas que está aquí contenida, pasarla, o si vamos quitándolo por pedazos, o si definitivamente dejarlo es una buena idea; ... esa es la necesidad de los estudios del modelo de lo que se pasó (minuto:20)
 
@@ -405,13 +405,13 @@ Los pronósticos de erosión, los casos de erosión estaban a 5 mts por año, ob
 
 Ahora bien, respecto del servicio público de alumbrado público, obra el informe técnico de iluminación de playa Salguero-5, suscrito por la "'Concesión Alumbrado Público de Santa Marta", en el que consta que el proyecto de iluminación fue desarrollado siguiendo todos los requerimientos exigidos por la Capitanía de Puerto de Santa Marta y por la DIMAR.
 
-Sobre el particular, el de mayo de 2011, el Alcalde Distrital de Santa Marta le solicitó a la DIMAR la concesión en área de playa marítima para llevar a cabo el proyecto de iluminación de Playa Salguero y la autorización formal para desarrollar las obras del proyecto.
+Sobre el particular, el 5 de mayo de 2011, el Alcalde Distrital de Santa Marta le solicitó a la DIMAR la concesión en área de playa marítima para llevar a cabo el proyecto de iluminación de Playa Salguero y la autorización formal para desarrollar las obras del proyecto.
 
-Lo anterior, teniendo como base el contrato del de febrero de 199717, celebrado entre ese ente territorial y la Unión Temporal Diselecsa LtdaEléctricas de Medellín, para la prestación del servicio de alumbrado público en el Distrito y el mantenimiento de la infraestructura y el otro Si 618 al referido contrato.
+Lo anterior, teniendo como base el contrato del 7 de febrero de 199717, celebrado entre ese ente territorial y la Unión Temporal Diselecsa LtdaEléctricas de Medellín, para la prestación del servicio de alumbrado público en el Distrito y el mantenimiento de la infraestructura y el otro Si 618 al referido contrato.
 
-El de marzo de 2011, el Director del DADMA certificó que las concesiones otorgadas por la Capitanía de Puerto de Santa Marta en Playa Salguero Rodadero sur no se encontraba sujeto a la expedición de una licencia ambiental y, el de abril siguiente, el Secretario de Planeación Distrital certificó que el terreno de playa solicitado en concesión para la instalación del alumbrado público en Playa Salguero "no está destinado a ningún uso oficial, no está ocupado por otra persona y no ofrece ningún inconveniente al Distrito de Santa Marta"20.
+El 2 de marzo de 2011, el Director del DADMA certificó que las concesiones otorgadas por la Capitanía de Puerto de Santa Marta en Playa Salguero Rodadero sur no se encontraba sujeto a la expedición de una licencia ambiental y, el 5 de abril siguiente, el Secretario de Planeación Distrital certificó que el terreno de playa solicitado en concesión para la instalación del alumbrado público en Playa Salguero "no está destinado a ningún uso oficial, no está ocupado por otra persona y no ofrece ningún inconveniente al Distrito de Santa Marta"20.
 
-Así, pues, el de mayo de 2012, la DIMAR otorgó permiso de concesión en área de playa de uso público sobre la orilla de la playa para instalar en el sector de Playa Salguero, consistentes en:
+Así, pues, el 16 de mayo de 2012, la DIMAR otorgó permiso de concesión en área de playa de uso público sobre la orilla de la playa para instalar en el sector de Playa Salguero, consistentes en:
 
 - "- 12 torres tipo mástil galvanizadas, con altura de metros cada una.
 - 12 bases para mástil en concreto con un área aproximada de.25 m2, para un total de 75 m2.
@@ -441,7 +441,7 @@ En concordancia con lo anterior, sobre este punto específico, la señora Rita D
 
 Después de que la erosión se comió las luminarias, se las comió todas, las tumbó, después era una playa como de dos metros, no había playa, eran dos metros de distancia, ósea nosotros en cualquier momento nos íbamos a desaparecer con el mar y ahora puede haber unos metros de playa por ahí a 30 metros quizás. Del otro lado, hace poco estuve mirando y ya están recuperando un poco".
 
-En el informe detallado de la conexión del sistema de alumbrado público del Sector de Playa Salguero en la costa del mar, suscrito por el Distrito de Santa Marta y remitido el de enero de 2020 quedó consignado que:
+En el informe detallado de la conexión del sistema de alumbrado público del Sector de Playa Salguero en la costa del mar, suscrito por el Distrito de Santa Marta y remitido el 27 de enero de 2020 quedó consignado que:
 
 - "1. La responsabilidad del mantenimiento de las redes de alumbrado público y luminarias del sector de Playa Salguero está a cargo de ESSMAR- Alumbrado Público de Santa Marta.
 2. En la actualidad debido a la erosión costera, de torres para iluminación instaladas inicialmente, solo hay izadas de las instaladas; ya que las otras fueron retiradas en su momento para minimizar cualquier riesgo que se pudiese llegar a generar por el aumento del fenómeno natural.
@@ -449,7 +449,7 @@ En el informe detallado de la conexión del sistema de alumbrado público del Se
 4. Las dos torres que no están operando, obedecen al retiro de la acometida eléctrica y tuberías por el daño causado debido a la acción de. La marea causó la exposición de las tuberías y conductores eléctricos generando un estado de inseguridad para los bañistas que en esta época (Diciembre - Enero) visitan el lugar.
 6. De lo anterior, fueron retiradas las acometidas eléctricas de las torres que se encuentran ubicadas más hacia el norte, colindantes con la calle"22.
 
-De otra parte, sobre el servicio de alcantarillado, obra el informe detallado de la conexión del Sistema de Alcantarillado del Sector de Playa Salguero, suscrito el de enero de 2020 por la Dirección de Alcantarillado de la Empresa de Servicios Públicos del Distrito de Santa Marta ESSMAR ESP:
+De otra parte, sobre el servicio de alcantarillado, obra el informe detallado de la conexión del Sistema de Alcantarillado del Sector de Playa Salguero, suscrito el 24 de enero de 2020 por la Dirección de Alcantarillado de la Empresa de Servicios Públicos del Distrito de Santa Marta ESSMAR ESP:
 
 "... el sistema de alcantarillado en la zona de PLAYA SALGUERO cuenta con un colector de redes sanitarias con diámetro de" PVC, ubicado sobre la Av Tamacá entre calles 22A y 29, este se encuentra diseñado para recibir Página 546 del archivo PDF, cuaderno principal.
 
@@ -459,7 +459,7 @@ Es importante resaltar, que algunas edificaciones ubicadas sobre la calle de la 
 
 En la actualidad, las firmas que se encuentran diseñando y construyendo nuevas en esta zona están creando una propuesta para construir una estación de bombeo de aguas residuales de mayor capacidad para poder conectarse al sistema de alcantarillado"23,
 
-Las pruebas de calidad de agua marina DGI-SCI-CAM-001860 aplicadas al sector de Playa Salguero el de noviembre de 2017, por la Unidad de Laboratorios de Calidad Ambiental Marina del INVEMAR, en la que se recolectaron muestras de agua en cinco puntos para análisis de microorganismos indicadores de calidad sanitaria, las cuales arrojaron como resultado que:
+Las pruebas de calidad de agua marina DGI-SCI-CAM-001860 aplicadas al sector de Playa Salguero el 28 de noviembre de 2017, por la Unidad de Laboratorios de Calidad Ambiental Marina del INVEMAR, en la que se recolectaron muestras de agua en cinco puntos para análisis de microorganismos indicadores de calidad sanitaria, las cuales arrojaron como resultado que:
 
 "los puntos y 5 presentaron valores de coliformes totales mayores al criterio de calidad establecido por la legislación colombiana para contacto primario (coliformes totales&lt;1000 NMP/100ml) y en lo referente a los coliformes termotolerantes, los puntos, 4 y 5 excedieron el valor permisible (&lt;200 NMP/100ml) para el mismo tipo de contacto.
 
@@ -467,7 +467,7 @@ Los resultados de enterococos totales fecales en los puntos y 5 se encontraron e
 
 Las concentraciones de los microorganismos indicadores, especialmente en los puntos y 5, están relacionadas con las altas precipitaciones que ocurrieron los días anteriores al evento de triatlón de los Juegos Bolivarianos 2017 y que pudieron favorecer las descargas de residuos domésticos a través del río Gaira. Pese a lo anterior, en los puntos, 2 y 3 las concentraciones registradas no representaron un riesgo alto para bañistas de acuerdo a la normatividad colombiana y referencias internacionales" (subrayas de la Sala).
 
-El de agosto de 2020 se llevó a cabo el consejo Distrital de Gestión del Riesgo, con el fin de deliberar sobre la problemática de la erosión costera en Playa Salguero, con la participación de los secretarios de las oficinas Distritales para la Gestión del Riesgo y Cambio Climático, de Planeación, de Gobierno, de Seguridad y Convivencia, de Salud, de Educación y de Página 545 del archivo PDF, cuaderno principal.
+El 13 de agosto de 2020 se llevó a cabo el consejo Distrital de Gestión del Riesgo, con el fin de deliberar sobre la problemática de la erosión costera en Playa Salguero, con la participación de los secretarios de las oficinas Distritales para la Gestión del Riesgo y Cambio Climático, de Planeación, de Gobierno, de Seguridad y Convivencia, de Salud, de Educación y de Página 545 del archivo PDF, cuaderno principal.
 
 25 Archivo PDF, cuaderno principal
 
@@ -518,7 +518,7 @@ El alcance del proyecto a ejecutar está encaminado a la mitigación temporal de
 
 Mediante Oficio No. 1700-12-0129, Corpamag brindó respuesta a una petición que fue elevada por el procurador ambiental, donde se le informó que efectivamente el distrito de Santa Marta elevó solicitud para obtener permiso de ocupación de cauce, playas y lechos para la instalación de dos estructuras blandas en geosintéticos (geotube) en el sector de playa Salguero. Que el alcance del proyecto consiste en realizar la instalación de estructuras confinadas con materiales blandos, los cuales tendrán tiempos cortos para generación acreción de manera eficiente evitando futuras erosiones en la zona. Corpamag consideró viable otorgar el permiso mediante la Resolución No. 4260 de 2022, permiso de ocupación de cauce, playas y lechos de conformidad con lo dispuesto en el Decreto 1076 de 2015.
 
-Por otro lado, a través de Oficio DGI-SCI-GEO-JUR 1002 del de agosto de 202230, INVEMAR brindó respuesta sobre el seguimiento a la erosión costera en playa Salguero, de la cual se resalta:
+Por otro lado, a través de Oficio DGI-SCI-GEO-JUR 1002 del 18 de agosto de 202230, INVEMAR brindó respuesta sobre el seguimiento a la erosión costera en playa Salguero, de la cual se resalta:
 
 "(...) A partir de la revisión histórica de imágenes satelitales, es evidente que el sector de playa Salguero naturalmente atraviesa por periodos de acreción y erosión, relacionados a épocas climáticas y fenómenos atmosféricos extremos, de alto impacto regional. Los monitoreos a su vez, han demostrado que en la actualidad, el sector presenta un dominancia de los procesos erosivos y que las intervenciones antrópicas como la redirección de la ronda del río y la instalación del espolón de la calle, han ocasionado un desequilibrio en el sistema afectando negativamente a la zona central de playa Salguero.
 
@@ -526,31 +526,31 @@ Los datos de línea de costa colectados desde marzo del 2017 hasta julio del 202
 
 El anexo A, B y C muestra el registro fotográfico del mes de agosto. Se observan diferencias de hasta casi m entre la zona norte y sur del espolón. Los procesos erosivos aumentan en el tiempo y se observa en el mes de abril (anexo D y E) un buen estado de la barrera de sacos en el escarpe y la aparente recuperación del perfil de playa, mientras que, en el mes de agosto (anexo F y G) se observa como los procesos erosivos superaron y desgastaron la barrera ocasionando el retroceso de la línea de costa y en consecuencia la remoción de la vegetación. Por último, dados los impactos identificados por la presencia del espolón de la calle, se recomienda trasladar la solicitud de concepto a la autoridad marítima colombiana -DIMAR, para definir si se remueve total o parcialmente dicha obra. El INVEMAR continua aportando a la recuperación ambiental de las zonas marinas y costeras a través del monitoreo y estudio técnico de las áreas afectadas por procesos erosivos, con la finalidad de crear alternativas basadas en ecosistemas (AbE) que involucren la participación comunitaria para la creación de resiliencia y disminución de la vulnerabilidad.(...)"
 
-Obra en el plenario también, el Oficio No: 14202202315 MD-DIMAR-CP04ARAP del de agosto de 202231, por medio del cual la DIMAR brinda respuesta a una petición formulada por el procurador ambiental, con la finalidad que se informara sobre la radicación de algún proyecto para atender el fenómeno erosivo en la línea de costa del distrito de Santa Marta, en especial en el sector de Playa Salguero. Al respecto la autoridad marítima indicó:
+Obra en el plenario también, el Oficio No: 14202202315 MD-DIMAR-CP04ARAP del 31 de agosto de 202231, por medio del cual la DIMAR brinda respuesta a una petición formulada por el procurador ambiental, con la finalidad que se informara sobre la radicación de algún proyecto para atender el fenómeno erosivo en la línea de costa del distrito de Santa Marta, en especial en el sector de Playa Salguero. Al respecto la autoridad marítima indicó:
 
-"(...) En relación al primer punto, a la fecha ante la Dirección General Marítima no se ha radicado trámite alguno para autorizar obras de protección costera en el Distrito de Santa Marta, ni en el sector de Playa Salguero; no obstante, la Oficina para la Gestión del Riesgo y Cambio Climático de la Alcaldía Distrital de Santa Marta presentó ante este Despacho el día de marzo de 2022, un estudio oceanográfico inicial y diseño de alternativas de solución ante la problemática de erosión costera para el sector de Playa Salguero consistentes en un sistema de diques y espolones tipo escollera, dicho estudio fue remitido al Centro de Investigaciones Oceanográficas e Hidrográficas del Caribe CIOH, en donde el centro manifestó que, el estudio presentado carecía de aspectos importantes para la construcción de obras de protección costera. Posterior a ello, la Alcaldía Distrital de Santa Marta radicó el día de julio de 2022, un estudio oceanográfico final y de diseño de alternativas de solución ante la problemática de erosión costera para el sector de Playa Salguero consistente en un sistema de Geobags distribuidos en toda la línea costera del sector, dicho estudio se encuentra en revisión científica del CIOH.
+"(...) En relación al primer punto, a la fecha ante la Dirección General Marítima no se ha radicado trámite alguno para autorizar obras de protección costera en el Distrito de Santa Marta, ni en el sector de Playa Salguero; no obstante, la Oficina para la Gestión del Riesgo y Cambio Climático de la Alcaldía Distrital de Santa Marta presentó ante este Despacho el día 17 de marzo de 2022, un estudio oceanográfico inicial y diseño de alternativas de solución ante la problemática de erosión costera para el sector de Playa Salguero consistentes en un sistema de diques y espolones tipo escollera, dicho estudio fue remitido al Centro de Investigaciones Oceanográficas e Hidrográficas del Caribe CIOH, en donde el centro manifestó que, el estudio presentado carecía de aspectos importantes para la construcción de obras de protección costera. Posterior a ello, la Alcaldía Distrital de Santa Marta radicó el día 12 de julio de 2022, un estudio oceanográfico final y de diseño de alternativas de solución ante la problemática de erosión costera para el sector de Playa Salguero consistente en un sistema de Geobags distribuidos en toda la línea costera del sector, dicho estudio se encuentra en revisión científica del CIOH.
 
 Es relevante mencionar que, en este Despacho reposa un estudio oceanográfico y de diseño del plan piloto para la instalación de dos Geobags en el sector de Playa Salguero, presentados por la Alcaldía Distrital de Santa Marta, sin embargo, se reitera que no cuenta con tramite alguno ante esta Entidad, debido a que no se han aportado los requisitos de Ley para el trámite de autorización de obra, los cuales se encuentran establecidos en el Decreto Ley 2324 de 1984 en concordancia con la normatividad marítima.
 
-En respuesta a su segunda petición, se le informa que de parte de la Capitanía de Puerto de Santa Marta, se realizó la sugerencia a la Alcaldía Distrital de Santa Marta de implementar estructuras blancas , para el sector y no el sistema de espolones tipo escollera que se tenían propuestos, teniendo en cuenta una visita técnica realizada el de marzo de 2022 al puerto DRUMMOND COMPANY, en donde se pudo evidenciar la eficiencia de dichos Geobags en la protección y recuperación de la línea costera del sitio donde fueron instalados, sin generar erosión en los sectores aledaños. Posteriormente, el día de abril de 2022, se hizo el acompañamiento in situ al sector de Playa Salguero, con el propósito de evaluar la posibilidad de instalar Geobags en dicho sector, en donde se concluyó instalar dos Geobas pilotos en el sector de Edificio Ambar Oceanic para observar cómo interactúa estas estructuras con el medio marino - costero. (...)"
+En respuesta a su segunda petición, se le informa que de parte de la Capitanía de Puerto de Santa Marta, se realizó la sugerencia a la Alcaldía Distrital de Santa Marta de implementar estructuras blancas , para el sector y no el sistema de espolones tipo escollera que se tenían propuestos, teniendo en cuenta una visita técnica realizada el 28 de marzo de 2022 al puerto DRUMMOND COMPANY, en donde se pudo evidenciar la eficiencia de dichos Geobags en la protección y recuperación de la línea costera del sitio donde fueron instalados, sin generar erosión en los sectores aledaños. Posteriormente, el día 07 de abril de 2022, se hizo el acompañamiento in situ al sector de Playa Salguero, con el propósito de evaluar la posibilidad de instalar Geobags en dicho sector, en donde se concluyó instalar dos Geobas pilotos en el sector de Edificio Ambar Oceanic para observar cómo interactúa estas estructuras con el medio marino - costero. (...)"
 
-Corpamag por su parte, indicó que mediante Resolución 4260 del de agosto de 2022, otorgó permiso de cauce, playas y lechos para la instalación de dos estructuras en geosintéticos (geotube en el sector de Playa Salguero...), en el acto administrativo se señalaron los detalles de los materiales y estructura de los geotubos, así como la evaluación técnica de los demás aspectos del proyecto que permitió a la Corporación otorgar el permiso a la alcaldía de Santa Marta por el término de la ejecución de las actividades autorizadas.
+Corpamag por su parte, indicó que mediante Resolución 4260 del 30 de agosto de 2022, otorgó permiso de cauce, playas y lechos para la instalación de dos estructuras en geosintéticos (geotube en el sector de Playa Salguero...), en el acto administrativo se señalaron los detalles de los materiales y estructura de los geotubos, así como la evaluación técnica de los demás aspectos del proyecto que permitió a la Corporación otorgar el permiso a la alcaldía de Santa Marta por el término de la ejecución de las actividades autorizadas.
 
 La Corporación Autónoma Regional del Magdalena allegó el proyecto de las condiciones ambientales de la zona marino-costera del departamento del Magdalena como herramienta para la gestión y protección de los ecosistemas marinos y costeros en jurisdicción de Corpamag - informe técnico final - convenio interadministrativo No. 451 de 2020
 
 La DIMAR brindó respuesta al requerimiento efectuado por este Tribunal en los siguientes términos:
 
-"(...) Al Primer Punto, me permito indicar que el señor Jefe de la Oficina para la Gestión del Riesgo y Cambio Climático del Distrito de Santa Marta, mediante el oficio N° 47001-140722-080, radicado el día de julio de 2022 en la Capitanía de Puerto de Santa Marta, bajo el SGDEA-SE N° 142022104339, remitió para conocimiento, análisis y sugerencias, los resultados y soportes en medio magnético que complementa el "ESTUDIO OCEANOGRÁFICO Y DE DISEÑO DE ALTERNATIVAS DE SOLUCIÓN ANTE LA PROBLEMÁTICA DE EROSIÓN COSTERA PARA EL SECTOR DE PLAYA SALGUERO - BAHÍA DE GAIRA, EN LA CIUDAD DE SANTA MARTA", que corresponde al informe final versión de la Modelación Oceanográfica obras definitivas, el cual se anexa.
+"(...) Al Primer Punto, me permito indicar que el señor Jefe de la Oficina para la Gestión del Riesgo y Cambio Climático del Distrito de Santa Marta, mediante el oficio N° 47001-140722-080, radicado el día 15 de julio de 2022 en la Capitanía de Puerto de Santa Marta, bajo el SGDEA-SE N° 142022104339, remitió para conocimiento, análisis y sugerencias, los resultados y soportes en medio magnético que complementa el "ESTUDIO OCEANOGRÁFICO Y DE DISEÑO DE ALTERNATIVAS DE SOLUCIÓN ANTE LA PROBLEMÁTICA DE EROSIÓN COSTERA PARA EL SECTOR DE PLAYA SALGUERO - BAHÍA DE GAIRA, EN LA CIUDAD DE SANTA MARTA", que corresponde al informe final versión de la Modelación Oceanográfica obras definitivas, el cual se anexa.
 
 Cabe resaltar que con el oficio interno N° 040945R de fecha de agosto de 2022, esta Capitanía de Puerto remitió al señor Director del Centro de investigaciones Oceanográficas e Hidrográficas del Caribe de la Dirección General Marítima (DIMAR), el mencionado estudio oceanográfico final y de diseño de alternativas de solución ante la problemática de erosión costera en el sector de Playa Salguero - Bahía de Gaira en la ciudad de Santa Marta, presentado por el Jefe de la Oficina para la Gestión del Riesgo de Desastres y Cambio Climático del Distrito de Santa Marta, para el análisis y verificación técnico científica correspondiente.
 
-Al Segundo Punto, me permito señalar que el señor Jefe de la Oficina para la Gestión del Riesgo y Cambio Climático del Distrito de Santa Marta, mediante el oficio N° 47001-030822-099, radicado el día de septiembre de 2022 en esta Capitanía de Puerto, bajo el SGDEA-SE N° 142022105486, remitió el proyecto "Instalación de dos estructuras en geosintéticos (GEOTUBE), en el sector de Playa Salguero, frente al edificio Ambar Oceanic", con sus respectivos anexos,
+Al Segundo Punto, me permito señalar que el señor Jefe de la Oficina para la Gestión del Riesgo y Cambio Climático del Distrito de Santa Marta, mediante el oficio N° 47001-030822-099, radicado el día 5 de septiembre de 2022 en esta Capitanía de Puerto, bajo el SGDEA-SE N° 142022105486, remitió el proyecto "Instalación de dos estructuras en geosintéticos (GEOTUBE), en el sector de Playa Salguero, frente al edificio Ambar Oceanic", con sus respectivos anexos,
 
 Radicación número: 47-001-2333-000-2016-0482-00 Actor: Rodrigo Martinez Silva y otro para dar solución a los procesos erosivos, que se presentan en la línea de costa.
 
-Es por ello, que remitió junto con el citado oficio N° 47001-030822099, el Informe (Estudio oceanográfico), batimetrías, evaluación del Río Gaira, Mapas y la Resolución CORPAMAG N° 4260 del de agosto de 2022, mediante la cual la Corporación Autónoma Regional del Magdalena, otorgó permiso de ocupación de cauce a la Alcaldía Distrital de Santa Marta, para la instalación de dos estructuras en geosinteticos (Geotube) en el sector de Playa Salguero, Distrito de Santa Marta - departamento del Magdalena.
+Es por ello, que remitió junto con el citado oficio N° 47001-030822099, el Informe (Estudio oceanográfico), batimetrías, evaluación del Río Gaira, Mapas y la Resolución CORPAMAG N° 4260 del 30 de agosto de 2022, mediante la cual la Corporación Autónoma Regional del Magdalena, otorgó permiso de ocupación de cauce a la Alcaldía Distrital de Santa Marta, para la instalación de dos estructuras en geosinteticos (Geotube) en el sector de Playa Salguero, Distrito de Santa Marta - departamento del Magdalena.
 
-Cabe resaltar, que los documentos allegados y radicados el dia de septiembre de 2022 en la capitanía de Puerto, bajo el SGDEA-SE N° 142022105486, se encuentran actualmente en revisión técnico - jurídica por parte de la Capitanía de Puerto de Santa Marta, por lo cual se procederá a informar a la Oficina para la Gestión del Riesgo y Cambio Climático del Distrito de Santa Marta, que deberá presentar la solicitud de trámite para Autorización de Obras de Protección Costera a través de la Sede Electrónica de DIMAR, trámites en línea, adjuntando los requisitos establecidos en el artículo 5.3.3.5. de la Resolución N° 00202019 MD-DIMAR SUBDEMAR-ALIT del de enero de 2019, expedida por la Dirección General Marítima, los cuales son:
+Cabe resaltar, que los documentos allegados y radicados el dia 5 de septiembre de 2022 en la capitanía de Puerto, bajo el SGDEA-SE N° 142022105486, se encuentran actualmente en revisión técnico - jurídica por parte de la Capitanía de Puerto de Santa Marta, por lo cual se procederá a informar a la Oficina para la Gestión del Riesgo y Cambio Climático del Distrito de Santa Marta, que deberá presentar la solicitud de trámite para Autorización de Obras de Protección Costera a través de la Sede Electrónica de DIMAR, trámites en línea, adjuntando los requisitos establecidos en el artículo 5.3.3.5. de la Resolución N° 00202019 MD-DIMAR SUBDEMAR-ALIT del 22 de enero de 2019, expedida por la Dirección General Marítima, los cuales son:
 
 ARTÍCULO 5.3.3.5. Declaratoria de calamidad pública. En situación de Calamidad Pública, en virtud de lo establecido en la Ley 1523 de 2012, la ejecución de las obras de protección se someterá al régimen especial que se establezca en el acto administrativo que la declare, y la autorización expedida por la Dirección General Marítima estará sujeta a los siguientes requisitos técnicos:
 
@@ -564,11 +564,11 @@ Por su parte, el Concejo Distrital manifestó que, una vez revisado los anexos d
 
 A su vez, el Ministerio de Ambiente y Desarrollo Sostenible indicó que esa cartera formuló el plan maestro de erosión costera PMEC, con apoyo técnico del INVEMAR, DIMAR y SERVICIO GEOLÓGICO COLOMBIANO y el gobierno de los Países Bajos, entre otros, en el que se coincide en la identificación de los puntos mencionados en el asunto de la ciudad de Santa Marta; y que en el marco de la implementación de PMEC se instaló conjuntamente la mesa técnica nacional en la Unidad Nacional de Gestión de Riesgo de Desastre UNGRD y en esa mesa de trabajo se indicaron unas recomendaciones para la formulación de proyectos costeros para prevenir y mitigar la erosión costera.
 
-EI DADSA manifestó que se encuentra participando activamente en la mesa técnica con respecto al fenómenos de erosión costera presente en el sector de playa salguero, la cual es liderada por la Procuraduría Judicial Il Ambiental y Agrario del Magdalena, de igual forma en atención a la sentencia del de junio de 2016 emanada del Tribunal Administrativo del Magdalena y modificada por el consejo de Estado el de julio de 2021 dentro del proceso iniciado por el señor Gabriel Antonio Carrero Torres, de ahí que, la alcaldía distrital de Santa Marta convocó el Concejo Distrital para el de abril de 2022 y en la sesiones se ordenó incluir al sector de playa Salguero en atención a esta acción popular y luego, la alcaldía expidió el Decreto No,. 050 del de abril de 2022 "Por medio del cual se declara la calamidad pública por erosión costera en el distrito turístico, cultural e histórico de Santa Marta en la zona Pozos Colorados y playa Salguero, se declara la urgencia manifiesta y se adoptan otras disposiciones".
+EI DADSA manifestó que se encuentra participando activamente en la mesa técnica con respecto al fenómenos de erosión costera presente en el sector de playa salguero, la cual es liderada por la Procuraduría Judicial Il Ambiental y Agrario del Magdalena, de igual forma en atención a la sentencia del 15 de junio de 2016 emanada del Tribunal Administrativo del Magdalena y modificada por el consejo de Estado el 22 de julio de 2021 dentro del proceso iniciado por el señor Gabriel Antonio Carrero Torres, de ahí que, la alcaldía distrital de Santa Marta convocó el Concejo Distrital para el 6 de abril de 2022 y en la sesiones se ordenó incluir al sector de playa Salguero en atención a esta acción popular y luego, la alcaldía expidió el Decreto No,. 050 del 6 de abril de 2022 "Por medio del cual se declara la calamidad pública por erosión costera en el distrito turístico, cultural e histórico de Santa Marta en la zona Pozos Colorados y playa Salguero, se declara la urgencia manifiesta y se adoptan otras disposiciones".
 
-El distrito de Santa Marta indicó que, a través del Cuerpo de Bomberos Voluntarios, se adjudicó y ejecutó contrato en figura de prestación de servicios, con el ingeniero civil Dorian Rodríguez González, cuyo objeto consiste en la prestación de servicio para el desarrollo de un análisis técnico de playa salguero; adicionalmente, puso de presente que puso en de riesgo y alternativas de la erosión costera que se presenta en el sector conocimiento de la DIMAR, para su análisis, aprobación de estudios y Radicación número: 47-001-2333-000-2016-0482-00 Actor: Rodrigo Martinez Silva y otro posibles ejecuciones, en diversas correspondencias del proyecto "estudio oceanográfico y de diseño de alternativas de solución ante la problemática de erosión costera para el sector de playa Salguero - Bahía de Gaira, en la ciudad de Santa Marta"; y en la sesión de la comisión segura celebrada el de septiembre de 2022, la jefatura de la OGRICC expuso el referido estudio.
+El distrito de Santa Marta indicó que, a través del Cuerpo de Bomberos Voluntarios, se adjudicó y ejecutó contrato en figura de prestación de servicios, con el ingeniero civil Dorian Rodríguez González, cuyo objeto consiste en la prestación de servicio para el desarrollo de un análisis técnico de playa salguero; adicionalmente, puso de presente que puso en de riesgo y alternativas de la erosión costera que se presenta en el sector conocimiento de la DIMAR, para su análisis, aprobación de estudios y Radicación número: 47-001-2333-000-2016-0482-00 Actor: Rodrigo Martinez Silva y otro posibles ejecuciones, en diversas correspondencias del proyecto "estudio oceanográfico y de diseño de alternativas de solución ante la problemática de erosión costera para el sector de playa Salguero - Bahía de Gaira, en la ciudad de Santa Marta"; y en la sesión de la comisión segura celebrada el 8 de septiembre de 2022, la jefatura de la OGRICC expuso el referido estudio.
 
-En efecto, está acreditado que mediante el Decreto No. 050 del de abril de 202238, el distrito de Santa Marta declaró la calamidad pública por erosión costera en el distrito de Santa Marta en el sector de Pozos Colorados y Playa Salguero, se declaró la urgencia manifiesta y se adoptaron otras disposiciones. A través del referido decreto se ordenó crear una mesa de trabajo que tendrá como misión dar cumplimiento a lo ordenado en el fallo de segunda instancia proferido por el consejo de Estado dentro de la acción popular con radicado 47001233100020110842501 y en tal sentido "definirá, adoptará y ejecutará el Plan Maestro de Erosión Costera como instrumento de planificación para atender la erosión costera en el área de Pozos Colorados" así como también respecto de la zona de Playa Salguero, decreto que tendría una vigencia de meses.
+En efecto, está acreditado que mediante el Decreto No. 050 del 6 de abril de 202238, el distrito de Santa Marta declaró la calamidad pública por erosión costera en el distrito de Santa Marta en el sector de Pozos Colorados y Playa Salguero, se declaró la urgencia manifiesta y se adoptaron otras disposiciones. A través del referido decreto se ordenó crear una mesa de trabajo que tendrá como misión dar cumplimiento a lo ordenado en el fallo de segunda instancia proferido por el consejo de Estado dentro de la acción popular con radicado 47001233100020110842501 y en tal sentido "definirá, adoptará y ejecutará el Plan Maestro de Erosión Costera como instrumento de planificación para atender la erosión costera en el área de Pozos Colorados" así como también respecto de la zona de Playa Salguero, decreto que tendría una vigencia de meses.
 
 ## 4.6. Análisis del caso en concreto
 
@@ -582,7 +582,7 @@ A efectos de resolver el problema jurídico planteado desde el inicio de las con
 
 En el sector de Playa Salguero se viene evidenciando, de años atrás, un alto grado de erosión costera, fenómeno consistente en un retroceso de la línea de playa de aproximadamente metros por año, que ocurre por factores naturales como el clima, bajos caudales del río Gaira y déficit de los aportes de sedimentos provenientes del mismo, así como por factores de carácter antrópico, tales como las construcciones desarrolladas a lo largo de la línea de playa, la construcción de diques y rellenos con material sobre el cauce del río, los cuales causan un desequilibrio en los procesos naturales que se deben generar en estas zonas y la consecuente afectación de sus ecosistemas.
 
-Según el documento CONPES 3990 consejo Nacional de Política Económica y Social del de marzo de 2020 "Colombia potencia bioceánica Sostenible 2030"39 , "Respecto al aumento del nivel medio del mar, su principal consecuencia es la erosión costera o cambios en la línea de costa que genera un aumento en la probabilidad de inundaciones por reducción de la superficie terrestre y las dinámicas en las áreas de desembocadura de ríos, además de reducir la disponibilidad de agua dulce de humedales o acuíferos cercanos a la nueva línea de costa y la pérdida de ecosistemas y sus servicios. Lo anterior eleva el riesgo de las comunidades y de la infraestructura ubicadas cerca al mar a sufrir daños por causa de las inundaciones".
+Según el documento CONPES 3990 consejo Nacional de Política Económica y Social del 31 de marzo de 2020 "Colombia potencia bioceánica Sostenible 2030"39 , "Respecto al aumento del nivel medio del mar, su principal consecuencia es la erosión costera o cambios en la línea de costa que genera un aumento en la probabilidad de inundaciones por reducción de la superficie terrestre y las dinámicas en las áreas de desembocadura de ríos, además de reducir la disponibilidad de agua dulce de humedales o acuíferos cercanos a la nueva línea de costa y la pérdida de ecosistemas y sus servicios. Lo anterior eleva el riesgo de las comunidades y de la infraestructura ubicadas cerca al mar a sufrir daños por causa de las inundaciones".
 
 Esta problemática representa un riesgo latente para el sector de Playa Salguero y las estructuras que se encuentran en la línea de playa, lo que evidencia la vulnerabilidad del área, a tal punto, que el mar derribó las El presente documento presenta a consideración del CONPES para la Politica Social la distribucior erritorial y sectorial del Situado Fiscal, así como la distribución territorial de la participación d municipios y resguardos indigenas en los Ingresos Co (cco.gov.co)
 
@@ -610,7 +610,7 @@ A su paso por Colombia, dicho huracán era de categoría, según la Escala de Vi
 
 Sumado a lo anterior, las pruebas de calidad de agua marina aplicadas al sector de Playa Salguero en 2017, para analizar microorganismos indicadores de calidad sanitaria, concluyeron que en dos de los puntos examinados los valores de "enterococos totales fecales" representaban un riesgo para los bañistas de contraer enfermedades gastrointestinales y que ello se debía a "las altas precipitaciones que ocurrieron los días anteriores al evento de triatlón de los Juegos Bolivarianos 2017 y que pudieron favorecer las descargas de residuos domésticos a través del río Gaira" y no a la exposición de las pozas sépticas del sector.
 
-40 Minuto de la audiencia de pruebas realizada el de enero de 2020.
+40 Minuto de la audiencia de pruebas realizada el 27 de enero de 2020.
 
 11 Presentación de PowerPoint (pronosticosyalertas.gov.co) "ALERTA ROJA EN EL MAR CARIBE.
 
@@ -630,7 +630,7 @@ Así las cosas, aunque está claro que algunas viviendas del sector carecen del 
 
 El proyecto de iluminación de Playa Salguero se desarrolló siguiendo todos los requerimientos exigidos por la Capitanía de Puerto de Santa Marta y por la DIMAR.
 
-En virtud del contrato del de febrero de 1997, celebrado entre el Distrito de Santa Marta y la Unión Temporal Diselecsa Ltda- Eléctricas de Medellín, para la prestación del servicio de alumbrado público en el Distrito y el mantenimiento de la infraestructura, el alcalde Distrital de Santa Marta le solicitó a la DIMAR la concesión en área de playa para llevarlo a cabo y la autorización formal para desarrollar las obras del proyecto.
+En virtud del contrato del 7 de febrero de 1997, celebrado entre el Distrito de Santa Marta y la Unión Temporal Diselecsa Ltda- Eléctricas de Medellín, para la prestación del servicio de alumbrado público en el Distrito y el mantenimiento de la infraestructura, el alcalde Distrital de Santa Marta le solicitó a la DIMAR la concesión en área de playa para llevarlo a cabo y la autorización formal para desarrollar las obras del proyecto.
 
 Por cumplir con los requisitos, la DIMAR otorgó el permiso de concesión en área de playa de uso público, para instalar torres tipo mástil galvanizadas, con altura de metros cada una, 12 bases para mástil en concreto con un área aproximada de.25 m2 (para un total de 75 m2), 72 luminarias de metal. Se indicó que la distancia aproximada entre la línea de más alta marea hasta la tierra firme era de metros.
 
@@ -646,7 +646,7 @@ Además de los factores climáticos, la erosión costera tiene como causa los el
 
 En el presente caso, resulta claro que la intervención de la Constructora AR sobre el cauce del río Gaira impactó negativamente el ecosistema y generó el aumento de la erosión costera.
 
-El Edificio Reserva del Mar fue licenciado por la entonces Curadora Urbana de Santa Marta, Sara Uribe Salas, quien expidió la Resolución No. 204 del de julio de 2012 "Por medio de la cual se otorga la Licencia de Construcción No. 053 y Licencia de Urbanismo No. 007".
+El Edificio Reserva del Mar fue licenciado por la entonces Curadora Urbana de Santa Marta, Sara Uribe Salas, quien expidió la Resolución No. 204 del 25 de julio de 2012 "Por medio de la cual se otorga la Licencia de Construcción No. 053 y Licencia de Urbanismo No. 007".
 
 Dicho proyecto urbanístico conservó los lineamientos urbanísticos autorizados por la referida señora y el arquitectónico constructivo fue objeto de modificación de licencia vigente, obtuvo prórroga y segunda prórroga, así como la una revalidación.
 
@@ -714,7 +714,7 @@ Además, la Sección Primera del consejo de Estado5i hizo alusión al contenido 
 
 50 El carácter de derecho fundamental del medio ambiente, dada su relación con derechos de esa indole, fue reiterado por la Corte, entre muchas otras, en las Sentencias C-432 de 2000, C-671 de 2001, C-293 de 2002 y C-595 de 2010.
 
-51 Sentencia de de junio de 2017. Expediente 88001-23-33-000-2014-00040-01(AP)
+51 Sentencia de 8 de junio de 2017. Expediente 88001-23-33-000-2014-00040-01(AP)
 
 colectivos y del ambiente, sino por cuanto su contenido es tal que no puede ser asignado a ninguna persona en particular"53\_54.
 
@@ -736,7 +736,7 @@ Para la Sala, estos derechos colectivos al goce de un ambiente sano y a la exist
 
 Como otros tantos, este derecho no se encuentra definido en las normas constitucionales y legales, pero comporta uno de los derechos colectivos de especial protección, de conformidad con lo previsto en el artículo 88 de la Carta Política y en el literal b) del artículo 4 de la Ley 472 de 1998.
 
-En Sentencia de Unificación del de febrero de 2018, el consejo de Estado analizó su alcance bajo la premisa de que, al no encontrarse definido en la Ley 472 de 1998, se trata de un concepto jurídico indeterminado que debe ser estudiado en cada caso concreto, teniendo en cuenta que al tiempo comporta un principio que debe regir toda la actividad administrativa, asióo:
+En Sentencia de Unificación del 13 de febrero de 2018, el consejo de Estado analizó su alcance bajo la premisa de que, al no encontrarse definido en la Ley 472 de 1998, se trata de un concepto jurídico indeterminado que debe ser estudiado en cada caso concreto, teniendo en cuenta que al tiempo comporta un principio que debe regir toda la actividad administrativa, asióo:
 
 166. Doctrinaria y jurisprudencialmente se ha considerado a la moralidaa administrativa dentro de una doble dimensión: i) como principio de la función administrativa (artículo 209 CP) y ii) como derecho colectivo (artículo 88 ibidem).
 
@@ -802,7 +802,7 @@ No obstante lo anterior, aunque algunas viviendas del sector de Playa Salguero n
 
 De conformidad con lo dispuesto en los artículos 365 de la Constitución Política y 5.1 de la Ley 142 de 1994, el acceso a una infraestructura de servicios públicos es inherente a la finalidad social del Estado, razón por la cual se debe garantizar el acceso a una infraestructura de servicios
 
-63 Sentencia del de mayo de2014. Expediente 25000-23-24-000-2010-00609-01(AP) Actor: HERMANN GUSTAVO GARRIDO PRADA Y OTROS
+63 Sentencia del 15 de mayo de2014. Expediente 25000-23-24-000-2010-00609-01(AP) Actor: HERMANN GUSTAVO GARRIDO PRADA Y OTROS
 Radicación número: 47-001-2333-000-2016-0482-00
 
 Actor: Rodrigo Martínez Silva y otro adecuada para la satisfacción de las necesidades básicas de la comunidad, al respecto el consejo de Estado dijo:
@@ -817,9 +817,9 @@ viii) La realización de las construcciones, edificaciones y desarrollos urbanos
 
 Conforme lo ha señalado la jurisprudencia del consejo de Estado, este derecho implica "la necesidad de proteger la adecuada utilización, transformación y ocupación del suelo, de manera que las autoridades competentes no actúen en forma arbitraria en contravención del respectivo plan de ordenamiento territorial o instrumento que haga sus veces, a través de acciones que estén fuera de su marco normativo"65.
 
-De igual forma, esa Corporación mediante sentencia de de abril de 201166, determinó que el núcleo esencial del derecho colectivo comprendía los siguientes aspectos: i) respeto y acatamiento del principio de función social y ecológica de la propiedad; ii) protección del espacio público procurando adelantar cualquier tipo de construcción o edificación con respeto por el espacio público, el patrimonio público, y la calidad de vida de los demás habitantes; iii) respetar los derechos ajenos y no abusar del derecho propio; y iv) Atender los procesos de cambio en el uso del suelo, en aras
+De igual forma, esa Corporación mediante sentencia de 7 de abril de 201166, determinó que el núcleo esencial del derecho colectivo comprendía los siguientes aspectos: i) respeto y acatamiento del principio de función social y ecológica de la propiedad; ii) protección del espacio público procurando adelantar cualquier tipo de construcción o edificación con respeto por el espacio público, el patrimonio público, y la calidad de vida de los demás habitantes; iii) respetar los derechos ajenos y no abusar del derecho propio; y iv) Atender los procesos de cambio en el uso del suelo, en aras
 
-64 Sentencia del de febrero de 2010, Consejero ponente: Rafael E. Ostau De Lafont Pianeta. Expediente 76001233100020040021201(AP) Inciso segundo artículo 58 C.P.
+64 Sentencia del 4 de febrero de 2010, Consejero ponente: Rafael E. Ostau De Lafont Pianeta. Expediente 76001233100020040021201(AP) Inciso segundo artículo 58 C.P.
 
 68 Art. 95 numeral 1 C.P.
 
@@ -1087,7 +1087,7 @@ Artículo 2.2.6.6.1.2 Naturaleza de la función del curador urbano. El curador u
 
 Artículo 2.2.6.6.1.3 Autonomía y responsabilidad del curador urbano. El curador urbano es autónomo en el ejercicio de sus funciones y responsable disciplinaria, fiscal, civil y penalmente por los daños y perjuicios que causen a los usuarios, a terceros o a la administración pública en el ejercicio de su función pública".
 
-El consejo de Estado mediante concepto No. 1309 del de diciembre de 2000, Magistrado Ponente, Dr. Augusto Trejos Jaramillo, estableció respecto a los curadores urbanos lo siguiente:
+El consejo de Estado mediante concepto No. 1309 del 7 de diciembre de 2000, Magistrado Ponente, Dr. Augusto Trejos Jaramillo, estableció respecto a los curadores urbanos lo siguiente:
 
 "Los curadores urbanos son particulares, que colaboran en las atribuciones municipales mediante el ejercicio de un poder legal de carácter administrativo y según el decreto 1052 de 1998 tienen periodo fijo, son nombrados por el alcalde, acceden al servicio mediante concurso de méritos, están sujetos al régimen de requisitos, inhabilidades e incompatibilidades y disciplinario, se posesionan y deben establecer conexión electrónica con los archivos públicos de las oficinas de planeación locales, se les asigna una jurisdicción y su actividad está sujeta a procedimiento administrativo regulado en el mencionado decreto; conforme a la ley de ordenamiento territorial desarrollan competencias policivas de 'control y vigilancia' en el trámite de la expedición de la licencia de urbanismo y construcción".
 
@@ -1097,7 +1097,7 @@ Mediante Sentencia 00942 de 2017 la Sección Segunda del consejo de Estado, sobr
 
 Es claro que el curador urbano no es un servidor público, sino un particular que ejerce funciones públicas para el cumplimiento de los fines del Estado. Aunque el curador es autónomo en el ejercicio de sus funciones, es responsable disciplinaria, fiscal, civil y penalmente por los daños y perjuicios que causen a los usuarios, a terceros o a la administración pública en el ejercicio de su función pública.
 
-Así las cosas, habrá lugar a conminar a la Procuraduría General de la Nación y a la Fiscalia General de la Nación, para que investiguen la conducta de la curadora de Santa Marta en 2012, la señora Sara Uribe Salas, con la expedición Resolución No. 204 del de julio de 2012 "Por medio de la cual se otorga la Licencia de Construcción No. 053 y Licencia de Urbanismo No. 007", para la construcción del proyecto Reserva del Mar, sus prórrogas y revalidaciones.
+Así las cosas, habrá lugar a conminar a la Procuraduría General de la Nación y a la Fiscalia General de la Nación, para que investiguen la conducta de la curadora de Santa Marta en 2012, la señora Sara Uribe Salas, con la expedición Resolución No. 204 del 25 de julio de 2012 "Por medio de la cual se otorga la Licencia de Construcción No. 053 y Licencia de Urbanismo No. 007", para la construcción del proyecto Reserva del Mar, sus prórrogas y revalidaciones.
 
 ## 4.6.3.7. La Procuraduría Delegada para Asuntos Ambientales
 
@@ -1127,11 +1127,11 @@ En virtud de lo dispuesto en el artículo 3 de la Ley 1523 de 2012 "Por la cual 
 13. Principio de concurrencia: La concurrencia de competencias entre entidades nacionales y territoriales de los ámbitos público, privado y comunitario que constituyen el sistema nacional de gestión del riesgo de desastres, tiene lugar cuando la eficacia en los procesos, acciones y tareas se logre mediante la unión de esfuerzos y la colaboración no jerárquica entre las autoridades y entidades involucradas. La acción concurrente puede darse en beneficio de todas o de algunas de las entidades. El ejercicio concurrente de competencias exige el respeto de las atribuciones propias de las autoridades involucradas, el acuerdo expreso sobre las metas comunes y sobre los procesos y procedimientos para alcanzarlas.
 14. Principio de subsidiariedad: Se refiere al reconocimiento de la autonomía de las entidades territoriales para ejercer sus competencias. La subsidiariedad puede ser de dos tipos: la subsidiariedad negativa, cuando la autoridad territorial de rango superior se abstiene de intervenir el riesgo y su materialización en el ámbito de las autoridades de rango inferior, si estas tienen los medios para hacerlo. La subsidiariedad positiva, impone a las autoridades de rango superior, el deber de acudir en ayuda de las autoridades de rango inferior, cuando estas últimas, no tengan los medios para enfrentar el riesgo y su materialización en desastre o cuando esté en riesgo un valor, un interés o un bien jurídico protegido relevante para la autoridad superior que acude en ayuda de la entidad afectada (...)".
 
-Si bien el de agosto de 2020 se llevó a cabo un consejo Distrital de Gestión del Riesgo, con el propósito de deliberar sobre la problemática de la erosión costera en Playa Salguero, con la participación de varias autoridades distritales, el Director de la Defensa Civil, el Presidente de la Cruz Roja Seccional Magdalena y delgados del ESSMAR, del IDEAM, de CORPAMAG y Capitán de Fragata, en el que se evidenció la necesidad de realizar un estudio océano-gráfico (que fue cotizado en ese entoncespor la DIMAR), con el fin de encontrar las causas que estaban provocando la erosión costera de Playa Salguero y de plantear las alternativas de solución correspondientes, lo cierto es que, dos años después, se ignora cuál fue el resultado del mismo, si finalmente se declaró la calamidad pública y si se realizó el referido estudio.
+Si bien el 13 de agosto de 2020 se llevó a cabo un consejo Distrital de Gestión del Riesgo, con el propósito de deliberar sobre la problemática de la erosión costera en Playa Salguero, con la participación de varias autoridades distritales, el Director de la Defensa Civil, el Presidente de la Cruz Roja Seccional Magdalena y delgados del ESSMAR, del IDEAM, de CORPAMAG y Capitán de Fragata, en el que se evidenció la necesidad de realizar un estudio océano-gráfico (que fue cotizado en ese entoncespor la DIMAR), con el fin de encontrar las causas que estaban provocando la erosión costera de Playa Salguero y de plantear las alternativas de solución correspondientes, lo cierto es que, dos años después, se ignora cuál fue el resultado del mismo, si finalmente se declaró la calamidad pública y si se realizó el referido estudio.
 
 Por otro lado, quedó demostrado que el distrito de Santa Marta elevó solicitud ante Corpamag para obtener permiso de ocupación de cauce, playas y lechos para la instalación de dos estructuras blandas en geosintéticos (geotube) en el sector de playa Salguero. Que el alcance del proyecto consiste en realizar la instalación de estructuras confinadas con materiales blandos, los cuales tendrán tiempos cortos para generación acreción de manera eficiente evitando futuras erosiones en la zona. Corpamag consideró viable otorgar el permiso mediante la Resolución No. 4260 de 2022, permiso de ocupación de cauce, playas y lechos de conformidad con lo dispuesto en el Decreto 1076 de 2015.
 
-En ese orden de ideas, la DIMAR informó que la Oficina para la Gestión del Riesgo y Cambio Climático de la Alcaldía Distrital de Santa Marta presentó ante la autoridad el día de marzo de 2022, un estudio problemática de erosión costera para el sector de Playa Salguero consistentes en un sistema de diques y espolones tipo escollera, dicho estudio remitido al Centros de Investigaciones Oceanográficas e Hidrográficas del Caribe - CIOH, en donde el centro manifestó que, el estudio presentado carecía de aspectos importantes para la construcción de obras de protección costera. Posterior a ello, la Alcaldía Distrital de Santa Marta radicó el día de julio de 2022, un estudio oceanográfico final y de diseño de alternativas de solución ante la problemática de erosión costera para el sector de Playa Salguero consistente en un sistema de Geobags distribuidos en toda la línea costera del sector, dicho estudio se encuentra en revisión científica del CIOH.
+En ese orden de ideas, la DIMAR informó que la Oficina para la Gestión del Riesgo y Cambio Climático de la Alcaldía Distrital de Santa Marta presentó ante la autoridad el día 17 de marzo de 2022, un estudio problemática de erosión costera para el sector de Playa Salguero consistentes en un sistema de diques y espolones tipo escollera, dicho estudio remitido al Centros de Investigaciones Oceanográficas e Hidrográficas del Caribe - CIOH, en donde el centro manifestó que, el estudio presentado carecía de aspectos importantes para la construcción de obras de protección costera. Posterior a ello, la Alcaldía Distrital de Santa Marta radicó el día 12 de julio de 2022, un estudio oceanográfico final y de diseño de alternativas de solución ante la problemática de erosión costera para el sector de Playa Salguero consistente en un sistema de Geobags distribuidos en toda la línea costera del sector, dicho estudio se encuentra en revisión científica del CIOH.
 
 También, la DIMAR indicó que, en la entidad reposa un estudio oceanográfico y de diseño del plan piloto para la instalación de dos Geobags en el sector de Playa Salguero, presentados por la Alcaldía Distrital de Santa Marta, sin embargo, reiteró que no cuenta con trámite alguno ante esta Entidad, debido a que no se han aportado los requisitos de Ley para el trámite de autorización de obra, los cuales se
 
@@ -1141,7 +1141,7 @@ encuentran establecidos en el Decreto Ley 2324 de 1984 en concordancia con la no
 
 En virtud de lo anterior, este Tribunal considera pertinente ordenar a la Alcaldesa del Distrito de Santa Marta, que en el término de cinco (5) contados a partir de la ejecutoria de la sentencia, radique ante la DIMAR, si aún no lo hubiere hecho, el estudio oceanográfico y de diseño del plan piloto para la instalación de dos Geobags en el sector de Playa Salguero, aportando y cumpliendo con todos los requisitos de Ley para el trámite de autorización de obra, los cuales se encuentran establecidos en el Decreto Ley 2324 de 1984 en concordancia con la normatividad marítima. La entidad, deberá establecer el plan de acción específico y realizará su seguimiento y evaluación. Todo ello sujeto a términos estrictos.
 
-Asimismo, se ordena a la Alcaldía Distrital de Santa Marta que, en el término de días siguiente a la ejecutoria de esta sentencia, la alcaldía distrital deberá acreditar ante este Tribunal, la entrega final de la obra, autorizada por Corpamag mediante la Resolución No. 4260 del de agosto de 2022 "Por medio de la cual se otorga permiso de ocupación de cauce a la alcaldía distrital de Santa Marta, para la instalación de dos estructuras geosintéticos (geotube) en el sector de Playa Saiguero, distrito de Santa Marta departamento del Magdalena", teniendo en cuenta que el programa general de trabajo se consignó que el proyecto pretendía ser ejecutad en el término de dias, a partir de la autorización emitida por Corpamag.
+Asimismo, se ordena a la Alcaldía Distrital de Santa Marta que, en el término de días siguiente a la ejecutoria de esta sentencia, la alcaldía distrital deberá acreditar ante este Tribunal, la entrega final de la obra, autorizada por Corpamag mediante la Resolución No. 4260 del 30 de agosto de 2022 "Por medio de la cual se otorga permiso de ocupación de cauce a la alcaldía distrital de Santa Marta, para la instalación de dos estructuras geosintéticos (geotube) en el sector de Playa Saiguero, distrito de Santa Marta departamento del Magdalena", teniendo en cuenta que el programa general de trabajo se consignó que el proyecto pretendía ser ejecutad en el término de dias, a partir de la autorización emitida por Corpamag.
 
 De igual manera deberá conformarse una mesa de trabajo que efectúe los estudios sobre el estado de la erosión costera en Playa Salguero y sus causas, con el fin de establecer acciones coordinadas que cada una de ellas debe ejecutar en el marco de sus competencias, particularmente sobre los planes de desarrollo, plan de ordenamiento territorial y los presupuestos. Todo ello estructurado en un cronograma estricto, que permita controlar su cumplimiento.
 
@@ -1162,10 +1162,10 @@ Adicionalmente, se deberán crear estrategias que permitan identificar, cuantifi
 
 El Pomiuac se constituye en norma de superior jerarquía y determinante ambiental para la elaboración y adopción de los planes de ordenamiento territorial, de conformidad con lo dispuesto en el artículo 10 de la Ley 388 de 1997 y orienta la planeación de los demás sectores en la zona costera".
 
-Estos instrumentos de planeación hacen parte del Sistema Nacional Ambiental - SINA, como estructura que comprende el conjunto de orientaciones, normas, actividades, recursos, programas e instituciones que permiten la puesta en marcha de los principios generales ambientales contenidos en la Ley 99 de 1993, particularmente del componente destinado a la ordenación y gestión de las Unidades Ambientales Costeras - UAC, cuyo análisis fue abordado por el consejo de Estado en sentencia del de agosto de 20208º, en la que se dijo lo siguiente:
+Estos instrumentos de planeación hacen parte del Sistema Nacional Ambiental - SINA, como estructura que comprende el conjunto de orientaciones, normas, actividades, recursos, programas e instituciones que permiten la puesta en marcha de los principios generales ambientales contenidos en la Ley 99 de 1993, particularmente del componente destinado a la ordenación y gestión de las Unidades Ambientales Costeras - UAC, cuyo análisis fue abordado por el consejo de Estado en sentencia del 21 de agosto de 20208º, en la que se dijo lo siguiente:
 
-## "VII.3.1. La ordenación y la gestión de las Unidades Ambientales Costeras (UAC). Concretamente, las directrices de conservación, preservación, uso y manejo del medio ambiente marino colombiano yacen en la Política Ambiental para el Desarrollo Sostenible de los Espacios Oceánicos y las Zonas Costeras e Insulares de Colombia (PNAOCI) de 2000, en el Documento CONPES 3164 de 2002, en la Política Nacional del Océano y de los Espacios Costeros de 2007 (PNOEC)81 -actualizada en el año 2017y en el Documento CONPES 3990 de de marzo de 2020.
-65. Ante el silencio del legislador, el Ministerio de Ambiente y Desarrollo Sostenible y el CONPES&amp; (órgano colegiado de carácter supra ministerial creado por la Ley 19 del de noviembre de 195883) se encargaron de materia ambiental, económica, administrativa y social que permitirían proteger y conservar el recurso marino.
+## "VII.3.1. La ordenación y la gestión de las Unidades Ambientales Costeras (UAC). Concretamente, las directrices de conservación, preservación, uso y manejo del medio ambiente marino colombiano yacen en la Política Ambiental para el Desarrollo Sostenible de los Espacios Oceánicos y las Zonas Costeras e Insulares de Colombia (PNAOCI) de 2000, en el Documento CONPES 3164 de 2002, en la Política Nacional del Océano y de los Espacios Costeros de 2007 (PNOEC)81 -actualizada en el año 2017y en el Documento CONPES 3990 de 31 de marzo de 2020.
+65. Ante el silencio del legislador, el Ministerio de Ambiente y Desarrollo Sostenible y el CONPES&amp; (órgano colegiado de carácter supra ministerial creado por la Ley 19 del 18 de noviembre de 195883) se encargaron de materia ambiental, económica, administrativa y social que permitirían proteger y conservar el recurso marino.
 
 80 Radicación Número: 13001-23-33-000-2017-00987-01 AP
 
@@ -1173,7 +1173,7 @@ Estos instrumentos de planeación hacen parte del Sistema Nacional Ambiental - S
 
 83 "Sobre reforma administrativa".
 
-84 Respecto de la naturaleza normativa de los documentos CONPES, ver el Auto de julio de 2019 (C.P. OSWALDO GIRALDO LÓPEZ radicación 11001-03-24-000-2019-00117-00), la sentencia de de marzo de 2017 (C.P. CARLOS ENRIQUE MORENO RUBIO (E), radicación 11001-03-24-000-201500555-00) y la sentencia de de octubre de 2010, (CP RAFAEL E. OSTAU DE LAFONT PIANETA, 25000-23-24-000-1998-00545-01). Esos actos administrativos no requieren ser acreditados en el proceso judicial por ser una norma de carácter nacional. Expresamente, el artículo 177 del CGP, al regular la prueba de las normas jurídicas, señala que: "El texto de normas jurídicas que no tengan alcance nacional y el de las leyes extranjeras, se aducirá en copia al proceso, de oficio o a solicitud de parte".
+84 Respecto de la naturaleza normativa de los documentos CONPES, ver el Auto de julio de 2019 (C.P. OSWALDO GIRALDO LÓPEZ radicación 11001-03-24-000-2019-00117-00), la sentencia de 7 de marzo de 2017 (C.P. CARLOS ENRIQUE MORENO RUBIO (E), radicación 11001-03-24-000-201500555-00) y la sentencia de 28 de octubre de 2010, (CP RAFAEL E. OSTAU DE LAFONT PIANETA, 25000-23-24-000-1998-00545-01). Esos actos administrativos no requieren ser acreditados en el proceso judicial por ser una norma de carácter nacional. Expresamente, el artículo 177 del CGP, al regular la prueba de las normas jurídicas, señala que: "El texto de normas jurídicas que no tengan alcance nacional y el de las leyes extranjeras, se aducirá en copia al proceso, de oficio o a solicitud de parte".
 
 66. Precisamente, en el año 2000, el entonces Ministerio de Medio Ambiente formuló la PNAOCI en un contexto en el que 'no existía un marco legal específico con relación a las zonas costeras colombianas', aun cuando 'sí existían normas e instituciones que tienen que ver con su manejo 85.
 
@@ -1187,7 +1187,7 @@ En cuanto a los principios allí consignados, y dada su directa relación con el
 
 Así, los programas de esta política pública están dirigidos a fomentar el ordenamiento ambiental territorial de los espacios oceánicos y zonas costeras e insulares; la sostenibilidad ambiental sectorial; la rehabilitación y restauración de ecosistemas marinos y costeros degradados: la conservación de áreas marinas y costeras protegidas; la conservación de especies, y la evaluación, prevención, reducción y control de fuentes terrestres y marinas de contaminación al mar.
 
-67. Dicha política -y su plan de acción- (periodo 2002 a 2004), fue aprobada a través del Documento CONPES 3164 de de mayo 2002, con un enfoque territorial tripartito: región Caribe Insular, región Caribe Continental y Oceánica, y región Pacífico.
+67. Dicha política -y su plan de acción- (periodo 2002 a 2004), fue aprobada a través del Documento CONPES 3164 de 10 de mayo 2002, con un enfoque territorial tripartito: región Caribe Insular, región Caribe Continental y Oceánica, y región Pacífico.
 
 anterior puede consultar en: https://www.minambiente.gov.co/images /BosquesBiodiversidadyServiciosEcosistemicos/pdf/Normativa/Politicas/4268\_161009 polit zonas \_costeras pnaoci.pdf
 
@@ -1214,7 +1214,7 @@ Por todo lo anterior, con el objeto de "proyectar a Colombia como potencia bioce
 
 "ARTÍCULO 208. LEY 1450 DE 2011 AUTORIDAD AMBIENTAL MARINA DE LAS CORPORACIONES. Las Corporaciones Autónomas Regionales y las de Desarrollo Sostenibles de los departamentos costeros, ejercerán sus funciones de autoridad ambiental en las zonas marinas hasta el límite de las líneas de base recta establecidas en el Decreto 1436 de 1984, salvo las competencias que de manera privativa corresponden al Ministerio de Ambiente, Vivienda y Desarrollo Territorial y a la Corporación para el Desarrollo Sostenible del Archipiélago de San Andrés, Providencia y Santa Catalina -CORALINA-.
 
-87 Las disposiciones que se citan a continuación están vigentes según lo dispuesto por el artículo 336 de la Ley 1955 de 2019, 'por el cual se expide el Plan Nacional de Desarrollo 2018-2022. "Pacto por Colombia, Pacto por la Equidad"', publicada en el Diario Oficial No. 50.964 de de mayo 2019.
+87 Las disposiciones que se citan a continuación están vigentes según lo dispuesto por el artículo 336 de la Ley 1955 de 2019, 'por el cual se expide el Plan Nacional de Desarrollo 2018-2022. "Pacto por Colombia, Pacto por la Equidad"', publicada en el Diario Oficial No. 50.964 de 25 de mayo de 2019.
 
 PARÁGRAFO 10. En los sectores en los cuales no se encuentran establecidas las líneas de base recta, la zona marina se fijará entre la línea de costa y hasta una línea paralela localizada a doce (12) millas náuticas de distancia mar adentro, en todos los casos la jurisdicción de la autoridad ambiental será aquella que corresponda a la mayor distancia a la línea de costa.
 
@@ -1234,7 +1234,7 @@ Adicionalmente, se deberán crear estrategias que permitan identificar, cuantifi
 
 descentralizadas, fomentando la inclusión del privado". (Negrillas de la Sala) sector
 
-74. En desarrolio de las mencionadas disposiciones, el Gobierno nacional expidió el Decreto 1120 de de mayo de 2013, "por el cual se reglamentan las Unidades Ambientales Costeras (UAC) (...) y se dictan otras disposiciones".
+74. En desarrolio de las mencionadas disposiciones, el Gobierno nacional expidió el Decreto 1120 de 31 de mayo de 2013, "por el cual se reglamentan las Unidades Ambientales Costeras (UAC) (...) y se dictan otras disposiciones".
 
 El artículo 5º de la norma ibidem define el Plan de Ordenación y Manejo Integrado de las Unidades Ambientales Costeras (POMIUAC) como "el instrumento de planificación mediante el cual la Comisión Conjunta o la autoridad ambiental competente, según el caso, definen y orienta la ordenación y manejo ambiental de las unidades ambientales costeras".
 
@@ -1244,7 +1244,7 @@ En cuanto a la adopción del mencionado instrumento, de conformidad con lo dispu
 
 Parágrafo 1º. Cuando el Ministerio de Ambiente y Desarrollo Sostenible participe en el proceso de formulación y adopción del Pomiuac, a través de la comisión conjunta, se considera surtida la emisión del aludido concepto. En los casos de Unidades Ambientales Costeras que no sean objeto de Comisión Conjunta, el Ministerio de Ambiente y Desarrollo Sostenible participará en calidad de invitado permanente en el proceso de formulación y adopción del Pomiuac y dentro de la participación en dicho proceso, el Ministerio de Ambiente y Desarrollo Sostenible emitirá el concepto.
 
-Parágrafo 2°. La modificación del Pomiuac se sujetará al procedimiento previsto para las fases de caracterización y diagnóstico, prospectiva y zonificación y formulación y adopción del Plan".". Finalmente, es de mencionar que el MADS, mediante Resolución 0768 de de abril de 2017, adoptó "la Guía Técnica para la Ordenación y Manejo Integrado de la Zona Costera. Este insumo básico permite clasificar las zonas costeras y agotar las distintas fases del POMIUAC?"
+Parágrafo 2°. La modificación del Pomiuac se sujetará al procedimiento previsto para las fases de caracterización y diagnóstico, prospectiva y zonificación y formulación y adopción del Plan".". Finalmente, es de mencionar que el MADS, mediante Resolución 0768 de 17 de abril de 2017, adoptó "la Guía Técnica para la Ordenación y Manejo Integrado de la Zona Costera. Este insumo básico permite clasificar las zonas costeras y agotar las distintas fases del POMIUAC?"
 
 - (Negrillas del original).
 
@@ -1272,7 +1272,7 @@ Salguero, de conformidad con lo expuesto en la parte motiva de la presente provi
 
 TERCERO. ORDENAR a la Alcaldesa del Distrito de Santa Marta CONVOCAR, en un término máximo de días contados desde la ejecutoria de esta sentencia, radique ante la DIMAR, si aún no lo hubiere hecho, el estudio oceanográfico y de diseño del plan piloto para la instalación de dos Geobags en el sector de Playa Salguero, aportando y cumpliendo con todos los requisitos de Ley para el trámite de autorización de obra, los cuales se encuentran establecidos en el Decreto Ley 2324 de 1984 en concordancia con la normatividad marítima. La entidad, deberá establecer el plan de acción específico y realizará su seguimiento y evaluación. Todo ello sujeto a términos estrictos.
 
-CUARTO. ORDENAR a la Alcaldía Distrital de Santa Marta que, en el término de días siguiente a la ejecutoria de esta sentencia, la alcaldía distrital deberá acreditar ante este Tribunal, la entrega final de la obra, autorizada por Corpamag mediante la Resolución No. 4260 del de agosto de 2022 "Por medio de la cual se otorga permiso de ocupación de cauce a la alcaldía distrital de Santa Marta, para la instalación de dos estructuras geosintéticos (geotube) en el sector de Playa Salguero, distrito de Santa Marta - departamento del Magdalena", teniendo en cuenta que el programa general de trabajo se consignó que el proyecto pretendía ser ejecutad en el término de días, a partir de la autorización emitida por Corpamag.
+CUARTO. ORDENAR a la Alcaldía Distrital de Santa Marta que, en el término de días siguiente a la ejecutoria de esta sentencia, la alcaldía distrital deberá acreditar ante este Tribunal, la entrega final de la obra, autorizada por Corpamag mediante la Resolución No. 4260 del 30 de agosto de 2022 "Por medio de la cual se otorga permiso de ocupación de cauce a la alcaldía distrital de Santa Marta, para la instalación de dos estructuras geosintéticos (geotube) en el sector de Playa Salguero, distrito de Santa Marta - departamento del Magdalena", teniendo en cuenta que el programa general de trabajo se consignó que el proyecto pretendía ser ejecutad en el término de días, a partir de la autorización emitida por Corpamag.
 
 Posteriormente, siguiendo un estricto cronograma de avances y gestiones, el Comité deberá formular, ejecutar, hacer seguimiento y evaluación de las políticas, estrategias, planes, programas regulaciones, instrumentos, medidas y acciones permanentes para contrarrestar la erosión costera en Playa Salguero y reducir del riesgo derivado de la misma.
 
@@ -1288,7 +1288,7 @@ La Magistrada Ponente convocará a reuniones bimestrales a partir de la ejecutor
 
 6.1.º ORDENAR a las entidades y autoridades que conforman el respectivo comité de verificación que dentro del marco de sus posibilidades se designe a un delegado específico que sea la persona que coordine o esté en frente de los requerimientos que efectúe el Tribunal Administrativo del Magdalena y las reuniones que se adelanten para la verificación del cumplimiento del fallo. Deberán presentar informes cada dos meses independientemente de las reuniones que se convoquen.
 
-SÉPTIMO. CONMINAR a la Procuraduría General de la Nación y a la Fiscalía General de la Nación, para que investiguen la conducta de la curadora de Santa Marta en 2012, la señora Sara Uribe Salas, con la expedición Resolución No. 204 del de julio de 2012 "Por medio de la cual se otorga la Licencia de Construcción No. 053 y Licencia de Urbanismo No. 007", para la construcción del proyecto Reserva del Mar, sus prórrogas y revalidaciones.
+SÉPTIMO. CONMINAR a la Procuraduría General de la Nación y a la Fiscalía General de la Nación, para que investiguen la conducta de la curadora de Santa Marta en 2012, la señora Sara Uribe Salas, con la expedición Resolución No. 204 del 25 de julio de 2012 "Por medio de la cual se otorga la Licencia de Construcción No. 053 y Licencia de Urbanismo No. 007", para la construcción del proyecto Reserva del Mar, sus prórrogas y revalidaciones.
 
 OCTAVO. ORDENAR a las Curadurías Urbanas de Santa Marta SUSPENDER la expedición de licencias de construcción para el sector de Playa Salguero, hasta tanto se logre la estabilidad la playa, como una medida provisional tendiente a salvaguardar el medio ambiente costero, contrarrestar la erosión en esa zona y garantizar la protección de los derechos colectivos amenazados у vulnerados.
 

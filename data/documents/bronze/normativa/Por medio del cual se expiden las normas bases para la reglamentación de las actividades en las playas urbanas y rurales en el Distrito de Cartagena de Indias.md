@@ -235,7 +235,7 @@ Los permisos y autorizaciones de que trata el presente decreto requieren concept
 7. La reglamentación de las actividades turísticas, recreacionales, culturales, deportivas en las playas turísticas como base para el otorgamiento de permisos de ocupación temporal de espacio público, por la administración distrital.
 8. La generación, desarrollo y consolidación del sistema de espacio publica, camo eje articulador del espacio terrestre- marino y como base para mejorarstos niveles de calidad de los servicios turísticos.
 
-- La organización y formalización de los particulares que ejercen actividades de comercio y de turismo, con base en el ordenamiento de las actividades que se desarrollan en las playas.
+9. La organización y formalización de los particulares que ejercen actividades de comercio y de turismo, con base en el ordenamiento de las actividades que se desarrollan en las playas.
 
 ## Título IV De las actividades generales que podrán adelantarse en las playas turísticas
 

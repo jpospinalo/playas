@@ -20,7 +20,7 @@ Acción:
 
 ## - Ley 1437 de 2011 -
 
-Decide la Sala el recurso de apelación interpuesto por la parte demandada, contra la sentencia proferida el día de mayo de 2016, por el Juzgado Primero Administrativo Oral del Circuito de Santa Marta, mediante la cual se amparó los derechos colectivos a la defensa del patrimonio público, al goce del espacio público, utilización y defensa de los bienes de uso público, al goce de un ambiente sano, a la existencia del equilibrio ecológico y aprovechamiento racional de los recursos naturales para garantizar su conservación, restauración o sustitución derecho colectivo a la seguridad y a la prevención de desastres previsibles técnicamente de los habitantes del Distrito de Santa Marta.
+Decide la Sala el recurso de apelación interpuesto por la parte demandada, contra la sentencia proferida el día 23 de mayo de 2016, por el Juzgado Primero Administrativo Oral del Circuito de Santa Marta, mediante la cual se amparó los derechos colectivos a la defensa del patrimonio público, al goce del espacio público, utilización y defensa de los bienes de uso público, al goce de un ambiente sano, a la existencia del equilibrio ecológico y aprovechamiento racional de los recursos naturales para garantizar su conservación, restauración o sustitución derecho colectivo a la seguridad y a la prevención de desastres previsibles técnicamente de los habitantes del Distrito de Santa Marta.
 
 ## ANTECEDENTES
 
@@ -99,7 +99,7 @@ Contesto la demanda en forma extemporánea.
 ## II.
 SENTENCIA DE PRIMERA INSTANCIA
 
-El Juzgado Primero Administrativo Oral del Circuito de Santa Marta mediante sentencia de fecha de mayo de 2016 (fls. 449-463), amparó los derechos colectivos a la defensa del patrimonio público, al goce del espacio público, utilización y defensa de los bienes de uso público, al goce de un ambiente sano, a la existencia del equilibrio ecológico y aprovechamiento racional de los recursos naturales para garantizar su conservación, restauración o sustitución derecho colectivo a la seguridad y a la prevención de desastres previsibles técnicamente de los habitantes del Distrito de Santa Marta, argumentado en el siguiente análisis:
+El Juzgado Primero Administrativo Oral del Circuito de Santa Marta mediante sentencia de fecha 23 de mayo de 2016 (fls. 449-463), amparó los derechos colectivos a la defensa del patrimonio público, al goce del espacio público, utilización y defensa de los bienes de uso público, al goce de un ambiente sano, a la existencia del equilibrio ecológico y aprovechamiento racional de los recursos naturales para garantizar su conservación, restauración o sustitución derecho colectivo a la seguridad y a la prevención de desastres previsibles técnicamente de los habitantes del Distrito de Santa Marta, argumentado en el siguiente análisis:
 
 El A quo en sus consideraciones señaló que los cambios que ha experimentado el rio Gaira no han obedecido a la acción u omisión de las entidades accionadas, como también es claro que actualmente no existen condiciones físicas o naturales para revertir ese proceso de transformación del flujo del rio Gaira en su entrega al Mar Caribe. Asimismo no fue probado en el proceso la erosión de los predios ubicados en la margen derecha del rio Gaira, en el tramo localizado en el cruce de la Avenida
 
@@ -118,9 +118,9 @@ El artículo 153 del C.P.A.C.A establece que los tribunales administrativos cono
 
 ## 1.2 Trámite:
 
-El día de julio de 2016 (fl.510), fue repartido a esta Corporación el recurso de apelación en contra de la sentencia de fecha de mayo de 2016 proferida por el Juzgado Primero Administrativo Oral del Circuito de Santa Marta.
+El día 6 de julio de 2016 (fl.510), fue repartido a esta Corporación el recurso de apelación en contra de la sentencia de fecha 23 de mayo de 2016 proferida por el Juzgado Primero Administrativo Oral del Circuito de Santa Marta.
 
-Mediante auto de fecha de agosto de 2016 (fl. 512), este Despacho Judicial admitió el recurso de apelación, ordenando correr traslado a las partes para que presentaran sus alegatos de conclusión, y al Ministerio Público para que emitiera concepto.
+Mediante auto de fecha 29 de agosto de 2016 (fl. 512), este Despacho Judicial admitió el recurso de apelación, ordenando correr traslado a las partes para que presentaran sus alegatos de conclusión, y al Ministerio Público para que emitiera concepto.
 
 ## 1.3 Argumento del recurso de apelación:
 
@@ -167,7 +167,7 @@ Antes de presentar la demanda para la protección de los derechos e intereses co
 
 El consejo de Estado' , sobre la naturaleza de las acciones populares ha establecido lo siguiente:
 
-"En relación con la naturaleza y características esenciales de este tipo de medio de control, la Corporación, en providencia del de abril de 2007, Exp. 70001-23-31- 000-2004-00267-01(AP), Magistrado Ponente Mauricio Fajardo Gómez, tuvo oportunidad de razonar de la manera que pasa a retenerse:
+"En relación con la naturaleza y características esenciales de este tipo de medio de control, la Corporación, en providencia del 19 de abril de 2007, Exp. 70001-23-31- 000-2004-00267-01(AP), Magistrado Ponente Mauricio Fajardo Gómez, tuvo oportunidad de razonar de la manera que pasa a retenerse:
 
 La Acción Popular, considerada como una acción constitucional , ha sido instituida como una vía adicional para el ejercicio efectivo del control judicial de la actividad de la Administración Pública y, por tanto, su objeto lejos de resultar extraño al que la Constitución y la ley han señalado de manera general a la Jurisdicción Contencioso Administrativa, encuadra dentro del mismo. Por tal razón resulta elemental que a esta Jurisdicción especializada se atribuya el conocimiento de aquellas acciones populares que tengan origen en la actividad de las entidades públicas y de los particulares que desempeñen funciones administrativas".
 
@@ -258,21 +258,21 @@ Así mismo, definirá los casos de responsabilidad civil objetiva por el daño i
 ## 4.) Pruebas en el proceso
 
 - Imágenes de la delimitación del perímetro urbano de Santa Marta fuente mapa basa IGAC aportada en la contestación de la demanda por parte de Corpamag (folio).
-- Acta visita técnica realizada por el DADMA, el de julio de 2013 por el funcionario Alberto Bolaño aportada por el Distrito de Santa Marta (folio 90)
+- Acta visita técnica realizada por el DADMA, el 13 de julio de 2013 por el funcionario Alberto Bolaño aportada por el Distrito de Santa Marta (folio 90)
 
-- Acta visita técnica realizada por el DADMA, el de julio de 2013 por el funcionario Alberto Bolaño aportada por el DADMA (folio 96)
+- Acta visita técnica realizada por el DADMA, el 13 de julio de 2013 por el funcionario Alberto Bolaño aportada por el DADMA (folio 96)
 - Fotografía obtenida por la fuente del google earth en junio de 2006 y 2009, aportadas por el DADMA en la contestación de la demanda (folio 97-98)
 - Copia simple del Acuerdo 005 de 2003 proferido por el Concejo Distrital de Santa Marta, "Por medio del cual se reforma el Acuerdo 016 del noviembre de 2002, se le asignan funciones y rentas al Departamento Administrativo Distrital del medio Ambiente y a sus órganos de administración y se dictan otras disposiciones", aportada por el DADMA en la contestación de la demanda (folios 104-111).
 - Copia del Acuerdo 016 del noviembre de 2002 expedido por el Concejo Distrital de Santa Marta (folios 135-146)
 - Concepto emitido por el Ministerio del Medio Ambiente sobre el alcance de los artículos 214 y 215 de la ley 1450 del 2011, radicado 4120-E1-12218 (folios 228-230)
-- Informe rendido por el director de Corpamag sobre los hechos de la demanda folios (276-281) solicitado por auto de fecha de mayo de 2014 (folio 272-273)
+- Informe rendido por el director de Corpamag sobre los hechos de la demanda folios (276-281) solicitado por auto de fecha 15 de mayo de 2014 (folio 272-273)
 - Acta de inspección judicial realizada en la desembocadura del río Gaira en el mar caribe folio (303-306) en el que incluye soporte fotográfico.
 - Testimonios de los señores Fernando Emilio Floréz Ramírez y Jairo Bautista Méndez rendidos en la diligencia de inspección judicial.
-- Plano de la urbanización Cantamar en el Rodadero recibido en la Secretaria de Planeación el de noviembre de 1987 (folio 307) aportado por el declarante Jairo Bautista Méndez en la diligencia de inspección judicial
+- Plano de la urbanización Cantamar en el Rodadero recibido en la Secretaria de Planeación el 25 de noviembre de 1987 (folio 307) aportado por el declarante Jairo Bautista Méndez en la diligencia de inspección judicial
 - Dictamen pericial dictado por el perito ingeniero Dorian Rodriguez a solicitud del ente demandado Corpamag (105-116) del cuaderno N° 3, junto con el testimonio rendido por ese perito en la diligencia de interrogación (402-404).
 - Contrato de obra pública N° 02 de 2010 suscrito entre Corpamag y CASIA LTDA, que tuvo por objeto la construcción de obras biomecánicas para la reducción de riesgo y desabastecimiento de agua para consumo humano y la interrupción de los servicios de productos y alcantarillado en la cuenca de los ríos Manzanares, Gaira, Córdoba, Fundación y Ariguani. (fls. 1-18) cuaderno N°2.
 - Contrato de obra pública N° 01 de 2009 suscrito entre Corpamag y el Consorcio Cumana el cual tuvo por objeto la interventoría administrativa, financiera y técnica de las obras civiles e hidráulicas de reducción de riesgo de desabastecimiento de agua para el consumo humano y la interrupción de los servicios de productos y alcantarillado en la cuenca de los ríos Manzanares, Gaira, Ariguani y Fundación; Cienagas de Buenavista, Zapayán y Cerro de San Antonio y Caños de Plato SCHILLER mediante la construcción de 922.381 m? de terraplenes en las cuencas de los Municipios de Ariguiani, Concordia, Fundación, Pivijay, Plato, Remolino y Santa Marta (folios 25-58) y cuaderno N° 2 en folios (140-153).
-- Contrato de consultoria N° 005 de de noviembre de 2008 suscrito entre Corpamag y la Unión temporal de alta Ingeniería 2008.
+- Contrato de consultoria N° 005 de 7 de noviembre de 2008 suscrito entre Corpamag y la Unión temporal de alta Ingeniería 2008.
 
 Acción popular- Radicado: 2011-00079-01 Demandante: Miguel Ángel Enciso Pava Demandado: CORPAMAG y OTROS
 
@@ -293,7 +293,7 @@ ARTICULO 679. PROHIBICION DE CONSTRUIR EN BIENES DE USO PÚBLICO Y FISCALES. Nad
 
 Adentrándonos al caso bajo estudio el demandante solicita que la Corporación Autónoma Regional del Magdalena restituya el Río Gaira al cauce natural que originalmente tenía, trayecto que alega fue alterado luego de pasar el puente que lo cruza a la altura de la carrera segunda o avenida Tamacá en el sector de El Rodadero; además pretende que CORPAMAG construya un muro de contención, gaviones y otra obra de ingeniería para proteger a los moradores del edificio Cantamar de los riesgo de la erosión.
 
-Cabe agregar que por medio de auto calendado el día de mayo de 2012 (fl.68), el Juzgado Primero del Circuito de Santa Marta vincula al Distrito Turístico, Cultural e Histórico de Santa Marta, al Departamento Administrativo Distrital del Medio Ambiente DADMA y a la Dirección General Marítima del Ministerio de Defensa Nacional DIMAR, por estar comprometidas en los hechos de la demanda y eventualmente podrían resultar responsables por los mismos.
+Cabe agregar que por medio de auto calendado el día 16 de mayo de 2012 (fl.68), el Juzgado Primero del Circuito de Santa Marta vincula al Distrito Turístico, Cultural e Histórico de Santa Marta, al Departamento Administrativo Distrital del Medio Ambiente DADMA y a la Dirección General Marítima del Ministerio de Defensa Nacional DIMAR, por estar comprometidas en los hechos de la demanda y eventualmente podrían resultar responsables por los mismos.
 
 Conocido lo anterior se observa en el expediente inspección judicial realizada por el A-quo en la ronda hidráulica del río Gaira (fl.303-316) donde se realiza análisis y tomas fotográficas en la zona, con el fin de verificar la alteración del cauce del río en su desembocadura y el curso natural de sus aguas; en la citada diligencia se encuentra que la construcción más cercana a la desembocadura del río es el hotel Cantamar y está ubicado a una distancia promedio de.20 metros; el juez de primera instancia deja constancia que a simple vista no se observa desvio del mismo.
 
@@ -326,7 +326,7 @@ Como respuesta al interrogante cuarto ¿Si la quebrada del río Bureche y el rí
 
 "ocurren tres fenómenos, el primero es el cambio en la dirección del flujo, es decir, cambio en la dirección de las corrientes porque se reduce la sección transversal hidráulica, es decir, el espacio por donde corre el agua, obligando que en parte de su recorrido final erosione en un lado y sedimente en el otro. El segundo fenómeno es el represamiento del agua por consiguiente, el desbordamiento de la lámina de agua porque su sección transversal se ha reducido. El tercer fenómeno que al tener invadida la ronda hidráulica no permite que el flujo de agua y sus corrientes (vectores de velocidad), funcionen libremente."
 
-Asimismo en la inspección judicial realizada por el A-quo en la ronda hidráulica del río Gaira (fl.303-316) se observa el testimonio de testigos que mantienen la postura de la parte accionante; sin embargo tanto la desviación del cauce del río Gaira, como la alteración del cauce del mismo por la instalación que hizo Corpamag de gaviones hacia la desembocadura del río, es desvirtuada con el interrogatorio de perito realizado el día de febrero de 2016.
+Asimismo en la inspección judicial realizada por el A-quo en la ronda hidráulica del río Gaira (fl.303-316) se observa el testimonio de testigos que mantienen la postura de la parte accionante; sin embargo tanto la desviación del cauce del río Gaira, como la alteración del cauce del mismo por la instalación que hizo Corpamag de gaviones hacia la desembocadura del río, es desvirtuada con el interrogatorio de perito realizado el día 16 de febrero de 2016.
 
 Por consiguiente de las pruebas practicadas se tiene como resultado que el cauce del río Gaira hacia su desembocadura no ha sido desviado ni se ha producido un cauce artificial por parte de la entidad demandada CORPAMAG ni por las entidades vinculadas al proceso, en últimas se entiende que los cambios en la desembocadura de los ríos Gaira y la quebrada Bureche son producto de la acción costera del mar a través del tiempo, por lo que es un fenómeno producto de la acción de la naturaleza y el cambio climático.
 
@@ -369,7 +369,7 @@ En casos similares el H. consejo de estado, se pronunciado de la siguiente maner
 
 Sentado lo anterior, el Distrito de Santa Marta deberá salvaguardar las orillas y desembocaduras de las cuencas hídricas de este Distrito y recuperar ese espacio público cedido por su omisión de vigilancia y control; entonces según el acervo probatorio se concluye que el Distrito de Santa Marta es responsable por la vulneración del derecho colectivo al goce del espacio público y la utilización y defensa de los bienes de uso público invocado por la parte demandante y consagrado en el artículo 4 numeral d de la Ley 472 de 1998.
 
-Sobre los entes demandados DIMAR y DADMA esta Corporación judicial negará las pretensiones de la demanda en contra del DADMA, -hoy DADSA, Departamento Distrital de Sostenibilidad Ambiental- en razón a que si bien según lo establecido en el Acuerdo 005 del de Noviembre del.003, expedido por el Concejo Distrital de Santa Marta, es la Máxima Autoridad Ambiental en el área urbana del DTCH de Santa Marta, es competencia de CORPAMAG según lo establecido en la Ley 1450 de 2011 artículos 214 y 215 literal f, la gestión integral del recurso hídrico del rio Gaira al ser un afluente principal del Distrito de Santa Marta. Igualmente en la citada norma se asignó a las Corporaciones Autónomas Regionales en las respectivas áreas de su competencia la formulación y ejecución de proyectos para la recuperación y conservación de los citados recursos hídricos.
+Sobre los entes demandados DIMAR y DADMA esta Corporación judicial negará las pretensiones de la demanda en contra del DADMA, -hoy DADSA, Departamento Distrital de Sostenibilidad Ambiental- en razón a que si bien según lo establecido en el Acuerdo 005 del 27 de Noviembre del 2.003, expedido por el Concejo Distrital de Santa Marta, es la Máxima Autoridad Ambiental en el área urbana del DTCH de Santa Marta, es competencia de CORPAMAG según lo establecido en la Ley 1450 de 2011 artículos 214 y 215 literal f, la gestión integral del recurso hídrico del rio Gaira al ser un afluente principal del Distrito de Santa Marta. Igualmente en la citada norma se asignó a las Corporaciones Autónomas Regionales en las respectivas áreas de su competencia la formulación y ejecución de proyectos para la recuperación y conservación de los citados recursos hídricos.
 
 En relación con la DIMAR esta Corporación Judicial encuentra jurídicamente procedente impartir órdenes a la DIMAR, tanto en el comité de verificación como en ejercicio de actividades propias del ámbito de su competencia funcional, con el objetivo de que no se vuelvan a generar situaciones como las que dieron origen a la presente acción popular.
 
@@ -379,7 +379,7 @@ Con respecto a este tema el H. consejo de Estado° ha establecido lo siguiente:
 
 Por consiguiente, se impartirá la orden al DIRECTOR DE LA DIRECCION GENERAL MARITIMA - DIMAR para que inicie la autorización y control en las áreas de litorales, playas y terrenos del mar caribe objeto de la presente acción popular, en cumplimiento de las funciones determinadas en los numerales y 22 del artículo 5ª del Decreto 2324 de 1984 o normas que los sustituyan y en lo dispuesto en el DECRETO 1561 DE 2002. "Por el cual se modifica parcialmente la estructura del Ministerio de Defensa Nacional".
 
-En relación a los motivos de inconformidad por parte de La Corporación Autónoma Regional del Magdalena - CORPAMAG respecto de las obligaciones que le fueron impuestas en los numerales tercero, cuarto y quinto de la providencia de instancia, esta Corporación judicial solo modificará la orden impartida en primera instancia por el A-quo en el artículo 3 de la sentencia de fecha de mayo de 2016, entorno a la obligación impuesta a CORPAMAG de asesorar al Distrito de Santa Marta luego del censo realizado por este, para desarrollar un plan a corto plazo de reubicación de esas viviendas y recuperación de ronda hídrica de protección del Río Gaira, es importante precisar que se realizará modificación a la citada orden en razón a que esta obligación debe estar solo en Cabeza del Distrito de Santa Marta, asimismo se vislumbra que la orden impartida por la Juez de primera instancia está por fuera del ámbito de competencia de CORPAMAG según lo contemplado en el artículo 46 de la Ley 99 de 1993.
+En relación a los motivos de inconformidad por parte de La Corporación Autónoma Regional del Magdalena - CORPAMAG respecto de las obligaciones que le fueron impuestas en los numerales tercero, cuarto y quinto de la providencia de instancia, esta Corporación judicial solo modificará la orden impartida en primera instancia por el A-quo en el artículo 3 de la sentencia de fecha 23 de mayo de 2016, entorno a la obligación impuesta a CORPAMAG de asesorar al Distrito de Santa Marta luego del censo realizado por este, para desarrollar un plan a corto plazo de reubicación de esas viviendas y recuperación de ronda hídrica de protección del Río Gaira, es importante precisar que se realizará modificación a la citada orden en razón a que esta obligación debe estar solo en Cabeza del Distrito de Santa Marta, asimismo se vislumbra que la orden impartida por la Juez de primera instancia está por fuera del ámbito de competencia de CORPAMAG según lo contemplado en el artículo 46 de la Ley 99 de 1993.
 
 Ahora bien, en cuanto al Comité de Verificación de la sentencia se ordenará incluir además del accionante, el agente del Ministerio Público, representantes de la Defensoría del Pueblo y de la Personería Distrital, la Corporación Autónoma Regional Del Magdalena -CORPAMAG- y a la Dirección General Marítima DIMAR, teniendo en cuenta las consideraciones antes expuestas.
 
@@ -395,9 +395,9 @@ En mérito de las consideraciones que anteceden, el Tribunal Administrativo del 
 
 ## FALLA
 
-PRIMERO: CONFIRMAR los artículos, 2, 4, 5, 6 de la sentencia del de mayo de 2016 proferida por el Juzgado Primero Administrativo del Circuito de Santa Marta, que amparo los derechos colectivos al goce del espacio público y la utilización y defensa de los bienes de uso público invocado por la parte demandante.
+PRIMERO: CONFIRMAR los artículos, 2, 4, 5, 6 de la sentencia del 23 de mayo de 2016 proferida por el Juzgado Primero Administrativo del Circuito de Santa Marta, que amparo los derechos colectivos al goce del espacio público y la utilización y defensa de los bienes de uso público invocado por la parte demandante.
 
-SEGUNDO: MODIFICAR el artículo 3 de la sentencia del de mayo de 2016 proferida por el Juzgado Primero Administrativo del Circuito de Santa Marta, el cual quedará de la siguiente manera:
+SEGUNDO: MODIFICAR el artículo 3 de la sentencia del 23 de mayo de 2016 proferida por el Juzgado Primero Administrativo del Circuito de Santa Marta, el cual quedará de la siguiente manera:
 
 "TERCERO: Para hacer efectivo el amparo del derechos colectivos vulnerados, se imparten las siguientes órdenes:
 

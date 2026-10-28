@@ -1,12 +1,12 @@
 ## DECRETO 415 DE 2017
 
-## (Marzo)
+## (Marzo 13)
 
-'Por el cual adiciona al Título de la Parte del Libro del Decreto 1076 de 2015, Decreto Único Reglamentario del Sector Ambiente y Desarrollo Sostenible, un Capítulo en el que se establece el Plan de Ordenación y Manejo Integrado de la Unidad Ambiental Costera -POMIUACCaribe Insular, en el Departamento Archipiélago de San Andrés, Providencia y Santa Catalina'
+'Por el cual adiciona al Título 4 de la Parte 2 del Libro 2 del Decreto 1076 de 2015, Decreto Único Reglamentario del Sector Ambiente y Desarrollo Sostenible, un Capítulo 3 en el que se establece el Plan de Ordenación y Manejo Integrado de la Unidad Ambiental Costera -POMIUACCaribe Insular, en el Departamento Archipiélago de San Andrés, Providencia y Santa Catalina'
 
 ## EL PRESIDENTE DE LA REPÚBLICA DE
 
-En ejercicio de sus facultades constitucionales y legales, en especial las que le confiere el numeral 11 del artículo 189 de la Constitución Política, el artículo 2°, los numerales y 24 del artículo 5° y parágrafo 3° del artículo 33 de la Ley 99 de 1993 y en desarrollo del parágrafo 3 del artículo 207 de la Ley 1450 de 2011 modificado por el artículo 17 del Decreto número 3570 de 2011 y,
+En ejercicio de sus facultades constitucionales y legales, en especial las que le confiere el numeral 11 del artículo 189 de la Constitución Política, el artículo 2°, los numerales 1 y 24 del artículo 5° y parágrafo 3° del artículo 33 de la Ley 99 de 1993 y en desarrollo del parágrafo 3 del artículo 207 de la Ley 1450 de 2011 modificado por el artículo 17 del Decreto número 3570 de 2011 y,
 
 ## CONSIDERANDO
 
@@ -22,7 +22,7 @@ Que según el artículo 5° de la Ley 99 de 1993, en concordancia con el artícu
 
 Que el parágrafo 3° del artículo 33 de la Ley 99 de 1993 consagra que cuando dos o más Corporaciones Autónomas Regionales tengan jurisdicción   sobre   un   ecosistema   o   sobre   una   cuenca   hidrográfica   común,   constituirán   una   comisión   conjunta   de   conformidad   con reglamentación   que   expida   el   Gobierno   Nacional.
 
-Que el de Noviembre de 2000. el Archipiélago de San Andrés. Providencia y Santa Catalina fue declarado Reserva de Biosfera por el Program of Man and the Biosphere MAB) de UNESCO, denominada con el nombre de SEAFLOWER, la cual cuenta con Plan de gestión para dicha estrategia complementaria de conservación.
+Que el 10 de Noviembre de 2000. el Archipiélago de San Andrés. Providencia y Santa Catalina fue declarado Reserva de Biosfera por el Program of Man and the Biosphere MAB) de UNESCO, denominada con el nombre de SEAFLOWER, la cual cuenta con Plan de gestión para dicha estrategia complementaria de conservación.
 
 Que por su parte, el artículo 212 de la Ley 1450 de 2011 estableció que el Ministerio de Ambiente y Desarrollo Sostenible le corresponde integrar y presidir las comisiones conjuntas de que trata el parágrafo 3° del artículo 33 de la Ley 99 de 1993.
 
@@ -34,7 +34,7 @@ Que la Política de Gestión Integral de Recurso Hídrico (2010) estableció que
 
 Que la Política Nacional Ambiental para el Desarrollo Sostenible de los Espacios Oceánicos y las Zonas Costeras e Insulares de Colombia (PNAOCI), adoptada por el consejo Nacional Ambiental en diciembre del año 2000 tiene por objeto propender por el desarrollo sostenible de los espacios oceánicos y las zonas costeras, que permita mediante su manejo integrado, contribuir al mejoramiento de la calidad de vida de la población colombiana, al desarrollo armónico de las actividades productivas y a la conservación y preservación de los ecosistemas y recursos marinos y costeros.
 
-Que el Programa de la Conferencia de las Naciones Unidas sobre el Medio Ambiente y Desarrollo, Río 92, recomienda en la Sección.17, entre otros:
+Que el Programa 21 de la Conferencia de las Naciones Unidas sobre el Medio Ambiente y Desarrollo, Río 92, recomienda en la Sección 11.17, entre otros:
 
 - '17.5. Los Estados ribereños se comprometen a proceder a una ordenación integrada y a un desarrollo sostenible de las zonas costeras y del medio marino sujetos a su jurisdicción nacional. Para tal fin es necesario, entre otras cosas:
 - a) Crear un proceso integrado de formulación de políticas y adopción de decisiones, en que participen todos los sectores interesados, para fomentar la compatibilidad y el equilibrio entre los distintos usos.'
@@ -43,10 +43,10 @@ Que en la segunda conferencia de los países signatarios del Convenio sobre Dive
 
 Que el Departamento Archipiélago de San Andrés, Providencia y Santa Catalina cuenta con diversas áreas protegidas de carácter nacional y regional su jurisdicción, los cuales establecen diversos Planes de Manejo para sus áreas, las cuales procedemos a relacionar:
 
-1. El Área Marina Protegida de la Reserva de Biosfera Seaflower fue creada mediante la Resolución N° 107 del de enero de 2005 del entonces Ministerio de Ministerio de Ambiente, Vivienda y Desarrollo Territorial y asignada categoría de Distrito de Manejo Integrado 'Área Marina Protegida de la Reserva de Biosfera Seaflower' a través de Resolución 977 de 2014, del hoy Ministerio de Ambiente y Desarrollo Sostenible.
-2. El Parque Regional 'OId Point Regional Mangrove Park' fue Declarado, Reservado y Alinderado mediante los Acuerdos del consejo Directivo de CORALINA No. 041 y 042 de de septiembre de 2001.
-3. El Parque Regional Johnny Cay fue creado a través de Acuerdo del consejo Directivo de CORALINA No. 027 de de agosto de 2001, reservado y alinderado a través del Acuerdo No. 041 de 2001, establecido Plan de manejo por medio de la Resolución No. 161 de de marzo de 2002 y homologado mediante el Acuerdo del consejo Directivo de CORALINA No.024 de de agosto de 2011.
-4. El Parque Regional "The Peak", fue Declarado, reservado y Alinderado por intermedio del Acuerdo del consejo Directivo de CORALINA No. 024 de de noviembre de 2007 y Homologado por el Acuerdo del consejo Directivo de CORALINA No.025 de 2011.
+1. El Área Marina Protegida de la Reserva de Biosfera Seaflower fue creada mediante la Resolución N° 107 del 27 de enero de 2005 del entonces Ministerio de Ministerio de Ambiente, Vivienda y Desarrollo Territorial y asignada categoría de Distrito de Manejo Integrado 'Área Marina Protegida de la Reserva de Biosfera Seaflower' a través de Resolución 977 de 2014, del hoy Ministerio de Ambiente y Desarrollo Sostenible.
+2. El Parque Regional 'OId Point Regional Mangrove Park' fue Declarado, Reservado y Alinderado mediante los Acuerdos del consejo Directivo de CORALINA No. 041 y 042 de 18 de septiembre de 2001.
+3. El Parque Regional Johnny Cay fue creado a través de Acuerdo del consejo Directivo de CORALINA No. 027 de 03 de agosto de 2001, reservado y alinderado a través del Acuerdo No. 041 de 2001, establecido Plan de manejo por medio de la Resolución No. 161 de 7 de marzo de 2002 y homologado mediante el Acuerdo del consejo Directivo de CORALINA No.024 de 19 de agosto de 2011.
+4. El Parque Regional "The Peak", fue Declarado, reservado y Alinderado por intermedio del Acuerdo del consejo Directivo de CORALINA No. 024 de 2 de noviembre de 2007 y Homologado por el Acuerdo del consejo Directivo de CORALINA No.025 de 2011.
 
 Que con base en lo expuesto, se puede observar como el Departamento Archipiélago de San Andrés, Providencia y Santa Catalina cuenta con múltiples instrumentos de ordenamiento ambiental, requeridos por la normatividad vigente. Así mismo, se destaca la designación del Archipiélago de San Andrés, Providencia y Santa Catalina como Reserva de Biosfera en el marco del Programa MAB de la UNESCO denominada Reserva de Biosfera -Seaflower, la cual constituye una estrategia complementaria para la conservación de la diversidad biológica cuyo fin es promover un desarrollo sostenible. Todo lo anterior, termina coexistiendo y generando importantes cargas administrativas en los procesos de formulación y adopción de los instrumentos de ordenamiento ambiental del territorio propiciando un sin número de dificultades tanto para la autoridad ambiental como para las autoridades territoriales en torno a la implementación y cumplimiento de las mismas.
 
@@ -56,13 +56,13 @@ En mérito de lo expuesto,
 
 ## DECRETA:
 
-ARTÍCULO 1°.- El Título de la Parte del Libro del Decreto 1076 de 2015, Decreto Único Reglamentario del Sector Ambiente y Desarrollo Sostenible, tendrá un Capítulo con el siguiente texto:
+ARTÍCULO 1°.- El Título 4 de la Parte 2 del Libro 2 del Decreto 1076 de 2015, Decreto Único Reglamentario del Sector Ambiente y Desarrollo Sostenible, tendrá un Capítulo 3 con el siguiente texto:
 
-## CAPÍTULO
+## CAPÍTULO 3
 
 ## Aguas marítimas
 
-## SECCIÓN
+## SECCIÓN 1
 
 ## Manejo integrado insular
 
@@ -73,7 +73,7 @@ ARTÍCULO 2.2.4.2.3.2. Unificación   de   instrumentos. -   Para   todos   los 
 El POMIUAC INSULAR, incorporará y subsumirá los siguientes instrumentos actualmente vigentes o exigibles para el Departamento Archipiélago de San Andrés, Providencia y Santa Catalina en su territorio emergido y sumergido:
 
 1. Plan de Manejo de la Reserva de Biosfera Seaflower.
-2. Plan o planes de Ordenación y Manejo de Cuencas Hidrográficas - POMCA. Plan o planes de Zonificación de los Manglares. Plan de Manejo de Acuíferos y Aguas Subterráneas. Planes de Manejo de Áreas Protegidas: (Área Marina Protegida de la Reserva de Biosfera Seaflower, el Parque Regional 'Old Point Regional Mangrove Park', el Parque Regional Johnny Cay, El Parque Regional 'The Peak').
+2. Plan o planes de Ordenación y Manejo de Cuencas Hidrográficas - POMCA. 3. Plan o planes de Zonificación de los Manglares. 4. Plan de Manejo de Acuíferos y Aguas Subterráneas. 5. Planes de Manejo de Áreas Protegidas: (Área Marina Protegida de la Reserva de Biosfera Seaflower, el Parque Regional 'Old Point Regional Mangrove Park', el Parque Regional Johnny Cay, El Parque Regional 'The Peak').
 
 PARÁGRAFO 1°.- El POMIUAC INSULAR se constituye en norma de superior jerarquía y determinante ambiental para la elaboración y adopción de los planes o esquemas de ordenamiento territorial o plan de ordenamiento departamental, en el Departamento Archipiélago de San Andrés, Providencia y Santa Catalina.
 
@@ -126,10 +126,10 @@ ARTÍCULO 2°. Vigencia y derogatorias. El presente decreto debe entenderse inco
 
 PUBLÍQUESE y CÚMPLASE.
 
-Dado en Bogotá, D.C., a los días del mes de marzo del año 2017.
+Dado en Bogotá, D.C., a los 13 días del mes de marzo del año 2017.
 
 LUIS GILBERTO MURILLO URRUTIA
 
 EL MINISTRO DE AMBIENTE Y DESARROLLO SOSTENIBLE
 
-NOTA: Publicado en el Diario Oficial No.***** de de marzo de 2017.
+NOTA: Publicado en el Diario Oficial No.***** de 13 de marzo de 2017.
