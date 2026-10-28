@@ -779,10 +779,11 @@
         "section_heading": 16,
         "section_index": 16,
         "section_name": 16,
+        "summary": 1,
         "total_chunks_in_section": 29
       },
       "export_records_matched_by_id": 41,
-      "export_text_mismatches": 1,
+      "export_text_mismatches": 2,
       "format": ".pdf",
       "gold_chunks": 43,
       "gold_ids_missing_export": 2,
@@ -1727,7 +1728,7 @@
     },
     {
       "code": "text_mismatches",
-      "detail": "1035 registros; diferencia de snapshots, no autorización para reemplazar datos",
+      "detail": "1036 registros; diferencia de snapshots, no autorización para reemplazar datos",
       "path": "data/chroma-rag_playas_magdalena-20260731-135720.jsonl.gz",
       "severity": "warning"
     },
@@ -2088,7 +2089,7 @@
         "section_heading": 1072,
         "section_index": 953,
         "section_name": 946,
-        "summary": 351,
+        "summary": 352,
         "titulo": 32,
         "total_chunks_in_section": 3655
       },
@@ -2378,7 +2379,7 @@
           "source": "decreto-2324-de-1984.md"
         }
       ],
-      "text_mismatches": 1035
+      "text_mismatches": 1036
     },
     "files": [
       {
@@ -3037,9 +3038,9 @@
         "sha256": "5ab68cc7dfec2a0ba41ce45536526a390e5d7077ae1c696788b816093b762614"
       },
       {
-        "bytes": 29002,
+        "bytes": 29005,
         "path": "data/documents/bronze/jurisprudencia/CE_Consulta_1990_Horacio_Serpa_Uso_Publico_Playa.md",
-        "sha256": "a98ecab54e057a479404249da7b1c68d9ec6f98aeb69209584e3d8b1b51db724"
+        "sha256": "1090289a490a6c6a4aeefefc190a9a11ce970259f61c0c209ec05cbcbe5fe9b0"
       },
       {
         "bytes": 593,
@@ -3767,9 +3768,9 @@
         "sha256": "c9bb76adf3b91e71b34961e49de4faa2588d112ba5fcd0c1e2f840b6f790f755"
       },
       {
-        "bytes": 83911,
+        "bytes": 83960,
         "path": "data/documents/gold/jurisprudencia/CE_Consulta_1990_Horacio_Serpa_Uso_Publico_Playa.jsonl",
-        "sha256": "fbfca72ff64b4cfdd83acc4bafa9e0a4183c36535e4f0bc972e8b3c23018a848"
+        "sha256": "252072a4bec7583ca5aa1a26e8e16088525099a5fbcd4bc2cbee94088e4ec73d"
       },
       {
         "bytes": 382476,
@@ -4332,9 +4333,9 @@
         "sha256": "d2e1a1b2e58c12d441a94a1e452101943d37ebccc56c8dd53e1b665f7b6f39a9"
       },
       {
-        "bytes": 30220,
+        "bytes": 30223,
         "path": "data/documents/silver/jurisprudencia/CE_Consulta_1990_Horacio_Serpa_Uso_Publico_Playa.jsonl",
-        "sha256": "41fcf15f8c339385db6c592f4c2efe6bcf8b6fdb2a4e6e829d05725fbd1bf929"
+        "sha256": "20a26eb27cc399749e02555542eedd1d60b8d157a8bba71b718579d498939263"
       },
       {
         "bytes": 134340,

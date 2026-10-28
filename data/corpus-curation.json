@@ -947,7 +947,8 @@
         "Mapa vigente de particiones verificadas, con sufijos completos respecto del nombre de la fuente: _s1_c13 → _s1_c13__part1, _s1_c13__part2. Los padres se retiraron y no se reciclaron; los otros IDs históricos conservan su asociación, salvo los residuos de formato enumerados en el estado local. Este mapa documenta una futura conciliación del índice, sin ejecutarla.",
         "SN!C18 consigna 335-1990; Raw, página 1, dice Radicación No. 355. No se resuelve esta discrepancia: number y case_reference quedan null; la fecha 1990-06-04 se conserva.",
         "Curación técnica de enriquecimiento Gold — lote resumenes-date-gold-20261028-v1: summary corregido en 0 registro(s); 5 objeto(s) DATE reclasificados como OTHER en 5 registro(s). Se conservaron cuerpos, IDs y los demás campos; sin reindexación ni validación jurídica.",
-        "Curación técnica de cifras y enriquecimiento Gold: summaries corregidos en 0 registro(s); 9 objeto(s) DATE reclasificados como OTHER; 0 inserciones numéricas verificadas en los cuerpos de las tres capas. Se conservaron IDs, estructura y demás campos. Sin reindexación ni validación jurídica."
+        "Curación técnica de cifras y enriquecimiento Gold: summaries corregidos en 0 registro(s); 9 objeto(s) DATE reclasificados como OTHER; 0 inserciones numéricas verificadas en los cuerpos de las tres capas. Se conservaron IDs, estructura y demás campos. Sin reindexación ni validación jurídica.",
+        "Curación técnica de L2-046, fragmento CE_Consulta_1990_Horacio_Serpa_Uso_Publico_Playa_s1_c23: se restituyó el orden de «elemento determinante del orden público y la tranquilidad» y la referencia al artículo 16 según Raw, página 6, apartado 4o., en Bronze, Silver y Gold; se corrigió únicamente su summary. Se conservaron los 43 IDs históricos, límites, contadores, keywords, entities y demás campos. Sin reindexación ni validación jurídica."
       ]
     },
     {
