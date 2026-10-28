@@ -219,10 +219,17 @@ export CHROMA_HOST=<ip-chromadb> OLLAMA_BASE_URL=http://<ip-ollama>:11434
 make eval-sin-llm                  # = uv run python -m evaluation.metricas_sin_llm
 
 # Solo las métricas de respuesta, sobre una caché ya generada (sin ChromaDB)
-uv run python -m evaluation.metricas_sin_llm --sin-recuperacion --cache <caché.jsonl>
+uv run python -m evaluation.metricas_sin_llm --sin-recuperacion --cache <caché.jsonl> --tag <tag>
+
+# Aceptar un cambio: guardar la corrida como nueva línea base y versionarla
+uv run python -m evaluation.metricas_sin_llm --guardar-linea-base
 ```
 
-Escribe `evaluation/results/metricas-sin-llm-v0.2[-<tag>].json`. Qué mide
+Escribe `evaluation/results/metricas-sin-llm-v0.2[-<tag>].json` (detalle por
+caso) y `.md` (tablas con IC 95 %, desgloses y casos a revisar). Si existe
+`evaluation/data/linea-base-sin-llm-v0.2.json`, compara contra ella e imprime
+`REGRESIÓN frente a la línea base: …` cuando una métrica sale del intervalo
+de la línea base en la dirección mala. Qué mide
 cada métrica y cómo leerla: [`evaluation/README.md` § Métricas fijas sin LLM](../evaluation/README.md#métricas-fijas-sin-llm).
 El juez RAGAS (fase 4) se reserva para los hitos, porque es el único que
 dice si la respuesta es jurídicamente correcta.
@@ -260,7 +267,7 @@ uv run python -m evaluation.baseline_report
 |---|---|---|
 | `ground_truth_v02.py` | `evaluation/data/legal-ground-truth-v0.2.json` (sí versionado) | ninguno |
 | `retrieval_baseline.py` | `retrieval-baseline-v0.2.json` | ninguno |
-| `metricas_sin_llm.py` | `metricas-sin-llm-v0.2.json` | ninguno |
+| `metricas_sin_llm.py` | `metricas-sin-llm-v0.2.json` y `.md` | ninguno |
 | `generation_cache.py` | `generation-cache-v0.2.jsonl` | ~0,0035 USD por caso |
 | `ragas_v02.py` | `ragas-v0.2.jsonl` | ~0,008 USD por caso |
 | `baseline_report.py` | `linea-base-v0.2.md` | ninguno |
