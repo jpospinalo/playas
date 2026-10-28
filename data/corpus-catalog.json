@@ -172,6 +172,7 @@
       "coverage": "not_verified",
       "doc_type": "jurisprudencia",
       "export_metadata_differences": {
+        "summary": 1,
         "total_chunks_in_section": 140
       },
       "export_records_matched_by_id": 156,
@@ -371,10 +372,11 @@
       "doc_type": "jurisprudencia",
       "export_metadata_differences": {
         "chunk_index": 502,
-        "entities": 4,
+        "entities": 10,
         "section_heading": 502,
         "section_index": 336,
         "section_name": 336,
+        "summary": 1,
         "total_chunks_in_section": 508
       },
       "export_records_matched_by_id": 530,
@@ -402,6 +404,7 @@
       "doc_type": "jurisprudencia",
       "export_metadata_differences": {
         "chunk_index": 32,
+        "entities": 3,
         "section_heading": 32,
         "section_index": 32,
         "section_name": 32,
@@ -461,7 +464,7 @@
       "doc_type": "jurisprudencia",
       "export_metadata_differences": {
         "chunk_index": 86,
-        "entities": 4,
+        "entities": 6,
         "section_heading": 82,
         "section_index": 76,
         "section_name": 76,
@@ -492,6 +495,7 @@
       "doc_type": "jurisprudencia",
       "export_metadata_differences": {
         "chunk_index": 110,
+        "entities": 2,
         "section_heading": 101,
         "section_index": 94,
         "section_name": 94,
@@ -521,6 +525,7 @@
       "coverage": "not_verified",
       "doc_type": "jurisprudencia",
       "export_metadata_differences": {
+        "summary": 1,
         "total_chunks_in_section": 65
       },
       "export_records_matched_by_id": 122,
@@ -548,7 +553,7 @@
       "doc_type": "jurisprudencia",
       "export_metadata_differences": {
         "chunk_index": 112,
-        "entities": 3,
+        "entities": 5,
         "keywords": 1,
         "keywords_str": 1,
         "section_heading": 112,
@@ -610,6 +615,7 @@
       "doc_type": "jurisprudencia",
       "export_metadata_differences": {
         "chunk_index": 41,
+        "entities": 2,
         "section_heading": 41,
         "section_index": 41,
         "section_name": 41,
@@ -640,7 +646,7 @@
       "doc_type": "jurisprudencia",
       "export_metadata_differences": {
         "chunk_index": 32,
-        "entities": 1,
+        "entities": 3,
         "section_heading": 2,
         "section_index": 2,
         "section_name": 2,
@@ -670,7 +676,8 @@
       "coverage": "not_verified",
       "doc_type": "jurisprudencia",
       "export_metadata_differences": {
-        "entities": 1
+        "entities": 1,
+        "summary": 1
       },
       "export_records_matched_by_id": 72,
       "export_text_mismatches": 25,
@@ -726,7 +733,7 @@
       "doc_type": "jurisprudencia",
       "export_metadata_differences": {
         "chunk_index": 102,
-        "entities": 2,
+        "entities": 3,
         "section_heading": 8,
         "section_index": 7,
         "section_name": 7,
@@ -757,6 +764,7 @@
       "doc_type": "jurisprudencia",
       "export_metadata_differences": {
         "chunk_index": 16,
+        "entities": 5,
         "section_heading": 16,
         "section_index": 16,
         "section_name": 16,
@@ -786,6 +794,7 @@
       "coverage": "not_verified",
       "doc_type": "jurisprudencia",
       "export_metadata_differences": {
+        "entities": 6,
         "total_chunks_in_section": 186
       },
       "export_records_matched_by_id": 197,
@@ -812,7 +821,7 @@
       "coverage": "not_verified",
       "doc_type": "jurisprudencia",
       "export_metadata_differences": {
-        "entities": 1,
+        "entities": 2,
         "total_chunks_in_section": 103
       },
       "export_records_matched_by_id": 117,
@@ -840,7 +849,7 @@
       "doc_type": "jurisprudencia",
       "export_metadata_differences": {
         "chunk_index": 110,
-        "entities": 3,
+        "entities": 6,
         "section_heading": 101,
         "section_index": 94,
         "section_name": 94,
@@ -871,6 +880,7 @@
       "doc_type": "jurisprudencia",
       "export_metadata_differences": {
         "chunk_index": 1,
+        "entities": 1,
         "section_heading": 1,
         "section_index": 1,
         "section_name": 1,
@@ -900,7 +910,7 @@
       "coverage": "not_verified",
       "doc_type": "normativa",
       "export_metadata_differences": {
-        "entities": 1
+        "entities": 2
       },
       "export_records_matched_by_id": 31,
       "export_text_mismatches": 9,
@@ -1004,7 +1014,8 @@
       "coverage": "not_verified",
       "doc_type": "normativa",
       "export_metadata_differences": {
-        "entities": 1
+        "entities": 1,
+        "summary": 1
       },
       "export_records_matched_by_id": 7,
       "export_text_mismatches": 1,
@@ -1332,7 +1343,7 @@
       "coverage": "not_verified",
       "doc_type": "normativa",
       "export_metadata_differences": {
-        "entities": 1
+        "entities": 2
       },
       "export_records_matched_by_id": 22,
       "export_text_mismatches": 0,
@@ -1358,7 +1369,7 @@
       "coverage": "not_verified",
       "doc_type": "normativa",
       "export_metadata_differences": {
-        "entities": 3,
+        "entities": 5,
         "summary": 1
       },
       "export_records_matched_by_id": 28,
@@ -1460,7 +1471,10 @@
       "bytes": 1414620,
       "coverage": "not_verified",
       "doc_type": "normativa",
-      "export_metadata_differences": {},
+      "export_metadata_differences": {
+        "entities": 1,
+        "summary": 1
+      },
       "export_records_matched_by_id": 13,
       "export_text_mismatches": 0,
       "format": ".pdf",
@@ -1488,7 +1502,7 @@
         "articulo": 42,
         "articulo_titulo": 42,
         "chunk_index": 37,
-        "entities": 15,
+        "entities": 17,
         "keywords": 7,
         "keywords_str": 7,
         "section_index": 42,
@@ -1555,7 +1569,9 @@
       "bytes": 886375,
       "coverage": "not_verified",
       "doc_type": "normativa",
-      "export_metadata_differences": {},
+      "export_metadata_differences": {
+        "entities": 1
+      },
       "export_records_matched_by_id": 7,
       "export_text_mismatches": 0,
       "format": ".pdf",
@@ -1584,11 +1600,12 @@
         "articulo_titulo": 30,
         "capitulo": 46,
         "chunk_index": 30,
-        "entities": 8,
+        "entities": 9,
         "keywords": 2,
         "keywords_str": 2,
         "section_index": 40,
         "section_name": 30,
+        "summary": 1,
         "total_chunks_in_section": 50
       },
       "export_records_matched_by_id": 83,
@@ -1618,7 +1635,7 @@
         "articulo": 48,
         "articulo_titulo": 48,
         "chunk_index": 4,
-        "entities": 34,
+        "entities": 39,
         "keywords_str": 1,
         "section_index": 36,
         "section_name": 48,
@@ -1649,7 +1666,7 @@
       "coverage": "not_verified",
       "doc_type": "normativa",
       "export_metadata_differences": {
-        "entities": 4
+        "entities": 5
       },
       "export_records_matched_by_id": 239,
       "export_text_mismatches": 0,
@@ -1680,7 +1697,7 @@
     },
     {
       "code": "records_with_metadata_differences",
-      "detail": "3891 registros; diferencia de snapshots, no autorización para reemplazar datos",
+      "detail": "3915 registros; diferencia de snapshots, no autorización para reemplazar datos",
       "path": "data/chroma-rag_playas_magdalena-20260731-135720.jsonl.gz",
       "severity": "warning"
     },
@@ -2041,19 +2058,19 @@
         "articulo_titulo": 136,
         "capitulo": 66,
         "chunk_index": 1363,
-        "entities": 407,
+        "entities": 458,
         "keywords": 318,
         "keywords_str": 319,
         "section_heading": 1072,
         "section_index": 953,
         "section_name": 946,
-        "summary": 327,
+        "summary": 334,
         "titulo": 32,
         "total_chunks_in_section": 3655
       },
       "path": "data/chroma-rag_playas_magdalena-20260731-135720.jsonl.gz",
       "records": 5888,
-      "records_with_metadata_differences": 3891,
+      "records_with_metadata_differences": 3915,
       "sha256": "28b7a3076d1c7ad0aa3ef2a4394e31423cdd5358f691fdc6a6104f7e15712d2d",
       "sources": [
         {
@@ -3636,9 +3653,9 @@
         "sha256": "2357f08e570b7a12c29e353f92d1994a0528afd20953626d37905385132797ac"
       },
       {
-        "bytes": 381791,
+        "bytes": 381867,
         "path": "data/documents/gold/jurisprudencia/AP Gieseken Cuello & Cía. S. en C. VS DIMAR y otros.jsonl",
-        "sha256": "ae03a6744d2a711b9bd5f05c950cd22f099854f34619c52528b51db27d3b966a"
+        "sha256": "df76a111d66fdef729ca9449f67b436ca05946a9c29ef44bdb55460d6467bde3"
       },
       {
         "bytes": 252945,
@@ -3656,19 +3673,19 @@
         "sha256": "f2ee44d85200ab50b70a4331351a23f83240fb51dd9f1d56b4e702d14a115d20"
       },
       {
-        "bytes": 818110,
+        "bytes": 818116,
         "path": "data/documents/gold/jurisprudencia/AP Rodrigo Martínez Silva VS Minambiente y otros.jsonl",
-        "sha256": "edc069821f4d9825e2ef690e99972a5dd685bc9a82655006728fef323f5a0146"
+        "sha256": "cf1da4ec64a258ab3dca9146781203fe7dcf2f08021022d57dc10b88e14e5c06"
       },
       {
-        "bytes": 1105749,
+        "bytes": 1105858,
         "path": "data/documents/gold/jurisprudencia/CC_TU_039_2024_Modesto_Manjarrez_VS_Autopistas_Del_Caribe_Consulta_Previa_Via.jsonl",
-        "sha256": "ebfbf45443c66da375d7df15bbca27d5b08e6a379ff5394d27f308de72768a72"
+        "sha256": "47cd61be0e9898ffdc5267bb934a2a63746d393a4542cb8cb5ad6e206dd9f687"
       },
       {
-        "bytes": 172683,
+        "bytes": 172686,
         "path": "data/documents/gold/jurisprudencia/CE_1era_NS_2009_603_Jose_Palencia_VS_MinDefensa_Resolución_Pilotos_Embargaciones.jsonl",
-        "sha256": "a4fad69a8d84bf4f41df167f307eda5f1368942a2481c630c6dd1e4186485c40"
+        "sha256": "cea612380130dca885b418ec1051454cfbf3c709517c634c916fa6b6a500434e"
       },
       {
         "bytes": 218656,
@@ -3676,44 +3693,44 @@
         "sha256": "f798eee50ecdc91d61805e5056a9c9735c1a564091444f13854764b87863ec89"
       },
       {
-        "bytes": 324009,
+        "bytes": 324011,
         "path": "data/documents/gold/jurisprudencia/CE_2da_AP_2011_178_Jose_Caballero_VS_Distrito_Cartagena_Venta_Inmueble_Valor_Cultural.jsonl",
-        "sha256": "9126486001b5f2c4740384d4c4588654e91f97e6ae8282aa40248350d4be5a8e"
+        "sha256": "259dec67546142855cbf49b1afc5b95a70d75985268598e06e9ba1b0a69db0c4"
       },
       {
-        "bytes": 604387,
+        "bytes": 604389,
         "path": "data/documents/gold/jurisprudencia/CE_2da_AP_2011_842_Gabriel_Carrero_VS_Dimar_Erosión_Costera.jsonl",
-        "sha256": "c7e814cb3f4cbc65c52df8052adce8d6b797da9191616d2b1558657b96a59d61"
+        "sha256": "45b7484e6e9018cbaa19aed59a1b5e9e4bb03c113fced6bc372502dee207bfcb"
       },
       {
-        "bytes": 249062,
+        "bytes": 249115,
         "path": "data/documents/gold/jurisprudencia/CE_2da_AP_2015_550_Angela_Muñoz_VS_Dpto_Cordoba_Bienes_De_Uso_Publico.jsonl",
-        "sha256": "c2c3e394b5d2e3355e467f168c0c8a0507df6caf32a2ebadfcbdf436a973bab7"
+        "sha256": "0463661b2ae01c145c2f9aee3f49bea306a03bf994d7d3a6b9962c1e959abc73"
       },
       {
-        "bytes": 238084,
+        "bytes": 238086,
         "path": "data/documents/gold/jurisprudencia/CE_2da_AP_2016_328_Ricardo_Cabrales_VS_Mun_Coveñas_Playa_Uso_Publico.jsonl",
-        "sha256": "88c1fe868e905b06644b3f677608bb86e0fb705a445991e94a5bfb97e1f31216"
+        "sha256": "dd21b3eb24e2c4fad548f6b8f88d86f2dafe6698925710b13c7543a08538cc19"
       },
       {
-        "bytes": 245677,
+        "bytes": 245678,
         "path": "data/documents/gold/jurisprudencia/CE_2da_AP_2017_103_Personeria_VS_Distrito_Cartagena_Desembocadura.jsonl",
-        "sha256": "be572c132bbf2fa1ad0065d52507399945d1947078a4ba93ba38c87a6c7a15f3"
+        "sha256": "238241dbb156594a58c48bf681a21c68864a30e0bca05cd6746f0664286edcfa"
       },
       {
-        "bytes": 451892,
+        "bytes": 451894,
         "path": "data/documents/gold/jurisprudencia/CE_2da_AP_2021_041_Edgar_Stephengs_VS_Archipielago_San_Andres_Desarrollo_Urbanistico.jsonl",
-        "sha256": "6efd39b321676b796391560844a6ef3b4bd19d03eef135389c7484f2fd1fd950"
+        "sha256": "362eb977c00604a4a533c8f9c4f335d0f914e23941d28e05ab880d99ca813f9c"
       },
       {
-        "bytes": 135113,
+        "bytes": 135115,
         "path": "data/documents/gold/jurisprudencia/CE_2da_NYR_1994_993_Inversiones_Araujo_VS_Capitania_Puerto_Cartagena_Urbanismo_Playa.jsonl",
-        "sha256": "782412a331de348cd25589543d67348d0d50dbeb6c91a9049a6ae4b9a60ba6be"
+        "sha256": "f783af783f8563e1de13f6b0f2cf990255a18a98f129d8a0ecca488458979402"
       },
       {
-        "bytes": 147723,
+        "bytes": 147789,
         "path": "data/documents/gold/jurisprudencia/CE_2da_NYR_1998_102_Flury_Valencia_VS_MinDefensa_Uso_Urbanistico_Playa.jsonl",
-        "sha256": "7ccbfb9be67ccb31765789a218b1c6b1b17c9b99affe3e173eaa548671a016cb"
+        "sha256": "fb8c57660265487fbc78ea87f310a952bdce661bd43abda9e5f2a092549c4b3b"
       },
       {
         "bytes": 60780,
@@ -3721,39 +3738,39 @@
         "sha256": "e3550a34dd35c8ae261803750facb37cee199b6708f1fd7662c09235ddb9dcff"
       },
       {
-        "bytes": 336251,
+        "bytes": 336252,
         "path": "data/documents/gold/jurisprudencia/CE_2da_NYR_2009_164_FEPEP_VS_DIMAR_Playa_Uso_Urbanistico.jsonl",
-        "sha256": "4a958b9fc5003eee337bcf8728fbec3920a03f766dccede837a9d04666cf2634"
+        "sha256": "60135858aa869b17a55f3a345b8ebc1a18a1be69a752bb4317f25c5d86729bf3"
       },
       {
-        "bytes": 83897,
+        "bytes": 83902,
         "path": "data/documents/gold/jurisprudencia/CE_Consulta_1990_Horacio_Serpa_Uso_Publico_Playa.jsonl",
-        "sha256": "8be1902fa4129bc97e42101a52477f6a1215603d6f35f816f6ebb8db4750c49d"
+        "sha256": "a7af7ef49be8c948f50028d597e139edd5745016838c5fdde550f936e2df536d"
       },
       {
-        "bytes": 382440,
+        "bytes": 382446,
         "path": "data/documents/gold/jurisprudencia/CE_Consulta_2005_168_MinDefensa_Bienes_De_Uso_Publico.jsonl",
-        "sha256": "2b5ea0d23a25874cdcf7d040689ef05fa2c98bb68117aeca58ad2ff8df159ab2"
+        "sha256": "38b547938d61c1ff37edc46bec21379ee5355a24a8df16cdd6e61f5921ca1566"
       },
       {
-        "bytes": 235617,
+        "bytes": 235618,
         "path": "data/documents/gold/jurisprudencia/CE_Consulta_2010_071_MinAmbiente_Bienes_De_Uso_Publico.jsonl",
-        "sha256": "ac479958821ae5cab4f04c72ab9c17665f2e06cef0af002d7ea9aecfc21b7131"
+        "sha256": "46f0d5a136e1e4b5d1349f60754f2cab17babb931392109da76379936d131e03"
       },
       {
-        "bytes": 620916,
+        "bytes": 620920,
         "path": "data/documents/gold/jurisprudencia/SENTENCIA DE SEGUNDA INSTANCIA 47001-2332-000-2011-08425-02- GABRIEL CARRERO.jsonl",
-        "sha256": "19f0f8a034fb229b5e79f2ef3ee90ecfa7c14483decb0a91ee3dbb26a9698661"
+        "sha256": "a08443369a76a90805051ec1f658a4e57e99817b8e1a0662fd58776b68db7341"
       },
       {
-        "bytes": 237465,
+        "bytes": 237466,
         "path": "data/documents/gold/jurisprudencia/TAA_2da_RD_2015_281_XXXX_VS_Dpto_Antioquia_Responsabilidad_Del_Estado.jsonl",
-        "sha256": "0161f25512d658eca7767438a4dd49334880fb93a3bf261df4c581cae5c30ea5"
+        "sha256": "701c5396db3aaa9d4c3c68e84aeaa03df574702cbcb93a7b5a81eb0163b124cf"
       },
       {
-        "bytes": 82398,
+        "bytes": 82399,
         "path": "data/documents/gold/normativa/Por el cual adiciona al Título 4 de la Parte 2 del Libro 2 del Decreto 1076 de 2015, un Capítulo 3 en el que se establece el Plan de Ordenación y Manejo Integrado de la Unidad Ambiental Costera -POMIUAC- Caribe In.jsonl",
-        "sha256": "fafcbd8ca69d1c81dd2cb370e1d35225170f24baedff98d9567cab3fced2e0a6"
+        "sha256": "c9b9a99b67ec4bb410550b406b39c516f99e5f5117da35e117ea13e4ebadf9a2"
       },
       {
         "bytes": 29577,
@@ -3771,9 +3788,9 @@
         "sha256": "437d30cfd542adf2c158b7d0acb060d4ecf1f7b1faeda4fc031deda678641a11"
       },
       {
-        "bytes": 14751,
+        "bytes": 14748,
         "path": "data/documents/gold/normativa/Por el cual se dictan normas sobre la prevención de la contaminación del medio marino y otras disposiciones.jsonl",
-        "sha256": "70cf16945c1cc3fbc8ce469319ca444e55e71b2a6650e5c2700a5200e1961509"
+        "sha256": "e25aaa4700594c2925e4bc66fce840f700f95d1d8a7d61b092daea2a43674cca"
       },
       {
         "bytes": 10621,
@@ -3836,14 +3853,14 @@
         "sha256": "5b8b769a93d83eb39a0fc4b13d7bb46fbbd8ffb38817aa5db0975a30ee71cc15"
       },
       {
-        "bytes": 40794,
+        "bytes": 40795,
         "path": "data/documents/gold/normativa/Por el cual se reorganiza la Dirección General Marítima y Portuaria.jsonl",
-        "sha256": "0687142a0eb8705e60c6855657d62fb64209105423c0c6808db09af2ba631193"
+        "sha256": "20f38cdfc1c16e13664a07524e65d49b5a8c5b27ab69ca3dcfa484f951b654d9"
       },
       {
-        "bytes": 55565,
+        "bytes": 55567,
         "path": "data/documents/gold/normativa/Por medio de la cual se reglamenta el área de playa en el Balneario Turístico El Rodadero.jsonl",
-        "sha256": "ff7b831f39524ef8e659b5e4de58f47717b527b65d2ca314369fa68ec3f7e212"
+        "sha256": "33f526ccac8c54e89336797080aec2442cde0040049527ed74215efc2b15b817"
       },
       {
         "bytes": 36718,
@@ -3861,14 +3878,14 @@
         "sha256": "21ee1b191ce69ab4489190133e00ab06b809d778cfb8d31b77970baea225f864"
       },
       {
-        "bytes": 30771,
+        "bytes": 30837,
         "path": "data/documents/gold/normativa/Por medio del cual se expide el Decreto Único Reglamentario del Sector Vivienda, Ciudad y Territorio.jsonl",
-        "sha256": "3d13f22310b7ef5503a47bf8825de7f84489f17162157829ca428ef8e5f24204"
+        "sha256": "42298b706b6c80420a278413c41099de7e40a661887fd5b650d60fc63eb241d6"
       },
       {
-        "bytes": 320414,
+        "bytes": 320416,
         "path": "data/documents/gold/normativa/Por medio del cual se expiden las normas bases para la reglamentación de las actividades en las playas urbanas y rurales en el Distrito de Cartagena de Indias.jsonl",
-        "sha256": "1cc72eb0917a08a612d5b582f30162967943fef7990c731d1f6b13987db2e6af"
+        "sha256": "98ab19e532a1bde13f3eda974b2b7d02163aabac9681a6b0d0443ed7c815f946"
       },
       {
         "bytes": 297490,
@@ -3876,24 +3893,24 @@
         "sha256": "4caca0b5adea304ab209998f1eab57532479a4b4ecaed052d724d522e9674bb7"
       },
       {
-        "bytes": 16661,
+        "bytes": 16662,
         "path": "data/documents/gold/normativa/Por medio del cual se reglamenta el trámite de solicitud de concesiones para el desarrollo de actividades portuarias previstas en las Leyes 1ª de 1991 y 1242 de 2008.jsonl",
-        "sha256": "81a99babca9d278fc472936baa772c5ec46cd112f130ab1c446bc87c6f4d050b"
+        "sha256": "73d228503d8dee2f9defd415a68e051df9b1a82805a49e52fa152a39298bc10b"
       },
       {
-        "bytes": 222256,
+        "bytes": 222260,
         "path": "data/documents/gold/normativa/Por medio del cual se reglamenta el uso, zonificación y horario de las playas con vocación turística del Distrito Turístico, Cultural e Histórico de Santa Marta, aptas para la realización de activiades de aprovech.jsonl",
-        "sha256": "eabe67362ad48c10a54b8f3c1419ce25fa279074e1bb1c3e6bc45a8d1658192a"
+        "sha256": "9d6d807089cddda0728e9f77b8d7d01b199816e622e938fe6fb1f36a0ea2d0ed"
       },
       {
-        "bytes": 1181362,
+        "bytes": 1181368,
         "path": "data/documents/gold/normativa/Reglamento Maritimo Colombiano REMAC 5-DIMAR (202103).jsonl",
-        "sha256": "0be92c98d652acfabcba0ab847f80985506a4f448d11c8fca53272a04a9dd953"
+        "sha256": "77022e241a40698d87020d13961c68915853046aaf7efbbbc7c8872544b9016b"
       },
       {
-        "bytes": 425800,
+        "bytes": 425801,
         "path": "data/documents/gold/normativa/decreto-2324-de-1984.jsonl",
-        "sha256": "6a71d151389dceeb026b4fd35813501a4f75b21192be9eef07dc3e78a0db4a52"
+        "sha256": "7a04447f1ee5628bdc072912d9f7cca5db5642894ad3e6669678472d24f0adaf"
       },
       {
         "bytes": 1232386,
