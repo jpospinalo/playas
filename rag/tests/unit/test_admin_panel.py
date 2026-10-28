@@ -300,6 +300,7 @@ def test_resumen_cifras(cliente) -> None:
         "nuevas": 2,
         "recurrentes": 1,
         "preguntas_por_persona": 2.3,
+        "mediana_por_persona": 2.0,
     }
 
     # Brechas: 2 sin respuesta (misma pregunta, agrupadas) + 1 mal calificada.

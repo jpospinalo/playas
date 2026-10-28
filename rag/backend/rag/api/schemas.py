@@ -330,6 +330,11 @@ class PanelCifras(BaseModel):
     calificaciones: int
     le_sirvio: int
     no_le_sirvio: int
+    # PQ-132: de dónde salen las "no le sirvió" (fuera de tema o pidió aclarar
+    # es donde ATLAS hizo lo correcto: no es contenido que falte).
+    no_le_sirvio_con_fuente: int = 0
+    no_le_sirvio_sin_respuesta: int = 0
+    no_le_sirvio_fuera_de_tema: int = 0
 
 
 class PanelPunto(BaseModel):
@@ -366,6 +371,8 @@ class PanelPersonas(BaseModel):
     nuevas: int
     recurrentes: int
     preguntas_por_persona: float
+    # PQ-141: la media se sesga con quien pregunta mucho; va con la mediana.
+    mediana_por_persona: float = 0
 
 
 class PanelBrecha(BaseModel):
@@ -374,6 +381,8 @@ class PanelBrecha(BaseModel):
     tema: str
     tema_titulo: str
     motivo: Literal["sin_respuesta_segura", "no_le_sirvio"]
+    # PQ-142: un grupo puede mezclar motivos; cuántas veces fue "no le sirvió".
+    veces_no_le_sirvio: int = 0
     esperaba: str | None
     ultima: str
     conversation_id: str

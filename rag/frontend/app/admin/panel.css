@@ -2819,3 +2819,11 @@ html:has(.pnl) {
 	stroke-linecap: round;
 	stroke-linejoin: round;
 }
+
+/* PQ-142: desglose de motivos bajo "Se repitió". */
+.pnl-veces-det {
+	display: block;
+	font-size: 15px;
+	font-weight: 400;
+	color: var(--p-tinta-2);
+}

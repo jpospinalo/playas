@@ -234,6 +234,16 @@ def _cifras(
         calificaciones=len(calificadas),
         le_sirvio=sum(f.calificacion == pm.UTIL for f in calificadas),
         no_le_sirvio=sum(f.calificacion == pm.NO_UTIL for f in calificadas),
+        no_le_sirvio_con_fuente=sum(
+            f.calificacion == pm.NO_UTIL and f.resultado == pm.CON_FUENTE for f in calificadas
+        ),
+        no_le_sirvio_sin_respuesta=sum(
+            f.calificacion == pm.NO_UTIL and f.resultado in pm.BRECHAS for f in calificadas
+        ),
+        no_le_sirvio_fuera_de_tema=sum(
+            f.calificacion == pm.NO_UTIL and f.resultado in (pm.FUERA_DE_TEMA, pm.PIDE_ACLARAR)
+            for f in calificadas
+        ),
     )
 
 
@@ -317,7 +327,7 @@ def _playas(filas: list[_Fila]) -> tuple[list[PanelConteo], int]:
     ], sin
 
 
-def _personas(cifras: PanelCifras) -> PanelPersonas:
+def _personas(cifras: PanelCifras, filas: list[_Fila] | None = None) -> PanelPersonas:
     # Sin ranking de personas (Ley 1581, finalidad): el panel sirve para
     # mejorar ATLAS, no para seguir a alguien. Ver PQ-05.
     return PanelPersonas(
@@ -327,7 +337,16 @@ def _personas(cifras: PanelCifras) -> PanelPersonas:
         preguntas_por_persona=round(cifras.preguntas / cifras.personas, 1)
         if cifras.personas
         else 0,
+        mediana_por_persona=_mediana(list(Counter(f.user_id for f in filas or []).values())),
     )
+
+
+def _mediana(xs: list[int]) -> float:
+    if not xs:
+        return 0
+    xs = sorted(xs)
+    m = len(xs) // 2
+    return float(xs[m]) if len(xs) % 2 else (xs[m - 1] + xs[m]) / 2
 
 
 def _brechas(filas: list[_Fila]) -> tuple[int, list[PanelBrecha]]:
@@ -349,6 +368,7 @@ def _brechas(filas: list[_Fila]) -> tuple[int, list[PanelBrecha]]:
                 motivo="no_le_sirvio"
                 if ultima.calificacion == pm.NO_UTIL
                 else "sin_respuesta_segura",
+                veces_no_le_sirvio=sum(f.calificacion == pm.NO_UTIL for f in fs),
                 esperaba=esperaba,
                 ultima=ultima.fecha.isoformat(),
                 conversation_id=ultima.conversation_id,
@@ -433,7 +453,7 @@ async def resumen(
         normas=_normas(filas),
         playas=playas,
         sin_playa=sin_playa,
-        personas=_personas(cifras),
+        personas=_personas(cifras, filas),
         brechas_total=brechas_total,
         brechas=brechas,
     )

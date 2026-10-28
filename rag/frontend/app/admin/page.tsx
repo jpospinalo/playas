@@ -13,6 +13,7 @@ import {
 	cambioTasa,
 	cuantas,
 	cuantasDecimal,
+	decimal,
 	descargarCsv,
 	diaMes,
 	fechaLarga,
@@ -352,6 +353,20 @@ function subtituloPeriodo(d: Resumen): string {
 	return `Del ${fechaLarga(d.periodo.desde)} al ${hasta}`;
 }
 
+/** PQ-132: "no le sirvió" separado por tipo de respuesta: las de fuera de
+ * tema o aclaración no son contenido que falte (ATLAS respondió bien). */
+function desgloseNoSirvio(c: Resumen["cifras"]): string {
+	const medias = c.calificaciones - c.le_sirvio - c.no_le_sirvio;
+	const si = `A ${numero(c.le_sirvio)} sí les sirvió${medias > 0 ? ` y a ${numero(medias)} a medias` : ""}.`;
+	if (c.no_le_sirvio_con_fuente === undefined || !c.no_le_sirvio) return `${si} Calificaron ${numero(c.calificaciones)} de ${numero(c.respuestas)} respuestas.`;
+	const partes = [
+		`${numero(c.no_le_sirvio_con_fuente)} con fuente`,
+		`${numero(c.no_le_sirvio_sin_respuesta ?? 0)} sin respuesta segura`,
+	];
+	if (c.no_le_sirvio_fuera_de_tema) partes.push(`${numero(c.no_le_sirvio_fuera_de_tema)} fuera de tema o aclaración`);
+	return `${si} De las ${numero(c.no_le_sirvio)}: ${partes.join(", ")}.`;
+}
+
 function Contenido({
 	datos,
 	dias: diasFiltro,
@@ -479,11 +494,7 @@ function Contenido({
 						progreso={pNoSirvio ?? undefined}
 						onVer={c.no_le_sirvio > 0 ? () => ver("no_le_sirvio") : undefined}
 						verTexto="Ver cuáles →"
-						det={`A ${numero(c.le_sirvio)} sí les sirvió${
-							c.calificaciones - c.le_sirvio - c.no_le_sirvio > 0
-								? ` y a ${numero(c.calificaciones - c.le_sirvio - c.no_le_sirvio)} a medias`
-								: ""
-						}. Calificaron ${numero(c.calificaciones)} de ${numero(c.respuestas)} respuestas.`}
+						det={desgloseNoSirvio(c)}
 					>
 						{numero(c.no_le_sirvio)}
 					</CifraBoton>
@@ -760,11 +771,16 @@ function NotaSerie({ datos }: { datos: Resumen }) {
 
 function Personas({ datos, dias }: { datos: Resumen; dias: number }) {
 	const p = datos.personas;
-	if (dias === 0) {
+	const mediana = p.mediana_por_persona ? ` (mediana ${decimal(p.mediana_por_persona)})` : "";
+	// PQ-141: si el periodo anterior no tiene preguntas, todos saldrían "nuevos":
+	// se dice como en "Todo".
+	if (dias === 0 || (datos.anterior !== null && datos.anterior.preguntas === 0)) {
 		return (
 			<p>
-				En todo el tiempo {p.activas === 1 ? "preguntó" : "preguntaron"} {cuantas(p.activas, "persona", "personas")}, con{" "}
-				{cuantasDecimal(p.preguntas_por_persona, "pregunta", "preguntas")} por persona en promedio.
+				{dias === 0 ? "En todo el tiempo" : "En el periodo"} {p.activas === 1 ? "preguntó" : "preguntaron"}{" "}
+				{cuantas(p.activas, "persona", "personas")}, con{" "}
+				{cuantasDecimal(p.preguntas_por_persona, "pregunta", "preguntas")} por persona en promedio{mediana}.
+				{dias !== 0 ? " Antes de este periodo no hay preguntas para saber quién vuelve." : null}
 			</p>
 		);
 	}
@@ -796,7 +812,7 @@ function Personas({ datos, dias }: { datos: Resumen; dias: number }) {
 				</li>
 			</ul>
 			<p style={{ margin: 0 }}>
-				En promedio, {cuantasDecimal(p.preguntas_por_persona, "pregunta", "preguntas")} por persona. La lista de cuentas
+				En promedio, {cuantasDecimal(p.preguntas_por_persona, "pregunta", "preguntas")} por persona{mediana}. La lista de cuentas
 				está en <Link href="/admin/cuentas">Cuentas</Link>.
 			</p>
 		</>

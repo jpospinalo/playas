@@ -27,6 +27,10 @@ export interface Cifras {
 	calificaciones: number;
 	le_sirvio: number;
 	no_le_sirvio: number;
+	/** PQ-132: desglose de "no le sirvió" por tipo de respuesta. */
+	no_le_sirvio_con_fuente?: number;
+	no_le_sirvio_sin_respuesta?: number;
+	no_le_sirvio_fuera_de_tema?: number;
 }
 
 export interface Punto {
@@ -59,6 +63,8 @@ export interface Brecha {
 	tema: string;
 	tema_titulo: string;
 	motivo: "sin_respuesta_segura" | "no_le_sirvio";
+	/** PQ-142: veces que fue "no le sirvió" (el resto, sin respuesta segura). */
+	veces_no_le_sirvio?: number;
 	esperaba: string | null;
 	ultima: string;
 	conversation_id: string;
@@ -74,7 +80,14 @@ export interface Resumen {
 	normas: Norma[];
 	playas: { nombre: string; preguntas: number }[];
 	sin_playa: number;
-	personas: { activas: number; nuevas: number; recurrentes: number; preguntas_por_persona: number };
+	personas: {
+		activas: number;
+		nuevas: number;
+		recurrentes: number;
+		preguntas_por_persona: number;
+		/** PQ-141: mediana de preguntas por persona (la media se sesga). */
+		mediana_por_persona?: number;
+	};
 	brechas_total: number;
 	brechas: Brecha[];
 }

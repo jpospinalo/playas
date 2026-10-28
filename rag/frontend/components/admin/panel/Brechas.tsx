@@ -102,6 +102,13 @@ export function Brechas({
 									<dt>Se repitió</dt>
 									<dd className="pnl-veces">
 										{numero(b.veces)} {b.veces === 1 ? "vez" : "veces"}
+										{/* PQ-142: el grupo puede mezclar motivos; se dice cada uno. */}
+										{b.veces_no_le_sirvio && b.veces_no_le_sirvio < b.veces ? (
+											<small className="pnl-veces-det">
+												{numero(b.veces - b.veces_no_le_sirvio)} sin respuesta segura, {numero(b.veces_no_le_sirvio)} no
+												le sirvió
+											</small>
+										) : null}
 									</dd>
 								</div>
 								<div>
