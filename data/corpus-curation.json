@@ -179,7 +179,8 @@
       "notes": [
         "Estado local vigente al 27-10-2026: 4 secciones Silver y 143 fragmentos Gold. Frente al inicio de este cierre se conservan 139 IDs, se retiran 3 y se añaden 4. Los IDs e índices conservados son históricos; los contadores indican la cardinalidad actual de su grupo. Las restituciones y los límites revisados se apoyan en pasajes de la fuente Raw; Bronze, Silver y Gold incorporan las correcciones literales y de atribución verificadas, sin ampliar la selección jurídica. Se retiraron 1 registros de puntuación o formato sin contenido jurídico. Sus IDs históricos terminan en: _s3_c46. La conservación de delimitadores en cabeceras, cuando corresponde a este documento, no modifica celdas ni prosa. Los nuevos fragmentos conservan solo el enriquecimiento compatible comprobado o campos vacíos explícitos; no se generó enriquecimiento con un modelo. Se mantienen la identidad y selección declaradas, las ambigüedades de fuente y las representaciones duplicadas. Este estado local no certifica fidelidad integral palabra por palabra, vigencia o validación jurídica, ni sincroniza el índice remoto.",
         "Mapa vigente de particiones verificadas, con sufijos completos respecto del nombre de la fuente: _s2_c3 → _s2_c3__part1, _s2_c3__part2; _s4_c1 → _s4_c1__part1, _s4_c1__part2. Los padres se retiraron y no se reciclaron; los otros IDs históricos conservan su asociación, salvo los residuos de formato enumerados en el estado local. Este mapa documenta una futura conciliación del índice, sin ejecutarla.",
-        "Se propagaron las referencias canónicas de imágenes de Bronze a Silver (12 ocurrencias) y Gold (15 ocurrencias), correspondientes a 12 destinos únicos. Se conservaron IDs, metadata, orden, contadores y el resto de los cuerpos; Raw, Bronze y activos quedaron intactos. Esta corrección no acredita resolución de rutas en el frontend."
+        "Se propagaron las referencias canónicas de imágenes de Bronze a Silver (12 ocurrencias) y Gold (15 ocurrencias), correspondientes a 12 destinos únicos. Se conservaron IDs, metadata, orden, contadores y el resto de los cuerpos; Raw, Bronze y activos quedaron intactos. Esta corrección no acredita resolución de rutas en el frontend.",
+        "Curación técnica del resumen L2-007, fragmento AP Gerardo Antenor Lemus Orozco VS Distrito de Santa Mata y otros_s4_c10: se distinguió la postura del salvamento de una nulidad adoptada. Se conservaron page_content, IDs, estructura y demás campos. Sin reindexación ni validación jurídica."
       ]
     },
     {
@@ -255,7 +256,8 @@
       ],
       "notes": [
         "Estado local vigente al 27-10-2026: 4 secciones Silver y 105 fragmentos Gold. Frente al inicio de este cierre se conservan 105 IDs, se retiran 2 y se añaden 0. Los IDs e índices conservados son históricos; los contadores indican la cardinalidad actual de su grupo. Las restituciones y los límites revisados se apoyan en pasajes de la fuente Raw; Bronze, Silver y Gold incorporan las correcciones literales y de atribución verificadas, sin ampliar la selección jurídica. Se retiraron 2 registros de puntuación o formato sin contenido jurídico. Sus IDs históricos terminan en: _s1_c6, _s3_c33. La conservación de delimitadores en cabeceras, cuando corresponde a este documento, no modifica celdas ni prosa. Se mantienen la identidad y selección declaradas, las ambigüedades de fuente y las representaciones duplicadas. Este estado local no certifica fidelidad integral palabra por palabra, vigencia o validación jurídica, ni sincroniza el índice remoto.",
-        "Curación técnica de cifras y enriquecimiento Gold: summaries corregidos en 1 registro(s); 0 objeto(s) DATE reclasificados como OTHER; 0 inserciones numéricas verificadas en los cuerpos de las tres capas. Se conservaron IDs, estructura y demás campos. Sin reindexación ni validación jurídica."
+        "Curación técnica de cifras y enriquecimiento Gold: summaries corregidos en 1 registro(s); 0 objeto(s) DATE reclasificados como OTHER; 0 inserciones numéricas verificadas en los cuerpos de las tres capas. Se conservaron IDs, estructura y demás campos. Sin reindexación ni validación jurídica.",
+        "Curación técnica del resumen L2-011, fragmento AP Inversiones E y D S.A.S VS DIMAR y otros_s1_c0: se conservó la denominación documental del medio de control y los actores identificados. Se conservaron page_content, IDs, estructura y demás campos. Sin reindexación ni validación jurídica."
       ]
     },
     {
@@ -304,7 +306,8 @@
         "Estado local vigente al 27-10-2026: 4 secciones Silver y 85 fragmentos Gold. Frente al inicio de este cierre se conservan 85 IDs, se retiran 0 y se añaden 0. Los IDs e índices conservados son históricos; los contadores indican la cardinalidad actual de su grupo. Las restituciones y los límites revisados se apoyan en pasajes de la fuente Raw; Bronze, Silver y Gold incorporan las correcciones literales y de atribución verificadas, sin ampliar la selección jurídica. Se mantienen la identidad y selección declaradas, las ambigüedades de fuente y las representaciones duplicadas. Este estado local no certifica fidelidad integral palabra por palabra, vigencia o validación jurídica, ni sincroniza el índice remoto.",
         "SM!C9 y Gold consignan 47-001-3333-001-2016-03261; Raw, página 1, distingue radicado principal 47-001-3333-001-2011-00079-01 y número interno I.2016-0326. case_reference permanece null.",
         "No se alinea la ficha anterior ni la metadata de ejecución.",
-        "Se propagaron las referencias canónicas de imágenes de Bronze a Silver (1 ocurrencia) y Gold (1 ocurrencia), correspondientes a 1 destino único. Se conservaron IDs, metadata, orden, contadores y el resto de los cuerpos; Raw, Bronze y activos quedaron intactos. Esta corrección no acredita resolución de rutas en el frontend."
+        "Se propagaron las referencias canónicas de imágenes de Bronze a Silver (1 ocurrencia) y Gold (1 ocurrencia), correspondientes a 1 destino único. Se conservaron IDs, metadata, orden, contadores y el resto de los cuerpos; Raw, Bronze y activos quedaron intactos. Esta corrección no acredita resolución de rutas en el frontend.",
+        "Curación técnica del resumen A01, fragmento AP Miguel Ángel Enciso VS Distrito y otros_s1_c2: se distinguieron las pretensiones de la demanda de una orden adoptada. Se conservaron page_content, IDs, estructura y demás campos. Sin reindexación ni validación jurídica."
       ]
     },
     {
@@ -893,7 +896,8 @@
         "Mapa vigente de particiones verificadas, con sufijos completos respecto del nombre de la fuente: _s2_c32 → _s2_c32__part1, _s2_c32__part2; _s2_c33 → _s2_c33__part1, _s2_c33__part2; _s2_c36 → _s2_c36__part1, _s2_c36__part2; _s4_c4 → _s4_c4__part1, _s4_c4__part2. Los padres se retiraron y no se reciclaron; los otros IDs históricos conservan su asociación, salvo los residuos de formato enumerados en el estado local. Este mapa documenta una futura conciliación del índice, sin ejecutarla.",
         "Se propagaron las referencias canónicas de imágenes de Bronze a Silver (18 ocurrencias) y Gold (25 ocurrencias), correspondientes a 18 destinos únicos. Se conservaron IDs, metadata, orden, contadores y el resto de los cuerpos; Raw, Bronze y activos quedaron intactos. Esta corrección no acredita resolución de rutas en el frontend.",
         "Curación técnica de enriquecimiento Gold — lote resumenes-date-gold-20261028-v1: summary corregido en 0 registro(s); 1 objeto(s) DATE reclasificados como OTHER en 1 registro(s). Se conservaron cuerpos, IDs y los demás campos; sin reindexación ni validación jurídica.",
-        "Curación técnica de cifras y enriquecimiento Gold: summaries corregidos en 0 registro(s); 6 objeto(s) DATE reclasificados como OTHER; 0 inserciones numéricas verificadas en los cuerpos de las tres capas. Se conservaron IDs, estructura y demás campos. Sin reindexación ni validación jurídica."
+        "Curación técnica de cifras y enriquecimiento Gold: summaries corregidos en 0 registro(s); 6 objeto(s) DATE reclasificados como OTHER; 0 inserciones numéricas verificadas en los cuerpos de las tres capas. Se conservaron IDs, estructura y demás campos. Sin reindexación ni validación jurídica.",
+        "Curación técnica del resumen L2-043, fragmento CE_2da_NYR_2009_164_FEPEP_VS_DIMAR_Playa_Uso_Urbanistico_s2_c28: se atribuyó el argumento al apoderado de MinDefensa–DIMAR en apelación. Se conservaron page_content, IDs, estructura y demás campos. Sin reindexación ni validación jurídica."
       ]
     },
     {
@@ -1156,7 +1160,8 @@
       "notes": [
         "Estado local vigente al 27-10-2026: 11 secciones Silver y 31 fragmentos Gold. Frente al inicio de este cierre se conservan 31 IDs, se retiran 0 y se añaden 0. Los IDs e índices conservados son históricos; los contadores indican la cardinalidad actual de su grupo. Las restituciones y los límites revisados se apoyan en pasajes de la fuente Raw; Bronze, Silver y Gold incorporan las correcciones literales y de atribución verificadas, sin ampliar la selección jurídica. La limpieza técnica de entities retiró 2 objetos que solo expresaban ausencia o puntuación, conservando el resto de objetos, tipos y orden; no se generaron sustitutos. Se mantienen la identidad y selección declaradas, las ambigüedades de fuente y las representaciones duplicadas. Este estado local no certifica fidelidad integral palabra por palabra, vigencia o validación jurídica, ni sincroniza el índice remoto.",
         "Curación técnica de enriquecimiento Gold — lote resumenes-date-gold-20261028-v1: summary corregido en 0 registro(s); 1 objeto(s) DATE reclasificados como OTHER en 1 registro(s). Se conservaron cuerpos, IDs y los demás campos; sin reindexación ni validación jurídica.",
-        "Curación técnica de cifras y enriquecimiento Gold: summaries corregidos en 0 registro(s); 3 objeto(s) DATE reclasificados como OTHER; 0 inserciones numéricas verificadas en los cuerpos de las tres capas. Se conservaron IDs, estructura y demás campos. Sin reindexación ni validación jurídica."
+        "Curación técnica de cifras y enriquecimiento Gold: summaries corregidos en 0 registro(s); 3 objeto(s) DATE reclasificados como OTHER; 0 inserciones numéricas verificadas en los cuerpos de las tres capas. Se conservaron IDs, estructura y demás campos. Sin reindexación ni validación jurídica.",
+        "Curación técnica del resumen L2-055, fragmento Por el cual adiciona al Título 4 de la Parte 2 del Libro 2 del Decreto 1076 de 2015, un Capítulo 3 en el que se establece el Plan de Ordenación y Manejo Integrado de la Unidad Ambiental Costera -POMIUAC- Caribe In_s2_art1_c0: se conservó la jerarquía Capítulo 3 y Sección 1. Se conservaron page_content, IDs, estructura y demás campos. Sin reindexación ni validación jurídica."
       ]
     },
     {
@@ -1775,7 +1780,8 @@
         "Identidad candidata de la ficha heredada y de la conciliación. El Raw revisado comienza dentro del texto y no contiene en su inicio el encabezado de expedición; no se atribuye un emisor por el tema ni por la entidad mencionada.",
         "Nacional es el ámbito declarado en el Excel, no una certificación de aplicabilidad o vigencia del texto.",
         "La fila heredada está en rojo; la selección se toma del texto de G, no se infiere ni se amplía a partir del color.",
-        "Curación técnica de cifras y enriquecimiento Gold: summaries corregidos en 0 registro(s); 1 objeto(s) DATE reclasificados como OTHER; 0 inserciones numéricas verificadas en los cuerpos de las tres capas. Se conservaron IDs, estructura y demás campos. Sin reindexación ni validación jurídica."
+        "Curación técnica de cifras y enriquecimiento Gold: summaries corregidos en 0 registro(s); 1 objeto(s) DATE reclasificados como OTHER; 0 inserciones numéricas verificadas en los cuerpos de las tres capas. Se conservaron IDs, estructura y demás campos. Sin reindexación ni validación jurídica.",
+        "Curación técnica del resumen L2-074, fragmento Por el cual se reglamenta el servicio público de transporte marítimo_s5_art29_c1: se conservaron autorización o comunicación, corredor cuando exista y referencia temporal. Se conservaron page_content, IDs, estructura y demás campos. Sin reindexación ni validación jurídica."
       ]
     },
     {
@@ -2129,7 +2135,8 @@
       "notes": [
         "Estado local vigente al 27-10-2026: 2 secciones Silver y 6 fragmentos Gold. Frente al inicio de este cierre se conservan 6 IDs, se retiran 0 y se añaden 0. Los IDs e índices conservados son históricos; los contadores indican la cardinalidad actual de su grupo. Las restituciones y los límites revisados se apoyan en pasajes de la fuente Raw; Bronze, Silver y Gold incorporan las correcciones literales y de atribución verificadas, sin ampliar la selección jurídica. La limpieza técnica de entities retiró 1 objetos que solo expresaban ausencia o puntuación, conservando el resto de objetos, tipos y orden; no se generaron sustitutos. Se mantienen la identidad y selección declaradas, las ambigüedades de fuente y las representaciones duplicadas. Este estado local no certifica fidelidad integral palabra por palabra, vigencia o validación jurídica, ni sincroniza el índice remoto.",
         "Número y año visibles en el pie de la copia Raw; el encabezado de expedición y el emisor no quedan confirmados en las páginas seleccionadas. Se conserva identidad provisional y issuer null.",
-        "Nacional es el ámbito declarado en el Excel, no una certificación de aplicabilidad o vigencia del texto."
+        "Nacional es el ámbito declarado en el Excel, no una certificación de aplicabilidad o vigencia del texto.",
+        "Curación técnica del resumen L2-084, fragmento Por el cual se reglamentan las disposiciones sobre licencias urbanísticas, reconocimiento de edificaciones y legalización de asentamientos humanos_s2_art11_c2: se separaron los supuestos y condiciones de los literales a, b y c. Se conservaron page_content, IDs, estructura y demás campos. Sin reindexación ni validación jurídica."
       ]
     },
     {
@@ -2387,7 +2394,8 @@
         "Número y año visibles en el pie de la copia Raw; el encabezado de expedición y el emisor no quedan confirmados en las páginas seleccionadas. Se conserva identidad provisional y issuer null.",
         "Nacional es el ámbito declarado en el Excel, no una certificación de aplicabilidad o vigencia del texto.",
         "Solo G19 está en rojo. Los siete identificadores se conservan, pero las descripciones heredadas de concesiones/reversiones no corresponden al contenido local de vertimientos. No corregir el literal ni sustituirlo por G21.",
-        "Curación técnica de cifras y enriquecimiento Gold: summaries corregidos en 0 registro(s); 2 objeto(s) DATE reclasificados como OTHER; 0 inserciones numéricas verificadas en los cuerpos de las tres capas. Se conservaron IDs, estructura y demás campos. Sin reindexación ni validación jurídica."
+        "Curación técnica de cifras y enriquecimiento Gold: summaries corregidos en 0 registro(s); 2 objeto(s) DATE reclasificados como OTHER; 0 inserciones numéricas verificadas en los cuerpos de las tres capas. Se conservaron IDs, estructura y demás campos. Sin reindexación ni validación jurídica.",
+        "Curación técnica del resumen L2-090, fragmento Por medio del cual se expide el Decreto Único Reglamentario del Sector Ambiente y Desarrollo Sostenible_s7_art2-2-3-3-6-1_c0: se conservó la opción del plan y la fecha asociada a la norma base del permiso. Se conservaron page_content, IDs, estructura y demás campos. Sin reindexación ni validación jurídica."
       ]
     },
     {
@@ -2538,7 +2546,8 @@
         "Estado local vigente al 27-10-2026: 10 secciones Silver y 14 fragmentos Gold. Frente al inicio de este cierre se conservan 14 IDs, se retiran 0 y se añaden 0. Los IDs e índices conservados son históricos; los contadores indican la cardinalidad actual de su grupo. La limpieza técnica de entities retiró 1 objetos que solo expresaban ausencia o puntuación, conservando el resto de objetos, tipos y orden; no se generaron sustitutos. Se mantienen la identidad y selección declaradas, las ambigüedades de fuente y las representaciones duplicadas. Este estado local no certifica fidelidad integral palabra por palabra, vigencia o validación jurídica, ni sincroniza el índice remoto.",
         "Número y año visibles en el pie de la copia Raw; el encabezado de expedición y el emisor no quedan confirmados en las páginas seleccionadas. Se conserva identidad provisional y issuer null.",
         "Nacional es el ámbito declarado en el Excel, no una certificación de aplicabilidad o vigencia del texto.",
-        "Curación técnica de cifras y enriquecimiento Gold: summaries corregidos en 0 registro(s); 1 objeto(s) DATE reclasificados como OTHER; 0 inserciones numéricas verificadas en los cuerpos de las tres capas. Se conservaron IDs, estructura y demás campos. Sin reindexación ni validación jurídica."
+        "Curación técnica de cifras y enriquecimiento Gold: summaries corregidos en 0 registro(s); 1 objeto(s) DATE reclasificados como OTHER; 0 inserciones numéricas verificadas en los cuerpos de las tres capas. Se conservaron IDs, estructura y demás campos. Sin reindexación ni validación jurídica.",
+        "Curación técnica del resumen L2-095, fragmento Por medio del cual se expide el Decreto Único Reglamentario del Sector Transporte_s7_art2-2-3-3-5-2_c1: se distinguieron hechos de expiración de instrucciones y se conservó la excepción geográfica. Se conservaron page_content, IDs, estructura y demás campos. Sin reindexación ni validación jurídica."
       ]
     },
     {

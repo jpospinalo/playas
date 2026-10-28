@@ -134,6 +134,7 @@
         "section_heading": 10,
         "section_index": 1,
         "section_name": 1,
+        "summary": 1,
         "total_chunks_in_section": 69
       },
       "export_records_matched_by_id": 139,
@@ -211,7 +212,7 @@
       "coverage": "not_verified",
       "doc_type": "jurisprudencia",
       "export_metadata_differences": {
-        "summary": 1,
+        "summary": 2,
         "total_chunks_in_section": 82
       },
       "export_records_matched_by_id": 105,
@@ -254,6 +255,7 @@
         "section_heading": 6,
         "section_index": 1,
         "section_name": 1,
+        "summary": 1,
         "total_chunks_in_section": 57
       },
       "export_records_matched_by_id": 85,
@@ -745,6 +747,7 @@
         "section_heading": 8,
         "section_index": 7,
         "section_name": 7,
+        "summary": 1,
         "total_chunks_in_section": 157
       },
       "export_records_matched_by_id": 157,
@@ -918,7 +921,8 @@
       "coverage": "not_verified",
       "doc_type": "normativa",
       "export_metadata_differences": {
-        "entities": 3
+        "entities": 3,
+        "summary": 1
       },
       "export_records_matched_by_id": 31,
       "export_text_mismatches": 9,
@@ -1176,7 +1180,8 @@
       "coverage": "not_verified",
       "doc_type": "normativa",
       "export_metadata_differences": {
-        "entities": 1
+        "entities": 1,
+        "summary": 1
       },
       "export_records_matched_by_id": 8,
       "export_text_mismatches": 0,
@@ -1331,7 +1336,8 @@
       "coverage": "not_verified",
       "doc_type": "normativa",
       "export_metadata_differences": {
-        "entities": 2
+        "entities": 2,
+        "summary": 1
       },
       "export_records_matched_by_id": 6,
       "export_text_mismatches": 1,
@@ -1410,7 +1416,8 @@
       "coverage": "not_verified",
       "doc_type": "normativa",
       "export_metadata_differences": {
-        "entities": 2
+        "entities": 2,
+        "summary": 1
       },
       "export_records_matched_by_id": 16,
       "export_text_mismatches": 0,
@@ -1462,7 +1469,8 @@
       "coverage": "not_verified",
       "doc_type": "normativa",
       "export_metadata_differences": {
-        "entities": 1
+        "entities": 1,
+        "summary": 1
       },
       "export_records_matched_by_id": 14,
       "export_text_mismatches": 0,
@@ -1713,7 +1721,7 @@
     },
     {
       "code": "records_with_metadata_differences",
-      "detail": "4002 registros; diferencia de snapshots, no autorización para reemplazar datos",
+      "detail": "4007 registros; diferencia de snapshots, no autorización para reemplazar datos",
       "path": "data/chroma-rag_playas_magdalena-20260731-135720.jsonl.gz",
       "severity": "warning"
     },
@@ -2080,13 +2088,13 @@
         "section_heading": 1072,
         "section_index": 953,
         "section_name": 946,
-        "summary": 342,
+        "summary": 351,
         "titulo": 32,
         "total_chunks_in_section": 3655
       },
       "path": "data/chroma-rag_playas_magdalena-20260731-135720.jsonl.gz",
       "records": 5888,
-      "records_with_metadata_differences": 4002,
+      "records_with_metadata_differences": 4007,
       "sha256": "28b7a3076d1c7ad0aa3ef2a4394e31423cdd5358f691fdc6a6104f7e15712d2d",
       "sources": [
         {
@@ -3664,9 +3672,9 @@
         "sha256": "482a450f4e30ee73607d44071819cbb6ce310e208a93f71b49700784ee661c5f"
       },
       {
-        "bytes": 355198,
+        "bytes": 355347,
         "path": "data/documents/gold/jurisprudencia/AP Gerardo Antenor Lemus Orozco VS Distrito de Santa Mata y otros.jsonl",
-        "sha256": "2357f08e570b7a12c29e353f92d1994a0528afd20953626d37905385132797ac"
+        "sha256": "6063afbf8fc3d5f8dd70bea8dad49eb3ad24f5647ea554a1bec35f9a3e509ebb"
       },
       {
         "bytes": 381961,
@@ -3674,14 +3682,14 @@
         "sha256": "8aa40d5a8f113fd7202a02ac7d4acebc773ba120def221a14a310bc77f3bb9ad"
       },
       {
-        "bytes": 252981,
+        "bytes": 253252,
         "path": "data/documents/gold/jurisprudencia/AP Inversiones E y D S.A.S VS DIMAR y otros.jsonl",
-        "sha256": "761215239ead2b8c597ec9221e31cc2c71b83127d88968a93c8b267b30146bca"
+        "sha256": "7453467f6beafd39cd03f79eac2fbfc7a9c05c0b33d1db16cc2bc42ea2d30c6b"
       },
       {
-        "bytes": 199614,
+        "bytes": 200013,
         "path": "data/documents/gold/jurisprudencia/AP Miguel Ángel Enciso VS Distrito y otros.jsonl",
-        "sha256": "03ddfac5b91e78f40aeb7198c55fa04bcd7a0eb297f9b156a38d50bb32710cdb"
+        "sha256": "9b984345175280ad035fd1db19f126e5a7dba8cb64a62b556e574855753210a9"
       },
       {
         "bytes": 797453,
@@ -3754,9 +3762,9 @@
         "sha256": "9be631facc8babc6da06cc4e3397efbc7fe24338b09c7492203b14453998a425"
       },
       {
-        "bytes": 336258,
+        "bytes": 336521,
         "path": "data/documents/gold/jurisprudencia/CE_2da_NYR_2009_164_FEPEP_VS_DIMAR_Playa_Uso_Urbanistico.jsonl",
-        "sha256": "ef1e8a0e091cb2dea4db316f14115cbc733874b58c168341c4af17145ba9281e"
+        "sha256": "c9bb76adf3b91e71b34961e49de4faa2588d112ba5fcd0c1e2f840b6f790f755"
       },
       {
         "bytes": 83911,
@@ -3784,9 +3792,9 @@
         "sha256": "37e58292359bf1c2c0aad9ebabb97786d28b2aabbd769d435a8ba4045e1e01b9"
       },
       {
-        "bytes": 82402,
+        "bytes": 82359,
         "path": "data/documents/gold/normativa/Por el cual adiciona al Título 4 de la Parte 2 del Libro 2 del Decreto 1076 de 2015, un Capítulo 3 en el que se establece el Plan de Ordenación y Manejo Integrado de la Unidad Ambiental Costera -POMIUAC- Caribe In.jsonl",
-        "sha256": "e9b4f399d5f975bd84719103111d460110548b44e923023ef3b2215987fc8f1a"
+        "sha256": "684742b7496cb727dc854ae62e7f7e045f011bfb276123513a9b73287a6cdfbd"
       },
       {
         "bytes": 29577,
@@ -3834,9 +3842,9 @@
         "sha256": "19cdfa7829bc69de92dce53b05389dd4619fdb5f80354b8b1327948c4513bf16"
       },
       {
-        "bytes": 16727,
+        "bytes": 16995,
         "path": "data/documents/gold/normativa/Por el cual se reglamenta el servicio público de transporte marítimo.jsonl",
-        "sha256": "d15eda931d34673b5385bd3932a55f9a9e653d2f221e1e3afb071c6d99f8826e"
+        "sha256": "9467a279c71008a30e511a3258f6d827f17175e514e999de6f65774adda26dd1"
       },
       {
         "bytes": 6527,
@@ -3864,9 +3872,9 @@
         "sha256": "a0ec79f1623f58265a6417895d8d8a2733216e12241ea6bdeca098e287209d6a"
       },
       {
-        "bytes": 15154,
+        "bytes": 15629,
         "path": "data/documents/gold/normativa/Por el cual se reglamentan las disposiciones sobre licencias urbanísticas, reconocimiento de edificaciones y legalización de asentamientos humanos.jsonl",
-        "sha256": "5b8b769a93d83eb39a0fc4b13d7bb46fbbd8ffb38817aa5db0975a30ee71cc15"
+        "sha256": "585bb0201812a41264467b055ce8582966ebd412e871ac1242ebb9743f9e001a"
       },
       {
         "bytes": 40795,
@@ -3879,9 +3887,9 @@
         "sha256": "83c1db4664412b9d12b3e090d5357de5bce792cbe85e04eb5f7dffd8c24d5325"
       },
       {
-        "bytes": 36720,
+        "bytes": 36923,
         "path": "data/documents/gold/normativa/Por medio del cual se expide el Decreto Único Reglamentario del Sector Ambiente y Desarrollo Sostenible.jsonl",
-        "sha256": "948679f3006f49dceca991571129a2bdef60eb9d2da8ac2eeac30e8d830b7c4a"
+        "sha256": "0335cae2df1ca4b851d32206186ab18725918d3ddb47acc57b07902f93e992c8"
       },
       {
         "bytes": 48359,
@@ -3889,9 +3897,9 @@
         "sha256": "ec82880f54bc938f41edbd653f996a5778c0b11a5911e6e143ef7a25303d0bcf"
       },
       {
-        "bytes": 29337,
+        "bytes": 29477,
         "path": "data/documents/gold/normativa/Por medio del cual se expide el Decreto Único Reglamentario del Sector Transporte.jsonl",
-        "sha256": "b2e72948709f292bd42437f50478ffd2d19dc0731435fde74bd2813332b746bc"
+        "sha256": "46f2ad3ca712e3e15e5152673d577cc9c51ab165cf7cd24464bde5fd7e8caed6"
       },
       {
         "bytes": 30837,
