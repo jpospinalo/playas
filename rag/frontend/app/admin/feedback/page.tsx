@@ -83,12 +83,8 @@ function CifraEncuesta({
 		det = `${cuantas(n, "encuesta", "encuestas")}; ${mide}`;
 	} else if (largo) {
 		const [c1, c2, c3, c4, c5] = conteos;
-		principal = (
-			<>
-				{porcentaje(c3, n)}&nbsp;%<small>&nbsp;adecuada</small>
-			</>
-		);
-		det = `${porcentaje(c1 + c2, n)} % corta · ${porcentaje(c4 + c5, n)} % larga, de ${numero(n)}. Promedio ${decimal(promedio)}.`;
+		principal = <>{porcentaje(c3, n)}&nbsp;%</>;
+		det = `de ${numero(n)} la vio adecuada; ${porcentaje(c1 + c2, n)} % corta y ${porcentaje(c4 + c5, n)} % larga. Promedio ${decimal(promedio)}.`;
 	} else {
 		const altas = conteos[3] + conteos[4];
 		const med = medianaEscala(conteos);

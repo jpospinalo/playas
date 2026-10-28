@@ -114,7 +114,7 @@ export function Columnas({ serie, agrupacion }: { serie: Punto[]; agrupacion: Ag
 					const cel = desdeFin % pasoCel === 0;
 					return (
 						<span key={p.fecha} className={`${pc ? "" : "no-pc"} ${cel ? "" : "no-cel"}`.trim() || undefined}>
-							{pc || cel ? etiquetaPunto(p, agrupacion) : ""}
+							{pc || cel ? <em>{etiquetaPunto(p, agrupacion)}</em> : null}
 						</span>
 					);
 				})}

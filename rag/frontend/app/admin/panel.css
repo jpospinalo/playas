@@ -2864,3 +2864,17 @@ html:has(.pnl) {
 	width: 100%;
 	text-align: center;
 }
+
+/* A10: con muchas columnas la fecha es más ancha que su columna; se centra
+   sobre ella sin desbordar la caja (las vecinas sin fecha le dan el sitio). */
+.pnl-eje-x span {
+	position: relative;
+	height: 1.5em;
+}
+.pnl-eje-x span em {
+	position: absolute;
+	left: 50%;
+	transform: translateX(-50%);
+	font-style: normal;
+	white-space: nowrap;
+}
