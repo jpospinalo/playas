@@ -189,7 +189,7 @@ Organización de carpas, sillas y vendedores.
 ## ARTÍCULO 11.
 Requisitos ambientales.
 
-- a) Se contemplará para cada playa turística un plan de manejo y monitoreo, para evaluar la calidad de agua de mar. Dicho plan debe responder a lo establecido en la norma VTC-ISO 5667-9. Con base en este seguimiento, en la playa turística se deben diseñar a implementar acciones de prevención y mitigación.
+- a) Se contemplará para cada playa turística un plan de manejo y monitoreo, para evaluar la calidad de agua de mar. Dicho plan debe responder a lo establecido en la norma NTC-ISO 5667-9. Con base en este seguimiento, en la playa turística se deben diseñar e implementar acciones de prevención y mitigación.
 - b) Toda fuente de vertimientos generados por la infraestructura, medios de transporte y, en general, todas las actividades que puedan afectar la zona costera, deben cumplir la reglamentación vigente sobre este tema.
 - c) Se implementarán acciones para el mantenimiento de la calidad de material constitutivo de la playa, que incluya mediciones puntuales antes y después de las temporadas, para cuantificar los posibles contaminantes.
 - d) Se realizará la limpieza de la misma diariamente, para que permanezca libre de residuos o de cualquier material que pueda afectar la seguridad de los usuarios o la estética propia del lugar.
@@ -197,7 +197,7 @@ Requisitos ambientales.
 - f) Se diseñarán acciones para el manejo integral de residuos sólidos para la zona costera, el cual debe incluir minimización, separación en la fuente, almacenamiento, transporte, aprovechamiento, tratamiento y disposición final.
 - g) Las playas contarán con recipientes de almacenamiento temporal de residuos sólidos, en proporción a la cantidad de usuarios de la misma; se deben tomar las medidas de seguridad necesarias, para evitar la proximidad de las canecas de almacenamient temporal con el mar. Las canecas de almacenamiento temporal de residuos sólidos deben contar con tapa y no deben tener contacto con el suelo.
 - h) Los establecimientos que prestan servicios en la playa deberán tener a disposición del público recipientes de almacenamiento temporal de residuos sólidos, que faciliten su separación claramente identificados en lugar visible.
-- i) Se contará con una frecuencia del servicio de recolección de residuos en la zona emergida según su ocupación y adelantar jornadas de limpieza submarina en la zona de bañistas de manera que garantice su limpieza permanente. Se recomienda consultar la GTC sobre separación en la fuente y recolección selectiva y la GTC 86 Gestión
+- i) Se contará con una frecuencia del servicio de recolección de residuos en la zona emergida según su ocupación y adelantar jornadas de limpieza submarina en la zona de bañistas de manera que garantice su limpieza permanente. Se recomienda consultar la GTC 24 sobre separación en la fuente y recolección selectiva y la GTC 86 Gestión
 - ambiental. Guía para la implementación de la gestión integral de los residuos sólidos -
 - j) Se diseñarán e implementarán acciones para la prevención y mitigación de impactos ambientales sobre los ecosistemas marino-costeros.
 - k) Se contará, con un punto de provisión de agua para baño en condiciones de uso permanente.

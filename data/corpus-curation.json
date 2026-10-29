@@ -386,7 +386,8 @@
         "Los 311 registros con diferencias de metadata señalados en el diagnóstico quedan aparte; este registro no elige entre Gold y backup.",
         "Se propagaron las referencias canónicas de imágenes de Bronze a Silver (2 ocurrencias) y Gold (2 ocurrencias), correspondientes a 2 destinos únicos. Se conservaron IDs, metadata, orden, contadores y el resto de los cuerpos; Raw, Bronze y activos quedaron intactos. Esta corrección no acredita resolución de rutas en el frontend.",
         "Curación técnica de enriquecimiento Gold — lote resumenes-date-gold-20261028-v1: summary corregido en 0 registro(s); 6 objeto(s) DATE reclasificados como OTHER en 6 registro(s). Se conservaron cuerpos, IDs y los demás campos; sin reindexación ni validación jurídica.",
-        "Curación técnica de cifras y enriquecimiento Gold: summaries corregidos en 0 registro(s); 22 objeto(s) DATE reclasificados como OTHER; 15 inserciones numéricas verificadas en los cuerpos de las tres capas. Se conservaron IDs, estructura y demás campos. Sin reindexación ni validación jurídica."
+        "Curación técnica de cifras y enriquecimiento Gold: summaries corregidos en 0 registro(s); 22 objeto(s) DATE reclasificados como OTHER; 15 inserciones numéricas verificadas en los cuerpos de las tres capas. Se conservaron IDs, estructura y demás campos. Sin reindexación ni validación jurídica.",
+        "Cierre técnico de la reserva C12: summary y cuerpos se conservan. Raw página 77 mantiene la secuencia «CONVOCAR» y «radique» sin complemento inequívoco; la restitución numérica anterior de 5 permanece íntegra y no resuelve esa sintaxis. Se requiere aclaración documental auténtica para cerrar la relación entre convocatoria y trámite; no se reconstruye la orden ni se cambia por inferencia."
       ]
     },
     {
@@ -1069,7 +1070,8 @@
         "Mapa vigente de particiones verificadas, con sufijos completos respecto del nombre de la fuente: _s4_c31 → _s4_c31__part1, _s4_c31__part2; _s4_c99 → _s4_c99__part1, _s4_c99__part2. Los padres se retiraron y no se reciclaron; los otros IDs históricos conservan su asociación, salvo los residuos de formato enumerados en el estado local. Este mapa documenta una futura conciliación del índice, sin ejecutarla.",
         "Dos rutas Raw contienen el mismo PDF byte a byte y conservan familias e IDs distintos. Ambas entradas permanecen separadas; este registro no deduplica el corpus o el índice.",
         "Curación técnica de enriquecimiento Gold — lote resumenes-date-gold-20261028-v1: summary corregido en 0 registro(s); 4 objeto(s) DATE reclasificados como OTHER en 3 registro(s). Se conservaron cuerpos, IDs y los demás campos; sin reindexación ni validación jurídica.",
-        "Curación técnica de cifras y enriquecimiento Gold: summaries corregidos en 0 registro(s); 26 objeto(s) DATE reclasificados como OTHER; 0 inserciones numéricas verificadas en los cuerpos de las tres capas. Se conservaron IDs, estructura y demás campos. Sin reindexación ni validación jurídica."
+        "Curación técnica de cifras y enriquecimiento Gold: summaries corregidos en 0 registro(s); 26 objeto(s) DATE reclasificados como OTHER; 0 inserciones numéricas verificadas en los cuerpos de las tres capas. Se conservaron IDs, estructura y demás campos. Sin reindexación ni validación jurídica.",
+        "Cierre técnico de la reserva C17: se conserva íntegro el summary. El contexto fecha dos informes en 2011 y no aporta fecha expresa del tercer dictamen; ni su sufijo 13 ni la inspección cercana de 2013 permiten atribuirle un año. La reserva requiere fecha expresa o referencia local inequívoca al mismo dictamen. No se confirma falsedad cronológica ni se modifica el texto."
       ]
     },
     {
@@ -1355,7 +1357,8 @@
       ],
       "notes": [
         "Número y año contrastados con Raw; la denominación Decreto ley procede de la ficha heredada y no se confirma aquí por interpretación jurídica del título genérico Decreto. Identidad provisional; el emisor solo se registra cuando aparece expresamente en el encabezado.",
-        "Nacional es el ámbito declarado en el Excel, no una certificación de aplicabilidad o vigencia del texto."
+        "Nacional es el ámbito declarado en el Excel, no una certificación de aplicabilidad o vigencia del texto.",
+        "Cierre técnico de la reserva C01: se conserva íntegro el summary del primer fragmento. El recorte Raw local no aporta una atribución geográfica expresa; no se ha demostrado que «colombiana» sea falso. Se requiere procedencia o encabezado local auténtico e inequívoco para resolver esa reserva. No se infiere país por conocimiento externo ni se modifica el corpus por falta de confirmación."
       ]
     },
     {
@@ -2033,7 +2036,8 @@
       "notes": [
         "Identidad candidata de la ficha heredada y de la conciliación. El Raw revisado comienza dentro del texto y no contiene en su inicio el encabezado de expedición; no se atribuye un emisor por el tema ni por la entidad mencionada.",
         "La fila heredada está en rojo; la selección se toma del texto de G, no se infiere ni se amplía a partir del color.",
-        "El ámbito del Archipiélago está expresamente documentado en el cuerpo Raw, página 1, y en Nacional!I11:N11; no se generaliza a otras playas."
+        "El ámbito del Archipiélago está expresamente documentado en el cuerpo Raw, página 1, y en Nacional!I11:N11; no se generaliza a otras playas.",
+        "Cierre técnico L2-081: se precisó únicamente el summary del artículo 1 para ligar «construido en terrenos consolidados de propiedad del departamento» al muelle departamental y mencionar separadamente la correspondiente zona de uso público denominada zona accesoria. Se reproduce el alcance literal de Raw página 1; no se decide propiedad o construcción de la zona accesoria. Los tres IDs, cuerpos y demás metadata permanecen intactos."
       ]
     },
     {
@@ -2254,7 +2258,8 @@
         "Identidad candidata de la ficha heredada y de la conciliación. El Raw revisado comienza dentro del texto y no contiene en su inicio el encabezado de expedición; no se atribuye un emisor por el tema ni por la entidad mencionada.",
         "Nacional es el ámbito declarado en el Excel, no una certificación de aplicabilidad o vigencia del texto.",
         "La selección 3 y 166–180 se vincula solo a esta familia PDF. Existe otra representación Raw Markdown con artículos 1–196, cuya selección no está documentada; no trasladar esta declaración a la copia MD.",
-        "Curación técnica de enriquecimiento Gold — lote resumenes-date-gold-20261028-v1: summary corregido en 0 registro(s); 1 objeto(s) DATE reclasificados como OTHER en 1 registro(s). Se conservaron cuerpos, IDs y los demás campos; sin reindexación ni validación jurídica."
+        "Curación técnica de enriquecimiento Gold — lote resumenes-date-gold-20261028-v1: summary corregido en 0 registro(s); 1 objeto(s) DATE reclasificados como OTHER en 1 registro(s). Se conservaron cuerpos, IDs y los demás campos; sin reindexación ni validación jurídica.",
+        "Cierre técnico L2-086: el summary del fragmento histórico terminado en _s6_art169_c2 usa el objeto literal del artículo 169, concesiones para uso y goce de playas marítimas y terrenos de bajamar, y conserva las certificaciones de sus literales f/g. No se afirma equivalencia o diferencia jurídica respecto de «concesiones portuarias», ni vigencia. Se conservan los 22 IDs, cuerpos, listas e índices y toda metadata ajena al summary."
       ]
     },
     {
@@ -2303,7 +2308,8 @@
         "Estado local vigente al 27-10-2026: 21 secciones Silver y 28 fragmentos Gold. Frente al inicio de este cierre se conservan 28 IDs, se retiran 0 y se añaden 0. Los IDs e índices conservados son históricos; los contadores indican la cardinalidad actual de su grupo. La limpieza técnica de entities retiró 3 objetos que solo expresaban ausencia o puntuación, conservando el resto de objetos, tipos y orden; no se generaron sustitutos. Se mantienen la identidad y selección declaradas, las ambigüedades de fuente y las representaciones duplicadas. Este estado local no certifica fidelidad integral palabra por palabra, vigencia o validación jurídica, ni sincroniza el índice remoto.",
         "Los horarios del artículo 17 y sus dos parágrafos, visibles en Raw página 6, ya se restituyeron y permanecen íntegros en Bronze, Silver sección 18 y Gold del artículo 17. La nota anterior describía la pérdida histórica, no un defecto actual. La conciliación del mapa literal y el contraste visual confirman la reparación; identidad respaldada no certifica fidelidad integral de la conversión.",
         "Curación técnica de enriquecimiento Gold — lote resumenes-date-gold-20261028-v1: summary corregido en 0 registro(s); 2 objeto(s) DATE reclasificados como OTHER en 2 registro(s). Se conservaron cuerpos, IDs y los demás campos; sin reindexación ni validación jurídica.",
-        "Curación técnica de cifras y enriquecimiento Gold: summaries corregidos en 1 registro(s); 2 objeto(s) DATE reclasificados como OTHER; 0 inserciones numéricas verificadas en los cuerpos de las tres capas. Se conservaron IDs, estructura y demás campos. Sin reindexación ni validación jurídica."
+        "Curación técnica de cifras y enriquecimiento Gold: summaries corregidos en 1 registro(s); 2 objeto(s) DATE reclasificados como OTHER; 0 inserciones numéricas verificadas en los cuerpos de las tres capas. Se conservaron IDs, estructura y demás campos. Sin reindexación ni validación jurídica.",
+        "Cierre técnico de la reserva L2-089: se conservan summary y cuerpos del artículo 11. Raw página 5 contiene la misma coordinación «Quienes no cumplan o tengan autorización»; no hay una negación perdida demostrada en las capas. Los carnés y el permiso artístico tienen apoyo, pero no resuelven esa primera oración. Se requiere aclaración documental auténtica; no se añade o elimina una negación ni se reconstruye su alcance."
       ]
     },
     {
@@ -2550,7 +2556,8 @@
         "Número y año visibles en el pie de la copia Raw; el encabezado de expedición y el emisor no quedan confirmados en las páginas seleccionadas. Se conserva identidad provisional y issuer null.",
         "Nacional es el ámbito declarado en el Excel, no una certificación de aplicabilidad o vigencia del texto.",
         "Curación técnica de cifras y enriquecimiento Gold: summaries corregidos en 0 registro(s); 1 objeto(s) DATE reclasificados como OTHER; 0 inserciones numéricas verificadas en los cuerpos de las tres capas. Se conservaron IDs, estructura y demás campos. Sin reindexación ni validación jurídica.",
-        "Curación técnica del resumen L2-095, fragmento Por medio del cual se expide el Decreto Único Reglamentario del Sector Transporte_s7_art2-2-3-3-5-2_c1: se distinguieron hechos de expiración de instrucciones y se conservó la excepción geográfica. Se conservaron page_content, IDs, estructura y demás campos. Sin reindexación ni validación jurídica."
+        "Curación técnica del resumen L2-095, fragmento Por medio del cual se expide el Decreto Único Reglamentario del Sector Transporte_s7_art2-2-3-3-5-2_c1: se distinguieron hechos de expiración de instrucciones y se conservó la excepción geográfica. Se conservaron page_content, IDs, estructura y demás campos. Sin reindexación ni validación jurídica.",
+        "Cierre técnico C06: el summary conserva expresamente «construcciones levantadas en las zonas de uso público» e «inmuebles por destinación que hagan parte de ellas», sin decidir equivalencia jurídica con la paráfrasis anterior. La segunda oración describe el deber de garantizar la reversión en buen estado de operación sin introducir el sustantivo disputado: Raw página PDF 3, impresa 286, dice «instancias» y los cuerpos derivados dicen «instalaciones». Esa diferencia histórica de cuerpo se conserva como límite, sin enmendarla ni certificar vigencia."
       ]
     },
     {
@@ -2855,7 +2862,8 @@
         "Local filas 2 y 3 corresponden a esta única fuente; ambas declaraciones Todo el decreto quedan vinculadas sin duplicar el archivo.",
         "Representación local de 25 secciones Silver y 83 fragmentos Gold, con unidades Silver diferenciadas para los artículos 1–24 y el preámbulo. Se conservan las reparaciones numéricas y de atribución ya verificadas, incluidas las de los artículos 9–14. El artículo 3, Principios Rectores, queda separado del artículo 2 por el rótulo literal cotejado en Raw, página 3. La sección 3 conserva el artículo 2 y se añade la sección 25 para el artículo 3 en su posición documental, sin renumerar las secciones 4–24. El encabezado del 3 se traslada del final del fragmento de finalidad al comienzo del fragmento del principio de integración; las unidades de prosa normativa permanecen iguales. Gold conserva sus 83 IDs y su orden: cambian solo dos page_content por ese traslado de contexto, sin altas ni bajas. Los tres fragmentos de principios pasan a artículo 3 y sección 25 con chunk_index 0–2 y cardinalidad 3; el artículo 2 conserva un fragmento con índice 0 y cardinalidad 1. Los sufijos _s3_art2_c1 hasta _s3_art2_c3 permanecen históricos, y los índices Silver siguen el orden documental 1–3, 25, 4–24. Se conservan summaries y keywords, sin enriquecimiento generado ni vacíos nuevos. En la entidad séptima del fragmento del principio de alineación se sustituye únicamente el texto con NUL por Artículo 1 del presente Decreto, conforme a su prosa y a Raw, preservando tipo y demás entidades. Los otros 79 registros Gold completos y las otras 23 líneas Silver permanecen íntegros. La declaración whole_declared no certifica completitud, fidelidad integral, vigencia ni validación jurídica, y no se sincroniza el índice vivo.",
         "Curación técnica de enriquecimiento Gold — lote resumenes-date-gold-20261028-v1: summary corregido en 1 registro(s); 1 objeto(s) DATE reclasificados como OTHER en 1 registro(s). Se conservaron cuerpos, IDs y los demás campos; sin reindexación ni validación jurídica.",
-        "Curación técnica de cifras y enriquecimiento Gold: summaries corregidos en 0 registro(s); 6 objeto(s) DATE reclasificados como OTHER; 0 inserciones numéricas verificadas en los cuerpos de las tres capas. Se conservaron IDs, estructura y demás campos. Sin reindexación ni validación jurídica."
+        "Curación técnica de cifras y enriquecimiento Gold: summaries corregidos en 0 registro(s); 6 objeto(s) DATE reclasificados como OTHER; 0 inserciones numéricas verificadas en los cuerpos de las tres capas. Se conservaron IDs, estructura y demás campos. Sin reindexación ni validación jurídica.",
+        "Cierre técnico L2-104 y contexto 376: el summary de Gold 57 distingue el sujeto expreso de establecimientos en h de las previsiones impersonales i–l, sin adjudicar responsabilidades jurídicas nuevas. En Bronze, Silver 12 y Gold 55/57 se corrigieron exclusivamente los tres contrastes literales confirmados en Raw página 11: GTC 24, VTC→NTC en NTC-ISO 5667-9 y «diseñar a implementar»→«diseñar e implementar». En Gold 55 se corrigió además VTC→NTC solo en keywords[2] y entities[0].text; se conservaron tipo OTRO, posiciones y longitudes. La entidad GTC sin número de Gold 57 permanece intacta. Se conservan los 83 IDs, matrices, tablas, otras reparaciones y todos los campos excluidos; sin reindexación ni validación jurídica."
       ]
     },
     {

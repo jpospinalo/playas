@@ -1289,7 +1289,9 @@
       "bytes": 192419,
       "coverage": "not_verified",
       "doc_type": "normativa",
-      "export_metadata_differences": {},
+      "export_metadata_differences": {
+        "summary": 1
+      },
       "export_records_matched_by_id": 3,
       "export_text_mismatches": 0,
       "format": ".pdf",
@@ -1365,7 +1367,8 @@
       "coverage": "not_verified",
       "doc_type": "normativa",
       "export_metadata_differences": {
-        "entities": 2
+        "entities": 2,
+        "summary": 1
       },
       "export_records_matched_by_id": 22,
       "export_text_mismatches": 0,
@@ -1472,7 +1475,7 @@
       "doc_type": "normativa",
       "export_metadata_differences": {
         "entities": 1,
-        "summary": 1
+        "summary": 2
       },
       "export_records_matched_by_id": 14,
       "export_text_mismatches": 0,
@@ -1626,16 +1629,16 @@
         "articulo_titulo": 30,
         "capitulo": 46,
         "chunk_index": 30,
-        "entities": 13,
-        "keywords": 2,
-        "keywords_str": 2,
+        "entities": 14,
+        "keywords": 3,
+        "keywords_str": 3,
         "section_index": 40,
         "section_name": 30,
-        "summary": 1,
+        "summary": 2,
         "total_chunks_in_section": 50
       },
       "export_records_matched_by_id": 83,
-      "export_text_mismatches": 7,
+      "export_text_mismatches": 9,
       "format": ".pdf",
       "gold_chunks": 83,
       "gold_ids_missing_export": 0,
@@ -1723,13 +1726,13 @@
     },
     {
       "code": "records_with_metadata_differences",
-      "detail": "4009 registros; diferencia de snapshots, no autorización para reemplazar datos",
+      "detail": "4012 registros; diferencia de snapshots, no autorización para reemplazar datos",
       "path": "data/chroma-rag_playas_magdalena-20260731-135720.jsonl.gz",
       "severity": "warning"
     },
     {
       "code": "text_mismatches",
-      "detail": "1037 registros; diferencia de snapshots, no autorización para reemplazar datos",
+      "detail": "1039 registros; diferencia de snapshots, no autorización para reemplazar datos",
       "path": "data/chroma-rag_playas_magdalena-20260731-135720.jsonl.gz",
       "severity": "warning"
     },
@@ -2084,19 +2087,19 @@
         "articulo_titulo": 136,
         "capitulo": 66,
         "chunk_index": 1363,
-        "entities": 710,
-        "keywords": 318,
-        "keywords_str": 319,
+        "entities": 711,
+        "keywords": 319,
+        "keywords_str": 320,
         "section_heading": 1072,
         "section_index": 953,
         "section_name": 946,
-        "summary": 355,
+        "summary": 359,
         "titulo": 32,
         "total_chunks_in_section": 3655
       },
       "path": "data/chroma-rag_playas_magdalena-20260731-135720.jsonl.gz",
       "records": 5888,
-      "records_with_metadata_differences": 4009,
+      "records_with_metadata_differences": 4012,
       "sha256": "28b7a3076d1c7ad0aa3ef2a4394e31423cdd5358f691fdc6a6104f7e15712d2d",
       "sources": [
         {
@@ -2380,7 +2383,7 @@
           "source": "decreto-2324-de-1984.md"
         }
       ],
-      "text_mismatches": 1037
+      "text_mismatches": 1039
     },
     "files": [
       {
@@ -3644,9 +3647,9 @@
         "sha256": "a495dc8f2b00d543ec13974978ebab8c32cc5d5ba5d194e04debdb1a9698ce6a"
       },
       {
-        "bytes": 54379,
+        "bytes": 54382,
         "path": "data/documents/bronze/normativa/Por medio del cual se reglamenta el uso, zonificación y horario de las playas con vocación turística del Distrito Turístico, Cultural e Histórico de Santa Marta, aptas para la realización de activiades de aprovech.md",
-        "sha256": "42ba3806679f03e2abe12e385e386ad9f79dd3ab8001d7222d301c0dda0912ba"
+        "sha256": "928e648c1f8a230e1948a52fc89f92b0b5179489fbed06f33b447eef6f351cef"
       },
       {
         "bytes": 357343,
@@ -3864,9 +3867,9 @@
         "sha256": "6d06d05ec001e495706a9ec17df635ad9a7582c6a4e29169671ffb7b9bea84dd"
       },
       {
-        "bytes": 5384,
+        "bytes": 5483,
         "path": "data/documents/gold/normativa/Por el cual se reglamenta parcialmente la Ley 47 del 19 de febrero de 1993.jsonl",
-        "sha256": "a6f506e668e6a9906349f2cc8d12bd67e766d088baef08d75951daee97cbe6bd"
+        "sha256": "19fafd4ff40abf2d4b572f929eb04533e67e88eaea665416c1667a64dadf013c"
       },
       {
         "bytes": 10682,
@@ -3879,9 +3882,9 @@
         "sha256": "585bb0201812a41264467b055ce8582966ebd412e871ac1242ebb9743f9e001a"
       },
       {
-        "bytes": 40795,
+        "bytes": 40884,
         "path": "data/documents/gold/normativa/Por el cual se reorganiza la Dirección General Marítima y Portuaria.jsonl",
-        "sha256": "20f38cdfc1c16e13664a07524e65d49b5a8c5b27ab69ca3dcfa484f951b654d9"
+        "sha256": "2163aa5dcdada80e1b2dfc64233329cae0341f3b8ce97f8938d1e72703ca502e"
       },
       {
         "bytes": 55591,
@@ -3899,9 +3902,9 @@
         "sha256": "ec82880f54bc938f41edbd653f996a5778c0b11a5911e6e143ef7a25303d0bcf"
       },
       {
-        "bytes": 29477,
+        "bytes": 29519,
         "path": "data/documents/gold/normativa/Por medio del cual se expide el Decreto Único Reglamentario del Sector Transporte.jsonl",
-        "sha256": "46f2ad3ca712e3e15e5152673d577cc9c51ab165cf7cd24464bde5fd7e8caed6"
+        "sha256": "12ad4d4a3cd39674d3f5dc6e3ecf23b1cfb33aee0713e6526b12b0e1b84135eb"
       },
       {
         "bytes": 30837,
@@ -3924,9 +3927,9 @@
         "sha256": "9ca071d2ae3a2b60e1315328de48ae6f5de791a8d2f329b95008c917fe13ce6d"
       },
       {
-        "bytes": 222266,
+        "bytes": 222651,
         "path": "data/documents/gold/normativa/Por medio del cual se reglamenta el uso, zonificación y horario de las playas con vocación turística del Distrito Turístico, Cultural e Histórico de Santa Marta, aptas para la realización de activiades de aprovech.jsonl",
-        "sha256": "904c16620e3c014fe698ef2f518051a9aedec4524f88b2f35f1a508ce510e02f"
+        "sha256": "3dff7b301d9478b371b8254b715749c5b37e0de3dc44247d83aee50f5ffd3ada"
       },
       {
         "bytes": 1181387,
@@ -4489,9 +4492,9 @@
         "sha256": "c7bd03c876cd101e2df3ee622f86b3c9e4a0d5383ece68d836ad3cd597bdeb2a"
       },
       {
-        "bytes": 73168,
+        "bytes": 73171,
         "path": "data/documents/silver/normativa/Por medio del cual se reglamenta el uso, zonificación y horario de las playas con vocación turística del Distrito Turístico, Cultural e Histórico de Santa Marta, aptas para la realización de activiades de aprovech.jsonl",
-        "sha256": "ea49342c01b6361b720f900450f51d1703847c349585d70c0cb52a4e41c236f7"
+        "sha256": "f48e5dc4131332a6d510579303fb5c3d3bfe428dd22a123bf47e4c1c69145246"
       },
       {
         "bytes": 458150,
