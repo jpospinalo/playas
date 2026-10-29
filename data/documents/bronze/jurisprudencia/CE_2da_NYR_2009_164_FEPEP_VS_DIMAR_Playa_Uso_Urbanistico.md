@@ -34,7 +34,7 @@ ANTECEDENTES
 
 ## Subsidiaria:
 
-En caso de no acceder a la (sic) pretensiones principales, 2.1, 2.2. y 2.3, que se le reconozca al FEPEP, el valor actualizado, de los terrenos y de todas las construcciones, reformas, mejoras, dotaciones, mantenimiento, administración, en que ha incurrido en el terreno objeto de debate, desde el momento de su adquisición, hasta el momento que se le haga el pago de las mismas, así como todos  los  gastos  y  perjuicios  que  se  hayan  ocasionado  o  puedan  llegar  a derivarse de las actuaciones adelantadas por la DIMAR. Todo lo anterior se calcula en la suma aproximada superior a Veintisiete Mil Millones de Pesos ($ 27.000.000 000), correspondientes aproximadamente a: $ 11.723,387.000 por concepto de construcción y dotación, unos $ 11.000.000.000 por concepto del valor aproximado que se tendría que reconocer (devolución) por los derechos de  los  768  copropietarios,  y  cerca  de  $  5.000.000.000  por  concepto  de mantenimiento, administración y demás gastos ejecutados en los presupuestos de los años 2001 a 2009.
+En caso de no acceder a la (sic) pretensiones principales 1, 2.1, 2.2. y 2.3, que se le reconozca al FEPEP, el valor actualizado, de los terrenos y de todas las construcciones, reformas, mejoras, dotaciones, mantenimiento, administración, en que ha incurrido en el terreno objeto de debate, desde el momento de su adquisición, hasta el momento que se le haga el pago de las mismas, así como todos  los  gastos  y  perjuicios  que  se  hayan  ocasionado  o  puedan  llegar  a derivarse de las actuaciones adelantadas por la DIMAR. Todo lo anterior se calcula en la suma aproximada superior a Veintisiete Mil Millones de Pesos ($ 27.000.000 000), correspondientes aproximadamente a: $ 11.723,387.000 por concepto de construcción y dotación, unos $ 11.000.000.000 por concepto del valor aproximado que se tendría que reconocer (devolución) por los derechos de  los  768  copropietarios,  y  cerca  de  $  5.000.000.000  por  concepto  de mantenimiento, administración y demás gastos ejecutados en los presupuestos de los años 2001 a 2009.
 
 3. Se condene a la entidad demandada en costas y agencias en derecho.
 4.  Se  ordene  dar  cumplimiento  al  fallo  en  los  términos  consagrados  en  los artículos 176, 177 y 178 del C.C.A […]' (mayúscula y negrilla del original).
@@ -70,7 +70,7 @@ Demandada: Ministerio de Defensa Nacional - Dirección General Marítima - DIMAR
 10. Advirtió que la demandante construyó el Condominio Palmacaoba que consta de cabañas las cuales fueron vendidas a 24 copropietarios en el sistema tiempo compartido, quienes están sometidos al régimen de propiedad horizontal según las escrituras públicas 3034 de 8 de octubre de 1999 y 834 de 31 de mayo de 2000.
 
 ## I.1.2.2.2. Falsa motivación. Mencionó que en los informes técnicos 057 de 2005 y 010 de 2006 elaborados por  la  sección  de  litorales  de  la  DIMAR  se  precisó  que  los  terrenos  objeto  de discusión constituyen bienes de uso público por ser playa marítima y terrenos de bajamar, sin que los mismos cumplieran con los requisitos de ese medio probatorio a luz de lo establecido en el CPC, además fueron emitidos sin motivación y con desconocimiento del derecho de audiencia y defensa.
-12. Anotó que, previo al informe técnico de 2006, la oficina de litorales elaboró los informes técnicos 048 de 2003 y 057 de 2005 los cuales fueron anulados por la DIMAR en atención a los escritos de objeción por error grave presentados por la parte demandante, y que el referido informe técnico, reprodujo el informe 057, cambiando solo la fecha en que se presentó la inspección.
+12. Anotó que, previo al informe técnico de 2006, la oficina de litorales elaboró los informes técnicos 048 de 2003 y 057 de 2005 los cuales fueron anulados por la DIMAR en atención a los escritos de objeción por error grave presentados por la parte demandante, y que el referido informe técnico 10, reprodujo el informe 057, cambiando solo la fecha en que se presentó la inspección.
 13. Advirtió que los conceptos fueron emitidos con desconocimiento del principio de imparcialidad toda vez que fueron realizados por la oficina de litoral de la DIMAR, aun  cuando  en  los  escritos  de  objeción  solicitó  un  peritazgo  por  el  Instituto Geográfico Agustín Codazzi -IGAC, además de otros argumentos que no fueron resueltos, como el relacionado al hecho de que en las inspecciones realizadas no se citó al FEPEP.
 14. Puso de presente que el acto administrativo sin número de 23 de enero de 2009, resolvió el recurso de apelación en contra de la Resolución 134 de 31 de octubre de 2006 con fundamento en los informes técnicos 057 de 2005 y 010 de 2006, cuando el primero había sido declarado nulo por la DIMAR y, el segundo no fue objeto de traslado, constituyéndose un desconocimiento del derecho del debido proceso.
 15. En ese contexto, concluyó que los informes técnicos utilizados para fundamentar los actos administrativos acusados no cumplieron con los requisitos exigidos para que fueran plena prueba, como lo es que la entidad que los emite sea imparcial, que sea motivado con todos los requerimientos técnicos y sometidos al efectivo ejercicio del derecho de defensa
@@ -83,9 +83,9 @@ Demandada: Ministerio de Defensa Nacional -Dirección General Marítima - DIMAR 
 
 17. Explicó que en el presente caso operó la caducidad respecto de las sanciones administrativas, toda vez que la DIMAR inició la actuación el 10 de mayo de 2000 y sólo se decidió la misma en primera instancia el 31 de octubre de 2006, esto es, 6 años después y, que la decisión de segunda instancia fue expedida hasta el 23 de enero de 2009.
 
-18. En ese  contexto,  afirmó que  se  configuró la  caducidad  de  la  potestad sancionatoria  de  años  de  que  trata  el  artículo  38  del  CCA,  por  cuanto  la investigación administrativa desde su inicio hasta la decisión final en firme tuvo una duración de años.
+18. En ese  contexto,  afirmó que  se  configuró la  caducidad  de  la  potestad sancionatoria  de  3 años  de  que  trata  el  artículo  38  del  CCA,  por  cuanto  la investigación administrativa desde su inicio hasta la decisión final en firme tuvo una duración de 9 años.
 
-19. Por otra parte, indicó que de acuerdo con el Decreto Ley 2324 de 1984 la DIMAR tiene competencia para vigilar, inspeccionar y adelantar investigaciones administrativas sancionatoria, pero no para declarar o determinar si un bien es de uso público, toda vez que, de acuerdo con los artículos (numerales 10° y 15) y 48 de la Ley 160 de 1994 y el Decreto 2663 de 1994 dicha competencia es del Instituto Colombiano de la Reforma Agraria -INCORA.
+19. Por otra parte, indicó que de acuerdo con el Decreto Ley 2324 de 1984 la DIMAR tiene competencia para vigilar, inspeccionar y adelantar investigaciones administrativas sancionatoria, pero no para declarar o determinar si un bien es de uso público, toda vez que, de acuerdo con los artículos 12 (numerales 10° y 15) y 48 de la Ley 160 de 1994 y el Decreto 2663 de 1994 dicha competencia es del Instituto Colombiano de la Reforma Agraria -INCORA.
 20. Además,  señaló  que  existía  prueba  que  los  terrenos  sobre  los  cuales  se construyó el Condominio Palmacaoba son de propiedad privada y no del Estado, toda vez que fueron adquiridos por particulares a través de diferentes escrituras públicas, debidamente registradas.
 21. Recordó que, de acuerdo con las escrituras públicas 1282 de 24 de junio de 1996, 2240 de 21 de junio de 1996 y 5988 de 18 de noviembre de 1997, el FEPEP adquirió tres lotes ubicados en el kilómetro de la vía que conduce de Tolú a Coveñas, en el departamento de Sucre, los cuales fueron englobados mediante escritura pública 046 de 14 de enero de 1998.
 22. Finalmente, precisó que, luego de cumplir con todos los requisitos, trámites y permisos  de  las  autoridades  locales  y  nacionales,  la  demandante  construyó  un complejo  sede  vacacional  denominado '[…]  Condominio  Palmacaoba  […]' que consta de cabañas las cuales fueron vendidas a 24 copropietarios en el sistema tiempo compartido, quienes están sometidos al régimen de propiedad horizontal según las escrituras públicas 3034 de 8 de octubre de 1999 y 834 de 31 de mayo de 2000.
@@ -97,7 +97,7 @@ Demandada: Ministerio de Defensa Nacional -Dirección General Marítima - DIMAR 
 
 ## II.1.  Desconocimiento  de  las  normas  en  que  debían  fundarse  los  actos administrativos demandados por violación al derecho de audiencia y defensa. El  apoderado  de  la  DIMAR  aclaró  que  desde  el  inicio  de  la  investigación administrativa se ordenó citar al representante legal del FEPEP quien ejerció su derecho de audiencia y defensa.
 
-25. Explicó que mediante los oficios 1015, 1431 y 1611 de julio, 1° de octubre y 28 de octubre de 1999 la Capitanía de Puerto de Coveñas informó al FEPEP que debía suspender las obras por tratarse de una zona de playa marítima del sector La Martha, del municipio de Tolú, por lo que era de su conocimiento la actuación administrativa adelantada.
+25. Explicó que mediante los oficios 1015, 1431 y 1611 de 12 julio, 1° de octubre y 28 de octubre de 1999 la Capitanía de Puerto de Coveñas informó al FEPEP que debía suspender las obras por tratarse de una zona de playa marítima del sector La Martha, del municipio de Tolú, por lo que era de su conocimiento la actuación administrativa adelantada.
 
 ## II.2.  Falsa motivación. Mencionó  que  los  conceptos  técnicos  deben  ser  emitidos  por  la  sección  de litorales de la Capitanía de Puerto de Coveñas según las funciones atribuidas a esa sección, de manera que el concepto técnico 010 de 2006 cuenta con plena validez y no resultaba necesario acudir a otras entidades para su elaboración.
 
@@ -155,7 +155,7 @@ Puerto para gozar de dicho bien ni legalizó su situación, a pesar de conocer q
 43. Al respecto, el a quo recordó que si bien es cierto que el Decreto Ley 2324 de 1984  no  estableció  un  procedimiento  para  llevar  a  cabo  las  investigaciones  por construcciones indebidas o no autorizadas en los bienes de uso público y terrenos sometidos a su jurisdicción, también lo es que de acuerdo con el artículo 82 de la misma disposición se estableció que '[…] l as investigaciones y sanciones por las anteriores infracciones se tramitarán de conformidad con el Código Contencioso Administrativo y en especial con los artículos 28, 29, 34, 35 y 74 […]'.
 44. Concretamente, expresó que al artículo 14 del CCA dispuso que '[…] c uando de la misma petición o de los registros que lleve la autoridad, resulte que hay terceros determinados  que  pueden  estar  directamente  interesados  en  las  resultas  de  la decisión, se les citará para que puedan hacerse parte y hacer valer sus derechos […]' .
 
-Demandada: Ministerio de Defensa Nacional - Dirección General Marítima - DIMAR. Aseveró que el caso en estudio se demostró que la DIMAR ordenó citar mediante auto del 10 de mayo de 2000 al representante legal del FEPEP, notificación que fue realizada el día del mismo mes y año, fecha, además, en la que se llevó a cabo diligencia de versión libre del referido representante.
+Demandada: Ministerio de Defensa Nacional - Dirección General Marítima - DIMAR. Aseveró que el caso en estudio se demostró que la DIMAR ordenó citar mediante auto del 10 de mayo de 2000 al representante legal del FEPEP, notificación que fue realizada el día 16 del mismo mes y año, fecha, además, en la que se llevó a cabo diligencia de versión libre del referido representante.
 
 46. Advirtió que en el expediente se encuentra el certificado de tradición y libertad expedido por la Oficina de Registro de Instrumentos Públicos de Sincelejo, esto es, respecto del bien inmueble identificado con la matrícula inmobiliaria 340-73526, en cuya  anotación  1ª  de  10 de  noviembre  de  1999  se  registró  la  constitución  del régimen  de  propiedad  horizontal  conforme  a  la  escritura  pública  3034  del  8 de octubre de 1999 de la Notaría 2ª del Círculo de Medellín.
 47. Agregó  que  en  la  anotación  2ª  de  23 de  noviembre  de  1999  se  registró  la constitución de un sistema de tiempo compartido de acuerdo con lo plasmado en la escritura  pública  2996  del  5 de  octubre  de 1999  de  la  Notaría  2ª  del  Círculo  de Medellín.
@@ -267,7 +267,7 @@ CONSIDERACIONES DE LA SALA
 
 ## VI.2.1.1. Resolución 134 de 31 de octubre de 2006
 
-'[…] Coveñas, 31 OCT. 2006 RESOLUCIÓN No. 134 /CP-OFJUR
+'[…] Coveñas, 31 OCT. 2006 RESOLUCIÓN No. 134 /CP9-OFJUR
 
 Por medio de la cual se falla una investigación de carácter administrativa.
 
@@ -279,7 +279,7 @@ Que la Dirección General Marítima ejerce jurisdicción hasta el límite exteri
 
 La Dirección General Marítima es una dependencia del Ministerio de Defensa Nacional  agregada  al  Comando  de  la  Armada  Nacional,  y  es  la  autoridad marítima  que  ejecuta  las  políticas  del  Gobierno  en  esta  materia,  y  tiene  por objeto  dirigir,  coordinar  y  controlar  las  actividades  marítimas,  promoverlas  y estimular su desarrollo artículo 1 Decreto Ley 2324/84.
 
-Mediante las señales N° 061522R Octubre/99 y 221632R Marzo/00 DILIT -CP, se puso en conocimiento de esta Capitanía que en inspección practicada al predio  ubicado  en  la  Zona  Norte,  sector  Nurnero (sic),  LA  MARTHA,  se encontró una construcción en material que se esta (sic) desarrollando en  el complejo vacacional PALMACAOBA en zona de playa marítima terrenos que se encuentran sometidos bajo la jurisdicción de la Dirección General Marítima (sic)
+Mediante las señales N° 061522R Octubre/99 y 221632R Marzo/00 DILIT -CP9, se puso en conocimiento de esta Capitanía que en inspección practicada al predio  ubicado  en  la  Zona  Norte,  sector  Nurnero (sic) 06, LA  MARTHA,  se encontró una construcción en material que se esta (sic) desarrollando en  el complejo vacacional PALMACAOBA en zona de playa marítima terrenos que se encuentran sometidos bajo la jurisdicción de la Dirección General Marítima (sic)
 
 El despacho mediante auto de fecha 10 de Mayo de 2000, inicia investigación de carácter administrativo por construcción no autorizada en un lote de terreno de  la  Nación  contra  el FONDO  DE  EMPLEADOS  PUBLICOS DE  LAS EMPRESAS PUBLICAS DE MEDELLÍN .
 
@@ -306,13 +306,13 @@ Ubicación: el predio objeto de la inspección se encuentra ubicado en la zona n
 
 ## Linderos y Medidas:
 
-Norte: Estación de policía Centenario y mide 225 metros. Sur: Amaur Escaf y María Villegas y mide 225 metros. Este: Manglares de la Nación Carretera troncal por medio y mide metros. Oeste: Playas de mar Caribe (Golfo de Morrosquillo) y mide metros.
+Norte: Estación de policía Centenario y mide 225 metros. Sur: Amaur Escaf y María Villegas y mide 225 metros. Este: Manglares de la Nación Carretera troncal por medio y mide 53 metros. Oeste: Playas de mar Caribe (Golfo de Morrosquillo) y mide 43 metros.
 
 ## DESCRIPCIÓN DE LAS CONSTRUCCIONES:
 
-- Construcciones en playa marítima, un pasillo en material permanente de metros de ancho por metros de largo para un total de metros Cuadrados.
-- 14 cabañas de,98 metros x 8.09 metros (903.81 metros cuadrados) en un terreno  bajo  inundable  con  población  de  manglar,  que  fue  rellenado  para  la construcción de estas, el cual ha causado un daño irreversible al ecosistema manglarico (sic) de la zona cortando la circulación de las aguas que mantenían vivo este importante ecosistema.
-- Sobre una antigua barra litoral, 18 cabañas de.98 metros x 8.09 metros (1162.04 metros cuadrados), una piscina bar y restaurante de.43 metros x 23.15 metros (773.90 metros cuadrados), un edificio principal con parqueaderos,  planta  tratamiento  aguas  residuales,  una  caseta  para  planta eléctrica, 01 portería y jardines para un total de (5260.3 metros cuadrados).
+- Construcciones en playa marítima, un pasillo en material permanente de 3 metros de ancho por 15 metros de largo para un total de 45 metros Cuadrados.
+- 14 cabañas de 7,98 metros x 8.09 metros (903.81 metros cuadrados) en un terreno  bajo  inundable  con  población  de  manglar,  que  fue  rellenado  para  la construcción de estas, el cual ha causado un daño irreversible al ecosistema manglarico (sic) de la zona cortando la circulación de las aguas que mantenían vivo este importante ecosistema.
+- Sobre una antigua barra litoral, 18 cabañas de 7.98 metros x 8.09 metros (1162.04 metros cuadrados), una piscina bar y restaurante de 33.43 metros x 23.15 metros (773.90 metros cuadrados), un edificio principal con parqueaderos,  planta  tratamiento  aguas  residuales,  una  caseta  para  planta eléctrica, 01 portería y jardines para un total de (5260.3 metros cuadrados).
 
 ## ÁREA TOTAL OCUPADA 10800 METROS CUADRADOS.
 
@@ -392,11 +392,11 @@ VERSIÓN LIBRE
 Diligencia de versión libre rendida el 25 de abril de 2005, por el señor JORGE IVÁN CLAVIJO FRANCO, obrante a folios 105 y 106. DOCUMENTALES
 
 ## […] PERICIALES. Concepto Técnico No. 057 del 10 de octubre de 2005, emitido por el Suboficial Segundo JAIRO PATERNINA YÉPEZ, Responsable del Área de Litorales de la Capitanía de Puerto de Coveñas, obrante a folios 115 y 116, en el que concluyó lo siguiente:
-2. "Construcción en playa marítima, un  pasillo  en  material  permanente  de metros de ancho por metros de largo para un total de metros cuadrados.
+2. "Construcción en playa marítima, un  pasillo  en  material  permanente  de 3 metros de ancho por 15 metros de largo para un total de 45 metros cuadrados.
 
-14 cabañas de.98 metros x 8.09 metros (903.81 metros cuadrados) en un terreno  bajo  inundable  con  población  de  manglar,  que  fue  rellenado  para  la construcción de estas, el cual ha causado un daño irreversible al ecosistema manglarico de la zona, cortando la circulación de las aguas que mantenían vivo este importante ecosistema.
+14 cabañas de 7.98 metros x 8.09 metros (903.81 metros cuadrados) en un terreno  bajo  inundable  con  población  de  manglar,  que  fue  rellenado  para  la construcción de estas, el cual ha causado un daño irreversible al ecosistema manglarico de la zona, cortando la circulación de las aguas que mantenían vivo este importante ecosistema.
 
-Sobre  una  antigua  barra  litoral,  18  cabañas  de.98  metros  'x  8.09  metros (1162.04 metros cuadrados), una piscina bar y restaurante de.43 metros x 23.15 metros (773.90 metros cuadrados), un edificio principal coti parqueaderos,  planta  de  tratamiento  de  aguas  residuales,  una  caseta  para planta  eléctrica,  01  portería  y  jardines  para  un  total  de  (5260.3  metros cuadrados)
+Sobre  una  antigua  barra  litoral,  18  cabañas  de 7.98  metros  'x  8.09  metros (1162.04 metros cuadrados), una piscina bar y restaurante de 33.43 metros x 23.15 metros (773.90 metros cuadrados), un edificio principal coti parqueaderos,  planta  de  tratamiento  de  aguas  residuales,  una  caseta  para planta  eléctrica,  01  portería  y  jardines  para  un  total  de  (5260.3  metros cuadrados)
 
 Área total ocupada 10800 metros cuadrados
 
@@ -428,7 +428,7 @@ Este  Despacho,  considera  que  se  debe  tener  en  cuenta  el  régimen  jur�
 ## FRENTE A LOS ARGUMENTOS DEL APELANTE.
 Frente al argumento de que la Dirección General Marítima incurre en error al determinar  que  los  terrenos  sobre  los  cuales  se  encuentra  construido  el condominio Palmacaoba, adquiridos de buena fe mediante escritura pública, no corresponden a playa marítima y terrenos de bajamar, considera esta Dirección que se trata de una mera apreciación subjetiva que no cuenta con sustento legal ni probatorio.
 
-En el caso sub examine, se trata de un condominio vacacional construido por el FONDO  DE  DE (sic) EMPLEADOS  DE  EMPRESAS  PÚBLICAS  DE MEDELLÍN, FEPEP, en el predio ubicado en la zona norte, sector No. 6 (La Martha) en Coveñas, a una distancia aproximada de.5 metros desde la línea de más alta marea.
+En el caso sub examine, se trata de un condominio vacacional construido por el FONDO  DE  DE (sic) EMPLEADOS  DE  EMPRESAS  PÚBLICAS  DE MEDELLÍN, FEPEP, en el predio ubicado en la zona norte, sector No. 6 (La Martha) en Coveñas, a una distancia aproximada de 20.5 metros desde la línea de más alta marea.
 
 El artículo 167 del Decreto Ley 2324 de 1984, define como costa nacional, una zona de dos (2) kilómetros de ancho paralela a la línea de la más alta marea, donde la Dirección  General  Marítima  ejerce  jurisdicción,  en  los  términos  del parágrafo 2°, del artículo 2° ibidem:
 
@@ -440,7 +440,7 @@ Es claro que la cercanía de la ubicación del condominio vacacional "Palmacaoba
 
 Del estudio de las pruebas obrantes en la investigación, se resalta el concepto técnico  No.  057  del  10 de  octubre  de  2005,  emitido  por  el  Suboficial Segundo JAIRO PATERNINA YEPES, quien tras efectuar una inspección del  lugar,  al  describir  las  construcciones  hechas  por  el  FONDO  DE  DE (sic) EMPLEADOS DE EMPRESAS PÚBLICAS DE MEDELLÍN FEPEP, en el citado predio, estableció lo siguiente:
 
-"Construcciones  en  playa  marítima,  un  pasillo  en  material  permanente  de metros de ancho por metros de largo para un total de metros cuadrados.
+"Construcciones  en  playa  marítima,  un  pasillo  en  material  permanente  de 3 metros de ancho por 15 metros de largo para un total de 45 metros cuadrados.
 
 14 cabañas (...) en un terreno bajo inundable con población de manglar, que fue rellenado para la construcción de estas, el cual ha causado un daño irreversible al ecosistema manglárico de la zona, cortando la circulación de las aguas que mantenían vivo este importante ecosistema (...)" (Cursiva fuera de texto).
 
@@ -471,7 +471,7 @@ Demandada: Ministerio de Defensa Nacional - Dirección General Marítima - DIMAR
 
 En mérito de lo anteriormente expuesto, el Director General Marítimo,
 
-ARTÍCULO 1°. CONFIRMAR en todas sus partes la Resolución 134 CP -OFJUR  del  31 de  octubre  de  2006,  proferida  por  el  Capitán  de  Puerto  de Coveñas, de conformidad con la parte motiva del presente proveído.
+ARTÍCULO 1°. CONFIRMAR en todas sus partes la Resolución 134 CP9 – OFJUR  del  31 de  octubre  de  2006,  proferida  por  el  Capitán  de  Puerto  de Coveñas, de conformidad con la parte motiva del presente proveído.
 
 ARTÍCULO 2°. NOTIFICAR personalmente por conducto de la Capitanía de Puerto  de  Coveñas,  el  contenido  del  presente  fallo  al  doctor  JORGE  IVÁN CLAVIJO  FRANCO, […] representante  legal  del  Fondo  de  Empleados  de Empresas Púbicas de Medellín, FEPEP, dentro de los cinco (5) días hábiles siguientes al envío de la citación o, subsidiariamente, por edicto que se fijara por el término de diez (10) días hábiles, de conformidad con lo establecido en los artículos y 45 del Código Contencioso Administrativo.
 
@@ -556,9 +556,9 @@ MATRÍCULA INMOBILIARIA
 
 COD CATASTRAL:
 
-COD CATASTRAL ANT: SIN INFORMACION garantías relacionadas con los derechos de defensa y contradicción (artículo 35); (iv)  motivar  debidamente  la  decisión  (artículo  35,  inc.1);  (v)  notificar  el  acto definitivo (artículos al); (vi) indicar expresamente los recursos procedentes contra el mismo (artículo 47).
+COD CATASTRAL ANT: SIN INFORMACION garantías relacionadas con los derechos de defensa y contradicción (artículo 35); (iv)  motivar  debidamente  la  decisión  (artículo  35,  inc.1);  (v)  notificar  el  acto definitivo (artículos 43 al 45); (vi) indicar expresamente los recursos procedentes contra el mismo (artículo 47).
 
-93. Conforme con lo anterior, la Sala constató que en el procedimiento administrativo adelantado por la DIMAR se expidió auto de apertura de investigación de fecha 10 de mayo de 2000 , a través del cual la Capitanía de Puerto de Coveñas avocó el conocimiento  de  la  investigación  por  la  presunta  construcción  no  autorizada  en terrenos sometidos bajo su jurisdicción en contra del FEPEP y que mediante oficio 0683  DIMAR  CP-  OFJUR   se  citó  a  su  representante  legal  para  que  rindiera declaración dentro de la mencionada investigación.
+93. Conforme con lo anterior, la Sala constató que en el procedimiento administrativo adelantado por la DIMAR se expidió auto de apertura de investigación de fecha 10 de mayo de 2000 , a través del cual la Capitanía de Puerto de Coveñas avocó el conocimiento  de  la  investigación  por  la  presunta  construcción  no  autorizada  en terrenos sometidos bajo su jurisdicción en contra del FEPEP y que mediante oficio 0683  DIMAR  CP9- OFJUR   se  citó  a  su  representante  legal  para  que  rindiera declaración dentro de la mencionada investigación.
 
 94. Se encuentra igualmente dentro del plenario el certificado de tradición y libertad expedido  por  la  Oficina  de  Registro  de  Instrumentos  Públicos  de  Sincelejo  del inmueble identificado con la matrícula inmobiliaria 340-73526, tal y como se observa a continuación:
 
@@ -826,7 +826,7 @@ Demandada: Ministerio de Defensa Nacional - Dirección General Marítima - DIMAR
 
 118. Señaló que el representante legal de la sociedad investigada tuvo conocimiento del  informe  técnico  en  comento,  así  mismo  contó  con  la  oportunidad  legal  de controvertirlo, en garantía del derecho de defensa y contradicción.
 
-119. Al  respecto,  la  Sala  encuentra  que  dentro  de  la  actuación  administrativa  se elaboró el concepto técnico 048 del 10 de junio de 2003, el cual fue emitido por el Jefe  de  la  Sección  de  Litorales  CP  con  destino  a  la  Capitanía  de  Puerto  de Coveñas, en el que se concluyó que '[…] el predio objeto del presente concepto técnico  se  encuentra  ubicado  en  la  Zona  Norte,  Sector  N°  6,  al  lado  del  C.A.I. CENTENARIO de la Policía Nacional y en su totalidad hace parte de los bienes de uso público de la Nación, bajo la jurisdicción de la Dirección General Marítima, por ser una zona de playa marítima y bajamar […]'.
+119. Al  respecto,  la  Sala  encuentra  que  dentro  de  la  actuación  administrativa  se elaboró el concepto técnico 048 del 10 de junio de 2003, el cual fue emitido por el Jefe  de  la  Sección  de  Litorales  CP9 con  destino  a  la  Capitanía  de  Puerto  de Coveñas, en el que se concluyó que '[…] el predio objeto del presente concepto técnico  se  encuentra  ubicado  en  la  Zona  Norte,  Sector  N°  6,  al  lado  del  C.A.I. CENTENARIO de la Policía Nacional y en su totalidad hace parte de los bienes de uso público de la Nación, bajo la jurisdicción de la Dirección General Marítima, por ser una zona de playa marítima y bajamar […]'.
 
 120. A través del auto del 8 de octubre de 2003 se ordenó correr traslado del referido concepto  técnico,  razón  por  la  que  se  remitió  comunicación  de  la  misma  fecha dirigida al representante legal del FEPEP, quien presentó escrito de objeción por error grave de la siguiente forma :
 
@@ -838,7 +838,7 @@ Por otra parte, desde mucho tiempo atrás en uno de los lotes adquiridos por el 
 
 Demandada: Ministerio de Defensa Nacional - Dirección General Marítima - DIMAR debió  indagar  sobre  este  tópico  y  así  evitar  un  pronunciamiento  sin fundamento  en  cuanto  a  que  el  terreno  no  presenta  "ningún  marcado cambio en el material ni en su forma fisiográfica" como si esta última fuese el único factor determinante en la calificación.
 
-En consecuencia, el Centro Recreacional "Palmacaoba" está construido en un bien de propiedad privada sobre el cual no tiene jurisdicción Dimar. Adicionalmente, no es válido predicar lo aseverado por la División de Litorales de esa Capitanía, si se tiene en cuenta que los dos lotes adyacentes a cada lado muestran un material consolidado y la existencia de vegetación permanente, y estimar que la franja de 225 metros de longitud que corre a su lado y con una anchura de y 43 metros, corresponda a una conformación diferente.
+En consecuencia, el Centro Recreacional "Palmacaoba" está construido en un bien de propiedad privada sobre el cual no tiene jurisdicción Dimar. Adicionalmente, no es válido predicar lo aseverado por la División de Litorales de esa Capitanía, si se tiene en cuenta que los dos lotes adyacentes a cada lado muestran un material consolidado y la existencia de vegetación permanente, y estimar que la franja de 225 metros de longitud que corre a su lado y con una anchura de 53 y 43 metros, corresponda a una conformación diferente.
 
 Por  otra  parte,  cómo  es  posible  que  el  Estado  a  través  de  diferentes  entes otorgue licencias y perciba tributos en relación con el lote en cuestión, como lo hizo Carsucre para otorgar licencia ambiental para la construcción del pozo para obtener el agua para uso del centro o la oficina de Planeación de Tolú que otorgó  la  licencia  de  construcción,  o  la  Tesorería  del  Municipio  de  Tolú  que percibe  el  impuesto  predial  o  las  Oficinas  Notariales  y  de  Registro  que autorizaron el otorgamiento de las respectivas escrituras y su registro percibiendo  para  ello  cuantiosas  sumas  de  dinero  por  concepto  de  tasas  y contribuciones.
 

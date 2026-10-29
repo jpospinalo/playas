@@ -15,7 +15,7 @@
         "total_chunks_in_section": 37
       },
       "export_records_matched_by_id": 118,
-      "export_text_mismatches": 10,
+      "export_text_mismatches": 16,
       "format": ".pdf",
       "gold_chunks": 118,
       "gold_ids_missing_export": 0,
@@ -50,10 +50,12 @@
       "coverage": "not_verified",
       "doc_type": "jurisprudencia",
       "export_metadata_differences": {
+        "entities": 1,
+        "summary": 4,
         "total_chunks_in_section": 131
       },
       "export_records_matched_by_id": 207,
-      "export_text_mismatches": 45,
+      "export_text_mismatches": 57,
       "format": ".pdf",
       "gold_chunks": 207,
       "gold_ids_missing_export": 0,
@@ -95,7 +97,7 @@
         "total_chunks_in_section": 126
       },
       "export_records_matched_by_id": 126,
-      "export_text_mismatches": 15,
+      "export_text_mismatches": 17,
       "format": ".pdf",
       "gold_chunks": 130,
       "gold_ids_missing_export": 4,
@@ -131,14 +133,15 @@
       "doc_type": "jurisprudencia",
       "export_metadata_differences": {
         "chunk_index": 69,
+        "entities": 1,
         "section_heading": 10,
         "section_index": 1,
         "section_name": 1,
-        "summary": 1,
+        "summary": 3,
         "total_chunks_in_section": 69
       },
       "export_records_matched_by_id": 139,
-      "export_text_mismatches": 69,
+      "export_text_mismatches": 73,
       "format": ".pdf",
       "gold_chunks": 143,
       "gold_ids_missing_export": 4,
@@ -173,11 +176,12 @@
       "coverage": "not_verified",
       "doc_type": "jurisprudencia",
       "export_metadata_differences": {
-        "summary": 2,
+        "entities": 1,
+        "summary": 4,
         "total_chunks_in_section": 140
       },
       "export_records_matched_by_id": 156,
-      "export_text_mismatches": 50,
+      "export_text_mismatches": 57,
       "format": ".pdf",
       "gold_chunks": 156,
       "gold_ids_missing_export": 0,
@@ -294,11 +298,11 @@
       "coverage": "not_verified",
       "doc_type": "jurisprudencia",
       "export_metadata_differences": {
-        "summary": 1,
+        "summary": 2,
         "total_chunks_in_section": 264
       },
       "export_records_matched_by_id": 316,
-      "export_text_mismatches": 50,
+      "export_text_mismatches": 82,
       "format": ".pdf",
       "gold_chunks": 316,
       "gold_ids_missing_export": 0,
@@ -340,7 +344,7 @@
         "total_chunks_in_section": 269
       },
       "export_records_matched_by_id": 307,
-      "export_text_mismatches": 67,
+      "export_text_mismatches": 68,
       "format": ".pdf",
       "gold_chunks": 307,
       "gold_ids_missing_export": 0,
@@ -377,14 +381,16 @@
       "export_metadata_differences": {
         "chunk_index": 502,
         "entities": 27,
+        "keywords": 1,
+        "keywords_str": 1,
         "section_heading": 502,
         "section_index": 336,
         "section_name": 336,
-        "summary": 1,
+        "summary": 2,
         "total_chunks_in_section": 508
       },
       "export_records_matched_by_id": 530,
-      "export_text_mismatches": 87,
+      "export_text_mismatches": 117,
       "format": ".pdf",
       "gold_chunks": 534,
       "gold_ids_missing_export": 4,
@@ -408,14 +414,17 @@
       "doc_type": "jurisprudencia",
       "export_metadata_differences": {
         "chunk_index": 32,
-        "entities": 15,
+        "entities": 22,
+        "keywords": 6,
+        "keywords_str": 6,
         "section_heading": 32,
         "section_index": 32,
         "section_name": 32,
+        "summary": 3,
         "total_chunks_in_section": 65
       },
       "export_records_matched_by_id": 83,
-      "export_text_mismatches": 18,
+      "export_text_mismatches": 79,
       "format": ".pdf",
       "gold_chunks": 85,
       "gold_ids_missing_export": 2,
@@ -445,7 +454,7 @@
         "total_chunks_in_section": 54
       },
       "export_records_matched_by_id": 103,
-      "export_text_mismatches": 26,
+      "export_text_mismatches": 28,
       "format": ".pdf",
       "gold_chunks": 105,
       "gold_ids_missing_export": 2,
@@ -469,15 +478,17 @@
       "doc_type": "jurisprudencia",
       "export_metadata_differences": {
         "chunk_index": 86,
-        "entities": 19,
+        "entities": 20,
+        "keywords": 3,
+        "keywords_str": 3,
         "section_heading": 82,
         "section_index": 76,
         "section_name": 76,
-        "summary": 1,
+        "summary": 4,
         "total_chunks_in_section": 154
       },
       "export_records_matched_by_id": 154,
-      "export_text_mismatches": 44,
+      "export_text_mismatches": 50,
       "format": ".pdf",
       "gold_chunks": 160,
       "gold_ids_missing_export": 6,
@@ -508,7 +519,7 @@
         "total_chunks_in_section": 251
       },
       "export_records_matched_by_id": 278,
-      "export_text_mismatches": 50,
+      "export_text_mismatches": 55,
       "format": ".pdf",
       "gold_chunks": 282,
       "gold_ids_missing_export": 4,
@@ -536,7 +547,7 @@
         "total_chunks_in_section": 65
       },
       "export_records_matched_by_id": 122,
-      "export_text_mismatches": 10,
+      "export_text_mismatches": 17,
       "format": ".pdf",
       "gold_chunks": 122,
       "gold_ids_missing_export": 0,
@@ -560,16 +571,17 @@
       "doc_type": "jurisprudencia",
       "export_metadata_differences": {
         "chunk_index": 112,
-        "entities": 15,
-        "keywords": 1,
-        "keywords_str": 1,
+        "entities": 16,
+        "keywords": 2,
+        "keywords_str": 2,
         "section_heading": 112,
         "section_index": 18,
         "section_name": 18,
+        "summary": 1,
         "total_chunks_in_section": 116
       },
       "export_records_matched_by_id": 116,
-      "export_text_mismatches": 35,
+      "export_text_mismatches": 36,
       "format": ".pdf",
       "gold_chunks": 118,
       "gold_ids_missing_export": 2,
@@ -596,11 +608,11 @@
         "section_heading": 7,
         "section_index": 7,
         "section_name": 7,
-        "summary": 2,
+        "summary": 3,
         "total_chunks_in_section": 66
       },
       "export_records_matched_by_id": 105,
-      "export_text_mismatches": 10,
+      "export_text_mismatches": 14,
       "format": ".pdf",
       "gold_chunks": 122,
       "gold_ids_missing_export": 17,
@@ -624,15 +636,15 @@
       "doc_type": "jurisprudencia",
       "export_metadata_differences": {
         "chunk_index": 41,
-        "entities": 14,
+        "entities": 15,
         "section_heading": 41,
         "section_index": 41,
         "section_name": 41,
-        "summary": 1,
+        "summary": 2,
         "total_chunks_in_section": 206
       },
       "export_records_matched_by_id": 206,
-      "export_text_mismatches": 62,
+      "export_text_mismatches": 68,
       "format": ".pdf",
       "gold_chunks": 208,
       "gold_ids_missing_export": 2,
@@ -663,7 +675,7 @@
         "total_chunks_in_section": 2
       },
       "export_records_matched_by_id": 66,
-      "export_text_mismatches": 14,
+      "export_text_mismatches": 20,
       "format": ".pdf",
       "gold_chunks": 68,
       "gold_ids_missing_export": 2,
@@ -686,11 +698,11 @@
       "coverage": "not_verified",
       "doc_type": "jurisprudencia",
       "export_metadata_differences": {
-        "entities": 6,
+        "entities": 7,
         "summary": 1
       },
       "export_records_matched_by_id": 72,
-      "export_text_mismatches": 25,
+      "export_text_mismatches": 28,
       "format": ".pdf",
       "gold_chunks": 74,
       "gold_ids_missing_export": 2,
@@ -717,6 +729,7 @@
         "section_heading": 19,
         "section_index": 19,
         "section_name": 19,
+        "summary": 1,
         "total_chunks_in_section": 21
       },
       "export_records_matched_by_id": 21,
@@ -744,15 +757,17 @@
       "doc_type": "jurisprudencia",
       "export_metadata_differences": {
         "chunk_index": 102,
-        "entities": 8,
+        "entities": 13,
+        "keywords": 2,
+        "keywords_str": 2,
         "section_heading": 8,
         "section_index": 7,
         "section_name": 7,
-        "summary": 1,
+        "summary": 7,
         "total_chunks_in_section": 157
       },
       "export_records_matched_by_id": 157,
-      "export_text_mismatches": 71,
+      "export_text_mismatches": 82,
       "format": ".pdf",
       "gold_chunks": 165,
       "gold_ids_missing_export": 8,
@@ -784,7 +799,7 @@
         "total_chunks_in_section": 29
       },
       "export_records_matched_by_id": 41,
-      "export_text_mismatches": 2,
+      "export_text_mismatches": 3,
       "format": ".pdf",
       "gold_chunks": 43,
       "gold_ids_missing_export": 2,
@@ -808,10 +823,11 @@
       "doc_type": "jurisprudencia",
       "export_metadata_differences": {
         "entities": 27,
+        "summary": 1,
         "total_chunks_in_section": 186
       },
       "export_records_matched_by_id": 197,
-      "export_text_mismatches": 14,
+      "export_text_mismatches": 18,
       "format": ".pdf",
       "gold_chunks": 197,
       "gold_ids_missing_export": 0,
@@ -862,14 +878,16 @@
       "doc_type": "jurisprudencia",
       "export_metadata_differences": {
         "chunk_index": 110,
-        "entities": 25,
+        "entities": 26,
+        "keywords": 1,
+        "keywords_str": 1,
         "section_heading": 101,
         "section_index": 94,
         "section_name": 94,
         "total_chunks_in_section": 251
       },
       "export_records_matched_by_id": 278,
-      "export_text_mismatches": 50,
+      "export_text_mismatches": 55,
       "format": ".pdf",
       "gold_chunks": 282,
       "gold_ids_missing_export": 4,
@@ -893,14 +911,14 @@
       "doc_type": "jurisprudencia",
       "export_metadata_differences": {
         "chunk_index": 1,
-        "entities": 10,
+        "entities": 12,
         "section_heading": 1,
         "section_index": 1,
         "section_name": 1,
         "total_chunks_in_section": 81
       },
       "export_records_matched_by_id": 116,
-      "export_text_mismatches": 10,
+      "export_text_mismatches": 24,
       "format": ".pdf",
       "gold_chunks": 118,
       "gold_ids_missing_export": 2,
@@ -1726,13 +1744,13 @@
     },
     {
       "code": "records_with_metadata_differences",
-      "detail": "4012 registros; diferencia de snapshots, no autorización para reemplazar datos",
+      "detail": "4019 registros; diferencia de snapshots, no autorización para reemplazar datos",
       "path": "data/chroma-rag_playas_magdalena-20260731-135720.jsonl.gz",
       "severity": "warning"
     },
     {
       "code": "text_mismatches",
-      "detail": "1039 registros; diferencia de snapshots, no autorización para reemplazar datos",
+      "detail": "1269 registros; diferencia de snapshots, no autorización para reemplazar datos",
       "path": "data/chroma-rag_playas_magdalena-20260731-135720.jsonl.gz",
       "severity": "warning"
     },
@@ -2087,19 +2105,19 @@
         "articulo_titulo": 136,
         "capitulo": 66,
         "chunk_index": 1363,
-        "entities": 711,
-        "keywords": 319,
-        "keywords_str": 320,
+        "entities": 733,
+        "keywords": 333,
+        "keywords_str": 334,
         "section_heading": 1072,
         "section_index": 953,
         "section_name": 946,
-        "summary": 359,
+        "summary": 386,
         "titulo": 32,
         "total_chunks_in_section": 3655
       },
       "path": "data/chroma-rag_playas_magdalena-20260731-135720.jsonl.gz",
       "records": 5888,
-      "records_with_metadata_differences": 4012,
+      "records_with_metadata_differences": 4019,
       "sha256": "28b7a3076d1c7ad0aa3ef2a4394e31423cdd5358f691fdc6a6104f7e15712d2d",
       "sources": [
         {
@@ -2383,7 +2401,7 @@
           "source": "decreto-2324-de-1984.md"
         }
       ],
-      "text_mismatches": 1039
+      "text_mismatches": 1269
     },
     "files": [
       {
@@ -2402,9 +2420,9 @@
         "sha256": "6088877daa567c5d573b193f26ee62428241fb595f7039138d4ce43b190af11a"
       },
       {
-        "bytes": 80090,
+        "bytes": 80111,
         "path": "data/documents/bronze/jurisprudencia/AP  Carlos Alberto Zúñiga Mejía y otros VS DIMAR y otros.md",
-        "sha256": "2e91ca0ad5487bd3fb3833f4ca4d81621c29c7964455b68f6358f54d6bfc4ef3"
+        "sha256": "a99a169962d0478ea19c9c97e357ae0be82a43d6778a7117622059bad12728d7"
       },
       {
         "bytes": 922,
@@ -2447,9 +2465,9 @@
         "sha256": "afe4d78a0e7b306780eb849522fe39c44567fd30a82a87e87e618c82424736a3"
       },
       {
-        "bytes": 147817,
+        "bytes": 147869,
         "path": "data/documents/bronze/jurisprudencia/AP Felipe José Campo Fernández VS Corpamag y otros.md",
-        "sha256": "75441587641135c091c65b9ae8345550c617d0460f6d58dfb19aae0a89b57aaf"
+        "sha256": "8ab36d9d625423a111ebe63da9c1eb89eea087f42cd3107fa09ab8f192bf3a77"
       },
       {
         "bytes": 773,
@@ -2467,9 +2485,9 @@
         "sha256": "a2f06473db26cf646b6e2e45bb88baf73e3d65d0326e343d180114665230f18d"
       },
       {
-        "bytes": 89469,
+        "bytes": 89490,
         "path": "data/documents/bronze/jurisprudencia/AP Gabriel Antonio Carrero VS DIMAR y otros.md",
-        "sha256": "730d2cde77e09c7922c475047890fb09581e7cc13d68f0acd84912b3b8ac23d1"
+        "sha256": "49f18d7523279c71a98474d1c4da23ba8f059e9fd752f6246b7295f9d775e159"
       },
       {
         "bytes": 666,
@@ -2542,9 +2560,9 @@
         "sha256": "cf2c367beb32606d4cfb7cc8306d6aa6f7eff4e0e74013c8373764ad32a2520a"
       },
       {
-        "bytes": 98164,
+        "bytes": 98200,
         "path": "data/documents/bronze/jurisprudencia/AP Gerardo Antenor Lemus Orozco VS Distrito de Santa Mata y otros.md",
-        "sha256": "bda443428a8b45a79c8a94b2eebe9e1e65eb62d2fc80e86689ff19f283370857"
+        "sha256": "83462ab665e4944710b20eeb34504e8ace04a885f8a2a8f5a097b988b222a9e2"
       },
       {
         "bytes": 539,
@@ -2562,9 +2580,9 @@
         "sha256": "f6a427d31fa3b6b692797ae5433ecca9cbb5a4e556188d9aebb7ec4924007856"
       },
       {
-        "bytes": 113181,
+        "bytes": 113225,
         "path": "data/documents/bronze/jurisprudencia/AP Gieseken Cuello & Cía. S. en C. VS DIMAR y otros.md",
-        "sha256": "1f69689e1e49e0d5a0da17cd1300795ca4cf42cb97e5a43a3462feb1f8d365b9"
+        "sha256": "66aaeee212d56a1cff308b8d471e5e3fd2d711348366d403070372347f90e6ca"
       },
       {
         "bytes": 566,
@@ -2627,9 +2645,9 @@
         "sha256": "7cb60a6de8e8ac0c7757f08725df48f9622e787764e583190ba0d1b8cef5bc6f"
       },
       {
-        "bytes": 217719,
+        "bytes": 217848,
         "path": "data/documents/bronze/jurisprudencia/AP PROCURADURÍA GENERAL DE LA ANCIÓN VS COORPAMAG Y OTROS.md",
-        "sha256": "d932c8188d560dfbc8593f58a01abbeb7c42420156a3efbd043884daeb3329a4"
+        "sha256": "184e9a1707fe7400024ec05e6a6cb4334b54607a049bcd5c3f60b8d6e2d0f7ad"
       },
       {
         "bytes": 1063,
@@ -2652,9 +2670,9 @@
         "sha256": "da7199cad9dd7b5d4623d01444794d2ed58be2ae63c601d949608f1793f4db6e"
       },
       {
-        "bytes": 222677,
+        "bytes": 222679,
         "path": "data/documents/bronze/jurisprudencia/AP Rodrigo Martínez Silva VS Minambiente y otros.md",
-        "sha256": "030ce6df538ace04efa947d0a86e432a56bb1f43c44844b3648ade90050715c2"
+        "sha256": "5f086b853e6d31820500f63aba0e5e7b7efb66e8339ee76646798126984172ff"
       },
       {
         "bytes": 146,
@@ -2667,9 +2685,9 @@
         "sha256": "5971ffd7e5ae3eda6c389aa972410b0e7a939eaf0c32f58d789fe7b17d289f80"
       },
       {
-        "bytes": 358176,
+        "bytes": 358313,
         "path": "data/documents/bronze/jurisprudencia/CC_TU_039_2024_Modesto_Manjarrez_VS_Autopistas_Del_Caribe_Consulta_Previa_Via.md",
-        "sha256": "69174d9c534a4d08c810c9e221b4bc1bb6fe4f4072fc36e82822f236bace4bbe"
+        "sha256": "46a2ad7811346eb8df42d37c204dc0edcd5e2a986a4fa0d67b566131dd142f40"
       },
       {
         "bytes": 167,
@@ -2682,9 +2700,9 @@
         "sha256": "5251b96f8e78477004b6afa20ed46a44ca44ad5b7ef04e646e0a8e79c407869c"
       },
       {
-        "bytes": 58476,
+        "bytes": 58505,
         "path": "data/documents/bronze/jurisprudencia/CE_1era_NS_2009_603_Jose_Palencia_VS_MinDefensa_Resolución_Pilotos_Embargaciones.md",
-        "sha256": "b11d90507901ae8e9cdb1d2a94880edde437e6d07cd2318f030dd2d25bf5dcca"
+        "sha256": "d7a53c43b0b4399bbf9389417ac8d766f55b93bc819e360bf81e2b2cd8a8b22e"
       },
       {
         "bytes": 653,
@@ -2699,7 +2717,7 @@
       {
         "bytes": 71498,
         "path": "data/documents/bronze/jurisprudencia/CE_2da_AP_2010_028_Radley_Bent_VS_Dimar_Daños_Ambientales_Embarcaciones.md",
-        "sha256": "491de83aa1d1b14c375355067f7342fe3ddbe700fae5aa536a8d8d543ce50a63"
+        "sha256": "47f6c8c8d8e0247b8274e2b8439e0822e5f8ef945aa37076166a2292ef4ac4c6"
       },
       {
         "bytes": 484,
@@ -2717,9 +2735,9 @@
         "sha256": "c1b437cffcc52d1a75aa936cbd3417839aa01b4cf799a97078444e4120ee7bf5"
       },
       {
-        "bytes": 104904,
+        "bytes": 104940,
         "path": "data/documents/bronze/jurisprudencia/CE_2da_AP_2011_178_Jose_Caballero_VS_Distrito_Cartagena_Venta_Inmueble_Valor_Cultural.md",
-        "sha256": "66e3be30359eef1e656c7b11b66dd756da7a2a9068ff2c414707507f9d29235c"
+        "sha256": "579c5945f1f50364ba55c438b69356bb23806f6eb686975f6ab2df78a831e87b"
       },
       {
         "bytes": 788,
@@ -2732,9 +2750,9 @@
         "sha256": "1a22812c4148d66e7c89ff7779af5bc7ce325b72288976789fe634a333097f8d"
       },
       {
-        "bytes": 198535,
+        "bytes": 198551,
         "path": "data/documents/bronze/jurisprudencia/CE_2da_AP_2011_842_Gabriel_Carrero_VS_Dimar_Erosión_Costera.md",
-        "sha256": "b9e5c2efc7e52aec1fa2766a15651fe96a1142ecb2224d9a61af1c61bdf17b6b"
+        "sha256": "af3054fde8812a79184c2c87c804e19b8f79445734df7a9949a778315b8f8181"
       },
       {
         "bytes": 479,
@@ -2752,9 +2770,9 @@
         "sha256": "c4a80d17940726d0dd23c1e7d192842e5fa8dd78793141ec9f78458c9e84f147"
       },
       {
-        "bytes": 78447,
+        "bytes": 78477,
         "path": "data/documents/bronze/jurisprudencia/CE_2da_AP_2015_550_Angela_Muñoz_VS_Dpto_Cordoba_Bienes_De_Uso_Publico.md",
-        "sha256": "81103513627f6e836cfae605128770f202b0d05dfcb65a50142ad1f97bca189c"
+        "sha256": "08654401a5ff99f4712675034acad88759082e29eb21aabc330042443000671e"
       },
       {
         "bytes": 520,
@@ -2767,9 +2785,9 @@
         "sha256": "d64c869673df110f2d2d9e3d810050c3dbc9f496e295d28c2b8a8198fc3ed7f3"
       },
       {
-        "bytes": 79345,
+        "bytes": 79350,
         "path": "data/documents/bronze/jurisprudencia/CE_2da_AP_2016_328_Ricardo_Cabrales_VS_Mun_Coveñas_Playa_Uso_Publico.md",
-        "sha256": "8e2f515dedf73b3ec83968d9cc133bafd999647b0b4cdbbaa885ae96437e25c3"
+        "sha256": "0007615219a81466560ba850971da7a29c832ebc51584645dbdda0342b8030dc"
       },
       {
         "bytes": 456,
@@ -2797,9 +2815,9 @@
         "sha256": "13fabccee986a3305bbedc64baad1f76cd042845d7c8e03cf1c7eeed51cf5ba8"
       },
       {
-        "bytes": 81987,
+        "bytes": 81997,
         "path": "data/documents/bronze/jurisprudencia/CE_2da_AP_2017_103_Personeria_VS_Distrito_Cartagena_Desembocadura.md",
-        "sha256": "8aa31c289148250321bf1095db98a1f1e162313d54cdd7998d5e86032175428f"
+        "sha256": "46c578389b8aa9e07e85acf490bb9358c3cb32d0d7882f9aba64e8db657bddac"
       },
       {
         "bytes": 910,
@@ -2842,9 +2860,9 @@
         "sha256": "8cccba5c3a3b8da27242670a98f5888e1a2049b2a45fa15b1d384ff302bd0d1c"
       },
       {
-        "bytes": 146741,
+        "bytes": 146852,
         "path": "data/documents/bronze/jurisprudencia/CE_2da_AP_2021_041_Edgar_Stephengs_VS_Archipielago_San_Andres_Desarrollo_Urbanistico.md",
-        "sha256": "f47fa03c6978563bdcdd5dca9613875f14d400371c8fc9958681f1ad234ac3a2"
+        "sha256": "470b123259760e59142b387249dd06fdbaf83f09be244578db07b172b61f6ad4"
       },
       {
         "bytes": 498,
@@ -2857,9 +2875,9 @@
         "sha256": "9b97922ecea0b05f655e035650d010886b7d48b43ff1cbf2b2e220c6d19264c3"
       },
       {
-        "bytes": 44356,
+        "bytes": 44394,
         "path": "data/documents/bronze/jurisprudencia/CE_2da_NYR_1994_993_Inversiones_Araujo_VS_Capitania_Puerto_Cartagena_Urbanismo_Playa.md",
-        "sha256": "782ad05506299b9f35c3985af76037dc978da1a62e330788d854bfbec2cad9bc"
+        "sha256": "ec946fc35f18a34d39ea7849535d065a5e6749e6d3d7194c50172446e27caf6a"
       },
       {
         "bytes": 714,
@@ -2872,9 +2890,9 @@
         "sha256": "9983b4a2a63cfc923b20bf163795d129bce7fa526722a0690f177431270a0f11"
       },
       {
-        "bytes": 50293,
+        "bytes": 50320,
         "path": "data/documents/bronze/jurisprudencia/CE_2da_NYR_1998_102_Flury_Valencia_VS_MinDefensa_Uso_Urbanistico_Playa.md",
-        "sha256": "f42de398c84c39e5d9e3df0efdc564c506fcb9033212d3634e56439880a313f8"
+        "sha256": "44834f2df0b6080c7cf25e5e50e154837b6037bc6faf27af7ef24294b7ad7a29"
       },
       {
         "bytes": 372,
@@ -3027,9 +3045,9 @@
         "sha256": "744678f0b89ebbcd639ade8e95895bec84defbe62ebd93435a12cf55e50b5cbc"
       },
       {
-        "bytes": 117363,
+        "bytes": 117445,
         "path": "data/documents/bronze/jurisprudencia/CE_2da_NYR_2009_164_FEPEP_VS_DIMAR_Playa_Uso_Urbanistico.md",
-        "sha256": "aa5df90e88e054d03203ec8034824bd6d8a7423374069fa8ef5723775b92fb5f"
+        "sha256": "76a440f1ecc26d37ed00eb344bc070692f83e841871b5736d369dfa2392fbc0e"
       },
       {
         "bytes": 444,
@@ -3042,9 +3060,9 @@
         "sha256": "5ab68cc7dfec2a0ba41ce45536526a390e5d7077ae1c696788b816093b762614"
       },
       {
-        "bytes": 29005,
+        "bytes": 29011,
         "path": "data/documents/bronze/jurisprudencia/CE_Consulta_1990_Horacio_Serpa_Uso_Publico_Playa.md",
-        "sha256": "1090289a490a6c6a4aeefefc190a9a11ce970259f61c0c209ec05cbcbe5fe9b0"
+        "sha256": "b4685a275658a98fac720466b3e1ec2ae1d14b8c86e40fe86818e29d1a7233e5"
       },
       {
         "bytes": 593,
@@ -3057,9 +3075,9 @@
         "sha256": "d28a69dccef0dd04c18c5122a8921c16137064fabb78eb2a9c47911863ebe8af"
       },
       {
-        "bytes": 132686,
+        "bytes": 132698,
         "path": "data/documents/bronze/jurisprudencia/CE_Consulta_2005_168_MinDefensa_Bienes_De_Uso_Publico.md",
-        "sha256": "b7e00db22a1b2c12bdb386b526be30b05092b1965d2f99f84c63e1bf270bf204"
+        "sha256": "dfb1929bdc5666ea2ed553ee811afead735463f1d6f267a593edbd06d5207672"
       },
       {
         "bytes": 578,
@@ -3097,9 +3115,9 @@
         "sha256": "a4560f6d33bf6b8116a70c3374a92280186238ae70585cdceda34b80fcfbe652"
       },
       {
-        "bytes": 198535,
+        "bytes": 198551,
         "path": "data/documents/bronze/jurisprudencia/SENTENCIA DE SEGUNDA INSTANCIA 47001-2332-000-2011-08425-02- GABRIEL CARRERO.md",
-        "sha256": "b9e5c2efc7e52aec1fa2766a15651fe96a1142ecb2224d9a61af1c61bdf17b6b"
+        "sha256": "af3054fde8812a79184c2c87c804e19b8f79445734df7a9949a778315b8f8181"
       },
       {
         "bytes": 494,
@@ -3117,9 +3135,9 @@
         "sha256": "f6181e664da587b3fcfb9743eeaa5b4c3931e8c2289066cbfa83b0291c0d2d61"
       },
       {
-        "bytes": 83374,
+        "bytes": 83448,
         "path": "data/documents/bronze/jurisprudencia/TAA_2da_RD_2015_281_XXXX_VS_Dpto_Antioquia_Responsabilidad_Del_Estado.md",
-        "sha256": "f771a1546ee266f5b81dbb5931bafcea1075ac1b36076cf74ba0430a6b05d862"
+        "sha256": "8faae42a2331c5dfec9cf5c3ff9e17875dc32bc38d5aa57101a293bbaa589ef2"
       },
       {
         "bytes": 117,
@@ -3662,29 +3680,29 @@
         "sha256": "e495d6d7e97dee0d0f0a4fe139ac8a530d61046bfd904bd4511d917b78ed5081"
       },
       {
-        "bytes": 286478,
+        "bytes": 286499,
         "path": "data/documents/gold/jurisprudencia/AP  Carlos Alberto Zúñiga Mejía y otros VS DIMAR y otros.jsonl",
-        "sha256": "c4a11b1129d8ea88edd3f43744af3208a546e8bd118b297514a90da626581ffb"
+        "sha256": "8b9d6c5a5cfda9d133aecfd62ed86a43a8945e1d77b0cc471926e8f0217f8863"
       },
       {
-        "bytes": 510753,
+        "bytes": 510909,
         "path": "data/documents/gold/jurisprudencia/AP Felipe José Campo Fernández VS Corpamag y otros.jsonl",
-        "sha256": "d0f3ebdd699339e2113105f3ae14a82af3411bf34823c98463689fd33405df85"
+        "sha256": "8449ff4677914249f0c949ad1911c11d9b731b18d4e7376eaa8db959b2c25068"
       },
       {
-        "bytes": 293089,
+        "bytes": 293110,
         "path": "data/documents/gold/jurisprudencia/AP Gabriel Antonio Carrero VS DIMAR y otros.jsonl",
-        "sha256": "482a450f4e30ee73607d44071819cbb6ce310e208a93f71b49700784ee661c5f"
+        "sha256": "b1f2a80a9e23028a8c0b9e7cf68872859c51b874262bc9ee5f652630c8f4d457"
       },
       {
-        "bytes": 355347,
+        "bytes": 355416,
         "path": "data/documents/gold/jurisprudencia/AP Gerardo Antenor Lemus Orozco VS Distrito de Santa Mata y otros.jsonl",
-        "sha256": "6063afbf8fc3d5f8dd70bea8dad49eb3ad24f5647ea554a1bec35f9a3e509ebb"
+        "sha256": "31976b7d6f79c10011f6314e8188a0188ea935dd259cc0e9b75a4d7320fc8a12"
       },
       {
-        "bytes": 381961,
+        "bytes": 382088,
         "path": "data/documents/gold/jurisprudencia/AP Gieseken Cuello & Cía. S. en C. VS DIMAR y otros.jsonl",
-        "sha256": "8aa40d5a8f113fd7202a02ac7d4acebc773ba120def221a14a310bc77f3bb9ad"
+        "sha256": "517922449dc87f047116e8439afb62cc02f498ad91821ddd2aa2fb0bc1649aad"
       },
       {
         "bytes": 253252,
@@ -3697,89 +3715,89 @@
         "sha256": "4306c215d64557048dacafbc2f44b16144506679ca3a176854c6f0e3989d697e"
       },
       {
-        "bytes": 797453,
+        "bytes": 797623,
         "path": "data/documents/gold/jurisprudencia/AP PROCURADURÍA GENERAL DE LA ANCIÓN VS COORPAMAG Y OTROS.jsonl",
-        "sha256": "4d49e0feb7a3d05d0193d076f0c10cb008073654be741f4672676ec404ba0e91"
+        "sha256": "9508c9e3ef96f0dfed14739927ee744266092c0605cd05e9e0ab5c119a17476e"
       },
       {
-        "bytes": 818152,
+        "bytes": 818145,
         "path": "data/documents/gold/jurisprudencia/AP Rodrigo Martínez Silva VS Minambiente y otros.jsonl",
-        "sha256": "734e6bf2c575d835bd3411f09523f24aec240f53ac11b4ba78379343121d6da0"
+        "sha256": "1d9da9e653fd4ec9adc0b8f374e6d8d2d868f76ef0a831757eb58ced1e7f5ecf"
       },
       {
-        "bytes": 1105885,
+        "bytes": 1106022,
         "path": "data/documents/gold/jurisprudencia/CC_TU_039_2024_Modesto_Manjarrez_VS_Autopistas_Del_Caribe_Consulta_Previa_Via.jsonl",
-        "sha256": "3a53452236cc49d48cf3fa329d560a70610b0f3cd35d5487767a6348914a1b6d"
+        "sha256": "0cc955e22969273761166f97cb21d067d1764e606e21027873d8f3eff134440d"
       },
       {
-        "bytes": 172708,
+        "bytes": 172752,
         "path": "data/documents/gold/jurisprudencia/CE_1era_NS_2009_603_Jose_Palencia_VS_MinDefensa_Resolución_Pilotos_Embargaciones.jsonl",
-        "sha256": "ee552fabbb05bc5065219192f2e32bce9cc66390a3e4ff3eb8e0a63219300cc3"
+        "sha256": "c68c72341a968fc97e41c7136bab0458eda08fb6865551e0bf1e58f8414db98a"
       },
       {
         "bytes": 218668,
         "path": "data/documents/gold/jurisprudencia/CE_2da_AP_2010_028_Radley_Bent_VS_Dimar_Daños_Ambientales_Embarcaciones.jsonl",
-        "sha256": "883bd40c81265f4f76e5d4db87aa06ed03c7335c04153bbe4fb2fb2afb33a369"
+        "sha256": "2d229b3ed3a696919fd7b7f7f3fcfe1048c0414ba703f9dec4749959991afe7f"
       },
       {
-        "bytes": 324105,
+        "bytes": 324155,
         "path": "data/documents/gold/jurisprudencia/CE_2da_AP_2011_178_Jose_Caballero_VS_Distrito_Cartagena_Venta_Inmueble_Valor_Cultural.jsonl",
-        "sha256": "f76ace717bcff1a47171c618620f789a794663b4584437dd1a0c7a29d59d8466"
+        "sha256": "891be14ef2040bd233b0f6323ea88db7e6879241824ac3894b405705a677d603"
       },
       {
-        "bytes": 604410,
+        "bytes": 604426,
         "path": "data/documents/gold/jurisprudencia/CE_2da_AP_2011_842_Gabriel_Carrero_VS_Dimar_Erosión_Costera.jsonl",
-        "sha256": "b5949e2eee88309c685a3b325d748a1d1ad2ea8203cf5fea9f90fec76a7ab805"
+        "sha256": "0e0badba0ae097e438c8565d5e7d732ea0e0dcc19f74b8dc0b2b7e77d679d064"
       },
       {
-        "bytes": 249124,
+        "bytes": 249154,
         "path": "data/documents/gold/jurisprudencia/CE_2da_AP_2015_550_Angela_Muñoz_VS_Dpto_Cordoba_Bienes_De_Uso_Publico.jsonl",
-        "sha256": "5a0116a044a3eee8db7368a5e9ebeb14b64953433809c20b1079f832ab35dcb3"
+        "sha256": "8686033299bd9908dbef51a113efeb008934d84c1057391971ffe0d3254311eb"
       },
       {
-        "bytes": 238101,
+        "bytes": 238112,
         "path": "data/documents/gold/jurisprudencia/CE_2da_AP_2016_328_Ricardo_Cabrales_VS_Mun_Coveñas_Playa_Uso_Publico.jsonl",
-        "sha256": "2f7430a47a18d90ffce28ad9746a308307c38cbbf480fa596ad5f9bb3b6b7ef7"
+        "sha256": "dd6882c6a432f19af8657d60c3688a13901f1f307c7486535ae84ce21ba88bd6"
       },
       {
-        "bytes": 245623,
+        "bytes": 245641,
         "path": "data/documents/gold/jurisprudencia/CE_2da_AP_2017_103_Personeria_VS_Distrito_Cartagena_Desembocadura.jsonl",
-        "sha256": "db68b8cfb11265436fd1ecbcda09f60a7e7538da66370a13fd9025e1cdd70f0e"
+        "sha256": "3cf065f8947d16a64d0dc6128151d130c4188863f28d49938e97ddc63073c01e"
       },
       {
-        "bytes": 452045,
+        "bytes": 452221,
         "path": "data/documents/gold/jurisprudencia/CE_2da_AP_2021_041_Edgar_Stephengs_VS_Archipielago_San_Andres_Desarrollo_Urbanistico.jsonl",
-        "sha256": "c1f59a35e7bafdbae0db6a6b1697d705967c4bb31398bf3ebf00f8f0e184e25f"
+        "sha256": "96919a274f1474d84210564fa12708a41c726dab7c9dc8a79a7c5ced8bea9dc5"
       },
       {
-        "bytes": 135121,
+        "bytes": 135159,
         "path": "data/documents/gold/jurisprudencia/CE_2da_NYR_1994_993_Inversiones_Araujo_VS_Capitania_Puerto_Cartagena_Urbanismo_Playa.jsonl",
-        "sha256": "76f7890426935b3b2aa5d2e36770e462de2322a96abc729260ea0c6afd629172"
+        "sha256": "595e8430f0580514506ca3fa8c69adda4d02c9fff2ec0c8d5615f14b158bf1c7"
       },
       {
-        "bytes": 147795,
+        "bytes": 147824,
         "path": "data/documents/gold/jurisprudencia/CE_2da_NYR_1998_102_Flury_Valencia_VS_MinDefensa_Uso_Urbanistico_Playa.jsonl",
-        "sha256": "95430b16fac505a79d469a9fb3a560c9e4dee87f8217f846e2a9e63b12353648"
+        "sha256": "ab5f84c926cf78c6d1fb471d5f8e4157d06a9a1d0581e48e98c3bafe7c5a1183"
       },
       {
-        "bytes": 60785,
+        "bytes": 60791,
         "path": "data/documents/gold/jurisprudencia/CE_2da_NYR_1999_503_Inversiones_Mercedes_VS_Dimar_Concesiones_Uso_Playa.jsonl",
-        "sha256": "9be631facc8babc6da06cc4e3397efbc7fe24338b09c7492203b14453998a425"
+        "sha256": "ce5f7d2343ee4aa0cfd04d7bc3497348c6a5074ed23ee5b3627948f259e02063"
       },
       {
-        "bytes": 336521,
+        "bytes": 336784,
         "path": "data/documents/gold/jurisprudencia/CE_2da_NYR_2009_164_FEPEP_VS_DIMAR_Playa_Uso_Urbanistico.jsonl",
-        "sha256": "c9bb76adf3b91e71b34961e49de4faa2588d112ba5fcd0c1e2f840b6f790f755"
+        "sha256": "63cab0a78e4bc61cb270e317961d78a610b6921714a02ec6ca0ec305e70c7c77"
       },
       {
-        "bytes": 83960,
+        "bytes": 83966,
         "path": "data/documents/gold/jurisprudencia/CE_Consulta_1990_Horacio_Serpa_Uso_Publico_Playa.jsonl",
-        "sha256": "252072a4bec7583ca5aa1a26e8e16088525099a5fbcd4bc2cbee94088e4ec73d"
+        "sha256": "1dcd30f6d79a87deb269887939efeba0f2ac6d8a722ed3be6b4a50339d54f94c"
       },
       {
-        "bytes": 382476,
+        "bytes": 382465,
         "path": "data/documents/gold/jurisprudencia/CE_Consulta_2005_168_MinDefensa_Bienes_De_Uso_Publico.jsonl",
-        "sha256": "40ed37354aacb0c34b793e20313ba4b64f10d89154c514a0b72dba9fe4fc73d7"
+        "sha256": "30e94c93a3ba3107a2432f6cdd6e663b344349d0257b06bef9ecde7c4f03498b"
       },
       {
         "bytes": 235632,
@@ -3787,14 +3805,14 @@
         "sha256": "c8cb1248a05450f48794fd6c5f9bf5c562029eeb6ba4d1fcfac91f944b2927bf"
       },
       {
-        "bytes": 620946,
+        "bytes": 620964,
         "path": "data/documents/gold/jurisprudencia/SENTENCIA DE SEGUNDA INSTANCIA 47001-2332-000-2011-08425-02- GABRIEL CARRERO.jsonl",
-        "sha256": "e1a1d6e0c9bb137b48a3fcf3f15e84b80780d9d64597fae8b7f21def55eb8b76"
+        "sha256": "81cbf5f41fa823a8c18234c9461c7a6ba5dd3252fe1343ae1410485767bd5722"
       },
       {
-        "bytes": 237476,
+        "bytes": 237566,
         "path": "data/documents/gold/jurisprudencia/TAA_2da_RD_2015_281_XXXX_VS_Dpto_Antioquia_Responsabilidad_Del_Estado.jsonl",
-        "sha256": "37e58292359bf1c2c0aad9ebabb97786d28b2aabbd769d435a8ba4045e1e01b9"
+        "sha256": "2c5ea43aefd5ed366d12b1641999008c7d1c76a2c18b9ac68376f861093973fa"
       },
       {
         "bytes": 82359,
@@ -4227,29 +4245,29 @@
         "sha256": "e495d6d7e97dee0d0f0a4fe139ac8a530d61046bfd904bd4511d917b78ed5081"
       },
       {
-        "bytes": 84672,
+        "bytes": 84693,
         "path": "data/documents/silver/jurisprudencia/AP  Carlos Alberto Zúñiga Mejía y otros VS DIMAR y otros.jsonl",
-        "sha256": "eb8e0347aec56b38a886b7c80168bb130d23978cf8101b9ad6458a03210b1644"
+        "sha256": "22a975c21d384306edac09dd6d3bf80e1592de9edb5b425dbc808fe8deb77ac2"
       },
       {
-        "bytes": 152467,
+        "bytes": 152519,
         "path": "data/documents/silver/jurisprudencia/AP Felipe José Campo Fernández VS Corpamag y otros.jsonl",
-        "sha256": "e47e7f28c464cef452096de4b98603573753789564e931dabb97f200428ce03e"
+        "sha256": "4a8b58844f1590e9cc33fb03fd576173714d92b35e4472b38557ea4ad9baaa72"
       },
       {
-        "bytes": 93444,
+        "bytes": 93465,
         "path": "data/documents/silver/jurisprudencia/AP Gabriel Antonio Carrero VS DIMAR y otros.jsonl",
-        "sha256": "62cefe305acb9f6989367b18476c33a330a876d19e5b2d788c0e7ebec27db0af"
+        "sha256": "9673fa520ac46e71d4a507bd69e6eaa0212689b043b6690469b1daf49cece128"
       },
       {
-        "bytes": 102895,
+        "bytes": 102931,
         "path": "data/documents/silver/jurisprudencia/AP Gerardo Antenor Lemus Orozco VS Distrito de Santa Mata y otros.jsonl",
-        "sha256": "df2bfbb2f13ff0ea2f9194569299bc7c3d13edcaf6e5dd62099c02deba74cdb8"
+        "sha256": "b54de3e990290263bec2597aeea2aaaafda5550bb1e6d37abdea38209372e506"
       },
       {
-        "bytes": 117467,
+        "bytes": 117511,
         "path": "data/documents/silver/jurisprudencia/AP Gieseken Cuello & Cía. S. en C. VS DIMAR y otros.jsonl",
-        "sha256": "a98de8d81d813538ddbf21c5c67f8ea81fe9f1066348ca9469c3034f07d1a587"
+        "sha256": "b2a324915377a6c0f40fda302271277a20720711843d3581df99da77f1497718"
       },
       {
         "bytes": 80378,
@@ -4262,69 +4280,69 @@
         "sha256": "8d98ebfac88c0df8e1dcafb1699d0743836abebe44a6857c438087200179dca0"
       },
       {
-        "bytes": 222847,
+        "bytes": 222974,
         "path": "data/documents/silver/jurisprudencia/AP PROCURADURÍA GENERAL DE LA ANCIÓN VS COORPAMAG Y OTROS.jsonl",
-        "sha256": "2f3573ceebf5d28bb11cdee4e8507cf253c167e461945a1409c071aab8f7fc43"
+        "sha256": "1fb4a27820b955533064e1b6bcc6038d6b077d4e4c30d955fa4f152af281430b"
       },
       {
-        "bytes": 227980,
+        "bytes": 227982,
         "path": "data/documents/silver/jurisprudencia/AP Rodrigo Martínez Silva VS Minambiente y otros.jsonl",
-        "sha256": "402196171a96dcf3b18551624d5c1b5678f029a2292eac62f8a3f2ece3b3edae"
+        "sha256": "7109cd3c02bf20db49bed3a90b725ea1bfbd01a6297f2f5781efcc4bf129f629"
       },
       {
-        "bytes": 360691,
+        "bytes": 360826,
         "path": "data/documents/silver/jurisprudencia/CC_TU_039_2024_Modesto_Manjarrez_VS_Autopistas_Del_Caribe_Consulta_Previa_Via.jsonl",
-        "sha256": "9088a526d279552555cc084cc746f62f865d78956b89330897d5b6537ade8ab3"
+        "sha256": "a7850a3c7a6ce771cb4763a88ed01b2dac735481705a0a4c22a28a23e701fed0"
       },
       {
-        "bytes": 60223,
+        "bytes": 60252,
         "path": "data/documents/silver/jurisprudencia/CE_1era_NS_2009_603_Jose_Palencia_VS_MinDefensa_Resolución_Pilotos_Embargaciones.jsonl",
-        "sha256": "718576ba7ed8c8ee2db9998ba6fe006bb02f9dff0159309a84d8f139ae0f7934"
+        "sha256": "d2484bb1877f29c6cd35d36b29e8c7f7847c16dad47647128fe0fd473000adfb"
       },
       {
         "bytes": 73166,
         "path": "data/documents/silver/jurisprudencia/CE_2da_AP_2010_028_Radley_Bent_VS_Dimar_Daños_Ambientales_Embarcaciones.jsonl",
-        "sha256": "6b195d29acf80bfb93b27c00ca8baff13c36c9bc50cbd780fe7f8c087a065e37"
+        "sha256": "e71d8f5c3ad50bd6439f561afc6eaf4ee8c89b308b2df92c493f00ecd4d3cdf0"
       },
       {
-        "bytes": 106849,
+        "bytes": 106885,
         "path": "data/documents/silver/jurisprudencia/CE_2da_AP_2011_178_Jose_Caballero_VS_Distrito_Cartagena_Venta_Inmueble_Valor_Cultural.jsonl",
-        "sha256": "c92c7aec7c1f3873614e5e3a1583dd02de8bf3a8e73f5af2a8e6f1f4bc2444cc"
+        "sha256": "bc2f30942bbd846d29077873b9236c9996ef8618c3d256e2846a31306445ab3b"
       },
       {
-        "bytes": 201979,
+        "bytes": 201995,
         "path": "data/documents/silver/jurisprudencia/CE_2da_AP_2011_842_Gabriel_Carrero_VS_Dimar_Erosión_Costera.jsonl",
-        "sha256": "dc54db98b0fe92c8eaaf53ffd1de567936a79b4329e56cba67b85e22de23055f"
+        "sha256": "1f322c73ae830c51ed46deb4f374ebf18b82a4a88829c6e7c16dc484c57d40cd"
       },
       {
-        "bytes": 80116,
+        "bytes": 80146,
         "path": "data/documents/silver/jurisprudencia/CE_2da_AP_2015_550_Angela_Muñoz_VS_Dpto_Cordoba_Bienes_De_Uso_Publico.jsonl",
-        "sha256": "6fc3106f2b749b849817f6120ad1dba2948cea2192dd7f39bebea18a89fd00ad"
+        "sha256": "db029a6053217b2423ddf22ccf9ef80a97dd9a6d6fdd4b6f79b35dfac7b00b98"
       },
       {
-        "bytes": 81273,
+        "bytes": 81278,
         "path": "data/documents/silver/jurisprudencia/CE_2da_AP_2016_328_Ricardo_Cabrales_VS_Mun_Coveñas_Playa_Uso_Publico.jsonl",
-        "sha256": "37b43231fb903c765c3102608279f3bf4c7d01e6254397fe0d854b9d8812cfb9"
+        "sha256": "8d892b7cbbcc5f8c526dfda1351c60d4ca62b8a5e5eeb8c99e3569c8340770ca"
       },
       {
-        "bytes": 83982,
+        "bytes": 83992,
         "path": "data/documents/silver/jurisprudencia/CE_2da_AP_2017_103_Personeria_VS_Distrito_Cartagena_Desembocadura.jsonl",
-        "sha256": "c6e9c65b04268ddd77805ae32b6d532b2177ffe07b5b69668ea338081aef1ad6"
+        "sha256": "426eba7a4c154fe1edeab61002d143c4a4f88ec0c929d77366d018c935c959a4"
       },
       {
-        "bytes": 149198,
+        "bytes": 149305,
         "path": "data/documents/silver/jurisprudencia/CE_2da_AP_2021_041_Edgar_Stephengs_VS_Archipielago_San_Andres_Desarrollo_Urbanistico.jsonl",
-        "sha256": "66d2ef55f80872892c39fa8fe389c052d039e2e3854d68050c5ae7fcef446c4b"
+        "sha256": "ca5549ac9d3d7f28a2c24f5b141f90de2d77d1f9e8639a78d3701c60c1d6d583"
       },
       {
-        "bytes": 46022,
+        "bytes": 46060,
         "path": "data/documents/silver/jurisprudencia/CE_2da_NYR_1994_993_Inversiones_Araujo_VS_Capitania_Puerto_Cartagena_Urbanismo_Playa.jsonl",
-        "sha256": "ae425c70a05268789401bb9fe402b47ea8f79dee1151ad6dc92bfb029dbdb3ec"
+        "sha256": "fe5b531b22761e239e475c66d5363ebcf30946b1b16d55d0dca94d2d04ffadbf"
       },
       {
-        "bytes": 51797,
+        "bytes": 51824,
         "path": "data/documents/silver/jurisprudencia/CE_2da_NYR_1998_102_Flury_Valencia_VS_MinDefensa_Uso_Urbanistico_Playa.jsonl",
-        "sha256": "1a6caad5c8cf7873de8c4df92b379b531b2ab944468d372b4b08e1aedde7db6c"
+        "sha256": "8a01dec4b112548d07ceb13b0d05e6824abb6149cff9b77577e27454fb4e765f"
       },
       {
         "bytes": 27137,
@@ -4332,19 +4350,19 @@
         "sha256": "53bb4207cbe60e2e5dd97c2ea84ad8eced844a70be63a496b1a371d0e73666ea"
       },
       {
-        "bytes": 119599,
+        "bytes": 119681,
         "path": "data/documents/silver/jurisprudencia/CE_2da_NYR_2009_164_FEPEP_VS_DIMAR_Playa_Uso_Urbanistico.jsonl",
-        "sha256": "d2e1a1b2e58c12d441a94a1e452101943d37ebccc56c8dd53e1b665f7b6f39a9"
+        "sha256": "9d368b6d534bccd7987e783308465d444d36fd785bba8ebd3ac22a2fdeb2f841"
       },
       {
-        "bytes": 30223,
+        "bytes": 30229,
         "path": "data/documents/silver/jurisprudencia/CE_Consulta_1990_Horacio_Serpa_Uso_Publico_Playa.jsonl",
-        "sha256": "20a26eb27cc399749e02555542eedd1d60b8d157a8bba71b718579d498939263"
+        "sha256": "f6a8d7d1136bbc983efd9d08f0b6e3de8cf7ff3cca9ba35baf69e819aaf42aed"
       },
       {
-        "bytes": 134340,
+        "bytes": 134352,
         "path": "data/documents/silver/jurisprudencia/CE_Consulta_2005_168_MinDefensa_Bienes_De_Uso_Publico.jsonl",
-        "sha256": "c990bb4a2079c336ed3983afaa03f76ba6dfa5ad81b3c3e09f17b25cf30aa9f3"
+        "sha256": "7636ed8493ef414fbb826285ffaac91332c371d877a36dfe98ec4a3fe98a645b"
       },
       {
         "bytes": 83954,
@@ -4352,14 +4370,14 @@
         "sha256": "24dfbc7070097a9fdc6d42e4419668bc64d9000faa26233f5389b2b1f151bbd3"
       },
       {
-        "bytes": 202099,
+        "bytes": 202115,
         "path": "data/documents/silver/jurisprudencia/SENTENCIA DE SEGUNDA INSTANCIA 47001-2332-000-2011-08425-02- GABRIEL CARRERO.jsonl",
-        "sha256": "411237db0fa916cf97a816f4aab9488961968fe16212e703418c2c57a7c0c913"
+        "sha256": "052ea49bdb0c88b69d60b91b504d4c619d03ec1bf3f320cb7aaeb877ed072112"
       },
       {
-        "bytes": 85161,
+        "bytes": 85235,
         "path": "data/documents/silver/jurisprudencia/TAA_2da_RD_2015_281_XXXX_VS_Dpto_Antioquia_Responsabilidad_Del_Estado.jsonl",
-        "sha256": "fcca7c1e5db025190de4dbeeb71536eed7069776945affefb7298bca9295f8b0"
+        "sha256": "ee98d969c4065ed8c570f70e144a734b4ad5af5d68a1ae27ecbd5986f0add931"
       },
       {
         "bytes": 27248,

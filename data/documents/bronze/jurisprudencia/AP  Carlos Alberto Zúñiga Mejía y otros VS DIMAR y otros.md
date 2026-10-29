@@ -64,9 +64,9 @@ La sala de decisión, resuelve en primera instancia, la demanda interpuesta por 
 20. En el escrito de alegatos de conclusión , la empresa de servicios públicos reiteró  los argumentos expuestos en la contestación de la demanda afirmando que la obra colector pluvial Bastidas - Mar Caribe es diseñada y ejecutada por el  Distrito  de  Santa  Marta,  sin  perjuicio  de  los  mantenimientos  y  limpieza realizados por ESSMAR E.S.P. por medio del convenio empresarial suscrito con la operadora ATESA E.S.P.
 
 ## 1.2.4. Distrito de Santa Marta.
-21. El apoderado del Distrito de Santa Marta manifestó  en la contestación de la demanda que los hechos relatados por la parte demandante obedecen a apreciaciones subjetivas y carecen de sustento probatorio, igualmente, se opuso a la prosperidad de las pretensiones, argumentando que el colector pluvial la es un proyecto diseñado para generar múltiples beneficios pluviales a diferentes barrios y sectores de la ciudad, además, que al estar en funcionamiento ambos colectores, tanto el de la carrera como el colector Bastidas - Mar Caribe, no habrá una suma de caudales que puedan generar posibles inundaciones.
+21. El apoderado del Distrito de Santa Marta manifestó  en la contestación de la demanda que los hechos relatados por la parte demandante obedecen a apreciaciones subjetivas y carecen de sustento probatorio, igualmente, se opuso a la prosperidad de las pretensiones, argumentando que el colector pluvial la 19 es un proyecto diseñado para generar múltiples beneficios pluviales a diferentes barrios y sectores de la ciudad, además, que al estar en funcionamiento ambos colectores, tanto el de la carrera como el colector Bastidas - Mar Caribe, no habrá una suma de caudales que puedan generar posibles inundaciones.
 
-22. Ahora, en cuanto al rompeolas ubicado en la bahía de Taganga, advirtió que a partir de un estudio se pudo demostrar que capacidad de descarga de este es menor que lo que transporta el canal, la cual debe ser lo contrario para evitar represamientos en el canal, por lo que se propuso la abertura mínima que se debe hacer para que la capacidad de descarga en el rompeolas sea mayor a la capacidad del canal, esto es, una demolición de cm.
+22. Ahora, en cuanto al rompeolas ubicado en la bahía de Taganga, advirtió que a partir de un estudio se pudo demostrar que capacidad de descarga de este es menor que lo que transporta el canal, la cual debe ser lo contrario para evitar represamientos en el canal, por lo que se propuso la abertura mínima que se debe hacer para que la capacidad de descarga en el rompeolas sea mayor a la capacidad del canal, esto es, una demolición de 50 cm.
 23. Conforme  con  lo  anterior,  propuso  las  excepciones  de  inexistencia  de vulneración  de  los  derechos  colectivos  -  orfandad  probatoria,  y  análisis preliminar del comportamiento del flujo a la salida del colector pluvial Bastidas - Mar Caribe.
 24. En el escrito de alegatos de conclusión , el ente territorial manifestó que, el objetivo del colector pluvial Bastidas - Mar Caribe es proporcionar a la ciudad  un  sistema  de  drenaje  pluvial  suficiente  para  evacuar  las  aguas  de escorrentía que originaban grandes inundaciones en diferentes sectores, de igual forma,  se  refirió  a  la  demolición  del  rompeolas  del  colector  en  cuestión, afirmando que esta decisión obedece a unos estudios realizados por hidráulicos, en los cuales se analizó el comportamiento del colector y se concluyó que el caudal de descarga era menor que el caudal de transporte dadas las dimensiones del rompeolas.
 
@@ -101,7 +101,7 @@ La sala de decisión, resuelve en primera instancia, la demanda interpuesta por 
 
 ## 1.3.6. INTERASEO S.A.S. E.S.P.
 
-37. La empresa prestadora de servicios públicos se opuso a la prosperidad de las pretensiones , indicando que implementaron un plan de limpieza de rejillas, sumideros y canales pluviales con el cual intervinieron y recolectaron residuos de box culverts y 13 sumideros de sistema de alcantarillado del Distrito.
+37. La empresa prestadora de servicios públicos se opuso a la prosperidad de las pretensiones , indicando que implementaron un plan de limpieza de rejillas, sumideros y canales pluviales con el cual intervinieron y recolectaron residuos de 3 box culverts y 13 sumideros de sistema de alcantarillado del Distrito.
 38. Propuso  como  excepciones  la  inexistencia  de  la  obligación  legal  y contractual de la prestación de recolección y/o limpieza en el sistema de drenaje del  Colector  Pluvial  Bastidas  -  Mar  Caribe,  cumplimiento  de  las  obligaciones legales y contractuales a cargo del prestador de aseo en la zona indicada en la demanda, falta de motivación respecto a la vinculación de INTERASEO S.A.S. E.S.P., y falta de legitimación en la causa por pasiva.
 
 ## 1.3.7. Ministerio de Vivienda, Ciudad y Territorio.
@@ -109,7 +109,7 @@ La sala de decisión, resuelve en primera instancia, la demanda interpuesta por 
 
 ## 1.4. Posición del Ministerio Público
 
-## 1.4.1. Concepto Procuraduría Judicial II Agraria y Ambiental de Santa Marta.
+## 1.4.1. Concepto Procuraduría 13 Judicial II Agraria y Ambiental de Santa Marta.
 40. El  Procurador  Ambiental   solicitó  que  se  ordene  la  protección  de  los derechos colectivos invocados por los demandantes, así mismo, que se disponga que la financiación le corresponda al Distrito de Santa Marta.
 41. En todo caso, indicó que debe contemplarse la necesidad de profundizar y  precisar  los  estudios  respecto  de  la  capacidad  hidráulica  del  canal  pluvial colector Bastidas, las obras complementarias que deben realizarse para evitar las escorrentías de aguas servidas del alcantarillado sanitario y las necesarias para evitar el ingreso de residuos sólidos al canal pluvial.
 
@@ -222,7 +222,7 @@ Calle calle
 3. Compuestos químicos halogenados.
 4. Materiales en cualquiera de los estados sólidos, líquidos, gaseosos o seres vivientes, producidos para la guerra química y/o biológica.
 5. Cualquier otra sustancia o forma de energía que a juicio de la Dirección General  Marítima  y  Portuaria  no  se  deba  verter  al  mar  por  su  alto  poder contaminante'.
-- 82.Este decreto, por más de años, señaló los criterios mínimos ambientales que acataron quienes vertieron aguas residuales a los océanos, resaltando que, en  el  año  2010,  el  Gobierno  nacional  se  comprometió  a  actualizar  esos estándares.
+- 82.Este decreto, por más de 35 años, señaló los criterios mínimos ambientales que acataron quienes vertieron aguas residuales a los océanos, resaltando que, en  el  año  2010,  el  Gobierno  nacional  se  comprometió  a  actualizar  esos estándares.
 
 83. Precisamente, en la Política Nacional para la Gestión Integral del Recurso Hídrico  (PNGIRH)  de  2010,  el  Estado  reconoció  la  necesidad  de  ' generar  las condiciones  para  el  fortalecimiento  institucional  de  la  GIRH ',  mediante  líneas estratégicas tendientes a 'integrar, armonizar y optimizar la normativa relativa a la  gestión  integral  del  recurso  hídrico  (…)' y 'establecer  y  aplicar  criterios  y estándares de calidad del recurso hídrico para usos con necesidad de reglamentación'.
 
@@ -232,7 +232,7 @@ Calle calle
 
 85.  Para  el  efecto,  y  mientras  se  cumplía  el  anterior  mandato,  el  Gobierno nacional fijó el siguiente régimen de transición:
 
-'Artículo  76.  Régimen  de  transición.  El  Ministerio  de  Ambiente,  Vivienda  y Desarrollo Territorial fijará mediante resolución, los usos del agua, criterios de calidad para cada uso, las normas de vertimiento a los cuerpos de agua, aguas , alcantarillados públicos y al suelo y el Protocolo para el Monitoreo marinas de los Vertimientos en Aguas Superficiales, Subterráneas. Mientras el Ministerio de Ambiente, Vivienda y Desarrollo Territorial expide  las  regulaciones  a  que  hace  referencia  el  inciso  anterior,  en ejercicio de las competencias de que dispone según la Ley 99 de 1993, continuarán transitoriamente vigentes los artículos a 48, artículos 72 a 79 y artículos 155, 156, 158, 160, 161 del Decreto 1594 de 1984 '.
+'Artículo  76.  Régimen  de  transición.  El  Ministerio  de  Ambiente,  Vivienda  y Desarrollo Territorial fijará mediante resolución, los usos del agua, criterios de calidad para cada uso, las normas de vertimiento a los cuerpos de agua, aguas , alcantarillados públicos y al suelo y el Protocolo para el Monitoreo marinas de los Vertimientos en Aguas Superficiales, Subterráneas. Mientras el Ministerio de Ambiente, Vivienda y Desarrollo Territorial expide  las  regulaciones  a  que  hace  referencia  el  inciso  anterior,  en ejercicio de las competencias de que dispone según la Ley 99 de 1993, continuarán transitoriamente vigentes los artículos 37 a 48, artículos 72 a 79 y artículos 155, 156, 158, 160, 161 del Decreto 1594 de 1984 '.
 
 86. Además, la norma precisó los escenarios en que debería aplicarse el principio de rigor  subsidiario  para  vertimientos ,  el  alcance  de  la  responsabilidad  del 'Por el cual se reglamenta parcialmente el Título I de la Ley 9ª de 1979, así como el Capítulo II del Título
 
@@ -254,7 +254,7 @@ El Ministerio de Ambiente Vivienda y Desarrollo Territorial dentro de los diez (
 
 Igualmente, el Ministerio de Ambiente Vivienda y Desarrollo Territorial deberá establecer las normas de vertimientos al suelo y aguas marinas, dentro de los treinta y seis (36) meses, contados a partir de la fecha de publicación de este decreto ".
 
-88.Posteriormente, en las secciones, 21, 22, 23 y 24 del capítulo del título III del Decreto 1076 de 2015 , el presidente de la Republica compiló las normas sobre conservación y preservación de las aguas y sus cauces, vertimientos por uso  doméstico,  municipal,  agrícola,  riego,  drenaje  y  uso  industrial;  y  las determinaciones sobre prohibiciones, sanciones, caducidad, control y vigilancia. Sin  embargo,  en  esa  oportunidad  tampoco  se  cumplió  con  el  propósito  de regular los vertimientos a los mares, señalado en la PNGIRH de 2010.
+88.Posteriormente, en las secciones20, 21, 22, 23 y 24 del capítulo 2 del título III del Decreto 1076 de 2015 , el presidente de la Republica compiló las normas sobre conservación y preservación de las aguas y sus cauces, vertimientos por uso  doméstico,  municipal,  agrícola,  riego,  drenaje  y  uso  industrial;  y  las determinaciones sobre prohibiciones, sanciones, caducidad, control y vigilancia. Sin  embargo,  en  esa  oportunidad  tampoco  se  cumplió  con  el  propósito  de regular los vertimientos a los mares, señalado en la PNGIRH de 2010.
 
 89.Esta grave omisión fue subsanada por el Ministerio de Ambiente y Desarrollo Sostenible, a través de la Resolución N° 0883 del 18 de mayo de 2018, 'Por la cual se establecen los parámetros y los valores límites máximos permisibles en los  vertimientos  puntuales  a  cuerpos  de  aguas  marinas,  y  se  dictan  otras disposiciones'.
 

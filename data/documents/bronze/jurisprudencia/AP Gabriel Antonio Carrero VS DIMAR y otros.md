@@ -84,11 +84,11 @@ Es de conocimiento público la situación anómala que afecta a los pobladores d
 
 ## 1.2. Trámite procesal
 
-La demanda se admitió por auto de 1o  de noviembre de 2011  que ordenó notificar como demandados a! Distrito de Santa Marta, al Departamento del Magdalena y a la DIMAR, y como  medida  cautelar ordenó  al  Distrito  de  Santa  Marta  que,  a  más tardar dentro  del término de días,  adoptara  un  plan de acción  con su  respectivo cronograma a fin de ejecutar en el menor tiempo posible las medidas de mitigación  a efectos de prevenir un daño inminente.
+La demanda se admitió por auto de 1o  de noviembre de 2011  que ordenó notificar como demandados a! Distrito de Santa Marta, al Departamento del Magdalena y a la DIMAR, y como  medida  cautelar ordenó  al  Distrito  de  Santa  Marta  que,  a  más tardar dentro  del término de 10 días,  adoptara  un  plan de acción  con su  respectivo cronograma a fin de ejecutar en el menor tiempo posible las medidas de mitigación  a efectos de prevenir un daño inminente.
 
 Por  auto  de 21 de  noviembre  de  2011  se  vinculó  al  Ministerio  de  Ambiente,  a  la Procuraduría General de la Nación para  Asuntos  Ambientales, al DADMA  y  a CORPAMAG.
 
-Por auto de 6 de julio de 2012 se convocó a las partes a audiencia especial de pacto de cumplimiento; y a solicitud del Ministerio de Ambiente y Desarrollo Sostenible, mediante proveído del enero de 2013, se reprogramó dicha audiencia para el 18 de febrero de 2013.
+Por auto de 6 de julio de 2012 se convocó a las partes a audiencia especial de pacto de cumplimiento; y a solicitud del Ministerio de Ambiente y Desarrollo Sostenible, mediante proveído del 18 enero de 2013, se reprogramó dicha audiencia para el 18 de febrero de 2013.
 
 Mediante auto de 28 de junio de 2013 se abrió a pruebas el proceso y el 18 de septiembre de  2013  se  practicó  inspección  judicial  con participación  de  un  experto  en  Geología Marina y Costera en la zona afectada por la erosión, especialmente donde está ubicado LAGOMAR MARINA CLUB; y el 28 de febrero de 2014, por Secretaría,  se corrió traslado a las partes del informe presentado el 17 de octubre de 2013.
 
@@ -120,7 +120,7 @@ Propuso excepción de falta de legitimación en la causa por pasiva, en razón a
 
 ## 1.4. Audiencia especial de pacto de cumplimiento
 
-En  aplicación  del  artículo  27  de  la  Ley 472  de  1998  se  inició  audiencia  de  pacto  de cumplimiento el 18 de febrero de 2013 a  las:00 a.m.,  la cual se suspendió porque el Folios 98-120
+En  aplicación  del  artículo  27  de  la  Ley 472  de  1998  se  inició  audiencia  de  pacto  de cumplimiento el 18 de febrero de 2013 a  las9:00 a.m.,  la cual se suspendió porque el Folios 98-120
 
 ' Folios  131-145
 
@@ -205,7 +205,7 @@ Para establecer la afectación  de  los derechos colectivos invocados por el  ac
 - Copia de la Resolución N° 001 de 2000, expedida por el Director de la Unidad del Riesgo del  Ministerio  del  Interior y  Justicia,  'por  la  cual  se  declara  la  situación  de  calamidad pública en  la Zona  Costera del  Departamento del  Magdalena,  reconociendo afectación en el sector costero de los Municipios de Sitionuevo,  Pueblo Viejo y Ciénaga  (fs 5-7).
 - Disco compacto contentivo del informe de erosión costera en el año 2008 realizado por AGUA  &amp;  TERRA  CONSULTORES  S.A.,  ' Diagnóstico de  la erosión costera del Departamento  de  Magdalena  entre  Bocas  de  Ceniza  y  Punta  Betín  y  estudio  de alternativas de solución ' (f.  177).
 -  Copia  del  Oficio  de  31 de  marzo  de  2011,  mediante  el  cual  la  Administradora  del Condominio Lagomar Marina Club solicitó a la Capitanía de Puerto de Santa Marta que realizara una visita a la Zona de Pozos Colorados y'emitiera concepto sobre el proceso erosivo  por socavación  e  informara  las  actividades  que  se  deben  ejecutar  para  la recuperación,  estabilización y protección de las playas que se encuentran en avanzado estado de deterioro (f. 8-10).
--  Copia  del  Oficio  N°  14201101060  MD-DIMAR-CP-AL1TMA  -021  suscrito  por  el Capitán  de  Fragata de la  Capitanía de  Puertos de Santa  Marta el 4 de mayo de 2011, mediante el cual informa a  la Administradora del Condominio Lagomar Marina Club que realizará  una visita en el área de playa marítima de la Zona de Pozos  Colorados el día  11 de abril del mismo año (f.11).
+-  Copia  del  Oficio  N°  14201101060  MD-DIMAR-CP04-AL1TMA  -021  suscrito  por  el Capitán  de  Fragata de la  Capitanía de  Puertos de Santa  Marta el 4 de mayo de 2011, mediante el cual informa a  la Administradora del Condominio Lagomar Marina Club que realizará  una visita en el área de playa marítima de la Zona de Pozos  Colorados el día  11 de abril del mismo año (f.11).
 
 -  Copia  del  Oficio  de  12 de  abril  de  2011 mediante  el  cual  la  Administradora  del Condominio  Lagomar  Marina  Club  solicitó  al  Capitán  de  Fragata  de  la  Capitanía  de Puertos de Santa Marta realizar una inspección con ingeniero oceanógrafo y solicita que se pronuncie sobre la posibilidad de recuperación de la playa, la realización de obras que prevengan el impacto del mar en el litoral e indique quién debe realizarlos (fs.  12-13).
 - Concepto Técnico N° 01 de 30 de mayo de 2011, suscrito por el Perito Marítimo experto en  Oceanógrafica  Física  de  la  Capitanía  de  Puerto  de  Santa  Marta,  en  el  que  rinde informe sobre la problemática de erosión costera que se están presentando en el sector de Lagomar (Pozos Colorados) y, en especial, con  las obras oceánicas y de protección costera instaladas vecinas al proyecto urbanístico (f.  15-29).
@@ -230,7 +230,7 @@ Por otra parte, a iniciativa de los residentes del Condominio Lagomar (f. 8-10, 
 3.  Teniendo en consideración que va existe un  estado de erosión persistente y significativa sobre todo el sector costero, evaluar la reubicación de las palmeras que paulatinamente se están derrumbando y de las que aún se encuentran en pie,  con el propósito  de  buscar una  estabilidad del poco  ancho  de playa  existente y permitir la recuperación natural por depositación de las arenas.
 4.  Técnicamente,  no  es  recomendable  establecer nuevas  obras  de  protección costera  ni  de  ingeniería  oceánica,  sin  antes  buscar  en  un  iapso  de  tiempo considerablemente significativo, la recuperación natural de la playa acompañada del  retiro  de  agüellas estructuras  afectadas, la  demolición  de  estructuras
 
-## sobredimensionadas  v la  reubicación  de  las  barreras  falladas  v desgastadas.' (Ver folios a 29).
+## sobredimensionadas  v la  reubicación  de  las  barreras  falladas  v desgastadas.' (Ver folios 15 a 29).
 
 Se  resalta  del  informe  anterior  el  reconocimiento  la  afectación  significativa  de  la  zona costera por cuenta de la erosión y la necesidad de recuperar las playas descritas.
 
@@ -250,7 +250,7 @@ Así mismo, la intervención antropogénica. juega un papel fundamental en lo gu
 
 De igual forma la tendencia erosiva observada también se ve influenciada,  de manera general, por ei Ascenso en el nivel del mar y los cambios climáticos.
 
-Dentro del Caribe colombiano los verdaderos efectos del ascenso del nivel del mar no han sido estimados con exactitud debido a la poca información instrumental con la que se cuenta.  Sin embargo,  los datos existentes sobre las variaciones en el nivel del mar en el Caribe colombiano, registran ascensos de a 22 cm en los últimos 100 años. A partir de estos valores se calcula que pueden esperarse del orden de 2a 5 mm por año, que llegarían a alcanzar entre QOcmyl m para el año 2100. Estos valores de aumento en el nivel del mar para zonas planas,  e incluso muchas de ellas un poco deprimidas cercanas a la línea de costa significa una pérdida paulatina de grandes áreas de terreno y la extensión de las inundaciones ocurridas durante los periodos invernales.
+Dentro del Caribe colombiano los verdaderos efectos del ascenso del nivel del mar no han sido estimados con exactitud debido a la poca información instrumental con la que se cuenta.  Sin embargo,  los datos existentes sobre las variaciones en el nivel del mar en el Caribe colombiano, registran ascensos de 15 a 22 cm en los últimos 100 años. A partir de estos valores se calcula que pueden esperarse del orden de 2a 5 mm por año, que llegarían a alcanzar entre 80 cm y 1 m para el año 2100. Estos valores de aumento en el nivel del mar para zonas planas,  e incluso muchas de ellas un poco deprimidas cercanas a la línea de costa significa una pérdida paulatina de grandes áreas de terreno y la extensión de las inundaciones ocurridas durante los periodos invernales.
 
 De  igual  forma en  la tendencia  erosiva  del  área  influyen  significativamente  las variaciones en las condiciones climáticas.  El oleaje en los últimos años ha presentado aumentos significativos en ia altura asociados al incremento de huracanes y tormentas tropicales,  cuyos coletazos se  han  sentido  en  la  parte  norte  del  Caribe  colombiano. Rangel  (2009)  determinó  que  en  los  últimos  años  el  paso  de  los  huracanes  Joan, registrado  en  octubre  1988,  ia  tormenta  tropical Iris  en  septiembre  1989,  el  huracán Cesar  en  julio de 1996  y  más recientemente Dean (2007) que hicieron  su desplazamiento por la costa de  La  Guajira y parte de la costa  de a   SNSM causaron retrocesos significativos y daños en diferentes estructuras.
 
@@ -270,7 +270,7 @@ Cualquier tipo de solución  o medida  de control y/o mitigación de la erosión
 
 El  dictamen  anterior, decretado  durante  la  inspección  judicial, no  fue  materia  de objeciones; proviene  de  una  entidad  altamente  especializada  y  de  un  profesional calificado en Oceanografía que a juicio  del Tribunal y está rendido en términos claros y precisos y describe  una  situación que,  además,  concuerda con los  demás medios de prueba. El  autor del  dictamen  reconoce  la escasez de  información  sobre  la  materia y manifiesta que lo rinde con base en la visita de campo y el análisis de fotografías aéreas que acompaña.
 
-El  conjunto de las  pruebas descritas no deja lugar a dudas acerca de que el Sector de Pozos  Colorados  sufre  un  acelerado  proceso  de  erosión  costera,  que  lo  ha  llevado  a perder entre y 77 metros, aproximadamente, y amenaza con  seguir avanzando, con lo  cual  se  pone en  riesgo a  las  personas que allí  residen y desarrollan  actividades,  así como su entorno y sus bienes.
+El  conjunto de las  pruebas descritas no deja lugar a dudas acerca de que el Sector de Pozos  Colorados  sufre  un  acelerado  proceso  de  erosión  costera,  que  lo  ha  llevado  a perder entre 17 y 77 metros, aproximadamente, y amenaza con  seguir avanzando, con lo  cual  se  pone en  riesgo a  las  personas que allí  residen y desarrollan  actividades,  así como su entorno y sus bienes.
 
 No  hay  noticia  de  que  alguna  autoridad  competente  haya  desarrollado  actividades capaces de detener o prevenir en forma efectiva el fenómeno descrito, y si bien la DIMAR ha  realizado algunas  recomendaciones y adelantado estudios que podrían  contribuir al diagnóstico  de  la  situación,  no  se trata  de  un  esfuerzo  conjunto y  coordinado  con  las demás autoridades -  distritales, departamentales y nacionales - llamadas a dar respuesta al  problema  por razón  de sus  competencias,  como  lo  recomienda el  dictamen  descrito previamente.
 

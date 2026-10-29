@@ -756,7 +756,7 @@ Bajo este entendimiento, no hay duda de que la actuación administrativa debe es
 
 Empero, ello exige un análisis en cada caso particular, para establecer si se configura i) el elemento objetivo, que se verifica teniendo en cuenta si, con la actuación cuestionada, la autoridad administrativa incurrió en la inobservancia o transgresión de la ley y, ii) el elemento subjetivo, consistente en la materialización de conductas amañadas, corruptas y alejadas de la correcta función pública.
 
-Del análisis del material probatorio obrante en el expediente se concluye la vulneración de este derecho colectivo, pues resulta evidente la conducta amañada por parte de la Curadora Urbana de Santa Marta, que es un particular en ejercicio de funciones públicas, al permitir que la Constructora AR modificara el cauce del río Gaira, con lo que facilitó el incremento de la erosión costera en Playa Salguero.
+Del análisis del material probatorio obrante en el expediente se concluye la vulneración de este derecho colectivo, pues resulta evidente la conducta amañada por parte de la Curadora Urbana 2 de Santa Marta, que es un particular en ejercicio de funciones públicas, al permitir que la Constructora AR modificara el cauce del río Gaira, con lo que facilitó el incremento de la erosión costera en Playa Salguero.
 
 ## iv) El goce del espacio público y la utilización y defensa de los bienes de uso público.
 

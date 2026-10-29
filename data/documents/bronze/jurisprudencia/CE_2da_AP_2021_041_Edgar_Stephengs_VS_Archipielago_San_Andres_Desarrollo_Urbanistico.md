@@ -123,7 +123,7 @@ I.3.2. El  apoderado  de  la Corporación  para  el  Desarrollo  Sostenible  del
 
 27. Precisó que la autoridad ambiental en la Resolución 1014 de 2 de noviembre de 2016  ' se  abstuvo  de  decidir  en  relación  con  la  infraestructura  sobre  el  área emergida, toda vez que se determinó que dicha infraestructura se encontraba por fuera  del  área  de  jurisdicción  de  la  DIMAR,  razón  por  la  cual  no  era  objeto  de viabilidad ambiental por parte de CORALINA y, su ejecución estaría sujeta a las normas urbanísticas del Municipio de Providencia y a la obtención de los permisos ambientales requeridos '.
 
-28. Recordó que la actividad de construcción impactó de forma negativa el entorno natural y desconoció el esquema de ordenamiento territorial vigente. En consecuencia, Coralina impuso una medida preventiva de suspensión de actividades por la ocupación de una zona de manglar y de la franja de protección mínima de metros a cada lado del cauce que transcurre en el sector del litigio, tal y como lo dispone el artículo 2.2.1.1.1.8.2 del Decreto 1076 de 2015.
+28. Recordó que la actividad de construcción impactó de forma negativa el entorno natural y desconoció el esquema de ordenamiento territorial vigente. En consecuencia, Coralina impuso una medida preventiva de suspensión de actividades por la ocupación de una zona de manglar y de la franja de protección mínima de 30 metros a cada lado del cauce que transcurre en el sector del litigio, tal y como lo dispone el artículo 2.2.1.1.1.8.2 del Decreto 1076 de 2015.
 
 29. En su sentir, antes de declarar como zona de protección reforzada la zona de Bowden  Gullie  y  los  ecosistemas  de  manglar  del  sector,  para  evitar  futuras construcciones  en  el  lugar,  es  necesario  adelantar  los  estudios  exigidos  en  la legislación  actual.  Aun  así,  afirmó  que  ese  territorio  es  refugio  de  especies  de importancia local y nacional, permite el control de la erosión, brinda una función paisajística, protege de los vientos fuertes y conecta otros ecosistemas estratégicos, por las siguientes razones:
 
@@ -293,17 +293,17 @@ Cuando este tipo de estructuras se contemple dentro del trámite de una licencia
 
 79. Para resolver estos reparos, se debe tener en cuenta que la Escritura Pública 0564 de 22 de julio de 2011 de la Notaria Única de San Andrés demuestra que la Armada Nacional  suscribió  en  esa  fecha  un  contrato  de  compraventa  por  el  monto  de 210.000.000  de  pesos  para  la  adquisición  del  predio con  código  catastral 88564000100000029000100000. En ese lugar se pretendía construir la Estación de Guardacostas de Providencia como se evidencia en el siguiente apartado de aquel documento público:
 
-'[…] PRIMERA OBJETO: EL VENDEDOR transfiere a título de compraventa al COMPRADOR con destinación a la Nación - Ministerio de Defensa Nacional Armada Nacional, para la construcción de la Estación de Guardacostas de Providencia el derecho de dominio, propiedad y posesión que tiene y ejerce sobre  el  siguiente  bien  inmueble:  Un  lote  de  terreno  ubicado  en  la Jurisdicción del Departamento Archipiélago de San Andrés, Providencia y Santa Catalina, sector denominado (Isla de Providencia) "PUEBLO VIEJO 97" área de terreno.605:00 M2 . […]' . (Negrilla fuera de texto)
+'[…] PRIMERA OBJETO: EL VENDEDOR transfiere a título de compraventa al COMPRADOR con destinación a la Nación - Ministerio de Defensa Nacional Armada Nacional, para la construcción de la Estación de Guardacostas de Providencia el derecho de dominio, propiedad y posesión que tiene y ejerce sobre  el  siguiente  bien  inmueble:  Un  lote  de  terreno  ubicado  en  la Jurisdicción del Departamento Archipiélago de San Andrés, Providencia y Santa Catalina, sector denominado (Isla de Providencia) "PUEBLO VIEJO - 11 24 97" área de terreno 1.605:00 M2 . […]' . (Negrilla fuera de texto)
 
 80. El  oficio  12506  de  13 de  junio  de  2014 ,  suscrito  por  la  Oficina  Jurídica  del Comando de la Armada Nacional, explica cuáles son las características del citado proyecto arquitectónico. Veamos:
 
-'[…] El proyecto de la construcción del muelle de guardacostas en la isla de Providencia se desarrolla en un lote de.272 m2 en el que se tiene proyectada una estación  confortable  que  cuente  entre  otros  espacios  con  zonas  de habitaciones para un promedio de personas […] que contarán con sus respectivas zonas de servicios sanitarios , cocina y comedor , además de las zonas  administrativas  en  las  que  principalmente  se  ubicarán  oficinas  de mando .
+'[…] El proyecto de la construcción del muelle de guardacostas en la isla de Providencia se desarrolla en un lote de 2.272 m2 en el que se tiene proyectada una estación  confortable  que  cuente  entre  otros  espacios  con  zonas  de habitaciones para un promedio de 35 personas […] que contarán con sus respectivas zonas de servicios sanitarios , cocina y comedor , además de las zonas  administrativas  en  las  que  principalmente  se  ubicarán  oficinas  de mando .
 
 MAR CARIBE. Canal natural. Asociación de pescadores de providencia,5, 6. Estructuras a demoler. Muelle actual de la asociación de pescadores.
 
 Otros espacios como la subestación eléctrica , planta de tratamiento de aguas residuales , tanques de abastecimiento de agua , entre otros , están sujetos a la normatividad y factibilidad de los mismos dependiendo del concepto emitido por Coralina y las empresas de servicios públicos.
 
-La  otra  parte  del  proyecto  consiste  en  el muelle  que  en  primera  instancia contará aproximadamente con una longitud de ml (sic) y  en  el  que  se esperan atracar embarcaciones de pequeño troquel […]'. (Negrilla fuera de texto).
+La  otra  parte  del  proyecto  consiste  en  el muelle  que  en  primera  instancia contará aproximadamente con una longitud de 40 ml (sic) y  en  el  que  se esperan atracar embarcaciones de pequeño troquel […]'. (Negrilla fuera de texto).
 
 Proyecto Estación de Guardacostas - Providencia
 
@@ -405,7 +405,7 @@ BAREY
 
 Lo  anterior  con  base  en  el  artículo  192  numeral  1  literal  C  del  decreto Nacional 019 de 2012 . […]' (Negrilla fuera de texto). En el plenario también reposa la Resolución 0499-201 MD-DIMAR-SUBDEMARALIT de 27 de julio de 2017, modificada por la Resolución 0092-2020) MD-DIMARSUBDEMAR-ALlT de 9 de marzo de 2020, en la que la Dirección General Marítima otorgó a la Armada Nacional una concesión marítima que comprende un área total de.000 m2, ubicados en jurisdicción de la Capitanía de Puerto de Providencia. El mismo acto autorizó la construcción del muelle de Guardacostas de Providencia para embarcaciones menores.
 85. Además,  obra  la  Resolución  193  de  24 de  junio  de  2020  relacionada  con  la concesión de aguas de mar superficiales , así como la Resolución 1179 de 26 de diciembre de 2016 que resolvió la solicitud de tala, poda y transporte de árboles, junto con  el  Auto  015  de  22 de  enero  de  2020  conforme  al  cual  Coralina  archivó  un expediente de aprovechamiento forestal, tras advertir el acatamiento de la medida compensatoria de siembra de 60 árboles .
-86. Igualmente reposan las Resoluciones 144 de 20 de abril de 2020 y 207 de 13 de julio de 2020, por medio de las cuales Coralina otorgó permiso de vertimientos para el citado  proyecto  por  el  término  de  años ,  previa  instalación  de  un  sistema  de tratamiento de aguas residuales.
+86. Igualmente reposan las Resoluciones 144 de 20 de abril de 2020 y 207 de 13 de julio de 2020, por medio de las cuales Coralina otorgó permiso de vertimientos para el citado  proyecto  por  el  término  de  5  años ,  previa  instalación  de  un  sistema  de tratamiento de aguas residuales.
 87. De las pruebas que se acaban de citar se tiene que  la  Armada  Nacional,  en principio,  obtuvo  una serie  de permisos  y  autorizaciones  en  virtud  de  los  cuales asumió que podía llevar a cabo las citadas obras. Sin embargo, lo cierto es que la autoridad castrense y Coralina debieron advertir que la construcción de la infraestructura del muelle, al ser parte de un aérea protegida del SINAP, estaba sujeta a la obtención del respectivo licenciamiento ambiental.
 
 88. El  10 de  noviembre  de  2000,  la  UNESCO  declaró  e  incorporó  la  reserva  de biosfera ' Seaflower ' a la Red Mundial de reservas de la Biosfera. En consecuencia, el Expediente digital Samai, anotación, documento ' 101\_880012333000202100041024EXPEDIENTEDI GI20230830141925 ', contiene link de carpeta one drive en la que reposa el documento denominado ' 56MemorialCoralina ', folio 822 y ss.
@@ -480,13 +480,13 @@ Prono a
 
 [ E ] xiste una alta afectación al ecosistema de manglar , así mismo se evidencia la modificación y degradación de las zonas y depósitos de playas remanentes. Es de  precisar  que las  condiciones  y  áreas  que  fueron  tenidas  en  cuenta  al momento de emitir el informe técnico N°  537  de  2016  para  el  concepto  de viabilidad  mediante  la  Resolución  No.  1014  del  2 de  noviembre  de  2016,  al denominando proyecto 'Estación de Control de Tráfico Marítimo' en la Isla  de Providencia, ha cambiado sustancialmente . […]
 
-[…]. Localizada en el extremo noroccidental de la isla, la microcuenca Bowden con  sus  434  hectáreas constituye  la  más  extensa de  las  microcuencas existentes, con un porcentaje de ocupación del,8% del área total terrestre de Providencia y Santa Catalina. Dentro de los afluentes más importantes está el Gully Bowden de una longitud de,5 kilómetros aproximadamente , que nace en cercanías del High Peak a 350 msnm y ÚNICAMENTE desemboca en la bahía Santa Catalina , tras atravesar el asentamiento de Old Town (Castro et al., 2004). Al interior de la microcuenca se identificaron humedales , de los cuales ocho corresponden a manantiales ligados al Gully Bowden y  tres a represamientos de agua construidos en diferentes épocas para el suministro de la población local […].
+[…]. Localizada en el extremo noroccidental de la isla, la microcuenca Bowden con  sus  434  hectáreas constituye  la  más  extensa de  las  11 microcuencas existentes, con un porcentaje de ocupación del 19,8% del área total terrestre de Providencia y Santa Catalina. Dentro de los afluentes más importantes está el Gully Bowden de una longitud de 2,5 kilómetros aproximadamente , que nace en cercanías del High Peak a 350 msnm y ÚNICAMENTE desemboca en la bahía Santa Catalina , tras atravesar el asentamiento de Old Town (Castro et al., 2004). Al interior de la microcuenca se identificaron 11 humedales , de los cuales ocho corresponden a manantiales ligados al Gully Bowden y  tres a represamientos de agua construidos en diferentes épocas para el suministro de la población local […].
 
 La  dinámica  hidrobiológica  de  los  57  humedales  de  Providencia  y  Santa Catalina, es fuertemente dependiente de la funcionalidad de las corrientes existentes en las ocho microcuencas identificadas como áreas de influencia directa de estos ecosistemas . Es por esto, que se deberá tener como criterio la identificación de las áreas importancia socioecológica que garanticen la conservación  de  los  humedales  en  cuanto  a  su  funcionalidad  hidrológica, gemorfológica, biótica, socioeconómica y cultural.
 
-[…] se definieron como áreas de protección los  humedales identificados y los afluentes  que  soportan  su  dinámica  ecológica.  El  Ministerio  de  Ambiente  y Desarrollo Sostenible (2015), a través del artículo 2.2.1.1.18.2 del Decreto 1076 de  2015  define  como ecosistemas  prioritarios  de  protección  del  país los humedales , rondas  hídricas ,  zonas  de  recarga  de  acuíferos, manglares ,  y estuarios, entre otros, determinando además la necesidad de generar planes de manejos y gestión que garanticen su conservación. Adicionalmente, se delimitó como zonas de amortiguación y manejo sostenible un buffer de metros que constituye una barrera frente a tensiones y perturbaciones que afecten el  recurso  hídrico de  humedales intermareales  arbolados  y  subsistemas interiores, naturales o artificiales permanentes.
+[…] se definieron como áreas de protección los  humedales identificados y los afluentes  que  soportan  su  dinámica  ecológica.  El  Ministerio  de  Ambiente  y Desarrollo Sostenible (2015), a través del artículo 2.2.1.1.18.2 del Decreto 1076 de  2015  define  como ecosistemas  prioritarios  de  protección  del  país los humedales , rondas  hídricas ,  zonas  de  recarga  de  acuíferos, manglares ,  y estuarios, entre otros, determinando además la necesidad de generar planes de manejos y gestión que garanticen su conservación. Adicionalmente, se delimitó como zonas de amortiguación y manejo sostenible un buffer de 30 metros que constituye una barrera frente a tensiones y perturbaciones que afecten el  recurso  hídrico de  humedales intermareales  arbolados  y  subsistemas interiores, naturales o artificiales permanentes.
 
-Con  434  hectáreas  de  extensión,  la  microcuenca  Bowden  integra humedales  y  una  única  desembocadura  en  la  bahía  Santa  Catalina,  tras atravesar el asentamiento de Old Town, todos ellos definidos como áreas de protección .
+Con  434  hectáreas  de  extensión,  la  microcuenca  Bowden  integra 14 humedales  y  una  única  desembocadura  en  la  bahía  Santa  Catalina,  tras atravesar el asentamiento de Old Town, todos ellos definidos como áreas de protección .
 
 - […]'. (Negrilla fuera de texto).
 
@@ -509,7 +509,7 @@ LETENDA
 
 104.  Posteriormente, mediante informe técnico 171 de 7 de mayo de 2021 , Coralina observó que el predio afectado continuaba siendo ocupado de manera indebida, así:
 
-'[…]. El día 07 de mayo de 2021, se procedió a efectuar visita a la instalación del comando especifico de Guarda Costa, ubicado sobre las playas y manglares del sector de Old town, en la cual se evidencia la instalación de un campamento con un total de casa carpas , un área de lavado que cuenta con una máquina de lavado y dos tanques de agua de 250 Its , un área de baño que cuenta con dos duchas móviles y otras dos hechas con cuatro troncos recubiertas con un tipo de plástico , una cocineta instalada en una construcción de material , una casa para dos caninos de aproximadamente meses de edad y finalmente un  área  en  donde  se  evidencia  un  total  de  tanques  de  agua  que  se encontraban a unos mts del estuario formado entre la desembocadura del Gully y el mar . […]'. (negrilla fuera de texto)
+'[…]. El día 07 de mayo de 2021, se procedió a efectuar visita a la instalación del comando especifico de Guarda Costa, ubicado sobre las playas y manglares del sector de Old town, en la cual se evidencia la instalación de un campamento con un total de casa carpas , un área de lavado que cuenta con una máquina de lavado y dos tanques de agua de 250 Its , un área de baño que cuenta con dos duchas móviles y otras dos hechas con cuatro troncos recubiertas con un tipo de plástico , una cocineta instalada en una construcción de material , una casa para dos caninos de aproximadamente 4 meses de edad y finalmente un  área  en  donde  se  evidencia  un  total  de  3 tanques  de  agua  que  se encontraban a unos 5 mts del estuario formado entre la desembocadura del Gully y el mar . […]'. (negrilla fuera de texto)
 
 […].  Que,  de  conformidad  a  la  importancia  ecológica  de  esos  ecosistemas, imponer  medida  preventiva  al  comando  especifico  de  guardacostas  por ocupar  una  zona  de  manglar  y  desembocadura  de  la  cuenca  o  Gully . Teniendo en cuenta las nuevas condiciones y áreas post LOTA, no se da cumplimiento a lo  establecido en el artículo 2.2.1.1.1.8.2 del Decreto 1076 de 2015 (Artículo 3 del Decreto 1449 de 1977), donde se establece que se debe dejar una franja no inferior a 30 metros de ancho, paralelas a las líneas de mareas máximas,  a  cada  lado  de  los  cauces  de  ríos,  quebradas  y  arroyos,  sean permanente o no , y alrededor de los lagos o depósitos de agua.
 
@@ -533,19 +533,15 @@ Pr
 
 PARÁGRAFO  1°:  La  medida  preventiva  impuesta  en  el  presente  artículo  se levantará cuando cesen las causas que originaron su imposición. […]'. (Negrilla fuera de texto).
 
-107.  Se debe resaltar que los días de mayo y 9 de junio de 2021, Coralina visitó el predio objeto de la controversia. Los resultados de la visita obran en el Informe Técnico 262 de 16 de junio de 2021, conforme al cual la autoridad presenció: i) herramientas de trabajo como carretilla, palas, pico y pala; ii) actividades de relleno con material de escombro; y iii) la ubicación de algunas de las carpas a distancias que no cumplen con lo establecido en el artículo 2.2.1.1.1.8.2 del Decreto 1076 de 2015 . Ese informe contiene el siguiente registro fotográfico de los hallazgos:
+107.  Se debe resaltar que los días 18 de mayo y 9 de junio de 2021, Coralina visitó el predio objeto de la controversia. Los resultados de la visita obran en el Informe Técnico 262 de 16 de junio de 2021, conforme al cual la autoridad presenció: i) herramientas de trabajo como carretilla, palas, pico y pala; ii) actividades de relleno con material de escombro; y iii) la ubicación de algunas de las carpas a distancias que no cumplen con lo establecido en el artículo 2.2.1.1.1.8.2 del Decreto 1076 de 2015 . Ese informe contiene el siguiente registro fotográfico de los hallazgos:
 
-Elementos de ocupación
-
-Primera carpa
-
-Tanque negro para agua baño
-
-Segunda carpa
-
-Tercera carpa
-
-Distancia borde Gully.0 mts,5 mts mts.0 mts.0 mts
+| Elementos de ocupación | Distancia borde Gully |
+| --- | --- |
+| Primera carpa | 8.0 mts |
+| Tanque negro para agua | 7,5 mts |
+| baño | 3 mts |
+| Segunda carpa | 9.0 mts |
+| Tercera carpa | 8.0 mts |
 
 ![Image](./CE_2da_AP_2021_041_Edgar_Stephengs_VS_Archipielago_San_Andres_Desarrollo_Urbanistico/assets/image_000040_fb176b7ed835d63203f16c56866ead98a24faa4206f4770a02231e33e966ec99.png)
 
@@ -649,7 +645,7 @@ Durante la visita de seguimiento, se realizó recorrido al predio de referencia,
 
 Con  respecto  a  las  condiciones  del  suelo  en  la  zona  donde  se  ubica  el campamento  de  Comando  Específico  de  San  Andrés,  Providencia  y  Santa Catalina, se observó residuos de excavación de la obra de reconstrucción contigua,  que,  según  lo  manifestado  por  los  delegados  la  Estación  de Guardacostas en Providencia, fue ubicado allí de manera temporal para avanzar en dichas obras . En el área donde se ubica la carpa del campamento del comando, se observó vegetación rastrera incipiente.
 
-- (…) Es  necesario  considerar  que  más  del  60%  del  área  del  terreno  se encuentra dentro área de Buffer Drenaje o Guilles (SIG-Coralina, 2021), Y también es una zona de inundación durante mareas altas. Esto se evidencia en la foto, donde es posible ver condiciones de anegación del suelo después de UBLICA
+- (…) Es  necesario  considerar  que  más  del  60%  del  área  del  terreno  se encuentra dentro área de Buffer Drenaje o Guilles (SIG-Coralina, 2021), Y también es una zona de inundación durante mareas altas. Esto se evidencia en la foto 6, donde es posible ver condiciones de anegación del suelo después de UBLICA
 
 Demandados: Ministerio de Defensa Nacional - Armada Nacional y otros un evento de lluvias, seguimiento realizado el 11 de junio de 2022 registrado en el municipio de Providencia y Santa Catalina.
 
@@ -732,7 +728,7 @@ criterio de uso y una vez se supere el estado crítico pasarán a formar parte d
 
 118.  En el marco de las referidas zonas de conservación ambiental, el artículo 18 del EOT clasificó los manglares y el buffer de manglar como ecosistemas de especial importancia ecológica:
 
-- '[…]  Cabeceras  de  microcuencas  y márgenes  de  protección  de  cauces , de desagües naturales , arroyos permanentes o no (Gullies), lagunas, manantiales y depósitos de agua. Se define una franja de protección a cada lado, a partir de la cota máxima de inundación para cada uno de dichos cauces . En las cabeceras de  las  microcuencas  y  los  nacimientos  se  tendrá  un  diámetro  de  metros  de protección. De especial interés son las Microcuencas de Freshwater Bay Gully, Lazy Hill, Bottom House y Bowden (Ver mapa N° 20).
+- '[…]  Cabeceras  de  microcuencas  y márgenes  de  protección  de  cauces , de desagües naturales , arroyos permanentes o no (Gullies), lagunas, manantiales y depósitos de agua. Se define una franja de protección a cada lado, a partir de la cota máxima de inundación para cada uno de dichos cauces . En las cabeceras de  las  microcuencas  y  los  nacimientos  se  tendrá  un  diámetro  de  20  metros  de protección. De especial interés son las Microcuencas de Freshwater Bay Gully, Lazy Hill, Bottom House y Bowden (Ver mapa N° 20).
 - Parches de manglar y zonas de bosques protector . Todos los parches de manglar  serán  de  conservación (Santa  Catalina, Old  Town ,  South  West  Bay, Manchineel y Parque Mc´Bean, pertenecientes a las microcuencas de Catalina sur, Bowden Gully , Southwest Bay y Gammadith respectivamente y como se muestra en el mapa No. 15) y bosques especialmente localizados en las microcuencas de  Bowden ( manglar ),  Salt  Creek  (bosques  y  arbustales),  Fres  Water  Gully (bosques), Southwest Bay (manglar), Gamma Dith (bosques, arbustales, manglar), Smooth Water (arbustos densos), Garret Bay (arbustos densos), Santa Catalina Sur (Manglar  y  bosque),  Santa  Catalina  Norte  (bosque). En  estas  áreas  sólo  se permitirá el uso de bosque protector y forman parte de la zona núcleo de la Reserva de Biosfera . […]'. (negrilla fuera de texto)
 119.  El  numeral  2.1.6.  del  mismo  precepto  normativo  puso  de  relieve  que  en Providencia  y  Santa  Catalina  existen  zonas  costeras,  playas  y  ecosistemas  de manglar con problemas de erosión acelerados, contaminación, zonas de canteras o sitios de explotación de materiales pétreos, entre otros. Por esa razón, el EOT les otorgó a esas áreas el tratamiento de ' zonas de recuperación '.
 120.  Por último, el artículo 18 catalogó los parches de manglar y las zonas de bosques y  márgenes  de  protección  como  áreas  de  manejo  especial  con  uso  exclusivo  de conservación, así:
