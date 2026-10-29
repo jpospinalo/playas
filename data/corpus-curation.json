@@ -307,7 +307,8 @@
         "SM!C9 y Gold consignan 47-001-3333-001-2016-03261; Raw, página 1, distingue radicado principal 47-001-3333-001-2011-00079-01 y número interno I.2016-0326. case_reference permanece null.",
         "No se alinea la ficha anterior ni la metadata de ejecución.",
         "Se propagaron las referencias canónicas de imágenes de Bronze a Silver (1 ocurrencia) y Gold (1 ocurrencia), correspondientes a 1 destino único. Se conservaron IDs, metadata, orden, contadores y el resto de los cuerpos; Raw, Bronze y activos quedaron intactos. Esta corrección no acredita resolución de rutas en el frontend.",
-        "Curación técnica del resumen A01, fragmento AP Miguel Ángel Enciso VS Distrito y otros_s1_c2: se distinguieron las pretensiones de la demanda de una orden adoptada. Se conservaron page_content, IDs, estructura y demás campos. Sin reindexación ni validación jurídica."
+        "Curación técnica del resumen A01, fragmento AP Miguel Ángel Enciso VS Distrito y otros_s1_c2: se distinguieron las pretensiones de la demanda de una orden adoptada. Se conservaron page_content, IDs, estructura y demás campos. Sin reindexación ni validación jurídica.",
+        "Curación técnica de Enciso (L2-014 y adyacentes): se corrigieron únicamente los summaries de los fragmentos AP Miguel Ángel Enciso VS Distrito y otros_s1_c0 y AP Miguel Ángel Enciso VS Distrito y otros_s1_c3 para separar demandante y demandados, omitir una fecha de presentación no acreditada y describir las pretensiones como solicitudes. Se restituyó «28» en «Leyes 28 de 1988» en Bronze, Silver y page_content del fragmento AP Miguel Ángel Enciso VS Distrito y otros_s1_c2. Su summary A01 y el fragmento AP Miguel Ángel Enciso VS Distrito y otros_s1_c4 con «2340» permanecen intactos. Se conservaron los 85 IDs históricos, límites, índices, contadores, listas y demás campos. Sin reindexación ni validación jurídica."
       ]
     },
     {
@@ -739,7 +740,8 @@
         "El encabezado escribe Edgar Jay Stephens; el filename tiene Stephengs. Se propone el rótulo descriptivo sin renombrar la fuente.",
         "Se propagaron las referencias canónicas de imágenes de Bronze a Silver (1 ocurrencia) y Gold (1 ocurrencia), correspondientes a 1 destino único. Se conservaron IDs, metadata, orden, contadores y el resto de los cuerpos; Raw, Bronze y activos quedaron intactos. Esta corrección no acredita resolución de rutas en el frontend.",
         "Curación técnica de enriquecimiento Gold — lote resumenes-date-gold-20261028-v1: summary corregido en 0 registro(s); 2 objeto(s) DATE reclasificados como OTHER en 2 registro(s). Se conservaron cuerpos, IDs y los demás campos; sin reindexación ni validación jurídica.",
-        "Curación técnica de cifras y enriquecimiento Gold: summaries corregidos en 0 registro(s); 20 objeto(s) DATE reclasificados como OTHER; 0 inserciones numéricas verificadas en los cuerpos de las tres capas. Se conservaron IDs, estructura y demás campos. Sin reindexación ni validación jurídica."
+        "Curación técnica de cifras y enriquecimiento Gold: summaries corregidos en 0 registro(s); 20 objeto(s) DATE reclasificados como OTHER; 0 inserciones numéricas verificadas en los cuerpos de las tres capas. Se conservaron IDs, estructura y demás campos. Sin reindexación ni validación jurídica.",
+        "Curación técnica del resumen L2-036, fragmento CE_2da_AP_2021_041_Edgar_Stephengs_VS_Archipielago_San_Andres_Desarrollo_Urbanistico_s3_c155: se sustituyó la atribución «Presidenta» por una descripción del rótulo Presidente, las aclaraciones de voto y la constancia SAMAI cotejadas en Raw, página 51. Se conservaron los 208 cuerpos e IDs, el solapamiento de 197 caracteres entre los fragmentos históricos terminados en _s3_c154 y _s3_c155, índices, contadores, keywords, entities y demás campos. Sin reindexación ni validación jurídica."
       ]
     },
     {

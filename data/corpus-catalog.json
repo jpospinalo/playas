@@ -255,11 +255,11 @@
         "section_heading": 6,
         "section_index": 1,
         "section_name": 1,
-        "summary": 1,
+        "summary": 3,
         "total_chunks_in_section": 57
       },
       "export_records_matched_by_id": 85,
-      "export_text_mismatches": 15,
+      "export_text_mismatches": 16,
       "format": ".pdf",
       "gold_chunks": 85,
       "gold_ids_missing_export": 0,
@@ -628,6 +628,7 @@
         "section_heading": 41,
         "section_index": 41,
         "section_name": 41,
+        "summary": 1,
         "total_chunks_in_section": 206
       },
       "export_records_matched_by_id": 206,
@@ -1722,13 +1723,13 @@
     },
     {
       "code": "records_with_metadata_differences",
-      "detail": "4007 registros; diferencia de snapshots, no autorización para reemplazar datos",
+      "detail": "4009 registros; diferencia de snapshots, no autorización para reemplazar datos",
       "path": "data/chroma-rag_playas_magdalena-20260731-135720.jsonl.gz",
       "severity": "warning"
     },
     {
       "code": "text_mismatches",
-      "detail": "1036 registros; diferencia de snapshots, no autorización para reemplazar datos",
+      "detail": "1037 registros; diferencia de snapshots, no autorización para reemplazar datos",
       "path": "data/chroma-rag_playas_magdalena-20260731-135720.jsonl.gz",
       "severity": "warning"
     },
@@ -2089,13 +2090,13 @@
         "section_heading": 1072,
         "section_index": 953,
         "section_name": 946,
-        "summary": 352,
+        "summary": 355,
         "titulo": 32,
         "total_chunks_in_section": 3655
       },
       "path": "data/chroma-rag_playas_magdalena-20260731-135720.jsonl.gz",
       "records": 5888,
-      "records_with_metadata_differences": 4007,
+      "records_with_metadata_differences": 4009,
       "sha256": "28b7a3076d1c7ad0aa3ef2a4394e31423cdd5358f691fdc6a6104f7e15712d2d",
       "sources": [
         {
@@ -2379,7 +2380,7 @@
           "source": "decreto-2324-de-1984.md"
         }
       ],
-      "text_mismatches": 1036
+      "text_mismatches": 1037
     },
     "files": [
       {
@@ -2603,9 +2604,9 @@
         "sha256": "193169df12948a6af81e6deb5300473caa00aa2eb4d1f57677bb32bff0ac2211"
       },
       {
-        "bytes": 63213,
+        "bytes": 63216,
         "path": "data/documents/bronze/jurisprudencia/AP Miguel Ángel Enciso VS Distrito y otros.md",
-        "sha256": "3002ab5062bda410f60ed9c44e61b21a5a58772c3a140783aa1c32a28ebb5633"
+        "sha256": "c91ff1c750e2cdf0cc53ba505c10449e70db3eec0706d3872f421cc7a97ed3fa"
       },
       {
         "bytes": 954,
@@ -3688,9 +3689,9 @@
         "sha256": "7453467f6beafd39cd03f79eac2fbfc7a9c05c0b33d1db16cc2bc42ea2d30c6b"
       },
       {
-        "bytes": 200013,
+        "bytes": 200796,
         "path": "data/documents/gold/jurisprudencia/AP Miguel Ángel Enciso VS Distrito y otros.jsonl",
-        "sha256": "9b984345175280ad035fd1db19f126e5a7dba8cb64a62b556e574855753210a9"
+        "sha256": "4306c215d64557048dacafbc2f44b16144506679ca3a176854c6f0e3989d697e"
       },
       {
         "bytes": 797453,
@@ -3743,9 +3744,9 @@
         "sha256": "db68b8cfb11265436fd1ecbcda09f60a7e7538da66370a13fd9025e1cdd70f0e"
       },
       {
-        "bytes": 451914,
+        "bytes": 452045,
         "path": "data/documents/gold/jurisprudencia/CE_2da_AP_2021_041_Edgar_Stephengs_VS_Archipielago_San_Andres_Desarrollo_Urbanistico.jsonl",
-        "sha256": "ae0108a7b7ab1d9c0b131004a136b9a154db144bb03a51a80e814fbd7d8c24c8"
+        "sha256": "c1f59a35e7bafdbae0db6a6b1697d705967c4bb31398bf3ebf00f8f0e184e25f"
       },
       {
         "bytes": 135121,
@@ -4253,9 +4254,9 @@
         "sha256": "134382da5217bfa490e9f4ab4e134750f66d628eb5a28ca4d38d26ca3ab95a82"
       },
       {
-        "bytes": 66992,
+        "bytes": 66995,
         "path": "data/documents/silver/jurisprudencia/AP Miguel Ángel Enciso VS Distrito y otros.jsonl",
-        "sha256": "ddb0143786312848222f8621854ca9420003b25ac5a926159b3c2918759be0ae"
+        "sha256": "8d98ebfac88c0df8e1dcafb1699d0743836abebe44a6857c438087200179dca0"
       },
       {
         "bytes": 222847,

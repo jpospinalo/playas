@@ -24,7 +24,7 @@ Decide la Sala el recurso de apelación interpuesto por la parte demandada, cont
 
 ## ANTECEDENTES
 
-"A) Que en virtud de lo dispuesto en las Leyes de 1988, 99 de 1993 y 768 de 2002, mediante decisión de mérito se ordene a la CORPORACIÓN AUTÓNOMA REGIONAL DEL MAGDALENA CORPAMAG-, al DISTRITO TURÍSTICO, CULTURAL E HISTÓRICO DE SANTA MARTA y al DEPARTAMENTO ADMINISTRATIVO DISTRITAL DEL MEDIO AMBIENTE - DADMAque por su propia cuenta y dentro del término que se les fije para ello:
+"A) Que en virtud de lo dispuesto en las Leyes 28 de 1988, 99 de 1993 y 768 de 2002, mediante decisión de mérito se ordene a la CORPORACIÓN AUTÓNOMA REGIONAL DEL MAGDALENA CORPAMAG-, al DISTRITO TURÍSTICO, CULTURAL E HISTÓRICO DE SANTA MARTA y al DEPARTAMENTO ADMINISTRATIVO DISTRITAL DEL MEDIO AMBIENTE - DADMAque por su propia cuenta y dentro del término que se les fije para ello:
 
 PRIMERO: Restituyan al RIO GAIRA el cauce natural que originalmente tenía en el trayecto en que fue alterado luego de pasar bajo el puente que lo cruza a la altura de la carrera segunda (2ª) o Avenida Tamacá en la Localidad de El Rodadero, zona urbana del Distrito, Turístico, Cultural e Histórico de Santa Marta, Departamento del Magdalena.
 
