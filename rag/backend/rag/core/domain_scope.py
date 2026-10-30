@@ -642,4 +642,29 @@ def _apply_domain_guard(
             doc_types=result.doc_types or heuristic.doc_types,
         )
 
+    # 6. Seguimiento de un tema (hilo, 30-oct): "¿Y si es algo temporal?"
+    #    sola no dice que es de playas, pero el modelo ya la reescribió con el
+    #    historial ("¿…construir algo temporal en la playa de Taganga…?") y
+    #    aun así a veces la marca `needs_clarification` (visto con
+    #    gpt-5.4-nano). Si hay historial, la reescritura es de verdad otra
+    #    pregunta y la heurística la ve dentro del ámbito, es `in_scope`. Sin
+    #    historial (tema nuevo) no aplica: "¿Y cuánto cuesta?" sigue pidiendo
+    #    aclaración.
+    resuelta = (result.standalone_question or "").strip()
+    if (
+        result.route == "needs_clarification"
+        and history_context.strip()
+        and resuelta
+        and resuelta != clean_question
+    ):
+        por_contexto = _fallback(resuelta, "")
+        if por_contexto.route == "in_scope":
+            expandida = (result.expanded_query or "").strip()
+            return EnrichedQuery(
+                route="in_scope",
+                standalone_question=resuelta,
+                expanded_query=resuelta if expandida in ("", clean_question) else expandida,
+                doc_types=result.doc_types or por_contexto.doc_types,
+            )
+
     return result

@@ -1011,3 +1011,56 @@ def test_general_contrastive_pairs_domain_guard(
             assert guarded.route == simulated_route, (
                 f"{caso_id} negativo(inland) sim={simulated_route}"
             )
+
+
+# ---------------------------------------------------------------------------
+# Hilo (30-oct): seguimiento corto que el modelo ya resolvió con el historial
+# ---------------------------------------------------------------------------
+
+_HIST_TAGANGA = (
+    "Usuario: ¿Puedo construir en la playa de Taganga?\n"
+    "Asistente: No se puede construir vivienda en las playas marítimas; otras "
+    "construcciones necesitan permiso de la DIMAR [doc1]."
+)
+# Lo que devolvió gpt-5.4-nano en la prueba real: buena reescritura, mala ruta.
+_RESUELTA = (
+    "¿Si la construcción en la playa de Taganga fuera algo temporal, qué permisos o "
+    "prohibiciones aplican para esas ocupaciones temporales en zona de playa?"
+)
+
+
+def test_seguimiento_resuelto_con_historial_pasa_a_in_scope() -> None:
+    llm = EnrichedQuery(
+        route="needs_clarification",
+        standalone_question=_RESUELTA,
+        expanded_query="¿Y si es algo temporal?",
+        doc_types=[],
+    )
+    r = _apply_domain_guard(llm, "¿Y si es algo temporal?", _HIST_TAGANGA)
+    assert r.route == "in_scope"
+    assert "Taganga" in r.standalone_question
+    # La búsqueda usa la pregunta resuelta, no el "¿Y si…?" suelto.
+    assert r.expanded_query == _RESUELTA
+    assert r.doc_types
+
+
+def test_sin_historial_un_seguimiento_suelto_sigue_pidiendo_aclaracion() -> None:
+    # Tema nuevo ("empieza de cero"): no hay nada que arrastrar.
+    llm = EnrichedQuery(
+        route="needs_clarification",
+        standalone_question=_RESUELTA,
+        expanded_query="¿Y cuánto cuesta?",
+        doc_types=[],
+    )
+    assert _apply_domain_guard(llm, "¿Y cuánto cuesta?", "").route == "needs_clarification"
+
+
+def test_si_el_modelo_no_reescribio_la_pregunta_no_se_fuerza() -> None:
+    llm = EnrichedQuery(
+        route="needs_clarification",
+        standalone_question="¿Y si es algo temporal?",
+        expanded_query="¿Y si es algo temporal?",
+        doc_types=[],
+    )
+    r = _apply_domain_guard(llm, "¿Y si es algo temporal?", _HIST_TAGANGA)
+    assert r.route == "needs_clarification"
