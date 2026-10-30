@@ -293,6 +293,23 @@ body:has(.guia) {
 .guia-otra .guia-btn-sec {
 	margin-top: 10px;
 }
+/* "Terminar y dejar el celular para otra persona": secundario, separado de
+   la acción principal y con su explicación debajo. El texto es largo: el
+   botón se parte en dos líneas en celular en vez de salirse. */
+.guia-dejar {
+	margin-top: 28px;
+	padding-top: 20px;
+	border-top: 2px solid var(--linea);
+}
+.guia-dejar .guia-btn-sec {
+	max-width: 100%;
+	padding: 12px 22px;
+	text-align: center;
+	white-space: normal;
+}
+.guia-dejar .pista {
+	max-width: 40em;
+}
 .guia-btn {
 	display: inline-flex;
 	align-items: center;

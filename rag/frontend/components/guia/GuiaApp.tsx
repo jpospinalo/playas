@@ -23,6 +23,7 @@ import { ConPrivacidad } from "@/components/guia/Privacidad";
 import { VentanaParticipante } from "@/components/guia/Ventana";
 import { pedirEncuesta } from "@/lib/admin/calendario";
 import { detenerVoz } from "@/lib/voz";
+import { forgetEmail } from "@/lib/auth";
 import type { Message, SourceGroup } from "@/lib/types";
 
 /**
@@ -32,7 +33,8 @@ import type { Message, SourceGroup } from "@/lib/types";
  * conversación propia.
  */
 export function GuiaApp() {
-	const { user, loading, signOut } = useAuth();
+	const { user, loading } = useAuth();
+	const salir = useSalir();
 	const tituloRef = useRef<HTMLHeadingElement>(null);
 	const router = useRouter();
 	// Semilleristas y comité solo evalúan: al entrar van directo a Evaluación (PQ-62).
@@ -55,7 +57,7 @@ export function GuiaApp() {
 					</p>
 				) : user ? (
 					// Primer ingreso: aviso de privacidad y autorización (Ley 1581).
-					<ConPrivacidad key={user.user_id} tituloRef={tituloRef} onSalir={() => void signOut()}>
+					<ConPrivacidad key={user.user_id} tituloRef={tituloRef} onSalir={() => salir()}>
 						<Flujo />
 					</ConPrivacidad>
 				) : (
@@ -66,8 +68,27 @@ export function GuiaApp() {
 	);
 }
 
+/**
+ * Cerrar sesión desde el flujo guiado. Celular compartido (QA E2-11): además
+ * del token se borra lo que el flujo guarda en la pestaña (última respuesta y
+ * borrador), para que la siguiente persona no vea la pregunta ni la respuesta
+ * anterior. "Terminar y dejar el celular para otra persona" también olvida el
+ * correo recordado en la pantalla de ingreso.
+ */
+function useSalir() {
+	const { signOut } = useAuth();
+	return (opciones?: { olvidarCorreo?: boolean }) => {
+		detenerVoz();
+		guardar(null);
+		guardarBorrador("");
+		if (opciones?.olvidarCorreo) forgetEmail();
+		void signOut();
+	};
+}
+
 function Encabezado() {
-	const { user, signOut } = useAuth();
+	const { user } = useAuth();
+	const salir = useSalir();
 	// Un toque sin querer en "Salir" no debe sacar a nadie: se pide confirmar.
 	const [confirmar, setConfirmar] = useState(false);
 	const noRef = useRef<HTMLButtonElement>(null);
@@ -118,7 +139,7 @@ function Encabezado() {
 							className="guia-btn-sec"
 							onClick={() => {
 								setConfirmar(false);
-								void signOut();
+								salir();
 							}}
 						>
 							Sí, salir
@@ -206,7 +227,7 @@ function Flujo() {
 	const cajaRef = useRef<HTMLTextAreaElement>(null);
 	const enfocarCaja = useRef(false);
 	const chat = useChat();
-	const { signOut } = useAuth();
+	const salir = useSalir();
 	// J5-5: si ya llenó la encuesta de percepción, no se le vuelve a ofrecer.
 	const [encuestaHecha, setEncuestaHecha] = useState(true);
 	useEffect(() => {
@@ -510,7 +531,7 @@ function Flujo() {
 				conversationId={chat.conversationId ?? null}
 				onVolver={() => window.history.back()}
 				onOtraPregunta={otraPregunta}
-				onSalir={() => void signOut()}
+				onSalir={() => salir({ olvidarCorreo: true })}
 				onEnviada={() => setEncuestaHecha(true)}
 			/>
 		);

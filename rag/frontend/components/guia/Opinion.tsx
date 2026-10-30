@@ -110,11 +110,19 @@ export function PantallaOpinion({
 				</p>
 				<div className="guia-acciones">
 					<button type="button" className="guia-btn" onClick={onOtraPregunta}>
-						Hacer otra pregunta
+						Volver al inicio
 					</button>
-					<button type="button" className="guia-btn-sec" onClick={onSalir}>
-						Salir de ATLAS
+				</div>
+				{/* Celular compartido (QA E2-11): cerrar sesión es secundario y dice
+				    para qué sirve; borra lo de esta persona antes de pasar el celular. */}
+				<div className="guia-dejar">
+					<button type="button" className="guia-btn-sec" onClick={onSalir} aria-describedby="dejar-ayuda">
+						Terminar y dejar el celular para otra persona
 					</button>
+					<p id="dejar-ayuda" className="pista">
+						Cierra su sesión y borra de este celular su pregunta y su correo. Lo que preguntó queda guardado en
+						ATLAS.
+					</p>
 				</div>
 			</section>
 		);

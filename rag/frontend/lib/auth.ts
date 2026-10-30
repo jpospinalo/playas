@@ -99,6 +99,15 @@ export function rememberEmail(email: string): void {
 	localStorage.setItem(LAST_EMAIL_KEY, email);
 }
 
+/** Olvida el correo recordado (celular compartido: la siguiente persona no lo ve). */
+export function forgetEmail(): void {
+	try {
+		localStorage.removeItem(LAST_EMAIL_KEY);
+	} catch {
+		// Sin almacenamiento: no había nada recordado.
+	}
+}
+
 export function getLastEmail(): string {
 	if (typeof window === "undefined") return "";
 	return localStorage.getItem(LAST_EMAIL_KEY) ?? "";

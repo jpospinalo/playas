@@ -49,7 +49,15 @@ describe("PantallaOpinion — encuesta de percepción del flujo guiado", () => {
 			conversation_id: "conv-1",
 		});
 		expect(await screen.findByRole("heading", { name: "Gracias por su opinión" })).toBeInTheDocument();
-		await userEvent.click(screen.getByRole("button", { name: "Salir de ATLAS" }));
+		// La acción principal vuelve al inicio; cerrar sesión es secundario y
+		// dice para qué sirve (celular compartido, QA E2-11).
+		const botones = screen.getAllByRole("button");
+		expect(botones[0]).toHaveAccessibleName("Volver al inicio");
+		await userEvent.click(screen.getByRole("button", { name: "Volver al inicio" }));
+		expect(props.onOtraPregunta).toHaveBeenCalled();
+		const dejar = screen.getByRole("button", { name: "Terminar y dejar el celular para otra persona" });
+		expect(dejar).toHaveAccessibleDescription(/borra de este celular su pregunta y su correo/);
+		await userEvent.click(dejar);
 		expect(props.onSalir).toHaveBeenCalled();
 	});
 });
