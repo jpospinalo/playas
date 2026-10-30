@@ -170,6 +170,13 @@ export function Recientes({
 										{p.persona}, {fechaHora(p.fecha)}
 									</span>
 								</p>
+								{(p.orden_en_tema ?? 1) > 1 ? (
+									// Hilo: un seguimiento se entiende con la pregunta que abrió el tema.
+									<p className="pnl-seguimiento">
+										Seguimiento: pregunta {p.orden_en_tema} de este tema
+										{p.primera_pregunta ? <> (empezó con “{recortar(p.primera_pregunta, 120)}”)</> : null}
+									</p>
+								) : null}
 								{p.esperaba ? <p className="pnl-esperaba">Esperaba: “{p.esperaba}”</p> : null}
 							</div>
 							<dl className="pnl-fila-estado pnl-dos">

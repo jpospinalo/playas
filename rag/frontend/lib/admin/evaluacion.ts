@@ -165,6 +165,8 @@ export interface Ficha {
 	es_comite: boolean;
 	anterior: string | null;
 	siguiente: string | null;
+	/** Si es un seguimiento: las preguntas y respuestas anteriores del mismo tema. */
+	contexto?: Array<{ numero_en_tema: number; pregunta: string; respuesta: string | null }>;
 }
 
 export interface CalificacionIn {

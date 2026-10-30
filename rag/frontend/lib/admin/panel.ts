@@ -14,7 +14,12 @@ import { expireAuthSession, getToken } from "@/lib/auth";
 export type Agrupacion = "dia" | "semana";
 
 export interface Cifras {
+	/** Preguntas escritas, incluidos los seguimientos. */
 	preguntas: number;
+	/** Conversaciones con preguntas en el periodo (un tema puede tener varias preguntas). */
+	temas?: number;
+	/** Preguntas que siguen un tema (2.ª en adelante). */
+	seguimientos?: number;
 	personas: number;
 	personas_nuevas: number;
 	respuestas: number;
@@ -124,6 +129,10 @@ export interface PreguntaItem {
 	participante?: string | null;
 	tipo_playa?: number | null;
 	conversation_id: string;
+	/** 1 = abrió el tema; 2 en adelante = seguimiento. */
+	orden_en_tema?: number;
+	/** Si es seguimiento: la pregunta que abrió el tema. */
+	primera_pregunta?: string | null;
 }
 
 export interface Preguntas {

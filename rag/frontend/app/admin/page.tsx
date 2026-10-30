@@ -454,6 +454,20 @@ function Contenido({
 					>
 						{numero(c.preguntas)}
 					</CifraBoton>
+					{/* Hilo: un tema es una conversación; puede tener varias preguntas
+					    (la primera y sus seguimientos, que ya cuentan en "Preguntas"). */}
+					{c.temas === undefined ? null : (
+						<CifraBoton
+							titulo="Temas"
+							det={
+								c.seguimientos
+									? `Veces que alguien empezó a preguntar sobre algo. ${cuantas(c.seguimientos, "pregunta fue seguimiento", "preguntas fueron seguimientos")} de un tema.`
+									: "Veces que alguien empezó a preguntar sobre algo. Todavía nadie siguió preguntando sobre el mismo tema."
+							}
+						>
+							{numero(c.temas)}
+						</CifraBoton>
+					)}
 					<CifraBoton
 						titulo="Personas que preguntaron"
 						det={

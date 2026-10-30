@@ -2999,3 +2999,34 @@ html:has(.pnl) {
 		padding-right: 12px;
 	}
 }
+
+/* Hilo (30-oct): un seguimiento se marca en las listas y, en la ficha del
+   evaluador, va precedido por lo que ya se había preguntado del tema. */
+.pnl .pnl-seguimiento {
+	margin: 4px 0 0;
+	font-size: 16px;
+	color: var(--p-tinta-2);
+	overflow-wrap: anywhere;
+}
+.pnl .pnl-contexto {
+	margin-bottom: var(--p-esp-3);
+	padding: var(--p-esp-3) var(--p-esp-4);
+	border-left: 4px solid var(--p-borde-ctl);
+	background: var(--p-fondo);
+	border-radius: 0 6px 6px 0;
+}
+.pnl .pnl-contexto ol {
+	list-style: none;
+	margin: var(--p-esp-2) 0;
+	padding: 0;
+	display: grid;
+	gap: var(--p-esp-2);
+}
+.pnl .pnl-contexto-t {
+	margin: 0;
+	font-weight: 600;
+	color: var(--p-tinta-2);
+}
+.pnl .pnl-contexto summary {
+	overflow-wrap: anywhere;
+}

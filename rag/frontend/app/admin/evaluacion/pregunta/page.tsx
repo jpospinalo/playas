@@ -125,6 +125,36 @@ function Ficha_() {
 						<h2 id="t-preg" className="sr">
 							Pregunta formulada
 						</h2>
+						{ficha.contexto && ficha.contexto.length ? (
+							// Hilo: un seguimiento se califica con lo que ya se había preguntado
+							// sobre el mismo tema (F1 contexto, F2 problema).
+							<div className="pnl-contexto">
+								<p className="pnl-contexto-t">
+									Es la pregunta {ficha.contexto.length + 1} de un mismo tema. Antes preguntó:
+								</p>
+								<ol>
+									{ficha.contexto.map((t) => (
+										<li key={t.numero_en_tema}>
+											<details className="pnl-plegable">
+												<summary>
+													{t.numero_en_tema}. {t.pregunta}
+												</summary>
+												{t.respuesta ? (
+													<div className="pnl-md">
+														<ReactMarkdown remarkPlugins={[remarkGfm]} skipHtml>
+															{sinMarcasDeCita(t.respuesta)}
+														</ReactMarkdown>
+													</div>
+												) : (
+													<p>Sin respuesta guardada.</p>
+												)}
+											</details>
+										</li>
+									))}
+								</ol>
+								<p className="pnl-contexto-t">Y luego preguntó (esta es la que se califica):</p>
+							</div>
+						) : null}
 						<p className="pnl-pregunta-texto">{ficha.pregunta}</p>
 						{ficha.respuesta ? (
 							<details className="pnl-plegable">

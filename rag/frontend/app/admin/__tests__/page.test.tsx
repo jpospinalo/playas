@@ -112,6 +112,41 @@ describe("app/admin/page — resumen del panel", () => {
 		expect(within(temas).getByText(/de 4: pocos datos/)).toBeInTheDocument();
 	});
 
+	it("hilo: 'Temas' cuenta conversaciones y un seguimiento se marca en la lista", async () => {
+		respuestaResumen = () =>
+			new Response(JSON.stringify(resumen({ cifras: { ...CIFRAS, temas: 400, seguimientos: 82 } })), { status: 200 });
+		const seguimiento = {
+			id: "q2",
+			fecha: "2026-10-25T20:00:00Z",
+			pregunta: "¿Y si es algo temporal?",
+			tema: "obras",
+			tema_titulo: "Construcciones cerca del mar",
+			playa: "Taganga",
+			resultado: "con_fuente",
+			fuentes: 1,
+			fuentes_sentencias: 0,
+			calificacion: null,
+			esperaba: null,
+			persona: "Ana",
+			conversation_id: "c1",
+			orden_en_tema: 2,
+			primera_pregunta: "¿Puedo construir en la playa de Taganga?",
+		} as const;
+		vi.stubGlobal(
+			"fetch",
+			vi.fn(async (url: string) => {
+				if (url.includes("/resumen")) return respuestaResumen();
+				return new Response(JSON.stringify({ ...PREGUNTAS, items: [seguimiento], total: 1 }), { status: 200 });
+			}),
+		);
+		render(<PanelResumen />);
+		expect(await screen.findByText("400")).toBeInTheDocument();
+		expect(screen.getByText(/82 preguntas fueron seguimientos de un tema/)).toBeInTheDocument();
+		expect(
+			await screen.findByText(/Seguimiento: pregunta 2 de este tema \(empezó con “¿Puedo construir en la playa de Taganga\?”\)/),
+		).toBeInTheDocument();
+	});
+
 	it("muestra el texto de las preguntas como texto plano", async () => {
 		const { container } = render(<PanelResumen />);
 		expect(await screen.findByText(/¿Puedo arreglar el techo\?/)).toBeInTheDocument();
