@@ -143,7 +143,15 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 		<div className="pnl">
 			<header className="pnl-cab">
 				<div className="pnl-cab-in">
-					<Link href="/admin" className="pnl-marca">
+					{/* El logo lleva al inicio del panel (la primera pestaña de cada
+					    rol): Resumen para el admin, Evaluación para evaluadores y comité,
+					    que no ven Resumen. No sale al sitio público: para eso está
+					    "Volver a ATLAS". El nombre accesible incluye el texto visible. */}
+					<Link
+						href={soloEvaluacion ? "/admin/evaluacion" : "/admin"}
+						className="pnl-marca"
+						aria-label={`ATLAS, panel de administración: ir al inicio del panel (${soloEvaluacion ? "Evaluación" : "Resumen"})`}
+					>
 						{/* eslint-disable-next-line @next/next/no-img-element */}
 						<img src="/brand/atlas-96.png" alt="" width={44} height={44} />
 						<span>

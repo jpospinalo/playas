@@ -202,6 +202,15 @@
 }
 .pnl .pnl-marca {
 	color: inherit;
+	/* Es el enlace al inicio del panel: aire para que el anillo de foco no
+	   quede pegado al texto, sin mover el logo (el margen negativo compensa). */
+	padding: 4px 10px 4px 4px;
+	margin: -4px -10px -4px -4px;
+	border-radius: 8px;
+}
+.pnl .pnl-marca:hover b {
+	text-decoration: underline;
+	text-underline-offset: 3px;
 }
 .pnl-marca img {
 	width: 44px;

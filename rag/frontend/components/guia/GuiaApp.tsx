@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { useChat } from "@/hooks/useChat";
@@ -103,16 +104,31 @@ function Encabezado() {
 	return (
 		<header className="guia-encabezado">
 			<div className="guia-barra">
-				{/* eslint-disable-next-line @next/next/no-img-element -- logo de 12 KB, sin optimizador */}
-				<img src="/brand/atlas-96.png" alt="" width={40} height={40} />
-				<div>
-					<span className="nombre">ATLAS</span>
-					<span className="zona">
-						<span className="largo">Preguntas sobre las playas de </span>
-						<span className="corto">Playas de </span>
-						<span className="lugar">Santa Marta</span>
+				{/* El logo lleva al inicio (a los temas). Es un enlace real a "/" para
+				    abrirlo en otra pestaña; con un toque normal avisa al flujo, que
+				    vuelve al inicio sin recargar (igual que "Volver al inicio"). El
+				    nombre accesible incluye el texto visible (WCAG 2.5.3). */}
+				<Link
+					href="/"
+					className="marca"
+					aria-label="ATLAS, preguntas sobre las Playas de Santa Marta: ir al inicio"
+					onClick={(e) => {
+						if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+						e.preventDefault();
+						window.dispatchEvent(new Event(EVENTO_INICIO));
+					}}
+				>
+					{/* eslint-disable-next-line @next/next/no-img-element -- logo de 12 KB, sin optimizador */}
+					<img src="/brand/atlas-96.png" alt="" width={40} height={40} />
+					<span>
+						<span className="nombre">ATLAS</span>
+						<span className="zona">
+							<span className="largo">Preguntas sobre las playas de </span>
+							<span className="corto">Playas de </span>
+							<span className="lugar">Santa Marta</span>
+						</span>
 					</span>
-				</div>
+				</Link>
 				{user && !confirmar ? (
 					<button type="button" className="salir" ref={salirRef} onClick={() => setConfirmar(true)}>
 						Salir
@@ -165,6 +181,8 @@ function tipoDeError(error: string | null): TipoError {
 }
 
 const CLAVE_GUARDADA = "atlas:ultima-respuesta";
+/** Evento con que el logo del encabezado pide al flujo volver al inicio. */
+const EVENTO_INICIO = "atlas:ir-inicio";
 const CLAVE_BORRADOR = "atlas:borrador";
 
 /** Lo escrito en la caja del inicio, para no perderlo si la pestaña se recarga. */
@@ -430,6 +448,20 @@ function Flujo() {
 		setSinSenal(false);
 		ir("inicio");
 	}
+
+	// El logo del encabezado (fuera de este componente) pide volver al inicio.
+	const alInicio = useRef<() => void>(() => {});
+	useEffect(() => {
+		alInicio.current = () => {
+			pendienteRef.current = null;
+			otraPregunta();
+		};
+	});
+	useEffect(() => {
+		const f = () => alInicio.current();
+		window.addEventListener(EVENTO_INICIO, f);
+		return () => window.removeEventListener(EVENTO_INICIO, f);
+	}, []);
 
 	/** Lleva a la caja del inicio con el cursor puesto. */
 	function irACaja(atras: boolean) {

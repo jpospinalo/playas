@@ -513,7 +513,7 @@ function ExpandedSidebarContent({
   const hasConversations = conversations.length > 0;
   return (
     <>
-      <SidebarHeader onToggleSidebar={onToggleSidebar} />
+      <SidebarHeader onToggleSidebar={onToggleSidebar} onInicio={onNewChat} />
 
       <div className="px-3 pt-2">
         <SidebarPillButton
@@ -660,10 +660,23 @@ export function AtlasGlyph() {
   );
 }
 
-function SidebarHeader({ onToggleSidebar }: { onToggleSidebar: () => void }) {
+function SidebarHeader({
+  onToggleSidebar,
+  onInicio,
+}: {
+  onToggleSidebar: () => void;
+  onInicio: () => void;
+}) {
   return (
     <div className="flex h-14 items-center justify-between px-5">
-      <div className="flex items-center gap-2.5">
+      {/* El logo lleva al inicio del chat (una consulta nueva), igual que
+          "Nueva consulta". El nombre accesible incluye el texto visible. */}
+      <button
+        type="button"
+        onClick={onInicio}
+        aria-label="ATLAS: ir al inicio (nueva consulta)"
+        className="-ml-1.5 flex min-h-11 items-center gap-2.5 rounded-lg px-1.5 hover:bg-elevated focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+      >
         <AtlasGlyph />
         <span
           className="text-base font-medium tracking-[0.04em] text-foreground"
@@ -671,7 +684,7 @@ function SidebarHeader({ onToggleSidebar }: { onToggleSidebar: () => void }) {
         >
           ATLAS
         </span>
-      </div>
+      </button>
       <button
         onClick={onToggleSidebar}
         aria-label="Cerrar panel"
