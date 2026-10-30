@@ -34,6 +34,7 @@ export const TXT = {
 	empezarDeNuevo: "Nueva pregunta sobre otro tema (empieza de cero)",
 	esperaTitulo: "Buscando la respuesta",
 	esperaTexto: "Estamos leyendo las normas y las sentencias. Puede tardar hasta un minuto.",
+	esperaLenta: "Está tardando más de lo normal. Puede seguir esperando o tocar «Cancelar y volver».",
 	sinSenal:
 		"No hay señal de internet. Cuando tenga señal, toque «Intentar otra vez».",
 	errorTitulo: "No pudimos traer la respuesta",
@@ -41,6 +42,10 @@ export const TXT = {
 		"No hay señal o el servidor no responde. Revise su internet y toque «Intentar otra vez».",
 	errorOtro:
 		"Hubo un problema al buscar la respuesta. Toque «Intentar otra vez». Si sigue pasando, vuelva a intentarlo en unos minutos.",
+	// Pregunta que quedó sin respuesta (sesión vencida o recarga a mitad de la
+	// espera): se ofrece seguir con ella al volver a entrar (UX-02, E2-19).
+	retomarTitulo: "Su pregunta quedó guardada",
+	retomarPista: "No alcanzamos a traer la respuesta. ¿Quiere que la busquemos ahora?",
 	entrarTitulo: "Entrar a ATLAS",
 	entrarPista: "Escriba el correo y la contraseña que le dieron.",
 } as const;

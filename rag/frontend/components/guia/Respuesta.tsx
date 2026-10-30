@@ -8,7 +8,11 @@ import { lecturaRespuesta, markdownATexto, ordenarRespuesta, type RespuestaOrden
 import { Atencion, Curvas, FlechaVolver } from "@/components/guia/iconos";
 import { Escuchar } from "@/components/guia/Escuchar";
 import { CajaPregunta } from "@/components/guia/Pantallas";
+import { Fuente } from "@/components/guia/Fuente";
 import { TXT } from "@/lib/guia/textos";
+
+const TXT_NO_GUARDADA =
+	"Esta respuesta no se pudo guardar. Puede seguir leyéndola. Para que quede registrada, toque «Guardar otra vez».";
 
 export type Calificacion = { util: boolean; comentario?: string };
 
@@ -54,10 +58,11 @@ interface RespuestaProps {
 	/** Preguntas anteriores del mismo tema (hilo), de la primera a la última. */
 	anteriores?: TurnoAnterior[];
 	onCalificarAnterior?: (id: string, c: Calificacion) => Promise<void>;
+	/** Estado del guardado de la respuesta (UX-02; sin valor = no aplica, p. ej. recuperada). */
+	guardado?: "ok" | "guardando" | "fallo";
+	onGuardarOtraVez?: () => void;
 	tituloRef: React.RefObject<HTMLHeadingElement | null>;
 }
-
-const LARGO_CITA = 420;
 
 /** `[docN]` → enlace interno que el componente convierte en "(fuente N)". */
 function prepararCitas(md: string, prefijo = ""): string {
@@ -71,11 +76,6 @@ function prepararCitas(md: string, prefijo = ""): string {
 function tipoDeFuente(grupo: SourceGroup): string {
 	const tipo = grupo.doc_type ?? grupo.metadata?.doc_type;
 	return tipo === "normativa" ? "Norma" : "Sentencia";
-}
-
-function recortar(texto: string): string {
-	const t = texto.replace(/\s+/g, " ").trim();
-	return t.length > LARGO_CITA ? `${t.slice(0, LARGO_CITA).trimEnd()}…` : t;
 }
 
 /**
@@ -252,17 +252,15 @@ function Contenido({
 				<details className="guia-fuentes" ref={fuentesRef}>
 					<summary>Ver de dónde sale esta respuesta</summary>
 					<ol>
+						{/* UX-01: nombre completo, datos de identificación, fragmento
+						    entero a pedido y "Copiar la referencia". */}
 						{fragmentos.map(({ grupo, fragmento }) => (
-							<li
+							<Fuente
 								key={fragmento.index}
-								id={`${prefijo}fuente-${fragmento.index}`}
-								tabIndex={-1}
-								className={`guia-fuente${marcada === fragmento.index ? " marcada" : ""}`}
-							>
-								<span className="num">Fuente {fragmento.index}.</span> {grupo.title || grupo.source}
-								<span className="tipo">{tipoDeFuente(grupo)}</span>
-								<blockquote>{recortar(fragmento.content)}</blockquote>
-							</li>
+								grupo={grupo}
+								fragmento={fragmento}
+								marcada={marcada === fragmento.index}
+							/>
 						))}
 					</ol>
 				</details>
@@ -343,6 +341,8 @@ export function Respuesta({
 	puedeSeguir = true,
 	anteriores = [],
 	onCalificarAnterior,
+	guardado,
+	onGuardarOtraVez,
 	tituloRef,
 }: RespuestaProps) {
 	const ordenada = useMemo<RespuestaOrdenada>(() => ordenarRespuesta(texto), [texto]);
@@ -385,6 +385,17 @@ export function Respuesta({
 				tituloRef={tituloRef}
 				pie={<Escuchar texto={textoParaLeer} etiqueta="Escuchar la respuesta" />}
 			/>
+
+			{guardado === "fallo" || guardado === "guardando" ? (
+				<div className="guia-aviso-guardado" role="status">
+					<p>{guardado === "guardando" ? "Guardando la respuesta…" : TXT_NO_GUARDADA}</p>
+					{guardado === "fallo" && onGuardarOtraVez ? (
+						<button type="button" className="guia-btn-sec" onClick={onGuardarOtraVez}>
+							Guardar otra vez
+						</button>
+					) : null}
+				</div>
+			) : null}
 
 			{sinRespuestaFirme ? (
 				<div className="guia-acciones">

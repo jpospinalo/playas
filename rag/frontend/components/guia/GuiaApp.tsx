@@ -15,6 +15,7 @@ import {
 	PantallaEspera,
 	PantallaInicio,
 	PantallaPlaya,
+	PantallaSeguir,
 	PantallaTema,
 	esTactil,
 } from "@/components/guia/Pantallas";
@@ -25,6 +26,15 @@ import { VentanaParticipante } from "@/components/guia/Ventana";
 import { pedirEncuesta } from "@/lib/admin/calendario";
 import { detenerVoz } from "@/lib/voz";
 import { forgetEmail } from "@/lib/auth";
+import {
+	exponerEnConsola,
+	iniciarMedicion,
+	marcarEtapa,
+	marcarPrimerTexto,
+	terminarMedicion,
+	transcurrido,
+} from "@/lib/medicion";
+import { borrarPendiente, guardarPendiente, leerPendiente } from "@/lib/guia/pendiente";
 import type { Message, SourceGroup } from "@/lib/types";
 
 /**
@@ -59,7 +69,7 @@ export function GuiaApp() {
 				) : user ? (
 					// Primer ingreso: aviso de privacidad y autorización (Ley 1581).
 					<ConPrivacidad key={user.user_id} tituloRef={tituloRef} onSalir={() => salir()}>
-						<Flujo />
+						<Flujo usuario={user.user_id} />
 					</ConPrivacidad>
 				) : (
 					<Entrar tituloRef={tituloRef} />
@@ -70,19 +80,21 @@ export function GuiaApp() {
 }
 
 /**
- * Cerrar sesión desde el flujo guiado. Celular compartido (QA E2-11): además
- * del token se borra lo que el flujo guarda en la pestaña (última respuesta y
- * borrador), para que la siguiente persona no vea la pregunta ni la respuesta
- * anterior. "Terminar y dejar el celular para otra persona" también olvida el
- * correo recordado en la pantalla de ingreso.
+ * Cerrar sesión desde el flujo guiado (encabezado, aviso de datos y "Terminar
+ * y dejar el celular para otra persona"). Celular compartido: además del
+ * token se borra lo que el flujo guarda en la pestaña (hilo, borrador y
+ * pregunta pendiente, E2-11) y el correo recordado en el ingreso (E2-20).
  */
 function useSalir() {
 	const { signOut } = useAuth();
-	return (opciones?: { olvidarCorreo?: boolean }) => {
+	return () => {
 		detenerVoz();
 		guardar(null);
 		guardarBorrador("");
-		if (opciones?.olvidarCorreo) forgetEmail();
+		borrarPendiente();
+		// E2-20 (rama ux): al salir, la siguiente persona no ve el correo
+		// anterior. Vale para toda salida, no solo "dejar el celular".
+		forgetEmail();
 		void signOut();
 	};
 }
@@ -217,18 +229,26 @@ interface TurnoGuardado {
  * al recargar se vuelve a abrir y se puede seguir preguntando.
  */
 interface HiloGuardado {
+	/** De quién es: solo se muestra a esa persona (E2-19, sesión vencida sin "Salir"). */
+	usuario?: string;
 	conversationId: string | null;
 	threadId: string | null;
 	turnos: TurnoGuardado[];
 }
 
-function leerGuardada(): HiloGuardado | null {
+function leerGuardada(usuario: string): HiloGuardado | null {
 	try {
 		const crudo = window.sessionStorage.getItem(CLAVE_GUARDADA);
 		if (!crudo) return null;
 		const d = JSON.parse(crudo) as Partial<HiloGuardado> & Partial<Omit<TurnoGuardado, "id">>;
+		// Si la sesión venció sin "Salir" y entra otra persona, el hilo
+		// anterior se borra sin mostrarse (mismo criterio que la pregunta pendiente).
+		if (d.usuario !== usuario) {
+			window.sessionStorage.removeItem(CLAVE_GUARDADA);
+			return null;
+		}
 		if (Array.isArray(d.turnos) && d.turnos.length > 0) {
-			return { conversationId: d.conversationId ?? null, threadId: d.threadId ?? null, turnos: d.turnos };
+			return { usuario, conversationId: d.conversationId ?? null, threadId: d.threadId ?? null, turnos: d.turnos };
 		}
 		// Formato anterior (una sola respuesta, sin conversación).
 		if (d.pregunta && typeof d.texto === "string") {
@@ -262,7 +282,7 @@ interface Turno {
 /** Desde esta cantidad de respuestas seguidas se sugiere empezar de nuevo (3 seguimientos). */
 const TOPE_SEGUIMIENTO = 4;
 
-function Flujo() {
+function Flujo({ usuario }: { usuario: string }) {
 	const { ruta, ir, volver } = useRutaGuia();
 	const tituloRef = useRef<HTMLHeadingElement>(null);
 	// Caja de pregunta del inicio, y si al llegar al inicio el cursor va ahí
@@ -286,7 +306,7 @@ function Flujo() {
 			vigente = false;
 		};
 	}, []);
-	const { messages, loading, error, stage, generationFinished, persistingMessageIds } = chat;
+	const { messages, loading, error, stage, isStreaming, generationFinished, persistingMessageIds } = chat;
 
 	const [pregunta, setPregunta] = useState<PreguntaActual | null>(null);
 	// Cómo se muestra cada pregunta enviada (lo que se envía puede llevar la
@@ -294,7 +314,7 @@ function Flujo() {
 	const [mostradas, setMostradas] = useState<Record<string, PreguntaActual>>(() => {
 		// Al recargar con un hilo guardado, cada pregunta vuelve a mostrarse
 		// como la vio la persona (con su playa), no como se envió.
-		const g = typeof window === "undefined" ? null : leerGuardada();
+		const g = typeof window === "undefined" ? null : leerGuardada(usuario);
 		return Object.fromEntries((g?.turnos ?? []).map((t) => [t.pregunta.envio, t.pregunta]));
 	});
 	// "¿Le sirvió?" ya respondido en esta visita (id de la respuesta → le sirvió).
@@ -312,8 +332,14 @@ function Flujo() {
 	// Veces que se tocó "Intentar otra vez" sin señal (para que se note que intentó).
 	const [intentos, setIntentos] = useState(0);
 	const [guardada, setGuardada] = useState<HiloGuardado | null>(() =>
-		typeof window === "undefined" ? null : leerGuardada(),
+		typeof window === "undefined" ? null : leerGuardada(usuario),
 	);
+	// Pregunta que quedó sin respuesta (sesión vencida o recarga durante la
+	// espera): al volver se ofrece seguir con ella (UX-02). Solo a su dueño.
+	const [retomar, setRetomar] = useState<PreguntaActual | null>(() =>
+		typeof window === "undefined" ? null : leerPendiente(usuario),
+	);
+	const [segundos, setSegundos] = useState(0);
 	// Recargó la página en una respuesta: se vuelve a abrir la conversación
 	// (el backend la recupera de la base) para poder seguir preguntando.
 	const [cargandoHilo, setCargandoHilo] = useState(false);
@@ -358,9 +384,28 @@ function Flujo() {
 	useEffect(() => {
 		if (pendienteRef.current) return;
 		if (pantalla === "espera" && nueva && (generationFinished || !loading) && !error) {
+			// El texto llega entero de una vez: si el efecto de "primer texto" no
+			// alcanzó a correr, se marca aquí, antes de cerrar la medición (E2-22).
+			marcarPrimerTexto();
+			terminarMedicion("ok");
+			borrarPendiente();
 			ir(`respuesta/${turnos.length}`, { reemplazar: true });
 		}
 	}, [pantalla, nueva, turnos.length, generationFinished, loading, error, ir]);
+
+	// Medición del tiempo hasta la respuesta útil (UX-02): etapas del backend,
+	// primer texto y error. Solo tiempos; nunca el texto de la pregunta.
+	useEffect(() => exponerEnConsola(), []);
+	useEffect(() => {
+		if (stage) marcarEtapa(stage);
+	}, [stage]);
+	const hayTexto = !!nueva?.text;
+	useEffect(() => {
+		if (isStreaming || hayTexto) marcarPrimerTexto();
+	}, [isStreaming, hayTexto]);
+	useEffect(() => {
+		if (error) terminarMedicion("error");
+	}, [error]);
 
 	const { submit } = chat;
 	useEffect(() => {
@@ -384,6 +429,7 @@ function Flujo() {
 			turnos.length === 0
 				? null
 				: {
+						usuario,
 						conversationId,
 						threadId: getThreadId(),
 						turnos: turnos.map((t) => ({
@@ -393,12 +439,22 @@ function Flujo() {
 							fuentes: t.mensaje.sources ?? [],
 						})),
 					},
-		[turnos, conversationId, getThreadId],
+		[turnos, conversationId, getThreadId, usuario],
 	);
 	useEffect(() => {
 		if (!vista || loading || error || !hiloActual) return;
 		guardar(hiloActual);
 	}, [vista, loading, error, hiloActual]);
+
+	// Contador de segundos en la espera (UX-02; se actualiza 1 vez por segundo).
+	const esperando = pantalla === "espera" && !!pregunta && !error && !sinSenal;
+	useEffect(() => {
+		if (!esperando) return;
+		const id = window.setInterval(() => {
+			setSegundos(Math.floor((transcurrido() ?? 0) / 1000));
+		}, 1000);
+		return () => window.clearInterval(id);
+	}, [esperando]);
 
 	// Al abrir la página (recarga): si quedó en una respuesta con su
 	// conversación guardada, se vuelve a abrir. Se decide en el primer pintado
@@ -458,11 +514,19 @@ function Flujo() {
 		setPregunta(p);
 		setMostradas((m) => ({ ...(esNueva ? {} : m), [p.envio]: p }));
 		setIntentos(0);
+		setSegundos(0);
+		setRetomar(null);
+		// Si la sesión vence a mitad de la espera, la pregunta no se pierde: al
+		// volver a entrar la misma persona se le ofrece seguir (UX-02, E2-19).
+		// Un seguimiento se guarda también; al retomarlo se envía como pregunta
+		// nueva (la conversación ya no está abierta).
+		guardarPendiente(p, usuario);
 		if (typeof navigator !== "undefined" && navigator.onLine === false) {
 			setSinSenal(true);
 			pendienteRef.current = null;
 		} else {
 			setSinSenal(false);
+			iniciarMedicion();
 			pendienteRef.current = { envio: p.envio, nueva: esNueva };
 			setTurnoEnvio((n) => n + 1);
 		}
@@ -496,11 +560,15 @@ function Flujo() {
 		}
 		setSinSenal(false);
 		setIntentos(0);
+		setSegundos(0);
+		iniciarMedicion();
 		pendienteRef.current = { envio: pregunta.envio, nueva: !esSeguimiento };
 		setTurnoEnvio((n) => n + 1);
 	}
 
 	function cancelarYVolver() {
+		terminarMedicion("cancelada");
+		borrarPendiente();
 		pendienteRef.current = null;
 		setSinSenal(false);
 		// En un seguimiento solo se detiene esta pregunta: "atrás" vuelve a la
@@ -515,6 +583,7 @@ function Flujo() {
 		// desde el inicio, la vuelve a ver (QA-15) en vez de un inicio repetido.
 		if (vista && hiloActual) setGuardada(hiloActual);
 		chat.resetChat();
+		borrarPendiente();
 		setMostradas({});
 		setPregunta(null);
 		setBorrador("");
@@ -559,6 +628,23 @@ function Flujo() {
 
 	const tema = buscarTema(ruta[1]);
 
+	// Al volver a entrar (o recargar) con una pregunta sin responder (UX-02).
+	if (retomar && !pregunta) {
+		return (
+			<PantallaSeguir
+				tituloRef={tituloRef}
+				pregunta={retomar.texto}
+				playa={retomar.playa}
+				onSeguir={() => preguntar(retomar.texto, retomar.envio, retomar.playa)}
+				onEmpezar={() => {
+					borrarPendiente();
+					setRetomar(null);
+					ir("inicio", { reemplazar: true });
+				}}
+			/>
+		);
+	}
+
 	if (pantalla === "tema" && tema) {
 		return (
 			<PantallaTema
@@ -600,7 +686,9 @@ function Flujo() {
 				/>
 			);
 		}
-		return <PantallaEspera tituloRef={tituloRef} etapa={stage} onVolver={cancelarYVolver} />;
+		return (
+			<PantallaEspera tituloRef={tituloRef} etapa={stage} segundos={segundos} onVolver={cancelarYVolver} />
+		);
 	}
 
 	if (pantalla === "respuesta" && vista) {
@@ -616,6 +704,14 @@ function Flujo() {
 				onVolver={() => volver("inicio")}
 				puedeCalificar={sePuedeCalificar(mensaje)}
 				onCalificar={(c) => calificar(mensaje.id, c)}
+				guardado={
+					persistingMessageIds.has(mensaje.id)
+						? "guardando"
+						: mensaje.persistenceStatus === "failed"
+							? "fallo"
+							: "ok"
+				}
+				onGuardarOtraVez={() => void chat.retryPersistMessage(mensaje.id)}
 				calificada={calificadas[mensaje.id]}
 				anteriores={turnos.slice(0, numero - 1).map((t) => ({
 					id: t.mensaje.id,
@@ -651,7 +747,7 @@ function Flujo() {
 				conversationId={chat.conversationId ?? null}
 				onVolver={() => window.history.back()}
 				onOtraPregunta={otraPregunta}
-				onSalir={() => salir({ olvidarCorreo: true })}
+				onSalir={() => salir()}
 				onEnviada={() => setEncuestaHecha(true)}
 			/>
 		);

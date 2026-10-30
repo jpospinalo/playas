@@ -346,29 +346,107 @@ export function CajaPregunta({
 	);
 }
 
+const ORDEN_ETAPAS = ["enriching", "retrieving", "generating"] as const;
+const NOMBRE_ETAPA: Record<(typeof ORDEN_ETAPAS)[number], string> = {
+	enriching: "Leer su pregunta",
+	retrieving: "Buscar en las normas y las sentencias",
+	generating: "Escribir la respuesta",
+};
+/** Pasado este tiempo se avisa que está tardando más de lo normal. */
+export const SEGUNDOS_AVISO_LENTO = 45;
+
+/**
+ * Espera por etapas (UX-02): muestra en qué paso va (los 3 que informa el
+ * backend), cuánto lleva y un aviso amable si tarda más de lo normal. La
+ * etapa "revisando las citas" no se muestra porque el backend no la informa.
+ */
 export function PantallaEspera({
 	tituloRef,
 	etapa,
+	segundos,
 	onVolver,
 }: {
 	tituloRef: TituloRef;
 	etapa: string | null;
+	/** Segundos desde que se envió la pregunta. */
+	segundos: number;
 	onVolver: () => void;
 }) {
+	const indice = Math.max(0, ORDEN_ETAPAS.indexOf((etapa ?? "enriching") as (typeof ORDEN_ETAPAS)[number]));
+	const lento = segundos >= SEGUNDOS_AVISO_LENTO;
 	return (
 		<>
 			<Volver onClick={onVolver}>Cancelar y volver</Volver>
 			<Cabeza titulo={TXT.esperaTitulo} tituloRef={tituloRef} lectura={lecturaEspera} />
 			<div className="guia-espera">
 				<Boya />
-				<p>
-					{TXT.esperaTexto}
-					{/* Solo la etapa es región viva: el lector anuncia "Buscando…"
-					    sin repetir la frase fija en cada cambio. */}
-					<span className="etapa" role="status">
-						{etapa && ETAPAS[etapa] ? ETAPAS[etapa] : ""}
-					</span>
-				</p>
+				<p>{TXT.esperaTexto}</p>
+			</div>
+			<ol className="guia-etapas" aria-label="Pasos">
+				{ORDEN_ETAPAS.map((e, i) => {
+					const estado = i < indice ? "hecho" : i === indice ? "ahora" : "despues";
+					return (
+						<li key={e} className={estado} aria-current={estado === "ahora" ? "step" : undefined}>
+							<span className="marca" aria-hidden="true">
+								{estado === "hecho" ? "✓" : i + 1}
+							</span>
+							<span>
+								{NOMBRE_ETAPA[e]}
+								<span className="sr-only">
+									{estado === "hecho" ? " (listo)" : estado === "ahora" ? " (en curso)" : " (falta)"}
+								</span>
+							</span>
+						</li>
+					);
+				})}
+			</ol>
+			<p className="guia-tiempo">
+				Lleva {segundos} {segundos === 1 ? "segundo" : "segundos"}.
+			</p>
+			{/* Región viva aparte: anuncia la etapa nueva y, si tarda, el aviso;
+			    nunca el contador de segundos. */}
+			<p className="guia-espera-estado" role="status">
+				{lento ? TXT.esperaLenta : etapa && ETAPAS[etapa] ? ETAPAS[etapa] : ""}
+			</p>
+		</>
+	);
+}
+
+/** Pregunta que quedó sin respuesta (sesión cerrada o página recargada). */
+export function PantallaSeguir({
+	tituloRef,
+	pregunta,
+	playa,
+	onSeguir,
+	onEmpezar,
+}: {
+	tituloRef: TituloRef;
+	pregunta: string;
+	playa: string | null;
+	onSeguir: () => void;
+	onEmpezar: () => void;
+}) {
+	return (
+		<>
+			<h1 id="titulo" ref={tituloRef} tabIndex={-1}>
+				{TXT.retomarTitulo}
+			</h1>
+			<p className="usted" style={{ marginTop: 12 }}>
+				Su pregunta: <q>{pregunta}</q>
+				{playa ? (
+					<>
+						, en <span className="lugar">{playa}</span>
+					</>
+				) : null}
+			</p>
+			<p className="pista">{TXT.retomarPista}</p>
+			<div className="guia-acciones">
+				<button type="button" className="guia-btn" onClick={onSeguir}>
+					Seguir con mi pregunta
+				</button>
+				<button type="button" className="guia-btn-sec" onClick={onEmpezar}>
+					Empezar de nuevo
+				</button>
 			</div>
 		</>
 	);

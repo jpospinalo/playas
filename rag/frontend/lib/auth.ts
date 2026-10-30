@@ -108,6 +108,9 @@ export function forgetEmail(): void {
 	}
 }
 
+/** Mismo que `forgetEmail` (nombre que usaba la rama ux, E2-20). */
+export const forgetLastEmail = forgetEmail;
+
 export function getLastEmail(): string {
 	if (typeof window === "undefined") return "";
 	return localStorage.getItem(LAST_EMAIL_KEY) ?? "";

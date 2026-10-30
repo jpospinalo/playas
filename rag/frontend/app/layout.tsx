@@ -7,6 +7,9 @@ import "./globals.css";
 // <ConFuentes> solo en /chat, /admin y /about. La portada usa la del sistema.
 
 export const metadata: Metadata = {
+	// Commit de la build (se pasa al compilar con NEXT_PUBLIC_COMMIT) para que QA
+	// compruebe qué versión está probando (E2-18).
+	other: { "atlas-commit": process.env.NEXT_PUBLIC_COMMIT ?? "local" },
 	title: {
 		default: "ATLAS — Normatividad y jurisprudencia costera",
 		template: "%s | ATLAS",

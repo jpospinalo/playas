@@ -79,7 +79,8 @@ describe("Respuesta (diseño v3)", () => {
 		const props = pintar("Sí. Texto [doc1].");
 		await userEvent.click(screen.getByRole("button", { name: "Sí" }));
 		expect(props.onCalificar).toHaveBeenCalledWith({ util: true });
-		expect(await screen.findByRole("status")).toHaveTextContent("Gracias");
+		const gracias = await screen.findByText(/Gracias\. Su respuesta/);
+		expect(gracias).toHaveAttribute("role", "status");
 	});
 
 	it("'No' pregunta qué le faltó y lo envía", async () => {
@@ -106,7 +107,7 @@ describe("Respuesta (diseño v3)", () => {
 		const caja = screen.getByLabelText(/Qué le faltó/).closest(".guia-sirvio") as HTMLElement;
 		Object.defineProperty(caja, "offsetHeight", { configurable: true, value: 260 });
 		await userEvent.click(screen.getByRole("button", { name: "Enviar" }));
-		await screen.findByRole("status");
+		await screen.findByText(/Gracias\. Su respuesta/);
 		expect(caja.style.minHeight).toBe("260px");
 	});
 
