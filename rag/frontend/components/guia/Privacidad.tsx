@@ -44,6 +44,12 @@ export function ConPrivacidad({
 		if (estado && !estado.aceptada) tituloRef.current?.focus();
 	}, [estado, tituloRef]);
 
+	// QA-F15: la pestaña dice la pantalla que se ve (como E2-24 en Entrar).
+	useEffect(() => {
+		if (error) document.title = "ATLAS: Un momento";
+		else if (estado && !estado.aceptada) document.title = "ATLAS: Antes de empezar: sus datos";
+	}, [estado, error]);
+
 	if (estado?.aceptada) return <>{children}</>;
 
 	if (error) {

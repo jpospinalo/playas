@@ -1604,3 +1604,12 @@ body:has(.guia) {
 .guia-hilo-mas {
 	margin: 0 0 10px;
 }
+
+/* QA-F10 (resto): a ~206 px, palabras largas en negrita se partían sin
+   guion. En el hilo abierto, guiones automáticos en español (lang="es"). */
+@media (max-width: 300px) {
+	.guia-hilo .cuerpo {
+		hyphens: auto;
+		-webkit-hyphens: auto;
+	}
+}
