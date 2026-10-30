@@ -136,6 +136,7 @@ def test_lote_crea_cuentas_con_clave_que_sirve(cliente) -> None:
     creadas = r.json()["creadas"]
     assert [x["codigo"] for x in creadas] == ["P009", "P010", None]
     assert creadas[0]["correo"] == "p009@ejercicio.atlas"
+    assert creadas[2]["correo"] == "eva.semillero@ejercicio.atlas"
     login = c.post(
         "/api/auth/login", json={"email": creadas[0]["correo"], "password": creadas[0]["clave"]}
     )
@@ -222,3 +223,11 @@ def test_registro_publico_guarda_el_tipo(cliente, monkeypatch: pytest.MonkeyPatc
             return p.codigo, p.tipo_playa
 
     assert asyncio.run(_perfil()) == ("P009", 2)
+
+
+def test_correo_generado_sin_tildes() -> None:
+    from rag.api.routes.participantes import _correo_generado
+
+    assert _correo_generado(None, "Comité Prueba") == "comite.prueba@ejercicio.atlas"
+    assert _correo_generado(None, "María Ñúñez") == "maria.nunez@ejercicio.atlas"
+    assert _correo_generado("P012", "José") == "p012@ejercicio.atlas"

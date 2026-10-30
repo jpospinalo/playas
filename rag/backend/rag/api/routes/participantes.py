@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import re
 import secrets
+import unicodedata
 import uuid
 from datetime import UTC, datetime
 from typing import Literal
@@ -224,7 +225,9 @@ async def siguiente_codigo(session: AsyncSession, usados: set[str]) -> str:
 
 
 def _correo_generado(codigo: str | None, nombre: str) -> str:
-    base = (codigo or re.sub(r"[^a-z0-9]+", ".", nombre.lower()).strip(".") or "cuenta").lower()
+    # Sin tildes ni eñes: "Comité" → "comite", no "comit" (la letra se perdía).
+    plano = unicodedata.normalize("NFKD", nombre).encode("ascii", "ignore").decode()
+    base = (codigo or re.sub(r"[^a-z0-9]+", ".", plano.lower()).strip(".") or "cuenta").lower()
     return f"{base}@{DOMINIO}"
 
 
