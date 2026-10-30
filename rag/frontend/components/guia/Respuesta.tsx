@@ -349,6 +349,14 @@ export function Respuesta({
 	const textoParaLeer = () => lecturaRespuesta(ordenada);
 	const sinRespuestaFirme = ordenada.tipo !== "normal";
 	const numero = anteriores.length + 1;
+	// Se puede seguir en el mismo tema con una respuesta firme, cuando ATLAS
+	// pidió más datos (se contestan aquí mismo) o, dentro de un hilo, aunque
+	// esta respuesta no haya sido segura. Fuera de tema o saludo: no.
+	const seguirAqui =
+		puedeSeguir &&
+		(ordenada.tipo === "normal" ||
+			ordenada.tipo === "aclaracion" ||
+			(ordenada.tipo === "sin-evidencia" && anteriores.length > 0));
 
 	return (
 		<>
@@ -397,9 +405,8 @@ export function Respuesta({
 			) : null}
 
 			{/* Seguimiento: misma conversación; la respuesta nueva llega en otra
-			    pantalla con todo lo anterior plegado arriba. Sin respuesta
-			    firme no hay "sobre este tema". */}
-			{sinRespuestaFirme || !puedeSeguir ? null : (
+			    pantalla con todo lo anterior plegado arriba. */}
+			{!seguirAqui ? null : (
 				<section className="guia-seguir" aria-labelledby="seguir-titulo">
 					<h2 id="seguir-titulo">{TXT.seguirTitulo}</h2>
 					<p id="seguir-recuerda" className="pista">
@@ -425,7 +432,7 @@ export function Respuesta({
 			<div className="guia-final">
 				<button
 					type="button"
-					className={sinRespuestaFirme || !puedeSeguir ? "guia-btn" : "guia-btn-sec"}
+					className={seguirAqui ? "guia-btn-sec" : "guia-btn"}
 					onClick={onOtraPregunta}
 				>
 					{TXT.empezarDeNuevo}

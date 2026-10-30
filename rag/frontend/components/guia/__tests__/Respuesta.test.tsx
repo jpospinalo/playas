@@ -1,5 +1,5 @@
 import { createRef, useState } from "react";
-import { render, screen, within } from "@testing-library/react";
+import { cleanup, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { Respuesta } from "@/components/guia/Respuesta";
@@ -246,6 +246,21 @@ describe("Hilo: lo que ya preguntó sobre este tema", () => {
 		expect(document.getElementById("t1-fuente-1")).toHaveTextContent("Decreto uno");
 		expect(document.getElementById("t2-fuente-1")).toHaveTextContent("Decreto dos");
 		expect(document.querySelectorAll("#fuente-1")).toHaveLength(1);
+	});
+
+	it("si ATLAS pidió más datos, se contestan en el mismo tema", () => {
+		pintar("La consulta podría estar dentro del ámbito, pero falta indicar la playa.", { fuentes: [] });
+		expect(screen.getByRole("textbox", { name: TXT.seguirTitulo })).toBeInTheDocument();
+	});
+
+	it("dentro de un hilo, una respuesta no segura deja seguir en el mismo tema", () => {
+		const sinEvidencia = "**Situación:** evidencia insuficiente.\n\n**Motivo:** no hubo fragmentos.";
+		pintar(sinEvidencia, { fuentes: [], anteriores });
+		expect(screen.getByRole("textbox", { name: TXT.seguirTitulo })).toBeInTheDocument();
+		// Sin hilo, como antes: solo empezar de nuevo.
+		cleanup();
+		pintar(sinEvidencia, { fuentes: [] });
+		expect(screen.queryByRole("textbox", { name: TXT.seguirTitulo })).not.toBeInTheDocument();
 	});
 
 	it("la respuesta actual ya calificada no vuelve a preguntar", () => {
