@@ -323,6 +323,34 @@ describe("Hilo: lo que ya preguntó sobre este tema", () => {
 		expect(screen.queryByRole("textbox", { name: TXT.seguirTitulo })).not.toBeInTheDocument();
 	});
 
+	it("QA-F08: en el hilo, partes del mismo documento van en una línea", async () => {
+		const doc = (n: number, contenido: string): SourceGroup => ({
+			source: "rodadero.md",
+			title: "Reglamento del área de playa de El Rodadero",
+			doc_type: "normativa",
+			metadata: {},
+			fragments: [{ index: n, content: contenido, metadata: {} }],
+		});
+		const unaAnterior = [
+			{
+				id: "r9",
+				pregunta: "¿Cuánto cuesta?",
+				playa: null,
+				texto: "Depende [doc3].",
+				fuentes: [doc(1, "Artículo 3. Tarifas."), fuente(2, "Decreto dos"), doc(3, "Artículo 9. Pagos."), doc(4, "Artículo 12. Multas.")],
+				puedeCalificar: true,
+			},
+		];
+		pintar("Sí. Texto.", { anteriores: unaAnterior });
+		const item = document.getElementById("t1-fuente-1")!;
+		expect(item).toHaveTextContent("Fuentes 1, 3 y 4. Reglamento del área de playa de El Rodadero");
+		expect(item).toHaveTextContent("3 partes del mismo documento");
+		expect(document.getElementById("t1-fuente-3")).toBeNull();
+		await userEvent.click(document.querySelector(".guia-hilo summary")!);
+		await userEvent.click(screen.getAllByRole("link", { name: "(fuente 3)" })[0]);
+		expect(item).toHaveClass("marcada");
+	});
+
 	it("la respuesta actual ya calificada no vuelve a preguntar", () => {
 		pintar("Sí. Texto.", { calificada: false });
 		expect(screen.queryByText("¿Esta respuesta le sirvió?")).not.toBeInTheDocument();

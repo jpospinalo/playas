@@ -116,17 +116,46 @@ function Contenido({
 	// Dos fuentes con el mismo párrafo se muestran una vez ("también aparece
 	// como fuente N"); una cita a la repetida abre la que quedó.
 	const { unicas, canonica } = useMemo(() => agruparRepetidas(fragmentos, nombreFuente), [fragmentos]);
+	// QA-F08: en la lista corta del hilo, varios fragmentos del mismo
+	// documento parecían la misma fuente repetida. Ahí se agrupan por
+	// documento ("Fuentes 1, 3 y 4. Decreto…") y una cita a cualquiera de
+	// ellos lleva a esa línea.
+	const porDocumento = useMemo(() => {
+		const grupos: Array<{ nombre: string; tipo: string; primero: number; indices: number[] }> = [];
+		const destino = new Map<number, number>();
+		for (const u of unicas) {
+			const nombre = nombreFuente(u.grupo);
+			let g = grupos.find((x) => x.nombre === nombre);
+			if (!g) {
+				g = { nombre, tipo: tipoDeFuente(u.grupo), primero: u.fragmento.index, indices: [] };
+				grupos.push(g);
+			}
+			for (const n of [u.fragmento.index, ...u.tambien.map((t) => t.indice)]) {
+				g.indices.push(n);
+				destino.set(n, g.primero);
+			}
+		}
+		for (const g of grupos) g.indices.sort((a, b) => a - b);
+		return { grupos, destino };
+	}, [unicas]);
+	const destinoDe = useCallback(
+		(cita: number) => {
+			const n = canonica.get(cita) ?? cita;
+			return compacto ? (porDocumento.destino.get(n) ?? n) : n;
+		},
+		[canonica, compacto, porDocumento],
+	);
 
 	const abrirFuente = useCallback(
 		(cita: number) => {
-			const n = canonica.get(cita) ?? cita;
+			const n = destinoDe(cita);
 			if (fuentesRef.current) fuentesRef.current.open = true;
 			setMarcada(n);
 			requestAnimationFrame(() => {
 				document.getElementById(`${prefijo}fuente-${n}`)?.focus();
 			});
 		},
-		[prefijo, canonica],
+		[prefijo, destinoDe],
 	);
 
 	const componentes = useMemo<Components>(
@@ -141,7 +170,7 @@ function Contenido({
 					// alta con relleno sin mover el renglón (ver .guia-cita).
 					return (
 						<a
-							href={`#${prefijo}fuente-${canonica.get(n) ?? n}`}
+							href={`#${prefijo}fuente-${destinoDe(n)}`}
 							className="guia-cita"
 							onClick={(e) => {
 								e.preventDefault();
@@ -170,7 +199,7 @@ function Contenido({
 			h3: ({ children }) => <p><strong>{children}</strong></p>,
 			img: () => null,
 		}),
-		[indices, abrirFuente, prefijo, canonica],
+		[indices, abrirFuente, prefijo, destinoDe],
 	);
 
 	const md = (contenido: string, extra?: string): ReactNode => (
@@ -242,20 +271,23 @@ function Contenido({
 				<div className="guia-fuentes compacto">
 					<H>De dónde sale esta respuesta</H>
 					<ol>
-						{unicas.map(({ grupo, fragmento, tambien }) => (
+						{porDocumento.grupos.map((g) => (
 							<li
-								key={fragmento.index}
-								id={`${prefijo}fuente-${fragmento.index}`}
+								key={g.primero}
+								id={`${prefijo}fuente-${g.primero}`}
 								tabIndex={-1}
-								className={`guia-fuente${marcada === fragmento.index ? " marcada" : ""}`}
+								className={`guia-fuente${marcada === g.primero ? " marcada" : ""}`}
 							>
-								<span className="num">Fuente {fragmento.index}.</span> {grupo.title || grupo.source}
-								<span className="tipo">{tipoDeFuente(grupo)}</span>
-								{tambien.length ? (
-									<span className="tambien">
-										También como fuente {tambien.map((t) => t.indice).join(" y ")}.
-									</span>
-								) : null}
+								<span className="num">
+									{g.indices.length > 1
+										? `Fuentes ${g.indices.slice(0, -1).join(", ")} y ${g.indices[g.indices.length - 1]}.`
+										: `Fuente ${g.primero}.`}
+								</span>{" "}
+								{g.nombre}
+								<span className="tipo">
+									{g.tipo}
+									{g.indices.length > 1 ? `. ${g.indices.length} partes del mismo documento` : ""}
+								</span>
 							</li>
 						))}
 					</ol>
