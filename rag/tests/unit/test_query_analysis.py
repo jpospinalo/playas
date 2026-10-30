@@ -1064,3 +1064,40 @@ def test_si_el_modelo_no_reescribio_la_pregunta_no_se_fuerza() -> None:
     )
     r = _apply_domain_guard(llm, "¿Y si es algo temporal?", _HIST_TAGANGA)
     assert r.route == "needs_clarification"
+
+
+def test_qa_f01_seguimiento_marcado_fuera_de_tema_sigue_el_tema() -> None:
+    hist = (
+        "Usuario: ¿Puedo vender comida en la playa de El Rodadero?\n"
+        "Asistente: Necesita permiso de la alcaldía para vender en la playa [doc1]."
+    )
+    llm = EnrichedQuery(
+        route="out_of_scope",
+        standalone_question="¿A quién acudo para pedir el permiso de vender comida en la playa de El Rodadero?",
+        expanded_query="¿a quién acudo?",
+        doc_types=[],
+    )
+    assert _apply_domain_guard(llm, "¿a quién acudo?", hist).route == "in_scope"
+
+
+def test_qa_f01_una_pregunta_ajena_en_un_hilo_sigue_fuera_de_tema() -> None:
+    llm = EnrichedQuery(
+        route="out_of_scope",
+        standalone_question="¿Qué horario tiene el museo del oro?",
+        expanded_query="¿Qué horario tiene el museo del oro?",
+        doc_types=[],
+    )
+    assert (
+        _apply_domain_guard(llm, "¿Qué horario tiene el museo del oro?", _HIST_TAGANGA).route
+        == "out_of_scope"
+    )
+
+
+def test_qa_f14_tipos_de_documento_sin_recuperacion_se_ignoran() -> None:
+    r = EnrichedQuery(
+        route="needs_clarification",
+        standalone_question="¿Se puede construir algo temporal en la playa de Taganga?",
+        expanded_query="¿Y si es algo temporal?",
+        doc_types=["normativa"],
+    )
+    assert r.doc_types == [] and "Taganga" in r.standalone_question

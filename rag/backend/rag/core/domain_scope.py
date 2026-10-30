@@ -104,9 +104,12 @@ class EnrichedQuery(BaseModel):
         if self.route == "in_scope" and not self.doc_types:
             raise ValueError("Una consulta in_scope debe seleccionar al menos un tipo documental.")
         if self.route != "in_scope" and self.doc_types:
-            raise ValueError(
-                "Las consultas sin recuperación no deben seleccionar tipos documentales."
-            )
+            # QA-F14: el modelo a veces marca needs_clarification/out_of_scope
+            # y además elige tipos de documento. Antes eso invalidaba todo el
+            # análisis y se seguía con la pregunta original sin reescribir
+            # (en un seguimiento corto, buscar sin contexto). Sin recuperación
+            # los tipos no se usan: se descartan y se conserva la reescritura.
+            self.doc_types = []
         return self
 
 
@@ -650,9 +653,13 @@ def _apply_domain_guard(
     #    pregunta y la heurística la ve dentro del ámbito, es `in_scope`. Sin
     #    historial (tema nuevo) no aplica: "¿Y cuánto cuesta?" sigue pidiendo
     #    aclaración.
+    #    QA-F01: lo mismo con `out_of_scope` ("¿a quién acudo?" tras vender
+    #    comida en El Rodadero). Una pregunta de verdad ajena ("¿qué horario
+    #    tiene el museo?") no cambia: su reescritura no tiene señal costera, y
+    #    una intención ajena inequívoca ya se resolvió arriba (regla 2).
     resuelta = (result.standalone_question or "").strip()
     if (
-        result.route == "needs_clarification"
+        result.route in ("needs_clarification", "out_of_scope")
         and history_context.strip()
         and resuelta
         and resuelta != clean_question
