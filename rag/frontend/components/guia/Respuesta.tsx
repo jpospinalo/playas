@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useId, useMemo, useRef, useState, type ReactNode } from "react";
 import ReactMarkdown, { type Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
 import type { SourceFragment, SourceGroup } from "@/lib/types";
@@ -12,6 +12,19 @@ import { TXT } from "@/lib/guia/textos";
 
 export type Calificacion = { util: boolean; comentario?: string };
 
+/** Una pregunta anterior del mismo tema, con su respuesta completa. */
+export interface TurnoAnterior {
+	/** id del mensaje de respuesta (para calificarla). */
+	id: string;
+	pregunta: string;
+	playa: string | null;
+	texto: string;
+	fuentes: SourceGroup[];
+	/** Ya la calificó en esta visita: true = le sirvió, false = no. */
+	calificada?: boolean;
+	puedeCalificar: boolean;
+}
+
 interface RespuestaProps {
 	pregunta: string;
 	playa: string | null;
@@ -20,6 +33,8 @@ interface RespuestaProps {
 	/** La respuesta aún no quedó guardada: no se puede calificar todavía. */
 	puedeCalificar: boolean;
 	onCalificar: (c: Calificacion) => Promise<void>;
+	/** Ya calificó esta respuesta antes (al volver con "atrás" no se pregunta otra vez). */
+	calificada?: boolean;
 	onVolver: () => void;
 	onOtraPregunta: () => void;
 	/** Encuesta de percepción al terminar (momento 3 del ejercicio). */
@@ -32,22 +47,25 @@ interface RespuestaProps {
 	onCambioSeguimiento: (texto: string) => void;
 	/** Pregunta de seguimiento: sigue la misma conversación. */
 	onSeguir: (texto: string) => void;
-	/** Ya van varias respuestas seguidas: se sugiere empezar de nuevo. */
+	/** Ya van varias respuestas seguidas: aviso sobre lo que ATLAS recuerda. */
 	muchasSeguidas: boolean;
 	/** false si la conversación ya no está abierta (respuesta guardada tras recargar). */
 	puedeSeguir?: boolean;
+	/** Preguntas anteriores del mismo tema (hilo), de la primera a la última. */
+	anteriores?: TurnoAnterior[];
+	onCalificarAnterior?: (id: string, c: Calificacion) => Promise<void>;
 	tituloRef: React.RefObject<HTMLHeadingElement | null>;
 }
 
 const LARGO_CITA = 420;
 
 /** `[docN]` → enlace interno que el componente convierte en "(fuente N)". */
-function prepararCitas(md: string): string {
+function prepararCitas(md: string, prefijo = ""): string {
 	return md
 		// Bloques de código o estilo que mande el backend: fuera con su
 		// contenido (skipHtml solo quita las etiquetas y dejaría el texto).
 		.replace(/<(script|style|iframe|object|embed|noscript)\b[\s\S]*?<\/\1\s*>/gi, "")
-		.replace(/\[doc(\d+)\]/gi, (_m, n) => `[(fuente ${n})](#fuente-${n})`);
+		.replace(/\[doc(\d+)\]/gi, (_m, n) => `[(fuente ${n})](#${prefijo}fuente-${n})`);
 }
 
 function tipoDeFuente(grupo: SourceGroup): string {
@@ -60,25 +78,28 @@ function recortar(texto: string): string {
 	return t.length > LARGO_CITA ? `${t.slice(0, LARGO_CITA).trimEnd()}…` : t;
 }
 
-export function Respuesta({
-	pregunta,
-	playa,
+/**
+ * Cuerpo de una respuesta: veredicto, partes y fuentes. Completo para la
+ * respuesta actual (h1, h2 y fuentes que se abren) y compacto dentro del
+ * hilo (sin h1, títulos h4, fuentes en lista: no se anida un "details" dentro
+ * de otro). `prefijo` separa los ids de las fuentes de cada respuesta.
+ */
+function Contenido({
 	texto,
 	fuentes,
-	puedeCalificar,
-	onCalificar,
-	onVolver,
-	onOtraPregunta,
-	onTerminar,
-	invitarEncuesta = false,
-	onEscribirDeNuevo,
-	seguimiento,
-	onCambioSeguimiento,
-	onSeguir,
-	muchasSeguidas,
-	puedeSeguir = true,
+	prefijo,
+	compacto,
 	tituloRef,
-}: RespuestaProps) {
+	pie,
+}: {
+	texto: string;
+	fuentes: SourceGroup[];
+	prefijo: string;
+	compacto: boolean;
+	tituloRef?: React.RefObject<HTMLHeadingElement | null>;
+	/** Lo que va justo después del veredicto (p. ej. "Escuchar"). */
+	pie?: ReactNode;
+}) {
 	const ordenada = useMemo<RespuestaOrdenada>(() => ordenarRespuesta(texto), [texto]);
 	const fuentesRef = useRef<HTMLDetailsElement>(null);
 	const [marcada, setMarcada] = useState<number | null>(null);
@@ -90,21 +111,21 @@ export function Respuesta({
 	}, [fuentes]);
 	const indices = useMemo(() => new Set(fragmentos.map((f) => f.fragmento.index)), [fragmentos]);
 
-	const abrirFuente = useCallback((n: number) => {
-		const det = fuentesRef.current;
-		if (!det) return;
-		det.open = true;
-		setMarcada(n);
-		requestAnimationFrame(() => {
-			const item = document.getElementById(`fuente-${n}`);
-			item?.focus();
-		});
-	}, []);
+	const abrirFuente = useCallback(
+		(n: number) => {
+			if (fuentesRef.current) fuentesRef.current.open = true;
+			setMarcada(n);
+			requestAnimationFrame(() => {
+				document.getElementById(`${prefijo}fuente-${n}`)?.focus();
+			});
+		},
+		[prefijo],
+	);
 
 	const componentes = useMemo<Components>(
 		() => ({
 			a({ href, children }) {
-				const m = href ? /^#fuente-(\d+)$/.exec(href) : null;
+				const m = href ? /^#(?:t\d+-)?fuente-(\d+)$/.exec(href) : null;
 				if (m) {
 					const n = Number(m[1]);
 					// Una cita a un fragmento que no llegó no se muestra como enlace.
@@ -113,7 +134,7 @@ export function Respuesta({
 					// alta con relleno sin mover el renglón (ver .guia-cita).
 					return (
 						<a
-							href={`#fuente-${n}`}
+							href={`#${prefijo}fuente-${n}`}
 							className="guia-cita"
 							onClick={(e) => {
 								e.preventDefault();
@@ -142,7 +163,7 @@ export function Respuesta({
 			h3: ({ children }) => <p><strong>{children}</strong></p>,
 			img: () => null,
 		}),
-		[indices, abrirFuente],
+		[indices, abrirFuente, prefijo],
 	);
 
 	const md = (contenido: string, extra?: string): ReactNode => (
@@ -150,7 +171,7 @@ export function Respuesta({
 			{/* skipHtml: si el backend manda HTML (<script>, <iframe>…) no se
 			    muestra ni como código ni como elemento. */}
 			<ReactMarkdown remarkPlugins={[remarkGfm]} components={componentes} skipHtml>
-				{prepararCitas(contenido)}
+				{prepararCitas(contenido, prefijo)}
 			</ReactMarkdown>
 		</div>
 	);
@@ -163,38 +184,32 @@ export function Respuesta({
 	// Los títulos fijos de la interfaz (no salen de la respuesta) van un
 	// poco más chicos que un "Sí." o "No." del backend.
 	const tituloLargo = !/[.!?]$/.test(ordenada.titulo) || markdownATexto(ordenada.titulo).length > 40;
-	const resumen = ordenada.resumen;
-
-	const textoParaLeer = () => lecturaRespuesta(ordenada);
-
-	const sinRespuestaFirme = ordenada.tipo !== "normal";
+	const titulo = (
+		<ReactMarkdown remarkPlugins={[remarkGfm]} components={tituloEnLinea} skipHtml>
+			{prepararCitas(ordenada.titulo, prefijo)}
+		</ReactMarkdown>
+	);
+	// En el hilo los títulos bajan un nivel bajo el h3 de cada pregunta.
+	const H = compacto ? "h4" : "h2";
 
 	return (
 		<>
-			<button type="button" className="guia-volver" onClick={onVolver}>
-				<FlechaVolver />
-				Volver
-			</button>
-			<p className="usted">
-				Usted preguntó: <q>{pregunta}</q>
-				{playa ? (
-					<>
-						, en <span className="lugar">{playa}</span>
-					</>
-				) : null}
-			</p>
+			{compacto ? (
+				<div className="guia-veredicto compacto">
+					<p className="titulo">{titulo}</p>
+					{ordenada.resumen ? md(ordenada.resumen, "resumen") : null}
+				</div>
+			) : (
+				<section className="guia-veredicto" aria-labelledby="titulo">
+					<Curvas />
+					<h1 id="titulo" ref={tituloRef} tabIndex={-1} className={tituloLargo ? "largo" : undefined}>
+						{titulo}
+					</h1>
+					{ordenada.resumen ? md(ordenada.resumen, "resumen") : null}
+				</section>
+			)}
 
-			<section className="guia-veredicto" aria-labelledby="titulo">
-				<Curvas />
-				<h1 id="titulo" ref={tituloRef} tabIndex={-1} className={tituloLargo ? "largo" : undefined}>
-					<ReactMarkdown remarkPlugins={[remarkGfm]} components={tituloEnLinea} skipHtml>
-						{prepararCitas(ordenada.titulo)}
-					</ReactMarkdown>
-				</h1>
-				{resumen ? md(resumen, "resumen") : null}
-			</section>
-
-			<Escuchar texto={textoParaLeer} etiqueta="Escuchar la respuesta" />
+			{pie}
 
 			{ordenada.secciones.map((s, i) =>
 				s.clase === "ojo" ? (
@@ -204,26 +219,43 @@ export function Respuesta({
 					<div key={i} className="guia-ojo">
 						<Atencion />
 						<div>
-							<h2>{s.titulo}</h2>
+							<H>{s.titulo}</H>
 							{md(s.cuerpo)}
 						</div>
 					</div>
 				) : (
 					<div key={i}>
-						<h2>{s.titulo}</h2>
+						<H>{s.titulo}</H>
 						{s.cuerpo ? md(s.cuerpo, s.clase === "acudir" ? "acudir" : undefined) : null}
 					</div>
 				),
 			)}
 
-			{fragmentos.length > 0 ? (
+			{fragmentos.length === 0 ? null : compacto ? (
+				<div className="guia-fuentes compacto">
+					<H>De dónde sale esta respuesta</H>
+					<ol>
+						{fragmentos.map(({ grupo, fragmento }) => (
+							<li
+								key={fragmento.index}
+								id={`${prefijo}fuente-${fragmento.index}`}
+								tabIndex={-1}
+								className={`guia-fuente${marcada === fragmento.index ? " marcada" : ""}`}
+							>
+								<span className="num">Fuente {fragmento.index}.</span> {grupo.title || grupo.source}
+								<span className="tipo">{tipoDeFuente(grupo)}</span>
+							</li>
+						))}
+					</ol>
+				</div>
+			) : (
 				<details className="guia-fuentes" ref={fuentesRef}>
 					<summary>Ver de dónde sale esta respuesta</summary>
 					<ol>
 						{fragmentos.map(({ grupo, fragmento }) => (
 							<li
 								key={fragmento.index}
-								id={`fuente-${fragmento.index}`}
+								id={`${prefijo}fuente-${fragmento.index}`}
 								tabIndex={-1}
 								className={`guia-fuente${marcada === fragmento.index ? " marcada" : ""}`}
 							>
@@ -234,7 +266,117 @@ export function Respuesta({
 						))}
 					</ol>
 				</details>
-			) : null}
+			)}
+		</>
+	);
+}
+
+/** Lo que ya preguntó sobre este tema: una línea por pregunta, se abre al tocarla. */
+function Hilo({
+	anteriores,
+	onCalificar,
+}: {
+	anteriores: TurnoAnterior[];
+	onCalificar?: (id: string, c: Calificacion) => Promise<void>;
+}) {
+	return (
+		<section className="guia-hilo" aria-labelledby="hilo-titulo">
+			<h2 id="hilo-titulo">Lo que ya preguntó sobre este tema</h2>
+			<ol>
+				{anteriores.map((t, i) => {
+					const n = i + 1;
+					const firme = ordenarRespuesta(t.texto).tipo === "normal";
+					return (
+						<li key={t.id}>
+							<details>
+								<summary>
+									<span className="n" aria-hidden="true">
+										{n}
+									</span>
+									<span className="q">
+										<span className="sr">Pregunta {n}: </span>
+										{t.pregunta}
+										{t.playa ? (
+											<>
+												, en <span className="lugar">{t.playa}</span>
+											</>
+										) : null}
+									</span>
+									<span className="abrir" aria-hidden="true" />
+								</summary>
+								<div className="cuerpo">
+									<Contenido texto={t.texto} fuentes={t.fuentes} prefijo={`t${n}-`} compacto />
+									{firme && onCalificar ? (
+										<Sirvio
+											puedeCalificar={t.puedeCalificar}
+											calificada={t.calificada}
+											onCalificar={(c) => onCalificar(t.id, c)}
+										/>
+									) : null}
+								</div>
+							</details>
+						</li>
+					);
+				})}
+			</ol>
+		</section>
+	);
+}
+
+export function Respuesta({
+	pregunta,
+	playa,
+	texto,
+	fuentes,
+	puedeCalificar,
+	onCalificar,
+	calificada,
+	onVolver,
+	onOtraPregunta,
+	onTerminar,
+	invitarEncuesta = false,
+	onEscribirDeNuevo,
+	seguimiento,
+	onCambioSeguimiento,
+	onSeguir,
+	muchasSeguidas,
+	puedeSeguir = true,
+	anteriores = [],
+	onCalificarAnterior,
+	tituloRef,
+}: RespuestaProps) {
+	const ordenada = useMemo<RespuestaOrdenada>(() => ordenarRespuesta(texto), [texto]);
+	const textoParaLeer = () => lecturaRespuesta(ordenada);
+	const sinRespuestaFirme = ordenada.tipo !== "normal";
+	const numero = anteriores.length + 1;
+
+	return (
+		<>
+			<button type="button" className="guia-volver" onClick={onVolver}>
+				<FlechaVolver />
+				Volver
+			</button>
+
+			{anteriores.length > 0 ? <Hilo anteriores={anteriores} onCalificar={onCalificarAnterior} /> : null}
+
+			<p className="usted">
+				{numero > 1 ? <span className="numero">Pregunta {numero} de este tema. </span> : null}
+				Usted preguntó: <q>{pregunta}</q>
+				{playa ? (
+					<>
+						, en <span className="lugar">{playa}</span>
+					</>
+				) : null}
+			</p>
+
+			<Contenido
+				texto={texto}
+				fuentes={fuentes}
+				prefijo=""
+				compacto={false}
+				tituloRef={tituloRef}
+				pie={<Escuchar texto={textoParaLeer} etiqueta="Escuchar la respuesta" />}
+			/>
 
 			{sinRespuestaFirme ? (
 				<div className="guia-acciones">
@@ -243,7 +385,7 @@ export function Respuesta({
 					</button>
 				</div>
 			) : (
-				<Sirvio puedeCalificar={puedeCalificar} onCalificar={onCalificar} />
+				<Sirvio puedeCalificar={puedeCalificar} calificada={calificada} onCalificar={onCalificar} />
 			)}
 			{invitarEncuesta && onTerminar ? (
 				<div className="guia-invita">
@@ -254,11 +396,15 @@ export function Respuesta({
 				</div>
 			) : null}
 
-			{/* Seguimiento: misma conversación, sin burbujas; la respuesta nueva
-			    reemplaza esta pantalla. Sin respuesta firme no hay "sobre esto". */}
+			{/* Seguimiento: misma conversación; la respuesta nueva llega en otra
+			    pantalla con todo lo anterior plegado arriba. Sin respuesta
+			    firme no hay "sobre este tema". */}
 			{sinRespuestaFirme || !puedeSeguir ? null : (
 				<section className="guia-seguir" aria-labelledby="seguir-titulo">
 					<h2 id="seguir-titulo">{TXT.seguirTitulo}</h2>
+					<p id="seguir-recuerda" className="pista">
+						{TXT.seguirRecuerda}
+					</p>
 					{muchasSeguidas ? (
 						<p className="guia-tope" role="note">
 							{TXT.seguirTope}
@@ -271,6 +417,7 @@ export function Respuesta({
 						onPreguntar={onSeguir}
 						pista={TXT.seguirPista}
 						etiqueta={TXT.seguirTitulo}
+						describe="seguir-recuerda"
 					/>
 				</section>
 			)}
@@ -278,7 +425,7 @@ export function Respuesta({
 			<div className="guia-final">
 				<button
 					type="button"
-					className={sinRespuestaFirme || muchasSeguidas || !puedeSeguir ? "guia-btn" : "guia-btn-sec"}
+					className={sinRespuestaFirme || !puedeSeguir ? "guia-btn" : "guia-btn-sec"}
 					onClick={onOtraPregunta}
 				>
 					{TXT.empezarDeNuevo}
@@ -295,15 +442,22 @@ export function Respuesta({
 
 function Sirvio({
 	puedeCalificar,
+	calificada,
 	onCalificar,
 }: {
 	puedeCalificar: boolean;
+	calificada?: boolean;
 	onCalificar: (c: Calificacion) => Promise<void>;
 }) {
 	const [paso, setPaso] = useState<"preguntar" | "que-falto" | "enviando" | "gracias" | "error">(
 		"preguntar",
 	);
 	const [comentario, setComentario] = useState("");
+	// Varios "¿Le sirvió?" en la misma pantalla (uno por respuesta del hilo):
+	// ids propios para que cada etiqueta apunte a lo suyo.
+	const id = useId();
+	const idPregunta = `${id}-sirvio`;
+	const idFalto = `${id}-que-falto`;
 	// Al cambiar el contenido del recuadro, el foco pasa al mensaje nuevo
 	// (si no, se perdería en el <body> al desaparecer el botón tocado).
 	const mensajeRef = useRef<HTMLParagraphElement>(null);
@@ -318,8 +472,8 @@ function Sirvio({
 	}
 	useEffect(() => {
 		if (paso === "gracias" || paso === "error") mensajeRef.current?.focus();
-		if (paso === "que-falto") document.getElementById("que-falto")?.focus();
-	}, [paso]);
+		if (paso === "que-falto") document.getElementById(idFalto)?.focus();
+	}, [paso, idFalto]);
 
 	async function enviar(c: Calificacion) {
 		fijarAlto();
@@ -332,14 +486,23 @@ function Sirvio({
 		}
 	}
 
+	// Ya la calificó (en esta pantalla u otra del mismo tema): no se pregunta otra vez.
+	if (calificada !== undefined && paso === "preguntar") {
+		return (
+			<div className="guia-sirvio">
+				<p className="gracias">Ya respondió: {calificada ? "le sirvió" : "no le sirvió"}.</p>
+			</div>
+		);
+	}
+
 	if (!puedeCalificar) return null;
 
 	return (
 		<div className="guia-sirvio" ref={cajaRef} style={altoMinimo ? { minHeight: altoMinimo } : undefined}>
 			{paso === "preguntar" || paso === "enviando" ? (
 				<>
-					<p id="sirvio-pregunta">¿Esta respuesta le sirvió?</p>
-					<div className="guia-acciones" role="group" aria-labelledby="sirvio-pregunta">
+					<p id={idPregunta}>¿Esta respuesta le sirvió?</p>
+					<div className="guia-acciones" role="group" aria-labelledby={idPregunta}>
 						<button
 							type="button"
 							className="guia-btn-sec si"
@@ -369,11 +532,11 @@ function Sirvio({
 						void enviar({ util: false, comentario: comentario.trim() || undefined });
 					}}
 				>
-					<label className="grande" htmlFor="que-falto" style={{ marginTop: 0 }}>
+					<label className="grande" htmlFor={idFalto} style={{ marginTop: 0 }}>
 						¿Qué le faltó? (si quiere)
 					</label>
 					<textarea
-						id="que-falto"
+						id={idFalto}
 						value={comentario}
 						maxLength={1000}
 						onChange={(e) => setComentario(e.target.value)}

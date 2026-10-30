@@ -203,23 +203,48 @@ function guardarBorrador(texto: string): void {
 	}
 }
 
-interface RespuestaGuardada {
+interface TurnoGuardado {
+	/** id del mensaje de respuesta. */
+	id: string;
 	pregunta: PreguntaActual;
 	texto: string;
 	fuentes: SourceGroup[];
 }
 
-/** Última respuesta de esta pestaña, para no perderla si se recarga la página. */
-function leerGuardada(): RespuestaGuardada | null {
+/**
+ * El hilo de esta pestaña (todas las preguntas del tema con sus respuestas),
+ * para no perderlo si se recarga la página. Con el id de la conversación,
+ * al recargar se vuelve a abrir y se puede seguir preguntando.
+ */
+interface HiloGuardado {
+	conversationId: string | null;
+	threadId: string | null;
+	turnos: TurnoGuardado[];
+}
+
+function leerGuardada(): HiloGuardado | null {
 	try {
 		const crudo = window.sessionStorage.getItem(CLAVE_GUARDADA);
-		return crudo ? (JSON.parse(crudo) as RespuestaGuardada) : null;
+		if (!crudo) return null;
+		const d = JSON.parse(crudo) as Partial<HiloGuardado> & Partial<Omit<TurnoGuardado, "id">>;
+		if (Array.isArray(d.turnos) && d.turnos.length > 0) {
+			return { conversationId: d.conversationId ?? null, threadId: d.threadId ?? null, turnos: d.turnos };
+		}
+		// Formato anterior (una sola respuesta, sin conversación).
+		if (d.pregunta && typeof d.texto === "string") {
+			return {
+				conversationId: null,
+				threadId: null,
+				turnos: [{ id: "guardada", pregunta: d.pregunta, texto: d.texto, fuentes: d.fuentes ?? [] }],
+			};
+		}
+		return null;
 	} catch {
 		return null;
 	}
 }
 
-function guardar(r: RespuestaGuardada | null): void {
+function guardar(r: HiloGuardado | null): void {
 	try {
 		if (r) window.sessionStorage.setItem(CLAVE_GUARDADA, JSON.stringify(r));
 		else window.sessionStorage.removeItem(CLAVE_GUARDADA);
@@ -266,7 +291,15 @@ function Flujo() {
 	const [pregunta, setPregunta] = useState<PreguntaActual | null>(null);
 	// Cómo se muestra cada pregunta enviada (lo que se envía puede llevar la
 	// playa al final). Clave: el texto enviado.
-	const [mostradas, setMostradas] = useState<Record<string, PreguntaActual>>({});
+	const [mostradas, setMostradas] = useState<Record<string, PreguntaActual>>(() => {
+		// Al recargar con un hilo guardado, cada pregunta vuelve a mostrarse
+		// como la vio la persona (con su playa), no como se envió.
+		const g = typeof window === "undefined" ? null : leerGuardada();
+		return Object.fromEntries((g?.turnos ?? []).map((t) => [t.pregunta.envio, t.pregunta]));
+	});
+	// "¿Le sirvió?" ya respondido en esta visita (id de la respuesta → le sirvió).
+	// Así, al volver a una respuesta o al verla plegada en el hilo, no se pregunta otra vez.
+	const [calificadas, setCalificadas] = useState<Record<string, boolean>>({});
 	// Pregunta que espera para enviarse (ver efecto de abajo): una nueva
 	// espera a que el chat quede vacío; un seguimiento, a que termine lo que
 	// estuviera en curso. Va en una ref; `turnoEnvio` solo dispara el efecto.
@@ -278,9 +311,12 @@ function Flujo() {
 	const [seguimiento, setSeguimiento] = useState("");
 	// Veces que se tocó "Intentar otra vez" sin señal (para que se note que intentó).
 	const [intentos, setIntentos] = useState(0);
-	const [guardada, setGuardada] = useState<RespuestaGuardada | null>(() =>
+	const [guardada, setGuardada] = useState<HiloGuardado | null>(() =>
 		typeof window === "undefined" ? null : leerGuardada(),
 	);
+	// Recargó la página en una respuesta: se vuelve a abrir la conversación
+	// (el backend la recupera de la base) para poder seguir preguntando.
+	const [cargandoHilo, setCargandoHilo] = useState(false);
 
 	const pantalla = ruta[0] ?? "inicio";
 
@@ -339,12 +375,52 @@ function Flujo() {
 	const numero = Number(ruta[1]) || turnos.length;
 	const vista = pantalla === "respuesta" ? (turnos[numero - 1] ?? null) : null;
 
-	// La respuesta completa se guarda en la pestaña (sessionStorage): si la
-	// persona recarga sin querer (jalar hacia abajo en el celular), la vuelve a ver.
+	// Todo el hilo se guarda en la pestaña (sessionStorage): si la persona
+	// recarga sin querer (jalar hacia abajo en el celular), lo vuelve a ver y
+	// puede seguir preguntando. Se borra al salir (celular compartido, E2-11).
+	const { conversationId, getThreadId, loadConversation } = chat;
+	const hiloActual = useMemo<HiloGuardado | null>(
+		() =>
+			turnos.length === 0
+				? null
+				: {
+						conversationId,
+						threadId: getThreadId(),
+						turnos: turnos.map((t) => ({
+							id: t.mensaje.id,
+							pregunta: t.pregunta,
+							texto: t.mensaje.text,
+							fuentes: t.mensaje.sources ?? [],
+						})),
+					},
+		[turnos, conversationId, getThreadId],
+	);
 	useEffect(() => {
-		if (!vista || loading || error) return;
-		guardar({ pregunta: vista.pregunta, texto: vista.mensaje.text, fuentes: vista.mensaje.sources ?? [] });
-	}, [vista, loading, error]);
+		if (!vista || loading || error || !hiloActual) return;
+		guardar(hiloActual);
+	}, [vista, loading, error, hiloActual]);
+
+	// Al abrir la página (recarga): si quedó en una respuesta con su
+	// conversación guardada, se vuelve a abrir. Se decide en el primer pintado
+	// y no después: "atrás" hacia un tema que ya se dejó no lo reabre.
+	const aReabrir = useRef(pantalla === "respuesta" && guardada?.conversationId ? guardada : null);
+	useEffect(() => {
+		const g = aReabrir.current;
+		if (!g?.conversationId) return;
+		setCargandoHilo(true);
+		const ahora = new Date();
+		void loadConversation({
+			id: g.conversationId,
+			threadId: g.threadId ?? getThreadId(),
+			title: null,
+			createdAt: ahora,
+			updatedAt: ahora,
+			messageCount: g.turnos.length * 2,
+		}).finally(() => setCargandoHilo(false));
+		// Sin marca de "ya hecho": en desarrollo React monta dos veces y el
+		// primer intento se cancela al desmontar; el segundo es el que vale.
+		// eslint-disable-next-line react-hooks/exhaustive-deps -- solo al abrir la página
+	}, []);
 
 	// Al cambiar de pantalla: arriba del todo, foco en el título (los
 	// lectores de pantalla lo anuncian) y título de la pestaña.
@@ -437,9 +513,7 @@ function Flujo() {
 	function otraPregunta() {
 		// La respuesta que se deja queda guardada: si la persona toca "atrás"
 		// desde el inicio, la vuelve a ver (QA-15) en vez de un inicio repetido.
-		if (vista) {
-			setGuardada({ pregunta: vista.pregunta, texto: vista.mensaje.text, fuentes: vista.mensaje.sources ?? [] });
-		}
+		if (vista && hiloActual) setGuardada(hiloActual);
 		chat.resetChat();
 		setMostradas({});
 		setPregunta(null);
@@ -473,6 +547,14 @@ function Flujo() {
 	async function calificar(id: string, c: Calificacion) {
 		const nota = c.util ? 5 : 1;
 		await chat.rateMessage(id, { pertinence: nota, accuracy: nota }, c.comentario);
+		setCalificadas((m) => ({ ...m, [id]: c.util }));
+	}
+
+	/** ¿Esta respuesta ya quedó guardada y se puede calificar? */
+	function sePuedeCalificar(m: Message): boolean {
+		return (
+			!loading && !!chat.conversationId && m.persistenceStatus !== "failed" && !persistingMessageIds.has(m.id)
+		);
 	}
 
 	const tema = buscarTema(ruta[1]);
@@ -532,13 +614,19 @@ function Flujo() {
 				texto={mensaje.text}
 				fuentes={mensaje.sources ?? []}
 				onVolver={() => volver("inicio")}
-				puedeCalificar={
-					!loading &&
-					!!chat.conversationId &&
-					mensaje.persistenceStatus !== "failed" &&
-					!persistingMessageIds.has(mensaje.id)
-				}
+				puedeCalificar={sePuedeCalificar(mensaje)}
 				onCalificar={(c) => calificar(mensaje.id, c)}
+				calificada={calificadas[mensaje.id]}
+				anteriores={turnos.slice(0, numero - 1).map((t) => ({
+					id: t.mensaje.id,
+					pregunta: t.pregunta.texto,
+					playa: t.pregunta.playa,
+					texto: t.mensaje.text,
+					fuentes: t.mensaje.sources ?? [],
+					calificada: calificadas[t.mensaje.id],
+					puedeCalificar: sePuedeCalificar(t.mensaje),
+				}))}
+				onCalificarAnterior={calificar}
 				onOtraPregunta={otraPregunta}
 				onTerminar={encuestaHecha ? undefined : () => ir(`opinion/${numero}`)}
 				invitarEncuesta={!encuestaHecha && numero === 1}
@@ -569,22 +657,36 @@ function Flujo() {
 		);
 	}
 
-	// Respuesta guardada (tras recargar la página): se muestra igual, pero sin
-	// "¿Le sirvió?", porque la conversación ya no está abierta en el chat.
-	if (pantalla === "respuesta" && !loading && guardada) {
+	// Hilo guardado (tras recargar, mientras se vuelve a abrir la
+	// conversación, o al volver con "atrás" a un tema que ya se dejó): se
+	// muestra igual, pero sin "¿Le sirvió?" ni caja para seguir, porque esa
+	// conversación no está abierta.
+	const turnoGuardado = guardada ? (guardada.turnos[numero - 1] ?? guardada.turnos[guardada.turnos.length - 1]) : null;
+	if (pantalla === "respuesta" && (!loading || cargandoHilo) && guardada && turnoGuardado) {
+		const indice = guardada.turnos.indexOf(turnoGuardado);
 		return (
 			<Respuesta
-				key="guardada"
-				pregunta={guardada.pregunta.texto}
-				playa={guardada.pregunta.playa}
-				texto={guardada.texto}
-				fuentes={guardada.fuentes}
+				key={`guardada-${indice}`}
+				pregunta={turnoGuardado.pregunta.texto}
+				playa={turnoGuardado.pregunta.playa}
+				texto={turnoGuardado.texto}
+				fuentes={turnoGuardado.fuentes}
 				puedeCalificar={false}
 				onCalificar={async () => {}}
+				calificada={calificadas[turnoGuardado.id]}
+				anteriores={guardada.turnos.slice(0, indice).map((t) => ({
+					id: t.id,
+					pregunta: t.pregunta.texto,
+					playa: t.pregunta.playa,
+					texto: t.texto,
+					fuentes: t.fuentes,
+					calificada: calificadas[t.id],
+					puedeCalificar: false,
+				}))}
 				onVolver={() => volver("inicio")}
 				onOtraPregunta={otraPregunta}
 				onEscribirDeNuevo={() => {
-					setBorrador(guardada.pregunta.texto);
+					setBorrador(turnoGuardado.pregunta.texto);
 					irACaja(false);
 				}}
 				// La conversación ya no está abierta: un seguimiento iría sin

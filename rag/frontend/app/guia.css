@@ -1262,3 +1262,135 @@ body:has(.guia) {
 		}
 	}
 }
+
+/* ── Hilo: lo que ya preguntó sobre este tema (30-oct) ─────────────────────
+   Una línea por pregunta anterior, con su número; se abre al tocarla y
+   muestra la respuesta completa en versión compacta. Sin burbujas: es la
+   misma columna de la respuesta, como pide REGLAS-DISENO. */
+.guia-hilo {
+	margin: 22px 0 26px;
+}
+.guia-hilo > h2 {
+	font-size: 24px;
+	margin: 0 0 10px;
+}
+.guia-hilo ol {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: grid;
+	gap: 10px;
+}
+.guia-hilo details {
+	background: var(--papel);
+	border: 2px solid var(--borde-ctl);
+	border-radius: 6px;
+}
+.guia-hilo details[open] {
+	border-color: var(--marino);
+}
+.guia-hilo summary {
+	display: flex;
+	align-items: flex-start;
+	gap: 12px;
+	min-height: 56px;
+	padding: 12px 16px;
+	font-weight: 600;
+	cursor: pointer;
+	list-style: none;
+	border-radius: 4px;
+}
+.guia-hilo summary::-webkit-details-marker {
+	display: none;
+}
+.guia-hilo summary:focus-visible {
+	outline: 4px solid var(--marino);
+	outline-offset: 3px;
+}
+.guia-hilo .n {
+	flex: none;
+	display: grid;
+	place-items: center;
+	width: 34px;
+	height: 34px;
+	border-radius: 50%;
+	background: var(--marino);
+	color: #fff;
+	font-size: 18px;
+	line-height: 1;
+}
+.guia-hilo .q {
+	flex: 1;
+	min-width: 0;
+	padding-top: 2px;
+	overflow-wrap: break-word;
+}
+.guia-hilo .abrir {
+	flex: none;
+	padding-top: 2px;
+	color: var(--marino);
+	font-size: 18px;
+	white-space: nowrap;
+	text-decoration: underline;
+	text-underline-offset: 3px;
+}
+.guia-hilo details:not([open]) .abrir::before {
+	content: "Ver respuesta";
+}
+.guia-hilo details[open] .abrir::before {
+	content: "Cerrar";
+}
+.guia-hilo .cuerpo {
+	padding: 4px 18px 18px;
+	border-top: 2px solid var(--linea);
+}
+.guia-hilo h4 {
+	font-size: 21px;
+	margin: 18px 0 6px;
+}
+.guia-veredicto.compacto {
+	margin-top: 14px;
+	padding: 14px 16px;
+}
+.guia-veredicto.compacto .titulo {
+	margin: 0;
+	font-size: 24px;
+	font-weight: 700;
+	line-height: 1.25;
+}
+.guia-veredicto.compacto .resumen {
+	font-size: 20px;
+}
+.guia-fuentes.compacto ol {
+	margin-top: 6px;
+}
+.guia-fuentes.compacto .guia-fuente {
+	padding: 10px 0;
+}
+.guia-hilo .guia-sirvio {
+	margin-top: 18px;
+}
+.guia-hilo .guia-sirvio > p {
+	font-size: 20px;
+}
+.guia .usted .numero {
+	display: block;
+	font-weight: 600;
+	color: var(--marino);
+}
+.guia-seguir .pista {
+	margin: 4px 0 10px;
+}
+@media (max-width: 600px) {
+	.guia-hilo summary {
+		flex-wrap: wrap;
+	}
+	/* "Ver respuesta" baja bajo la pregunta, alineado con el texto. */
+	.guia-hilo .abrir {
+		width: 100%;
+		padding-left: 46px;
+	}
+	.guia-hilo .cuerpo {
+		padding: 4px 14px 14px;
+	}
+}

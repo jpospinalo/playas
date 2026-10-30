@@ -24,11 +24,14 @@ export const TXT = {
 	otraPlaya: "Otra playa o no sé",
 	escribirVacio: "Escriba su pregunta antes de tocar «Preguntar».",
 	escribirCorta: "Su pregunta es muy corta. Cuéntenos un poco más, por ejemplo qué pasó y en qué playa.",
-	seguirTitulo: "¿Quiere preguntar algo más sobre esto?",
-	seguirPista: "Escriba aquí lo que le faltó saber…",
+	seguirTitulo: "Siga preguntando sobre este mismo tema",
+	seguirRecuerda: "ATLAS recuerda lo que ya conversaron.",
+	seguirPista: "Escriba aquí su siguiente pregunta…",
+	// Sin tope de preguntas (decisión de Juan, 30-oct). Desde la 4.ª respuesta
+	// se avisa lo cierto: ATLAS entiende cada pregunta con lo último conversado.
 	seguirTope:
-		"Ya hizo varias preguntas seguidas sobre este caso. Si ahora quiere preguntar por otra cosa, es mejor empezar de nuevo.",
-	empezarDeNuevo: "Empezar de nuevo con otro tema",
+		"ATLAS recuerda mejor lo último que conversaron. Si quiere volver sobre algo del principio, escríbalo completo.",
+	empezarDeNuevo: "Nueva pregunta sobre otro tema (empieza de cero)",
 	esperaTitulo: "Buscando la respuesta",
 	esperaTexto: "Estamos leyendo las normas y las sentencias. Puede tardar hasta un minuto.",
 	sinSenal:

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { queryRagStream, throwIfSessionExpired } from "@/lib/api";
 import { expireAuthSession, getToken } from "@/lib/auth";
 import { API_URL } from "@/lib/config";
@@ -63,6 +63,8 @@ export interface UseChatReturn {
 	submit: (question: string) => Promise<void>;
 	resetChat: () => void;
 	loadConversation: (conv: Conversation) => Promise<void>;
+	/** Identificador del hilo actual (para volver a abrir la conversación al recargar). */
+	getThreadId: () => string;
 	/** A5 — reintenta guardar una respuesta con `persistenceStatus: "failed"`. */
 	retryPersistMessage: (messageId: string) => Promise<void>;
 	/** A6 — cancela únicamente la consulta en streaming actualmente activa. */
@@ -832,6 +834,8 @@ export function useChat({ onConversationChanged }: UseChatOptions = {}): UseChat
 		threadIdRef.current = generateId();
 	}
 
+	const getThreadId = useCallback(() => threadIdRef.current, []);
+
 	return {
 		messages,
 		input,
@@ -851,6 +855,7 @@ export function useChat({ onConversationChanged }: UseChatOptions = {}): UseChat
 		submit,
 		resetChat,
 		loadConversation,
+		getThreadId,
 		retryPersistMessage,
 		cancel,
 		rateMessage,

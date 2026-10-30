@@ -170,9 +170,87 @@ describe("Respuesta (diseño v3)", () => {
 		expect(screen.getByRole("button", { name: TXT.empezarDeNuevo })).toHaveClass("guia-btn");
 	});
 
-	it("tras varias respuestas seguidas sugiere empezar de nuevo", () => {
+	it("tras varias respuestas seguidas avisa qué recuerda ATLAS, sin tope (decisión 30-oct)", () => {
 		pintar("Sí. Texto.", { muchasSeguidas: true });
 		expect(screen.getByText(TXT.seguirTope)).toBeInTheDocument();
-		expect(screen.getByRole("button", { name: TXT.empezarDeNuevo })).toHaveClass("guia-btn");
+		// La caja sigue ahí y "otro tema" no se vuelve la acción principal.
+		expect(screen.getByRole("textbox", { name: TXT.seguirTitulo })).toBeInTheDocument();
+		expect(screen.getByRole("button", { name: TXT.empezarDeNuevo })).toHaveClass("guia-btn-sec");
+	});
+
+	it("la caja de seguimiento dice que ATLAS recuerda lo conversado", () => {
+		pintar("Sí. Texto.");
+		expect(screen.getByRole("textbox", { name: TXT.seguirTitulo })).toHaveAccessibleDescription(
+			TXT.seguirRecuerda,
+		);
+		expect(screen.getByRole("button", { name: TXT.empezarDeNuevo })).toHaveTextContent(
+			"Nueva pregunta sobre otro tema (empieza de cero)",
+		);
+	});
+});
+
+describe("Hilo: lo que ya preguntó sobre este tema", () => {
+	const fuente = (n: number, titulo: string): SourceGroup => ({
+		source: `${titulo}.md`,
+		title: titulo,
+		doc_type: "normativa",
+		metadata: {},
+		fragments: [{ index: n, content: `Contenido ${titulo}`, metadata: {} }],
+	});
+	const anteriores = [
+		{
+			id: "r1",
+			pregunta: "¿Puedo construir en la playa?",
+			playa: "Taganga",
+			texto: "No. Hace falta permiso [doc1].",
+			fuentes: [fuente(1, "Decreto uno")],
+			calificada: true,
+			puedeCalificar: true,
+		},
+		{
+			id: "r2",
+			pregunta: "¿Y si es algo temporal?",
+			playa: null,
+			texto: "Tampoco. También pide permiso [doc1].",
+			fuentes: [fuente(1, "Decreto dos")],
+			puedeCalificar: true,
+		},
+	];
+
+	it("muestra las anteriores plegadas, numeradas, y la actual completa como pregunta 3", async () => {
+		const onCalificarAnterior = vi.fn().mockResolvedValue(undefined);
+		pintar("Sí. La Capitanía [doc1].", { anteriores, onCalificarAnterior });
+		const hilo = screen.getByRole("region", { name: "Lo que ya preguntó sobre este tema" });
+		const items = Array.from(hilo.querySelectorAll<HTMLLIElement>(":scope > ol > li"));
+		expect(items).toHaveLength(2);
+		const primera = items[0].querySelector("details")!;
+		expect(primera.open).toBe(false);
+		expect(within(primera).getByText(/Pregunta 1:/)).toBeInTheDocument();
+		expect(screen.getByText(/Pregunta 3 de este tema\./)).toBeInTheDocument();
+		// La actual sigue siendo el único h1.
+		expect(screen.getAllByRole("heading", { level: 1 })).toHaveLength(1);
+		// Se abre al tocarla y muestra su respuesta y su "Ya respondió".
+		await userEvent.click(primera.querySelector("summary")!);
+		expect(primera.open).toBe(true);
+		expect(within(primera).getByText(/Hace falta permiso/)).toBeInTheDocument();
+		expect(within(primera).getByText("Ya respondió: le sirvió.")).toBeInTheDocument();
+		// La segunda todavía se puede calificar, con su propio "¿Le sirvió?".
+		const segunda = items[1].querySelector("details")!;
+		await userEvent.click(segunda.querySelector("summary")!);
+		await userEvent.click(within(segunda).getByRole("button", { name: "Sí" }));
+		expect(onCalificarAnterior).toHaveBeenCalledWith("r2", { util: true });
+	});
+
+	it("las fuentes de cada respuesta del hilo tienen ids propios (no chocan con la actual)", () => {
+		pintar("Sí. La Capitanía [doc1].", { anteriores });
+		expect(document.getElementById("t1-fuente-1")).toHaveTextContent("Decreto uno");
+		expect(document.getElementById("t2-fuente-1")).toHaveTextContent("Decreto dos");
+		expect(document.querySelectorAll("#fuente-1")).toHaveLength(1);
+	});
+
+	it("la respuesta actual ya calificada no vuelve a preguntar", () => {
+		pintar("Sí. Texto.", { calificada: false });
+		expect(screen.queryByText("¿Esta respuesta le sirvió?")).not.toBeInTheDocument();
+		expect(screen.getByText("Ya respondió: no le sirvió.")).toBeInTheDocument();
 	});
 });
