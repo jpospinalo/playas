@@ -357,6 +357,24 @@ describe("Hilo: lo que ya preguntó sobre este tema", () => {
 		expect(screen.getByRole("link", { name: "la norma" })).toHaveAttribute("href", "https://ejemplo.gov.co/ley/1234");
 	});
 
+	it("QA-F12: con más de 3 anteriores muestra las 2 últimas y 'Ver las N preguntas anteriores'", async () => {
+		const muchas = Array.from({ length: 5 }, (_, i) => ({
+			id: `m${i + 1}`,
+			pregunta: `Pregunta número ${i + 1}`,
+			playa: null,
+			texto: `Sí. Respuesta ${i + 1}.`,
+			fuentes: [],
+			puedeCalificar: true,
+		}));
+		pintar("Sí. Texto.", { anteriores: muchas });
+		const hilo = screen.getByRole("region", { name: "Lo que ya preguntó sobre este tema" });
+		expect(hilo.querySelectorAll("summary")).toHaveLength(2);
+		expect(within(hilo).getByText(/Pregunta 4:/)).toBeInTheDocument();
+		await userEvent.click(screen.getByRole("button", { name: "Ver las 3 preguntas anteriores" }));
+		expect(hilo.querySelectorAll("summary")).toHaveLength(5);
+		expect(screen.getByText(/Pregunta 6 de este tema\./)).toBeInTheDocument();
+	});
+
 	it("la respuesta actual ya calificada no vuelve a preguntar", () => {
 		pintar("Sí. Texto.", { calificada: false });
 		expect(screen.queryByText("¿Esta respuesta le sirvió?")).not.toBeInTheDocument();

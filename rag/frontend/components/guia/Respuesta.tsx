@@ -329,11 +329,32 @@ function Hilo({
 	anteriores: TurnoAnterior[];
 	onCalificar?: (id: string, c: Calificacion) => Promise<void>;
 }) {
+	// QA-F12: con más de 3 preguntas anteriores, en el celular había que
+	// pasar ~850 px de tarjetas antes de la respuesta actual. Se muestran las
+	// 2 últimas y un botón para ver las demás (la numeración no cambia).
+	const [todas, setTodas] = useState(false);
+	const ocultas = !todas && anteriores.length > 3 ? anteriores.length - 2 : 0;
 	return (
 		<section className="guia-hilo" aria-labelledby="hilo-titulo">
 			<h2 id="hilo-titulo">Lo que ya preguntó sobre este tema</h2>
-			<ol>
-				{anteriores.map((t, i) => {
+			{ocultas > 0 ? (
+				<button
+					type="button"
+					className="guia-btn-sec guia-hilo-mas"
+					aria-expanded={false}
+					onClick={(e) => {
+						const seccion = e.currentTarget.closest(".guia-hilo");
+						setTodas(true);
+						// El botón desaparece: el foco pasa a la primera pregunta.
+						requestAnimationFrame(() => seccion?.querySelector<HTMLElement>("summary")?.focus());
+					}}
+				>
+					Ver las {ocultas} preguntas anteriores
+				</button>
+			) : null}
+			<ol start={ocultas + 1}>
+				{anteriores.slice(ocultas).map((t, j) => {
+					const i = j + ocultas;
 					const n = i + 1;
 					const firme = ordenarRespuesta(t.texto).tipo === "normal";
 					return (
