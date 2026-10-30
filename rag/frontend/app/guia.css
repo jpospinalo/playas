@@ -1279,7 +1279,14 @@ body:has(.guia) {
 	margin: 0;
 	padding: 0;
 	display: grid;
+	/* minmax(0, 1fr): una tabla o palabra larga dentro de una respuesta
+	   abierta no ensancha la columna (se salía 16 px a 360). */
+	grid-template-columns: minmax(0, 1fr);
 	gap: 10px;
+}
+.guia-hilo li,
+.guia-hilo details {
+	min-width: 0;
 }
 .guia-hilo details {
 	background: var(--papel);
@@ -1343,6 +1350,7 @@ body:has(.guia) {
 .guia-hilo .cuerpo {
 	padding: 4px 18px 18px;
 	border-top: 2px solid var(--linea);
+	overflow-wrap: break-word;
 }
 .guia-hilo h4 {
 	font-size: 21px;
@@ -1393,4 +1401,23 @@ body:has(.guia) {
 	.guia-hilo .cuerpo {
 		padding: 4px 14px 14px;
 	}
+}
+
+/* "Tenga en cuenta" sin salirse: el texto del recuadro puede encogerse
+   (en el hilo, con menos ancho, se salía 13 px a 360). */
+.guia-ojo > div {
+	min-width: 0;
+}
+.guia-hilo .guia-ojo {
+	gap: 10px;
+	padding: 12px;
+}
+.guia-hilo .guia-ojo > svg {
+	width: 28px;
+	height: 28px;
+}
+.guia-hilo .guia-ojo h4 {
+	margin: 0 0 6px;
+	font-size: 20px;
+	color: var(--ambar-txt);
 }
