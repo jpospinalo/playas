@@ -525,7 +525,29 @@ function Sirvio({
 		if (paso === "que-falto") document.getElementById(idFalto)?.focus();
 	}, [paso, idFalto]);
 
+	// QA-F06a: un "No" tocado se guarda aunque la persona no toque "Enviar".
+	// Si sigue a otra pantalla (o cierra la página) con "¿Qué le faltó?"
+	// abierto, el "No" se manda sin comentario. Solo una vez.
+	const noPendiente = useRef(false);
+	const calificarRef = useRef(onCalificar);
+	useEffect(() => {
+		calificarRef.current = onCalificar;
+	});
+	useEffect(() => {
+		const mandarNo = () => {
+			if (!noPendiente.current) return;
+			noPendiente.current = false;
+			void calificarRef.current({ util: false }).catch(() => {});
+		};
+		window.addEventListener("pagehide", mandarNo);
+		return () => {
+			window.removeEventListener("pagehide", mandarNo);
+			mandarNo();
+		};
+	}, []);
+
 	async function enviar(c: Calificacion) {
+		noPendiente.current = false;
 		fijarAlto();
 		setPaso("enviando");
 		try {
@@ -569,6 +591,7 @@ function Sirvio({
 							disabled={paso === "enviando"}
 							onClick={() => {
 								fijarAlto();
+								noPendiente.current = true;
 								setPaso("que-falto");
 							}}
 						>

@@ -112,6 +112,27 @@ describe("Respuesta (diseño v3)", () => {
 		expect(props.onEscribirDeNuevo).toHaveBeenCalled();
 	});
 
+	it("QA-F06a: 'No' sin 'Enviar' se guarda al salir de la pantalla, una sola vez", async () => {
+		const onCalificar = vi.fn().mockResolvedValue(undefined);
+		pintar("Sí. Texto [doc1].", { onCalificar });
+		await userEvent.click(screen.getByRole("button", { name: "No" }));
+		expect(onCalificar).not.toHaveBeenCalled();
+		cleanup();
+		expect(onCalificar).toHaveBeenCalledTimes(1);
+		expect(onCalificar).toHaveBeenCalledWith({ util: false });
+	});
+
+	it("QA-F06a: 'No' con 'Enviar' no se manda dos veces al salir", async () => {
+		const onCalificar = vi.fn().mockResolvedValue(undefined);
+		pintar("Sí. Texto [doc1].", { onCalificar });
+		await userEvent.click(screen.getByRole("button", { name: "No" }));
+		await userEvent.type(screen.getByLabelText(/Qué le faltó/), "El horario");
+		await userEvent.click(screen.getByRole("button", { name: "Enviar" }));
+		await screen.findByText(/Gracias\. Su respuesta/);
+		cleanup();
+		expect(onCalificar).toHaveBeenCalledTimes(1);
+	});
+
 	it("tras enviar '¿Qué le faltó?' el recuadro no se encoge (un doble toque no cae en 'Empezar de nuevo')", async () => {
 		pintar("Sí. Texto [doc1].");
 		await userEvent.click(screen.getByRole("button", { name: "No" }));
