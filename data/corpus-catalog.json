@@ -550,17 +550,17 @@
         "Corporación": 278,
         "Radicado": 278,
         "chunk_index": 110,
-        "entities": 44,
-        "keywords": 1,
-        "keywords_str": 1,
+        "entities": 45,
+        "keywords": 2,
+        "keywords_str": 2,
         "section_heading": 101,
         "section_index": 94,
         "section_name": 94,
-        "summary": 3,
+        "summary": 5,
         "total_chunks_in_section": 251
       },
       "export_records_matched_by_id": 278,
-      "export_text_mismatches": 55,
+      "export_text_mismatches": 56,
       "format": ".pdf",
       "gold_chunks": 282,
       "gold_ids_missing_export": 4,
@@ -1010,16 +1010,16 @@
         "Radicado": 278,
         "chunk_index": 110,
         "entities": 31,
-        "keywords": 1,
-        "keywords_str": 1,
+        "keywords": 2,
+        "keywords_str": 2,
         "section_heading": 101,
         "section_index": 94,
         "section_name": 94,
-        "summary": 3,
+        "summary": 5,
         "total_chunks_in_section": 251
       },
       "export_records_matched_by_id": 278,
-      "export_text_mismatches": 55,
+      "export_text_mismatches": 56,
       "format": ".pdf",
       "gold_chunks": 282,
       "gold_ids_missing_export": 4,
@@ -1911,7 +1911,7 @@
     },
     {
       "code": "text_mismatches",
-      "detail": "1269 registros; diferencia de snapshots, no autorización para reemplazar datos",
+      "detail": "1271 registros; diferencia de snapshots, no autorización para reemplazar datos",
       "path": "data/chroma-rag_playas_magdalena-20260731-135720.jsonl.gz",
       "severity": "warning"
     },
@@ -2268,14 +2268,14 @@
         "articulo_titulo": 136,
         "capitulo": 66,
         "chunk_index": 1363,
-        "entities": 1055,
-        "keywords": 342,
-        "keywords_str": 343,
+        "entities": 1056,
+        "keywords": 344,
+        "keywords_str": 345,
         "norma": 524,
         "section_heading": 1072,
         "section_index": 953,
         "section_name": 946,
-        "summary": 415,
+        "summary": 419,
         "titulo": 32,
         "total_chunks_in_section": 3655
       },
@@ -2565,7 +2565,7 @@
           "source": "decreto-2324-de-1984.md"
         }
       ],
-      "text_mismatches": 1269
+      "text_mismatches": 1271
     },
     "files": [
       {
@@ -2914,9 +2914,9 @@
         "sha256": "1a22812c4148d66e7c89ff7779af5bc7ce325b72288976789fe634a333097f8d"
       },
       {
-        "bytes": 198551,
+        "bytes": 198441,
         "path": "data/documents/bronze/jurisprudencia/CE_2da_AP_2011_842_Gabriel_Carrero_VS_Dimar_Erosión_Costera.md",
-        "sha256": "af3054fde8812a79184c2c87c804e19b8f79445734df7a9949a778315b8f8181"
+        "sha256": "2a892a78c5088f7870837cb745a5fd6ca99256c29b1d004fa54897d22daabbcd"
       },
       {
         "bytes": 479,
@@ -3279,9 +3279,9 @@
         "sha256": "a4560f6d33bf6b8116a70c3374a92280186238ae70585cdceda34b80fcfbe652"
       },
       {
-        "bytes": 198551,
+        "bytes": 198441,
         "path": "data/documents/bronze/jurisprudencia/SENTENCIA DE SEGUNDA INSTANCIA 47001-2332-000-2011-08425-02- GABRIEL CARRERO.md",
-        "sha256": "af3054fde8812a79184c2c87c804e19b8f79445734df7a9949a778315b8f8181"
+        "sha256": "2a892a78c5088f7870837cb745a5fd6ca99256c29b1d004fa54897d22daabbcd"
       },
       {
         "bytes": 494,
@@ -3909,9 +3909,9 @@
         "sha256": "652f31d261aff5e8d8bf3078e4138e4ebe587b146e2a6179ba3dea860442691f"
       },
       {
-        "bytes": 645275,
+        "bytes": 645088,
         "path": "data/documents/gold/jurisprudencia/CE_2da_AP_2011_842_Gabriel_Carrero_VS_Dimar_Erosión_Costera.jsonl",
-        "sha256": "807ecd15e8f465b3b978250d2931dc5c20eb0a3fe102b977dc883bbb32062322"
+        "sha256": "6d16bf57b1a1608dd50cf3398e7a06eeeb2f00e3287c9aa60a0d7bfe89fba343"
       },
       {
         "bytes": 265809,
@@ -3969,9 +3969,9 @@
         "sha256": "60b3cfa95afa9a050590a3142c25d1949d74086943ef4e845c06fa306d2c55ae"
       },
       {
-        "bytes": 662779,
+        "bytes": 662685,
         "path": "data/documents/gold/jurisprudencia/SENTENCIA DE SEGUNDA INSTANCIA 47001-2332-000-2011-08425-02- GABRIEL CARRERO.jsonl",
-        "sha256": "5d3df1d91c889a3878306754ad4d1b27a3ee3365bddec739592134ccf21ae40f"
+        "sha256": "cbf2eca9f02b7b19b06c8fbe24b6ad0e815293bf0919a848ed43713f3efff06f"
       },
       {
         "bytes": 237694,
@@ -4474,9 +4474,9 @@
         "sha256": "bc2f30942bbd846d29077873b9236c9996ef8618c3d256e2846a31306445ab3b"
       },
       {
-        "bytes": 201995,
+        "bytes": 201884,
         "path": "data/documents/silver/jurisprudencia/CE_2da_AP_2011_842_Gabriel_Carrero_VS_Dimar_Erosión_Costera.jsonl",
-        "sha256": "1f322c73ae830c51ed46deb4f374ebf18b82a4a88829c6e7c16dc484c57d40cd"
+        "sha256": "f332a1ac64e7ec93dce01b11237e1699f14ee7677ba585024708c7006324910f"
       },
       {
         "bytes": 80146,
@@ -4534,9 +4534,9 @@
         "sha256": "24dfbc7070097a9fdc6d42e4419668bc64d9000faa26233f5389b2b1f151bbd3"
       },
       {
-        "bytes": 202115,
+        "bytes": 202004,
         "path": "data/documents/silver/jurisprudencia/SENTENCIA DE SEGUNDA INSTANCIA 47001-2332-000-2011-08425-02- GABRIEL CARRERO.jsonl",
-        "sha256": "052ea49bdb0c88b69d60b91b504d4c619d03ec1bf3f320cb7aaeb877ed072112"
+        "sha256": "018ce33bb042dc326f21a50391c89e9027415cea61cbd64536f47d463184240c"
       },
       {
         "bytes": 85235,

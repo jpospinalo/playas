@@ -900,7 +900,7 @@ PRIMERO:  MODIFICAR la  orden  dada  respecto  al  estudio  y  declaración  de 
 
 SEGUNDO: MODIFICAR la orden dada en el párrafo cuarto y quinto del numeral tercero de la parte resolutiva de la sentencia de primera instancia, el cual quedará así:
 
-'Se ordena a las autoridades demandadas que conformen una mesa de trabajo  en  la  que  se  definirá,  adoptará  y  ejecutará  el  Plan  Maestro  de Consultado en https://relatoria.consejodeestado.gov.co:8080/Vistas/Casos/list\_procesos.aspx?guid=47001233100
+'Se ordena a las autoridades demandadas que conformen una mesa de trabajo  en  la  que  se  definirá,  adoptará  y  ejecutará  el  Plan  Maestro  de
 
 Erosión Costera como instrumento de planificación para atender la erosión costera  en  el  Departamento  del  Magdalena,  así  como  sus  causas; determinar las políticas y acciones que debe emprender cada una de las entidades en el marco de sus competencias, particularmente las modificaciones en los planes de desarrollo, ordenamiento territorial y los presupuestos departamental y distrital; las obras que se deban ejecutar a cargo del Departamento del Magdalena, del Distrito de Santa Marta y de CORPAMAG y los compromisos de la DIMAR y del Ministerio del Medio Ambiente.  Exhortándolos  para  que,  al  momento  de  cumplir  las  órdenes dadas  y  desplegar  las  acciones  tendientes  a  resolver  la  problemática ambiental,  apliquen  y  articulen  los  demás  instrumentos  de  planeación dispuestos para atender la ocurrencia e impacto de procesos erosivos, tales como: los Planes Integrales de Gestión del Cambio Climático Sectoriales y Territoriales y POMIUAC.
 
