@@ -6,7 +6,18 @@ describe("pregunta pendiente atada a la persona (E2-19)", () => {
 
 	it("se ofrece de nuevo solo a quien la hizo", () => {
 		guardarPendiente({ texto: "¿Puedo vender?", envio: "¿Puedo vender?", playa: null }, "persona-1");
-		expect(leerPendiente("persona-1")).toEqual({ texto: "¿Puedo vender?", envio: "¿Puedo vender?", playa: null });
+		expect(leerPendiente("persona-1")).toEqual({
+			texto: "¿Puedo vender?",
+			envio: "¿Puedo vender?",
+			playa: null,
+			conversationId: null,
+			threadId: null,
+		});
+	});
+
+	it("un seguimiento guarda su conversación para retomarlo en el mismo tema (QA-F03)", () => {
+		guardarPendiente({ texto: "¿y si?", envio: "¿y si?", playa: null, conversationId: "c1", threadId: "t1" }, "p");
+		expect(leerPendiente("p")).toMatchObject({ conversationId: "c1", threadId: "t1" });
 	});
 
 	it("si entra otra persona no la ve y se borra", () => {

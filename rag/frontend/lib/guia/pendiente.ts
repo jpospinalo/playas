@@ -8,6 +8,9 @@ export interface PreguntaPendiente {
 	texto: string;
 	envio: string;
 	playa: string | null;
+	/** Si era un seguimiento: la conversación a la que pertenece (QA-F03). */
+	conversationId?: string | null;
+	threadId?: string | null;
 }
 
 /**
@@ -40,7 +43,13 @@ export function leerPendiente(usuario: string): PreguntaPendiente | null {
 			return null;
 		}
 		return typeof p.texto === "string" && typeof p.envio === "string"
-			? { texto: p.texto, envio: p.envio, playa: typeof p.playa === "string" ? p.playa : null }
+			? {
+					texto: p.texto,
+					envio: p.envio,
+					playa: typeof p.playa === "string" ? p.playa : null,
+					conversationId: typeof p.conversationId === "string" ? p.conversationId : null,
+					threadId: typeof p.threadId === "string" ? p.threadId : null,
+				}
 			: null;
 	} catch {
 		return null;

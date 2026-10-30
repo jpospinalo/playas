@@ -34,7 +34,7 @@ import {
 	terminarMedicion,
 	transcurrido,
 } from "@/lib/medicion";
-import { borrarPendiente, guardarPendiente, leerPendiente } from "@/lib/guia/pendiente";
+import { borrarPendiente, guardarPendiente, leerPendiente, type PreguntaPendiente } from "@/lib/guia/pendiente";
 import type { Message, SourceGroup } from "@/lib/types";
 
 /**
@@ -354,7 +354,7 @@ function Flujo({ usuario }: { usuario: string }) {
 	);
 	// Pregunta que quedó sin respuesta (sesión vencida o recarga durante la
 	// espera): al volver se ofrece seguir con ella (UX-02). Solo a su dueño.
-	const [retomar, setRetomar] = useState<PreguntaActual | null>(() =>
+	const [retomar, setRetomar] = useState<PreguntaPendiente | null>(() =>
 		typeof window === "undefined" ? null : leerPendiente(usuario),
 	);
 	const [segundos, setSegundos] = useState(0);
@@ -536,9 +536,12 @@ function Flujo({ usuario }: { usuario: string }) {
 		setRetomar(null);
 		// Si la sesión vence a mitad de la espera, la pregunta no se pierde: al
 		// volver a entrar la misma persona se le ofrece seguir (UX-02, E2-19).
-		// Un seguimiento se guarda también; al retomarlo se envía como pregunta
-		// nueva (la conversación ya no está abierta).
-		guardarPendiente(p, usuario);
+		// Un seguimiento se guarda con su conversación: al retomarlo se vuelve a
+		// abrir y sigue el mismo tema (QA-F03).
+		guardarPendiente(
+			esNueva ? p : { ...p, conversationId: chat.conversationId, threadId: chat.getThreadId() },
+			usuario,
+		);
 		if (typeof navigator !== "undefined" && navigator.onLine === false) {
 			setSinSenal(true);
 			pendienteRef.current = null;
@@ -570,7 +573,10 @@ function Flujo({ usuario }: { usuario: string }) {
 			ir("inicio");
 			return;
 		}
-		if (!esSeguimiento) chat.resetChat();
+		// QA-F05: si la pregunta nueva ya abrió su conversación (falló después),
+		// se reintenta en la misma; abrir otra dejaba la pregunta dos veces.
+		const reutilizar = !esSeguimiento && !!chat.conversationId && turnos.length === 0;
+		if (!esSeguimiento && !reutilizar) chat.resetChat();
 		if (navigator.onLine === false) {
 			setSinSenal(true);
 			setIntentos((n) => n + 1);
@@ -580,7 +586,7 @@ function Flujo({ usuario }: { usuario: string }) {
 		setIntentos(0);
 		setSegundos(0);
 		iniciarMedicion();
-		pendienteRef.current = { envio: pregunta.envio, nueva: !esSeguimiento };
+		pendienteRef.current = { envio: pregunta.envio, nueva: !esSeguimiento && !reutilizar };
 		setTurnoEnvio((n) => n + 1);
 	}
 
@@ -653,7 +659,26 @@ function Flujo({ usuario }: { usuario: string }) {
 				tituloRef={tituloRef}
 				pregunta={retomar.texto}
 				playa={retomar.playa}
-				onSeguir={() => preguntar(retomar.texto, retomar.envio, retomar.playa)}
+				onSeguir={() => {
+					const r = retomar;
+					const p = { texto: r.texto, envio: r.envio, playa: r.playa };
+					if (!r.conversationId) {
+						preguntar(r.texto, r.envio, r.playa);
+						return;
+					}
+					// QA-F03: era un seguimiento. Se reabre su conversación (el
+					// servidor la recupera) y se manda como la siguiente del tema.
+					setRetomar(null);
+					const ahora = new Date();
+					void loadConversation({
+						id: r.conversationId,
+						threadId: r.threadId ?? getThreadId(),
+						title: null,
+						createdAt: ahora,
+						updatedAt: ahora,
+						messageCount: 0,
+					}).then(() => enviar(p, false));
+				}}
 				onEmpezar={() => {
 					borrarPendiente();
 					setRetomar(null);
