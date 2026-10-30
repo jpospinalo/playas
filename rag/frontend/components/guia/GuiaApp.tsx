@@ -197,18 +197,36 @@ const CLAVE_GUARDADA = "atlas:ultima-respuesta";
 const EVENTO_INICIO = "atlas:ir-inicio";
 const CLAVE_BORRADOR = "atlas:borrador";
 
-/** Lo escrito en la caja del inicio, para no perderlo si la pestaña se recarga. */
-function leerBorrador(): string {
+/**
+ * Lo escrito en la caja del inicio, para no perderlo si la pestaña se recarga.
+ * Se guarda con su dueño: si la sesión vence sin "Salir" y entra otra persona
+ * en el mismo celular, el borrador se borra sin mostrarse (mismo criterio que
+ * la pregunta pendiente y el hilo, E2-19).
+ */
+function leerBorrador(usuario: string): string {
 	try {
-		return window.sessionStorage.getItem(CLAVE_BORRADOR) ?? "";
+		const crudo = window.sessionStorage.getItem(CLAVE_BORRADOR);
+		if (!crudo) return "";
+		const d = JSON.parse(crudo) as { usuario?: string; texto?: string };
+		if (d.usuario !== usuario || typeof d.texto !== "string") {
+			window.sessionStorage.removeItem(CLAVE_BORRADOR);
+			return "";
+		}
+		return d.texto;
 	} catch {
+		// Formato anterior (texto suelto, sin dueño) o almacenamiento roto: no se muestra.
+		try {
+			window.sessionStorage.removeItem(CLAVE_BORRADOR);
+		} catch {
+			// nada que borrar
+		}
 		return "";
 	}
 }
 
-function guardarBorrador(texto: string): void {
+function guardarBorrador(texto: string, usuario?: string): void {
 	try {
-		if (texto) window.sessionStorage.setItem(CLAVE_BORRADOR, texto);
+		if (texto && usuario) window.sessionStorage.setItem(CLAVE_BORRADOR, JSON.stringify({ usuario, texto }));
 		else window.sessionStorage.removeItem(CLAVE_BORRADOR);
 	} catch {
 		// Sin almacenamiento: solo se pierde esta comodidad.
@@ -326,8 +344,8 @@ function Flujo({ usuario }: { usuario: string }) {
 	const pendienteRef = useRef<{ envio: string; nueva: boolean } | null>(null);
 	const [turnoEnvio, setTurnoEnvio] = useState(0);
 	const [sinSenal, setSinSenal] = useState(false);
-	const [borrador, setBorrador] = useState(() => (typeof window === "undefined" ? "" : leerBorrador()));
-	useEffect(() => guardarBorrador(borrador), [borrador]);
+	const [borrador, setBorrador] = useState(() => (typeof window === "undefined" ? "" : leerBorrador(usuario)));
+	useEffect(() => guardarBorrador(borrador, usuario), [borrador, usuario]);
 	const [seguimiento, setSeguimiento] = useState("");
 	// Veces que se tocó "Intentar otra vez" sin señal (para que se note que intentó).
 	const [intentos, setIntentos] = useState(0);
