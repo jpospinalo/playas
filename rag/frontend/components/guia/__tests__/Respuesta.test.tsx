@@ -4,6 +4,7 @@ import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { Respuesta } from "@/components/guia/Respuesta";
 import { TXT } from "@/lib/guia/textos";
+import { YA_CALIFICADO } from "@/lib/api";
 import type { SourceGroup } from "@/lib/types";
 
 const FUENTES: SourceGroup[] = [
@@ -187,6 +188,15 @@ describe("Respuesta (diseño v3)", () => {
 		expect(screen.getByRole("button", { name: TXT.empezarDeNuevo })).toHaveTextContent(
 			"Nueva pregunta sobre otro tema (empieza de cero)",
 		);
+	});
+});
+
+describe("¿Le sirvió? ya respondido antes (409)", () => {
+	it("si el servidor ya tenía la opinión, lo dice sin mostrar error", async () => {
+		pintar("Sí. Texto.", { onCalificar: vi.fn().mockRejectedValue(new Error(YA_CALIFICADO)) });
+		await userEvent.click(screen.getByRole("button", { name: "Sí" }));
+		expect(await screen.findByText(/Ya había respondido sobre esta respuesta/)).toHaveAttribute("role", "status");
+		expect(screen.queryByRole("alert")).not.toBeInTheDocument();
 	});
 });
 

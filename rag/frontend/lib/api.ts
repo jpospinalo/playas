@@ -218,6 +218,9 @@ export async function submitConversationFeedback(
 	return res.json() as Promise<{ id: string }>;
 }
 
+/** El servidor ya tenía la opinión de esta persona sobre ese mensaje (409). */
+export const YA_CALIFICADO = "Ya existe feedback para este mensaje.";
+
 export async function submitMessageFeedback(
 	request: MessageFeedbackRequest,
 ): Promise<{ id: string }> {
@@ -230,7 +233,7 @@ export async function submitMessageFeedback(
 	});
 
 	if (res.status === 409) {
-		throw new Error("Ya existe feedback para este mensaje.");
+		throw new Error(YA_CALIFICADO);
 	}
 
 	await throwIfSessionExpired(res, token);

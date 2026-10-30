@@ -11,6 +11,7 @@ import { CajaPregunta } from "@/components/guia/Pantallas";
 import { Fuente } from "@/components/guia/Fuente";
 import { agruparRepetidas } from "@/lib/guia/fuentes";
 import { nombreFuente } from "@/lib/referencia";
+import { YA_CALIFICADO } from "@/lib/api";
 import { TXT } from "@/lib/guia/textos";
 
 const TXT_NO_GUARDADA =
@@ -479,7 +480,7 @@ function Sirvio({
 	calificada?: boolean;
 	onCalificar: (c: Calificacion) => Promise<void>;
 }) {
-	const [paso, setPaso] = useState<"preguntar" | "que-falto" | "enviando" | "gracias" | "error">(
+	const [paso, setPaso] = useState<"preguntar" | "que-falto" | "enviando" | "gracias" | "error" | "ya">(
 		"preguntar",
 	);
 	const [comentario, setComentario] = useState("");
@@ -501,7 +502,7 @@ function Sirvio({
 		if (alto) setAltoMinimo((a) => Math.max(a ?? 0, alto));
 	}
 	useEffect(() => {
-		if (paso === "gracias" || paso === "error") mensajeRef.current?.focus();
+		if (paso === "gracias" || paso === "error" || paso === "ya") mensajeRef.current?.focus();
 		if (paso === "que-falto") document.getElementById(idFalto)?.focus();
 	}, [paso, idFalto]);
 
@@ -511,8 +512,10 @@ function Sirvio({
 		try {
 			await onCalificar(c);
 			setPaso("gracias");
-		} catch {
-			setPaso("error");
+		} catch (e) {
+			// Ya la había calificado antes (p. ej. antes de recargar): no es un
+			// error, su opinión ya está guardada.
+			setPaso(e instanceof Error && e.message === YA_CALIFICADO ? "ya" : "error");
 		}
 	}
 
@@ -581,6 +584,11 @@ function Sirvio({
 			{paso === "gracias" ? (
 				<p className="gracias" role="status" ref={mensajeRef} tabIndex={-1}>
 					Gracias. Su respuesta nos ayuda a mejorar ATLAS.
+				</p>
+			) : null}
+			{paso === "ya" ? (
+				<p className="gracias" role="status" ref={mensajeRef} tabIndex={-1}>
+					Ya había respondido sobre esta respuesta. Su opinión quedó guardada.
 				</p>
 			) : null}
 			{paso === "error" ? (
