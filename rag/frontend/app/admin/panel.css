@@ -2947,3 +2947,46 @@ html:has(.pnl) {
 		grid-row: 2;
 	}
 }
+
+/* Desplegables con flecha propia (no la del sistema, que en Chrome/macOS
+   queda pegada al borde): chevron a 14 px del borde derecho y 42 px de
+   relleno para que el texto nunca la toque. Un solo estilo para todos los
+   <select> del panel; el color sigue al tema (claro/oscuro). */
+.pnl select {
+	appearance: none;
+	-webkit-appearance: none;
+	padding-right: 42px;
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='9' viewBox='0 0 14 9'%3E%3Cpath d='M1.5 1.5 7 7l5.5-5.5' fill='none' stroke='%23485559' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+	background-repeat: no-repeat;
+	background-position: right 14px center;
+	background-size: 14px 9px;
+	text-overflow: ellipsis;
+	cursor: pointer;
+}
+.dark .pnl select {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='9' viewBox='0 0 14 9'%3E%3Cpath d='M1.5 1.5 7 7l5.5-5.5' fill='none' stroke='%23a7b4ba' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+.pnl select:disabled {
+	cursor: not-allowed;
+	opacity: 0.6;
+}
+/* En celular la opción más larga ("Lanchas, motos de agua y bañistas") no
+   cabía junto a la flecha: un punto menos de letra y algo menos de relleno.
+   La flecha sigue a 14 px del borde, con 12 px de aire hasta el texto. */
+@media (max-width: 420px) {
+	.pnl select {
+		font-size: 17px;
+		padding-left: 10px;
+		padding-right: 40px;
+	}
+}
+/* Alto contraste (Windows): las imágenes de fondo se ocultan; se vuelve a
+   la flecha del sistema para que siga viéndose que es un desplegable. */
+@media (forced-colors: active) {
+	.pnl select {
+		appearance: auto;
+		-webkit-appearance: menulist;
+		background-image: none;
+		padding-right: 12px;
+	}
+}
