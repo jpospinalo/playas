@@ -576,3 +576,61 @@ def test_hilo_temas_seguimientos_y_tema_heredado(cliente) -> None:
     filas = list(csv.reader(io.StringIO(texto_csv.decode("utf-8-sig"))))
     assert filas[0][-1].startswith("Pregunta del tema")
     assert [f[-1] for f in filas[1:]].count("2") == 1
+
+
+def test_qa_f07_un_hilo_un_tema_y_la_playa_de_lo_ultimo_nombrado(cliente) -> None:
+    """QA-F07: el hilo abre con una pregunta sin tema reconocible, sigue con
+    vender en Taganga, cambia a El Rodadero y un seguimiento por su texto
+    parece de otro tema. Todo el hilo queda en un tema; la playa es la
+    última nombrada hasta ese punto; una fuera de tema sigue en "Otros"."""
+    c, factory = cliente
+    h = _auth(**_ADMIN)
+
+    async def _hilo() -> None:
+        async with factory() as s:
+            s.add(Conversation(id="h7", user_id="u2", thread_id="h7", created_at=_hace(2)))
+            preguntas = [
+                ("¿Necesito permiso?", agent._NO_EVIDENCE_RESPONSE),
+                ("¿Puedo vender comida en la playa de Taganga?", "Con permiso [doc1]."),
+                ("¿y eso?", "Sí [doc1]."),
+                ("¿Y en El Rodadero es igual?", "Igual [doc1]."),
+                ("¿Me pueden cerrar el paso a la playa?", "No [doc1]."),
+                ("¿Qué horario tiene el museo?", agent._OUT_OF_SCOPE_RESPONSE),
+            ]
+            for n, (texto, resp) in enumerate(preguntas):
+                creado = _hace(2) + timedelta(minutes=n)
+                s.add(
+                    Message(
+                        id=f"h7q{n}",
+                        conversation_id="h7",
+                        role="user",
+                        text=texto,
+                        created_at=creado,
+                    )
+                )
+                s.add(
+                    Message(
+                        id=f"h7a{n}",
+                        conversation_id="h7",
+                        role="assistant",
+                        text=resp,
+                        sources=_FUENTE if "[doc1]" in resp else [],
+                        created_at=creado + timedelta(seconds=5),
+                    )
+                )
+            await s.commit()
+
+    asyncio.run(_hilo())
+    items = {
+        i["id"]: i
+        for i in c.get("/api/admin/panel/preguntas?dias=30&page_size=100", headers=h).json()[
+            "items"
+        ]
+        if i["id"].startswith("h7q")
+    }
+    temas = {k: v["tema"] for k, v in items.items()}
+    assert {temas[f"h7q{n}"] for n in range(5)} == {"vender"}
+    assert temas["h7q5"] == pm.TEMA_OTROS
+    assert items["h7q0"]["playa"] is None
+    assert items["h7q2"]["playa"] == "Taganga"
+    assert items["h7q4"]["playa"] == "El Rodadero"

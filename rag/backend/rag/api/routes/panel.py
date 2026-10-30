@@ -185,14 +185,21 @@ async def _cargar_filas(session: AsyncSession, desde: datetime | None) -> list[_
 
 async def _ubicar_en_hilo(session: AsyncSession, filas: list[_Fila]) -> None:
     """Numera cada pregunta dentro de su conversación (sobre toda la
-    conversación, no solo el periodo) y hereda el tema y la playa de la
-    primera cuando un seguimiento no dice de qué trata ("¿Y si es algo
-    temporal?" cae en "Otros temas" por su texto, pero sigue siendo de
-    construcciones). Un seguimiento con tema propio lo conserva; uno que
-    ATLAS juzgó fuera de tema o saludo sigue en "Otros"."""
+    conversación, no solo el periodo) y unifica el tema del hilo (QA-F07).
+
+    - Tema: una conversación es un tema. Se toma el primero reconocible por
+      el texto de sus preguntas, en orden, y se aplica a todas las que ATLAS
+      no juzgó fuera de tema ni saludo. Así un mismo caso no queda partido
+      en "Otros", "Vender" y "Entrar" según cómo se escribió cada seguimiento.
+    - Playa: la que nombra la pregunta o, si no nombra ninguna, la última que
+      se nombró antes en la conversación (un cambio de playa a mitad del hilo
+      se respeta desde ahí en adelante).
+    """
     conversaciones = sorted({f.conversation_id for f in filas})
     posicion: dict[str, int] = {}
-    primera: dict[str, tuple[str, str]] = {}
+    playa_previa: dict[str, str] = {}
+    primera: dict[str, str] = {}
+    tema_hilo: dict[str, str] = {}
     for i in range(0, len(conversaciones), 500):
         stmt = (
             select(Message.id, Message.conversation_id, Message.text)
@@ -200,21 +207,30 @@ async def _ubicar_en_hilo(session: AsyncSession, filas: list[_Fila]) -> None:
             .order_by(Message.conversation_id, Message.created_at, Message.id)
         )
         vistas: dict[str, int] = defaultdict(int)
+        ultima_playa: dict[str, str] = {}
         for mid, cid, texto in (await session.execute(stmt)).all():
             vistas[cid] += 1
             posicion[mid] = vistas[cid]
             if vistas[cid] == 1:
-                primera[cid] = (mid, texto)
+                primera[cid] = texto
+            if cid not in tema_hilo:
+                tema = pm.clasificar_tema(texto)
+                if tema != pm.TEMA_OTROS:
+                    tema_hilo[cid] = tema
+            if cid in ultima_playa:
+                playa_previa[mid] = ultima_playa[cid]
+            playa = pm.detectar_playa(texto)
+            if playa != pm.SIN_PLAYA:
+                ultima_playa[cid] = playa
     for f in filas:
         f.orden = posicion.get(f.id, 1)
-        if f.orden == 1 or f.conversation_id not in primera:
-            continue
-        _mid, texto = primera[f.conversation_id]
-        f.primera = texto
-        if f.tema == pm.TEMA_OTROS and f.resultado not in (pm.FUERA_DE_TEMA, pm.SALUDO):
-            f.tema = pm.clasificar_tema(texto)
-        if f.playa == pm.SIN_PLAYA:
-            f.playa = pm.detectar_playa(texto)
+        if f.orden > 1:
+            f.primera = primera.get(f.conversation_id)
+        tema = tema_hilo.get(f.conversation_id)
+        if tema and f.resultado not in (pm.FUERA_DE_TEMA, pm.SALUDO):
+            f.tema = tema
+        if f.playa == pm.SIN_PLAYA and f.id in playa_previa:
+            f.playa = playa_previa[f.id]
 
 
 async def _primeras_preguntas(session: AsyncSession) -> dict[str, datetime]:
