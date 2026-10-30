@@ -98,7 +98,17 @@ describe("Respuesta (diseño v3)", () => {
 		// Sin palabras técnicas ni tuteo del texto fijo del backend.
 		expect(screen.queryByText(/corpus|fragmentos|consulta|precisa/i)).not.toBeInTheDocument();
 		expect(screen.queryByText("¿Esta respuesta le sirvió?")).not.toBeInTheDocument();
+		// QA-F02: precisar la pregunta sigue en el mismo tema: la pregunta va a
+		// la caja de esta pantalla, no al inicio (que empezaría de cero).
 		await userEvent.click(screen.getByRole("button", { name: "Escribir la pregunta de otra forma" }));
+		expect(props.onEscribirDeNuevo).not.toHaveBeenCalled();
+		expect(screen.getByRole("textbox", { name: TXT.seguirTitulo })).toHaveValue("Un hotel no me deja pasar");
+	});
+
+	it("fuera de tema en la 1.ª pregunta: sin caja y el botón dice que empieza de cero", async () => {
+		const props = pintar("La consulta está fuera del ámbito de ATLAS.", { fuentes: [] });
+		expect(screen.queryByRole("textbox", { name: TXT.seguirTitulo })).not.toBeInTheDocument();
+		await userEvent.click(screen.getByRole("button", { name: "Escribir la pregunta de otra forma (empieza de cero)" }));
 		expect(props.onEscribirDeNuevo).toHaveBeenCalled();
 	});
 
@@ -160,9 +170,9 @@ describe("Respuesta (diseño v3)", () => {
 		expect(props.onSeguir).not.toHaveBeenCalled();
 	});
 
-	it("sin respuesta firme no hay caja de seguimiento", () => {
+	it("sin respuesta segura sí hay caja para precisar en el mismo tema (QA-F02)", () => {
 		pintar("**Situación:** evidencia insuficiente.\n\n**Motivo:** no hubo fragmentos.", { fuentes: [] });
-		expect(screen.queryByText(TXT.seguirTitulo)).not.toBeInTheDocument();
+		expect(screen.getByRole("textbox", { name: TXT.seguirTitulo })).toBeInTheDocument();
 		expect(screen.getByRole("button", { name: TXT.empezarDeNuevo })).toBeInTheDocument();
 	});
 
@@ -282,13 +292,13 @@ describe("Hilo: lo que ya preguntó sobre este tema", () => {
 		expect(screen.getByRole("textbox", { name: TXT.seguirTitulo })).toBeInTheDocument();
 	});
 
-	it("dentro de un hilo, una respuesta no segura deja seguir en el mismo tema", () => {
-		const sinEvidencia = "**Situación:** evidencia insuficiente.\n\n**Motivo:** no hubo fragmentos.";
-		pintar(sinEvidencia, { fuentes: [], anteriores });
+	it("dentro de un hilo, 'fuera de tema' no corta el tema (QA-F01)", () => {
+		const fuera = "La consulta está fuera del ámbito de ATLAS.";
+		pintar(fuera, { fuentes: [], anteriores });
 		expect(screen.getByRole("textbox", { name: TXT.seguirTitulo })).toBeInTheDocument();
-		// Sin hilo, como antes: solo empezar de nuevo.
+		// Sin hilo, fuera de tema: solo empezar de nuevo.
 		cleanup();
-		pintar(sinEvidencia, { fuentes: [] });
+		pintar(fuera, { fuentes: [] });
 		expect(screen.queryByRole("textbox", { name: TXT.seguirTitulo })).not.toBeInTheDocument();
 	});
 

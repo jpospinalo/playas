@@ -120,7 +120,7 @@ export function PantallaOpinion({
 						Terminar y dejar el celular para otra persona
 					</button>
 					<p id="dejar-ayuda" className="pista">
-						Cierra su sesión y borra de este celular su pregunta y su correo. Lo que preguntó queda guardado en
+						Sale de ATLAS y borra de este celular su pregunta y su correo. Lo que preguntó queda guardado en
 						ATLAS.
 					</p>
 				</div>

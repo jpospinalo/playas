@@ -56,7 +56,7 @@ describe("PantallaOpinion — encuesta de percepción del flujo guiado", () => {
 		await userEvent.click(screen.getByRole("button", { name: "Volver al inicio" }));
 		expect(props.onOtraPregunta).toHaveBeenCalled();
 		const dejar = screen.getByRole("button", { name: "Terminar y dejar el celular para otra persona" });
-		expect(dejar).toHaveAccessibleDescription(/borra de este celular su pregunta y su correo/);
+		expect(dejar).toHaveAccessibleDescription(/Sale de ATLAS y borra de este celular su pregunta y su correo/);
 		await userEvent.click(dejar);
 		expect(props.onSalir).toHaveBeenCalled();
 	});

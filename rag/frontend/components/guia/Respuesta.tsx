@@ -363,13 +363,32 @@ export function Respuesta({
 	const sinRespuestaFirme = ordenada.tipo !== "normal";
 	const numero = anteriores.length + 1;
 	// Se puede seguir en el mismo tema con una respuesta firme, cuando ATLAS
-	// pidió más datos (se contestan aquí mismo) o, dentro de un hilo, aunque
-	// esta respuesta no haya sido segura. Fuera de tema o saludo: no.
+	// pidió más datos (se contestan aquí mismo) y cuando no hubo respuesta
+	// segura (precisar la pregunta sin perder lo conversado, QA-F02). "Fuera
+	// de tema" solo dentro de un hilo (QA-F01: un seguimiento mal entendido no
+	// corta el tema). Un saludo: no.
 	const seguirAqui =
 		puedeSeguir &&
 		(ordenada.tipo === "normal" ||
 			ordenada.tipo === "aclaracion" ||
-			(ordenada.tipo === "sin-evidencia" && anteriores.length > 0));
+			ordenada.tipo === "sin-evidencia" ||
+			(ordenada.tipo === "fuera-de-tema" && anteriores.length > 0));
+
+	// "Escribir la pregunta de otra forma": si se puede seguir aquí, la
+	// pregunta va a la caja de esta misma pantalla (mismo tema, con lo ya
+	// conversado). Si no, empieza de cero en el inicio y el botón lo dice.
+	function escribirDeOtraForma() {
+		if (!seguirAqui) {
+			onEscribirDeNuevo();
+			return;
+		}
+		onCambioSeguimiento(pregunta);
+		requestAnimationFrame(() => {
+			const caja = document.getElementById("seguimiento") as HTMLTextAreaElement | null;
+			caja?.scrollIntoView({ block: "center" });
+			caja?.focus();
+		});
+	}
 
 	return (
 		<>
@@ -412,8 +431,8 @@ export function Respuesta({
 
 			{sinRespuestaFirme ? (
 				<div className="guia-acciones">
-					<button type="button" className="guia-btn-sec" onClick={onEscribirDeNuevo}>
-						Escribir la pregunta de otra forma
+					<button type="button" className="guia-btn-sec" onClick={escribirDeOtraForma}>
+						{seguirAqui ? "Escribir la pregunta de otra forma" : "Escribir la pregunta de otra forma (empieza de cero)"}
 					</button>
 				</div>
 			) : (
