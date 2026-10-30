@@ -2610,9 +2610,6 @@ html:has(.pnl) {
 .pnl button.pnl-tb-cifra:hover .pnl-tb-valor {
 	text-decoration: underline;
 }
-.pnl-tb-valor > small:only-child {
-	font-size: 24px;
-}
 .pnl-tb-prog.ojo i {
 	background: var(--p-ambar);
 }
@@ -2910,5 +2907,43 @@ html:has(.pnl) {
 	.pnl-matriz td {
 		padding-left: 8px;
 		padding-right: 8px;
+	}
+}
+
+/* "de N", "de N (p %)", "de N · pocos datos" junto a la cifra: letra
+   secundaria y siempre dentro de la tarjeta. Si no cabe al lado de la cifra,
+   baja entero a la línea siguiente; si tampoco cabe ahí, se parte entre
+   palabras (nunca a media palabra). Antes una regla con :only-child lo ponía
+   a 24 px, porque el número es texto y no cuenta como hermano. */
+.pnl .pnl-tb-valor > small.pnl-tb-de {
+	display: inline-block;
+	max-width: 100%;
+	font-size: 16px;
+	font-weight: 600;
+	line-height: 1.35;
+	color: var(--p-tinta-2);
+	white-space: normal;
+	overflow-wrap: break-word;
+	vertical-align: baseline;
+}
+.pnl .pnl-tb-cifra.ojo .pnl-tb-valor > small.pnl-tb-de {
+	color: var(--p-ambar-txt);
+}
+
+/* "Por persona" en dos tarjetas lado a lado (761-1000 px): cada fila pedía
+   170 + 150 px fijos y la barra quedaba en 0 px, con "(33 %)" o "Terminado"
+   fuera de la tarjeta. Se decide por el ancho de la tarjeta, no de la
+   pantalla: si la barra no tendría ~120 px, nombre y cifra arriba y la barra
+   a todo el ancho debajo. */
+.pnl .pnl-tb-dos > .pnl-bloque {
+	container-type: inline-size;
+}
+@container (max-width: 480px) {
+	.pnl .pnl-tb-persona {
+		grid-template-columns: minmax(0, 1fr) auto;
+	}
+	.pnl .pnl-tb-persona .riel {
+		grid-column: 1 / -1;
+		grid-row: 2;
 	}
 }
