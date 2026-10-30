@@ -103,6 +103,10 @@ class _Fila:
     respuesta_id: str | None = None
     calificacion: str | None = None
     esperaba: str | None = None
+    # Hilo: posición de la pregunta en su conversación (1 = la que abrió el
+    # tema; 2 en adelante = seguimientos) y el texto de esa primera pregunta.
+    orden: int = 1
+    primera: str | None = None
 
     @property
     def es_brecha(self) -> bool:
@@ -159,6 +163,8 @@ async def _cargar_filas(session: AsyncSession, desde: datetime | None) -> list[_
                     previa.tema = pm.TEMA_OTROS
             previa = None
 
+    await _ubicar_en_hilo(session, filas)
+
     por_respuesta = {f.respuesta_id: f for f in filas if f.respuesta_id}
     ids = list(por_respuesta)
     for i in range(0, len(ids), 500):
@@ -175,6 +181,40 @@ async def _cargar_filas(session: AsyncSession, desde: datetime | None) -> list[_
             fila.calificacion = pm.calificacion(ratings)
             fila.esperaba = (esperaba or "").strip() or fila.esperaba
     return filas
+
+
+async def _ubicar_en_hilo(session: AsyncSession, filas: list[_Fila]) -> None:
+    """Numera cada pregunta dentro de su conversación (sobre toda la
+    conversación, no solo el periodo) y hereda el tema y la playa de la
+    primera cuando un seguimiento no dice de qué trata ("¿Y si es algo
+    temporal?" cae en "Otros temas" por su texto, pero sigue siendo de
+    construcciones). Un seguimiento con tema propio lo conserva; uno que
+    ATLAS juzgó fuera de tema o saludo sigue en "Otros"."""
+    conversaciones = sorted({f.conversation_id for f in filas})
+    posicion: dict[str, int] = {}
+    primera: dict[str, tuple[str, str]] = {}
+    for i in range(0, len(conversaciones), 500):
+        stmt = (
+            select(Message.id, Message.conversation_id, Message.text)
+            .where(Message.conversation_id.in_(conversaciones[i : i + 500]), Message.role == "user")
+            .order_by(Message.conversation_id, Message.created_at, Message.id)
+        )
+        vistas: dict[str, int] = defaultdict(int)
+        for mid, cid, texto in (await session.execute(stmt)).all():
+            vistas[cid] += 1
+            posicion[mid] = vistas[cid]
+            if vistas[cid] == 1:
+                primera[cid] = (mid, texto)
+    for f in filas:
+        f.orden = posicion.get(f.id, 1)
+        if f.orden == 1 or f.conversation_id not in primera:
+            continue
+        _mid, texto = primera[f.conversation_id]
+        f.primera = texto
+        if f.tema == pm.TEMA_OTROS and f.resultado not in (pm.FUERA_DE_TEMA, pm.SALUDO):
+            f.tema = pm.clasificar_tema(texto)
+        if f.playa == pm.SIN_PLAYA:
+            f.playa = pm.detectar_playa(texto)
 
 
 async def _primeras_preguntas(session: AsyncSession) -> dict[str, datetime]:
@@ -222,6 +262,8 @@ def _cifras(
     nuevas = {u for u in personas if desde is None or primeras.get(u, desde) >= desde}
     return PanelCifras(
         preguntas=len(filas),
+        temas=len({f.conversation_id for f in filas}),
+        seguimientos=sum(f.orden > 1 for f in filas),
         personas=len(personas),
         personas_nuevas=len(nuevas),
         respuestas=len(respondidas),
@@ -530,6 +572,8 @@ def _item(
         esperaba=f.esperaba,
         persona=nombres.get(f.user_id, _nombre(None)),
         conversation_id=f.conversation_id,
+        orden_en_tema=f.orden,
+        primera_pregunta=f.primera,
     )
 
 
@@ -617,6 +661,8 @@ async def preguntas_csv(
             "Lo que esperaba",
             "Persona",
             "Conversación",
+            # Al final para no mover las columnas que ya se usan.
+            "Pregunta del tema (1 = la que abrió el tema)",
         ]
     )
     for f in filas:
@@ -636,6 +682,7 @@ async def preguntas_csv(
                     f.esperaba,
                     nombres.get(f.user_id, _nombre(None)),
                     f.conversation_id,
+                    f.orden,
                 )
             ]
         )

@@ -945,3 +945,37 @@ def test_con_puesto_comparte_el_puesto_en_empate() -> None:
     filas = [{"p": 9}, {"p": 7}, {"p": 7}, {"p": 3}]
     assert [f["puesto"] for f in ej.con_puesto(filas, lambda f: f["p"])] == [1, 2, 2, 4]
     assert "puesto" not in filas[0]
+
+
+def test_ficha_de_un_seguimiento_trae_lo_anterior_del_tema(cliente) -> None:
+    """Hilo: un seguimiento ("¿Y si es de noche?") se califica viendo las
+    preguntas y respuestas anteriores de su conversación; la pregunta que
+    abrió el tema no trae contexto."""
+    c = cliente
+    *_, COM, _ = _hs()  # noqa: N806
+    cuando = _AHORA - timedelta(days=3) + timedelta(minutes=2)
+    _en_bd(
+        c,
+        Message(
+            id="q1s",
+            conversation_id="c0",
+            role="user",
+            text="¿Y si es de noche?",
+            created_at=cuando,
+        ),
+        Message(
+            id="a1s",
+            conversation_id="c0",
+            role="assistant",
+            text="De noche tampoco.",
+            created_at=cuando + timedelta(seconds=5),
+        ),
+    )
+    primera = c.get("/api/evaluacion/preguntas/q1", headers=COM).json()
+    assert primera["contexto"] == []
+    seguimiento = c.get("/api/evaluacion/preguntas/q1s", headers=COM).json()
+    assert seguimiento["pregunta"] == "¿Y si es de noche?"
+    assert seguimiento["respuesta"] == "De noche tampoco."
+    assert seguimiento["contexto"] == [
+        {"numero_en_tema": 1, "pregunta": PREGUNTAS[0][2], "respuesta": "Respuesta 0"}
+    ]

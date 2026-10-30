@@ -550,6 +550,14 @@ class BandejaResponse(BaseModel):
     conteos: dict[str, int]
 
 
+class TurnoContexto(BaseModel):
+    """Una pregunta anterior del mismo tema (conversación), con su respuesta."""
+
+    numero_en_tema: int
+    pregunta: str
+    respuesta: str | None
+
+
 class FichaResponse(BaseModel):
     message_id: str
     numero: int
@@ -576,6 +584,10 @@ class FichaResponse(BaseModel):
     practica: bool = False
     anterior: str | None
     siguiente: str | None
+    # Hilo: si es un seguimiento, las preguntas y respuestas anteriores del
+    # mismo tema. "¿Y si es algo temporal?" sola no se puede calificar bien en
+    # F1 (contexto) ni F2 (problema); con lo anterior, sí.
+    contexto: list[TurnoContexto] = Field(default_factory=list)
 
 
 def _cal_out(c: ej.Calificacion) -> CalificacionOut:
@@ -871,6 +883,29 @@ async def _respuesta(session: AsyncSession, p: _Pregunta) -> str | None:
     return filas[-1][0] if filas else None
 
 
+async def _contexto(session: AsyncSession, p: _Pregunta) -> list[TurnoContexto]:
+    """Preguntas anteriores de la misma conversación, cada una con la primera
+    respuesta de ATLAS que le siguió (vacío si la pregunta abrió el tema)."""
+    filas = (
+        await session.execute(
+            select(Message.id, Message.role, Message.text)
+            .where(Message.conversation_id == p.conversation_id)
+            .order_by(Message.created_at, Message.role.desc(), Message.id)
+        )
+    ).all()
+    turnos: list[TurnoContexto] = []
+    for mid, role, texto in filas:
+        if mid == p.message_id:
+            break
+        if role == "user":
+            turnos.append(
+                TurnoContexto(numero_en_tema=len(turnos) + 1, pregunta=texto, respuesta=None)
+            )
+        elif role == "assistant" and turnos and turnos[-1].respuesta is None:
+            turnos[-1].respuesta = texto
+    return turnos
+
+
 async def _ficha(session: AsyncSession, message_id: str, user: dict) -> FichaResponse:
     preguntas = await _cargar(session)
     sede = await _sede(session, user["sub"])
@@ -912,6 +947,7 @@ async def _ficha(session: AsyncSession, message_id: str, user: dict) -> FichaRes
         practica=p.practica,
         anterior=preguntas[indice - 1].message_id if indice > 0 else None,
         siguiente=preguntas[indice + 1].message_id if indice + 1 < len(preguntas) else None,
+        contexto=await _contexto(session, p),
     )
 
 

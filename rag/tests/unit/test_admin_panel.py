@@ -507,3 +507,72 @@ def test_encuestas_csv_con_comentarios(cliente) -> None:
     ]
     assert "Muy clara" in [f[-1] for f in filas[1:]]
     assert "@" not in r.content.decode("utf-8-sig")
+
+
+def test_hilo_temas_seguimientos_y_tema_heredado(cliente) -> None:
+    """Seguimientos (2.ª pregunta en adelante de una conversación): cuentan
+    como preguntas, no como temas nuevos; heredan el tema de la primera si
+    su texto no dice de qué trata; uno fuera de tema sigue en "Otros"."""
+    c, factory = cliente
+    h = _auth(**_ADMIN)
+    antes = c.get("/api/admin/panel/resumen?dias=30", headers=h).json()["cifras"]
+    assert antes["temas"] == 7 and antes["seguimientos"] == 0
+
+    async def _seguimientos() -> None:
+        async with factory() as s:
+            base = _hace(1)
+            for n, (texto, resp) in enumerate(
+                [
+                    ("¿Y si es de noche?", "Tampoco [doc1]."),
+                    ("¿Qué horario tiene el museo?", agent._OUT_OF_SCOPE_RESPONSE),
+                ],
+                start=1,
+            ):
+                creado = base + timedelta(minutes=n)
+                s.add(
+                    Message(
+                        id=f"q0s{n}",
+                        conversation_id="c0",
+                        role="user",
+                        text=texto,
+                        created_at=creado,
+                    )
+                )
+                s.add(
+                    Message(
+                        id=f"a0s{n}",
+                        conversation_id="c0",
+                        role="assistant",
+                        text=resp,
+                        sources=_FUENTE if n == 1 else [],
+                        created_at=creado + timedelta(seconds=5),
+                    )
+                )
+            await s.commit()
+
+    asyncio.run(_seguimientos())
+    r = c.get("/api/admin/panel/resumen?dias=30", headers=h).json()
+    cif = r["cifras"]
+    # Las preguntas suben en 2; los temas (conversaciones) no.
+    assert cif["preguntas"] == antes["preguntas"] + 2
+    assert cif["temas"] == 7 and cif["seguimientos"] == 2
+    temas = {t["id"]: t for t in r["temas"]}
+    assert temas["entrar"]["preguntas"] == 3  # 2 de antes + "¿Y si es de noche?" heredado
+
+    items = {
+        i["id"]: i
+        for i in c.get("/api/admin/panel/preguntas?dias=30&page_size=100", headers=h).json()[
+            "items"
+        ]
+    }
+    assert items["q0"]["orden_en_tema"] == 1 and items["q0"]["primera_pregunta"] is None
+    noche = items["q0s1"]
+    assert noche["orden_en_tema"] == 2 and noche["tema"] == "entrar"
+    assert noche["primera_pregunta"] == pm.TEMAS_POR_ID["entrar"].preguntas[1]
+    museo = items["q0s2"]
+    assert museo["orden_en_tema"] == 3 and museo["tema"] == pm.TEMA_OTROS
+
+    texto_csv = c.get("/api/admin/panel/preguntas.csv?dias=30", headers=h).content
+    filas = list(csv.reader(io.StringIO(texto_csv.decode("utf-8-sig"))))
+    assert filas[0][-1].startswith("Pregunta del tema")
+    assert [f[-1] for f in filas[1:]].count("2") == 1

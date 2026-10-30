@@ -315,7 +315,11 @@ class PanelPeriodo(BaseModel):
 
 
 class PanelCifras(BaseModel):
-    preguntas: int
+    preguntas: int = Field(..., description="Preguntas escritas, incluidos los seguimientos")
+    temas: int = Field(
+        0, description="Conversaciones con preguntas en el periodo (un tema puede tener varias)"
+    )
+    seguimientos: int = Field(0, description="Preguntas que siguen un tema (2.ª en adelante)")
     personas: int
     personas_nuevas: int
     respuestas: int = Field(..., description="Respuestas sin contar saludos")
@@ -424,6 +428,10 @@ class PanelPreguntaItem(BaseModel):
     participante: str | None = Field(default=None, description="Número de participante")
     tipo_playa: int | None = Field(default=None, description="Tipo de usuario de playa (1-5)")
     conversation_id: str
+    orden_en_tema: int = Field(1, description="1 = abrió el tema; 2 en adelante = seguimiento")
+    primera_pregunta: str | None = Field(
+        default=None, description="Si es seguimiento: la pregunta que abrió el tema"
+    )
 
 
 class PanelPreguntasResponse(BaseModel):
