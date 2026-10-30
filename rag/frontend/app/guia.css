@@ -1539,3 +1539,12 @@ body:has(.guia) {
 	font-size: 18px;
 	color: var(--tinta-2);
 }
+
+/* Fuentes con el mismo párrafo: se muestra una y se anota la otra. */
+.guia-fuente .tambien {
+	display: block;
+	margin: 6px 0 0;
+	font-size: 18px;
+	color: var(--tinta-2);
+	overflow-wrap: anywhere;
+}

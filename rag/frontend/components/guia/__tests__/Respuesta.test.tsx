@@ -190,6 +190,24 @@ describe("Respuesta (diseño v3)", () => {
 	});
 });
 
+describe("Fuentes con el mismo párrafo", () => {
+	it("se muestran una vez y la cita a la repetida abre la que quedó", async () => {
+		const parrafo =
+			"Las playas y los terrenos de bajamar son bienes de uso público de la Nación, inalienables, imprescriptibles e inembargables, y su uso por particulares exige concesión, permiso o licencia otorgados conforme a la ley vigente.";
+		const fuentes: SourceGroup[] = [
+			{ source: "a.md", title: "Consulta 2010", doc_type: "jurisprudencia", metadata: {}, fragments: [{ index: 1, content: parrafo, metadata: {} }] },
+			{ source: "b.md", title: "Sentencia 2016", doc_type: "jurisprudencia", metadata: {}, fragments: [{ index: 2, content: parrafo, metadata: {} }] },
+		];
+		pintar("Sí. Son bienes de uso público [doc2].", { fuentes });
+		const lista = screen.getByText("Ver de dónde sale esta respuesta").closest("details")!;
+		expect(within(lista).getAllByRole("listitem")).toHaveLength(1);
+		expect(within(lista).getByText(/aparece también como/)).toHaveTextContent("fuente 2 (Sentencia 2016)");
+		await userEvent.click(screen.getByRole("link", { name: "(fuente 2)" }));
+		expect(lista.open).toBe(true);
+		expect(document.getElementById("fuente-1")).toHaveClass("marcada");
+	});
+});
+
 describe("Hilo: lo que ya preguntó sobre este tema", () => {
 	const fuente = (n: number, titulo: string): SourceGroup => ({
 		source: `${titulo}.md`,

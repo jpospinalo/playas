@@ -11,6 +11,8 @@ interface FuenteProps {
 	grupo: SourceGroup;
 	fragmento: SourceFragment;
 	marcada: boolean;
+	/** Otras fuentes con el mismo párrafo (no se repiten en la lista). */
+	tambien?: Array<{ indice: number; nombre: string }>;
 }
 
 /**
@@ -18,7 +20,7 @@ interface FuenteProps {
  * completo, datos de identificación sin cortar, el fragmento entero (con
  * "Ver todo el fragmento" si es largo) y "Copiar la referencia".
  */
-export function Fuente({ grupo, fragmento, marcada }: FuenteProps) {
+export function Fuente({ grupo, fragmento, marcada, tambien = [] }: FuenteProps) {
 	const [completo, setCompleto] = useState(false);
 	const [copiado, setCopiado] = useState<"" | "ok" | "error">("");
 	const idTexto = useId();
@@ -41,6 +43,17 @@ export function Fuente({ grupo, fragmento, marcada }: FuenteProps) {
 		>
 			<span className="num">Fuente {fragmento.index}.</span> {nombreFuente(grupo)}
 			<span className="tipo">{tipoDe(grupo) === "normativa" ? "Norma" : "Sentencia"}</span>
+			{tambien.length > 0 ? (
+				<p className="tambien">
+					El mismo párrafo aparece también como{" "}
+					{tambien.map((t, i) => (
+						<span key={t.indice}>
+							{i > 0 ? "; " : ""}fuente {t.indice} ({t.nombre})
+						</span>
+					))}
+					.
+				</p>
+			) : null}
 			{datos.length > 0 ? (
 				// E2-12: solo los datos que trae la fuente; el título aclara que
 				// pueden faltar otros (no es una ficha oficial completa).

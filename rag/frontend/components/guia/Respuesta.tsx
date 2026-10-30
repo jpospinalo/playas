@@ -9,6 +9,8 @@ import { Atencion, Curvas, FlechaVolver } from "@/components/guia/iconos";
 import { Escuchar } from "@/components/guia/Escuchar";
 import { CajaPregunta } from "@/components/guia/Pantallas";
 import { Fuente } from "@/components/guia/Fuente";
+import { agruparRepetidas } from "@/lib/guia/fuentes";
+import { nombreFuente } from "@/lib/referencia";
 import { TXT } from "@/lib/guia/textos";
 
 const TXT_NO_GUARDADA =
@@ -110,16 +112,20 @@ function Contenido({
 		return lista.sort((a, b) => a.fragmento.index - b.fragmento.index);
 	}, [fuentes]);
 	const indices = useMemo(() => new Set(fragmentos.map((f) => f.fragmento.index)), [fragmentos]);
+	// Dos fuentes con el mismo párrafo se muestran una vez ("también aparece
+	// como fuente N"); una cita a la repetida abre la que quedó.
+	const { unicas, canonica } = useMemo(() => agruparRepetidas(fragmentos, nombreFuente), [fragmentos]);
 
 	const abrirFuente = useCallback(
-		(n: number) => {
+		(cita: number) => {
+			const n = canonica.get(cita) ?? cita;
 			if (fuentesRef.current) fuentesRef.current.open = true;
 			setMarcada(n);
 			requestAnimationFrame(() => {
 				document.getElementById(`${prefijo}fuente-${n}`)?.focus();
 			});
 		},
-		[prefijo],
+		[prefijo, canonica],
 	);
 
 	const componentes = useMemo<Components>(
@@ -134,7 +140,7 @@ function Contenido({
 					// alta con relleno sin mover el renglón (ver .guia-cita).
 					return (
 						<a
-							href={`#${prefijo}fuente-${n}`}
+							href={`#${prefijo}fuente-${canonica.get(n) ?? n}`}
 							className="guia-cita"
 							onClick={(e) => {
 								e.preventDefault();
@@ -163,7 +169,7 @@ function Contenido({
 			h3: ({ children }) => <p><strong>{children}</strong></p>,
 			img: () => null,
 		}),
-		[indices, abrirFuente, prefijo],
+		[indices, abrirFuente, prefijo, canonica],
 	);
 
 	const md = (contenido: string, extra?: string): ReactNode => (
@@ -235,7 +241,7 @@ function Contenido({
 				<div className="guia-fuentes compacto">
 					<H>De dónde sale esta respuesta</H>
 					<ol>
-						{fragmentos.map(({ grupo, fragmento }) => (
+						{unicas.map(({ grupo, fragmento, tambien }) => (
 							<li
 								key={fragmento.index}
 								id={`${prefijo}fuente-${fragmento.index}`}
@@ -244,6 +250,11 @@ function Contenido({
 							>
 								<span className="num">Fuente {fragmento.index}.</span> {grupo.title || grupo.source}
 								<span className="tipo">{tipoDeFuente(grupo)}</span>
+								{tambien.length ? (
+									<span className="tambien">
+										También como fuente {tambien.map((t) => t.indice).join(" y ")}.
+									</span>
+								) : null}
 							</li>
 						))}
 					</ol>
@@ -254,12 +265,13 @@ function Contenido({
 					<ol>
 						{/* UX-01: nombre completo, datos de identificación, fragmento
 						    entero a pedido y "Copiar la referencia". */}
-						{fragmentos.map(({ grupo, fragmento }) => (
+						{unicas.map(({ grupo, fragmento, tambien }) => (
 							<Fuente
 								key={fragmento.index}
 								grupo={grupo}
 								fragmento={fragmento}
 								marcada={marcada === fragmento.index}
+								tambien={tambien}
 							/>
 						))}
 					</ol>
