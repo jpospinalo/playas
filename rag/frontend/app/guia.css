@@ -1420,6 +1420,8 @@ body:has(.guia) {
 	margin: 0 0 6px;
 	font-size: 20px;
 	color: var(--ambar-txt);
+}
+
 /* Unión con juan-felipe-ux (30-oct): colores llevados a los tokens v3.1
    (sin --sonda, --agua ni --magenta de la carta náutica).
    Fuentes completas (UX-01): datos de identificación sin cortar y acciones. */
