@@ -243,6 +243,27 @@ async def add_message(
                 status_code=status.HTTP_409_CONFLICT,
                 detail="El identificador del mensaje ya está en uso.",
             )
+    if payload.role == "user":
+        # QA-F05: "Intentar otra vez" tras un error vuelve a guardar la misma
+        # pregunta (con otro id). Si lo último de la conversación ya es esa
+        # pregunta, sin respuesta en medio, se devuelve la existente: una
+        # pregunta, no dos (ni en el panel ni en la bandeja del evaluador).
+        ultimo = (
+            await session.execute(
+                select(Message)
+                .where(Message.conversation_id == conversation_id)
+                .order_by(Message.created_at.desc(), Message.id.desc())
+                .limit(1)
+            )
+        ).scalar_one_or_none()
+        if ultimo is not None and ultimo.role == "user" and ultimo.text == payload.text:
+            return MessageOut(
+                id=ultimo.id,
+                role=ultimo.role,
+                text=ultimo.text,
+                sources=ultimo.sources,
+                created_at=ultimo.created_at.isoformat(),
+            )
     now = datetime.now(UTC)
     msg = Message(
         id=payload.message_id or str(uuid.uuid4()),
