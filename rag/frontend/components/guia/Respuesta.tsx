@@ -73,7 +73,14 @@ function prepararCitas(md: string, prefijo = ""): string {
 		// Bloques de código o estilo que mande el backend: fuera con su
 		// contenido (skipHtml solo quita las etiquetas y dejaría el texto).
 		.replace(/<(script|style|iframe|object|embed|noscript)\b[\s\S]*?<\/\1\s*>/gi, "")
-		.replace(/\[doc(\d+)\]/gi, (_m, n) => `[(fuente ${n})](#${prefijo}fuente-${n})`);
+		.replace(/\[doc(\d+)\]/gi, (_m, n) => `[(fuente ${n})](#${prefijo}fuente-${n})`)
+		// QA-F10: "construcción/ocupación" no tiene dónde partirse y, con letra
+		// grande, se salía o se cortaba a mitad de palabra. Un corte invisible
+		// después de la barra deja partir ahí (solo entre letras: no toca
+		// fechas, y las palabras que son enlaces quedan intactas).
+		.split(/(\s+)/)
+		.map((t) => (/https?:|www\.|\]\(|#/i.test(t) ? t : t.replace(/(\p{L})\/(?=\p{L})/gu, "$1/\u200B")))
+		.join("");
 }
 
 function tipoDeFuente(grupo: SourceGroup): string {

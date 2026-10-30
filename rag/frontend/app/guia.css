@@ -1548,3 +1548,55 @@ body:has(.guia) {
 	color: var(--tinta-2);
 	overflow-wrap: anywhere;
 }
+
+/* QA-F10: con letra grande o zoom alto (ventana de ~200-300 px) la
+   respuesta abierta en el hilo quedaba en una columna de ~120 px y partía
+   palabras. Sin sangrías anidadas: el texto usa todo el ancho. */
+@media (max-width: 300px) {
+	.guia-main {
+		padding-left: 8px;
+		padding-right: 8px;
+	}
+	.guia-hilo summary {
+		padding: 10px 8px;
+		gap: 8px;
+	}
+	.guia-hilo .n {
+		width: 28px;
+		height: 28px;
+		font-size: 16px;
+	}
+	.guia-hilo .abrir {
+		padding-left: 0;
+	}
+	.guia-hilo .cuerpo {
+		padding: 4px 6px 10px;
+	}
+	.guia-hilo .guia-veredicto.compacto {
+		padding: 8px 6px 8px 8px;
+		border-left-width: 4px;
+	}
+	.guia-hilo .guia-ojo {
+		display: block;
+		padding: 8px 6px;
+		border-left-width: 4px;
+	}
+	.guia-hilo .guia-ojo > svg {
+		display: none;
+	}
+	.guia-hilo .guia-sirvio {
+		padding: 10px 6px;
+	}
+	.guia-hilo .guia-md ul,
+	.guia-hilo .guia-md ol {
+		padding-left: 18px;
+	}
+}
+@media (max-width: 300px) {
+	.guia h1,
+	.guia-veredicto h1,
+	.guia-veredicto h1.largo {
+		font-size: 24px;
+		overflow-wrap: break-word;
+	}
+}

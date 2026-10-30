@@ -351,6 +351,12 @@ describe("Hilo: lo que ya preguntó sobre este tema", () => {
 		expect(item).toHaveClass("marcada");
 	});
 
+	it("QA-F10: 'construcción/ocupación' se puede partir en la barra; los enlaces no se tocan", () => {
+		pintar("Sí. Toda construcción/ocupación necesita permiso. Más en [la norma](https://ejemplo.gov.co/ley/1234).");
+		expect(screen.getByText(/construcción\/​ocupación/)).toBeInTheDocument();
+		expect(screen.getByRole("link", { name: "la norma" })).toHaveAttribute("href", "https://ejemplo.gov.co/ley/1234");
+	});
+
 	it("la respuesta actual ya calificada no vuelve a preguntar", () => {
 		pintar("Sí. Texto.", { calificada: false });
 		expect(screen.queryByText("¿Esta respuesta le sirvió?")).not.toBeInTheDocument();
