@@ -14,7 +14,8 @@ import statistics
 import unicodedata
 from collections import Counter
 from pathlib import Path
-from urllib.parse import unquote
+from typing import cast
+from urllib.parse import quote, unquote
 
 from PIL import Image
 
@@ -34,24 +35,99 @@ logger = logging.getLogger(__name__)
 
 
 def relativize_image_refs(md_text: str, md_path: Path) -> str:
-    """Convert absolute image paths produced by ``save_as_markdown`` to
-    relative paths so the markdown stays portable."""
+    """Serialize raw local image paths without truncating nested parentheses.
+
+    Existing relative URIs, external URLs and ambiguous/title-bearing tokens
+    stay literal. Unsupported boundaries preserve the rest of that line.
+    New destinations are URL-encoded once, without angle delimiters.
+    """
     md_dir = md_path.parent
+    opening = re.compile(r"!\[([^\]\r\n]*)\]\(")
+    scheme = re.compile(r"^[A-Za-z][A-Za-z0-9+.-]*:")
+    percent_escape = re.compile(r"%[0-9A-Fa-f]{2}")
 
-    def _rel(m: re.Match[str]) -> str:
-        alt = m.group(1)
-        raw_path = m.group(2)
-        try:
-            abs_img = Path(raw_path).resolve()
-            rel = abs_img.relative_to(md_dir)
-            rel_ref = rel.as_posix()
-            if not rel_ref.startswith(("./", "../")):
-                rel_ref = f"./{rel_ref}"
-            return f"![{alt}]({rel_ref})"
-        except (ValueError, OSError):
-            return m.group(0)
+    def destination(line: str, start: int) -> tuple[int, str, bool] | None:
+        angled = line[start : start + 1] == "<"
+        if angled:
+            close = line.find(">", start + 1)
+            if close < 0 or line[close + 1 : close + 2] != ")":
+                return None
+            raw = line[start + 1 : close]
+            if "<" in raw:
+                return None
+            end = close + 2
+        else:
+            depth = 1
+            group_start = -1
+            final_group = -1
+            end = start
+            for index in range(start, len(line)):
+                char = line[index]
+                if (
+                    char in "\\\"'"
+                    or ord(char) < 32
+                    or 127 <= ord(char) <= 159
+                    or line.startswith("![", index)
+                ):
+                    return None
+                if char == "(":
+                    if depth == 1:
+                        group_start = index
+                    depth += 1
+                elif char == ")":
+                    depth -= 1
+                    if depth == 0:
+                        end = index + 1
+                        break
+                    if depth == 1:
+                        final_group = group_start if line[index + 1 : index + 2] == ")" else -1
+            else:
+                return None
+            if final_group > start and line[final_group - 1].isspace():
+                return None
+            raw = line[start : end - 1]
+        if (
+            not raw
+            or raw != raw.strip()
+            or any(ord(c) < 32 or 127 <= ord(c) <= 159 or c == "\\" for c in raw)
+        ):
+            return None
+        return end, raw, angled
 
-    return re.sub(r"!\[([^\]]*)\]\(([^)]+)\)", _rel, md_text)
+    def encode(raw: str, angled: bool) -> str:
+        if scheme.match(raw) or raw.startswith("//"):
+            return raw
+        if raw.startswith("/"):
+            try:
+                relative = Path(raw).resolve().relative_to(md_dir).as_posix()
+            except (ValueError, OSError):
+                return raw
+            return quote(f"./{relative}", safe="/._-~")
+        if angled or not any(c in raw for c in " ()<>") or percent_escape.search(raw):
+            return raw
+        return quote(raw, safe="/._-~")
+
+    result: list[str] = []
+    for line in md_text.splitlines(keepends=True):
+        if "`" in line or "\\![" in line:
+            result.append(line)
+            continue
+        cursor = 0
+        for match in opening.finditer(line):
+            if match.start() < cursor:
+                continue
+            parsed = destination(line, match.end())
+            if parsed is None:
+                break
+            end, raw, angled = parsed
+            encoded = encode(raw, angled)
+            result.append(line[cursor : match.start()])
+            result.append(
+                match.group(0) + encoded + ")" if encoded != raw else line[match.start() : end]
+            )
+            cursor = end
+        result.append(line[cursor:])
+    return "".join(result)
 
 
 def _resolve_image_path(img_ref: str, md_dir: Path) -> Path:
@@ -157,8 +233,8 @@ def filter_images(
         and all(item["remove_reason"] is not None for item in analyzed)
     ):
         fallback_candidates = sorted(
-            [item for item in analyzed if int(item["area"]) >= IMAGE_FALLBACK_MIN_AREA],
-            key=lambda item: int(item["area"]),
+            [item for item in analyzed if int(cast(int, item["area"])) >= IMAGE_FALLBACK_MIN_AREA],
+            key=lambda item: int(cast(int, item["area"])),
             reverse=True,
         )
         for item in fallback_candidates[: max(1, IMAGE_FALLBACK_MAX_KEEP)]:

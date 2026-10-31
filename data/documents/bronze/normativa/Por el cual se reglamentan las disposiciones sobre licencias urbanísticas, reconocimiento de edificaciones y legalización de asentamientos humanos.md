@@ -28,4 +28,4 @@ Los municipios y distritos establecerán qué tipo de amoblamiento sobre el espa
 
 Esta autorización podrá concederse siempre y cuando se garantice el libre tránsito a la ciudadanía y no se vulnere la utilización de las zonas de playas marítimas y terrenos de bajamar al uso común.
 
-De conformidad con lo dispuesto en los artículos 177 del Decreto-ley 2324 de 1984 y 43 de la Ley 12 de 1991, ninguna autoridad concederá permiso para la construcción de vivienda en las playas marítimas y terrenos de bajamar.
+De conformidad con lo dispuesto en los artículos 177 del Decreto-ley 2324 de 1984 y 43 de la Ley 1ª de 1991, ninguna autoridad concederá permiso para la construcción de vivienda en las playas marítimas y terrenos de bajamar.

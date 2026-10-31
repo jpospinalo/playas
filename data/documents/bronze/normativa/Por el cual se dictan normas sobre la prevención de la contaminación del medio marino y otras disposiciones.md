@@ -1,6 +1,6 @@
 # DECRETO 1875 DE 1979
 > Por el cual se dictan normas sobre la prevención de la contaminación del medio marino y otras disposiciones.
-Diario Oficial No. 35339 de agosto de 1979
+Diario Oficial No. 35339 de 31 de agosto de 1979
 
 Artículo 1. Para los efectos del presente Decreto, se entiende por contaminación marina, la introducción por el hombre, directa o indirecta de sustancias o energía en el medio marino cuando produzca o pueda producir efectos nocivos, tales como daños a los recursos vivos y a la vida marina, peligros para la salud humana, obstaculización de las actividades marítimas, incluso la pesca y otros usos legítimos del mar, deterioro de la calidad del agua del mar y menoscabo de los lugares de esparcimiento.
 

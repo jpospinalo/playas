@@ -11,7 +11,7 @@ para cada chunk que NO tenga ``doc_type`` (o lo tenga vacío), lo etiqueta
 preservando el resto de su metadata. Reescribe el objeto S3 completo por archivo
 (un ``.jsonl`` es un único objeto). Es idempotente.
 
-Uso (desde la raíz del proyecto, para que cargue el .env):
+Uso desde ingesta/, con su configuración .env:
     uv run python -m utils.backfill_doc_type_s3                       # dry-run
     uv run python -m utils.backfill_doc_type_s3 --apply               # aplica
     uv run python -m utils.backfill_doc_type_s3 --apply --doc-type jurisprudencia
@@ -75,7 +75,9 @@ def backfill(doc_type: str, layers: tuple[str, ...], apply: bool) -> int:
         print(f"\n[DRY-RUN] No se escribió nada. {grand_tagged} chunks se etiquetarían.")
         print("  Ejecuta con --apply para aplicar.")
     else:
-        print(f"\n[OK] Backfill S3 completado. {grand_tagged} chunks etiquetados como '{doc_type}'.")
+        print(
+            f"\n[OK] Backfill S3 completado. {grand_tagged} chunks etiquetados como '{doc_type}'."
+        )
     return grand_tagged
 
 

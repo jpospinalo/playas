@@ -2,7 +2,7 @@
 
 ## DECRETO 1766 DE 2013
 
-## (Agosto)
+## (Agosto 13)
 
 'Por el cual se reglamenta el funcionamiento de los Comités Locales para la Organización de las Playas de que trata el artículo 12 de la Ley 1558 de 2012.'
 
@@ -98,7 +98,7 @@ ARTÍCULO 11. VIGENCIA. El presente decreto rige a partir de la fecha de su publ
 
 PUBLÍQUESE Y CÚMPLASE.
 
-Dado en Bogotá, D.C., a los días del mes de agosto del año 2013.
+Dado en Bogotá, D.C., a los 16 días del mes de agosto del año 2013.
 
 JUAN MANUEL SANTOS CALDERÓN EL PRESIDENTE DE LA REPÚBLICA,
 
@@ -106,4 +106,4 @@ JUAN CARLOS PINZÓN BUENO.
 
 EL MINISTRO DE DEFENSA NACIONAL, SERGIO DIAZGRANADOS GUIDA. EL MINISTRO DE COMERCIO, INDUSTRIA Y TURISMO,
 
-NOTA: Publicado en el Diario Oficial 48884 de agosto de 2013.
+NOTA: Publicado en el Diario Oficial 48884 de 16 agosto de 2013.

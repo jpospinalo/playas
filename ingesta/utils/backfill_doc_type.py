@@ -9,10 +9,11 @@ Este script recorre la colección, y para cada chunk que NO tenga ``doc_type``
 ``jurisprudencia``) preservando el resto de su metadata. Solo actualiza
 metadata: NO re-genera embeddings. Es idempotente.
 
-Uso (desde la raíz del proyecto, para que cargue el .env):
-    uv run python -m utils.backfill_doc_type             # dry-run (no escribe)
-    uv run python -m utils.backfill_doc_type --apply     # aplica los cambios
-    uv run python -m utils.backfill_doc_type --apply --doc-type jurisprudencia
+Uso desde rag/ (su entorno incluye chromadb), con CHROMA_HOST y CHROMA_PORT
+definidos explícitamente; ver ingesta/docs/SCRIPTS.md:
+    uv run python ../ingesta/utils/backfill_doc_type.py --collection nombre
+Por defecto no escribe. --apply necesita autorización del responsable del corpus.
+load_dotenv() no selecciona rag/.env por el directorio de invocación.
 """
 
 from __future__ import annotations

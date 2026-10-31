@@ -1,13 +1,16 @@
-.PHONY: install lint format typecheck test test-cov test-integration pipeline bucket-backup clean help
+.PHONY: install lint format format-check typecheck test test-cov test-integration pipeline bucket-backup clean help
 
 install:  ## Instalar dependencias (incluidas las de desarrollo)
 	uv sync --group dev
 
 lint:  ## Verificar errores de estilo y lógica con ruff
-	uv run ruff check ingest/ tests/
+	uv run ruff check ingest/ tests/ utils/
 
 format:  ## Formatear código con ruff
-	uv run ruff format ingest/ tests/
+	uv run ruff format ingest/ tests/ utils/
+
+format-check:  ## Verificar formato sin modificar archivos
+	uv run ruff format --check ingest/ tests/ utils/
 
 typecheck:  ## Verificar tipos con mypy
 	uv run mypy ingest/
@@ -18,7 +21,7 @@ test:  ## Ejecutar tests unitarios
 test-cov:  ## Ejecutar tests con informe de cobertura
 	uv run pytest tests/unit/ --cov=ingest --cov-report=term-missing --cov-report=html
 
-test-integration:  ## Ejecutar tests de integración (requiere servicios activos)
+test-integration:  ## Verificar contratos entre etapas sin servicios externos
 	uv run pytest tests/integration/ -m integration
 
 pipeline:  ## Ejecutar el pipeline completo de ingesta

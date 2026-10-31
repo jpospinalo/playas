@@ -21,7 +21,7 @@ SECTION_NAMES: dict[int, str] = {
 
 # ---------------------------------------------------------------------------
 # Section keyword variants (normalised: no accents, lowercase, no punctuation)
-# Each entry is checked as an exact match OR as a substring of the heading.
+# Sections 1–3 accept a word-bounded prefix; section 4 requires the complete title.
 # ---------------------------------------------------------------------------
 
 SECTION_VARIANTS: dict[int, list[str]] = {
@@ -85,38 +85,78 @@ def _strip_accents(text: str) -> str:
     return "".join(c for c in unicodedata.normalize("NFD", text) if unicodedata.category(c) != "Mn")
 
 
-def normalize_heading(text: str) -> str:
-    """
-    Return a canonical form of a heading used for section classification:
-    - Strip leading enumeration (Roman / Arabic numbers with separators)
-    - Remove punctuation except spaces
-    - Lowercase
-    - Strip accents
-    - Collapse whitespace
-    """
-    text = text.strip()
-    text = _LEADING_ENUM.sub("", text)
+# Optional spaces inside each word, mandatory separation between distinct words.
+# The extra complete title already belongs to section 3 via "consideraciones".
+_KNOWN_HEADING_PATTERNS = {
+    _strip_accents(title): re.compile(
+        r"\s+".join(
+            r"\s*".join(re.escape(letter) for letter in word)
+            for word in _strip_accents(title).split()
+        )
+    )
+    for title in [
+        *(variant for variants in SECTION_VARIANTS.values() for variant in variants),
+        "consideraciones y fundamentos",
+    ]
+}
+_QUOTE_MARKERS = "'\"‘’“”>"
+
+
+def _canonical_heading(text: str) -> str:
+    """Normalize a candidate, recovering internal spacing only in complete known titles."""
     text = _strip_accents(text)
     text = text.lower()
     text = re.sub(r"[^\w\s]", " ", text)
     text = re.sub(r"\s+", " ", text).strip()
+    for canonical, pattern in _KNOWN_HEADING_PATTERNS.items():
+        if pattern.fullmatch(text):
+            return canonical
     return text
+
+
+def _heading_candidate(text: str) -> str:
+    """Remove successive lexical numerals without erasing quotes or known spaced titles."""
+    text = text.strip()
+    while text:
+        if text[0] in _QUOTE_MARKERS or _canonical_heading(text) in _KNOWN_HEADING_PATTERNS:
+            break
+        match = _LEADING_ENUM.match(text)
+        if match is None:
+            break
+        # The existing grammar consumes at least one character on every match.
+        text = text[match.end() :].lstrip()
+    return text
+
+
+def normalize_heading(text: str) -> str:
+    """Normalize only the heading candidate, preserving the document body.
+
+    Remove successive Roman/Arabic enumeration, punctuation and accents;
+    lowercase and collapse whitespace. Recover internal spacing only when
+    the entire candidate is a known title. Use classify_heading() to reject
+    explicitly quoted headings before their quote marks are normalized away.
+    """
+    return _canonical_heading(_heading_candidate(text))
 
 
 def classify_heading(heading: str) -> int | None:
     """
     Return the section number (1–4) for *heading*, or None if unrecognised.
 
-    Matching strategy: the normalised heading must *start with* one of the
-    known variants (allowing for a small trailing suffix).  Longer variants
-    are checked before shorter ones so specifics win over generals
-    (e.g. "el recurso de apelacion" before "recurso de apelacion").
+    Explicitly quoted candidates, including those after enumeration, are
+    rejected before punctuation normalization. Sections 1–3 accept a known
+    prefix followed by a word boundary, without limiting the title length.
+    Section 4 requires a complete canonical title, never a prose suffix.
+    Longer variants and the existing category order retain their priority.
 
     Using startswith rather than arbitrary substring prevents false positives
     from long paragraph titles that happen to contain section keywords
     (e.g. "puntualmente las conclusiones del estudio fueron").
     """
-    norm = normalize_heading(heading)
+    candidate = _heading_candidate(heading)
+    if candidate and candidate[0] in _QUOTE_MARKERS:
+        return None
+    norm = _canonical_heading(candidate)
     if not norm:
         return None
 
@@ -124,9 +164,7 @@ def classify_heading(heading: str) -> int | None:
         # Sort variants by length desc so longer (more specific) win first
         variants = sorted(SECTION_VARIANTS[section_num], key=len, reverse=True)
         for variant in variants:
-            # Accept if the normalised heading starts with the variant
-            # (covers "conclusiones", "falla", "consideraciones del tribunal", etc.)
-            if norm.startswith(variant):
+            if norm == variant or (section_num != 4 and norm.startswith(variant + " ")):
                 return section_num
 
     return None
@@ -184,10 +222,9 @@ def split_by_sections(doc: Document) -> list[Document]:
 
             classified = classify_heading(heading_text)
 
-            # Handle "split headings": some documents write the Roman/Arabic
-            # numeral on the '## ' line and the actual section name on the
-            # very next non-blank line (e.g. "## IV.\nCONSIDERACIONES DEL TRIBUNAL").
-            if classified is None and not normalize_heading(heading_text):
+            # Only a nonempty lexical enumeration enables continuation, not
+            # punctuation or quotes that happen to normalize to an empty string.
+            if classified is None and heading_text.strip() and not _heading_candidate(heading_text):
                 body_lines = block_body.split("\n")
                 # Look for the first non-empty line after the '## heading' line
                 first_content = next(
@@ -197,7 +234,7 @@ def split_by_sections(doc: Document) -> list[Document]:
                 if first_content:
                     classified = classify_heading(first_content)
                     if classified is not None:
-                        # Use the continuation line as the canonical heading text
+                        # Preserve the original continuation line for metadata.
                         heading_text = first_content
 
             if classified is not None:

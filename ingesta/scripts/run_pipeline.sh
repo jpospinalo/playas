@@ -18,7 +18,7 @@ echo "=== 1/5 Conversión PDF → Markdown ==="
 echo "=== 2/5 Ingesta y normalización ==="
 (cd "${INGESTA_DIR}" && uv run python -m ingest.loaders)
 
-echo "=== 3/5 Chunking + Enriquecimiento con Gemini ==="
+echo "=== 3/5 Chunking + Enriquecimiento con el proveedor configurado ==="
 (cd "${INGESTA_DIR}" && uv run python -m ingest.splitter_and_enrich)
 
 echo "=== 4/5 Indexación en ChromaDB ==="

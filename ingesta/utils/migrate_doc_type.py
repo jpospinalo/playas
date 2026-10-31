@@ -1,15 +1,15 @@
 """Migra los objetos S3 existentes de la raíz de cada capa hacia el subnivel
 ``<capa>/jurisprudencia/``.
 
-Hoy todos los objetos del bucket están directamente bajo ``data/<capa>/``
-(raw, bronze, silver, gold) y todos son jurisprudencia. Este script los reubica
-en ``data/<capa>/jurisprudencia/`` para dejar libre ``data/<capa>/normativa/``
-para futuros documentos normativos.
+Utilidad para corpus heredados sin subprefijo de tipo bajo ``data/<capa>/``
+(raw, bronze, silver, gold). Asume que esos objetos son jurisprudencia y los
+reubica en ``data/<capa>/jurisprudencia/``. No clasifica documentos: validar
+esa premisa antes de aplicar a un bucket con documentos mixtos.
 
 Es idempotente: nunca vuelve a mover algo que ya esté bajo ``jurisprudencia/``
 o ``normativa/`` justo después de la capa.
 
-Uso:
+Uso desde ingesta/:
     uv run python -m utils.migrate_doc_type            # dry-run (por defecto)
     uv run python -m utils.migrate_doc_type --apply    # ejecuta de verdad
 """

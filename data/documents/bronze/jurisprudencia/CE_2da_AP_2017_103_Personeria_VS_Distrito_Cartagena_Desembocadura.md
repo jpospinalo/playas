@@ -8,7 +8,7 @@ Es competente el Distrito de Cartagena para realizar un censo de las personas qu
 
 ## ACCIÓN POPULAR - SENTENCIA DE SEGUNDA INSTANCIA
 
-Procede la Sala a decidir los recursos de apelación interpuestos por el Distrito de Cartagena  de  Indias  (en  adelante  el  Distrito  de  Cartagena)  y  la  Corporación Autónoma Regional del Canal del Dique (en adelante CARDIQUE), en contra de la sentencia del de julio de 2019, proferida por el Tribunal Administrativo de Bolívar.
+Procede la Sala a decidir los recursos de apelación interpuestos por el Distrito de Cartagena  de  Indias  (en  adelante  el  Distrito  de  Cartagena)  y  la  Corporación Autónoma Regional del Canal del Dique (en adelante CARDIQUE), en contra de la sentencia del 10 de julio de 2019, proferida por el Tribunal Administrativo de Bolívar.
 
 ## I.
 SÍNTESIS DEL CASO.1. El  señor  William  Matson  Ospino,  en  su  calidad  de  Personero  Distrital  de Cartagena de Indias, presentó la demanda de la referencia en contra del Distrito de
@@ -33,7 +33,7 @@ SEXTO. Ordenar la realización de todas las demás medidas necesarias que exceda
 
 Expresó que, dentro del cúmulo de cuerpos de aguas que integran la ciudad de Cartagena de Indias, se encuentra la desembocadura natural de la Ciénaga hacia el mar, de la cual el reconocido Caño Luisa conforma uno de los brazos, a la altura del  Corregimiento  de  La  Boquilla;  dicho  caño  se  ha  visto  afectado  por  ciertos fenómenos, tales como el asentamiento o invasión de grupos familiares a orillas, o incluso, sobre el mismo cuerpo de agua. Igualmente, expuso que en la zona es posible observar la disposición de basuras y excretas allí acumuladas.
 
-Aseveró que esta situación ha generado que, ante eventos de fuertes o regulares lluvias,  se  produzca  la  inundación  de  viviendas  y  áreas  públicas  en  las  zonas aledañas a la ciénaga, tanto al sur como al norte de ésta, en los Barrios Olaya, sector de noviembre y otros cercanos y en La Boquilla y Mar Linda.
+Aseveró que esta situación ha generado que, ante eventos de fuertes o regulares lluvias,  se  produzca  la  inundación  de  viviendas  y  áreas  públicas  en  las  zonas aledañas a la ciénaga, tanto al sur como al norte de ésta, en los Barrios Olaya, sector 11 de noviembre y otros cercanos y en La Boquilla y Mar Linda.
 
 Comentó  que  los  puentes  ubicados  sobre  la  desembocadura  de  la  Ciénaga, componentes del anillo vial o vía al mar (Caño Luisa, Brazuelo, La Boquilla, Caño Unión y Juan Polo), fueron construidos para permitir que los flujos de agua de la Ciénaga de La Virgen tuvieran salida al mar y se mantuviera esa interconexión. No obstante,  esto  no  ha  sido  sostenible  en  el  tiempo  debido  a  causas  naturales  y presiones antrópicas. Por un lado, la banca de arena que el mar forma de manera cíclica frente a la boca de la ciénaga bloquea débilmente la interconexión; por otro lado, la acción humana, con las invasiones, la construcción de puentes rústicos y la disposición inadecuada de residuos, aumenta la susceptibilidad a la acumulación de arena, agravando así el problema de la desconexión de los sistemas acuáticos.
 
@@ -42,7 +42,7 @@ Concluyó  que  es  imperativa  la  recuperación  de  la  dinámica  hidrológi
 ## II.
 TRÁMITE DE LA ACCIÓN
 
-- 2.1. La  demanda  correspondió  al  Juzgado  Administrativo  del  Circuito  de Cartagena que, a través de auto del de febrero de 2017, dispuso su admisión. Particularmente, ordenó notificar al Distrito de Cartagena, a EPA y a CARDIQUE.
+- 2.1. La  demanda  correspondió  al  Juzgado 14 Administrativo  del  Circuito  de Cartagena que, a través de auto del 27 de febrero de 2017, dispuso su admisión. Particularmente, ordenó notificar al Distrito de Cartagena, a EPA y a CARDIQUE.
 
 2.2.
 
@@ -66,7 +66,7 @@ Anotó que la Administración Distrital ha venido delegando desde tiempo atrás 
 
 Asimismo, expresó que el Corregimiento de La Boquilla, lugar de ubicación de los Caños Luisa, Brazuelo, La Boquilla, Caño Limón y Juan Polo, no se encuentran dentro del perímetro urbano de su jurisdicción, sino que está a cargo del Distrito de Cartagena y de CARDIQUE.
 
-2.4. Mediante auto del de febrero de 2017, el Juzgado Administrativo de Cartagena ordenó vincular al proceso a EDURBE S.A., toda vez que su objeto social es la recuperación sanitaria de Cartagena, el cual comprende las obras de limpieza, canalización y angostamiento de los caños. 3
+2.4. Mediante auto del 27 de febrero de 2017, el Juzgado 14 Administrativo de Cartagena ordenó vincular al proceso a EDURBE S.A., toda vez que su objeto social es la recuperación sanitaria de Cartagena, el cual comprende las obras de limpieza, canalización y angostamiento de los caños. 3
 
 2.5. La sociedad EDURBE S.A. se opuso a las pretensiones de la demanda al considerar que no ha causado la vulneración de los derechos colectivos invocados por el actor popular .
 
@@ -78,15 +78,15 @@ Refirió que los hechos de la demanda se derivan de la ocurrencia de fenómenos 
 
 Formuló  como  excepciones: (i) indebido agotamiento de los requisitos de procedibilidad; (ii) falta de legitimación en la causa por pasiva; (iii) inexistencia de vulneración  de  derechos  colectivos;  (iv)  indebida  integración  del  litisconsorcio necesario; (v) inexistencia de obligación; (vi) hecho imputable a un tercero, y (vii) carencia de objeto.
 
-2.6. El  día  de  mayo  de  2017  se  declaró  fallida  la  audiencia  de  pacto  de cumplimiento .
+2.6. El  día  31 de  mayo  de  2017  se  declaró  fallida  la  audiencia  de  pacto  de cumplimiento .
 
 - 2.7. CARDIQUE presentó la contestación de la demanda de forma extemporánea .
-- 2.8. A través de auto del de noviembre de 2017, el Juzgado Administrativo de  Cartagena  declaró  su  falta  de  competencia  y  ordenó  remitir  el  asunto  de  la referencia al Tribunal Administrativo de Bolívar .
+- 2.8. A través de auto del 2 de noviembre de 2017, el Juzgado Administrativo de  Cartagena  declaró  su  falta  de  competencia  y  ordenó  remitir  el  asunto  de  la referencia al Tribunal Administrativo de Bolívar .
 
 ## III.
 FALLO DE PRIMERA INSTANCIA
 
-- 3.1. El Tribunal Administrativo de Bolívar dictó sentencia el de julio de 2019, en  el  sentido  de  declarar:  (i)  no  probadas  las  excepciones  planteadas  por  las entidades demandadas, y (ii) vulnerados los derechos colectivos al goce del espacio público y la utilización y defensa de los bienes de uso público, al medio ambiente sano y equilibrio ecológico. A continuación, se transcribe la parte resolutiva:
+- 3.1. El Tribunal Administrativo de Bolívar dictó sentencia el 10 de julio de 2019, en  el  sentido  de  declarar:  (i)  no  probadas  las  excepciones  planteadas  por  las entidades demandadas, y (ii) vulnerados los derechos colectivos al goce del espacio público y la utilización y defensa de los bienes de uso público, al medio ambiente sano y equilibrio ecológico. A continuación, se transcribe la parte resolutiva:
 
 'PRIMERO: DECLARAR no probadas las excepciones aquí planteadas.
 
@@ -125,8 +125,8 @@ Como  fundamento  de  ello,  esa  autoridad  judicial,  luego  de  exponer  el  
 
 y  lagunas  interiores' ,  tenía  plena  competencia  para  desarrollar  actividades  de protección y cuidado del medio ambiente.
 
-- 3.1.2.  En  relación  con  el  EPA  sostuvo  que  fue  creado  por  medio  del  Acuerdo número 029 del de diciembre de 2002, modificado por el Acuerdo número 003 del  de  febrero  de 2003,  correspondiéndole  el  ejercicio  de  las  mismas competencias de las Corporaciones Autónomas Regionales, en los términos de los artículos  y  66  de  la  Ley  99  de  1993,  por  lo  cual  desempeña  funciones  de autoridad  ambiental  en  el  área  de  su  jurisdicción,  esto  es,  dentro  del  perímetro urbano de la cabecera distrital.
-- 3.1.3.  Sobre CARDIQUE, abordó de oficio su legitimación para intervenir en este asunto; para el efecto trajo a colación las funciones establecidas en el artículo 31 de la Ley 99 de 1993, puntualmente los numerales, 4, 12, 17, 18, 19 y 20, para señalar que, como máxima autoridad ambiental en la jurisdicción del Distrito, es a quien le corresponde ejercer la evaluación, control y seguimiento ambiental de los usos del agua, el suelo y los demás recursos naturales renovables. Agregó que la Ciénaga de la Virgen es un cuerpo hídrico que recibe influencia del Canal del Dique.
+- 3.1.2.  En  relación  con  el  EPA  sostuvo  que  fue  creado  por  medio  del  Acuerdo número 029 del 30 de diciembre de 2002, modificado por el Acuerdo número 003 del  10 de  febrero  de 2003,  correspondiéndole  el  ejercicio  de  las  mismas competencias de las Corporaciones Autónomas Regionales, en los términos de los artículos  y  66  de  la  Ley  99  de  1993,  por  lo  cual  desempeña  funciones  de autoridad  ambiental  en  el  área  de  su  jurisdicción,  esto  es,  dentro  del  perímetro urbano de la cabecera distrital.
+- 3.1.3.  Sobre CARDIQUE, abordó de oficio su legitimación para intervenir en este asunto; para el efecto trajo a colación las funciones establecidas en el artículo 31 de la Ley 99 de 1993, puntualmente los numerales 2, 4, 12, 17, 18, 19 y 20, para señalar que, como máxima autoridad ambiental en la jurisdicción del Distrito, es a quien le corresponde ejercer la evaluación, control y seguimiento ambiental de los usos del agua, el suelo y los demás recursos naturales renovables. Agregó que la Ciénaga de la Virgen es un cuerpo hídrico que recibe influencia del Canal del Dique.
 - 3.1.4.  En cuanto a EDURBE S.A., luego de exponer algunas normas de la Ley 62 de 1937 y del Decreto 7 de 1984, comentó que, como encargada de la limpieza y canalización de los caños de la bahía, era evidente que estaba involucrada en el trámite de la referencia.
 - 3.1.5.  Enseguida, enunció las pruebas aportadas al plenario y señaló que estaba acreditada la vulneración a los derechos colectivos al goce a un ambiente sano y al equilibrio ecológico por la existencia de una invasión en la rivera del Caño Luisa, alrededor del puente que lleva el mismo nombre y otras zonas cercanas, lo que ha generado el  estrechamiento  del  cauce  del  Canal  del  Dique  y  ha  derivado  en  la contaminación del ecosistema, propiciando la reproducción de bacterias y desfavoreciendo  el  bosque  de  mangle.  Además,  reprochó  que  dicho  sector  no cuenta  con  manejo  de  basuras,  por  lo  que  se  encuentra  una  gran  cantidad  de residuos  sólidos  que  impiden  la  normal  circulación  del  caño  y  ha  provocado situaciones  de  salubridad  y  de  contaminación  que  podían  llegar  a  afectar  las
 
@@ -143,19 +143,19 @@ Finalmente, solicitó que se revocara la sentencia recurrida y manifestó que en
 
 sólidos,  remoción de rellenos que se hubieren efectuado, dragando los sectores donde se ha disminuido u obstaculizado el flujo natural de agua entre el mar y las ciénaga de la Virgen, recuperación y descontaminación de las áreas degradadas de cuencas hidrográficas, conservación, uso y manejo de la fauna silvestre, y adelantar tareas de protección de las zonas afectadas para que no se realicen sobre ellas nuevas invasiones.
 
-4.2.  El Distrito alegó  que  no  se  encuentra  en  la  posibilidad  de  cumplir  con  las órdenes contenidas en los literales b y c del numeral tercero de la parte resolutiva de la sentencia del de julio de 2019, proferida por el Tribunal Administrativo de Bolívar, toda vez que esas funciones recaen en cabeza del Fondo de Vivienda de Interés  Social  y  Reforma  Urbana  de  Cartagena  (en  adelante  CORVIVIENDA), establecimiento  público  del  orden  distrital,  con  personería  jurídica,  autonomía administrativa  y  patrimonio  propio,  creado  mediante  Acuerdo  núm.  37  de  1991 (Junio),  entidad  encargada  de  coordinar  con  EDURBE  S.A.  el  desarrollo  de proyectos  para  la  reubicación,  rehabilitación,  mejoramiento  y  construcción,  de viviendas  de  interés  social,  cuando  sea  necesaria  la  recuperación  de  playas, playones, caños, lagos, lagunas y ciénagas.
+4.2.  El Distrito alegó  que  no  se  encuentra  en  la  posibilidad  de  cumplir  con  las órdenes contenidas en los literales b y c del numeral tercero de la parte resolutiva de la sentencia del 10 de julio de 2019, proferida por el Tribunal Administrativo de Bolívar, toda vez que esas funciones recaen en cabeza del Fondo de Vivienda de Interés  Social  y  Reforma  Urbana  de  Cartagena  (en  adelante  CORVIVIENDA), establecimiento  público  del  orden  distrital,  con  personería  jurídica,  autonomía administrativa  y  patrimonio  propio,  creado  mediante  Acuerdo  núm.  37  de  1991 (Junio 19),  entidad  encargada  de  coordinar  con  EDURBE  S.A.  el  desarrollo  de proyectos  para  la  reubicación,  rehabilitación,  mejoramiento  y  construcción,  de viviendas  de  interés  social,  cuando  sea  necesaria  la  recuperación  de  playas, playones, caños, lagos, lagunas y ciénagas.
 
 ## V.
-TRÁMITE EN SEGUNDA INSTANCIA.1. Mediante auto del de marzo de 2021, el Despacho admitió los recursos de apelación  y con proveído del de abril de 2022 corrió traslado para alegar de conclusión .
+TRÁMITE EN SEGUNDA INSTANCIA.1. Mediante auto del 8 de marzo de 2021, el Despacho admitió los recursos de apelación  y con proveído del 29 de abril de 2022 corrió traslado para alegar de conclusión .
 
-- 5.2. En memorial del de mayo de 2022, CARDIQUE reiteró  los  argumentos expuestos en el recurso de alzada .
-- 5.3. Por  medio  de  escrito  del  de  mayo  de  2022,  el Distrito ratificó  los argumentos expuestos en la contestación del libelo introductorio y en el recurso de apelación .
+- 5.2. En memorial del 9 de mayo de 2022, CARDIQUE reiteró  los  argumentos expuestos en el recurso de alzada .
+- 5.3. Por  medio  de  escrito  del  6 de  mayo  de  2022,  el Distrito ratificó  los argumentos expuestos en la contestación del libelo introductorio y en el recurso de apelación .
 
-.4. Con oficio del de mayo de 2022, el EPA insistió en que los Caños Luisa, Brazuelo, La Boquilla, Limón y Juan Polo, no se encuentran dentro del perímetro urbano de su jurisdicción, motivo por el cual afirmó que no era competente para resolver la situación de vulneración de derechos colectivos planteada por la parte actora.  Agregó  que  la  solución  de  la  problemática  ambiental  y  de  saneamiento básico  que  presenta  el  canal  pluvial  del  corregimiento  de  La  Boquilla  era responsabilidad  del  Distrito,  por  medio  de  la  Secretaría  de  Infraestructura  y  del Departamento Administrativo de Valorización .
+.4. Con oficio del 16 de mayo de 2022, el EPA insistió en que los Caños Luisa, Brazuelo, La Boquilla, Limón y Juan Polo, no se encuentran dentro del perímetro urbano de su jurisdicción, motivo por el cual afirmó que no era competente para resolver la situación de vulneración de derechos colectivos planteada por la parte actora.  Agregó  que  la  solución  de  la  problemática  ambiental  y  de  saneamiento básico  que  presenta  el  canal  pluvial  del  corregimiento  de  La  Boquilla  era responsabilidad  del  Distrito,  por  medio  de  la  Secretaría  de  Infraestructura  y  del Departamento Administrativo de Valorización .
 
-- 5.5. Mediante memorial del de mayo de 2022, la parte actora solicitó que se confirmara la sentencia proferida en primera instancia por el Tribunal Administrativo de Bolívar el de julio de 2019.
+- 5.5. Mediante memorial del 18 de mayo de 2022, la parte actora solicitó que se confirmara la sentencia proferida en primera instancia por el Tribunal Administrativo de Bolívar el 10 de julio de 2019.
 
-5.6. En auto del de abril de 2024, el Despacho sustanciador abrió de oficio un incidente de nulidad al advertir que CORVIVIENDA no fue vinculada al presente asunto, a pesar de que debía comparecer en calidad de demandada . En proveído del de junio de los corrientes, se declaró saneada la anterior nulidad y se resolvió tener como parte accionada a la citada entidad .
+5.6. En auto del 24 de abril de 2024, el Despacho sustanciador abrió de oficio un incidente de nulidad al advertir que CORVIVIENDA no fue vinculada al presente asunto, a pesar de que debía comparecer en calidad de demandada . En proveído del 14 de junio de los corrientes, se declaró saneada la anterior nulidad y se resolvió tener como parte accionada a la citada entidad .
 
 ## VI.
 CONCEPTO DEL MINISTERIO PÚBLICO
@@ -164,7 +164,7 @@ El Ministerio Público solicitó que se confirmara la decisión adoptada por el 
 
 '¿Cuáles  son  las  entidades  que  están  llamadas  a  restablecer  los  derechos colectivos derechos e intereses colectivos de los demandantes a i) un ambiente sano; ii) la existencia de un equilibrio ecológico y el manejo y aprovechamiento racional de los recursos naturales para garantizar su desarrollo sostenible, su conservación  restauración o sustitución; iii) la prevención de desastres previsibles técnicamente y iv) la seguridad y salubridad públicas, los cuales se hallan vulnerados a raíz de la proliferación de construcciones tipo invasión en las  riberas  del  Caño  Luisa,  en  jurisdicción  del  Distrito  Turístico  y  Cultural  de Cartagena de Indias?' .
 
-![Image](./CE_2da_AP_2017_103_Personeria_VS_Distrito_Cartagena_Desembocadura/assets/image_000012_55a4c77536b6e4ba8a143539dfe43975e20d864b1f3f317038438758ad713cf.png)
+![Image](./CE_2da_AP_2017_103_Personeria_VS_Distrito_Cartagena_Desembocadura/assets/image_000012_55a4c77536b6e4ba8a143539dfe43975e20d864b1f3f317038438758ad713cf6.png)
 
 Para responder a tal interrogante y tras exponer las normas sobre las competencias de las entidades recurrentes, indicó que el Distrito no solo tiene la responsabilidad principal de restituir el espacio público como autoridad de policía en su área, sino que también tiene la capacidad directa de colaborar con el EPA y CORVIVIENDA en los planes y programas necesarios para cumplir con la sentencia apelada, ya que el alcalde es parte y preside los Consejos Directivos de estas entidades. Por lo tanto, entendió que las órdenes impartidas en la sentencia de primera instancia eran adecuadas al ordenar a la Alcaldía del Distrito que recupere el espacio público en las riberas del Caño Luisa, coordine el censo poblacional correspondiente y realice las acciones ambientales en conjunto con el EPA y CARDIQUE.
 
@@ -183,7 +183,7 @@ De conformidad con lo dispuesto en el artículo 37 de la Ley 472 de 1998, el art
 
 Antes de plantear la controversia, la Sala encuentra que la sociedad EPA, en el escrito  en  el  que  presentó  sus  alegatos  finales  en  esa  instancia,  expresó  varias inconformidades  contra  el  fallo  recurrido.  En  particular,  reprochó  que  no  era competente para ejecutar las órdenes impartidas en la sentencia apelada, dado que los  cuerpos  de  agua  objeto  de  controversia  no  se  encontraban  en  su  área  de jurisdicción. Además, resaltó que las actividades que le fueron encomendadas en la sentencia apelada debían ser desarrolladas por el Distrito, a través de la Secretaría de Infraestructura y del Departamento Administrativo de Valorización.
 
-En ese orden, es pertinente indicar que el memorial de traslado para alegar de conclusión no es la oportunidad procesal para que una de las partes exprese su inconformidad  en  contra  del  fallo  de  primera  instancia,  cuando  éste  no  ha  sido apelado  por  ese  extremo  de  la litis .    En  ese  sentido,  debe  señalarse  que,  de conformidad con el artículo 328 del CGP, aplicable por las remisiones dispuestas en los artículos de la Ley 472 de 1998  y 306 del CPACA , la competencia del Juez de segunda instancia está restringida únicamente los reproches efectuados en los respectivos recursos de alzada en contra de la decisión recurrida.
+En ese orden, es pertinente indicar que el memorial de traslado para alegar de conclusión no es la oportunidad procesal para que una de las partes exprese su inconformidad  en  contra  del  fallo  de  primera  instancia,  cuando  éste  no  ha  sido apelado  por  ese  extremo  de  la litis .    En  ese  sentido,  debe  señalarse  que,  de conformidad con el artículo 328 del CGP, aplicable por las remisiones dispuestas en los artículos 44 de la Ley 472 de 1998  y 306 del CPACA , la competencia del Juez de segunda instancia está restringida únicamente los reproches efectuados en los respectivos recursos de alzada en contra de la decisión recurrida.
 
 17  ' Artículo 44. Aspectos no regulados. En los procesos por acciones populares se aplicarán las disposiciones del Código  de  Procedimiento  Civil y del Código  Contencioso  Administrativo dependiendo de la jurisdicción que le corresponda, en los aspectos no regulados en la presente ley, mientras no se opongan a la naturaleza y la finalidad de tales acciones.'   ' Artículo 306. Aspectos no regulados. En los aspectos no contemplados en este Código se seguirá el Código de Procedimiento Civil en lo que sea compatible con la naturaleza de los procesos y actuaciones que correspondan a la Jurisdicción de lo Contencioso Administrativo.'
 
@@ -221,7 +221,7 @@ Cartagena y los municipios de Clemencia, Santa Catalina, Santa Rosa, Turbaco y V
 
 El siguiente mapa permite ilustrar de mejor manera lo anterior:
 
-![Image](./CE_2da_AP_2017_103_Personeria_VS_Distrito_Cartagena_Desembocadura/assets/image_000017_f52c963f4dfde2bd0f1d643c7250f7b6ace141a543bc1ff36db7b493c20e6cc.png)
+![Image](./CE_2da_AP_2017_103_Personeria_VS_Distrito_Cartagena_Desembocadura/assets/image_000017_f52c963f4dfde2bd0f1d643c7250f7b6ace141a543bc1ff36db7b493c20e6cc7.png)
 
 De  lo  hasta  aquí  expuesto,  queda  con  total  claridad  que  CARDIQUE  tiene jurisdicción en el área rural del Distrito de Cartagena, zona en la que, como se vio, se encuentra la Ciénaga de La Virgen.
 
@@ -267,7 +267,7 @@ Así, como se vio, el Tribunal determinó los plazos para su cumplimiento y prec
 
 Sin embargo, dicha orden no es clara frente a lo que le corresponde efectuar a cada entidad demandada, dado que expuso que esas actividades debían ser efectuadas por  todas  las  entidades  demandadas,  ignorando  que  éstas  tienen  competencias diferenciables, lo que podría afectar la correcta ejecución de lo allí previsto.
 
-7.4.2.1. En efecto, téngase en cuenta que, conforme se vio precedentemente, CARDIQUE únicamente tiene jurisdicción sobre los cuerpos de agua ubicados en la zona  rural  del  Distrito  de  Cartagena .  De  modo  es  claro  que  solamente  los mandatos que deban ser desarrollados en esa área deben ser cumplidos por esa entidad,  ello  en  cumplimiento  de  las  facultades  asignadas  a  esa  clase  de Corporaciones Ambientales en los numerales, 7, 12 y 17 del artículo 31 de la Ley 99 de 1993, que les imponen: (i) coordinar el proceso de preparación de los planes, programas  y  proyectos  de  desarrollo  medioambiental  que  deban  formular  los diferentes  organismos  y  entidades  integradas  del  Sistema  Nacional  Ambiental (SINA) en el área de su jurisdicción, y en especial, asesorar a los Departamentos, Distritos y Municipios de su comprensión territorial en la definición de los planes de desarrollo ambiental y en sus programas y proyectos en materia de protección del medio ambiente y los recursos naturales renovables, de manera que se asegure la armonía  y  coherencia  de  las  políticas  y  acciones  adoptadas  por  las  distintas entidades territoriales; (ii) promover y realizar conjuntamente con los organismos nacionales  adscritos  y  vinculados  al  Ministerio  del  Medio  Ambiente,  y  con  las entidades  de  apoyo  técnico  y  científico  del  Sistema  Nacional  Ambiental  (SINA), estudios  e  investigaciones  en  materia  de  medio  ambiente  y  recursos  naturales
+7.4.2.1. En efecto, téngase en cuenta que, conforme se vio precedentemente, CARDIQUE únicamente tiene jurisdicción sobre los cuerpos de agua ubicados en la zona  rural  del  Distrito  de  Cartagena .  De  modo  es  claro  que  solamente  los mandatos que deban ser desarrollados en esa área deben ser cumplidos por esa entidad,  ello  en  cumplimiento  de  las  facultades  asignadas  a  esa  clase  de Corporaciones Ambientales en los numerales 4, 7, 12 y 17 del artículo 31 de la Ley 99 de 1993, que les imponen: (i) coordinar el proceso de preparación de los planes, programas  y  proyectos  de  desarrollo  medioambiental  que  deban  formular  los diferentes  organismos  y  entidades  integradas  del  Sistema  Nacional  Ambiental (SINA) en el área de su jurisdicción, y en especial, asesorar a los Departamentos, Distritos y Municipios de su comprensión territorial en la definición de los planes de desarrollo ambiental y en sus programas y proyectos en materia de protección del medio ambiente y los recursos naturales renovables, de manera que se asegure la armonía  y  coherencia  de  las  políticas  y  acciones  adoptadas  por  las  distintas entidades territoriales; (ii) promover y realizar conjuntamente con los organismos nacionales  adscritos  y  vinculados  al  Ministerio  del  Medio  Ambiente,  y  con  las entidades  de  apoyo  técnico  y  científico  del  Sistema  Nacional  Ambiental  (SINA), estudios  e  investigaciones  en  materia  de  medio  ambiente  y  recursos  naturales
 
 Radicado: 13001-23-33-0002017-01038 -01 Demandante: Personería Distrital de Cartagena de Indias renovables; (iii) ejercer las funciones de evaluación, control y seguimiento ambiental de los usos del agua, el suelo, el aire y los demás recursos naturales renovables,  lo  cual  comprenderá  el  vertimiento,  emisión  o  incorporación  de sustancias o residuos líquidos, sólidos y gaseosos y a las aguas, al aire o a los suelos, así como los vertimientos o emisiones que puedan causar daño o poner en peligro  el  normal  desarrollo  sostenible  de  los  recursos  naturales  renovables  o impedir  u  obstaculizar  su  empleo  para  otros  usos  y (iv) imponer  y ejecutar  a prevención  y  sin  perjuicio  de  las  competencias  atribuidas  por  la  ley  a  otras autoridades, las medidas de policía y las sanciones previstas en la ley, en caso de violación a las normas de protección ambiental y de manejo de recursos naturales renovables y exigir, con sujeción a las regulaciones pertinentes, la reparación de los daños causados.
 
@@ -356,6 +356,8 @@ CUARTO: ORDENAR a la Corporación Autónoma Regional del Canal del Dique -CARDIQ
 
 Posteriormente,  de  forma  coordinada  y  concurrente,  deberán  ejecutar dichas  actividades  en  su  totalidad  dentro  de  los  dieciocho  (18)  meses siguientes al vencimiento del término anterior.
 
+Las anotadas actividades son las siguientes:
+
 - A. Adelantar las limpiezas y recolección de basura respectivas, del caño Luisa.
 - B. Reforestación, recuperación y restauración de áreas mangláricas.
 - C.  Recuperación  de  los  suelos  en  áreas  de  procesos  erosivos  para  su conservación y estabilización, así como la remoción de escombros y materiales sólidos.
@@ -379,7 +381,7 @@ Una vez presentado el Plan de Acción, el Tribunal convocará al Comité de Veri
 
 La ejecución total del Plan de Acción, incluida la reubicación y la restitución del espacio público, se hará en un plazo máximo de dos (2) años contados a partir de su aprobación, término dentro del cual el Alcalde de Cartagena deberá rendir al Comité de Verificación, a través del Tribunal Administrativo de Bolívar, informes escritos trimestrales de gestión .'
 
-En efecto, téngase en cuenta que esa entidad fue creada por el Concejo Distrital de Cartagena  de  Indias,  mediante  Acuerdo  del  de  junio  de  1991,  como  un establecimiento descentralizado, con personería jurídica, autonomía administrativa y patrimonio independiente. Ahora, en el artículo 2º de esa norma se determinó que Coordinar  con  la ella  debía  '
+En efecto, téngase en cuenta que esa entidad fue creada por el Concejo Distrital de Cartagena  de  Indias,  mediante  Acuerdo  del  19 de  junio  de  1991,  como  un establecimiento descentralizado, con personería jurídica, autonomía administrativa y patrimonio independiente. Ahora, en el artículo 2º de esa norma se determinó que Coordinar  con  la ella  debía  '
 
 empresa de desarrollo  urbano  de  Bolívar  SA desarrollo  de  proyectos  para  la  reubicación el ,  rehabilitación,  mejoramiento  y construcción,  de  viviendas  de  interés  social,  cuando  sea  necesaria  la recuperación de playas, playones, y negrillas de la Sala).
 
@@ -405,7 +407,7 @@ En desarrollo de esta disposición se expidió la Ley 1551 de 2012,
 
 'Artículo 3o. Funciones de los municipios. Formular y adoptar los planes de ordenamiento territorial, reglamentando de manera específica los usos del suelo en las áreas urbanas, de expansión y rurales,  de  acuerdo  con  las  leyes  y  teniendo  en  cuenta  los  instrumentos definidos por la UPRA para el ordenamiento y el uso eficiente del suelo rural.
 
-Optimizar los usos de las tierras disponibles y coordinar los planes sectoriales en  armonía  con  las  políticas  nacionales  y  los  planes  departamentales  y metropolitanos. Los Planes de Ordenamiento Territorial serán presentados para revisión ante el Concejo Municipal o Distrital cada años.
+Optimizar los usos de las tierras disponibles y coordinar los planes sectoriales en  armonía  con  las  políticas  nacionales  y  los  planes  departamentales  y metropolitanos. Los Planes de Ordenamiento Territorial serán presentados para revisión ante el Concejo Municipal o Distrital cada 12 años.
 
 Calle No. 7-65 - Tel: (57-1) 350-6700 - Bogotá D.C. - Colombia caños
 
@@ -435,6 +437,8 @@ También comunicará a las entidades o autoridades administrativas para que, en 
 
 Además, conforme a la anterior disposición, esta Sección  definió que era menester no sólo que se incluyera, por mandato legal, al Tribunal que emitió sentencia de primera  instancia,  sino  que  además  precisó  que  quien  debía  presidirlo  es  el Magistrado que había adelantado la sustanciación y proyección de la decisión en la anotada instancia como Ponente de esta .
 
+23 Sentencia de 28 de junio de 2019, Consejero Ponente: Hernando Sánchez Sánchez. Radicación Número: 52001-23-33-000-2018-00361-01(AP), en la que se dijo:
+
 ' Comité de verificación.
 
 167. Para el cumplimiento de las órdenes proferidas en esta sentencia, se ordenará la conformación de un comité de verificación, según lo dispone el artículo 34 de la Ley 472:
@@ -451,15 +455,7 @@ Sobre el particular, la Corte Constitucional en sentencia T-254 de 2014, precis�
 
 '[…]  Como  punto  de  partida,  se  destaca  el  hecho  de  que  ambos  cuerpos  normativos  hayan considerado que dichas autoridades debían conservar su competencia, después de proferido el fallo, para adoptar las medidas que conduzcan a hacer efectivo el amparo. Eso explica que tanto el juez de tutela como el de la acción popular puedan convocar a las entidades encargadas de ejecutar las órdenes de protección, cuantas veces sea necesario; practicar pruebas para establecer los motivos de su negligencia y adelantar las diligencias que correspondan para corregir tales obstáculos. 24
 
-El juez de la acción popular cuenta con una herramienta adicional para esos efectos: la conformación del comité para la verificación del cumplimiento que, integrado de la manera en que se anunció previamente (Supra.5.) cumple la función de asesorar al funcionario judicial en la formulación de
-
-En consecuencia, a efectos de aplicar dicho criterio, debe modificarse el numeral sexto de la sentencia de primera instancia, con el fin de que el Magistrado Ponente del  Tribunal  Administrativo  de  Bolívar  haga  parte  del  mencionado  Comité  y  lo presida.
-
-En  mérito  de  lo  expuesto,  el  consejo  de  Estado,  Sala  de  lo  Contencioso Administrativo, Sección Primera,
-
-## R E S U E L V E
-
-PRIMERO: MODIFICAR los literales B y C del numeral tercero de la parte resolutiva de la sentencia de primera instancia, el cual quedará así:
+El juez de la acción popular cuenta con una herramienta adicional para esos efectos: la conformación del comité para la verificación del cumplimiento que, integrado de la manera en que se anunció previamente (Supra 4.5.) cumple la función de asesorar al funcionario judicial en la formulación de
 
 propuestas  que  conduzcan  a  realizar  la  protección  concedida  y,  además,  permite  hacer  un seguimiento de las gestiones que los responsables de restablecer el derecho colectivo vulnerado han adoptado con ese objeto. 24
 
@@ -473,10 +469,20 @@ El  papel  que  cumple  el  comité  de  verificación  en  la  asesoría  y  se
 
 Es por lo anterior que la Sala considera que el comité de verificación en el asunto sub-examine no debe ser revocado, pero sí modificado en el sentido de incluir al Tribunal, a través de su magistrado ponente, quien lo presidirá.'  (Negrillas del original) (Subrayas de la Sala)
 
+En consecuencia, a efectos de aplicar dicho criterio, debe modificarse el numeral sexto de la sentencia de primera instancia, con el fin de que el Magistrado Ponente del  Tribunal  Administrativo  de  Bolívar  haga  parte  del  mencionado  Comité  y  lo presida.
+
+En  mérito  de  lo  expuesto,  el  consejo  de  Estado,  Sala  de  lo  Contencioso Administrativo, Sección Primera,
+
+## R E S U E L V E
+
+PRIMERO: MODIFICAR los literales B y C del numeral tercero de la parte resolutiva de la sentencia de primera instancia, el cual quedará así:
+
 TERCERO: ORDENAR al alcalde del Distrito de Cartagena lo siguiente:
 
 - B. Que, en coordinación con CORVIVIENDA y ENDURBE y dentro del marco de  sus  funciones,  realicen  un  censo  de  las  personas  que  se  encuentran habitando  la  rivera  del  Caño  Luisa,  para  así,  determinar  si  éstas  deben  ser reubicadas  en  otro  lugar  y  ser  vinculadas  a  los  programas  de  entrega  de vivienda que maneja el Distrito de Cartagena.
 - C. Que, en coordinación con CORVIVIENDA y ENDURBE y en el ámbito de sus competencias,  a  más  tardar  dentro  de  los  tres  (3)  meses  siguientes  a  la ejecutoria de este fallo, presente ante el Tribunal Administrativo de Bolívar un Plan  de  Acción  técnicamente  elaborado,  que  tenga  en  cuenta  todos  los aspectos administrativos, jurídicos, técnicos y presupuestales del proyecto, con su respectivo cronograma de ejecución.
+
+Una vez presentado el Plan de Acción, el Tribunal convocará al Comité de Verificación para que se reúna dentro del mes siguiente para estudiarlo y formular las recomendaciones pertinentes que el Tribunal tendrá en cuenta para efectos de la aprobación del Plan, la cual se ha de realizar dentro de los seis (6) meses siguientes a su presentación.
 
 La ejecución total del Plan de Acción, incluida la reubicación y la restitución del espacio público, se hará en un plazo máximo de dos (2) años contados a partir de su aprobación, término dentro del cual el alcalde de Cartagena deberá rendir al  Comité  de  Verificación,  a  través  del  Tribunal  Administrativo  de  Bolívar, informes escritos trimestrales de gestión.
 
@@ -486,6 +492,8 @@ CUARTO: ORDENAR a la Corporación Autónoma Regional del Canal del Dique -  CARD
 
 Posteriormente, de forma coordinada y concurrente, deberán ejecutar dichas actividades  en  su totalidad  dentro  de  los  dieciocho  (18)  meses  siguientes  al vencimiento del término anterior.
 
+Las anotadas actividades son las siguientes:
+
 - A. Adelantar las limpiezas y recolección de basura respectivas, del caño Luisa.
 - B. Reforestación, recuperación y restauración de áreas mangláricas.
 - C.  Recuperación  de  los  suelos  en  áreas  de  procesos  erosivos  para  su conservación y estabilización, así como la remoción de escombros y materiales sólidos.
@@ -494,6 +502,8 @@ Posteriormente, de forma coordinada y concurrente, deberán ejecutar dichas acti
 - E. Recuperación y descontaminación de las áreas desagradadas de cuencas hidrográficas.
 - F. Conservación uso y manejo de la fauna silvestre.
 - G. Adelantar tareas de protección de la zona afectada para que no se realicen sobre ellas nuevas invasiones.
+
+Para el cumplimiento de la anterior orden, el Director de la Corporación Autónoma Regional del Canal del Dique - CARDIQUE y el Alcalde del Distrito de Cartagena, deberán incluir las actividades y actuaciones señaladas en precedencia y que sean de su cargo, dentro de los planes, programas y/o proyectos, así como en el presupuesto de dichas entidades, para los períodos o vigencias que fueren necesarias
 
 TERCERO: MODIFICAR el numeral sexo de la sentencia recurrida así:
 
@@ -507,9 +517,9 @@ SEXTO: Ejecutoriada esta providencia, DEVOLVER el  expediente al Tribunal de ori
 
 Cópiese, notifíquese, comuníquese y cúmplase,
 
-La anterior providencia fue leída, discutida y aprobada por la Sala en su sesión del de agosto de 2024.
+La anterior providencia fue leída, discutida y aprobada por la Sala en su sesión del 1 de agosto de 2024.
 
-![Image](./CE_2da_AP_2017_103_Personeria_VS_Distrito_Cartagena_Desembocadura/assets/image_000033_ee6a4d39be39eaadd75ddff3ef02bf3456322509fce870e2f7bced9a947edda.png)
+![Image](./CE_2da_AP_2017_103_Personeria_VS_Distrito_Cartagena_Desembocadura/assets/image_000033_ee6a4d39be39eaadd75ddff3ef02bf3456322509fce870e2f7bced9a947edda0.png)
 
 Radicado: 13001-23-33-000- 2017-01038 -01
 

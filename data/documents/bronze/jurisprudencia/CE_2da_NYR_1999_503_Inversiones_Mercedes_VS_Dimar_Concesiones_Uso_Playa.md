@@ -1,6 +1,6 @@
 CONCESIÓN DE BIENES DE USO PUBLICO-Competencia de la Dirección General  Marítima  y  Portuaria  /  DIRECCIÓN  GENERAL  MARÍTIMA  Y PORTUARIA-Incompetencia para otorgar licencias de construcción
 
-La  Sala concluye  que,  bien  aceptando  que  el  terreno  controvertido  es  playa,  o  bien aceptando  que  no  lo  es,  lo  cierto  es  que  la  DIMAR  no  podía  otorgarle  el  permiso  de construcción en los términos solicitados por la demandante, pues, si es playa, sólo podría otorgarle permiso de concesión y, si no lo es, por no ser un bien de uso público, tampoco podría concederle dicho permiso, por no tener competencia legal para ello. Al haber sido desvirtuada  la  legalidad  de  la  Resolución  núm.  0026  de  de  enero  de  1994,  la  Sala confirmará la sentencia recurrida.
+La  Sala concluye  que,  bien  aceptando  que  el  terreno  controvertido  es  playa,  o  bien aceptando  que  no  lo  es,  lo  cierto  es  que  la  DIMAR  no  podía  otorgarle  el  permiso  de construcción en los términos solicitados por la demandante, pues, si es playa, sólo podría otorgarle permiso de concesión y, si no lo es, por no ser un bien de uso público, tampoco podría concederle dicho permiso, por no tener competencia legal para ello. Al haber sido desvirtuada  la  legalidad  de  la  Resolución  núm.  0026  de  17 de  enero  de  1994,  la  Sala confirmará la sentencia recurrida.
 
 ## consejo DE ESTADO
 
@@ -18,19 +18,19 @@ Ref. : Acción: Nulidad y Restablecimiento del Derecho
 
 Actor: INVERSIONES LAS MERCEDES S.A.
 
-Se decide el recurso de apelación interpuesto por el apoderado de la parte actora contra la sentencia de de enero de 1998, por la cual la Sección Primera del  Tribunal  Administrativo  de  Cundinamarca  declaró  no  probada  la  excepción propuesta y denegó las pretensiones de la demanda.
+Se decide el recurso de apelación interpuesto por el apoderado de la parte actora contra la sentencia de 22 de enero de 1998, por la cual la Sección Primera del  Tribunal  Administrativo  de  Cundinamarca  declaró  no  probada  la  excepción propuesta y denegó las pretensiones de la demanda.
 
 I. ANTECEDENTES
 
 INVERSIONES  LAS  MERCEDES  S.A., a  través  de  apoderado  y  en ejercicio  de  la  acción  consagrada  en  el  artículo  85  del  C.C.A.,  solicitó  que  se declare la nulidad de los siguientes actos:
 
-a) Resolución núm. 0674 de de junio de 1993, expedida por el Director
+a) Resolución núm. 0674 de 23 de junio de 1993, expedida por el Director
 
 General Marítimo, por medio de la cual otorgó una concesión a la demandante, en un área de terreno de propiedad de la Nación, localizada en el sector de San
 
-Luis denominado Sound Bay, en San Andrés Isla, por un término de años, vencidos  los  cuales, tanto  el  terreno  como  la  construcción  allí  levantada reverterían a la Nación; otorgó permiso para construir dentro del área asignada en  concesión,  tres  cabañas  descritas  en  la  parte  considerativa,  destinadas exclusivamente  al  turismo;  ordenó  elevar  a  escritura  pública  el  compromiso adquirido  con  la  Nación,  así  como  prestar  las  garantías  correspondientes  y cumplir  con  unos  requisitos  y  procedimientos  en  relación  con  la  concesión otorgada.
+Luis denominado Sound Bay, en San Andrés Isla, por un término de 20 años, vencidos  los  cuales, tanto  el  terreno  como  la  construcción  allí  levantada reverterían a la Nación; otorgó permiso para construir dentro del área asignada en  concesión,  tres  cabañas  descritas  en  la  parte  considerativa,  destinadas exclusivamente  al  turismo;  ordenó  elevar  a  escritura  pública  el  compromiso adquirido  con  la  Nación,  así  como  prestar  las  garantías  correspondientes  y cumplir  con  unos  requisitos  y  procedimientos  en  relación  con  la  concesión otorgada.
 
-- b) Resolución núm. 0026 de de enero de 1994, por medio de la cual se resolvió el recurso de reposición interpuesto contra la resolución identificada en el  literal  a),  revocándola  y,  en  su  lugar,  negó  el  permiso  de  construcción  y ordenó iniciar una investigación administrativa por la ocupación indebida de los bienes de la Nación.
+- b) Resolución núm. 0026 de 17 de enero de 1994, por medio de la cual se resolvió el recurso de reposición interpuesto contra la resolución identificada en el  literal  a),  revocándola  y,  en  su  lugar,  negó  el  permiso  de  construcción  y ordenó iniciar una investigación administrativa por la ocupación indebida de los bienes de la Nación.
 
 Como  consecuencia  de  lo  anterior  y  a  título  de  restablecimiento  del derecho,  solicita  que  se  ordene  autorizar  la  construcción  de  las  cabañas solicitadas y se indemnicen los perjuicios ocasionados, los cuales ascienden a una suma  muy  superior  a  los  doscientos  millones  de  pesos  ($200.000.000.00), cantidad  que  debía  recibir  la  sociedad  actora  por  concepto  de  la  explotación turística de las cabañas.
 
@@ -63,16 +63,16 @@ Lo único que debe constatar la autoridad marítima, como garante del uso públi
 ## II.
 FUNDAMENTOS DE LA SENTENCIA RECURRIDA
 
-- 1º. La señora Amparo Berrío de Sánchez adelantó proceso de pertenencia por prescripción extintiva de dominio sobre dos lotes de terreno ubicados en el sector denominado Sound Bay de la Isla de San Andrés, adquiriendo el dominio de los mismos por decisión del Juzgado Promiscuo Territorial de San Andrés y Providencia  en  sentencia  de  de  marzo  de  1979.  Posteriormente,  mediante escritura pública 3055 de de octubre de 1988, la sociedad INVERSIONES LAS MERCEDES S.A. adquirió el dominio por compra hecha a la mencionada señora de  los  lotes  de  terreno,  los  cuales  fueron  englobados  mediante  la  Escritura Pública  núm.  3652  de  de  diciembre  de  1989  de  la  Notaría  7ª  de  Cali, unificándose el predio en la matrícula inmobiliaria núm. 450-000124-28.
+- 1º. La señora Amparo Berrío de Sánchez adelantó proceso de pertenencia por prescripción extintiva de dominio sobre dos lotes de terreno ubicados en el sector denominado Sound Bay de la Isla de San Andrés, adquiriendo el dominio de los mismos por decisión del Juzgado Promiscuo Territorial de San Andrés y Providencia  en  sentencia  de  15 de  marzo  de  1979.  Posteriormente,  mediante escritura pública 3055 de 31 de octubre de 1988, la sociedad INVERSIONES LAS MERCEDES S.A. adquirió el dominio por compra hecha a la mencionada señora de  los  lotes  de  terreno,  los  cuales  fueron  englobados  mediante  la  Escritura Pública  núm.  3652  de  13 de  diciembre  de  1989  de  la  Notaría  7ª  de  Cali, unificándose el predio en la matrícula inmobiliaria núm. 450-000124-28.
 
 La  sociedad  actora  derribó  las  casas  existentes  y,  antes  de  proceder  a construir las cabañas, adelantó los trámites ante la DIMAR, conforme lo prescrito en el Decreto 2324 de 1984, a través de la Capitanía de San Andrés, solicitando permiso  para  iniciar  el  proyecto  de  construcción  de  tres  cabañas,  con  fines turísticos.
 
 Del texto del artículo 5º, numeral 27, del Decreto 2324 de 1984, se infiere que es competencia de la Dirección Marítima y Portuaria otorgar los permisos y concesiones sobre los predios de su jurisdicción y, a través de las Capitanías de Puertos, ordenar los peritazgos o inspecciones oculares de los predios sobre los cuales se pide el permiso de construcción, de conformidad con el procedimiento señalado por el decreto en cita, razón por la cual no basta solicitar el permiso o concesión, sino que es necesario verificar la veracidad de los hechos en que se fundamentan los documentos anexos a la petición. En desarrollo de esta función, fue que la Capitanía de Puertos ordenó una inspección ocular al sitio denominado Sound Bay.
 
-2º. En orden a determinar si los predios en cuestión constituyen playas o zonas de bajamar, se ordenó la práctica de una inspección ocular, cuyo informe se  rindió  el  de  septiembre  de  1993,  señalándose  en  el  mismo  que  sí  son playas,  dictamen que difiere de las pruebas allegadas por la parte actora a la solicitud  de  construcción,  en  las  que  se  afirma  que  los  terrenos  no  tienen  el carácter  de  bienes  de  uso  público,  es  decir,  que  no  son  playas  ni  zonas  de bajamar.
+2º. En orden a determinar si los predios en cuestión constituyen playas o zonas de bajamar, se ordenó la práctica de una inspección ocular, cuyo informe se  rindió  el  8 de  septiembre  de  1993,  señalándose  en  el  mismo  que  sí  son playas,  dictamen que difiere de las pruebas allegadas por la parte actora a la solicitud  de  construcción,  en  las  que  se  afirma  que  los  terrenos  no  tienen  el carácter  de  bienes  de  uso  público,  es  decir,  que  no  son  playas  ni  zonas  de bajamar.
 
 - 3º. Por solicitud de las partes se ordenó la práctica de un peritazgo, el cual fue rendido por un topógrafo, quien concluyó que los terrenos en cuestión no son playa ni terrenos de bajamar, no obstante que en la actuación administrativa el perito dictaminó que sí son playas, razón por la cual se le otorgó concesión y no permiso.
-- 4º. Si bien es cierto que la demandante solicitó permiso de construcción de  unas  cabañas,  también  lo  es  que  surtido  el  trámite  ante  la  DIMAR  se estableció que los terrenos objeto de la solicitud eran de uso público por tratarse de playas, razón por la cual mediante la Resolución núm. 0674 de de junio de 1993 se otorgó concesión por el término de años, decisión contra la cual se interpuso  recurso  de  reposición,  el  cual  fue  resuelto  a  través  de  la  Resolución 0026 de de enero de 1994, revocándose la concesión otorgada y denegando el permiso de construcción de las cabañas.
+- 4º. Si bien es cierto que la demandante solicitó permiso de construcción de  unas  cabañas,  también  lo  es  que  surtido  el  trámite  ante  la  DIMAR  se estableció que los terrenos objeto de la solicitud eran de uso público por tratarse de playas, razón por la cual mediante la Resolución núm. 0674 de 23 de junio de 1993 se otorgó concesión por el término de 20 años, decisión contra la cual se interpuso  recurso  de  reposición,  el  cual  fue  resuelto  a  través  de  la  Resolución 0026 de 17 de enero de 1994, revocándose la concesión otorgada y denegando el permiso de construcción de las cabañas.
 - 5º.  En  consecuencia,  el  hecho  de  que  la  DIMAR  hubiera  otorgado  en primer lugar concesión a la parte actora sobre los posibles terrenos de la Nación y luego le hubiera negado a la misma el derecho de realizar el proyecto turístico no  conlleva  a  considerar  que  el  ente  público  esté  desconociendo  la  propiedad sobre el bien de la demandante, pues, para pedir la nulidad de los actos y el restablecimiento del derecho, la parte actora indica que se violaron los artículos 669 y 674 del Código Civil relativos al dominio y a  los bienes de uso público, cuando  lo  que  en  aquéllos  se  niega  es  el  permiso  de  construcción  de  unas cabañas, sin que, por lo tanto, se encuentre infracción directa de dichas normas por parte de las resoluciones demandadas.
 - 6º. Como la jurisdicción contencioso administrativa es rogada, el estudio debe limitarse a las normas violadas, al concepto de violación y a los hechos en que se fundan las pretensiones, encontrándose en el asunto sub judice que se deben negar las pretensiones de la demanda.
 
@@ -106,7 +106,7 @@ No observándose causal de nulidad que invalide lo actuado, se procede a resolve
 
 ## C O N S I D E R A C I O N E S
 
-En primer lugar, la Sala advierte que respecto de la Resolución núm. 0674 de de junio de 1993 no hará pronunciamiento alguno, dado que la misma fue expresamente revocada mediante la Resolución núm. 0026 de de enero de 1994, lo cual significa que aquélla desapareció del mundo  jurídico. En consecuencia,  el  análisis de  la Sala  se  circunscribirá a la última  de  las resoluciones identificadas, cuyo texto es el siguiente:
+En primer lugar, la Sala advierte que respecto de la Resolución núm. 0674 de 23 de junio de 1993 no hará pronunciamiento alguno, dado que la misma fue expresamente revocada mediante la Resolución núm. 0026 de 17 de enero de 1994, lo cual significa que aquélla desapareció del mundo  jurídico. En consecuencia,  el  análisis de  la Sala  se  circunscribirá a la última  de  las resoluciones identificadas, cuyo texto es el siguiente:
 
 ## 'RE S U LT A N D O S
 
@@ -130,7 +130,7 @@ En primer lugar, la Sala advierte que respecto de la Resolución núm. 0674 de d
 
 'R E S U E L V E :
 
-'ARTICULO  1º.  Revocar  la  concesión  otorgada  mediante  la resolución No. 674 del de junio de 1993.
+'ARTICULO  1º.  Revocar  la  concesión  otorgada  mediante  la resolución No. 674 del 23 de junio de 1993.
 
 'ARTICULO 2º. Denegar el permiso de construcción reiterado en el recurso de reposición interpuesto.
 
@@ -144,8 +144,6 @@ A su turno, las normas que se dicen violadas son del siguiente tenor:
 
 Constitución Política
 
-Código Civil
-
 'Artículo  58.Se  garantizan  la  propiedad  privada  y  los demás derechos adquiridos con arreglo a las leyes civiles, los cuales no pueden ser desconocidos ni vulnerados por leyes posteriores. Cuando de la aplicación de una ley expedida por motivo  de  utilidad  pública  o  interés  social,  resultaren  en conflicto los derechos de los particulares con la necesidad por ella  reconocida,  el  interés  privado  deberá  ceder  al  interés público o social.
 
 'La propiedad es una función social que implica obligaciones. Como tal, le es inherente una función ecológica.
@@ -153,6 +151,8 @@ Código Civil
 'El  Estado  protegerá  y  promoverá  las  formas  asociativas  y solidarias de propiedad.
 
 'Por motivos de utilidad pública o de interés social definidos por el legislador, podrá haber expropiación mediante sentencia judicial e indemnización previa…'.
+
+Código Civil
 
 'Artículo 669.Concepto. El dominio (que se llama también propiedad)  es  el  derecho  real  en  una  cosa  corporal,  para gozar y disponer de ella arbitrariamente, no siendo contra ley o contra derecho ajeno.
 
@@ -170,13 +170,13 @@ Corrobora lo anterior el hecho de que a pesar de que la apelante sostiene que  e
 
 Así  las  cosas,  la  Sala  concluye  que,  bien  aceptando  que  el  terreno controvertido es playa, o bien aceptando que no lo es, lo cierto es que la DIMAR no podía otorgarle el permiso de construcción en los términos solicitados por la demandante, pues, si es playa, sólo podría otorgarle permiso de concesión y, si no lo es, por no ser un bien de uso público, tampoco podría concederle dicho permiso, por no tener competencia legal para ello.
 
-Al no haber sido desvirtuada la legalidad de la Resolución núm. 0026 de de enero de 1994, la Sala confirmará la sentencia recurrida.
+Al no haber sido desvirtuada la legalidad de la Resolución núm. 0026 de 17 de enero de 1994, la Sala confirmará la sentencia recurrida.
 
 En mérito de lo expuesto, el consejo de Estado, Sala de lo Contencioso Administrativo, Sección Primera, administrando justicia en nombre  de  la República y por autoridad de la ley,
 
 ## F A L L A :
 
-CONFIRMASE la sentencia apelada de de enero de 1998, proferida por el Tribunal Administrativo de Cundinamarca.
+CONFIRMASE la sentencia apelada de 22 de enero de 1998, proferida por el Tribunal Administrativo de Cundinamarca.
 
 Ejecutoriada  esta  providencia,  devuélvase  el  expediente  al  Tribunal  de origen.
 
