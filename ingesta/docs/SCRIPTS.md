@@ -2,8 +2,9 @@
 
 Los comandos de esta página se ejecutan desde `ingesta/`, salvo donde se
 indica otro directorio. Leer [el contrato y límites del pipeline](../README.md)
-antes de procesar documentos. No ejecutar estos scripts para validar una
-limpieza de código: pueden escribir datos y consumir servicios externos.
+antes de procesar documentos. Cada sección distingue archivos locales de
+servicios externos. No ejecutar pipelines o migraciones para validar una
+edición de documentación.
 
 ## Pipelines
 
@@ -47,6 +48,62 @@ No asumir que estas comprobaciones validan los IDs Gold ni el corpus existente.
 Tampoco asumir que un Gold existente garantiza enriquecimiento completo:
 los errores de LLM y la política de omitir existentes deben revisarse.
 
+## Inventario técnico local
+
+`utils/audit_local_corpus.py` inspecciona `../data/documents/` y genera
+`data/corpus-catalog.json` y `data/CORPUS_CATALOG.md`. Usa solo la biblioteca
+estándar; no importa la ingesta productiva ni consulta S3, ChromaDB, Ollama o
+un LLM. Ver [capas, registro y uso del corpus](../../data/README.md).
+
+Desde `ingesta/`, con su Python 3.12 ya instalado:
+
+```bash
+# Comprobar los dos inventarios sin escribir archivos.
+.venv/bin/python -m utils.audit_local_corpus --export data/chroma-rag_playas_magdalena-20260731-135720.jsonl.gz --check
+```
+
+Para inspeccionar sin cotejar los artefactos generados, omitir `--check`.
+Para regenerarlos, reemplazarlo por `--write`: esta opción escribe solamente
+los dos inventarios y no modifica el corpus. No regenerarlos si sus entradas
+no cambiaron. La herramienta también se puede ejecutar por ruta; los argumentos
+relativos, incluido `--export`, se resuelven respecto del repositorio.
+
+El export se indica explícitamente; no se selecciona por fecha. Sin `--export`,
+la comparación con el backup queda sin comprobar. Su colección y fecha se
+leen del manifest y no describen el índice desplegado hoy.
+
+| Salida | Significado |
+|---|---|
+| `0` | Operación completada sin errores técnicos; puede haber avisos |
+| `1` | Errores técnicos, o inventarios ausentes/desactualizados en `--check` |
+| `2` | Operación incompleta por lectura, rutas inseguras, entradas cambiantes o destino no permitido |
+
+`--write` puede generar un informe con errores: leer el resumen antes de
+considerar válida la salida.
+
+### Comprobaciones y límites
+
+- Asocia capas por tipo y nombre normalizado Unicode solo si la relación es
+  inequívoca; conserva rutas e IDs. Una fuente idéntica no autoriza fusionar
+  representaciones y un nombre largo o descompuesto no demuestra corrupción.
+- Comprueba UTF-8/JSON, firma PDF básica y referencias inline a imágenes de
+  Bronze. No hace OCR, renderizado, validación completa de PDF ni navegación
+  de enlaces. Las rutas de imagen deben ser locales, internas al corpus y sin
+  symlinks; sintaxis no soportada se informa sin inventar un destino ausente.
+- Una sección Silver vacía es aviso; un chunk o archivo Gold vacío es error.
+  Los IDs duplicados reconocibles se detectan aunque una fila sea inválida;
+  los ambiguos y los registros inválidos se excluyen de la comparación.
+- Compara JSONL/gzip de forma secuencial y comprueba estabilidad de entradas.
+  No retiene embeddings. La comparación de metadata respeta omisión de `None`,
+  serialización de listas/objetos y `keywords_str` del contrato de
+  [vectorstore](../../rag/backend/rag/core/vectorstore.py). Conserva el orden
+  de listas y no reinterpreta referencias jurídicas como números u objetos.
+- Los hallazgos no acreditan fidelidad integral, vigencia, selección jurídica,
+  correspondencia con S3 o presencia en el índice vivo. No reemplazan datos
+  automáticamente. El detalle de sintaxis y casos límite está en
+  [la herramienta](../utils/audit_local_corpus.py) y sus
+  [contratos offline](../tests/unit/test_local_corpus_catalog.py).
+
 ## Infraestructura: responsabilidades
 
 - `ingesta/infrastructure/`: bucket S3, no instancias ChromaDB/Ollama.
@@ -55,16 +112,25 @@ los errores de LLM y la política de omitir existentes deben revisarse.
 - [RAG](../../rag/README.md): servicio/API/frontend.
 - [Guía operacional de la raíz](../../README.md): despliegue y arranque/apagado.
 
-Los antiguos nombres `ingesta/scripts/ec2_chroma_db.sh` y
-`ingesta/scripts/ec2_ollama_embeddings.sh` no existen en este checkout.
-No son comandos de aprovisionamiento disponibles. No aplicar Terraform ni
-operar AWS como parte de pruebas offline o mantenimiento documental.
+No aplicar Terraform ni operar AWS como parte de pruebas offline o
+mantenimiento documental.
 
 ## Utilidades de mantenimiento
 
 No son etapas habituales del pipeline. Antes de escribir o mover datos:
 confirmar colección/bucket, respaldo y clasificación con su responsable.
 Un dry-run puede consultar servicios reales y necesita permisos de lectura.
+
+### Importación de un export a ChromaDB
+
+[El importador](../../data/import_to_chromadb.py) se ejecuta con el entorno
+`rag/`, no con el de ingesta. Conecta y escribe en una colección; no es una
+comprobación offline del corpus.
+
+Exige `--batch-size > 0`; un valor inválido termina con `2` antes de conectar.
+Si falla un lote, continúa con los siguientes y termina con `1`; los registros
+ya escritos no se revierten. Sin errores termina con `0`, también con un
+export vacío. Confirmar destino y respaldo antes de autorizar su ejecución.
 
 ### Backup S3
 
