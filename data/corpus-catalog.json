@@ -473,6 +473,7 @@
         "section_heading": 1,
         "section_index": 1,
         "section_name": 1,
+        "summary": 1,
         "total_chunks_in_section": 54
       },
       "export_records_matched_by_id": 103,
@@ -822,6 +823,7 @@
       "doc_type": "jurisprudencia",
       "export_metadata_differences": {
         "Corporación": 21,
+        "Magistrado ponente": 21,
         "Radicado": 21,
         "entities": 5,
         "section_heading": 19,
@@ -838,6 +840,9 @@
       "observed_metadata": {
         "Corporación": [
           "Consejo de Estado — Sala de lo Contencioso Administrativo — Sección Primera"
+        ],
+        "Magistrado ponente": [
+          "Manuel Santiago Urueta Ayola"
         ],
         "Radicado": [
           "5037"
@@ -1418,7 +1423,7 @@
       "coverage": "not_verified",
       "doc_type": "normativa",
       "export_metadata_differences": {
-        "entities": 1
+        "entities": 2
       },
       "export_records_matched_by_id": 3,
       "export_text_mismatches": 0,
@@ -1555,7 +1560,7 @@
       "coverage": "not_verified",
       "doc_type": "normativa",
       "export_metadata_differences": {
-        "entities": 2,
+        "entities": 3,
         "summary": 1
       },
       "export_records_matched_by_id": 22,
@@ -1663,7 +1668,7 @@
       "coverage": "not_verified",
       "doc_type": "normativa",
       "export_metadata_differences": {
-        "entities": 6,
+        "entities": 7,
         "summary": 2
       },
       "export_records_matched_by_id": 14,
@@ -1921,7 +1926,7 @@
     },
     {
       "code": "records_with_metadata_differences",
-      "detail": "4779 registros; diferencia de snapshots, no autorización para reemplazar datos",
+      "detail": "4782 registros; diferencia de snapshots, no autorización para reemplazar datos",
       "path": "data/chroma-rag_playas_magdalena-20260731-135720.jsonl.gz",
       "severity": "warning"
     },
@@ -2279,26 +2284,26 @@
       "manifest_count": 5888,
       "metadata_field_differences": {
         "Corporación": 2762,
-        "Magistrado ponente": 157,
+        "Magistrado ponente": 178,
         "Radicado": 2605,
         "articulo": 179,
         "articulo_titulo": 136,
         "capitulo": 66,
         "chunk_index": 1363,
-        "entities": 1056,
+        "entities": 1059,
         "keywords": 344,
         "keywords_str": 345,
         "norma": 524,
         "section_heading": 1072,
         "section_index": 953,
         "section_name": 946,
-        "summary": 419,
+        "summary": 420,
         "titulo": 32,
         "total_chunks_in_section": 3655
       },
       "path": "data/chroma-rag_playas_magdalena-20260731-135720.jsonl.gz",
       "records": 5888,
-      "records_with_metadata_differences": 4779,
+      "records_with_metadata_differences": 4782,
       "sha256": "28b7a3076d1c7ad0aa3ef2a4394e31423cdd5358f691fdc6a6104f7e15712d2d",
       "sources": [
         {
@@ -3916,9 +3921,9 @@
         "sha256": "888fff71143b0de81495bba14824827805dde5f1691b31c97ae6dd5296f34087"
       },
       {
-        "bytes": 234107,
+        "bytes": 234147,
         "path": "data/documents/gold/jurisprudencia/CE_2da_AP_2010_028_Radley_Bent_VS_Dimar_Daños_Ambientales_Embarcaciones.jsonl",
-        "sha256": "cb514e6cd96f2ec893020bacb2375cf2df5f2ce17f4295988b84bb1fd8755c39"
+        "sha256": "7f1eb361dd04e4f4071553bc1ae5576cbebd988a6f1e962119dda3173753ba79"
       },
       {
         "bytes": 352512,
@@ -3936,9 +3941,9 @@
         "sha256": "699666f8c599c65db6edad5165def87c2b65e43f9a5f4ef6bfbd6984fca7907e"
       },
       {
-        "bytes": 255095,
+        "bytes": 255079,
         "path": "data/documents/gold/jurisprudencia/CE_2da_AP_2016_328_Ricardo_Cabrales_VS_Mun_Coveñas_Playa_Uso_Publico.jsonl",
-        "sha256": "5848f234ad629897ca5ee3d2fa8f8767a82e6ca18e5186b9e3311d00aff578d7"
+        "sha256": "576aab38b40a9a8de3a8ed3eb016e8d240062cd4cbb2409b2b6c074247d91049"
       },
       {
         "bytes": 266617,
@@ -3961,9 +3966,9 @@
         "sha256": "4a7b2e3532714ce63403e7cb6baca173fed8a1caf233e3433677cbbf75ee6611"
       },
       {
-        "bytes": 72672,
+        "bytes": 75304,
         "path": "data/documents/gold/jurisprudencia/CE_2da_NYR_1999_503_Inversiones_Mercedes_VS_Dimar_Concesiones_Uso_Playa.jsonl",
-        "sha256": "564c87d64872f6cf0bd75d9079cd1685c746dedca4ba35278e6f30d1589bbff7"
+        "sha256": "2025a10e92bb3e57b100f54100427e7f0b767769e7da5402a429580172d96a32"
       },
       {
         "bytes": 361298,
@@ -3981,9 +3986,9 @@
         "sha256": "761e73b494ff16f1e4e041dc32f9b23e2d4bab1d1a28e4467e60cab50dcdc824"
       },
       {
-        "bytes": 249037,
+        "bytes": 249018,
         "path": "data/documents/gold/jurisprudencia/CE_Consulta_2010_071_MinAmbiente_Bienes_De_Uso_Publico.jsonl",
-        "sha256": "60b3cfa95afa9a050590a3142c25d1949d74086943ef4e845c06fa306d2c55ae"
+        "sha256": "3e2fc66495531e7973e28d5ed5a52730526dfa055181aad08bd4967eea80b5e4"
       },
       {
         "bytes": 662697,
@@ -4051,14 +4056,14 @@
         "sha256": "9467a279c71008a30e511a3258f6d827f17175e514e999de6f65774adda26dd1"
       },
       {
-        "bytes": 6521,
+        "bytes": 6523,
         "path": "data/documents/gold/normativa/Por el cual se reglamenta la Ley 13 de 1990.jsonl",
-        "sha256": "e4c6a1301dba9c6812267e0464f13710597a137853c336c8425ab15c27c445b5"
+        "sha256": "b86592f9e04ef3acf684f84b57cb051a6ab0dca4a941cbac2f60cf6688b5f3ad"
       },
       {
-        "bytes": 6408,
+        "bytes": 6337,
         "path": "data/documents/gold/normativa/Por el cual se reglamenta la habilitación y la prestación del servicio público de transporte fluvial.jsonl",
-        "sha256": "949cfe6edac2c30817f0c0086028c223b5060b147044355d5b5bd90739f8c6c4"
+        "sha256": "2b215eb9218d56befbe4a58f3f1d9598ed7056265a8c364a17d5513c48153f89"
       },
       {
         "bytes": 14281,
@@ -4081,9 +4086,9 @@
         "sha256": "585bb0201812a41264467b055ce8582966ebd412e871ac1242ebb9743f9e001a"
       },
       {
-        "bytes": 40884,
+        "bytes": 40890,
         "path": "data/documents/gold/normativa/Por el cual se reorganiza la Dirección General Marítima y Portuaria.jsonl",
-        "sha256": "2163aa5dcdada80e1b2dfc64233329cae0341f3b8ce97f8938d1e72703ca502e"
+        "sha256": "9b25f6a88725fb941f48e1b786daa70b52cb85fc2f8fca80726eb7dc1d14e39e"
       },
       {
         "bytes": 56489,
@@ -4101,9 +4106,9 @@
         "sha256": "ec82880f54bc938f41edbd653f996a5778c0b11a5911e6e143ef7a25303d0bcf"
       },
       {
-        "bytes": 29456,
+        "bytes": 29455,
         "path": "data/documents/gold/normativa/Por medio del cual se expide el Decreto Único Reglamentario del Sector Transporte.jsonl",
-        "sha256": "486efe7d8ce651bb4f9ffa1554968bd574feabeffe05c7e3367a3244faf6173b"
+        "sha256": "b823abe470ac5ba4243c749d317b2cd3f88fc2f0ce1e7ca317b3ae7d253f95ed"
       },
       {
         "bytes": 30834,
