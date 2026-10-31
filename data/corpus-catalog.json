@@ -384,25 +384,29 @@
       "doc_type": "jurisprudencia",
       "export_metadata_differences": {
         "Corporación": 530,
+        "Magistrado ponente": 530,
         "Radicado": 530,
         "chunk_index": 502,
-        "entities": 73,
+        "entities": 75,
         "keywords": 1,
         "keywords_str": 1,
         "section_heading": 502,
         "section_index": 336,
         "section_name": 336,
-        "summary": 3,
+        "summary": 4,
         "total_chunks_in_section": 508
       },
       "export_records_matched_by_id": 530,
-      "export_text_mismatches": 117,
+      "export_text_mismatches": 121,
       "format": ".pdf",
       "gold_chunks": 534,
       "gold_ids_missing_export": 4,
       "observed_metadata": {
         "Corporación": [
           "Corte Constitucional — Sala Tercera de Revisión"
+        ],
+        "Magistrado ponente": [
+          "Diana Fajardo Rivera"
         ],
         "Radicado": [
           "T-9.370.946"
@@ -1988,7 +1992,7 @@
     },
     {
       "code": "text_mismatches",
-      "detail": "1271 registros; diferencia de snapshots, no autorización para reemplazar datos",
+      "detail": "1275 registros; diferencia de snapshots, no autorización para reemplazar datos",
       "path": "data/chroma-rag_playas_magdalena-20260731-135720.jsonl.gz",
       "severity": "warning"
     },
@@ -2340,20 +2344,20 @@
       "manifest_count": 5888,
       "metadata_field_differences": {
         "Corporación": 2762,
-        "Magistrado ponente": 2232,
+        "Magistrado ponente": 2762,
         "Radicado": 2605,
         "articulo": 179,
         "articulo_titulo": 136,
         "capitulo": 66,
         "chunk_index": 1363,
-        "entities": 1059,
+        "entities": 1061,
         "keywords": 344,
         "keywords_str": 345,
         "norma": 524,
         "section_heading": 1072,
         "section_index": 953,
         "section_name": 946,
-        "summary": 420,
+        "summary": 421,
         "titulo": 32,
         "total_chunks_in_section": 3655
       },
@@ -2643,7 +2647,7 @@
           "source": "decreto-2324-de-1984.md"
         }
       ],
-      "text_mismatches": 1271
+      "text_mismatches": 1275
     },
     "files": [
       {
@@ -2927,9 +2931,9 @@
         "sha256": "5971ffd7e5ae3eda6c389aa972410b0e7a939eaf0c32f58d789fe7b17d289f80"
       },
       {
-        "bytes": 358313,
+        "bytes": 358450,
         "path": "data/documents/bronze/jurisprudencia/CC_TU_039_2024_Modesto_Manjarrez_VS_Autopistas_Del_Caribe_Consulta_Previa_Via.md",
-        "sha256": "46a2ad7811346eb8df42d37c204dc0edcd5e2a986a4fa0d67b566131dd142f40"
+        "sha256": "f9fbf7613456c3bcea34b69b32ba89ab1ebdf8ebcf47ee7b4056117ad438d365"
       },
       {
         "bytes": 167,
@@ -3967,9 +3971,9 @@
         "sha256": "e4672de0b7a20e812fbbe8dea60ef62a3ab84846dec207a4ffbe047b4b988d98"
       },
       {
-        "bytes": 1156528,
+        "bytes": 1181495,
         "path": "data/documents/gold/jurisprudencia/CC_TU_039_2024_Modesto_Manjarrez_VS_Autopistas_Del_Caribe_Consulta_Previa_Via.jsonl",
-        "sha256": "1456a5bff9d8e04ab58f95fc5967b2049ae18f32358b016977280d996a63eefa"
+        "sha256": "c81b0673e75e6a140d9ee3938689072ed9cb2c2e1e3982846478f2d802b0c9cb"
       },
       {
         "bytes": 188919,
@@ -4532,9 +4536,9 @@
         "sha256": "7109cd3c02bf20db49bed3a90b725ea1bfbd01a6297f2f5781efcc4bf129f629"
       },
       {
-        "bytes": 360826,
+        "bytes": 360971,
         "path": "data/documents/silver/jurisprudencia/CC_TU_039_2024_Modesto_Manjarrez_VS_Autopistas_Del_Caribe_Consulta_Previa_Via.jsonl",
-        "sha256": "a7850a3c7a6ce771cb4763a88ed01b2dac735481705a0a4c22a28a23e701fed0"
+        "sha256": "80abc301aa276d860cf3537a838720a7158650b80e4e31fd340af43eb1d9427c"
       },
       {
         "bytes": 60252,

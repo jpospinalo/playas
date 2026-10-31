@@ -601,9 +601,13 @@ Séptimo.  LIBRAR las   comunicaciones   -   por   la   secretaría   general   
 
 Con aclaración de voto
 
+## JORGE ENRIQUE IBÁÑEZ NAJAR
+
 Magistrado
 
 Con salvamento de voto
+
+## VLADIMIR FERNÁNDEZ ANDRADE
 
 ## ANDREA LILIANA ROMERO LOPEZ Secretaria General
 
@@ -645,6 +649,8 @@ Magistrada ponente: Diana Fajardo Rivera.      Acompaño la decisión de la Sala
 DIANA FAJARDO RIVERA Magistrada
 
 ## SALVAMENTO DE VOTO DEL MAGISTRADO
+
+## JORGE ENRIQUE IBÁÑEZ NAJAR
 
 ## A LA SENTENCIA T-039/24
 
@@ -698,6 +704,8 @@ En el acta de la inspección judicial del 28 de julio de 2023, se dejó constanc
 Con fundamento en todo lo expuesto, me aparto de la conclusión a la que llegó la Sala Tercera de Revisión, porque como lo expliqué previamente: (i) no existía legitimación en la causa, (ii) no hay certeza de una afectación real a las comunidades accionantes, y (iii) además, no existe una titulación colectiva que acredite su dominio sobre el territorio. A pesar de que la jurisprudencia de esta Corte ha ampliado el concepto de territorio a otras áreas habitualmente ocupadas por las comunidades indígenas, estas reglas no puedes ser extrapoladas sin un riguroso estudio a las comunidades afrodescendientes, en especial, por el concepto amplio de territorio - lo que incluye la consulta previa - por lo que al carecer de evidencia suficiente que compruebe la afectación, no había lugar a concederla.
 
 En los anteriores términos, de manera respetuosa, dejo planteado mi disenso respecto de la decisión adoptada en la Sentencia T-039 de 2024.
+
+## JORGE ENRIQUE IBÁÑEZ NAJAR
 
 ## Magistrado
 
@@ -1019,8 +1027,8 @@ En tal sentido, no es exacto lo que afirma Autopistas del Caribe cuando señala 
 - [189]  Archivo 'Rta. consejo Comunitario Comunidades Negras Vereda Paiva Mamonal', p. 4, disponible en: https://siicor.corteconstitucional.gov.co/controldeprocesos/file.php?Id=6662.
 - [190]  Extraído del documento presentado por el consejo Comunitario de Santa Rosa de Lima en respuesta al Auto de pruebas del 18 de julio de 2023, disponible en: https://siicor.corteconstitucional.gov.co/controldeprocesos/file.php?Id=6543  (Archivo   'Respuesta   a   la magistrada - Santa Rosa de Lima, p. 24).
 - [191]  Archivo 'Rta. Autopistas del Caribe' y, dentro de este, 'ADC\_0007903\_0', págs. 4 y 5, disponible en: https://siicor.corteconstitucional.gov.co/controldeprocesos/file.php?Id=6662
-- [192]  Sentencia SU-123 de 2018. MM.PP. Alberto Rojas Ríos y Rodrigo Uprimny Yepes (conjuez). AV. Carlos Bernal Pulido. SPV. Luis Guillermo Guerrero Pérez, párrafo.7.
-- [193] Ibidem , párrafos.2 y 20.4.
+- [192]  Sentencia SU-123 de 2018. MM.PP. Alberto Rojas Ríos y Rodrigo Uprimny Yepes (conjuez). AV. Carlos Bernal Pulido. SPV. Luis Guillermo Guerrero Pérez, párrafo 17.7.
+- [193] Ibidem , párrafos 20.2 y 20.4.
 - [194] Ibidem , párrafos 24.7 y 24.11.
 - [195] Ver   al   respecto   la   contestación   del   consejo   Comunitario   de   Santa   Rosa   de   Lima (https://siicor.corteconstitucional.gov.co/controldeprocesos/file.php?Id=6543), del consejo Comunitario de Comunidades Negras de la Vereda Paiva Mamonal (https://lc.cx/siEikZ) y del Cabildo Indígena Zenú de Chiricoco -CAIZECHI   (https://siicor.corteconstitucional.gov.co/controldeprocesos/file.php? Id=6670). u [196]  Ver la síntesis de algunas de estas decisiones en los considerandos 96 a 98 de esta providencia.
 
