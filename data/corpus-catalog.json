@@ -426,6 +426,7 @@
       "doc_type": "jurisprudencia",
       "export_metadata_differences": {
         "Corporación": 83,
+        "Magistrado ponente": 83,
         "Radicado": 83,
         "chunk_index": 32,
         "entities": 29,
@@ -445,6 +446,9 @@
       "observed_metadata": {
         "Corporación": [
           "Consejo de Estado — Sala de lo Contencioso Administrativo — Sección Primera"
+        ],
+        "Magistrado ponente": [
+          "Marco Antonio Velilla Moreno"
         ],
         "Radicado": [
           "110010324000200900603 00"
@@ -468,6 +472,7 @@
       "doc_type": "jurisprudencia",
       "export_metadata_differences": {
         "Corporación": 103,
+        "Magistrado ponente": 103,
         "Radicado": 103,
         "entities": 11,
         "section_heading": 1,
@@ -484,6 +489,9 @@
       "observed_metadata": {
         "Corporación": [
           "Consejo de Estado — Sala de lo Contencioso Administrativo — Sección Primera"
+        ],
+        "Magistrado ponente": [
+          "Marco Antonio Velilla Moreno (E)"
         ],
         "Radicado": [
           "88001-23-31-000-2010-00028-01(AP)"
@@ -507,6 +515,7 @@
       "doc_type": "jurisprudencia",
       "export_metadata_differences": {
         "Corporación": 154,
+        "Magistrado ponente": 154,
         "Radicado": 154,
         "chunk_index": 86,
         "entities": 29,
@@ -526,6 +535,9 @@
       "observed_metadata": {
         "Corporación": [
           "Consejo de Estado — Sala de lo Contencioso Administrativo — Sección Tercera — Subsección B"
+        ],
+        "Magistrado ponente": [
+          "Fredy Ibarra Martínez"
         ],
         "Radicado": [
           "13001-23-31-000-2011-00178-01 (63.554)"
@@ -549,6 +561,7 @@
       "doc_type": "jurisprudencia",
       "export_metadata_differences": {
         "Corporación": 278,
+        "Magistrado ponente": 278,
         "Radicado": 278,
         "chunk_index": 110,
         "entities": 45,
@@ -568,6 +581,9 @@
       "observed_metadata": {
         "Corporación": [
           "Consejo de Estado — Sala de lo Contencioso Administrativo — Sección Primera"
+        ],
+        "Magistrado ponente": [
+          "Oswaldo Giraldo López"
         ],
         "Radicado": [
           "4700123310002011-08425-02(AP)"
@@ -591,6 +607,7 @@
       "doc_type": "jurisprudencia",
       "export_metadata_differences": {
         "Corporación": 122,
+        "Magistrado ponente": 122,
         "Radicado": 122,
         "entities": 13,
         "summary": 2,
@@ -604,6 +621,9 @@
       "observed_metadata": {
         "Corporación": [
           "Consejo de Estado — Sala de lo Contencioso Administrativo — Sección Primera"
+        ],
+        "Magistrado ponente": [
+          "Oswaldo Giraldo López"
         ],
         "Radicado": [
           "23001233300020150005501"
@@ -627,6 +647,7 @@
       "doc_type": "jurisprudencia",
       "export_metadata_differences": {
         "Corporación": 116,
+        "Magistrado ponente": 116,
         "Radicado": 116,
         "chunk_index": 112,
         "entities": 20,
@@ -646,6 +667,9 @@
       "observed_metadata": {
         "Corporación": [
           "Consejo de Estado — Sala de lo Contencioso Administrativo — Sección Primera"
+        ],
+        "Magistrado ponente": [
+          "Hernando Sánchez Sánchez"
         ],
         "Radicado": [
           "700012333000201600328-01"
@@ -669,6 +693,7 @@
       "doc_type": "jurisprudencia",
       "export_metadata_differences": {
         "Corporación": 105,
+        "Magistrado ponente": 105,
         "Radicado": 105,
         "entities": 19,
         "section_heading": 7,
@@ -685,6 +710,9 @@
       "observed_metadata": {
         "Corporación": [
           "Consejo de Estado — Sala de lo Contencioso Administrativo — Sección Primera"
+        ],
+        "Magistrado ponente": [
+          "Oswaldo Giraldo López"
         ],
         "Radicado": [
           "13001-23-33-000-2017-01038-01"
@@ -708,6 +736,7 @@
       "doc_type": "jurisprudencia",
       "export_metadata_differences": {
         "Corporación": 206,
+        "Magistrado ponente": 206,
         "Radicado": 206,
         "chunk_index": 41,
         "entities": 30,
@@ -725,6 +754,9 @@
       "observed_metadata": {
         "Corporación": [
           "Consejo de Estado — Sala de lo Contencioso Administrativo — Sección Primera"
+        ],
+        "Magistrado ponente": [
+          "Germán Eduardo Osorio Cifuentes"
         ],
         "Radicado": [
           "88001-23-33-000-2021-00041-02"
@@ -748,6 +780,7 @@
       "doc_type": "jurisprudencia",
       "export_metadata_differences": {
         "Corporación": 66,
+        "Magistrado ponente": 66,
         "Radicado": 66,
         "chunk_index": 32,
         "entities": 14,
@@ -765,6 +798,9 @@
       "observed_metadata": {
         "Corporación": [
           "Consejo de Estado — Sala de lo Contencioso Administrativo — Sección Primera"
+        ],
+        "Magistrado ponente": [
+          "Manuel Santiago Urueta Ayola"
         ],
         "Radicado": [
           "13001-23-31-000-1994-9935-01(3100)"
@@ -788,6 +824,7 @@
       "doc_type": "jurisprudencia",
       "export_metadata_differences": {
         "Corporación": 72,
+        "Magistrado ponente": 72,
         "Radicado": 72,
         "entities": 12,
         "summary": 2
@@ -800,6 +837,9 @@
       "observed_metadata": {
         "Corporación": [
           "Consejo de Estado — Sala de lo Contencioso Administrativo — Sección Primera"
+        ],
+        "Magistrado ponente": [
+          "Martha Sofía Sanz Tobón"
         ],
         "Radicado": [
           "23001-23-31-000-1998-10290-01"
@@ -866,6 +906,7 @@
       "doc_type": "jurisprudencia",
       "export_metadata_differences": {
         "Corporación": 157,
+        "Magistrado ponente": 157,
         "Radicado": 157,
         "chunk_index": 102,
         "entities": 25,
@@ -885,6 +926,9 @@
       "observed_metadata": {
         "Corporación": [
           "Consejo de Estado — Sala de lo Contencioso Administrativo — Sección Primera"
+        ],
+        "Magistrado ponente": [
+          "Germán Eduardo Osorio Cifuentes"
         ],
         "Radicado": [
           "70001-23-31-000-2009-00164-01"
@@ -948,6 +992,7 @@
       "doc_type": "jurisprudencia",
       "export_metadata_differences": {
         "Corporación": 197,
+        "Magistrado ponente": 197,
         "Radicado": 197,
         "entities": 51,
         "summary": 2,
@@ -961,6 +1006,9 @@
       "observed_metadata": {
         "Corporación": [
           "Consejo de Estado — Sala de Consulta y Servicio Civil"
+        ],
+        "Magistrado ponente": [
+          "Enrique José Arboleda Perdomo"
         ],
         "Radicado": [
           "11001-03-06-000-2005-01682-00(1682)"
@@ -984,6 +1032,7 @@
       "doc_type": "jurisprudencia",
       "export_metadata_differences": {
         "Corporación": 117,
+        "Magistrado ponente": 117,
         "Radicado": 117,
         "entities": 28,
         "summary": 1,
@@ -997,6 +1046,9 @@
       "observed_metadata": {
         "Corporación": [
           "Consejo de Estado — Sala de Consulta y Servicio Civil"
+        ],
+        "Magistrado ponente": [
+          "Augusto Hernández Becerra"
         ],
         "Radicado": [
           "11001-03-06-000-2010-00071-00"
@@ -1020,6 +1072,7 @@
       "doc_type": "jurisprudencia",
       "export_metadata_differences": {
         "Corporación": 278,
+        "Magistrado ponente": 278,
         "Radicado": 278,
         "chunk_index": 110,
         "entities": 31,
@@ -1039,6 +1092,9 @@
       "observed_metadata": {
         "Corporación": [
           "Consejo de Estado — Sala de lo Contencioso Administrativo — Sección Primera"
+        ],
+        "Magistrado ponente": [
+          "Oswaldo Giraldo López"
         ],
         "Radicado": [
           "4700123310002011-08425-02(AP)"
@@ -2284,7 +2340,7 @@
       "manifest_count": 5888,
       "metadata_field_differences": {
         "Corporación": 2762,
-        "Magistrado ponente": 178,
+        "Magistrado ponente": 2232,
         "Radicado": 2605,
         "articulo": 179,
         "articulo_titulo": 136,
@@ -3916,54 +3972,54 @@
         "sha256": "1456a5bff9d8e04ab58f95fc5967b2049ae18f32358b016977280d996a63eefa"
       },
       {
-        "bytes": 184298,
+        "bytes": 188919,
         "path": "data/documents/gold/jurisprudencia/CE_1era_NS_2009_603_Jose_Palencia_VS_MinDefensa_Resolución_Pilotos_Embargaciones.jsonl",
-        "sha256": "888fff71143b0de81495bba14824827805dde5f1691b31c97ae6dd5296f34087"
+        "sha256": "dbad21d250bbdfe2f40fc5c553f1792ca3185f90fbd6885bbb5b3c3515fea8fa"
       },
       {
-        "bytes": 234147,
+        "bytes": 240268,
         "path": "data/documents/gold/jurisprudencia/CE_2da_AP_2010_028_Radley_Bent_VS_Dimar_Daños_Ambientales_Embarcaciones.jsonl",
-        "sha256": "7f1eb361dd04e4f4071553bc1ae5576cbebd988a6f1e962119dda3173753ba79"
+        "sha256": "2e34279eb75db1f1e2e144c137f5ff7def4c3df6b7d495abf6775c58ac223b8c"
       },
       {
-        "bytes": 352512,
+        "bytes": 360370,
         "path": "data/documents/gold/jurisprudencia/CE_2da_AP_2011_178_Jose_Caballero_VS_Distrito_Cartagena_Venta_Inmueble_Valor_Cultural.jsonl",
-        "sha256": "652f31d261aff5e8d8bf3078e4138e4ebe587b146e2a6179ba3dea860442691f"
+        "sha256": "fda9253b1d758b5fc120756730888931c0aebdff97160aff9e54e3e505c110a9"
       },
       {
-        "bytes": 645100,
+        "bytes": 658934,
         "path": "data/documents/gold/jurisprudencia/CE_2da_AP_2011_842_Gabriel_Carrero_VS_Dimar_Erosión_Costera.jsonl",
-        "sha256": "76ee76ef7c7479e58022320bc119e22e2adb90fb5722c7409b093113fea65697"
+        "sha256": "8bbcb9c2060e172bd1323abd8c8721b56cff8ca48bc5332e4646d808ed69ba88"
       },
       {
-        "bytes": 265809,
+        "bytes": 271665,
         "path": "data/documents/gold/jurisprudencia/CE_2da_AP_2015_550_Angela_Muñoz_VS_Dpto_Cordoba_Bienes_De_Uso_Publico.jsonl",
-        "sha256": "699666f8c599c65db6edad5165def87c2b65e43f9a5f4ef6bfbd6984fca7907e"
+        "sha256": "1b9b7cf562a569214e905f5a7cb4e3501afdc5329091dacb0eaf35dcbc89444a"
       },
       {
-        "bytes": 255079,
+        "bytes": 261368,
         "path": "data/documents/gold/jurisprudencia/CE_2da_AP_2016_328_Ricardo_Cabrales_VS_Mun_Coveñas_Playa_Uso_Publico.jsonl",
-        "sha256": "576aab38b40a9a8de3a8ed3eb016e8d240062cd4cbb2409b2b6c074247d91049"
+        "sha256": "35fcd50d61e8379c08b3fe22f241ba481302025b2850dcd4b5918ab6d04ad5dc"
       },
       {
-        "bytes": 266617,
+        "bytes": 272812,
         "path": "data/documents/gold/jurisprudencia/CE_2da_AP_2017_103_Personeria_VS_Distrito_Cartagena_Desembocadura.jsonl",
-        "sha256": "21c1192c48fac7742f47821999ab77b990f70c42076362a3854b5325c1a154a0"
+        "sha256": "5329bffbe447891b17bcbc5a710b139b77a62fd2324bd2e56743dd2e5651b423"
       },
       {
-        "bytes": 482107,
+        "bytes": 494253,
         "path": "data/documents/gold/jurisprudencia/CE_2da_AP_2021_041_Edgar_Stephengs_VS_Archipielago_San_Andres_Desarrollo_Urbanistico.jsonl",
-        "sha256": "81458621588b8edc8cf0f97e8bf0db397b99b64a36112d108fb046e6189281c7"
+        "sha256": "5f9ce27cdf67c3fe069d5952c6a089b2750c08ea9310b9666a2902e6020bad92"
       },
       {
-        "bytes": 145128,
+        "bytes": 148831,
         "path": "data/documents/gold/jurisprudencia/CE_2da_NYR_1994_993_Inversiones_Araujo_VS_Capitania_Puerto_Cartagena_Urbanismo_Playa.jsonl",
-        "sha256": "970ad97ef48bed4296ddd6d5feed812b8484c56599f22b561e68ec7b8407939b"
+        "sha256": "1603b25704f829fb39336a84a33bb382536bc018275f9dc584fb7dd3eed05133"
       },
       {
-        "bytes": 158700,
+        "bytes": 162544,
         "path": "data/documents/gold/jurisprudencia/CE_2da_NYR_1998_102_Flury_Valencia_VS_MinDefensa_Uso_Urbanistico_Playa.jsonl",
-        "sha256": "4a7b2e3532714ce63403e7cb6baca173fed8a1caf233e3433677cbbf75ee6611"
+        "sha256": "8877168fd51518673caadfb8da2b872199acc88bd8c9b7e999d058e15eaacbca"
       },
       {
         "bytes": 75304,
@@ -3971,9 +4027,9 @@
         "sha256": "2025a10e92bb3e57b100f54100427e7f0b767769e7da5402a429580172d96a32"
       },
       {
-        "bytes": 361298,
+        "bytes": 371041,
         "path": "data/documents/gold/jurisprudencia/CE_2da_NYR_2009_164_FEPEP_VS_DIMAR_Playa_Uso_Urbanistico.jsonl",
-        "sha256": "7dad6c03ad37186a195fe08d9b01a3601af266541993a0ceec94e1b42ce421dc"
+        "sha256": "517aa364100f5a1e0f28f52ad96014c58ad583f5adbbf7c504661bd49733a22e"
       },
       {
         "bytes": 88982,
@@ -3981,19 +4037,19 @@
         "sha256": "7a9c9b9566c556c9670610a65c5c1d8eeb851b0f2b9823ee2772a7fe18280471"
       },
       {
-        "bytes": 406124,
+        "bytes": 417156,
         "path": "data/documents/gold/jurisprudencia/CE_Consulta_2005_168_MinDefensa_Bienes_De_Uso_Publico.jsonl",
-        "sha256": "761e73b494ff16f1e4e041dc32f9b23e2d4bab1d1a28e4467e60cab50dcdc824"
+        "sha256": "453f4f9ce30066cb83b63400a341b920b7b97b892c49929056ac285af26bda2a"
       },
       {
-        "bytes": 249018,
+        "bytes": 255102,
         "path": "data/documents/gold/jurisprudencia/CE_Consulta_2010_071_MinAmbiente_Bienes_De_Uso_Publico.jsonl",
-        "sha256": "3e2fc66495531e7973e28d5ed5a52730526dfa055181aad08bd4967eea80b5e4"
+        "sha256": "20eb711a1561369fb7c9bd6878d117e6825d6a2961d201de75c9afa93ac4c3d4"
       },
       {
-        "bytes": 662697,
+        "bytes": 676397,
         "path": "data/documents/gold/jurisprudencia/SENTENCIA DE SEGUNDA INSTANCIA 47001-2332-000-2011-08425-02- GABRIEL CARRERO.jsonl",
-        "sha256": "b862e9f2f63e87d131acf99ed22e6f14e20b870f68e54fcd7eba028231ca44b0"
+        "sha256": "3ed13ffda25dca291002abf611ac0fce9c078841e47de6b9c6ab4fb0cb3f6d55"
       },
       {
         "bytes": 253978,
