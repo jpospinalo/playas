@@ -888,9 +888,9 @@ Así las cosas, es menester modificar el numeral cuarto de la sentencia de prime
 
 ## 6.4.8. Reconocimiento de personería
 
-Finalmente, en atención a que el abogado Orlando Sepúlveda Otálora, vía correo electrónico enviado a la Secretaría General de esta Corporación el 24 de mayo de 2021, aportó poder que obra a índices y 31 de la Sede Electrónica para la Gestión Judicial 92 , para actuar en nombre  y representación del Departamento del Magdalena, el Despacho lo reconocerá como apoderado de su representado en el proceso de la referencia.
+Finalmente, en atención a que el abogado Orlando Sepúlveda Otálora, vía correo electrónico enviado a la Secretaría General de esta Corporación el 24 de mayo de 2021, aportó poder que obra a índices 29 y 31 de la Sede Electrónica para la Gestión Judicial 92 , para actuar en nombre  y representación del Departamento del Magdalena, el Despacho lo reconocerá como apoderado de su representado en el proceso de la referencia.
 
-No obstante, se advierte que el día 16 julio de 2021, el mencionado profesional del derecho allegó, como consta a índice de la Sede Electrónica para la Gestión Judicial 93 , memorial de renuncia al poder, con la constancia de comunicación a la entidad representada. En consecuencia la misma se tendrá por bien presentada al cumplir con los requisitos legales exigidos para el efecto.
+No obstante, se advierte que el día 16 julio de 2021, el mencionado profesional del derecho allegó, como consta a índice 44 de la Sede Electrónica para la Gestión Judicial 93 , memorial de renuncia al poder, con la constancia de comunicación a la entidad representada. En consecuencia la misma se tendrá por bien presentada al cumplir con los requisitos legales exigidos para el efecto.
 
 En  mérito  de  lo  expuesto,  el  consejo  de  Estado,  Sala  de  lo  Contencioso Administrativo, Sección Primera, administrando justicia en nombre de la República y por autoridad de la Ley,
 
@@ -912,9 +912,9 @@ TERCERO: MODIFICAR el numeral cuarto de la parte resolutiva de la sentencia apel
 
 CUARTO: En lo demás CONFIRMAR la sentencia proferida el 15 de junio de 2016, por el Tribunal Administrativo de Magdalena, por las razones expuestas en la parte motiva de esta sentencia.
 
-QUINTO: RECONOCER personería para actuar en nombre del Departamento del Magdalena, al profesional del derecho Orlando Sepúlveda Otálora, de conformidad con el poder obra a índices y 31 de la Sede Electrónica para la Gestión Judicial.
+QUINTO: RECONOCER personería para actuar en nombre del Departamento del Magdalena, al profesional del derecho Orlando Sepúlveda Otálora, de conformidad con el poder obra a índices 29 y 31 de la Sede Electrónica para la Gestión Judicial.
 
-SEXTO: TENER POR BIEN PRESENTADA la renuncia de poder allegada por el abogado Orlando Sepúlveda Otálora, de conformidad con el memorial que obra a índice de la Sede Electrónica para la Gestión Judicial.
+SEXTO: TENER POR BIEN PRESENTADA la renuncia de poder allegada por el abogado Orlando Sepúlveda Otálora, de conformidad con el memorial que obra a índice 44 de la Sede Electrónica para la Gestión Judicial.
 
 SÉPTIMO: En cumplimiento de lo dispuesto en el artículo 80 de la Ley 472 de 1998, REMITIR copia de esta decisión a la Defensoría del Pueblo.
 

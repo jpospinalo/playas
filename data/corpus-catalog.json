@@ -902,6 +902,8 @@
       "coverage": "not_verified",
       "doc_type": "jurisprudencia",
       "export_metadata_differences": {
+        "Corporación": 41,
+        "Magistrado ponente": 41,
         "chunk_index": 16,
         "entities": 16,
         "section_heading": 16,
@@ -916,6 +918,12 @@
       "gold_chunks": 43,
       "gold_ids_missing_export": 2,
       "observed_metadata": {
+        "Corporación": [
+          "Consejo de Estado — Sala de Consulta y Servicio Civil"
+        ],
+        "Magistrado ponente": [
+          "Javier Henao Hidrón"
+        ],
         "title": [
           "CE Consulta 1990 Horacio Serpa Uso Publico Playa"
         ]
@@ -1048,6 +1056,8 @@
       "coverage": "not_verified",
       "doc_type": "jurisprudencia",
       "export_metadata_differences": {
+        "Corporación": 116,
+        "Magistrado ponente": 116,
         "chunk_index": 1,
         "entities": 29,
         "section_heading": 1,
@@ -1061,6 +1071,12 @@
       "gold_chunks": 118,
       "gold_ids_missing_export": 2,
       "observed_metadata": {
+        "Corporación": [
+          "Tribunal Administrativo de Antioquia — Sala Segunda de Oralidad"
+        ],
+        "Magistrado ponente": [
+          "Sandra Liliana Pérez Henao"
+        ],
         "title": [
           "TAA 2da RD 2015 281 XXXX VS Dpto Antioquia Responsabilidad Del Estado"
         ]
@@ -1905,7 +1921,7 @@
     },
     {
       "code": "records_with_metadata_differences",
-      "detail": "4743 registros; diferencia de snapshots, no autorización para reemplazar datos",
+      "detail": "4779 registros; diferencia de snapshots, no autorización para reemplazar datos",
       "path": "data/chroma-rag_playas_magdalena-20260731-135720.jsonl.gz",
       "severity": "warning"
     },
@@ -2262,7 +2278,8 @@
       "ids_missing_gold": 127,
       "manifest_count": 5888,
       "metadata_field_differences": {
-        "Corporación": 2605,
+        "Corporación": 2762,
+        "Magistrado ponente": 157,
         "Radicado": 2605,
         "articulo": 179,
         "articulo_titulo": 136,
@@ -2281,7 +2298,7 @@
       },
       "path": "data/chroma-rag_playas_magdalena-20260731-135720.jsonl.gz",
       "records": 5888,
-      "records_with_metadata_differences": 4743,
+      "records_with_metadata_differences": 4779,
       "sha256": "28b7a3076d1c7ad0aa3ef2a4394e31423cdd5358f691fdc6a6104f7e15712d2d",
       "sources": [
         {
@@ -2914,9 +2931,9 @@
         "sha256": "1a22812c4148d66e7c89ff7779af5bc7ce325b72288976789fe634a333097f8d"
       },
       {
-        "bytes": 198441,
+        "bytes": 198453,
         "path": "data/documents/bronze/jurisprudencia/CE_2da_AP_2011_842_Gabriel_Carrero_VS_Dimar_Erosión_Costera.md",
-        "sha256": "2a892a78c5088f7870837cb745a5fd6ca99256c29b1d004fa54897d22daabbcd"
+        "sha256": "6add438320e6b25525f738b9bd0ac09dee2869ae46c536f497a2ae5719187ac3"
       },
       {
         "bytes": 479,
@@ -3279,9 +3296,9 @@
         "sha256": "a4560f6d33bf6b8116a70c3374a92280186238ae70585cdceda34b80fcfbe652"
       },
       {
-        "bytes": 198441,
+        "bytes": 198453,
         "path": "data/documents/bronze/jurisprudencia/SENTENCIA DE SEGUNDA INSTANCIA 47001-2332-000-2011-08425-02- GABRIEL CARRERO.md",
-        "sha256": "2a892a78c5088f7870837cb745a5fd6ca99256c29b1d004fa54897d22daabbcd"
+        "sha256": "6add438320e6b25525f738b9bd0ac09dee2869ae46c536f497a2ae5719187ac3"
       },
       {
         "bytes": 494,
@@ -3909,9 +3926,9 @@
         "sha256": "652f31d261aff5e8d8bf3078e4138e4ebe587b146e2a6179ba3dea860442691f"
       },
       {
-        "bytes": 645088,
+        "bytes": 645100,
         "path": "data/documents/gold/jurisprudencia/CE_2da_AP_2011_842_Gabriel_Carrero_VS_Dimar_Erosión_Costera.jsonl",
-        "sha256": "6d16bf57b1a1608dd50cf3398e7a06eeeb2f00e3287c9aa60a0d7bfe89fba343"
+        "sha256": "76ee76ef7c7479e58022320bc119e22e2adb90fb5722c7409b093113fea65697"
       },
       {
         "bytes": 265809,
@@ -3954,9 +3971,9 @@
         "sha256": "7dad6c03ad37186a195fe08d9b01a3601af266541993a0ceec94e1b42ce421dc"
       },
       {
-        "bytes": 83779,
+        "bytes": 88982,
         "path": "data/documents/gold/jurisprudencia/CE_Consulta_1990_Horacio_Serpa_Uso_Publico_Playa.jsonl",
-        "sha256": "b49f3a68c85df3495b6c5dd215780ef818ff089a78dcf69dabcfb1beb06b5075"
+        "sha256": "7a9c9b9566c556c9670610a65c5c1d8eeb851b0f2b9823ee2772a7fe18280471"
       },
       {
         "bytes": 406124,
@@ -3969,14 +3986,14 @@
         "sha256": "60b3cfa95afa9a050590a3142c25d1949d74086943ef4e845c06fa306d2c55ae"
       },
       {
-        "bytes": 662685,
+        "bytes": 662697,
         "path": "data/documents/gold/jurisprudencia/SENTENCIA DE SEGUNDA INSTANCIA 47001-2332-000-2011-08425-02- GABRIEL CARRERO.jsonl",
-        "sha256": "cbf2eca9f02b7b19b06c8fbe24b6ad0e815293bf0919a848ed43713f3efff06f"
+        "sha256": "b862e9f2f63e87d131acf99ed22e6f14e20b870f68e54fcd7eba028231ca44b0"
       },
       {
-        "bytes": 237694,
+        "bytes": 253978,
         "path": "data/documents/gold/jurisprudencia/TAA_2da_RD_2015_281_XXXX_VS_Dpto_Antioquia_Responsabilidad_Del_Estado.jsonl",
-        "sha256": "f23aa30a49010b390491f0bf957272293595f301f676027059a8d3d5c8403cce"
+        "sha256": "723af166c10fa17af684d7aa2f030827f5e50609bee05df9555a4897b14b6f54"
       },
       {
         "bytes": 83353,
@@ -4474,9 +4491,9 @@
         "sha256": "bc2f30942bbd846d29077873b9236c9996ef8618c3d256e2846a31306445ab3b"
       },
       {
-        "bytes": 201884,
+        "bytes": 201896,
         "path": "data/documents/silver/jurisprudencia/CE_2da_AP_2011_842_Gabriel_Carrero_VS_Dimar_Erosión_Costera.jsonl",
-        "sha256": "f332a1ac64e7ec93dce01b11237e1699f14ee7677ba585024708c7006324910f"
+        "sha256": "8fefc184e5b9f0c3b2890f24675357544712cec3cb5234513edd14a0923b4a36"
       },
       {
         "bytes": 80146,
@@ -4534,9 +4551,9 @@
         "sha256": "24dfbc7070097a9fdc6d42e4419668bc64d9000faa26233f5389b2b1f151bbd3"
       },
       {
-        "bytes": 202004,
+        "bytes": 202016,
         "path": "data/documents/silver/jurisprudencia/SENTENCIA DE SEGUNDA INSTANCIA 47001-2332-000-2011-08425-02- GABRIEL CARRERO.jsonl",
-        "sha256": "018ce33bb042dc326f21a50391c89e9027415cea61cbd64536f47d463184240c"
+        "sha256": "4584310ac0146676169810adb34ba28c9d1793e74f35a7f11a21ed65508585a4"
       },
       {
         "bytes": 85235,
