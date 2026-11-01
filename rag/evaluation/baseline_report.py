@@ -7,11 +7,12 @@ resto de ``results/``). El análisis versionado para los revisores está en
 ``docs/EVALUACION_LINEA_BASE.md``.
 
 Uso:
-    uv run python -m evaluation.baseline_report
+    uv run python -m evaluation.baseline_report [--tag <etiqueta>]
 """
 
 from __future__ import annotations
 
+import argparse
 import json
 from collections import Counter
 from pathlib import Path
@@ -20,6 +21,7 @@ from typing import Any
 from evaluation.generation_cache import CACHE_PATH, load_cache
 from evaluation.ragas_v02 import METRIC_NAMES, RESULTS_PATH, aggregate_scores
 from evaluation.retrieval_baseline import REPORT_PATH as RETRIEVAL_PATH
+from evaluation.run_paths import tagged
 
 OUTPUT_PATH = Path("evaluation/results/linea-base-v0.2.md")
 
@@ -73,10 +75,10 @@ def _load_jsonl(path: Path) -> list[dict[str, Any]]:
         return [json.loads(line) for line in f if line.strip()]
 
 
-def build_report() -> str:
-    retrieval = json.loads(RETRIEVAL_PATH.read_text(encoding="utf-8"))
-    generation = load_cache(CACHE_PATH)
-    ragas_rows = _load_jsonl(RESULTS_PATH)
+def build_report(tag: str | None = None) -> str:
+    retrieval = json.loads(tagged(RETRIEVAL_PATH, tag).read_text(encoding="utf-8"))
+    generation = load_cache(tagged(CACHE_PATH, tag))
+    ragas_rows = _load_jsonl(tagged(RESULTS_PATH, tag))
     retrieval_cols = ["hit_at_4", "hit_at_20", "mrr", "doc_recall_at_4"]
 
     sections = [
@@ -109,9 +111,13 @@ def build_report() -> str:
 
 
 def main() -> int:
-    OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
-    OUTPUT_PATH.write_text(build_report(), encoding="utf-8")
-    print(f"Reporte: {OUTPUT_PATH}")
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--tag", default=None, help="etiqueta de la corrida")
+    tag = parser.parse_args().tag
+    output_path = tagged(OUTPUT_PATH, tag)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path.write_text(build_report(tag), encoding="utf-8")
+    print(f"Reporte: {output_path}")
     return 0
 
 
