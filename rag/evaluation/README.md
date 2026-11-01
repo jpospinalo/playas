@@ -231,12 +231,46 @@ Comprobado el 2026-10-28 con ChromaDB y Ollama locales:
 - **Método:** el de [`docs/EVALUACION_LINEA_BASE.md`](../docs/EVALUACION_LINEA_BASE.md) § 2, sin cambios: ground truth con el mismo hash, recuperación, caché de generación, piloto de 3 casos con revisión manual, RAGAS 0.4.3 con juez gpt-5-nano (`reasoning_effort=low`) y reporte. 65 casos juzgados, sin errores ni valores faltantes.
 - **Corpus:** `data/documents/gold` de `main` @ `23c6c5b`, 56 archivos, 5.862 fragmentos (4.404 de jurisprudencia y 1.458 de normativa), sha256 `98e8bba6…c3cf52`. Se verificó el índice contra Gold: 0 faltantes y 0 sobrantes.
 - **Sistema:** backend sin cambios (`4c2186e`) y gpt-5-nano como generador.
-- **Infraestructura local, no AWS:** ChromaDB 1.3.5 y Ollama en CPU, indexados con [`indexar_gold_local.py`](indexar_gold_local.py). **El índice desplegado en AWS no se actualizó**, así que todavía sirve el corpus anterior. Por eso la latencia (39,0 s frente a 60,7 s) no es comparable y no es efecto del corpus.
+- **Infraestructura local, no AWS:** ChromaDB 1.3.5 y Ollama en CPU, indexados con [`indexar_gold_local.py`](indexar_gold_local.py). **La colección que sirve ATLAS en AWS (`rag_playas`) no se actualizó**, así que todavía sirve el corpus anterior. Por eso la latencia (39,0 s frente a 60,7 s) no es comparable y no es efecto del corpus.
 - **Interrupción:** un reinicio del equipo detuvo el juez en el caso 33. Se reanudó desde ahí sin repetir casos.
 - **Control de ceros (§ 10):** Factual Correctness se repitió dos veces en los 3 casos con cero. Caso 003: 0 → 0,57 → 0, respuesta incompleta e inestable. Caso 062: 0 → 0 → 0, fallo real, porque no entrega el radicado aunque el documento llega. Caso 070: 0 → 0,60 → 0,46, cero falso del juez.
 - **Costo estimado:** generación 0,22 USD, juez 0,47 USD y control 0,01 USD, ≈0,70 USD en total.
 - **No incluido:** el exportador de snapshots de `origin/corpus` (`c642d09`) no cambia Gold y no está en `main`. `feat/ingesta-medallion-escalabilidad` y `security` tampoco entran, y el frontend no interviene en esta evaluación.
 - **Por verificar antes de reindexar AWS:** `build_or_load_vectorstore` crea la colección sin indicar la métrica, y ChromaDB usa `l2` por defecto, mientras que la colección anterior y esta corrida usan coseno. No se midió su efecto.
+
+### Prueba en AWS con Claude (no reemplaza la línea base)
+
+Corrida del 2026-11-01 sobre el ChromaDB y el Ollama de AWS, para dejar lista la evaluación en la misma infraestructura de la corrida anterior. Sin una key de OpenAI válida no se pudo usar gpt-5-nano, así que se usó **Claude Sonnet 5.5 como generador y Claude Haiku 5.5 como juez**. La línea base vigente sigue siendo la de gpt-5-nano de arriba.
+
+**Las notas del juez no son comparables con la línea base**, porque cambian a la vez el generador y el juez, y no se separó el efecto de cada uno. Este juez fue mucho más severo en el piloto y en la corrida completa; los números de abajo no indican que ATLAS haya empeorado.
+
+| Indicador | Prueba con Claude en AWS |
+|---|---|
+| Respondidas | 65 de 66 (el caso 046 pide aclaración) |
+| Diagnóstico del juez | 14 correctas, 38 recuperación, 11 incompletas, 2 alucinación |
+| Fidelidad / evidencia recuperada | 0,63 / 0,39 |
+| Factual F1 / Answer Accuracy | 0,30 / 0,22 |
+
+Sí se puede usar lo que no depende del juez:
+
+| Métrica sin LLM | AWS, prueba | Local, línea base |
+|---|---:|---:|
+| `acierto_doc_4` (pregunta original) | 0,569 | 0,586 |
+| `acierto_doc_20` | 0,741 | 0,741 |
+| `mrr_doc_20` | 0,561 | 0,562 |
+| Normativa en top-4 | 0 de 18 | 0 de 18 |
+| Jurisprudencia en top-4 | 33 de 40 | 34 de 40 |
+| `articulos_4_grafo` | 0,202 | 0,136 |
+| `refs_esperadas_en_respuesta` | 0,202 | 0,079 |
+| `respuestas_con_refs_sin_respaldo` | 0,123 (8 casos) | 0,000 |
+
+- **Recuperación:** AWS confirma el hallazgo principal: la normativa no llega al modelo. La diferencia con local es de un caso de jurisprudencia y está dentro del margen. No se investigó su causa.
+- **Generador:** Sonnet citó más referencias esperadas, pero también dejó 8 respuestas con referencias sin respaldo. La regresión es de este generador, no del sistema con gpt-5-nano.
+- **Texto de plantilla:** ninguna respuesta lo filtró, frente a 4 con gpt-5-nano.
+- **Colección:** el corpus congelado quedó en AWS en una colección aparte, `rag_playas_corpus_congelado` (5.862 fragmentos, coseno). `rag_playas` sigue con 5.888 y ATLAS no se cambió a la nueva.
+- **Vectores:** se copiaron del índice local, porque generarlos en el Ollama de AWS tomaba unas 3 horas. Se compararon antes en 24 fragmentos, incluidos los 10 más largos: coseno ≥ 0,99998 frente a los del Ollama de AWS. Las preguntas sí se convierten en vectores en AWS.
+- **Modelos:** Claude se conectó con un puente local no versionado, sin cambios en el backend. Ignora la temperatura y `reasoning_effort`, y la latencia (26,1 s) no es comparable. El control de ceros se repitió en el caso 056: 0 → 0,18 → 0,06.
+- **Pendiente:** repetir generación y juez con gpt-5-nano sobre esta colección cuando haya key. Es lo único que deja una línea base en las mismas condiciones que la anterior.
 
 ### Gráficas
 
