@@ -27,6 +27,7 @@ data/silver/
 data/gold/
 !data/*.jsonl.gz
 !data/import_to_chromadb.py
+!data/export_chroma_snapshot.py
 !data/seed_users.sql
 !data/documents/
 !data/README.md

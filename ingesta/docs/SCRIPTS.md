@@ -121,6 +121,66 @@ No son etapas habituales del pipeline. Antes de escribir o mover datos:
 confirmar colección/bucket, respaldo y clasificación con su responsable.
 Un dry-run puede consultar servicios reales y necesita permisos de lectura.
 
+### Snapshot documental de ChromaDB (solo lectura)
+
+[El exportador](../../data/export_chroma_snapshot.py) es una CLI independiente
+para una colección existente. Usa Python 3.12 y Chroma 1.5.9 del entorno
+`rag/`, sin cargar configuración del RAG ni generar o leer embeddings. No
+crea ni modifica colecciones; la lectura sí consume recursos del servidor.
+
+Desde la raíz del repositorio, estos comandos son locales y no exportan:
+
+```bash
+rag/.venv/bin/python -B data/export_chroma_snapshot.py --help
+rag/.venv/bin/python -B -m unittest discover -s rag/tests/unit -p 'test_chroma_snapshot_export.py' -v
+```
+
+La captura real es una operación separada y supervisada. Requiere identidad
+confirmada por el responsable y argumentos explícitos `--host` (nombre de host
+o IPv4, sin esquema, ruta o credenciales; IPv6 no soportado), `--port`,
+`--tenant`, `--database`, `--collection` y
+`--output-dir`. Usa HTTP. `--confirm-no-writes` registra la declaración de que
+no habrá ingestas, actualizaciones ni borrados durante la ventana; no demuestra
+ausencia de escrituras. El RAG puede atender consultas, pero deben evitarse
+otros procesos que puedan indexar. No ejecutar si no se puede coordinar esa
+ventana. No sustituir esa confirmación por conteos estables.
+
+El destino debe ser una carpeta nueva y privada, con padre existente y fuera
+del repositorio y de paquetes de evidencia cerrados. No se sobrescribe ni se
+borra nada. El lote es de 100 registros por defecto (`--batch-size` admite
+1–100), con pausa de 100 ms entre páginas y sin reintentos o reanudación.
+Proxies efectivos HTTP/HTTPS/ALL, incluso con bypass, o una versión distinta
+del SDK detienen la operación. No hay autenticación en esta versión. El SDK
+se importa en el directorio privado temporalmente usado como CWD para evitar
+leer un `.env` del proyecto; se restaura el CWD al terminar.
+
+El transporte no tiene timeout automático aquí: el responsable debe vigilar
+la ejecución, fijar un límite operativo y cancelar si no responde o afecta al
+servicio. Esta lectura paginada **no es transaccional**; un cambio concurrente
+con igual cardinalidad puede pasar inadvertido.
+
+La salida tiene un `snapshot.jsonl` con `id`, `document` y `metadata` observados,
+y un `manifest.json` con identidad/UUID, conteos, anomalías, fechas y SHA-256.
+Los IDs reales, textos, nulos y metadatos se conservan; las anomalías se cuentan,
+no se reparan. No contiene vectores ni es entrada del importador siguiente.
+No demuestra equivalencia con Gold o con una receta de embeddings.
+
+Se cierra el cliente y se restaura el CWD antes de publicar mediante hardlinks sin
+reemplazo; un filesystem sin ese soporte detiene la entrega sin fallback.
+El punto de cierre es el manifiesto final propio `COMPLETE`, vinculado a los
+bytes del JSONL. Los candidatos `.partial` se conservan como nombres del mismo
+archivo; no duplican bytes. Un candidato `COMPLETE` aislado o un JSONL final
+sin manifiesto final propio no acredita entrega. Antes del cierre, un error
+deja la corrida incompleta. Después, un fallo o cancelación no degrada ni
+reescribe lo publicado: conservarlo para revisión, sin repetir automáticamente
+la captura.
+
+Retornos: `0` publicación verificada y finalización normal; `1` error; `2`
+argumentos/destino inválidos; `130` interrupción. Un retorno no cero posterior
+al cierre no invalida el `COMPLETE` propio verificado. Revisar estado y huellas
+antes de aceptar la captura; no confundir completitud técnica con validez del
+corpus ni usarla para atribuir bajas si se informó actividad de escritura.
+
 ### Importación de un export a ChromaDB
 
 [El importador](../../data/import_to_chromadb.py) se ejecuta con el entorno
