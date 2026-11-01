@@ -5,6 +5,8 @@
 **Fecha:** 2026-10-15\
 **Base de la evaluación:** 66 preguntas con respuesta de referencia construidas y validadas por el equipo jurídico (ground truth v0.2)
 
+> Este informe usa el corpus anterior. La línea base vigente, sobre el corpus congelado, está en [`evaluation/README.md`](../evaluation/README.md#resultados-sobre-el-ground-truth-v02).
+
 ---
 
 ## 1. Resumen

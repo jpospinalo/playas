@@ -269,6 +269,15 @@ uv run python -m evaluation.ragas_v02                       # resto
 uv run python -m evaluation.baseline_report
 ```
 
+Para evaluar el corpus versionado sin S3 ni tocar el índice desplegado, levantar
+un ChromaDB aparte e indexar Gold en él. Todas las fases aceptan `--tag`:
+
+```bash
+CHROMA_PORT=8001 uv run python -m evaluation.indexar_gold_local
+CHROMA_PORT=8001 uv run python -m evaluation.retrieval_baseline --tag corpus-congelado
+uv run python -m evaluation.baseline_report --tag corpus-congelado
+```
+
 | Módulo | Escribe (en `evaluation/results/`, no versionado) | Costo LLM |
 |---|---|---|
 | `ground_truth_v02.py` | `evaluation/data/legal-ground-truth-v0.2.json` (sí versionado) | ninguno |

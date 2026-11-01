@@ -13,6 +13,7 @@ Infraestructura offline para medir la calidad de ATLAS. Nunca forma parte de la 
 | `generation_cache.py` | Línea base, fase 2: grafo real una vez por caso, con ruta, consulta reescrita, tokens y costo, en caché reanudable |
 | `ragas_v02.py` | Línea base, fase 4: métricas RAGAS (`collections`) con juez gpt-5-nano sobre la caché |
 | `baseline_report.py` | Línea base, fase 5: tablas consolidadas |
+| `indexar_gold_local.py` | Indexa `data/documents/gold` en un ChromaDB de evaluación con la lógica de producción, sin S3 ni tocar el índice desplegado |
 | `run_paths.py` | Rutas de resultados por corrida (`--tag`), para comparar modelos sin sobrescribir la línea base |
 | `registro.py` | Registro versionado de evaluaciones (`registro/evaluaciones.csv` → `docs/REGISTRO_EVALUACIONES.md`) |
 | `registro/evaluaciones.csv` | Registro de cada evaluación: fecha, versión del sistema, modelo, métricas, latencia y costo (versionado) |
@@ -129,45 +130,46 @@ porque son ambiguos entre normas.
 
 ### Línea base de estas métricas
 
-Sistema actual (código de `dc21e78`, ChromaDB 1.3.5 con la colección del repo
-y `embeddinggemma` con el mismo digest que en AWS; caché de gpt-5-nano del
-2026-10-08). Es el contenido de `data/linea-base-sin-llm-v0.2.json`:
+Corpus congelado (`data/documents/gold`, 5.862 fragmentos), ChromaDB 1.3.5 y
+`embeddinggemma` locales, caché de gpt-5-nano del 2026-11-01. Es el contenido de
+`data/linea-base-sin-llm-v0.2.json`; entre paréntesis, la línea base anterior.
 
 | Métrica | Valor | IC 95 % | Casos |
 |---|---|---|---|
-| `acierto_doc_4` | 0,603 | 0,48 – 0,72 | 58 |
-| `acierto_doc_20` | 0,741 | 0,62 – 0,84 | 58 |
-| `mrr_doc_20` | 0,556 | 0,43 – 0,67 | 58 |
-| `doc_recall_4` | 0,534 | 0,41 – 0,65 | 58 |
-| `articulos_4` | 0,071 | 0,01 – 0,14 | 39 |
-| `docs_distintos_4` | 2,27 | 2,02 – 2,52 | 66 |
-| `fuga_territorial_4` | 0,061 (4 casos) | 0,02 – 0,12 | 66 |
-| `acierto_doc_4_grafo` | 0,561 | 0,42 – 0,68 | 57 |
-| `articulos_4_grafo` | 0,129 | 0,04 – 0,23 | 38 |
-| `citas_validas` | 1,000 | 1,00 – 1,00 | 65 |
-| `respuestas_con_refs_sin_respaldo` | 0,046 (3 casos) | 0,00 – 0,11 | 65 |
-| `refs_esperadas_en_respuesta` | 0,090 | 0,02 – 0,18 | 38 |
+| `acierto_doc_4` | 0,586 (0,603) | 0,45 – 0,71 | 58 |
+| `acierto_doc_20` | 0,741 (0,741) | 0,62 – 0,84 | 58 |
+| `mrr_doc_20` | 0,562 (0,556) | 0,44 – 0,68 | 58 |
+| `doc_recall_4` | 0,509 (0,534) | 0,39 – 0,62 | 58 |
+| `articulos_4` | 0,075 (0,071) | 0,01 – 0,16 | 39 |
+| `docs_distintos_4` | 2,30 (2,27) | 2,03 – 2,58 | 66 |
+| `fuga_territorial_4` | 0,045, 3 casos (0,061, 4 casos) | 0,00 – 0,11 | 66 |
+| `acierto_doc_4_grafo` | 0,544 (0,561) | 0,40 – 0,67 | 57 |
+| `articulos_4_grafo` | 0,136 (0,129) | 0,05 – 0,24 | 38 |
+| `citas_validas` | 1,000 (1,000) | 1,00 – 1,00 | 65 |
+| `respuestas_con_refs_sin_respaldo` | 0,000 (0,046, 3 casos) | 0,00 – 0,00 | 65 |
+| `refs_esperadas_en_respuesta` | 0,079 (0,090) | 0,01 – 0,16 | 38 |
+
+Todos los cambios quedan dentro del margen de la línea base anterior.
 
 Lo que muestran los desgloses:
 
 - **La normativa es el punto débil.** Con documento esperado de normativa
-  (REMAC 5, Decreto 2324 de 1984), `acierto_doc_4` es 0,056 (1 de 18); con
-  jurisprudencia, 0,850. Las 4 fugas territoriales caen en esos casos de
-  normativa (0,222): en lugar de la norma nacional llega el reglamento de
-  Cartagena o de Santa Marta.
+  (REMAC 5, Decreto 2324 de 1984), `acierto_doc_4` es 0 de 18 (antes 1 de 18);
+  con jurisprudencia, 34 de 40 (0,850). Las 3 fugas territoriales caen en esos
+  casos: en lugar de la norma nacional llega un reglamento local.
 - **Los casos revisados por el equipo jurídico** son casi todos de normativa
-  (18 de los 19 que tienen documento esperado): `acierto_doc_4` 0,105 frente a
+  (18 de los 19 que tienen documento esperado): `acierto_doc_4` 0,053 frente a
   0,846 en los no revisados. La diferencia por revisión es la misma que la de
   normativa frente a jurisprudencia.
-- **El artículo exacto casi nunca llega** (`articulos_4` 0,071), aunque
+- **El artículo exacto casi nunca llega** (`articulos_4` 0,075), aunque
   llegue el documento.
 - **La consulta enriquecida no mejora la recuperación** frente a la pregunta
-  original (`acierto_doc_4_grafo` 0,561 frente a `acierto_doc_4` 0,603,
-  dentro del margen), pero sí trae más artículos exactos (0,129 frente a
-  0,071).
+  original (`acierto_doc_4_grafo` 0,544 frente a `acierto_doc_4` 0,586,
+  dentro del margen), pero sí trae más artículos exactos (0,136 frente a
+  0,075) y lleva la normativa de 0 a 2 de 18.
 
-`acierto_doc_4` (0,603) es la tasa de los fragmentos que llegan al modelo. El
-`hit_at_4` de `retrieval_baseline.py` (0,569) se calcula sobre el ranking de
+`acierto_doc_4` (0,586) es la tasa de los fragmentos que llegan al modelo. El
+`hit_at_4` de `retrieval_baseline.py` (0,603) se calcula sobre el ranking de
 20 y por eso es distinto.
 
 ### Verificación de las métricas
@@ -201,16 +203,80 @@ Comprobado el 2026-10-28 con ChromaDB y Ollama locales:
 
 ## Resultados sobre el ground truth v0.2
 
-66 casos construidos por el equipo jurídico; 27 marcados como revisados. Detalle de cada corrida en el [registro de evaluaciones](../docs/REGISTRO_EVALUACIONES.md).
+**Línea base vigente: corpus congelado, 2026-11-01.** 66 casos construidos por el equipo jurídico, 27 marcados como revisados. Detalle de cada corrida en el [registro de evaluaciones](../docs/REGISTRO_EVALUACIONES.md).
 
-| Indicador | Sistema actual (gpt-5-nano) | Modelo local (gemma4:e2b) |
-|---|---|---|
-| Respuestas correctas según el juez | **51 de 65** | 32 de 65 |
-| Fidelidad a las fuentes (*faithfulness*) | **0,87** | 0,83 |
-| Coincidencia con la respuesta jurídica (Factual F1 / Answer Accuracy) | **0,70 / 0,72** | 0,41 / 0,59 |
-| Documento esperado entre los fragmentos consultados (hit@4) | 0,55 (normativa nacional 2 de 18) | 0,57 |
-| Tipo de pregunta más débil | Secuencia, trámite u orden jurídico (F1 0,54) | — |
+| Indicador | Corpus congelado (vigente) | Corpus anterior (2026-10-08) | Modelo local gemma4:e2b (2026-10-14) |
+|---|---|---|---|
+| Fragmentos indexados | **5.862** | 5.888 | — |
+| Respuestas correctas según el juez | **52 de 65** | 51 de 65 | 32 de 65 |
+| Falla de recuperación / incompleta | **8 / 5** | 8 / 6 | — |
+| Fidelidad a las fuentes (*faithfulness*) | **0,88** | 0,87 | 0,83 |
+| Evidencia recuperada (*context recall*) | **0,85** | 0,80 | 0,82 |
+| Factual F1 / Answer Accuracy | **0,66 / 0,73** | 0,70 / 0,72 | 0,41 / 0,59 |
+| Documento esperado en los fragmentos del grafo (hit@4) | **0,53** (normativa 2 de 18) | 0,55 (normativa 2 de 18) | 0,57 |
+| Tipo de pregunta más débil | Secuencia, trámite u orden jurídico (F1 **0,40**) | Secuencia, trámite u orden jurídico (F1 0,54) | — |
 
-- Informe para el equipo jurídico, con la comparación frente al modelo local: **[`docs/INFORME_EVALUACION_ATLAS.md`](../docs/INFORME_EVALUACION_ATLAS.md)**.
-- Anexo técnico de la línea base (cómo leer las métricas, hallazgos y propuestas): **[`docs/EVALUACION_LINEA_BASE.md`](../docs/EVALUACION_LINEA_BASE.md)**.
+**Lectura:** depurar el corpus no cambió de forma medible la calidad. La diferencia emparejada por caso, ahora menos antes, incluye el cero en las cuatro métricas: fidelidad +0,01 (IC 95 % −0,03 a +0,06), evidencia recuperada +0,06 (−0,01 a +0,13), Factual F1 −0,04 (−0,11 a +0,04) y Answer Accuracy +0,01 (−0,05 a +0,07). Entre una corrida y otra, 17 de 65 casos cambian de diagnóstico aunque el total casi no se mueve, así que la nota de un caso aislado no es concluyente. Las notas son del juez automático, no una validación jurídica.
+
+### Qué hay que trabajar
+
+1. **La normativa no llega al modelo.** Con la pregunta original, REMAC 5 (14 casos) y Decreto 2324 de 1984 (4 casos) quedan en 0 de 18 dentro de los 4 fragmentos. Ambos están en el corpus (573 y 239 fragmentos), así que el problema es de recuperación, no de datos. La jurisprudencia llega en 34 de 40.
+2. **Las preguntas de secuencia o trámite son las más débiles** (F1 0,40, 8 casos): la respuesta omite etapas. Con tan pocos casos, la caída frente a 0,54 es orientativa.
+3. **Falso fuera de alcance:** el caso 046 sigue sin responderse porque el grafo lo clasifica como `out_of_scope`.
+4. **Texto de plantilla:** 4 respuestas filtran instrucciones internas ("oraciones con [doc"), igual que en la corrida anterior.
+5. **Citas:** ninguna respuesta trae referencias sin respaldo (antes 3) y todas las citas son válidas, pero las referencias esperadas casi no aparecen (0,079).
+
+### Condiciones de la corrida
+
+- **Método:** el de [`docs/EVALUACION_LINEA_BASE.md`](../docs/EVALUACION_LINEA_BASE.md) § 2, sin cambios: ground truth con el mismo hash, recuperación, caché de generación, piloto de 3 casos con revisión manual, RAGAS 0.4.3 con juez gpt-5-nano (`reasoning_effort=low`) y reporte. 65 casos juzgados, sin errores ni valores faltantes.
+- **Corpus:** `data/documents/gold` de `main` @ `23c6c5b`, 56 archivos, 5.862 fragmentos (4.404 de jurisprudencia y 1.458 de normativa), sha256 `98e8bba6…c3cf52`. Se verificó el índice contra Gold: 0 faltantes y 0 sobrantes.
+- **Sistema:** backend sin cambios (`4c2186e`) y gpt-5-nano como generador.
+- **Infraestructura local, no AWS:** ChromaDB 1.3.5 y Ollama en CPU, indexados con [`indexar_gold_local.py`](indexar_gold_local.py). **El índice desplegado en AWS no se actualizó**, así que todavía sirve el corpus anterior. Por eso la latencia (39,0 s frente a 60,7 s) no es comparable y no es efecto del corpus.
+- **Interrupción:** un reinicio del equipo detuvo el juez en el caso 33. Se reanudó desde ahí sin repetir casos.
+- **Control de ceros (§ 10):** Factual Correctness se repitió dos veces en los 3 casos con cero. Caso 003: 0 → 0,57 → 0, respuesta incompleta e inestable. Caso 062: 0 → 0 → 0, fallo real, porque no entrega el radicado aunque el documento llega. Caso 070: 0 → 0,60 → 0,46, cero falso del juez.
+- **Costo estimado:** generación 0,22 USD, juez 0,47 USD y control 0,01 USD, ≈0,70 USD en total.
+- **No incluido:** el exportador de snapshots de `origin/corpus` (`c642d09`) no cambia Gold y no está en `main`. `feat/ingesta-medallion-escalabilidad` y `security` tampoco entran, y el frontend no interviene en esta evaluación.
+- **Por verificar antes de reindexar AWS:** `build_or_load_vectorstore` crea la colección sin indicar la métrica, y ChromaDB usa `l2` por defecto, mientras que la colección anterior y esta corrida usan coseno. No se midió su efecto.
+
+### Gráficas
+
+Las cifras de cada gráfica están en las tablas de esta sección y en las dos de abajo.
+
+![Fidelidad 0,87 a 0,88; evidencia recuperada 0,80 a 0,85; F1 0,70 a 0,66; Answer Accuracy 0,72 a 0,73; documento en top-4 0,60 a 0,59](../docs/img/linea-base/01-indicadores.png)
+
+![Diagnóstico del juez: 51, 8 y 6 antes; 52, 8 y 5 ahora](../docs/img/linea-base/02-diagnostico.png)
+
+![Factual F1 por tipo de pregunta; secuencia o trámite es el más bajo](../docs/img/linea-base/03-por-tipo.png)
+
+![Fracción de casos en que el documento esperado llega a los 4 fragmentos; REMAC 5 y Decreto 2324 quedan en cero](../docs/img/linea-base/04-por-documento.png)
+
+#### Por tipo de pregunta
+
+| Tipo | Casos | F1 antes | F1 ahora | Answer Accuracy antes | Answer Accuracy ahora |
+|---|---:|---:|---:|---:|---:|
+| Extracción puntual | 2 | 0,00 | 0,33 | 0,25 | 0,50 |
+| Síntesis dentro de un documento | 7 | 0,74 | 0,65 | 0,75 | 0,71 |
+| Cruce entre documentos | 5 | 0,72 | 0,65 | 0,65 | 0,60 |
+| Comparación jurídica | 7 | 0,74 | 0,80 | 0,54 | 0,57 |
+| Aplicación normativa o jurisprudencial | 36 | 0,75 | 0,71 | 0,83 | 0,85 |
+| Secuencia, trámite u orden jurídico | 8 | 0,54 | 0,40 | 0,56 | 0,53 |
+
+#### Por documento esperado
+
+Fracción de casos en que el documento llega a los 4 fragmentos, con la pregunta original.
+
+| Documento | Casos | Antes | Ahora |
+|---|---:|---:|---:|
+| decreto-2324-de-1984 | 4 | 0,00 | 0,00 |
+| Reglamento Maritimo Colombiano REMAC 5-DIMAR (202103) | 14 | 0,07 | 0,00 |
+| AP  Carlos Alberto Zúñiga Mejía y otros VS DIMAR y otros | 7 | 0,57 | 0,57 |
+| AP Gerardo Antenor Lemus Orozco VS Distrito de Santa Mata y  | 18 | 0,61 | 0,61 |
+| AP Inversiones E y D S.A.S VS DIMAR y otros | 3 | 0,67 | 0,67 |
+| AP PROCURADURÍA GENERAL DE LA ANCIÓN VS COORPAMAG Y OTROS | 4 | 0,75 | 0,75 |
+| AP Felipe José Campo Fernández VS Corpamag y otros | 9 | 0,89 | 0,78 |
+| AP Gieseken Cuello & Cía. S. en C. VS DIMAR y otros | 7 | 0,86 | 0,86 |
+| AP Rodrigo Martínez Silva VS Minambiente y otros | 2 | 1,00 | 1,00 |
+
+- Comparación frente al modelo local, sobre el corpus anterior: **[`docs/INFORME_EVALUACION_ATLAS.md`](../docs/INFORME_EVALUACION_ATLAS.md)**.
+- Cómo leer las métricas, con el detalle de la corrida anterior: **[`docs/EVALUACION_LINEA_BASE.md`](../docs/EVALUACION_LINEA_BASE.md)**.
 - Comandos: [`docs/SCRIPTS.md` § Línea base](../docs/SCRIPTS.md#línea-base-sobre-legal-ground-truth-v02).

@@ -9,6 +9,8 @@
 | **Dataset** | `evaluation/data/legal-ground-truth-v0.2.json`: 66 casos del equipo jurídico |
 | **Revisores** | Juan Pablo Ospina López, Camilo |
 
+> **Esta es la corrida del 2026-10-08, sobre el corpus anterior.** La línea base vigente es la del corpus congelado (2026-11-01): ver [`evaluation/README.md`](../evaluation/README.md#resultados-sobre-el-ground-truth-v02). El método y la forma de leer las métricas siguen siendo los de este documento.
+
 > **Objetivo** (acordado en la reunión del 2026-10-08): establecer el estado actual de ATLAS frente al ground truth validado por el equipo jurídico e identificar en qué tipos de pregunta falla más, evaluando por separado la **recuperación** y la **generación**. **No se calibró nada:** las hipótesis de la §8 son propuestas para discutir.
 
 ## Índice
