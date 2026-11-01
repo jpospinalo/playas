@@ -24,7 +24,7 @@ La  Sala  procede  a  decidir  el  recurso  de  apelación  interpuesto  por  la
 
 Ministerio  de  Defensa  Nacional
 
-Dirección  General  Marítima  -DIMAR  contra  la sentencia  de  de  abril  de  2018  proferida  por  la  Sala  Tercera  de  Decisión  del Tribunal Administrativo de Sucre .
+Dirección  General  Marítima  -DIMAR  contra  la sentencia  de  9 de  abril  de  2018  proferida  por  la  Sala  Tercera  de  Decisión  del Tribunal Administrativo de Sucre .
 
 La presente providencia tiene las siguientes partes:
 
@@ -50,7 +50,7 @@ denominado:
 1. La parte actora formuló las siguientes pretensiones :
 2. &lt;[…] Mediante el ejercicio de esta Acción de carácter Constitucional y por estar dentro de los eventos a que ella se refiere, pido a usted:
 
-PRIMERO: Que  mediante  Sentencia,  se  ordene  a  la  Capitanía  del  Puerto  de Coveñas y a la Alcaldía del Municipio de Coveñas, a través de sus representantes legales,  que dentro del plazo que el H. Tribunal tenga a bien fijar, procedan a adelantar las acciones legales y policivas a que haya lugar, para la recuperación de las playas del municipio de Coveñas, sector Boca de la Ciénaga a Puerto Viejo, ocupadas por los particulares cuyos nombres y ubicación se relacionan en el oficio No. 19201300594 del de mayo de 2013 dirigido por el señor Capitán del Puerto de Coveñas al Alcalde de ese mismo municipio y por todas aquellas personas no incluidas en él que en adelante sean identificadas.
+PRIMERO: Que  mediante  Sentencia,  se  ordene  a  la  Capitanía  del  Puerto  de Coveñas y a la Alcaldía del Municipio de Coveñas, a través de sus representantes legales,  que dentro del plazo que el H. Tribunal tenga a bien fijar, procedan a adelantar las acciones legales y policivas a que haya lugar, para la recuperación de las playas del municipio de Coveñas, sector Boca de la Ciénaga a Puerto Viejo, ocupadas por los particulares cuyos nombres y ubicación se relacionan en el oficio No. 19201300594 del 23 de mayo de 2013 dirigido por el señor Capitán del Puerto de Coveñas al Alcalde de ese mismo municipio y por todas aquellas personas no incluidas en él que en adelante sean identificadas.
 
 SEGUNDO: Que se advierta a los funcionarios obligados sobre las sanciones a que puede dar lugar el incumplimiento de lo ordenado […]=.
 
@@ -60,24 +60,24 @@ SEGUNDO: Que se advierta a los funcionarios obligados sobre las sanciones a que 
 3. 3.2.   Precisó que es competencia de la Dirección General Marítima -DIMAR vigilar y controlar el uso público a que están destinadas las playas y terrenos de bajamar en su jurisdicción. En igual sentido, afirmó que corresponde a los alcaldes municipales ejercer la vigilancia y defensa de los bienes de uso público y del medio ambiente.
 
 ## Actuaciones en primera instancia.
-4. El Magistrado Sustanciador del Tribunal Administrativo de Sucre profirió auto de  de  marzo  de  2017   en  el  que  resolvió:  i)  admitir  la  demanda;  ii)  notificar personalmente a las partes; e iii) informar a los miembros de la comunidad a través de un medio masivo de comunicación.
+4. El Magistrado Sustanciador del Tribunal Administrativo de Sucre profirió auto de  9 de  marzo  de  2017   en  el  que  resolvió:  i)  admitir  la  demanda;  ii)  notificar personalmente a las partes; e iii) informar a los miembros de la comunidad a través de un medio masivo de comunicación.
 5. La Nación -Ministerio de Defensa Nacional -Dirección General Marítima -DIMAR presentó de manera extemporánea escrito de contestación de la demanda,
 
 2 Cfr. Índice del Sistema de Gestión Judicial, SAMAI. Archivo denominado: RECIBEPRUEBAS\_70001233300020160032(.zip) NroActua. 001CuadernoPrincipal, folio y siguientes.
 
 3 Cfr. Índice del Sistema de Gestión Judicial, SAMAI. Archivo denominado: RECIBEPRUEBAS\_70001233300020160032(.zip) NroActua. 001CuadernoPrincipal, folio y siguientes.
 
-razón por la cual el Magistrado Sustanciador del Tribunal Administrativo de Sucre profirió auto de de mayo de 2017 mediante el cual resolvió tener la demanda por no contestada, decisión contra la cual la entidad interpuso recurso de reposición que fue resuelto en providencia de de junio de 2017, proferida en el trámite de la audiencia de pacto de cumplimiento , en el sentido de confirmar la decisión.
+razón por la cual el Magistrado Sustanciador del Tribunal Administrativo de Sucre profirió auto de 30 de mayo de 2017 mediante el cual resolvió tener la demanda por no contestada, decisión contra la cual la entidad interpuso recurso de reposición que fue resuelto en providencia de 27 de junio de 2017, proferida en el trámite de la audiencia de pacto de cumplimiento , en el sentido de confirmar la decisión.
 
 6. El Municipio de Coveñas no contestó la demanda.
 
 ## Otras actuaciones.
-7. El  Tribunal  Administrativo  de  Sucre  llevó  a  cabo  la  audiencia  especial  de pacto  de  cumplimiento  el  día  de  junio  de  2017,  la  cual  declaró  fallida  por  la inasistencia de la parte actora y del Alcalde o delegado del Municipio de Coveñas .
-8. El Magistrado Sustanciador del Tribunal Administrativo de Sucre mediante auto proferido el de junio de 2017 decretó dos pruebas de oficio consistentes en oficiar a la Dirección General Marítima -DIMAR y al Municipio de Coveñas para que allegaran al expediente información sobre la existencia de construcciones en la zona objeto  de  la  acción  popular,  el  otorgamiento  de  permisos  y  la  verificación  del funcionamiento de establecimientos de comercio .
+7. El  Tribunal  Administrativo  de  Sucre  llevó  a  cabo  la  audiencia  especial  de pacto  de  cumplimiento  el  día  27 de  junio  de  2017,  la  cual  declaró  fallida  por  la inasistencia de la parte actora y del Alcalde o delegado del Municipio de Coveñas .
+8. El Magistrado Sustanciador del Tribunal Administrativo de Sucre mediante auto proferido el 27 de junio de 2017 decretó dos pruebas de oficio consistentes en oficiar a la Dirección General Marítima -DIMAR y al Municipio de Coveñas para que allegaran al expediente información sobre la existencia de construcciones en la zona objeto  de  la  acción  popular,  el  otorgamiento  de  permisos  y  la  verificación  del funcionamiento de establecimientos de comercio .
 9. Durante  el  trámite  de  la  primera  instancia  las  partes  guardaron  silencio durante la etapa de presentación de alegatos de conclusión y, el Ministerio público presentó concepto en el que solicitó no acceder a las pretensiones de la demanda.
 
 ## Sentencia proferida, en primera instancia.
-1. La  Sala  Tercera  de  Decisión  del  Tribunal  Administrativo  de  Sucre  profirió sentencia el de abril de 2018, en la que resolvió lo siguiente :
+1. La  Sala  Tercera  de  Decisión  del  Tribunal  Administrativo  de  Sucre  profirió sentencia el 9 de abril de 2018, en la que resolvió lo siguiente :
 2. &lt;[…] PRIMERO: DECLÁRASE vulnerado el derecho colectivo al goce del espacio público  y  la  utilización  y  defensa  de  los  bienes  de  uso  público,  alegado  como vulnerado por el actor popular, con base en las consideraciones expuestas en la parte motiva de esta providencia.
 
 SEGUNDO: Como  consecuencia  de  la  anterior  declaración, se  impartirán  las siguientes órdenes:
@@ -102,7 +102,7 @@ QUINTO: Para  los  fines  indicados  en  el  artículo  80  de  la  Ley  472  de
 
 SEXTO:  COMPÚLSESE copias  con  destino  Procuraduría  Provincial  de  Sincelejo para  lo  de  su  competencia,  por  la  inasistencia  del  alcalde  municipal  de  Coveñas
 
-Sucre, a la audiencia especial de pacto de cumplimiento y su falta de diligencia al no concurrir en el presente trámite para defender el interés del ente territorial . Anéxese copia de esta providencia y copia del acta escrita de pacto de cumplimiento y la copia tomada en medio audiovisual, en fecha de junio de 2017.
+Sucre, a la audiencia especial de pacto de cumplimiento y su falta de diligencia al no concurrir en el presente trámite para defender el interés del ente territorial . Anéxese copia de esta providencia y copia del acta escrita de pacto de cumplimiento y la copia tomada en medio audiovisual, en fecha 28 de junio de 2017.
 
 SÉPTIMO: RECONÓZCASE personería  adjetiva  al  abogado  Juan  Miguel  Navarro Navarro, identificado con la T.P. No. 131.996 del C.S. de la J., para actuar en nombre y  representación  del  Municipio  de  Coveñas-Sucre,  conforme  al  memorial  poder obrante a folio 258 del expediente.
 
@@ -114,20 +114,20 @@ OCTAVO: En firme este fallo, CANCÉLESE su radicación, y devuélvase el expedie
 13. Frente  a  la  competencia  de  la  Dirección  General  Marítima -DIMAR -Capitanía de Puerto de Coveñas consideró lo siguiente :
 4. &lt;[…]  en  atención  a  que  el  asunto  que  en  esta  oportunidad  ocupa  la  atención  del Tribunal gira en torno al asentamiento de kioscos tipo parasol en madera y palma dedicados al comercio y ventas al público, en zonas playeras, y que respecto de esta especial  categoría  de  bienes  la  DIMAR  tiene  a  su  cargo  el  otorgamiento  de autorizaciones administrativas, la defensa de tales bienes y la recuperación de los mismos, no cabe duda de la existencia de fundamentos normativos, funcionales y fácticos que justifican la legitimación material de dicho órgano administrativo y, por tanto, ante la eventual vulneración del derecho al goce efectivo del espacio público, se  deberán  impartir  órdenes  en  el  comité  de  verificación  como  en  ejercicio  de actividades propias del ámbito de su competencia funcional, con el objeto de que no se vuelvan a generar situaciones como las que dieron origen a la presente acción popular […]=.
 
-## Solicitud de nulidad de la sentencia proferida, en primera instancia. La Nación -Ministerio de Defensa Nacional -Dirección General Marítima -DIMAR -Capitanía de Puerto de Coveñas  presentó escrito de de mayo de 2018
+## Solicitud de nulidad de la sentencia proferida, en primera instancia. La Nación -Ministerio de Defensa Nacional -Dirección General Marítima -DIMAR -Capitanía de Puerto de Coveñas  presentó escrito de 30 de mayo de 2018
 
 8 Cfr. Índice del Sistema de Gestión Judicial, SAMAI. Archivo denominado: RECIBEPRUEBAS\_70001233300020160032(.zip) NroActua. 001CuadernoPrincipal, folio 281 y siguiemtes.
 
 en  el  que  solicitó  declarar  la  nulidad  por  indebida  notificación  de  la  sentencia proferida, en primera instancia.
 
-15. El Magistrado Sustanciador del Tribunal Administrativo de Sucre profirió auto de de diciembre de 2020 mediante el cual resolvió declarar la nulidad procesal del acto de notificación personal de la sentencia de de abril de 2018 y, tener por surtida por conducta concluyente la notificación de la referida sentencia precisando que el término para interponer el recurso de apelación comenzaba a computarse desde la notificación de la providencia que declaró la nulidad procesal.
+15. El Magistrado Sustanciador del Tribunal Administrativo de Sucre profirió auto de 11 de diciembre de 2020 mediante el cual resolvió declarar la nulidad procesal del acto de notificación personal de la sentencia de 9 de abril de 2018 y, tener por surtida por conducta concluyente la notificación de la referida sentencia precisando que el término para interponer el recurso de apelación comenzaba a computarse desde la notificación de la providencia que declaró la nulidad procesal.
 
 ## Recurso de apelación
 
-## Nación -Ministerio  de  Defensa  Nacional -Dirección  General  Marítima -DIMAR -Capitanía de Puerto de Coveñas. La Nación -Ministerio de Defensa Nacional -Dirección General Marítima -DIMAR -Capitanía de Puerto de Coveñas  presentó escrito de de diciembre de 2020 , en el que solicitó revocar la sentencia proferida, en primera instancia, y su desvinculación de la acción de la referencia.
+## Nación -Ministerio  de  Defensa  Nacional -Dirección  General  Marítima -DIMAR -Capitanía de Puerto de Coveñas. La Nación -Ministerio de Defensa Nacional -Dirección General Marítima -DIMAR -Capitanía de Puerto de Coveñas  presentó escrito de 18 de diciembre de 2020 , en el que solicitó revocar la sentencia proferida, en primera instancia, y su desvinculación de la acción de la referencia.
 17. Fundamentó  el  recurso  de  apelación  en  la  falta  de  competencia  de  la autoridad marítima para ejecutar acciones tendientes a la restitución física de los bienes de uso público.
-18. Reiteró que la entidad mediante oficio núm. 19201300594 MD-DIMAR. CP09ALITMA de de mayo de 2013, solicitó al Alcalde del Municipio de Coveñas que ejecutara &lt;[…] las acciones policivas pertinentes para evitar la proliferación de este tipo de construcciones, así como también la restitución de las áreas intervenidas por particulares, toda vez que se considera en su totalidad un bien (sic) uso público constituido por playa marítima […]= .
-19. Adujo que la competencia del Municipio para ejecutar acciones de policía tendientes a la restitución física de los bienes de uso público se fundamenta en: i) los numerales y 2 del artículo 315 de la Constitución Política; ii) los artículos.º y 5.º del Decreto 640 de de marzo de 1937, reglamentario del artículo 208 de la Ley 4.ª de 1913; y iii) el Código Nacional de Seguridad y Convivencia Ciudadana.
+18. Reiteró que la entidad mediante oficio núm. 19201300594 MD-DIMAR. CP09ALITMA de 23 de mayo de 2013, solicitó al Alcalde del Municipio de Coveñas que ejecutara &lt;[…] las acciones policivas pertinentes para evitar la proliferación de este tipo de construcciones, así como también la restitución de las áreas intervenidas por particulares, toda vez que se considera en su totalidad un bien (sic) uso público constituido por playa marítima […]= .
+19. Adujo que la competencia del Municipio para ejecutar acciones de policía tendientes a la restitución física de los bienes de uso público se fundamenta en: i) los numerales y 2 del artículo 315 de la Constitución Política; ii) los artículos.º y 5.º del Decreto 640 de 16 de marzo de 1937, reglamentario del artículo 208 de la Ley 4.ª de 1913; y iii) el Código Nacional de Seguridad y Convivencia Ciudadana.
 
 11 Cfr. Índice del Sistema de Gestión Judicial, SAMAI. Ingreso con número único de radicación de primera instancia. Archivo denominado:
 
@@ -139,7 +139,7 @@ Manifestó que en la zona denominada Boca de la Ciénaga de la Caimanera existen
 
 ## Concesión del recurso de apelación.
 
-El Magistrado Sustanciador del Tribunal Administrativo de Sucre profirió auto de  de  julio  de  2022 ,  mediante  el  cual  concedió  el  recurso  de  apelación presentado por la Dirección General Marítima
+El Magistrado Sustanciador del Tribunal Administrativo de Sucre profirió auto de  7 de  julio  de  2022 ,  mediante  el  cual  concedió  el  recurso  de  apelación presentado por la Dirección General Marítima
 
 DIMAR
 
@@ -147,11 +147,11 @@ Capitanía de Puerto de Coveñas contra la sentencia proferida, en primera insta
 
 ## Actuaciones en segunda instancia.
 
-El Despacho sustanciador profirió auto de de marzo de 2023  mediante el cual admitió el recurso de apelación interpuesto contra la sentencia proferida, en primera instancia.
+El Despacho sustanciador profirió auto de 9 de marzo de 2023  mediante el cual admitió el recurso de apelación interpuesto contra la sentencia proferida, en primera instancia.
 
 23.
 
-La  Procuradora  Segunda  Delegada  ante  el  consejo  de  Estado  presentó escrito de de marzo de 2023  en el que solicitó confirmar la sentencia proferida, en primera instancia, con fundamento en que a la Dirección General Marítima
+La  Procuradora  Segunda  Delegada  ante  el  consejo  de  Estado  presentó escrito de 29 de marzo de 2023  en el que solicitó confirmar la sentencia proferida, en primera instancia, con fundamento en que a la Dirección General Marítima
 
 DIMAR -Capitanía de Puerto de Coveñas no le fue impartida la orden de restituir físicamente el bien de uso público ocupado indebidamente.
 
@@ -166,9 +166,9 @@ Archivo denominado:
 
 jurisprudencial  sobre  las  facultades  del  juez  popular;  y  viii)  el  análisis  del  caso concreto.
 
-## Competencia de la Sala. Vistos: i) el artículo 16 de la Ley 472, sobre competencia para conocer de las acciones populares en segunda instancia; ii) el artículo 13 del Acuerdo 80 de de marzo de 2019 , sobre la distribución de asuntos entre las secciones del consejo de Estado; y iii) el 150 de la Ley 1437, sobre competencia del consejo de Estado, en  segunda  instancia;  esta  Sección  es  competente  para  conocer,  en  segunda instancia,  de  los  recursos  de  apelación  que  se  presenten  contra  las  sentencias proferidas, en primera instancia, por los Tribunales Administrativos en el trámite de las acciones populares.
+## Competencia de la Sala. Vistos: i) el artículo 16 de la Ley 472, sobre competencia para conocer de las acciones populares en segunda instancia; ii) el artículo 13 del Acuerdo 80 de 12 de marzo de 2019 , sobre la distribución de asuntos entre las secciones del consejo de Estado; y iii) el 150 de la Ley 1437, sobre competencia del consejo de Estado, en  segunda  instancia;  esta  Sección  es  competente  para  conocer,  en  segunda instancia,  de  los  recursos  de  apelación  que  se  presenten  contra  las  sentencias proferidas, en primera instancia, por los Tribunales Administrativos en el trámite de las acciones populares.
 
-26. Vistos los artículos 320 16  y 328 17  de la Ley 1564 de de julio de 2012 , norma aplicable al presente caso, en virtud de lo dispuesto en el artículo 37 de la Ley 472, el juez se limitará a conocer de los puntos o cuestiones a los cuales se contrae  el  recurso  interpuesto  por  la  Nación -Ministerio  de  Defensa  Nacional  Dirección General Marítima -DIMAR -Capitanía de Puerto de Coveñas.
+26. Vistos los artículos 320 16  y 328 17  de la Ley 1564 de 12 de julio de 2012 , norma aplicable al presente caso, en virtud de lo dispuesto en el artículo 37 de la Ley 472, el juez se limitará a conocer de los puntos o cuestiones a los cuales se contrae  el  recurso  interpuesto  por  la  Nación -Ministerio  de  Defensa  Nacional  Dirección General Marítima -DIMAR -Capitanía de Puerto de Coveñas.
 27. Agotados los trámites inherentes a la acción popular de que trata este asunto y  sin  que  se  observe  causal  de  nulidad  que  pueda  invalidar  lo  actuado,  la  Sala procede a proferir la sentencia correspondiente.
 
 ## Problemas jurídicos.
@@ -191,7 +191,7 @@ Dirección General Marítima
 
 Capitanía  de  Puerto  de  Coveñas  tiene  competencia  para  iniciar  la regulación, autorización y control en las playas del sector Boca de la Ciénaga de la Caimanera en el Municipio de Coveñas.
 
-Y, en ese sentido, establecer si se debe confirmar, modificar o revocar la sentencia  de  de  abril  de  2018  proferida  por  la  Sala  Tercera  de  Decisión  del Tribunal Administrativo de Sucre.
+Y, en ese sentido, establecer si se debe confirmar, modificar o revocar la sentencia  de  9 de  abril  de  2018  proferida  por  la  Sala  Tercera  de  Decisión  del Tribunal Administrativo de Sucre.
 
 ## Marco  normativo  y  desarrollo  jurisprudencial  del  medio  de  control  de protección de los derechos e intereses colectivos.
 
@@ -202,7 +202,7 @@ Visto el artículo 88 de la Constitución Política, que dispone que las accione
 31. Visto el artículo 2.° de la Ley 472, que define las acciones populares como &lt;[…] los medios procesales para la protección de los derechos e intereses colectivos […]= que se ejercen para &lt;[…] evitar el daño contingente, hacer cesar el peligro, la amenaza,  la  vulneración  o  agravio  sobre  los  derechos  e  intereses  colectivos,  o restituir las cosas a su estado anterior cuando fuere posible […]=.
 32. Esta  acción  busca  que  la  comunidad  pueda  disponer  de  un  mecanismo judicial  para  la  protección  efectiva,  de  forma  rápida  y  sencilla,  de  los  derechos colectivos,  cuya  amenaza  o  vulneración  debe  necesariamente  probarse  para  la procedencia del amparo.
 33. Conforme con lo anterior, los supuestos sustanciales para que proceda la acción popular son: i) una acción u omisión de la parte demandada; ii) un daño contingente,  peligro,  amenaza,  vulneración  o  agravio  de  derechos  o  intereses colectivos;  y,  iii)  la  relación  o  nexo  de  causalidad  entre  la  acción  u  omisión  y  la afectación de los derechos e intereses.
-34. Sobre el particular, la Sección Primera del consejo de Estado, en providencia de de marzo de 2014, explicó que la acción popular es autónoma y principal y, además, puede ser ejercida por cualquier persona natural o jurídica, sin embargo &lt;[…] quien concurre al litigio después de haberse promovido la acción popular por diferente persona, sólo puede acogerse al proceso dentro de los términos en que Calle No. 7-65
+34. Sobre el particular, la Sección Primera del consejo de Estado, en providencia de 28 de marzo de 2014, explicó que la acción popular es autónoma y principal y, además, puede ser ejercida por cualquier persona natural o jurídica, sin embargo &lt;[…] quien concurre al litigio después de haberse promovido la acción popular por diferente persona, sólo puede acogerse al proceso dentro de los términos en que Calle No. 7-65
 
 ésta  presenta  la  demanda,  es  decir,  no  le  es  dable  al  tercero  extenderse  en  la materia discutida, los móviles o las consecuencias del proceso, puesto que es la parte actora quien en la demanda, fija el litigio […] = 19 .
 
@@ -211,7 +211,7 @@ Visto el artículo 88 de la Constitución Política, que dispone que las accione
 ## Marco normativo y desarrollo jurisprudencial del derecho colectivo al goce del espacio público y la utilización y defensa de los bienes de uso público.
 36. Antes  de  la  Constitución  política  de  1991,  el  marco  normativo  sobre  los bienes de uso público se encontraba contenido en el Código Civil. En efecto, el artículo 674 del ejusdem establece que son bienes de uso público aquellos cuyo "[…] uso pertenece a todo s los habitantes de un territorio, como el de calles, plazas, puentes y caminos; se llaman bienes de la unión de uso público o bienes públicos del territorio […] =.
 
-37. Por su parte y en relación con el espacio público, el artículo 5.º de la Ley 9 del de enero de 1989  , señala:
+37. Por su parte y en relación con el espacio público, el artículo 5.º de la Ley 9 del 11 de enero de 1989  , señala:
 
 &lt;[…] [A]rtículo  5º. Entiéndase  por  espacio  público  el conjunto  de  inmuebles públicos y  los  elementos  arquitectónicos  y  naturales  de  los  inmuebles  privados, destinados  por  su  naturaleza, por  su  uso  o  afectación  a  la  satisfacción  de
 
@@ -236,7 +236,7 @@ Es un derecho e interés colectivo.
 
 43. Así  las  cosas,  el  buen  uso,  el  libre  acceso  y  la  preservación  del  espacio público son aspectos que en una sociedad contribuyen a mejorar la calidad de vida y a garantizar la existencia de un escenario de convivencia libre que acerca a todos los habitantes de una ciudad en condiciones de igualdad.
 
-## Marco normativo y desarrollo jurisprudencial sobre la protección a las playas marítimas como bienes de uso público. Vistos: i) el artículo 63 de la Constitución Política, sobre la inalienabilidad, imprescriptibilidad e inembargabilidad de los bienes de uso público; ii) el artículo 166 del Decreto núm. 2324 de de septiembre de 1984 , sobre la prohibición de transferir a cualquier título a particulares las playas por ser bienes de uso público; y iii) el artículo 5.º de la Ley 9 de de enero de 1989 , adicionado por el artículo 138 de la Ley 388 de de julio de 1997 , sobre la definición de las playas marinas, como bienes de uso público.
+## Marco normativo y desarrollo jurisprudencial sobre la protección a las playas marítimas como bienes de uso público. Vistos: i) el artículo 63 de la Constitución Política, sobre la inalienabilidad, imprescriptibilidad e inembargabilidad de los bienes de uso público; ii) el artículo 166 del Decreto núm. 2324 de 18 de septiembre de 1984 , sobre la prohibición de transferir a cualquier título a particulares las playas por ser bienes de uso público; y iii) el artículo 5.º de la Ley 9 de 11 de enero de 1989 , adicionado por el artículo 138 de la Ley 388 de 18 de julio de 1997 , sobre la definición de las playas marinas, como bienes de uso público.
 45. De acuerdo a lo previsto en el artículo 166 del Decreto 2334 de 1984 las playas son bienes de uso público, intransferibles a cualquier título a los particulares,
 
 22 &lt;Por el cual se reorganiza la Dirección General Marítima y Portuaria=.
@@ -256,7 +256,7 @@ Vale  decir,  que  entre  este  tipo  de  bienes  se  incluían,  además,  los 
 48. La Sala considera que la protección del derecho colectivo al goce del espacio público y a la utilización y defensa de los bienes de uso público se garantiza, en el caso concreto, a través de la salvaguarda de las playas marinas en el sector de la Boca de la Ciénaga de la Caimanera contra la amenaza generada por la ocupación de  esa  zona  con  kioscos  construidos  con  madera  y  palma  sin  la  autorización expedida por la autoridad competente, en una zona que por su naturaleza de bien de uso público, es para el uso y disfrute colectivo.
 
 ## Marco  normativo  y  desarrollo  jurisprudencial  sobre  la  competencia  de  la Dirección General Marítima -DIMAR para la recuperación de zonas de playa marina.
-49. Vistos los artículos.º y 5.º, en especial, los numerales y 27, del Decreto 2324  de  1984, sobre la jurisdicción, regulación, autorización y control de
+49. Vistos los artículos.º y 5.º, en especial, los numerales 21 y 27, del Decreto 2324  de  1984, sobre la jurisdicción, regulación, autorización y control de
 
 concesiones y permisos en playas, así como la competencia de la Dirección General Marítima  -DIMAR  para  adelantar  y  fallar  las  investigaciones  por  construcciones indebidas o no autorizadas en los bienes de uso público y terrenos sometidos a su jurisdicción.
 
@@ -291,15 +291,15 @@ precisar que de acuerdo con la Ley reguladora de la acción popular, la misma se
 
 . La Nación -Ministerio de Defensa Nacional -Dirección General Marítima DIMAR presentó recurso de apelación contra  la  sentencia  proferida,  en  primera instancia, el cual fundamentó en la falta de competencia de la autoridad marítima nacional para ejecutar acciones tendientes a la restitución física de los bienes de uso público, competencia que a juicio del apoderado judicial de la entidad, está en cabeza exclusivamente del Municipio de Coveñas, a través del Alcalde y, que en todo caso, la Capitanía de Puerto de Coveñas informó al Municipio la existencia de construcciones denominadas kioscos en los que se realizan actividades comerciales en el sector conocido como Boca de la Ciénaga de la Caimanera, en playas de ese Municipio.
 
-58. La  Sala  procederá  a  apreciar  y  valorar  todas  las  pruebas  decretadas  y aportadas, en primera instancia, de conformidad con las reglas de la sana crítica y en los términos del artículo 176 de la Ley 1564, aplicando para ello las reglas de la lógica  y  la  certeza  que  sobre  determinados  hechos  se  requiere  para  efectos  de decidir  lo  que  en  derecho  corresponda,  en  relación  con  los  problemas  jurídicos planteados en el recurso de apelación interpuesto contra la sentencia proferida, en primera instancia, el de abril de 2018.
+58. La  Sala  procederá  a  apreciar  y  valorar  todas  las  pruebas  decretadas  y aportadas, en primera instancia, de conformidad con las reglas de la sana crítica y en los términos del artículo 176 de la Ley 1564, aplicando para ello las reglas de la lógica  y  la  certeza  que  sobre  determinados  hechos  se  requiere  para  efectos  de decidir  lo  que  en  derecho  corresponda,  en  relación  con  los  problemas  jurídicos planteados en el recurso de apelación interpuesto contra la sentencia proferida, en primera instancia, el 9 de abril de 2018.
 
 ## Respecto del análisis del material probatorio obrante en el expediente
 
-59. Obra  en  el  expediente  copia  del  documento  identificado  con  número 19201300594 MD-DIMAR-CP-ALTIMA de de mayo de 2013, suscrito por el Capitán de Puerto de Coveñas y dirigido al Alcalde Municipal de Coveñas, en el que se manifestó lo siguiente :
+59. Obra  en  el  expediente  copia  del  documento  identificado  con  número 19201300594 MD-DIMAR-CP-ALTIMA de 23 de mayo de 2013, suscrito por el Capitán de Puerto de Coveñas y dirigido al Alcalde Municipal de Coveñas, en el que se manifestó lo siguiente :
 
-'[…] [C]on  toda  atención  me  dirijo  al  señor  Alcalde  Municipal  de Coveñas, con el fin de comunicarle que teniendo en cuenta el compromiso adquirido en la reunión de consejo Seguridad llevada a cabo el día de enero del presente año en las instalaciones de ese despacho, la cual está relacionada con la realización de un censo de los kioscos que se encuentran construidos sin permiso de las autoridades competentes sobre la playa marítima en la jurisdicción  del  municipio  de  Coveñas,  me  permito  hacer  la  siguiente relación de los kioscos que fueron inspeccionados por el personal técnico del área de litorales de esta Capitanía de Puerto en las zonas No, 2, 3, 4, en el sector de la Boca de la Ciénaga hasta Puerto Viejo del municipio de Coveñas, detallados así:
+'[…] [C]on  toda  atención  me  dirijo  al  señor  Alcalde  Municipal  de Coveñas, con el fin de comunicarle que teniendo en cuenta el compromiso adquirido en la reunión de consejo Seguridad llevada a cabo el día 10 de enero del presente año en las instalaciones de ese despacho, la cual está relacionada con la realización de un censo de los kioscos que se encuentran construidos sin permiso de las autoridades competentes sobre la playa marítima en la jurisdicción  del  municipio  de  Coveñas,  me  permito  hacer  la  siguiente relación de los kioscos que fueron inspeccionados por el personal técnico del área de litorales de esta Capitanía de Puerto en las zonas No, 2, 3, 4, en el sector de la Boca de la Ciénaga hasta Puerto Viejo del municipio de Coveñas, detallados así:
 
-Acuerdo (sic) a lo anterior, en el sector La Martha se encontraron 306 kioscos; en complemento a esto anteriormente se había llevado a cabo el censo en el sector  de  la  segunda  ensenada,  lo  cual  fue  informado  con  oficio  No. 19201300328  del  de  abril  de  2013,  mediante  el  cual  se  reportaron  520
+Acuerdo (sic) a lo anterior, en el sector La Martha se encontraron 306 kioscos; en complemento a esto anteriormente se había llevado a cabo el censo en el sector  de  la  segunda  ensenada,  lo  cual  fue  informado  con  oficio  No. 19201300328  del  3 de  abril  de  2013,  mediante  el  cual  se  reportaron  520
 
 33 Cfr. Índice del Sistema de Gestión Judicial, SAMAI. Archivo denominado: RECIBEPRUEBAS\_70001233300020160032(.zip) NroActua. 001CuadernoPrincipal, folio 65 y siguientes.
 
@@ -307,9 +307,9 @@ kioscos, para un total actual de 826 kioscos censados en los dos sectores mencio
 
 Igualmente,  de  la  información  obtenida  en  campo  se  pudo  verificar  que ninguna  de  las  personas  que  aparecen  como  presuntos  propietarios  de  los kioscos, tienen permiso de las autoridades competentes, motivo por el cual y con fundamento en lo dispuesto en el artículo 132 del Código Nacional de Policía que establece: "Cuando se trate de la Restitución de bienes de uso público, como vías urbanas o rurales, los alcaldes, una vez establecido por los medios que estén a su  alcance, el carácter de uso público de la zona o vía ocupada, procederán . a dictar la correspondiente restitución que deberá cumplirse en un plazo no mayor de treinta días= (cursiva fuera de texto), esta  Capitanía  de  Puerto  se  permite  solicitar  a  su  Despacho    se ordenen las acciones  policivas  pertinentes  para  evitar  la  proliferación  de este  tipo  de  construcciones,  así  como  también  la  restitución  de  las  áreas intervenidas  por  particulares  en  la  zona  antes  mencionada,  toda  vez  que  se considera  en  su  totalidad  un  bien  de  uso  público  constituido  por  playa marítima […]=. (Destacado fuera del texto).
 
-60. Copia  del  documento  identificado  con  número  19201600618  MD-DIMARCP-ARAP de de mayo de 2016 suscrito por el Capitán de Puerto de Coveñas y dirigido al actor popular en el que se indicó :
+60. Copia  del  documento  identificado  con  número  19201600618  MD-DIMARCP-ARAP de 13 de mayo de 2016 suscrito por el Capitán de Puerto de Coveñas y dirigido al actor popular en el que se indicó :
 
-&lt; En  relación  a  su  comunicado  del  de  mayo  de  2016,  radicada  bajo  el  No. 192016101357,  mediante  la  cual  solicita  información  si  los  señores  INGRID PARDO GARCIA, CARMEN TERESA MURILLO GARCIA,GILDARDO ZULUAGA y  GUILLERMO  GARRIDO,  tienen  permiso  especial  o  licencia  de  construcción expedida por ese despacho, que les permita ocupar y explotar comercialmente las playas de uso público correspondientes al primero y segundo  espolón del sector Norte  del  Puente  de  la  ciénaga  de  la  Caimanera,  situados  en  las  siguientes coordenadas geográficas: N 9° 2 6= 14.86" - W 75° 3 7= 36.90", el primero y N 90° 26 = 14.86" W 75° 3 7= 41.53".
+&lt; En  relación  a  su  comunicado  del  03 de  mayo  de  2016,  radicada  bajo  el  No. 192016101357,  mediante  la  cual  solicita  información  si  los  señores  INGRID PARDO GARCIA, CARMEN TERESA MURILLO GARCIA,GILDARDO ZULUAGA y  GUILLERMO  GARRIDO,  tienen  permiso  especial  o  licencia  de  construcción expedida por ese despacho, que les permita ocupar y explotar comercialmente las playas de uso público correspondientes al primero y segundo  espolón del sector Norte  del  Puente  de  la  ciénaga  de  la  Caimanera,  situados  en  las  siguientes coordenadas geográficas: N 9° 2 6= 14.86" - W 75° 3 7= 36.90", el primero y N 90° 26 = 14.86" W 75° 3 7= 41.53".
 
 Me permito informar que atendiendo a las coordenadas proporcionadas en el presente  escrito,  se  pudo  verificar  a  través  del  Área  de  Litorales  de  esta Capitanía de Puerto, que las anteriores personas no poseen a la fecha solicitud de concesión, así corno tampoco concesión en firme emitida por la Dirección General Marítima, que les permita la ocupación y/o construcción sobre dichos terrenos,  así  mismo  se  deja  constancia  al  peticionario  que las  Licencias  de Construcción, a la cual usted hace referencia en su escrito no son emitidas por esta Autoridad Administrativa .
 
@@ -325,10 +325,10 @@ Por lo tanto, le corresponde a la Alcaldía Municipal, en cabeza del Alcalde com
 
 De conformidad con el artículo 124 del Decreto ley 1355 de 1970, en armonía con el artículo 121 de la Constitución Política, a las autoridades públicas con funciones de policía, les corresponde "de manera especial' actuar siempre que se atente contra la integridad de un bien de uso público; los gobernadores y los alcaldes son autoridades de policía pero en su respectiva entidad territorial; como respecto de  los  bienes  de  uso  público  bajo  jurisdicción  de  la  autoridad  marítima,  la  ley  ha conferido a ésta una  competencia  propia  y específica, la actuación de los gobernadores y de los alcaldes está referida a la suspensión de las construcciones en los  términos  del  Decreto  ley  1355  de  1970,  como  medida  de  prevención,  debiendo inmediatamente informar a DIMAR para que adelante y falle la investigación que le compete y tome las medidas que correspondan en cuanto a la obra y el material utilizado.
 
-Finalmente y concordancia con lo antes mencionado nos permitimos informarle que  para  el  año  2013,  este  despacho  en  cumplimiento  de  las  facultades otorgadas  a  esta  Autoridad,  realizó  inspección  de  los  litorales  evidenciado ocupaciones de material no permanente, descritos como kioscos ocupando las  zonas  de  playa  marítima  del  Municipio  de  Coveñas  incluidos  los relacionados  en  su  solicitud,  acuerdo  al  oficio  No.  1919201300594,  MDDIMAR-CP-ALITMA con fecha de mayo de 2013, y en el cual se le solicitó a la  alcaldía  Municipal  de  Coveñas  representada  por  el  Alcalde,  como  Máxima Autoridad Policiva y competente Restituir Material y Físicamente los bienes de uso público de la Nación descritos en el mencionado oficio […]=. (Destacado fuera del texto).
+Finalmente y concordancia con lo antes mencionado nos permitimos informarle que  para  el  año  2013,  este  despacho  en  cumplimiento  de  las  facultades otorgadas  a  esta  Autoridad,  realizó  inspección  de  los  litorales  evidenciado ocupaciones de material no permanente, descritos como kioscos ocupando las  zonas  de  playa  marítima  del  Municipio  de  Coveñas  incluidos  los relacionados  en  su  solicitud,  acuerdo  al  oficio  No.  1919201300594,  MD-DIMAR-CP09-ALITMA con fecha 23 de mayo de 2013, y en el cual se le solicitó a la  alcaldía  Municipal  de  Coveñas  representada  por  el  Alcalde,  como  Máxima Autoridad Policiva y competente Restituir Material y Físicamente los bienes de uso público de la Nación descritos en el mencionado oficio […]=. (Destacado fuera del texto).
 
-61. Copia del documento identificado con número 19201600625 de de mayo de  2016  suscrito  por  el  Capitán  de  Puerto  de  Coveñas,  en  el  que  responde  un derecho de petición presentado por el actor popular de la siguiente manera :
-2. &lt;[…] [ E]n respuesta a su solicitud con fecha de mayo de 2016, radicada bajo el No. 192016101357 del de mayo de 2016, mediante la cual solicita se informe:
+61. Copia del documento identificado con número 19201600625 de 16 de mayo de  2016  suscrito  por  el  Capitán  de  Puerto  de  Coveñas,  en  el  que  responde  un derecho de petición presentado por el actor popular de la siguiente manera :
+2. &lt;[…] [ E]n respuesta a su solicitud con fecha 02 de mayo de 2016, radicada bajo el No. 192016101357 del 3 de mayo de 2016, mediante la cual solicita se informe:
 3. &lt;[…] si las personas que a continuación relaciono o cualquier otra, tienen permiso especial  o  licencia  de  construcción  expedida  por  ese  despacho,  que  les  permita ocupar  y  explotar  comercialmente  las  playas  de  uso  público  correspondientes  al primero y segundo espolón del sector Norte del Puente de la ciénaga de la Caimanera, situados en las siguientes coordenadas geográficas: N 9° 26 = 14.86"W 75° 37 = 36,90", el primero y N 90° 26 = 14.86" - W 75 0 37 = 41.53", el segundo:
 
 INGRID PARDO GARCIA Cfr. Índice del Sistema de Gestión Judicial, SAMAI. Archivo denominado: RECIBEPRUEBAS\_70001233300020160032(.zip) NroActua. 001CuadernoPrincipal, folio y siguientes.
@@ -361,24 +361,24 @@ Por lo  tanto,  le  corresponde  a  la  Alcaldía  Municipal',  en  cabeza  del 
 
 De conformidad con el artículo 124 del Decreto ley 1355 de 1970, en armonía con el  artículo  121  de  la  Constitución  Política,  a  las  autoridades  públicas  con funciones de policía, les corresponde ''de manera especial" actuar siempre que se atente  contra  la  integridad  de  un  bien  de  uso  público;  los  gobernadores  y  los alcaldes son autoridades de policía pero en su respectiva entidad territorial; corno respecto de los bienes de uso público bajo jurisdicción de la autoridad marítima, la ley ha conferido a ésta una competencia propia y específica, la actuación de los  gobernadores  y  de  los  alcaldes  está  referida  a  la  suspensión  de  las construcciones en los términos del Decreto ley  1355 de 1970, como medida de prevención, debiendo inmediatamente informar a DIMAR para que adelante y falle la investigación que le compete y tome las medidas que correspondan en cuanto a la obra y el material utilizado.
 
-Nos permitimos informarle que para el año 2013, se realizó inspección a los kioscos que ocupan toda la zona de playa marítima del Municipio de Coveñas incluidos los relacionados en su solicitud. Acuerdo al oficio No. 19.19201300594  MD-DIMAR-CP-ALITMA  con  fecha  de  mayo  de  2013, este despacho solicitó a la alcaldía Municipal de Coveñas representada por el Alcalde, como Máxima Autoridad Policiva y competente Restituir Material y  Físicamente  los  bienes  de  uso  público  de  la  Nación  descritos  en  el mencionado oficio […]=. (Destacado fuera del texto).
+Nos permitimos informarle que para el año 2013, se realizó inspección a los kioscos que ocupan toda la zona de playa marítima del Municipio de Coveñas incluidos los relacionados en su solicitud. Acuerdo al oficio No. 19.19201300594  MD-DIMAR-CP09-ALITMA  con  fecha  23 de  mayo  de  2013, este despacho solicitó a la alcaldía Municipal de Coveñas representada por el Alcalde, como Máxima Autoridad Policiva y competente Restituir Material y  Físicamente  los  bienes  de  uso  público  de  la  Nación  descritos  en  el mencionado oficio […]=. (Destacado fuera del texto).
 
-62. Copia  del  documento  identificado  con  número  19201501343  de  de noviembre de 2015  suscrito por el Encargado de las Funciones del Capitán de Puerto de Coveñas y dirigido al Alcalde Municipal de Coveñas en el que solicita &lt; […] ordenar las acciones policivas pertinentes para evitar la proliferación de este tipo de ocupaciones, así como también la restitución de los bienes de uso público de la Nación intervenidos por particulares en el sector antes mencionado […] = .
-63. Copia del Concepto Técnico núm. CT-13-A-CP-ALIT-613 de de julio de 2017 elaborado por el Inspector de Litorales y el responsable del Área de Litorales y Áreas Marinas de la Capitanía de Puerto de Coveñas, el cual tiene por asunto: &lt;Concepto  técnico  sobre  ocupación  de  un  lote  de terreno  con  características técnicas de playa marítima ocupado presuntamente por los señores Ingrid Pardo Cfr. Índice del Sistema de Gestión Judicial, SAMAI. Archivo denominado: RECIBEPRUEBAS\_70001233300020160032(.zip) NroActua. 001CuadernoPrincipal, folio 232 y siguientes.
+62. Copia  del  documento  identificado  con  número  19201501343  de  13 de noviembre de 2015  suscrito por el Encargado de las Funciones del Capitán de Puerto de Coveñas y dirigido al Alcalde Municipal de Coveñas en el que solicita &lt; […] ordenar las acciones policivas pertinentes para evitar la proliferación de este tipo de ocupaciones, así como también la restitución de los bienes de uso público de la Nación intervenidos por particulares en el sector antes mencionado […] = .
+63. Copia del Concepto Técnico núm. CT-13-A-CP09-ALIT-613 de 21 de julio de 2017 elaborado por el Inspector de Litorales y el responsable del Área de Litorales y Áreas Marinas de la Capitanía de Puerto de Coveñas, el cual tiene por asunto: &lt;Concepto  técnico  sobre  ocupación  de  un  lote  de terreno  con  características técnicas de playa marítima ocupado presuntamente por los señores Ingrid Pardo Cfr. Índice del Sistema de Gestión Judicial, SAMAI. Archivo denominado: RECIBEPRUEBAS\_70001233300020160032(.zip) NroActua. 001CuadernoPrincipal, folio 232 y siguientes.
 
 García, Carmen Teresa Murillo García, Gildardo Zuluaga y Guillermo Garrido en el segundo espolón del sector de la Boca de la Ciénaga de la Caimanera, Municipio de Coveñas, Sucre=, en el que se indicó lo siguiente:
 
-- &lt;[…]  [ E]n  el  momento  de  la  inspección,  realizada  el  día  de  julio  de  2017,  se encuentra  que  el  sector  de  playa  se  ha  restituido  aparentemente  de  manera voluntaria, observando que la mayoría de los kioscos que se encontraban hacia la base del espolón así como demás ocupaciones que se encontraban en este sector, ya no están ocupando dicha área, quedando únicamente kioscos tipo parasol en madera y palma de aproximadamente tres (03) metros de diámetro cada uno (7.07 m2) para un total de (35,35 m2) y un Kiosco de aproximadamente siete metros  por  cinco  metros  (35  m2),  que  al  parecer  según  la  información recolectada en campo fueron instalados por el señor Gildardo Zuluaga .
+- &lt;[…]  [ E]n  el  momento  de  la  inspección,  realizada  el  día  13 de  julio  de  2017,  se encuentra  que  el  sector  de  playa  se  ha  restituido  aparentemente  de  manera voluntaria, observando que la mayoría de los kioscos que se encontraban hacia la base del espolón así como demás ocupaciones que se encontraban en este sector, ya no están ocupando dicha área, quedando únicamente kioscos tipo parasol en madera y palma de aproximadamente tres (03) metros de diámetro cada uno (7.07 m2) para un total de (35,35 m2) y un Kiosco de aproximadamente siete metros  por  cinco  metros  (35  m2),  que  al  parecer  según  la  información recolectada en campo fueron instalados por el señor Gildardo Zuluaga .
 
 ## 5. OTROS ASPECTOS RELEVANTES A CONSIDERAR
 
 - 5.1 La identificación del terreno y las ocupaciones encontradas es tal y como quedó establecido en los numerales y 4 del presente concepto.
 - 5.2 Acuerdo (sic) a la inspección realizada, las coordenadas tomadas en la inspección y  al  estudio  realizado,  la  ocupación  comprende  un  área total  de  Mil  cuatrocientos noventa  y  nueve  coma  ochenta  y  tres  metros  cuadrados  (1499,83  m2),  las construcciones un área total de setenta coma treinta y cinco metros cuadrados (70,35 m2) ubicados  sobre  un  terreno  que  tiene  características  técnicas  de  playa marítima , de acuerdo con lo descrito en el artículo 167 del Decreto Ley 2324 de 1984.
-- 5.3 Se anexa registro fotográfico de la situación actual del sector objeto de ocupación, inspección realizada el de julio de 2017,
+- 5.3 Se anexa registro fotográfico de la situación actual del sector objeto de ocupación, inspección realizada el 13 de julio de 2017,
 
 ## 6. CONCEPTO
 
-Teniendo  en  cuenta  la  inspección  in  situ  realizada  por  funcionarios  del  Área  de Litorales de esta Capitanía de Puerto el día de julio de 2017, las coordenadas tomadas y los estudios realizados al área ocupada presuntamente por los señores Ingrid  Pardo García, Carmen Teresa Murillo García, Gildardo Zuluaga y Guillermo Garrido en el segundo espolón al norte del sector de la Boca de la Ciénaga de la Caimanera, municipio de Coveñas, Sucre, el Área de Litorales se permite manifestar lo siguiente:
+Teniendo  en  cuenta  la  inspección  in  situ  realizada  por  funcionarios  del  Área  de Litorales de esta Capitanía de Puerto el día 13 de julio de 2017, las coordenadas tomadas y los estudios realizados al área ocupada presuntamente por los señores Ingrid  Pardo García, Carmen Teresa Murillo García, Gildardo Zuluaga y Guillermo Garrido en el segundo espolón al norte del sector de la Boca de la Ciénaga de la Caimanera, municipio de Coveñas, Sucre, el Área de Litorales se permite manifestar lo siguiente:
 
 - 6.1 El área descrita en el numeral 3 del presente concepto, está comprendida por un total de mil cuatrocientos noventa y nueve coma ochenta y tres metros cuadrados (1499,83 m2) ubicados sobre un terreno que tiene características técnicas de playa marítima bienes de uso público de la Nación bajo la jurisdicción de la Dirección  General  Marítima, de  acuerdo  con  lo  descrito  en  el  artículo  167  del Decreto Ley 2324 de 1984.
 - 6.2 Las construcciones relacionadas en el numeral 4, las cuales se encuentran dentro del predio en mención comprenden un área total de setenta coma treinta y cinco metros cuadrados (70,35 m2).
@@ -391,7 +391,7 @@ Teniendo  en  cuenta  la  inspección  in  situ  realizada  por  funcionarios  d
 
 DIMAR y el Municipio de Coveñas, toda vez que la primera de las entidades contestó las peticiones elevadas por el actor popular y allegó informe técnico decretado por el Tribunal en el trámite de la audiencia de pacto de cumplimiento, en el que informó sobre la situación de invasión del espacio público en la playa y la comunicación del asunto a la Alcaldía de Coveñas.
 
-- 64.3. Se concluye que existe vulneración del derecho colectivo al goce del espacio público y a la utilización y defensa de los bienes de uso público de acuerdo con el informe técnico elaborado por el Inspector de Litorales y el responsable del Área de Litorales y Áreas Marinas de la Capitanía de Puerto de Coveñas el día de julio de 2017, en el que se informó sobre la existencia de construcciones  tipo kiosco parasol en un terreno que tiene características técnicas de playa marítima  y, en consecuencia, de bien de uso público de la Nación, sin que existan permisos y/o autorizaciones expedidas por parte de la autoridad competente.
+- 64.3. Se concluye que existe vulneración del derecho colectivo al goce del espacio público y a la utilización y defensa de los bienes de uso público de acuerdo con el informe técnico elaborado por el Inspector de Litorales y el responsable del Área de Litorales y Áreas Marinas de la Capitanía de Puerto de Coveñas el día 21 de julio de 2017, en el que se informó sobre la existencia de construcciones  tipo kiosco parasol en un terreno que tiene características técnicas de playa marítima  y, en consecuencia, de bien de uso público de la Nación, sin que existan permisos y/o autorizaciones expedidas por parte de la autoridad competente.
 
 ## Solución a los problemas jurídicos
 
@@ -461,7 +461,7 @@ la Dirección General Marítima
 
 DIMAR; y el Agente del Ministerio Público delegado
 
-74. La Sala considera que debe modificarse la parte resolutiva de la sentencia proferida  el  de  abril  de  2018  por  la  Sala  Tercera  de  Decisión  del  Tribunal Administrativo  de  Sucre  en  lo  relacionado  con  la  conformación  del  Comité  de Verificación  de  cumplimiento en el sentido de precisar que  el  Magistrado Sustanciador  del  Tribunal  deberá  presidir  el  comité  de  verificación,  tal  como  se precisará en la parte resolutiva de la sentencia.
+74. La Sala considera que debe modificarse la parte resolutiva de la sentencia proferida  el  9 de  abril  de  2018  por  la  Sala  Tercera  de  Decisión  del  Tribunal Administrativo  de  Sucre  en  lo  relacionado  con  la  conformación  del  Comité  de Verificación  de  cumplimiento en el sentido de precisar que  el  Magistrado Sustanciador  del  Tribunal  deberá  presidir  el  comité  de  verificación,  tal  como  se precisará en la parte resolutiva de la sentencia.
 
 75.
 
@@ -503,7 +503,7 @@ Administrativo,  Sección  Primera,  administrando  justicia  en  nombre  de  la
 
 ## III. RESUELVE
 
-el ordinal segundo de la sentencia proferida el de abril
+el ordinal segundo de la sentencia proferida el 9 de abril
 
 PRIMERO: MODIFICAR de 2018 por la Sala Tercera de Decisión del Tribunal Administrativo de Sucre, por las razones expuestas en la parte motiva de esta providencia, el cual quedará así:
 
@@ -535,7 +535,7 @@ En  el  evento  que  durante  la  ejecución  de  la  sentencia  se  observe  qu
 
 SEGUNDO: CONFIRMAR en lo demás la sentencia de proferida por la Sala Tercera de Decisión del Tribunal Administrativo de Sucre, por las razones expuestas en la parte motiva de esta providencia.
 
-TERCERO: REMITIR copia de la presente sentencia a la Defensoría del Pueblo, en cumplimiento de lo dispuesto en el artículo 80 de la Ley 472 de de agosto de 1998.
+TERCERO: REMITIR copia de la presente sentencia a la Defensoría del Pueblo, en cumplimiento de lo dispuesto en el artículo 80 de la Ley 472 de 5 de agosto de 1998.
 
 CUARTO: En  firme  esta  providencia, DEVOLVER el  expediente  al  Tribunal Administrativo de Sucre, dejando las correspondientes anotaciones de ley.
 

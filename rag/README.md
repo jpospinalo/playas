@@ -6,8 +6,9 @@ contiene el servicio RAG: API FastAPI + agente LangGraph + frontend Next.js +
 infraestructura ECS Fargate.
 
 Para la ingestión de documentos (PDF → Markdown → chunks enriquecidos →
-ChromaDB) ver `../ingesta/`. Ambos son proyectos `uv`/`bun` independientes;
-ver el `CLAUDE.md` en la raíz del repositorio para el mapa completo.
+ChromaDB) ver [`../ingesta/README.md`](../ingesta/README.md). Son proyectos
+Python `uv` independientes; Bun se utiliza únicamente en el frontend del
+workspace RAG. Ver el [`README.md` raíz](../README.md) para el mapa completo.
 
 ---
 

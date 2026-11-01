@@ -52,7 +52,7 @@ PARÁGRAFO 2: No obstante lo establecido en el Parágrafo anterior, la Alcaldía
 
 uso de lo ofrecido, en atención a las disposiciones de prevención y atención de desastres, por motivos de higiene, sanidad y salubridad pública y por razones medioambientales.
 
-ARTÍCULO 3. Área de Playa Autorizada: Determinese como área de playa autorizada para efectos del arrendamiento de sillas, aquella comprendida linealmente entre las Calle y 10 del Balneario El Rodadero, perímetro el cual será delimitado mediante vallas. De igual manera el horario establecido para la prestación del servicio de sillas será, en este caso (uso nocturno), a partir de las:00 Horas hasta las:30 Horas; de conformidad con lo consagrado en el Parágrafo del Artículo 17° del presente Decreto.
+ARTÍCULO 3. Área de Playa Autorizada: Determinese como área de playa autorizada para efectos del arrendamiento de sillas, aquella comprendida linealmente entre las Calle 8 y 10 del Balneario El Rodadero, perímetro el cual será delimitado mediante vallas. De igual manera el horario establecido para la prestación del servicio de sillas será, en este caso (uso nocturno), a partir de las 17:00 Horas hasta las 22:30 Horas; de conformidad con lo consagrado en el Parágrafo del Artículo 17° del presente Decreto.
 
 ARTÍCULO 4. Número de Sillas Autorizadas: Determínese el número de sillas permitidas por las personas que prestan el servicio de alquiler de estos elementos en la playa del Balneario El Rodadero en cuarenta (40) sillas como máximo per cápita autorizada para dichos fines. No se admitirá arrume o acumulación de sillas sobre la playa o el camellón del Rodadero. Los propietarios de estas sillas deberán buscar un lugar adecuado donde sean almacenadas cuando no se encuentren en uso. Además, no se permitirá que personas que no tengan carné sean utilizadas para la prestación de servicios de sillas.
 
@@ -82,7 +82,7 @@ ARTÍCULO 13. Remoción de Personas Autorizadas: Que el artículo 4º del Decret
 
 ARTÍCULO 14. Dimensiones Puestos de Ventas: Cúmplase a cabalidad con el Artículo 10º del Decreto No. 182 de 2006, en razón de las dimensiones de los puestos de ventas estacionarias, el cual estipula: "El mueble a utilizar para la actividad de venta estacionaria, no deberá fijarse al suelo, estará equipado de
 
-ruedas y sus dimensiones no podrán exceder.20 cms de largo, 0.90 cms de ancho, una altura de.10 cms y un techo que no podrá sobresalir más de cms".
+ruedas y sus dimensiones no podrán exceder 1.20 cms de largo, 0.90 cms de ancho, una altura de 1.10 cms y un techo que no podrá sobresalir más de 10 cms".
 
 PARÁGRAFO: La violación a la anterior norma constituye causal de revocatoria del Carné o Permiso de vendedor informal, al tenor de lo consagrado por el Parágrafo del Artículo 4° del Decreto No. 182 de 2006.
 
@@ -90,11 +90,11 @@ ARTÍCULO 15. Suspensión Permiso: De conformidad con el Estatuto Distrital de P
 
 ARTÍCULO 16. Uso de Derivados del Petróleo: Queda prohibido el uso de cilindros o pipetas de gas, cocinol, leña, carbón o cualquier combustible derivado del petróleo, para ser utilizado como medio de combustión en el camellón y la zona de playa del Balneario El Rodadero.
 
-ARTÍCULO 17. Horario: El horario de uso de la playa del Balneario El Rodadero será a partir de las:00 Horas hasta las:30 Horas con las especificaciones que han sido señaladas en artículos anteriores del presente Decreto.
+ARTÍCULO 17. Horario: El horario de uso de la playa del Balneario El Rodadero será a partir de las 06:00 Horas hasta las 22:30 Horas con las especificaciones que han sido señaladas en artículos anteriores del presente Decreto.
 
-PARÁGRAFO 1: Entiéndase por horario diurno en zona de playa del Balneario El Rodadero, para cualquier tipo de venta informal o prestación de un servicio, aquél comprendido entre las:00 Horas y las:00 Horas. Así mismo el horario nocturno será aquel comprendido entre las:00 Horas y las:59 Horas; a excepción de la actividad dedicada al alquiler de sillas la cual será regulada por el siguiente Parágrafo.
+PARÁGRAFO 1: Entiéndase por horario diurno en zona de playa del Balneario El Rodadero, para cualquier tipo de venta informal o prestación de un servicio, aquél comprendido entre las 06:00 Horas y las 16:00 Horas. Así mismo el horario nocturno será aquel comprendido entre las 16:00 Horas y las 23:59 Horas; a excepción de la actividad dedicada al alquiler de sillas la cual será regulada por el siguiente Parágrafo.
 
-PARAGRAFO 2: De conformidad con el Artículo 3º del presente Decreto, el horario diurno aplicable a la actividad de alquiler de carpas y sillas, será el comprendido entre:00 Horas y las:00 Horas. Así mismo el horario nocturno de sillas será aquel comprendido entre las:00 Horas y las:30 Horas.
+PARAGRAFO 2: De conformidad con el Artículo 3º del presente Decreto, el horario diurno aplicable a la actividad de alquiler de carpas y sillas, será el comprendido entre 06:00 Horas y las 17:00 Horas. Así mismo el horario nocturno de sillas será aquel comprendido entre las 17:00 Horas y las 22:30 Horas.
 
 ARTÍCULO 18. Autoridades Facultadas: Están facultados para realizar el procedimiento policivo correspondiente, los Inspectores de Policía adscritos a la Secretaría de Gobierno Distrital y los miembros de la Policía Metropolitana, los cuales deberán ceñirse al manual de incautación y decomisos reglamentado en el Decreto Distrital n° 259 de 2008.
 

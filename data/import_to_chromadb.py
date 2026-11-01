@@ -6,6 +6,7 @@ Usage:
     python3 import_to_chromadb.py <file.jsonl.gz> [--host HOST] [--port PORT]
                                   [--collection NAME] [--batch-size N]
 """
+
 import argparse
 import gzip
 import json
@@ -14,7 +15,6 @@ import time
 from pathlib import Path
 
 import chromadb
-
 
 BATCH_SIZE = 100
 
@@ -25,9 +25,21 @@ def parse_args():
     parser.add_argument("--host", default=None, help="ChromaDB host (overrides manifest)")
     parser.add_argument("--port", type=int, default=None, help="ChromaDB port (overrides manifest)")
     parser.add_argument("--collection", default=None, help="Collection name (overrides manifest)")
-    parser.add_argument("--batch-size", type=int, default=BATCH_SIZE, help=f"Upsert batch size (default {BATCH_SIZE})")
-    parser.add_argument("--recreate", action="store_true", help="Delete and recreate the collection before importing")
-    return parser.parse_args()
+    parser.add_argument(
+        "--batch-size",
+        type=int,
+        default=BATCH_SIZE,
+        help=f"Upsert batch size (default {BATCH_SIZE})",
+    )
+    parser.add_argument(
+        "--recreate",
+        action="store_true",
+        help="Delete and recreate the collection before importing",
+    )
+    args = parser.parse_args()
+    if args.batch_size <= 0:
+        parser.error("--batch-size must be greater than zero")
+    return args
 
 
 def load_records(path: Path):
@@ -115,15 +127,21 @@ def main():
             imported += len(batch)
         except Exception as e:
             errors += len(batch)
-            print(f"  ERROR on batch {i}–{i+len(batch)}: {e}", file=sys.stderr)
+            print(f"  ERROR on batch {i}–{i + len(batch)}: {e}", file=sys.stderr)
 
         pct = imported / total * 100
         elapsed = time.time() - start
         rate = imported / elapsed if elapsed > 0 else 0
-        print(f"\r  {imported}/{total} ({pct:.1f}%)  {rate:.0f} docs/s  errors={errors}", end="", flush=True)
+        print(
+            f"\r  {imported}/{total} ({pct:.1f}%)  {rate:.0f} docs/s  errors={errors}",
+            end="",
+            flush=True,
+        )
 
-    print(f"\n\nDone. {imported} imported, {errors} errors in {time.time()-start:.1f}s")
+    print(f"\n\nDone. {imported} imported, {errors} errors in {time.time() - start:.1f}s")
     print(f"Collection '{collection_name}' now has {collection.count()} documents.")
+    if errors:
+        sys.exit(1)
 
 
 if __name__ == "__main__":
