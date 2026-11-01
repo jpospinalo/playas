@@ -242,7 +242,7 @@ Comprobado el 2026-10-28 con ChromaDB y Ollama locales:
 
 Corrida del 2026-11-01 sobre el ChromaDB y el Ollama de AWS, para dejar lista la evaluación en la misma infraestructura de la corrida anterior. Sin una key de OpenAI válida no se pudo usar gpt-5-nano, así que se usó **Claude Sonnet 5.5 como generador y Claude Haiku 5.5 como juez**. La línea base vigente sigue siendo la de gpt-5-nano de arriba.
 
-**Las notas del juez no son comparables con la línea base**, porque cambian a la vez el generador y el juez, y no se separó el efecto de cada uno. Este juez fue mucho más severo en el piloto y en la corrida completa; los números de abajo no indican que ATLAS haya empeorado.
+**Las notas del juez no son comparables con la línea base**, porque cambian a la vez el generador y el juez, y no se separó el efecto de cada uno. Las notas bajan mucho y es probable que pese el cambio de juez, pero no está medido; los números de abajo no indican que ATLAS haya empeorado.
 
 | Indicador | Prueba con Claude en AWS |
 |---|---|
