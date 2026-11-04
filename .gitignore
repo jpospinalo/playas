@@ -98,3 +98,14 @@ _claude_sync/
 # 16) Binarios de terceros descargados (instaladores, plugins) — no deben versionarse
 *.deb
 session-manager-plugin.deb
+
+# Entrega lógica Gold: selección explícita, fuera de data/*.jsonl.gz.
+!data/chroma-releases/
+data/chroma-releases/*
+!data/chroma-releases/gold-a-769a847f096b/
+data/chroma-releases/gold-a-769a847f096b/*
+!data/chroma-releases/gold-a-769a847f096b/GOLD_A.jsonl.gz
+!data/chroma-releases/gold-a-769a847f096b/PROCEDENCIA_GOLD_A.json
+!data/chroma-releases/gold-a-769a847f096b/manifest.json
+!data/chroma-releases/gold-a-769a847f096b/README.md
+!data/chroma-releases/gold-a-769a847f096b/verificar_paquete.py

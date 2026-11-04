@@ -1,0 +1,139 @@
+{
+  "content": {
+    "Gold_P1_sha256": "d82aa5ca047aa993bface1121de239e3fbf8fda637c4a1c6dbe2dcf53ab4de1f",
+    "dimension": 768,
+    "doc_types": {
+      "jurisprudencia": 4404,
+      "normativa": 1458
+    },
+    "duplicate_vector_pairs_preserved": 3,
+    "metadata_contract": "Adaptación exacta P1: keywords_str derivado, None omitidos y listas/objetos como JSON strings; Gold original permanece intacto.",
+    "payload_manifest": {
+      "Chroma_operations": false,
+      "HEAD": "c642d097329bdb9904bb5b70d2e36a7e1cab8c77",
+      "cache_sha256": "78e05e2e05b69915d3bf9c27a135182c0ae8f04239352651a825949d191b8095",
+      "collection": "rag_playas_gold_d82aa5ca047a_a",
+      "context_tokens": 2048,
+      "dimension": 768,
+      "distance_for_new_collection": "cosine",
+      "kind": "not_loaded",
+      "main": "23c6c5bab2e4b47dbda77f3d197ce46dab2af57a",
+      "manifest_sha256": "d82aa5ca047aa993bface1121de239e3fbf8fda637c4a1c6dbe2dcf53ab4de1f",
+      "model": "embeddinggemma:latest",
+      "model_blob_sha256": "0800cbac9c2064dde519420e75e512a83cb360de3ad5df176185dc69652fc515",
+      "model_digest": "85462619ee721b466c5927d109d4cb765861907d5417b9109caebc4e614679f1",
+      "new_A": 5798,
+      "ollama_version": "0.40.13",
+      "recipe_source_sha256": "ce71bedba019d7cd54952a22fb2973fc462924f6549baec808c6f059ea531739",
+      "records": 5862,
+      "reused_A": 64,
+      "runtime_arguments": {
+        "batch": 2048,
+        "ctx_total": 2048,
+        "microbatch": 2048,
+        "parallel": 1
+      },
+      "schema_version": 1,
+      "source_commit": "23c6c5bab2e4b47dbda77f3d197ce46dab2af57a"
+    },
+    "records": 5862,
+    "unique_vectors": 5859
+  },
+  "created_at_utc": "2026-11-04T13:21:00.053474+00:00",
+  "embedding": {
+    "generation_context_tokens": 2048,
+    "generation_ollama_version": "0.40.13",
+    "input_transport_readback_hashes_are_distinct": true,
+    "model": "embeddinggemma:latest",
+    "model_blob_sha256": "0800cbac9c2064dde519420e75e512a83cb360de3ad5df176185dc69652fc515",
+    "model_digest": "85462619ee721b466c5927d109d4cb765861907d5417b9109caebc4e614679f1",
+    "recipe_source_sha256": "ce71bedba019d7cd54952a22fb2973fc462924f6549baec808c6f059ea531739",
+    "transport": "IEEE754_float32_little_endian_Base64",
+    "vector_input": "original_generation_vectors"
+  },
+  "evidence": {
+    "active_preservation_method": "59 canonical response page hashes equal P1; composite nontransactional read",
+    "full_forensic_chain_included": false,
+    "generation_closure_sha256": "b908a37058d50eec2e4270cac777ba47c46f2563536bd0b8a404bbe653a8e94b",
+    "generation_package_closure_sha256": "a471709dfe781ae24073d6a2644762331eeecf4c31a057c7cfc93ebadd81cf21",
+    "import_closed_at_utc": "2026-11-03T02:51:05.955597+00:00",
+    "import_closure_sha256": "4b6d174fd44cb04af80c67cecea78c195671e770538e972fd6af73d8ead08d32",
+    "not_a_physical_or_live_collection_export": true,
+    "prior_import_status": "CANDIDATA_VERIFICADA_NO_ACTIVA",
+    "query_traceability_limit": "Two successful technical query controls evidenced by sealed code flow and response hashes; detailed returnedIDs/distances were not checkpointed before the original stop and are not fabricated or rerun."
+  },
+  "files": {
+    "GOLD_A.jsonl.gz": {
+      "bytes": 45682839,
+      "preparation_mode": 384,
+      "sha256": "769a847f096bba8a5a7269c34ddc780ca7dc35d170fde128b871fda019ebe6c8"
+    },
+    "PROCEDENCIA_GOLD_A.json": {
+      "bytes": 4432548,
+      "preparation_mode": 384,
+      "sha256": "f9ec241ca9b537241ab209cc3b6ba5c11fd7adaadd845865b5601f3057a28149"
+    },
+    "README.md": {
+      "bytes": 3469,
+      "preparation_mode": 384,
+      "sha256": "2d8313aa814a12c59054854eafa28d9bbe267275c758deaf52dabdca4b28ea0d"
+    },
+    "verificar_paquete.py": {
+      "bytes": 11854,
+      "preparation_mode": 384,
+      "sha256": "c979b357cde176f40f8be9cddef4850de40e0c991c213a29698bc0efe8fe2162"
+    }
+  },
+  "historical_collection_observations": {
+    "active": {
+      "id": "13a575ef-d02f-49de-9a2d-4d2ab82e13c8",
+      "name": "rag_playas",
+      "records": 5888
+    },
+    "candidate": {
+      "id": "c587d892-5404-44a6-9eca-5ebdc0439979",
+      "name": "rag_playas_gold_d82aa5ca047a_a",
+      "records": 5862
+    },
+    "database": "default_database",
+    "observed_at_utc": "2026-11-03T02:51:05.955597+00:00",
+    "tenant": "default_tenant",
+    "use_as_restore_defaults": false
+  },
+  "index": {
+    "ef_construction": 100,
+    "ef_search": 100,
+    "max_neighbors": 16,
+    "resize_factor": 1.2,
+    "space": "cosine",
+    "sync_threshold": 1000
+  },
+  "kind": "gold_logical_input_backup",
+  "readback_contract": {
+    "architecture": "x86_64",
+    "comparison": "exact Float32 expected HNSW normalization and readback reconstruction for this captured build",
+    "comparison_tolerance": false,
+    "executor": "native Chroma local HNSW",
+    "hnsw_revision": "312991cf9e640d5ccab879906a51e7612ce6fcf1",
+    "image": "chromadb/chroma:1.3.5",
+    "image_id": "sha256:111a6bd768be19721f5b4e88567d0e1d1f5c2ab5161129e711c0a431e667b128",
+    "universal_across_builds": false
+  },
+  "schema_version": 1,
+  "source": {
+    "Gold_P1_sha256": "d82aa5ca047aa993bface1121de239e3fbf8fda637c4a1c6dbe2dcf53ab4de1f",
+    "repository_head_at_generation": "c642d097329bdb9904bb5b70d2e36a7e1cab8c77",
+    "repository_head_at_packaging": "c642d097329bdb9904bb5b70d2e36a7e1cab8c77",
+    "source_gold_commit": "23c6c5bab2e4b47dbda77f3d197ce46dab2af57a"
+  },
+  "state_at_packaging": {
+    "activation_per_last_import_receipt": false,
+    "durability_tested": false,
+    "generation_verified": true,
+    "independent_restore_tested": false,
+    "persistence_reservation": "Effective SQLite was in container overlay outside declared bind; container recreation may lose collections. Not corrected or restore-tested.",
+    "previous_import_verified": true,
+    "remote_state_rechecked_at_packaging": false
+  },
+  "version": "gold-a-769a847f096b"
+}

@@ -91,6 +91,10 @@ No forman parte de las capas documentales. Consultar
 [su operación y efectos](../ingesta/docs/SCRIPTS.md) antes de utilizarlos.
 Los dumps PostgreSQL de `backups/` son locales y no se versionan.
 
+## Respaldo lógico Gold para recuperación
+
+La [entrega versionada Gold A](chroma-releases/gold-a-769a847f096b/README.md) conserva los vectores originales y su procedencia. Su manifiesto registra el estado al empaquetar y los ensayos de recuperación pendientes. Se selecciona explícitamente: los scripts de despliegue actuales no consumen esta subcarpeta ni activan su colección.
+
 ## Ground truth
 
 El banco activo es [legal-ground-truth-v0.1.json](../rag/evaluation/data/legal-ground-truth-v0.1.json),
