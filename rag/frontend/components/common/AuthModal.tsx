@@ -56,20 +56,38 @@ interface AuthModalProps {
   dismissible?: boolean;
 }
 
+type Mode = "login" | "register";
+
 export function AuthModal({ open, onClose, dismissible = true }: AuthModalProps) {
-  const { signIn, sessionExpiredMessage } = useAuth();
+  const { signIn, signUp, sessionExpiredMessage } = useAuth();
+  const [mode, setMode] = useState<Mode>("login");
   const [email, setEmail] = useState(getLastEmail);
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [nombres, setNombres] = useState("");
+  const [apellidos, setApellidos] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   function resetForm() {
+    setMode("login");
     setEmail(getLastEmail());
     setPassword("");
+    setConfirmPassword("");
+    setNombres("");
+    setApellidos("");
     setShowPassword(false);
     setError(null);
     setSubmitting(false);
+  }
+
+  function handleModeChange(next: Mode) {
+    if (next === mode) return;
+    setMode(next);
+    setPassword("");
+    setConfirmPassword("");
+    setError(null);
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -77,9 +95,19 @@ export function AuthModal({ open, onClose, dismissible = true }: AuthModalProps)
     if (submitting) return;
     setError(null);
 
+    if (mode === "register" && password !== confirmPassword) {
+      setError("Las contraseñas no coinciden.");
+      return;
+    }
+
     setSubmitting(true);
     try {
-      await signIn(email, password);
+      if (mode === "register") {
+        const displayName = `${nombres.trim()} ${apellidos.trim()}`.trim() || null;
+        await signUp(email, password, displayName);
+      } else {
+        await signIn(email, password);
+      }
       resetForm();
       onClose();
     } catch (err: unknown) {
@@ -94,7 +122,11 @@ export function AuthModal({ open, onClose, dismissible = true }: AuthModalProps)
     onClose();
   }
 
-  const submitDisabled = submitting || !email || !password;
+  const submitDisabled =
+    submitting ||
+    !email ||
+    !password ||
+    (mode === "register" && (!confirmPassword || !nombres || !apellidos));
   // El gate obligatorio de inicio (dismissible=false) nunca debe poder
   // cerrarse (ni por Escape ni por click en el backdrop), y mientras se
   // envía el formulario tampoco: el usuario debe ver el resultado del
@@ -159,8 +191,42 @@ export function AuthModal({ open, onClose, dismissible = true }: AuthModalProps)
                 id={titleId}
                 className="text-lg font-medium text-foreground"
               >
-                Iniciar sesión
+                {mode === "login" ? "Iniciar sesión" : "Crear cuenta"}
               </h2>
+            </div>
+
+            <div
+              role="tablist"
+              className="mb-5 grid grid-cols-2 gap-1 rounded-full bg-surface p-1"
+            >
+              <button
+                type="button"
+                role="tab"
+                aria-selected={mode === "login"}
+                disabled={submitting}
+                onClick={() => handleModeChange("login")}
+                className={`rounded-full px-3 py-1.5 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-60 ${
+                  mode === "login"
+                    ? "bg-elevated text-foreground shadow"
+                    : "text-muted hover:text-foreground"
+                }`}
+              >
+                Iniciar sesión
+              </button>
+              <button
+                type="button"
+                role="tab"
+                aria-selected={mode === "register"}
+                disabled={submitting}
+                onClick={() => handleModeChange("register")}
+                className={`rounded-full px-3 py-1.5 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-60 ${
+                  mode === "register"
+                    ? "bg-elevated text-foreground shadow"
+                    : "text-muted hover:text-foreground"
+                }`}
+              >
+                Crear cuenta
+              </button>
             </div>
 
             {sessionExpiredMessage && (
@@ -173,6 +239,49 @@ export function AuthModal({ open, onClose, dismissible = true }: AuthModalProps)
             )}
 
             <form onSubmit={handleSubmit} noValidate className="space-y-3.5">
+              {mode === "register" && (
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label
+                      htmlFor="auth-nombres"
+                      className="mb-1.5 block text-xs font-medium text-muted"
+                    >
+                      Nombres
+                    </label>
+                    <input
+                      id="auth-nombres"
+                      type="text"
+                      autoComplete="given-name"
+                      required
+                      value={nombres}
+                      onChange={(e) => setNombres(e.target.value)}
+                      placeholder="Ana"
+                      className={inputClass}
+                      disabled={submitting}
+                    />
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="auth-apellidos"
+                      className="mb-1.5 block text-xs font-medium text-muted"
+                    >
+                      Apellidos
+                    </label>
+                    <input
+                      id="auth-apellidos"
+                      type="text"
+                      autoComplete="family-name"
+                      required
+                      value={apellidos}
+                      onChange={(e) => setApellidos(e.target.value)}
+                      placeholder="Gómez"
+                      className={inputClass}
+                      disabled={submitting}
+                    />
+                  </div>
+                </div>
+              )}
+
               <div>
                 <label
                   htmlFor="auth-email"
@@ -204,7 +313,7 @@ export function AuthModal({ open, onClose, dismissible = true }: AuthModalProps)
                   <input
                     id="auth-password"
                     type={showPassword ? "text" : "password"}
-                    autoComplete="current-password"
+                    autoComplete={mode === "register" ? "new-password" : "current-password"}
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
@@ -222,6 +331,28 @@ export function AuthModal({ open, onClose, dismissible = true }: AuthModalProps)
                   </button>
                 </div>
               </div>
+
+              {mode === "register" && (
+                <div>
+                  <label
+                    htmlFor="auth-confirm-password"
+                    className="mb-1.5 block text-xs font-medium text-muted"
+                  >
+                    Confirmar contraseña
+                  </label>
+                  <input
+                    id="auth-confirm-password"
+                    type={showPassword ? "text" : "password"}
+                    autoComplete="new-password"
+                    required
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder="••••••••"
+                    className={inputClass}
+                    disabled={submitting}
+                  />
+                </div>
+              )}
 
               <AnimatePresence>
                 {error && (
@@ -243,7 +374,11 @@ export function AuthModal({ open, onClose, dismissible = true }: AuthModalProps)
                 disabled={submitDisabled}
                 className="mt-2 w-full rounded-full bg-accent px-4 py-2.5 text-sm font-medium text-accent-fg transition-colors hover:bg-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-elevated disabled:cursor-not-allowed disabled:opacity-45"
               >
-                {submitting ? "Procesando…" : "Iniciar sesión"}
+                {submitting
+                  ? "Procesando…"
+                  : mode === "login"
+                    ? "Iniciar sesión"
+                    : "Crear cuenta"}
               </button>
             </form>
           </motion.div>

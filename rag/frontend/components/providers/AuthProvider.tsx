@@ -31,6 +31,7 @@ interface AuthContextValue {
 	/** Mensaje a mostrar en el login cuando la sesión se cerró por expiración, no por logout manual. */
 	sessionExpiredMessage: string | null;
 	signIn: (email: string, password: string) => Promise<void>;
+	signUp: (email: string, password: string, displayName: string | null) => Promise<void>;
 	signOut: () => Promise<void>;
 }
 
@@ -163,6 +164,41 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 		setSessionExpiredMessage(null);
 	}
 
+	async function signUp(
+		email: string,
+		password: string,
+		displayName: string | null,
+	): Promise<void> {
+		const res = await fetch(`${API_URL}/api/auth/register`, {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({ email, password, display_name: displayName }),
+			signal: withRestTimeout(),
+		});
+		if (!res.ok) {
+			throw new Error(
+				await readErrorDetail(res, "No se pudo completar el registro."),
+			);
+		}
+		const data = (await res.json()) as {
+			access_token: string;
+			user_id: string;
+			email: string;
+			display_name: string | null;
+			role: string;
+		};
+		const authUser: AuthUser = {
+			user_id: data.user_id,
+			email: data.email,
+			display_name: data.display_name,
+			role: data.role,
+		};
+		setAuth(data.access_token, authUser);
+		rememberEmail(data.email);
+		setUser(authUser);
+		setSessionExpiredMessage(null);
+	}
+
 	async function signOut(): Promise<void> {
 		clearAuth();
 		setUser(null);
@@ -177,6 +213,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 				loading,
 				sessionExpiredMessage,
 				signIn,
+				signUp,
 				signOut,
 			}}
 		>
