@@ -41,7 +41,11 @@ def load_local_records(path: Path) -> tuple[list[str], list[str], list[str], lis
     from rag.core import vectorstore
 
     original = vectorstore.read_text
-    vectorstore.read_text = lambda key: Path(key).read_text(encoding="utf-8")
+
+    def _leer_local(key: str, encoding: str = "utf-8") -> str:
+        return Path(key).read_text(encoding=encoding)
+
+    vectorstore.read_text = _leer_local
     try:
         return vectorstore.load_gold_records(str(path))
     finally:
