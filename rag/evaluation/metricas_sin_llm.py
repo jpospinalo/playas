@@ -22,6 +22,18 @@ producción; requiere ChromaDB y Ollama de embeddings, sin modelo generador):
 - ``fuga_territorial_4``: llega una norma local de un lugar que la pregunta
   no menciona (p. ej. el reglamento de Cartagena ante una pregunta general).
 
+Recuperación por la ruta real de producción (sufijo ``_multi``):
+
+El grafo no recupera con la pregunta cruda: recupera con la pregunta original
+y con la consulta enriquecida por separado y fusiona las listas (ver
+``HybridEnsembleRetriever.afuse_queries``). Medir solo la pregunta cruda deja
+fuera ese efecto, así que ``acierto_doc_4_multi``, ``mrr_doc_20_multi`` y
+``articulos_4_multi`` repiten las tres métricas centrales por esa ruta,
+reusando la ``enriched_query`` que la caché de generación ya guardó —sin
+ningún LLM—. Las métricas sin sufijo se conservan tal cual, con la pregunta
+cruda, para que la línea base versionada siga siendo comparable. Valen
+``None`` en los casos donde la caché no trae consulta enriquecida.
+
 Grafo completo (sobre una caché de ``generation_cache.py`` ya generada; no
 genera nada):
 
@@ -32,6 +44,11 @@ genera nada):
   que no están en ningún fragmento ni en la pregunta.
 - ``refs_esperadas_en_respuesta``: fracción de las referencias del equipo
   jurídico que la respuesta menciona.
+- ``fuga_plantilla``: la respuesta imprime texto de instrucción del prompt en
+  vez de contenido jurídico (``[docN]`` literal, o el arranque de la
+  descripción de una sección de ``AGENT_RESPONSE_SECTIONS``). Las frases no se
+  copian aquí: se derivan de ese diccionario, así que la métrica no puede
+  quedar desincronizada del prompt.
 
 Cada métrica global lleva un intervalo de confianza del 95 % por bootstrap con
 semilla fija, y el reporte se desglosa por tipo de pregunta, revisión y clase
@@ -48,6 +65,7 @@ Uso:
 from __future__ import annotations
 
 import argparse
+import asyncio
 import json
 import random
 import re
@@ -55,6 +73,7 @@ import unicodedata
 from collections.abc import Iterable
 from dataclasses import dataclass
 from datetime import UTC, datetime
+from itertools import dropwhile
 from pathlib import Path
 from typing import Any
 
@@ -70,27 +89,14 @@ from evaluation.retrieval_baseline import (
 )
 from evaluation.run_paths import tagged
 from rag.core.agent import _validate_citations
+from rag.core.prompts import AGENT_RESPONSE_SECTIONS
+from rag.core.territorio import LUGARES, lugar_de_norma
 
 REPORT_PATH = Path("evaluation/results/metricas-sin-llm-v0.2.json")
 BASELINE_PATH = Path("evaluation/data/linea-base-sin-llm-v0.2.json")
 
 SEMILLA = 20261028
 REPETICIONES = 2000
-
-# Lugar → palabras que lo identifican en el título de una norma o en la
-# pregunta. Solo se consideran normas locales los documentos ``normativa``.
-LUGARES: dict[str, tuple[str, ...]] = {
-    "cartagena": ("cartagena", "bocagrande", "playa blanca", "baru", "castillogrande", "boquilla"),
-    "santa marta": (
-        "santa marta",
-        "rodadero",
-        "taganga",
-        "playa cristal",
-        "tayrona",
-        "pozos colorados",
-    ),
-    "turbo": ("turbo",),
-}
 
 _NORMA_RE = re.compile(
     r"\b(ley|decreto|resolucion|acuerdo)(?:[\s-]+ley)?\s+(?:no\.?\s*)?(\d{1,5})\s+de\s+(\d{4})"
@@ -114,17 +120,27 @@ METRICAS: tuple[Metrica, ...] = (
     Metrica("articulos_4", "recuperacion", 1),
     Metrica("docs_distintos_4", "recuperacion", 0),
     Metrica("fuga_territorial_4", "recuperacion", -1),
+    Metrica("acierto_doc_4_multi", "recuperacion", 1),
+    Metrica("mrr_doc_20_multi", "recuperacion", 1),
+    Metrica("articulos_4_multi", "recuperacion", 1),
     Metrica("acierto_doc_4_grafo", "respuesta", 1),
     Metrica("articulos_4_grafo", "respuesta", 1),
     Metrica("citas_validas", "respuesta", 1),
     Metrica("respuestas_con_refs_sin_respaldo", "respuesta", -1),
     Metrica("refs_esperadas_en_respuesta", "respuesta", 1),
+    Metrica("fuga_plantilla", "respuesta", -1),
 )
 SENTIDO = {m.clave: m.sentido for m in METRICAS}
+
+# Métricas de la ruta de producción. Están siempre presentes en cada fila —con
+# valor ``None`` si no hubo consulta enriquecida— para que el reporte no
+# dependa de qué caso quedó primero.
+CLAVES_MULTI = ("acierto_doc_4_multi", "mrr_doc_20_multi", "articulos_4_multi")
 
 # Métricas que se desglosan por grupo en el reporte Markdown.
 DESGLOSE = (
     "acierto_doc_4",
+    "acierto_doc_4_multi",
     "mrr_doc_20",
     "articulos_4",
     "fuga_territorial_4",
@@ -151,13 +167,7 @@ def referencias_legales(texto: str) -> set[str]:
 
 def norma_local(fragmento: dict[str, Any]) -> str | None:
     """Lugar de una norma local, o ``None`` si no es normativa local."""
-    if fragmento.get("doc_type") != "normativa":
-        return None
-    titulo = _plano(str(fragmento.get("title", "")))
-    for lugar, palabras in LUGARES.items():
-        if any(p in titulo for p in palabras):
-            return lugar
-    return None
+    return lugar_de_norma(fragmento)
 
 
 def clase_esperada(documentos: list[str]) -> str:
@@ -167,6 +177,70 @@ def clase_esperada(documentos: list[str]) -> str:
         return "sin documento"
     clases = {"jurisprudencia" if d.startswith("AP ") else "normativa" for d in documentos}
     return clases.pop() if len(clases) == 1 else "mixta"
+
+
+# Palabras sin contenido que no sirven para reconocer una frase de instrucción.
+_VACIAS = frozenset(
+    (
+        "el",
+        "la",
+        "los",
+        "las",
+        "de",
+        "del",
+        "en",
+        "y",
+        "o",
+        "que",
+        "un",
+        "una",
+        "se",
+        "su",
+        "a",
+        "con",
+    )
+)
+
+
+def _frase_instruccion(descripcion: str) -> str:
+    """Patrón de las tres primeras palabras con contenido de ``descripcion``.
+
+    Se descartan las palabras vacías iniciales —el modelo copia la descripción
+    sin el artículo— y se conservan las intermedias para exigir que la frase
+    sea contigua. Tres palabras bastan para distinguir el texto de instrucción
+    de la prosa jurídica normal, y no tanto como para fallar ante un recorte.
+    """
+    palabras = list(dropwhile(lambda p: p in _VACIAS, re.findall(r"[a-z]+", _plano(descripcion))))
+    frase: list[str] = []
+    con_contenido = 0
+    for palabra in palabras:
+        frase.append(palabra)
+        if palabra not in _VACIAS:
+            con_contenido += 1
+        if con_contenido == 3:
+            break
+    return r"\s+".join(frase)
+
+
+_FUGAS = tuple(
+    re.compile(patron)
+    for patron in (
+        r"\[docn\]",
+        *(_frase_instruccion(d) for d in AGENT_RESPONSE_SECTIONS.values()),
+    )
+)
+
+
+def fuga_de_plantilla(respuesta: str) -> bool:
+    """``True`` si la respuesta imprime texto de instrucción del prompt.
+
+    En la línea base del corpus congelado pasaba en 10 de 66 respuestas: el
+    modelo copiaba la descripción de la sección junto al título (p. ej.
+    "Criterio principal — regla jurídica central en 2–4 oraciones con [docN]")
+    porque en el prompt el título y su descripción compartían línea.
+    """
+    plano = _plano(respuesta)
+    return any(patron.search(plano) for patron in _FUGAS)
 
 
 def _cobertura(esperadas: set[str], encontradas: set[str]) -> float | None:
@@ -220,6 +294,27 @@ def metricas_recuperacion(
     }
 
 
+def metricas_multiconsulta(
+    caso: dict[str, Any], top4: list[dict[str, Any]], titulos_20: list[str]
+) -> dict[str, Any]:
+    """Las tres métricas centrales de recuperación, pero por la ruta que corre
+    en producción: la pregunta original y la consulta enriquecida recuperadas
+    por separado y fusionadas. Las claves llevan sufijo ``_multi`` para no
+    pisar las de la pregunta cruda, que son las que compara la línea base."""
+    esperados = caso["documentos_esperados"]
+    titulos_4 = [f["title"] for f in top4]
+    posicion = first_relevant_rank(titulos_20, esperados) if esperados else None
+    return {
+        "acierto_doc_4_multi": first_relevant_rank(titulos_4, esperados) is not None
+        if esperados
+        else None,
+        "mrr_doc_20_multi": (1 / posicion if posicion else 0.0) if esperados else None,
+        "articulos_4_multi": _cobertura(
+            _refs_esperadas(caso), referencias_legales(" ".join(f["texto"] for f in top4))
+        ),
+    }
+
+
 def metricas_respuesta(
     caso: dict[str, Any],
     answer: str,
@@ -244,6 +339,7 @@ def metricas_respuesta(
         # Por caso: la respuesta tiene al menos una referencia sin respaldo.
         "respuestas_con_refs_sin_respaldo": bool(sin_respaldo),
         "refs_esperadas_en_respuesta": _cobertura(_refs_esperadas(caso), citadas),
+        "fuga_plantilla": fuga_de_plantilla(answer),
     }
 
 
@@ -267,7 +363,11 @@ def resumir(filas: list[dict[str, Any]], con_intervalo: bool = True) -> dict[str
     ignorando los casos donde no aplica (``None``)."""
     resumen: dict[str, dict[str, Any]] = {}
     for m in METRICAS:
-        if not filas or m.clave not in filas[0]:
+        # Se mira cada fila, no solo la primera: una métrica que no aplica a
+        # todos los casos (p. ej. las de la ruta de producción cuando la caché
+        # no trae consulta enriquecida) desaparecería del reporte según qué
+        # caso quedara primero.
+        if not any(m.clave in f for f in filas):
             continue
         valores = _valores(filas, m.clave)
         resumen[m.clave] = {
@@ -363,7 +463,8 @@ def linea_base(
         global_.update(datos["global"])
         for clave in datos["global"]:
             casos[clave] = {
-                f["case_id"]: None if f[clave] is None else float(f[clave]) for f in datos["casos"]
+                f["case_id"]: None if f.get(clave) is None else float(f[clave])
+                for f in datos["casos"]
             }
     return {
         "dataset": reporte["dataset"],
@@ -486,18 +587,40 @@ def _fragmentos(docs: list[Any]) -> list[dict[str, Any]]:
     ]
 
 
-def correr_recuperacion(casos: list[dict[str, Any]]) -> list[dict[str, Any]]:
+def correr_recuperacion(
+    casos: list[dict[str, Any]],
+    consultas_extra: dict[str, list[str]] | None = None,
+) -> list[dict[str, Any]]:
+    """Corre el retriever de producción sobre cada caso.
+
+    ``consultas_extra``: consultas adicionales por ``case_id`` —la
+    ``enriched_query`` que la caché de generación ya guardó—. Cuando un caso
+    trae alguna, se mide además la ruta real de producción (cada consulta
+    recuperada por separado y fusionada) y se añaden las métricas ``_multi``.
+    Sin ellas esas claves quedan en ``None``, nunca ausentes.
+    """
     from rag.core.retriever import get_ensemble_retriever, init_retrievers
 
     init_retrievers()
     prod = get_ensemble_retriever(k=PROD_K, k_candidates=PROD_K_CANDIDATES)
     deep = get_ensemble_retriever(k=DEEP_K, k_candidates=DEEP_K)
+    extra = consultas_extra or {}
     filas = []
     for caso in casos:
         top4 = _fragmentos(prod.invoke(caso["pregunta"]))
         titulos_20 = [f["title"] for f in _fragmentos(deep.invoke(caso["pregunta"]))]
-        filas.append(metricas_recuperacion(caso, top4, titulos_20))
-        print(f"{caso['id']}: acierto={filas[-1]['acierto_doc_4']}")
+        fila = metricas_recuperacion(caso, top4, titulos_20)
+        consultas = [caso["pregunta"], *extra.get(caso["id"], ())]
+        if len(consultas) > 1:
+            top4_multi = _fragmentos(asyncio.run(prod.afuse_queries(consultas)))
+            titulos_20_multi = [
+                f["title"] for f in _fragmentos(asyncio.run(deep.afuse_queries(consultas)))
+            ]
+            fila.update(metricas_multiconsulta(caso, top4_multi, titulos_20_multi))
+        else:
+            fila.update(dict.fromkeys(CLAVES_MULTI))
+        filas.append(fila)
+        print(f"{caso['id']}: acierto={fila['acierto_doc_4']} multi={fila['acierto_doc_4_multi']}")
     return filas
 
 
@@ -535,9 +658,16 @@ def main() -> int:
         "git": git_state(),
         "tag": args.tag,
     }
-    if not args.sin_recuperacion:
-        reporte["recuperacion"] = _seccion(correr_recuperacion(casos))
+    # La caché se carga antes de recuperar: de ahí salen las consultas
+    # enriquecidas con las que se mide la ruta real de producción.
     cache = load_cache(args.cache)
+    if not args.sin_recuperacion:
+        enriquecidas = {
+            r["case_id"]: [consulta]
+            for r in cache
+            if (consulta := (r.get("enriched_query") or "").strip())
+        }
+        reporte["recuperacion"] = _seccion(correr_recuperacion(casos, enriquecidas))
     if cache:
         filas_r = [
             metricas_respuesta(

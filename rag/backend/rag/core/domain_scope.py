@@ -619,11 +619,14 @@ def _apply_domain_guard(
        nunca produce ``in_scope`` en la heurística — por construcción de
        ``_has_coastal_signal()`` — así que la regla 3 nunca puede forzar
        ``in_scope`` en ese caso.
-    5. Si la heurística no tiene suficiente certeza (``needs_clarification``
-       o un ``out_of_scope`` que no proviene de una señal ajena
-       inequívoca), se conserva el análisis semántico del LLM tal cual,
-       incluyendo un ``in_scope`` del modelo para un caso ambiguo que la
-       heurística no pudo resolver por sí sola.
+    5. Si la heurística encuentra una sola señal (``needs_clarification``) y
+       el modelo dijo ``out_of_scope``, se degrada a ``needs_clarification``
+       para pedir el dato que falta en vez de cerrar la consulta.
+    6. Si la heurística no tiene suficiente certeza (``needs_clarification``
+       con un modelo que no dijo ``out_of_scope``, o un ``out_of_scope`` que no
+       proviene de una señal ajena inequívoca), se conserva el análisis
+       semántico del LLM tal cual, incluyendo un ``in_scope`` del modelo para
+       un caso ambiguo que la heurística no pudo resolver por sí sola.
     """
     heuristic = _fallback(question, history_context)
     clean_question = question.strip()
@@ -633,6 +636,29 @@ def _apply_domain_guard(
 
     if _has_unambiguous_off_topic_intent(clean_question):
         return heuristic
+
+    # Una sola señal presente (costera o jurídica, no ambas) y ninguna
+    # intención inequívocamente ajena: la pregunta es al menos plausible dentro
+    # del dominio, así que un ``out_of_scope`` del modelo se degrada a
+    # ``needs_clarification``. Rechazar con "fuera del ámbito" deja al usuario
+    # sin salida; pedirle el dato que falta le da una. Es el caso de una
+    # consulta jurídica real sin ningún marcador costero —p. ej. la vigencia de
+    # una licencia de construcción suspendida por una medida cautelar—, que el
+    # modelo etiquetaba como ajena aunque el corpus sí la cubre en contexto
+    # costero.
+    #
+    # Costo asumido: una consulta jurídica genuinamente ajena (sin señal
+    # costera y sin caer en la familia #5) recibe una petición de aclaración en
+    # vez de un rechazo. Se prefiere ese costo: la regla 2 de arriba ya protege
+    # los casos inequívocos, y pedir un dato nunca afirma nada sobre el
+    # derecho aplicable.
+    if heuristic.route == "needs_clarification" and result.route == "out_of_scope":
+        return EnrichedQuery(
+            route="needs_clarification",
+            standalone_question=result.standalone_question,
+            expanded_query=result.expanded_query,
+            doc_types=[],
+        )
 
     if heuristic.route == "in_scope" and result.route != "in_scope":
         return EnrichedQuery(

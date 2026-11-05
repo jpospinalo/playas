@@ -81,6 +81,12 @@ def _make_gated_and_fast_retrievers() -> tuple[object, asyncio.Event, asyncio.Ev
                 await release.wait()
             return [Document(page_content="fragmento", metadata={"chunk_id": "1"})]
 
+        async def afuse_queries(self, queries: list[str]) -> list[Document]:
+            docs: list[Document] = []
+            for query in queries:
+                docs.extend(await self.ainvoke(query))
+            return docs
+
     def make_retriever(**kwargs: object) -> _Retriever:
         calls["n"] += 1
         return _Retriever(gated=calls["n"] == 1)
@@ -176,6 +182,9 @@ async def test_backpressure_rejection_releases_the_conversation_lock_immediately
 class _FastRetriever:
     async def ainvoke(self, query: str) -> list[Document]:
         return [Document(page_content="fragmento", metadata={"chunk_id": "1"})]
+
+    async def afuse_queries(self, queries: list[str]) -> list[Document]:
+        return [Document(page_content="fragmento", metadata={"chunk_id": "1"}) for _ in queries]
 
 
 @pytest.mark.anyio

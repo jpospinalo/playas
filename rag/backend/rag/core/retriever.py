@@ -3,7 +3,7 @@
 
 Combina búsqueda léxica (BM25 sobre texto aumentado con keywords y resumen)
 con búsqueda semántica (embeddings de Ollama vía ChromaDB) usando Weighted
-Reciprocal Rank Fusion (RRF, c=160). Los sub-retrievers se ejecutan en
+Reciprocal Rank Fusion (RRF, c=2). Los sub-retrievers se ejecutan en
 paralelo desde una única capa de concurrencia async (``asyncio.gather`` +
 ``asyncio.to_thread`` por sub-retriever, sin ningún ``ThreadPoolExecutor``
 propio) cuando se invoca vía ``ainvoke()``; ``invoke()`` (síncrono)
@@ -28,6 +28,7 @@ from __future__ import annotations
 
 import asyncio
 import re
+from collections.abc import Sequence
 from typing import Any
 
 import chromadb
@@ -48,6 +49,8 @@ from rag.config import (
 )
 
 from .embeddings import OllamaEmbeddings
+from .territorio import plano
+from .territorio import priorizar_territorio as _priorizar_territorio
 
 # ---------------------------------------------------------------------
 # Configuración
@@ -60,6 +63,38 @@ from .embeddings import OllamaEmbeddings
 
 EMBEDDINGS = OllamaEmbeddings()
 
+# Constantes de fusión.
+#
+# Salen de la medición offline sobre el ground truth v0.2 del propio repo
+# (validación holdout de 200 particiones: 183 mejoran, 4 empeoran), no de una
+# elección arbitraria. Con c=160 cualquier candidato vectorial superaba a
+# cualquier candidato léxico y la lista final era siempre el top-4 vectorial;
+# c=2, BM25 0.6 y vector 0.4 recuperan el comportamiento híbrido y suben el
+# acierto de documento en top-4 de 0.586 a 0.690 sin degradar el MRR.
+#
+# Con el tokenizador español (ver ``_tokenize_bm25``) la señal léxica es mucho
+# más limpia y BM25 pasa a llevar la mayor parte del peso: 0.8/0.2 frente a
+# 0.6/0.4. La elección se validó con 200 particiones aleatorias por mitades
+# (ganancia en la mitad reservada de +0.022 en hit@4; 112 particiones mejor,
+# 30 peor). ``RRF_C`` se mantiene en 2.
+RRF_C = 2
+BM25_WEIGHT = 0.8
+VECTOR_WEIGHT = 0.2
+
+
+# Palabras vacías del español que no aportan señal léxica al BM25.
+_STOPWORDS_ES: frozenset[str] = frozenset(
+    """
+a al algo algun alguna algunas alguno algunos ante antes aqui asi aun cada como con
+contra cual cuales cuando de del desde donde dos e el ella ellas ello ellos en entre
+era eran es esa esas ese eso esos esta estaba estado estan estar estas este esto
+estos fue fueron ha habia han hasta hay la las le les lo los mas me mi mis mucho muy
+nada ni no nos nosotros o otra otras otro otros para pero poco por porque que quien
+se sea segun ser si sido siempre sin sobre solo son su sus tambien tan tanto te
+tiene tienen todo todos tu tus un una unas uno unos y ya yo
+""".split()
+)
+
 # ---------------------------------------------------------------------
 # Singletons de módulo — reutilizados entre requests
 # ---------------------------------------------------------------------
@@ -70,8 +105,32 @@ _bm25_base: BM25Retriever | None = None
 
 
 def _tokenize_bm25(text: str) -> list[str]:
-    """Replica el preprocesamiento histórico de BM25Retriever: ``str.split``."""
-    return text.split()
+    """Tokenizador léxico español para el índice BM25 y para las consultas.
+
+    ``str.split()`` separaba solo por espacios, así que "Playa," y "playa", o
+    "DIMAR" y "dimar", eran términos distintos y la señal léxica se perdía por
+    mayúsculas, tildes, puntuación y plurales. Aquí se normaliza con
+    ``plano`` (minúsculas y sin tildes), se extraen palabras con
+    ``\\w+``, se descartan las palabras vacías del español y los tokens de
+    una sola letra, y se reduce un plural ligero final ("playas" → "playa",
+    "concesiones" → "concesion").
+
+    Medido sobre el corpus congelado (ground truth v0.2, 66 casos) junto con
+    el cambio de pesos a BM25 0.8 / vector 0.2: hit@4 de la ruta de producción
+    0.690→0.724, MRR 0.549→0.640, artículos 0.088→0.201, normativa 5→7/18.
+    La misma función se usa para indexar y para consultar.
+    """
+    tokens = re.findall(r"\w+", plano(text))
+    resultado: list[str] = []
+    for token in tokens:
+        if token in _STOPWORDS_ES or len(token) == 1:
+            continue
+        if len(token) > 4 and token.endswith("es"):
+            token = token[:-2]
+        elif len(token) > 4 and token.endswith("s"):
+            token = token[:-1]
+        resultado.append(token)
+    return resultado
 
 
 class BM25Retriever(BaseRetriever):
@@ -363,6 +422,24 @@ def _has_retrievable_content(text: str) -> bool:
 # ---------------------------------------------------------------------
 
 
+def _diversificar_sentencias(docs: list[Document], tope: int) -> list[Document]:
+    """Partición estable: a partir del fragmento ``tope + 1`` de una misma
+    sentencia, los siguientes pasan al final (no se descartan). Solo aplica a
+    ``jurisprudencia``; las normas conservan todos sus artículos."""
+    vistos: dict[str, int] = {}
+    primeros: list[Document] = []
+    extra: list[Document] = []
+    for doc in docs:
+        meta = doc.metadata or {}
+        if meta.get("doc_type") != "jurisprudencia":
+            primeros.append(doc)
+            continue
+        clave = str(meta.get("source") or meta.get("title") or doc.page_content)
+        vistos[clave] = vistos.get(clave, 0) + 1
+        (primeros if vistos[clave] <= tope else extra).append(doc)
+    return [*primeros, *extra]
+
+
 class HybridEnsembleRetriever(BaseRetriever):
     """
     Retriever híbrido que combina varios sub-retrievers usando
@@ -381,9 +458,16 @@ class HybridEnsembleRetriever(BaseRetriever):
 
     retrievers: list[BaseRetriever]
     weights: list[float]
-    c: int = 160  # constante RRF
+    c: int = RRF_C  # constante RRF; ver RRF_C para la medición que la fija
     id_key: str | None = "chunk_id"
     max_results: int = 4
+    priorizar_territorio: bool = True
+    # Tope de fragmentos por sentencia antes del recorte (None = sin tope).
+    # Sin él, el top-4 se llenaba con cuatro fragmentos de una misma
+    # sentencia. Medido sobre el ground truth v0.2: hit@4 de producción
+    # 0.724→0.759, documento en top-20 0.793→0.828, normativa 7→8/18; cuesta
+    # artículos 0.201→0.175 (un caso). Las normas no tienen tope.
+    fragmentos_por_sentencia: int | None = 1
 
     @model_validator(mode="after")
     def _validate_retrievers_and_weights_match(self) -> HybridEnsembleRetriever:
@@ -406,19 +490,35 @@ class HybridEnsembleRetriever(BaseRetriever):
             )
         return self
 
-    def _fuse(self, all_results: list[list[Document]]) -> list[Document]:
-        """Fusión RRF ponderada, común a las rutas síncrona y asíncrona."""
-        if len(all_results) != len(self.weights):
+    def _fuse(
+        self,
+        all_results: list[list[Document]],
+        weights: Sequence[float] | None = None,
+        queries: Sequence[str] = (),
+    ) -> list[Document]:
+        """Fusión RRF ponderada, común a las rutas síncrona, asíncrona y multiconsulta.
+
+        ``weights`` permite reutilizar esta misma fórmula cuando una ruta
+        produce varias listas por sub-recuperador (multiconsulta). Si se omite,
+        se usan los pesos de la instancia, que es el caso de una sola consulta.
+
+        ``queries`` habilita la prioridad territorial: antes de recortar a
+        ``max_results`` se demotan las normas locales de ciudades que las
+        consultas no mencionan, de modo que los puestos liberados los ocupan
+        los siguientes candidatos. Con ``queries`` vacío no se reordena nada.
+        """
+        effective_weights = list(self.weights if weights is None else weights)
+        if len(all_results) != len(effective_weights):
             raise ValueError(
                 "HybridEnsembleRetriever._fuse(): el número de listas de resultados "
                 f"({len(all_results)}) no coincide con el número de pesos "
-                f"({len(self.weights)}) — configuración estructural inválida antes "
+                f"({len(effective_weights)}) — configuración estructural inválida antes "
                 "de fusionar."
             )
         scores: dict[str, float] = {}
         doc_by_id: dict[str, Document] = {}
 
-        for docs, w in zip(all_results, self.weights, strict=False):
+        for docs, w in zip(all_results, effective_weights, strict=False):
             for rank, doc in enumerate(docs, start=1):
                 if self.id_key and self.id_key in (doc.metadata or {}):
                     doc_id = str(doc.metadata[self.id_key])
@@ -428,18 +528,25 @@ class HybridEnsembleRetriever(BaseRetriever):
                 doc_by_id.setdefault(doc_id, doc)
                 scores[doc_id] = scores.get(doc_id, 0.0) + w / (rank + self.c)
 
-        # Se recorre en orden de score descendente y se descartan los
+        # Se recorre en orden de score descendente. Antes de descartar los
         # candidatos sin contenido alfanumérico (basura estructural del
-        # corpus), rellenando con el siguiente mejor candidato en vez de
-        # simplemente truncar a max_results. No afecta a BM25, al vector
-        # store, a los pesos ni a k: opera solo sobre el resultado ya
-        # fusionado, así que nunca devuelve más de max_results documentos.
+        # corpus) y de truncar a max_results, se demotan las normas locales de
+        # ciudades no mencionadas: así el recorte final se hace sobre el orden
+        # territorial y los puestos liberados los ocupan los siguientes
+        # candidatos. No afecta a BM25, al vector store, a los pesos ni a k:
+        # opera solo sobre el resultado ya fusionado, así que nunca devuelve
+        # más de max_results documentos.
         sorted_ids = sorted(scores, key=lambda identifier: scores[identifier], reverse=True)
+        ordered_docs = [doc_by_id[doc_id] for doc_id in sorted_ids]
+        if self.fragmentos_por_sentencia:
+            ordered_docs = _diversificar_sentencias(ordered_docs, self.fragmentos_por_sentencia)
+        if self.priorizar_territorio and queries:
+            ordered_docs = _priorizar_territorio(ordered_docs, queries)
+
         selected: list[Document] = []
-        for doc_id in sorted_ids:
+        for doc in ordered_docs:
             if len(selected) >= self.max_results:
                 break
-            doc = doc_by_id[doc_id]
             if not _has_retrievable_content(doc.page_content or ""):
                 continue
             selected.append(doc)
@@ -453,7 +560,7 @@ class HybridEnsembleRetriever(BaseRetriever):
     ) -> list[Document]:
         del run_manager
         all_results: list[list[Document]] = [r.invoke(query) for r in self.retrievers]
-        return self._fuse(all_results)
+        return self._fuse(all_results, queries=(query,))
 
     async def _aget_relevant_documents(
         self,
@@ -467,14 +574,49 @@ class HybridEnsembleRetriever(BaseRetriever):
         all_results: list[list[Document]] = await asyncio.gather(
             *(asyncio.to_thread(r.invoke, query) for r in self.retrievers)
         )
-        return self._fuse(all_results)
+        return self._fuse(all_results, queries=(query,))
+
+    @staticmethod
+    def _normalize_queries(queries: Sequence[str]) -> list[str]:
+        """Descarta consultas vacías o de solo espacios y deduplica por orden."""
+        normalized: list[str] = []
+        seen: set[str] = set()
+        for query in queries:
+            value = (query or "").strip()
+            if value and value not in seen:
+                seen.add(value)
+                normalized.append(value)
+        return normalized
+
+    async def afuse_queries(self, queries: Sequence[str]) -> list[Document]:
+        """Recupera con cada consulta y fusiona todas las listas con RRF.
+
+        Cada sub-recuperador recibe cada consulta una sola vez (los duplicados
+        y las cadenas vacías se descartan antes de llamar). Todas las llamadas
+        se lanzan juntas en un único ``asyncio.gather`` sobre ``ainvoke`` — sin
+        ``asyncio.to_thread`` ni ``ThreadPoolExecutor`` anidados — y se fusionan
+        con la misma fórmula y el mismo filtro post-fusión que la ruta de una
+        sola consulta, aplicando a cada lista el peso del sub-recuperador que
+        la produjo.
+        """
+        normalized = self._normalize_queries(queries)
+        if not normalized:
+            return []
+
+        all_results = await asyncio.gather(
+            *(r.ainvoke(query) for query in normalized for r in self.retrievers)
+        )
+        # Orden query-major, igual que el productorio de arriba: por cada
+        # consulta se repite la secuencia de pesos de self.retrievers.
+        weights = list(self.weights) * len(normalized)
+        return self._fuse(list(all_results), weights=weights, queries=normalized)
 
 
 def get_ensemble_retriever(
     k: int = 4,
     k_candidates: int | None = None,
-    bm25_weight: float = 0.3,
-    vector_weight: float = 0.7,
+    bm25_weight: float = BM25_WEIGHT,
+    vector_weight: float = VECTOR_WEIGHT,
     doc_types: list[str] | None = None,
 ) -> HybridEnsembleRetriever:
     """

@@ -18,6 +18,8 @@ from __future__ import annotations
 
 from langchain_core.documents import Document
 
+from .territorio import describir_ambito, lugar_de_norma
+
 # ---------------------------------------------------------------------------
 # Sanitización (parche temporal)
 # ---------------------------------------------------------------------------
@@ -51,8 +53,8 @@ def sanitize_replacement_chars(value):
 def build_context_block(docs: list[Document]) -> str:
     """Convierte una lista de documentos en un bloque de contexto legible.
 
-    Incluye metadatos de atribución (corporación, magistrado, tema, sección
-    y resumen) para que el LLM pueda citar correctamente las fuentes.
+    Incluye metadatos de atribución (corporación, radicado, magistrado, tema,
+    sección y resumen) para que el LLM pueda citar correctamente las fuentes.
     """
     bloques: list[str] = []
     for i, d in enumerate(docs, start=1):
@@ -75,6 +77,8 @@ def build_context_block(docs: list[Document]) -> str:
             articulo = sanitize_replacement_chars(meta.get("articulo", ""))
 
             meta_lines = [f"Norma: {norma}"]
+            if lugar := lugar_de_norma(meta):
+                meta_lines.append(f"Ámbito territorial: {describir_ambito(lugar)}")
             if titulo:
                 meta_lines.append(f"Título: {titulo}")
             if capitulo:
@@ -89,6 +93,7 @@ def build_context_block(docs: list[Document]) -> str:
             corporacion = sanitize_replacement_chars(
                 meta.get("Corporación") or meta.get("CorporaciÃ³n") or meta.get("Corporacion", "")
             )
+            radicado = sanitize_replacement_chars(meta.get("Radicado", "") or "").strip()
             magistrado = sanitize_replacement_chars(meta.get("Magistrado ponente", ""))
             tema = sanitize_replacement_chars(meta.get("Tema principal", ""))
             section = sanitize_replacement_chars(meta.get("section_name", ""))
@@ -96,6 +101,8 @@ def build_context_block(docs: list[Document]) -> str:
             meta_lines = []
             if corporacion:
                 meta_lines.append(f"Corporación: {corporacion}")
+            if radicado:
+                meta_lines.append(f"Radicado: {radicado}")
             if magistrado:
                 meta_lines.append(f"Magistrado ponente: {magistrado}")
             if tema:

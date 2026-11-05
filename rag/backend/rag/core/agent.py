@@ -59,28 +59,55 @@ PROMPT_NO_SYSTEM = ChatPromptTemplate.from_messages(
 _CITATION_RE = re.compile(r"\[doc(\d+)\]", re.IGNORECASE)
 _MAX_ANALYSIS_HISTORY_CHARS = 4000
 
+# Respuestas sin recuperación. Las cuatro guían al usuario en vez de limitarse
+# a describir el ámbito en abstracto: quien no sabe cómo preguntar no sale de
+# una descripción de alcance, pero sí sale de un ejemplo concreto y de los tres
+# datos que de verdad hacen falta para buscar en el corpus. Los ejemplos tienen
+# la forma de las consultas reales del ground truth (lugar + actividad +
+# autoridad), y los lugares nombrados existen en el corpus.
+
+_EJEMPLOS_CONSULTA = (
+    "- «Un hotel con concesión cerró el paso a la playa frente a mi casa en El Rodadero, "
+    "¿puede hacerlo?»\n"
+    "- «¿Qué exige DIMAR para operar motos acuáticas en una playa de Santa Marta?»\n"
+    "- «La Alcaldía autorizó un concierto en la playa, ¿qué requisitos debía cumplir?»"
+)
+
+_DATOS_QUE_FALTAN = (
+    "- **Dónde**: la playa, el municipio o el distrito (El Rodadero, Taganga, Cartagena, "
+    "Turbo…).\n"
+    "- **Qué actividad o trámite**: acceso, ocupación, construcción, concesión, permiso, "
+    "sanción, deslinde, evento.\n"
+    "- **Quién intervino**: DIMAR, la alcaldía, la autoridad ambiental, un juez."
+)
+
 _CONVERSATION_RESPONSE = (
     "Puedo responder consultas sobre jurisprudencia y normatividad colombiana relacionada con "
     "playas, zonas costeras y aguas marítimas, incluidos derechos, usos permitidos o prohibidos, "
     "pesca, turismo, permisos, concesiones, sanciones, autoridades y procedimientos vinculados "
-    "con esos espacios."
+    "con esos espacios.\n\n"
+    "Por ejemplo:\n" + _EJEMPLOS_CONSULTA + "\n\n"
+    "Cuéntame tu caso con el lugar y la actividad y busco la jurisprudencia y la normativa "
+    "que apliquen."
 )
 _OUT_OF_SCOPE_RESPONSE = (
     "La consulta está fuera del ámbito jurídico y normativo relacionado con playas, zonas "
-    "costeras, aguas marítimas y bienes de uso público en Colombia. Puedo responder sobre pesca, "
-    "turismo, derechos, permisos y procedimientos cuando estén vinculados con esos espacios."
+    "costeras, aguas marítimas y bienes de uso público en Colombia.\n\n"
+    "Si tu caso sí tiene un lado costero, planteámelo así:\n" + _EJEMPLOS_CONSULTA
 )
 _CLARIFICATION_RESPONSE = (
-    "La consulta podría estar dentro del ámbito, pero necesito que indiques su "
-    "conexión con playas, zonas costeras, aguas marítimas o bienes de uso público. Por ejemplo, "
-    "puedes precisar el lugar, la actividad, el permiso, la autoridad o el derecho que deseas revisar."
+    "Tu consulta puede estar dentro del ámbito, pero necesito un poco más de contexto para "
+    "buscar en las normas y sentencias que apliquen.\n\n"
+    "Dime cualquiera de estos tres y sigo:\n" + _DATOS_QUE_FALTAN + "\n\n"
+    "Así se ven las consultas que puedo responder:\n" + _EJEMPLOS_CONSULTA
 )
 _NO_EVIDENCE_RESPONSE = (
     "**Situación:** evidencia insuficiente.\n\n"
     "**Motivo:** no se recuperaron fragmentos del corpus que permitan sustentar una respuesta "
     "jurídica verificable.\n\n"
-    "**Cómo reformular:** precisa la actividad, autoridad, norma, procedimiento, lugar o derecho "
-    "relacionado con la playa o zona costera."
+    "**Cómo reformular:** añade cualquiera de estos tres datos y vuelvo a buscar:\n"
+    + _DATOS_QUE_FALTAN
+    + "\n\nTambién ayuda nombrar la norma, el expediente o el magistrado ponente si los conoces."
 )
 _INVALID_CITATIONS_RESPONSE = (
     "**Situación:** no fue posible producir una respuesta verificable.\n\n"
@@ -96,24 +123,33 @@ def _conversation_response(question: str) -> str:
         return "Con gusto."
     if any(term in normalized for term in ("adiós", "adios", "hasta luego")):
         return "Hasta luego."
-    if normalized.startswith(("hola", "buenos días", "buenas tardes", "buenas noches")):
-        return "Hola. ¿Cuál es tu consulta?"
+    saludos = ("hola", "buenos días", "buenas tardes", "buenas noches", "buen día")
+    for saludo in saludos:
+        if normalized.startswith(saludo):
+            # Un saludo seguido de un asunto («hola, tengo un problema con la
+            # playa») ya es una consulta: se pide el dato que falta en vez de
+            # obligar a repetirla.
+            resto = normalized[len(saludo) :].split()
+            return _CLARIFICATION_RESPONSE if len(resto) >= 2 else "Hola. ¿Cuál es tu consulta?"
     return _CONVERSATION_RESPONSE
 
 
-def _compose_retrieval_query(state: AgentState) -> str:
-    """Conserva la consulta original y añade reformulaciones sin duplicarlas."""
-    candidates = (
-        state["question"],
-        state.get("standalone_question"),
-        state.get("enriched_query"),
-    )
-    parts: list[str] = []
-    for candidate in candidates:
+def _retrieval_queries(state: AgentState) -> list[str]:
+    """Consultas a recuperar por separado: original, autosuficiente y enriquecida.
+
+    Conserva el orden, recorta espacios, descarta vacías y deduplica. Si la
+    pregunta original queda vacía, no se inventa ninguna consulta.
+    """
+    question = (state["question"] or "").strip()
+    if not question:
+        return []
+
+    queries = [question]
+    for candidate in (state.get("standalone_question"), state.get("enriched_query")):
         value = (candidate or "").strip()
-        if value and value not in parts:
-            parts.append(value)
-    return "\n".join(parts)
+        if value and value not in queries:
+            queries.append(value)
+    return queries
 
 
 def _compose_generation_question(state: AgentState) -> str:
@@ -183,6 +219,37 @@ def extract_answer_from_state(state: dict) -> str:
     return ""
 
 
+_SOLO_CITAS_RE = re.compile(r"^\s*(?:\[doc\d+\]\s*)+$", re.IGNORECASE)
+_TITULO_RE = re.compile(r"^\s*\*\*[^*\n]+\*\*\s*$")
+
+
+def _tidy_answer(answer: str) -> str:
+    """Limpia defectos de formato de la respuesta generada sin tocar su contenido.
+
+    - Quita las líneas que solo contienen marcadores ``[docN]``: no respaldan
+      ninguna frase (algunos modelos «etiquetan» así una sección).
+    - Quita los títulos de sección en negrita repetidos; el contenido que
+      seguía al duplicado se conserva bajo el primero.
+    - Colapsa las líneas en blanco consecutivas que dejan esas supresiones.
+    """
+    lineas: list[str] = []
+    titulos: set[str] = set()
+    for linea in answer.splitlines():
+        if _SOLO_CITAS_RE.match(linea):
+            continue
+        if _TITULO_RE.match(linea):
+            clave = linea.strip().casefold()
+            if clave in titulos:
+                continue
+            titulos.add(clave)
+        if not linea.strip() and (not lineas or not lineas[-1].strip()):
+            continue
+        lineas.append(linea)
+    while lineas and not lineas[-1].strip():
+        lineas.pop()
+    return "\n".join(lineas)
+
+
 def _validate_citations(answer: str, doc_count: int) -> bool:
     """Comprueba que una respuesta jurídica cite al menos un documento existente."""
     references = [int(value) for value in _CITATION_RE.findall(answer)]
@@ -230,7 +297,6 @@ async def respond_without_retrieval_node(state: AgentState) -> dict:
 async def retrieve_forced_node(state: AgentState) -> dict:
     _emit_status("retrieving", "Buscando evidencia en jurisprudencia y normatividad…")
     with stage_timer("retrieve_forced") as fields:
-        query = _compose_retrieval_query(state)
         doc_types = state.get("doc_types") or None
         k = min(max(int(state.get("k", 4)), 1), 8)
         k_candidates = min(max(int(state.get("k_candidates", 8)), k), 20)
@@ -240,11 +306,12 @@ async def retrieve_forced_node(state: AgentState) -> dict:
             k_candidates=k_candidates,
             doc_types=doc_types,
         )
-        # Una sola capa de concurrencia — ainvoke() orquesta BM25 y el
-        # retriever vectorial internamente (asyncio.gather + to_thread, sin
-        # ThreadPoolExecutor anidado). No se envuelve aquí en
-        # asyncio.to_thread(retriever.invoke, ...).
-        docs = await retriever.ainvoke(query)
+        # Una sola capa de concurrencia — afuse_queries() lanza BM25 y el
+        # retriever vectorial para cada consulta con un único asyncio.gather
+        # sobre sus ainvoke, sin ThreadPoolExecutor ni asyncio.to_thread
+        # anidados. No se envuelve aquí en asyncio.to_thread(retriever.invoke,
+        # ...).
+        docs = await retriever.afuse_queries(_retrieval_queries(state))
         selected = docs[:k]
         # Conteo, no contenido: cuántos documentos, no cuáles ni su texto.
         fields["doc_count"] = len(selected)
@@ -289,7 +356,7 @@ async def generate_node(state: AgentState) -> dict:
             log_context_budget_warning(
                 chars=full_context_chars, doc_count=len(docs), stage="generate"
             )
-        answer = str(await chain.ainvoke(prompt_value)).strip()
+        answer = _tidy_answer(str(await chain.ainvoke(prompt_value)).strip())
 
         if not _validate_citations(answer, len(docs)):
             log_citation_format_error(doc_count=len(docs))

@@ -46,6 +46,12 @@ class _SlowRetriever:
         await asyncio.sleep(self.delay)
         return [Document(page_content=f"fragmento-{self.tag}", metadata={"chunk_id": self.tag})]
 
+    async def afuse_queries(self, queries: list[str]) -> list[Document]:
+        docs: list[Document] = []
+        for query in queries:
+            docs.extend(await self.ainvoke(query))
+        return docs
+
     def invoke(self, query: str) -> list[Document]:
         return [Document(page_content=f"fragmento-{self.tag}", metadata={"chunk_id": self.tag})]
 
@@ -195,6 +201,12 @@ async def test_concurrent_turns_on_different_threads_start_without_waiting_on_ea
             start_times[self.tag] = time.perf_counter()
             await asyncio.sleep(0.1)
             return [Document(page_content=self.tag, metadata={"chunk_id": self.tag})]
+
+        async def afuse_queries(self, queries: list[str]) -> list[Document]:
+            docs: list[Document] = []
+            for query in queries:
+                docs.extend(await self.ainvoke(query))
+            return docs
 
     calls = {"n": 0}
 

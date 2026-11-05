@@ -70,6 +70,17 @@ async def test_in_scope_run_logs_all_three_stage_timers_without_leaking_question
         async def ainvoke(self, query: str) -> list[Document]:
             return self.invoke(query)
 
+        async def afuse_queries(self, queries: list[str]) -> list[Document]:
+            merged: list[Document] = []
+            seen: set[str] = set()
+            for query in queries:
+                for doc in self.invoke(query):
+                    doc_id = str((doc.metadata or {}).get("chunk_id", doc.page_content))
+                    if doc_id not in seen:
+                        seen.add(doc_id)
+                        merged.append(doc)
+            return merged
+
     monkeypatch.setattr(agent_module, "enrich_query_async", analyze)
     monkeypatch.setattr(agent_module, "get_ensemble_retriever", lambda **kwargs: FakeRetriever())
     monkeypatch.setattr(
@@ -159,6 +170,17 @@ async def test_invalid_citations_logs_a_citation_format_error(
 
         async def ainvoke(self, query: str) -> list[Document]:
             return self.invoke(query)
+
+        async def afuse_queries(self, queries: list[str]) -> list[Document]:
+            merged: list[Document] = []
+            seen: set[str] = set()
+            for query in queries:
+                for doc in self.invoke(query):
+                    doc_id = str((doc.metadata or {}).get("chunk_id", doc.page_content))
+                    if doc_id not in seen:
+                        seen.add(doc_id)
+                        merged.append(doc)
+            return merged
 
     monkeypatch.setattr(agent_module, "enrich_query_async", analyze)
     monkeypatch.setattr(agent_module, "get_ensemble_retriever", lambda **kwargs: FakeRetriever())

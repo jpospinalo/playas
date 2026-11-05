@@ -78,7 +78,7 @@ async def test_in_scope_route_uses_enrichment_limits_k_and_validates_citations(
 
     class FakeRetriever:
         def invoke(self, query: str) -> list[Document]:
-            captured["query"] = query
+            captured.setdefault("queries", []).append(query)
             return [
                 Document(page_content=f"fragmento {index}", metadata={"chunk_id": str(index)})
                 for index in range(4)
@@ -86,6 +86,9 @@ async def test_in_scope_route_uses_enrichment_limits_k_and_validates_citations(
 
         async def ainvoke(self, query: str) -> list[Document]:
             return self.invoke(query)
+
+        async def afuse_queries(self, queries: list[str]) -> list[Document]:
+            return [doc for query in queries for doc in self.invoke(query)]
 
     def make_retriever(**kwargs):
         captured.update(kwargs)
@@ -113,11 +116,11 @@ async def test_in_scope_route_uses_enrichment_limits_k_and_validates_citations(
         "k": 2,
         "k_candidates": 5,
         "doc_types": ["jurisprudencia", "normativa"],
-        "query": (
-            "¿Puede cerrarse?\n"
-            "¿Puede un hotel cerrar el acceso a una playa?\n"
-            "hotel acceso público playa cierre derecho uso"
-        ),
+        "queries": [
+            "¿Puede cerrarse?",
+            "¿Puede un hotel cerrar el acceso a una playa?",
+            "hotel acceso público playa cierre derecho uso",
+        ],
     }
     assert len(result["sources"]) == 2
     assert result["messages"][-1].content == "El acceso no puede cerrarse [doc1]."
@@ -178,6 +181,9 @@ async def test_legitimate_full_case_reaches_retrieval_exactly_once(
 
         async def ainvoke(self, query: str) -> list[Document]:
             return self.invoke(query)
+
+        async def afuse_queries(self, queries: list[str]) -> list[Document]:
+            return [doc for query in queries for doc in self.invoke(query)]
 
     monkeypatch.setattr(agent_module, "get_ensemble_retriever", lambda **kwargs: FakeRetriever())
     monkeypatch.setattr(
@@ -256,11 +262,14 @@ async def test_long_narrative_case_reaches_retriever_with_full_question_preserve
     class FakeRetriever:
         def invoke(self, query: str) -> list[Document]:
             call_count["n"] += 1
-            captured["query"] = query
+            captured.setdefault("queries", []).append(query)
             return [Document(page_content="fragmento", metadata={"chunk_id": "1"})]
 
         async def ainvoke(self, query: str) -> list[Document]:
             return self.invoke(query)
+
+        async def afuse_queries(self, queries: list[str]) -> list[Document]:
+            return [doc for query in queries for doc in self.invoke(query)]
 
     monkeypatch.setattr(agent_module, "get_ensemble_retriever", lambda **kwargs: FakeRetriever())
     monkeypatch.setattr(
@@ -299,7 +308,7 @@ async def test_long_narrative_case_reaches_retriever_with_full_question_preserve
     )
 
     assert result["query_route"] == "in_scope"
-    assert call_count["n"] == 1
-    assert question in captured["query"]
+    assert call_count["n"] == len(captured["queries"]) == 2
+    assert question in captured["queries"]
     assert len(result["enriched_query"].split()) <= 45
     assert result["question"] == question

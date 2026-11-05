@@ -5,10 +5,14 @@ from __future__ import annotations
 import pytest
 
 from evaluation.metricas_sin_llm import (
+    CLAVES_MULTI,
+    SENTIDO,
     clase_esperada,
     comparar,
+    fuga_de_plantilla,
     intervalo_95,
     linea_base,
+    metricas_multiconsulta,
     metricas_recuperacion,
     metricas_respuesta,
     norma_local,
@@ -428,3 +432,86 @@ def test_cli_rechaza_una_etiqueta_invalida_antes_de_correr(monkeypatch):
     monkeypatch.setattr(sys, "argv", ["metricas_sin_llm", "--tag", "MAL tag"])
     with pytest.raises(ValueError, match="Etiqueta"):
         m.main()
+
+
+# ── Métricas de la ruta de producción (multiconsulta) ────────────────────────
+
+
+def test_multiconsulta_mide_los_fragmentos_de_la_ruta_de_produccion():
+    fila = metricas_multiconsulta(_caso(), [_frag(REMAC, "artículo 5.3.6.2")], [CARTAGENA, REMAC])
+    assert fila["acierto_doc_4_multi"] is True
+    assert fila["mrr_doc_20_multi"] == 0.5
+
+
+def test_multiconsulta_sin_documento_esperado_no_aplica():
+    fila = metricas_multiconsulta(_caso(documentos_esperados=[]), [_frag(CARTAGENA)], [CARTAGENA])
+    assert fila["acierto_doc_4_multi"] is None
+    assert fila["mrr_doc_20_multi"] is None
+
+
+def test_multiconsulta_cubre_los_articulos_esperados():
+    caso = _caso(respuesta="según el artículo 5.3.6.2", ubicacion_evidencia="")
+    fila = metricas_multiconsulta(caso, [_frag(REMAC, "artículo 5.3.6.2")], [REMAC])
+    assert fila["articulos_4_multi"] == 1.0
+
+
+def test_las_claves_multi_estan_en_el_registro_de_metricas():
+    """Si una clave ``_multi`` no está en METRICAS, no se resume ni se compara:
+    saldría del reporte en silencio."""
+    assert set(CLAVES_MULTI) <= set(SENTIDO)
+
+
+def test_resumir_incluye_una_metrica_que_falta_en_la_primera_fila():
+    """Un caso sin consulta enriquecida no lleva las claves ``_multi``. Si
+    ``resumir`` solo mirara la primera fila, la métrica desaparecería del
+    reporte por el orden de los casos."""
+    filas = [
+        {"case_id": "a", "acierto_doc_4": True},
+        {"case_id": "b", "acierto_doc_4": True, "acierto_doc_4_multi": True},
+    ]
+    resumen = resumir(filas, con_intervalo=False)
+    assert resumen["acierto_doc_4_multi"] == {"n": 1, "valor": 1.0}
+
+
+def test_linea_base_tolera_una_fila_sin_una_metrica():
+    reporte = {
+        "dataset": "d",
+        "fecha": "f",
+        "git": {},
+        "recuperacion": {
+            "global": {"acierto_doc_4_multi": {"n": 1, "valor": 1.0}},
+            "casos": [
+                {"case_id": "a"},
+                {"case_id": "b", "acierto_doc_4_multi": True},
+            ],
+        },
+    }
+    base = linea_base(reporte)
+    assert base["casos"]["acierto_doc_4_multi"] == {"a": None, "b": 1.0}
+
+
+# ── Fuga de plantilla del prompt ────────────────────────────────────────────
+
+
+def test_fuga_si_la_respuesta_imprime_docn_literal():
+    assert fuga_de_plantilla("Criterio principal — regla en 2–4 oraciones con [docN].") is True
+
+
+def test_fuga_si_la_respuesta_copia_la_descripcion_de_la_seccion():
+    """Lo que de verdad pasó en la línea base: el título con su descripción
+    pegada, sin ningún contenido jurídico detrás."""
+    assert fuga_de_plantilla("- Criterio principal — regla jurídica central") is True
+
+
+def test_una_respuesta_con_contenido_real_no_es_fuga():
+    texto = (
+        "**Criterio principal** — La DIMAR tiene competencia sobre las zonas de bajamar "
+        "cuando existe riesgo para el medio marino [doc1][doc3]."
+    )
+    assert fuga_de_plantilla(texto) is False
+
+
+def test_la_fuga_entra_en_las_metricas_de_respuesta():
+    fila = metricas_respuesta(_caso(), "Criterio principal — regla jurídica central", [], [])
+    assert fila["fuga_plantilla"] is True
+    assert "fuga_plantilla" in SENTIDO

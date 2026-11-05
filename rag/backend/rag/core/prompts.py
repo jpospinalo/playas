@@ -21,7 +21,42 @@ from __future__ import annotations
 # Todo lo dinámico va en el HumanMessage, lo que permite que providers como
 # Grok u OpenAI hagan cache-hit del prefijo entre requests.
 
-AGENT_SYSTEM: str = """\
+# ---------------------------------------------------------------------------
+# Agente — Secciones de la respuesta analítica
+# ---------------------------------------------------------------------------
+#
+# El título y su descripción viven separados a propósito. Cuando iban juntos
+# en la misma línea ("- **Criterio principal** — regla jurídica central en 2–4
+# oraciones con [docN]."), el modelo copiaba la descripción al texto de la
+# respuesta como si fuera parte del título: 4 de 65 respuestas de la línea base
+# del corpus congelado salieron con "— regla jurídica central en 2–4 oraciones
+# con [docN]" impreso. Con el título y la descripción en bloques distintos, y
+# una regla explícita de no reproducir las descripciones, el modelo tiene los
+# títulos exactos que debe usar y ningún texto de instrucción adosado a ellos.
+#
+# ``evaluation/metricas_sin_llm.py`` importa este diccionario para medir la
+# fuga (``fuga_plantilla``): así la métrica no mantiene su propia copia de
+# estas frases y no puede quedar desincronizada del prompt.
+
+AGENT_RESPONSE_SECTIONS: dict[str, str] = {
+    "Criterio principal": "la regla jurídica central, en dos a cuatro oraciones",
+    "Desarrollo jurídico": (
+        "el razonamiento de la Sala, los hechos procesales relevantes, las normas "
+        "aplicadas y las condiciones de aplicabilidad"
+    ),
+    "Síntesis jurisprudencial": (
+        "convergencias, divergencias o evolución del criterio entre las fuentes; "
+        "se omite cuando hay un solo documento"
+    ),
+    "Límites de evidencia": ("qué aspectos no cubre el contexto y qué completaría la respuesta"),
+}
+
+_SECCIONES_TITULOS = " · ".join(f"**{t}**" for t in AGENT_RESPONSE_SECTIONS)
+_SECCIONES_GUIA = "\n".join(
+    f"{titulo}: {descripcion}." for titulo, descripcion in AGENT_RESPONSE_SECTIONS.items()
+)
+
+AGENT_SYSTEM: str = f"""\
 Responde consultas mediante recuperación y síntesis jurídica especializada en Colombia. El ámbito \
 incluye jurisprudencia y normatividad relacionada con playas, zonas costeras, aguas marítimas, \
 terrenos de bajamar, bienes de uso público y actividades conectadas con esos espacios, como \
@@ -52,13 +87,18 @@ Consulta puntual (definición, dato concreto, pregunta cerrada):
 Responde directamente y con concisión. No uses secciones formales. Cita [docN] donde corresponda.
 
 Consulta jurisprudencial o analítica:
-El usuario espera análisis, no transcripciones. Usa esta estructura cuando resulte pertinente:
-- **Criterio principal** — regla jurídica central en 2–4 oraciones con [docN].
-- **Desarrollo jurídico** — razonamiento de la Sala, hechos procesales relevantes, normas \
-aplicadas, condiciones de aplicabilidad. Cita [docN] en cada punto.
-- **Síntesis jurisprudencial** *(omitir si hay un solo documento)* — convergencias, divergencias \
-o evolución del criterio entre las fuentes.
-- **Límites de evidencia** — qué aspectos no cubre el contexto y qué completaría la respuesta.
+El usuario espera análisis, no transcripciones. Cuando resulte pertinente, estructura la \
+respuesta con estos títulos, escritos exactamente así y sin añadirles nada más:
+
+{_SECCIONES_TITULOS}
+
+Lo que va debajo de cada título, para tu uso interno — estas descripciones son instrucciones \
+para ti, nunca texto de la respuesta. No las copies, no las parafrasees y no las pegues \
+junto al título:
+
+{_SECCIONES_GUIA}
+
+Cita [docN] en cada punto, debajo del título correspondiente.
 
 Consulta normativa o procedimental:
 - Identifica la regla, autoridad competente, sujetos, requisitos, procedimiento, derechos, \
@@ -155,13 +195,18 @@ ENRICHER_HUMAN_BODY: str = (
     "- `out_of_scope`: asunto claramente ajeno al ámbito.\n"
     "- `conversation`: saludo, despedida o pregunta sobre las capacidades del sistema.\n"
     "- `needs_clarification`: podría pertenecer al ámbito, pero falta indicar su relación con "
-    "playas, costas, aguas marítimas o bienes públicos costeros.\n\n"
+    "playas, costas, aguas marítimas o bienes públicos costeros. Si la consulta nombra una "
+    "playa, un lugar o una obra costera, el mar o una autoridad marítima, esa relación ya "
+    "existe: no uses esta ruta.\n\n"
     "Si la ruta es `in_scope`:\n"
     "1. `standalone_question`: reescribe la pregunta para que sea autosuficiente, preservando "
     "nombres, cifras, artículos, radicados y restricciones del usuario.\n"
     "2. `expanded_query`: conserva la pregunta autosuficiente y añade solo sinónimos o términos "
-    "jurídicos directamente pertinentes. Máximo 45 palabras. No inventes normas, artículos, "
-    "autoridades, expedientes ni hechos que el usuario o el historial no mencionen.\n"
+    "jurídicos directamente pertinentes. Los términos jurídicos se añaden, nunca reemplazan: "
+    "mantén con las mismas palabras del usuario los objetos, actividades, lugares y trámites "
+    "que nombra, sin sustituirlos por categorías generales. Máximo 45 palabras. No inventes "
+    "normas, artículos, autoridades, expedientes ni hechos que el usuario o el historial no "
+    "mencionen.\n"
     "3. `doc_types`: usa `normativa`, `jurisprudencia` o ambos según lo que la pregunta necesite.\n\n"
     "Para las demás rutas, conserva la consulta en `standalone_question`, deja "
     "`expanded_query` igual a la consulta y usa una lista vacía en `doc_types`.\n\n"

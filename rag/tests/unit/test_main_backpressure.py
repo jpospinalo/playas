@@ -31,6 +31,12 @@ class _SlowRetriever:
         await asyncio.sleep(0.08)
         return [Document(page_content="fragmento", metadata={"chunk_id": "1"})]
 
+    async def afuse_queries(self, queries: list[str]) -> list[Document]:
+        docs: list[Document] = []
+        for query in queries:
+            docs.extend(await self.ainvoke(query))
+        return docs
+
     def invoke(self, query: str) -> list[Document]:
         return [Document(page_content="fragmento", metadata={"chunk_id": "1"})]
 

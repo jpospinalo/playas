@@ -27,6 +27,12 @@ EMBED_FN = OllamaEmbeddingFunction()
 # Tamaño máximo de cada batch para embeddings e ingesta en Chroma
 BATCH_SIZE = 200
 
+# Metadato obligatorio al crear la colección: todas las colecciones vivas del
+# proyecto usan distancia coseno (misma convención que
+# evaluation/indexar_gold_local.py). Sin él, Chroma crearía la colección con su
+# espacio por defecto (l2) y la recuperación se degradaría en silencio.
+COLLECTION_METADATA = {"hnsw:space": "cosine"}
+
 # Retry para errores de red
 MAX_RETRIES = 3
 INITIAL_BACKOFF = 2.0  # segundos
@@ -163,7 +169,9 @@ def build_or_load_vectorstore(
       - Aborta toda la operación si un batch falla tras los 3 intentos.
     """
     client = chromadb.HttpClient(host=CHROMA_HOST, port=CHROMA_PORT)
-    collection = client.get_or_create_collection(name=collection_name)
+    # Si la colección ya existe, chromadb ignora `metadata` y conserva el
+    # espacio configurado; el metadato solo aplica a la creación.
+    collection = client.get_or_create_collection(name=collection_name, metadata=COLLECTION_METADATA)
 
     count_before = collection.count()
 

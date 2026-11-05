@@ -11,9 +11,10 @@ evidencia de evaluación offline. Confirman tres cosas:
 2. Cada escenario sintético produce el orden y los scores que la fórmula RRF
    ponderada predice manualmente (misma referencia analítica independiente
    que ya usa ``tests/unit/test_retriever_invariants.py``).
-3. La conclusión central del diagnóstico — que un candidato exclusivo de BM25
-   no compite con los vectoriales dentro del rango realista de
-   ``k_candidates`` (4-20) — se sostiene con la configuración real leída.
+3. La conclusión central se evalúa con la configuración real leída. Tras el
+   cambio a ``c=2``, BM25 0.8 y vector 0.2, un candidato exclusivo de BM25 en
+   rank 1 sí compite con los vectoriales dentro del rango realista de
+   ``k_candidates`` (4-20); antes, con ``c=160``, quedaba siempre detrás.
 """
 
 from __future__ import annotations
@@ -73,30 +74,29 @@ def test_mixed_scenario_order_matches_manual_rrf_calculation() -> None:
     pero ejercitando el diagnóstico offline en vez del retriever directamente."""
     result = scenario_final_ranking_mixed()
     assert result["orden_resultante"] == result["orden_esperado_por_score"]
-    assert result["orden_resultante"] == ["b", "d", "a", "c"]
+    # Con BM25 0.8 / vector 0.2, "a" y "b" empatan exactamente:
+    # 0.8/3 == 0.8/4 + 0.2/3. El orden estable conserva el de inserción.
+    assert result["orden_resultante"] == ["a", "b", "c", "d"]
 
 
-def test_bm25_exclusive_never_beats_vector_within_realistic_k_range() -> None:
-    """La afirmación central del diagnóstico: si la búsqueda vectorial entrega al
-    menos k candidatos (k entre 4 y 20 — rango real de ``k_candidates``),
-    un candidato exclusivo de BM25 en su mejor rank posible (1) no compite
-    con ellos."""
+def test_bm25_exclusive_beats_vector_within_realistic_k_range() -> None:
+    """Con la configuración actual (c=2, BM25 0.8, vector 0.2) el candidato
+    exclusivo de BM25 en su mejor rank posible (1) sí compite con los
+    candidatos vectoriales: gana incluso al vectorial en rank 1."""
     result = bm25_exclusive_vs_vector_sweep()
-    assert result["bm25_compite_en_algun_k_del_rango"] is False
+    assert result["bm25_compite_en_algun_k_del_rango"] is True
     for row in result["filas"]:
-        assert row["bm25_excl_supera_al_ultimo_vectorial"] is False
-        # El candidato BM25 debe terminar siempre después de todos los k
-        # candidatos vectoriales (posición k+1, el último lugar posible).
-        assert row["posicion_final_bm25_excl"] == row["k"] + 1
+        assert row["bm25_excl_supera_al_ultimo_vectorial"] is True
+        assert row["posicion_final_bm25_excl"] == 1
 
 
-def test_crossover_k_is_far_outside_the_realistic_range() -> None:
+def test_crossover_k_is_inside_the_realistic_range_with_current_weights() -> None:
     """El punto de cruce analítico (a partir de qué k un vectorial en su
-    peor rank empezaría a perder frente al mejor caso de BM25) debe quedar
-    muy por fuera del rango realista de k_candidates (4-20) para que la
-    conclusión del diagnóstico sea válida con los parámetros actuales."""
+    peor rank empieza a perder frente al mejor caso de BM25) cae ahora dentro
+    del rango realista de k_candidates (4-20), que es justamente lo que
+    devuelve la señal léxica al ranking híbrido."""
     result = bm25_exclusive_vs_vector_sweep()
-    assert result["k_de_cruce_analitico"] > 20 * 10  # amplio margen de sobra
+    assert result["k_de_cruce_analitico"] <= 4
     # Y coincide con la fórmula cerrada: peso_bm25/(1+c) == peso_vector/(k+c)
     k = result["k_de_cruce_analitico"]
     expected_score_at_crossover = VECTOR_WEIGHT / (k + RRF_C)

@@ -20,13 +20,22 @@ es puramente de lectura/diagnóstico, no se invoca desde la ruta online.
 
 Pregunta que este diagnóstico responde con evidencia numérica reproducible:
 si la búsqueda vectorial entrega al menos ``k`` candidatos, ¿compite
-normalmente un candidato exclusivo de BM25 contra ellos? La respuesta corta,
-demostrada abajo, es no: con los pesos y la ``c`` actuales, el mejor caso
-posible para un candidato exclusivo de BM25 (rank 1 en BM25) solo alcanza a
-superar a un candidato vectorial-exclusivo cuando ese candidato vectorial
-ocupa un rank mayor a ~215 — muy por fuera de cualquier ``k``/``k_candidates``
-realista de este sistema (máximo actual: 20, ver ``QueryRequest.k_candidates``
-en ``api/schemas.py``).
+normalmente un candidato exclusivo de BM25 contra ellos? El veredicto no está
+escrito aquí a mano: se calcula a partir de la configuración real leída de
+``get_ensemble_retriever`` (ver ``conclusion`` y ``k_de_cruce_analitico`` en
+``bm25_exclusive_vs_vector_sweep``), y cambia si esa configuración cambia.
+
+Historia de este diagnóstico, que es su razón de existir: con los parámetros
+originales (``c=160``, BM25 0.3 / vector 0.7) la respuesta era **no** — el
+mejor caso posible para un candidato exclusivo de BM25 (rank 1) solo superaba
+a un candidato vectorial-exclusivo cuando ese ocupaba un rank mayor a ~215,
+muy por fuera de cualquier ``k``/``k_candidates`` realista del sistema
+(máximo 20, ver ``QueryRequest.k_candidates`` en ``api/schemas.py``). Es
+decir: el recuperador estaba etiquetado como híbrido pero entregaba siempre
+el top-k vectorial, y la señal léxica solo servía para reordenar lo que el
+vector ya había encontrado. Esa es la razón por la que ``RRF_C`` bajó a 2 y
+los pesos se invirtieron a BM25 0.6 / vector 0.4 (ver la medición citada en
+``core/retriever.py``).
 """
 
 from __future__ import annotations
@@ -258,13 +267,20 @@ def bm25_exclusive_vs_vector_sweep(
         "k_de_cruce_analitico": crossover_k,
         "conclusion": (
             "Con los pesos y la c reales de producción, un candidato exclusivo de "
-            "BM25 en su mejor rank posible (1) solo alcanza a superar al peor "
-            "candidato vectorial-exclusivo cuando ese candidato vectorial ocupa un "
-            f"rank mayor a ~{crossover_k:.1f} — muy por fuera del rango realista de "
-            "k_candidates de este sistema (4-20). Dentro de ese rango realista, el "
-            "candidato exclusivo de BM25 nunca compite con los candidatos "
-            "vectoriales cuando la búsqueda vectorial ya entrega al menos k "
-            "resultados."
+            "BM25 en su mejor rank posible (1) alcanza a superar al peor candidato "
+            "vectorial-exclusivo cuando ese candidato vectorial ocupa un rank mayor "
+            f"a ~{crossover_k:.1f}. "
+            + (
+                "Ese punto de cruce cae dentro del rango realista de k_candidates "
+                "(4-20), así que la señal léxica sí compite por los primeros "
+                "puestos y el recuperador se comporta de verdad como híbrido."
+                if crossover_k <= 20
+                else "Ese punto de cruce queda fuera del rango realista de "
+                "k_candidates (4-20), así que el candidato exclusivo de BM25 nunca "
+                "compite con los vectoriales cuando la búsqueda vectorial ya "
+                "entrega al menos k resultados: el recuperador está etiquetado "
+                "como híbrido pero entrega el top-k vectorial."
+            )
         ),
     }
 

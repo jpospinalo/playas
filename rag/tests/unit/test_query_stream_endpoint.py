@@ -98,6 +98,12 @@ class _SlowRetriever:
         await asyncio.sleep(self.delay)
         return [Document(page_content=f"fragmento-{self.tag}", metadata={"chunk_id": self.tag})]
 
+    async def afuse_queries(self, queries: list[str]) -> list[Document]:
+        docs: list[Document] = []
+        for query in queries:
+            docs.extend(await self.ainvoke(query))
+        return docs
+
 
 @pytest.mark.anyio
 async def test_same_thread_concurrent_turns_do_not_lose_a_message(
@@ -167,6 +173,12 @@ async def test_different_threads_proceed_in_parallel(monkeypatch: pytest.MonkeyP
             await asyncio.sleep(0.1)
             return [Document(page_content=self.tag, metadata={"chunk_id": self.tag})]
 
+        async def afuse_queries(self, queries: list[str]) -> list[Document]:
+            docs: list[Document] = []
+            for query in queries:
+                docs.extend(await self.ainvoke(query))
+            return docs
+
     calls = {"n": 0}
 
     def make_retriever(**kwargs: object) -> _RecordingSlowRetriever:
@@ -215,6 +227,12 @@ async def test_exception_in_astream_emits_error_event_and_releases_resources(
     class _FailingRetriever:
         async def ainvoke(self, query: str) -> list[Document]:
             raise RuntimeError("fallo simulado de recuperación")
+
+        async def afuse_queries(self, queries: list[str]) -> list[Document]:
+            docs: list[Document] = []
+            for query in queries:
+                docs.extend(await self.ainvoke(query))
+            return docs
 
     monkeypatch.setattr(
         agent_module, "get_ensemble_retriever", lambda **kwargs: _FailingRetriever()
@@ -272,6 +290,12 @@ async def test_closing_the_iterator_early_releases_all_resources(
             await release.wait()
             return [Document(page_content="fragmento", metadata={"chunk_id": "1"})]
 
+        async def afuse_queries(self, queries: list[str]) -> list[Document]:
+            docs: list[Document] = []
+            for query in queries:
+                docs.extend(await self.ainvoke(query))
+            return docs
+
     monkeypatch.setattr(agent_module, "get_ensemble_retriever", lambda **kwargs: _GatedRetriever())
     monkeypatch.setattr(
         agent_module,
@@ -327,6 +351,9 @@ async def test_normal_completion_preserves_event_shape(
             return [
                 Document(page_content="fragmento", metadata={"chunk_id": "1", "source": "x.pdf"})
             ]
+
+        async def afuse_queries(self, queries: list[str]) -> list[Document]:
+            return [doc for query in queries for doc in await self.ainvoke(query)]
 
     monkeypatch.setattr(agent_module, "get_ensemble_retriever", lambda **kwargs: _FastRetriever())
     monkeypatch.setattr(
@@ -412,6 +439,12 @@ async def test_asgi_send_failure_before_first_event_releases_all_resources(
             nonlocal graph_started
             graph_started = True
             return [Document(page_content="fragmento", metadata={"chunk_id": "1"})]
+
+        async def afuse_queries(self, queries: list[str]) -> list[Document]:
+            docs: list[Document] = []
+            for query in queries:
+                docs.extend(await self.ainvoke(query))
+            return docs
 
     monkeypatch.setattr(
         agent_module, "get_ensemble_retriever", lambda **kwargs: _TrackingRetriever()

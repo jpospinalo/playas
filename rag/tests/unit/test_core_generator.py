@@ -46,6 +46,17 @@ def _mock_in_scope_pipeline(
         async def ainvoke(self, query: str) -> list[Document]:
             return self.invoke(query)
 
+        async def afuse_queries(self, queries: list[str]) -> list[Document]:
+            merged: list[Document] = []
+            seen: set[str] = set()
+            for query in queries:
+                for doc in self.invoke(query):
+                    doc_id = str((doc.metadata or {}).get("chunk_id", doc.page_content))
+                    if doc_id not in seen:
+                        seen.add(doc_id)
+                        merged.append(doc)
+            return merged
+
     monkeypatch.setattr(agent_module, "enrich_query_async", analyze)
     monkeypatch.setattr(agent_module, "get_ensemble_retriever", lambda **kwargs: FakeRetriever())
     monkeypatch.setattr(

@@ -80,7 +80,7 @@ class _FakeHttpClient:
     def __init__(self, collection: _FakeCollection) -> None:
         self._collection = collection
 
-    def get_or_create_collection(self, name: str) -> _FakeCollection:
+    def get_or_create_collection(self, name: str, metadata: dict | None = None) -> _FakeCollection:
         return self._collection
 
 

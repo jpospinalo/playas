@@ -6,9 +6,9 @@ from langchain_core.messages import AIMessage, HumanMessage
 
 from rag.core.agent import (
     _compose_generation_question,
-    _compose_retrieval_query,
     _conversation_response,
     _history_for_analysis,
+    _retrieval_queries,
     _validate_citations,
     route_after_analysis,
 )
@@ -45,10 +45,11 @@ def test_original_question_is_preserved_in_retrieval_and_generation() -> None:
         "standalone_question": "¿Cuál es el plazo del permiso de ocupación de una playa?",
         "enriched_query": "plazo permiso ocupación playa",
     }
-    retrieval_query = _compose_retrieval_query(state)
+    retrieval_queries = _retrieval_queries(state)
     generation_question = _compose_generation_question(state)
-    assert retrieval_query.startswith("¿Y cuál es el plazo?\n")
-    assert "permiso de ocupación" in retrieval_query
+    assert retrieval_queries[0] == "¿Y cuál es el plazo?"
+    assert "¿Cuál es el plazo del permiso de ocupación de una playa?" in retrieval_queries
+    assert "plazo permiso ocupación playa" in retrieval_queries
     assert "Pregunta original: ¿Y cuál es el plazo?" in generation_question
     assert "Reformulación contextual" in generation_question
 
