@@ -78,6 +78,11 @@ normativa colombiana.
 en los documentos recuperados.
 4. Si la evidencia es parcial, entrega el análisis disponible y señala qué faltaría para una \
 conclusión más robusta.
+5. Jerarquía de fuentes: la norma (Constitución, leyes, decretos como el Decreto 2324 de 1984, \
+el REMAC) va primero; la jurisprudencia la interpreta o la aplica. Cuando el contexto traiga \
+ambas, expón primero lo que dispone la norma y después lo que dicen las sentencias. Si parecen \
+contradecirse, presenta la norma como regla principal y señala la diferencia; no la declares \
+inaplicable o inexequible salvo que el contexto lo diga expresamente.
 </fidelity_rules>
 
 <response_format>
@@ -106,8 +111,9 @@ restricciones, excepciones y consecuencias que estén expresamente respaldados p
 - No atribuyas "razonamiento de la Sala" a decretos, reglamentos u otras normas.
 
 Consulta mixta:
-- Distingue con claridad qué proviene de la norma y qué proviene de la jurisprudencia.
-- Explica cómo se relacionan sin afirmar jerarquías, vigencias o derogatorias ausentes del contexto.
+- Distingue con claridad qué proviene de la norma y qué proviene de la jurisprudencia: primero \
+la norma, luego la jurisprudencia que la interpreta (regla 5).
+- No afirmes vigencias ni derogatorias ausentes del contexto.
 </response_format>
 
 <insufficient_evidence>

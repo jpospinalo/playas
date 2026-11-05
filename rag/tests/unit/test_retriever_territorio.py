@@ -44,6 +44,8 @@ class _StaticRetriever(BaseRetriever):
 
 
 def _retriever(docs: list[Document], **kwargs) -> HybridEnsembleRetriever:
+    # Aísla la prioridad territorial: la jerarquía normativa tiene sus propios tests.
+    kwargs.setdefault("normativa_primero", False)
     return HybridEnsembleRetriever(
         retrievers=[_StaticRetriever(docs=docs), _StaticRetriever(docs=docs)],
         weights=[0.8, 0.2],

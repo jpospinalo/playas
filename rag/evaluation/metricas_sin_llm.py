@@ -604,6 +604,10 @@ def correr_recuperacion(
     init_retrievers()
     prod = get_ensemble_retriever(k=PROD_K, k_candidates=PROD_K_CANDIDATES)
     deep = get_ensemble_retriever(k=DEEP_K, k_candidates=DEEP_K)
+    # El top-20 diagnostica la fusión: sin la jerarquía normativa, que movería
+    # todas las normas de los 20 al frente y falsearía el MRR. La jerarquía se
+    # mide en el top-4 de producción (``prod``).
+    deep.normativa_primero = False
     extra = consultas_extra or {}
     filas = []
     for caso in casos:

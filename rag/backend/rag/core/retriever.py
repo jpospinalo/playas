@@ -49,7 +49,7 @@ from rag.config import (
 )
 
 from .embeddings import OllamaEmbeddings
-from .territorio import plano
+from .territorio import lugar_de_norma, lugares_mencionados, plano
 from .territorio import priorizar_territorio as _priorizar_territorio
 
 # ---------------------------------------------------------------------
@@ -81,6 +81,11 @@ RRF_C = 2
 BM25_WEIGHT = 0.8
 VECTOR_WEIGHT = 0.2
 
+# Puestos del top-k reservados a normas aplicables (si hay candidatas). Medido
+# sobre el ground truth v0.2 (k=4): con 0 cupos solo se reordena y el acierto
+# no cambia (0.724); con 1 sube a 0.741 y normativa 7→8/18, sin bajar
+# jurisprudencia (0.875); 2 cupos no añaden nada, así que se queda en 1.
+CUPOS_NORMATIVA = 1
 
 # Palabras vacías del español que no aportan señal léxica al BM25.
 _STOPWORDS_ES: frozenset[str] = frozenset(
@@ -440,6 +445,55 @@ def _diversificar_sentencias(docs: list[Document], tope: int) -> list[Document]:
     return [*primeros, *extra]
 
 
+def _es_norma_aplicable(doc: Document, lugares: set[str]) -> bool:
+    """Norma nacional, o norma local de un lugar que la consulta menciona.
+
+    Las normas locales de otras ciudades no cuentan: la prioridad territorial
+    ya las posterga y la jerarquía no debe devolverlas al frente.
+    """
+    meta = doc.metadata or {}
+    if meta.get("doc_type") != "normativa":
+        return False
+    lugar = lugar_de_norma(meta)
+    return lugar is None or lugar in lugares
+
+
+def _priorizar_normativa(
+    seleccion: list[Document],
+    candidatos: Sequence[Document],
+    queries: Sequence[str],
+    cupos: int,
+) -> list[Document]:
+    """Jerarquía normativa: la norma va antes que la jurisprudencia.
+
+    1. Si la selección tiene menos de ``cupos`` normas aplicables y quedan
+       normas aplicables entre los ``candidatos`` no seleccionados, cada una
+       reemplaza a la jurisprudencia peor ubicada de la selección. Nunca
+       cambia el tamaño de la selección ni quita normas.
+    2. Partición estable: las normas aplicables primero, luego el resto, cada
+       grupo en su orden de fusión. Así el modelo lee la norma (REMAC,
+       decretos, leyes) antes que las sentencias que la interpretan.
+    """
+    lugares = lugares_mencionados(queries)
+    seleccion = list(seleccion)
+    faltan = cupos - sum(_es_norma_aplicable(d, lugares) for d in seleccion)
+    if faltan > 0:
+        ya = {id(d) for d in seleccion}
+        reservas = [d for d in candidatos if id(d) not in ya and _es_norma_aplicable(d, lugares)]
+        for norma in reservas[:faltan]:
+            juris = [
+                i
+                for i, d in enumerate(seleccion)
+                if (d.metadata or {}).get("doc_type") == "jurisprudencia"
+            ]
+            if not juris:
+                break
+            seleccion[juris[-1]] = norma
+    normas = [d for d in seleccion if _es_norma_aplicable(d, lugares)]
+    resto = [d for d in seleccion if not _es_norma_aplicable(d, lugares)]
+    return [*normas, *resto]
+
+
 class HybridEnsembleRetriever(BaseRetriever):
     """
     Retriever híbrido que combina varios sub-retrievers usando
@@ -468,6 +522,12 @@ class HybridEnsembleRetriever(BaseRetriever):
     # 0.724→0.759, documento en top-20 0.793→0.828, normativa 7→8/18; cuesta
     # artículos 0.201→0.175 (un caso). Las normas no tienen tope.
     fragmentos_por_sentencia: int | None = 1
+    # Jerarquía normativa (pedida por el equipo jurídico): la norma aplicable
+    # va antes que la jurisprudencia en el contexto, y se le reservan
+    # ``cupos_normativa`` puestos si hay normas entre los candidatos. Ver
+    # ``_priorizar_normativa`` y CUPOS_NORMATIVA para la medición.
+    normativa_primero: bool = True
+    cupos_normativa: int = CUPOS_NORMATIVA
 
     @model_validator(mode="after")
     def _validate_retrievers_and_weights_match(self) -> HybridEnsembleRetriever:
@@ -543,13 +603,10 @@ class HybridEnsembleRetriever(BaseRetriever):
         if self.priorizar_territorio and queries:
             ordered_docs = _priorizar_territorio(ordered_docs, queries)
 
-        selected: list[Document] = []
-        for doc in ordered_docs:
-            if len(selected) >= self.max_results:
-                break
-            if not _has_retrievable_content(doc.page_content or ""):
-                continue
-            selected.append(doc)
+        candidatos = [d for d in ordered_docs if _has_retrievable_content(d.page_content or "")]
+        selected = candidatos[: self.max_results]
+        if self.normativa_primero and queries:
+            selected = _priorizar_normativa(selected, candidatos, queries, self.cupos_normativa)
         return selected
 
     def _get_relevant_documents(

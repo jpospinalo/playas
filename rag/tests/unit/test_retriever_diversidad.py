@@ -39,6 +39,8 @@ def _ids(docs: list[Document]) -> list[str]:
 
 
 def _ret(docs: list[Document], max_results: int = 3, **kw) -> HybridEnsembleRetriever:
+    # Aísla la diversificación: la jerarquía normativa tiene sus propios tests.
+    kw.setdefault("normativa_primero", False)
     return HybridEnsembleRetriever(
         retrievers=[_Static(docs=docs)], weights=[1.0], max_results=max_results, **kw
     )
