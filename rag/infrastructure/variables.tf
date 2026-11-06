@@ -152,7 +152,7 @@ variable "query_enrichment_enabled" {
 variable "register_enabled" {
   description = "Permitir registro público de usuarios en /api/auth/register"
   type        = bool
-  default     = false
+  default     = true
 }
 
 # ── S3 ────────────────────────────────────────────────────────────────────────
