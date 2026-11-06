@@ -116,6 +116,26 @@ _INVALID_CITATIONS_RESPONSE = (
 )
 
 
+_SALUDOS = (
+    "hola",
+    "buenos días",
+    "buenos dias",
+    "buenas tardes",
+    "buenas noches",
+    "buen día",
+    "buen dia",
+    "buenas",
+)
+_CORTESIAS = frozenset(
+    "cómo como estás estas está esta qué que tal vas va todo bien buenas buenos días dias tardes".split()
+)
+_GREETING_RESPONSE = (
+    "Hola. Cuéntame tu caso y busco las normas y sentencias que apliquen.\n\n"
+    "Me ayuda saber:\n" + _DATOS_QUE_FALTAN + "\n\n"
+    "Por ejemplo:\n" + _EJEMPLOS_CONSULTA
+)
+
+
 def _conversation_response(question: str) -> str:
     """Responde interacciones sociales sin presentar una identidad al usuario."""
     normalized = re.sub(r"[^a-záéíóúñü\s]", "", question.casefold()).strip()
@@ -123,14 +143,14 @@ def _conversation_response(question: str) -> str:
         return "Con gusto."
     if any(term in normalized for term in ("adiós", "adios", "hasta luego")):
         return "Hasta luego."
-    saludos = ("hola", "buenos días", "buenas tardes", "buenas noches", "buen día")
-    for saludo in saludos:
+    for saludo in _SALUDOS:
         if normalized.startswith(saludo):
             # Un saludo seguido de un asunto («hola, tengo un problema con la
             # playa») ya es una consulta: se pide el dato que falta en vez de
-            # obligar a repetirla.
-            resto = normalized[len(saludo) :].split()
-            return _CLARIFICATION_RESPONSE if len(resto) >= 2 else "Hola. ¿Cuál es tu consulta?"
+            # obligar a repetirla. Un saludo solo, o con cortesías («hola,
+            # ¿cómo estás?»), recibe la guía con ejemplos.
+            resto = [w for w in normalized[len(saludo) :].split() if w not in _CORTESIAS]
+            return _CLARIFICATION_RESPONSE if len(resto) >= 2 else _GREETING_RESPONSE
     return _CONVERSATION_RESPONSE
 
 

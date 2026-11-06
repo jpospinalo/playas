@@ -55,6 +55,8 @@ def test_original_question_is_preserved_in_retrieval_and_generation() -> None:
 
 
 def test_social_responses_do_not_present_an_assistant_identity() -> None:
-    assert _conversation_response("Hola") == "Hola. ¿Cuál es tu consulta?"
+    saludo = _conversation_response("Hola")
+    assert saludo.startswith("Hola.")
+    assert "ATLAS" not in saludo and "soy " not in saludo.casefold()
     assert _conversation_response("Gracias") == "Con gusto."
     assert "ATLAS" not in _conversation_response("¿Qué puedes hacer?")

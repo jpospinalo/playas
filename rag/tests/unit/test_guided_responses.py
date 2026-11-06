@@ -131,8 +131,20 @@ def test_saludo_con_problema_guia_en_vez_de_preguntar_cual_es_la_consulta() -> N
     )
 
 
-def test_saludo_solo_sigue_siendo_breve() -> None:
-    from rag.core.agent import _conversation_response
+def test_saludo_solo_guia_con_ejemplos() -> None:
+    """Quien solo saluda suele no saber qué preguntar: se le muestran los datos
+    útiles y ejemplos en vez de un «¿Cuál es tu consulta?» seco."""
+    from rag.core.agent import _EJEMPLOS_CONSULTA, _conversation_response
 
-    assert _conversation_response("Hola") == "Hola. ¿Cuál es tu consulta?"
-    assert _conversation_response("buenas tardes!") == "Hola. ¿Cuál es tu consulta?"
+    for saludo in (
+        "Hola",
+        "buenas tardes!",
+        "buenas",
+        "hola, ¿cómo estás?",
+        "hola que tal",
+        "buenos dias",
+    ):
+        respuesta = _conversation_response(saludo)
+        assert respuesta.startswith("Hola."), saludo
+        assert _EJEMPLOS_CONSULTA in respuesta, saludo
+        assert "puede estar dentro del ámbito" not in respuesta, saludo
