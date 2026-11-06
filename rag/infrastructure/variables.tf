@@ -147,6 +147,14 @@ variable "query_enrichment_enabled" {
   default     = true
 }
 
+# ── Autenticación ─────────────────────────────────────────────────────────────
+
+variable "register_enabled" {
+  description = "Permitir registro público de usuarios en /api/auth/register"
+  type        = bool
+  default     = false
+}
+
 # ── S3 ────────────────────────────────────────────────────────────────────────
 
 variable "s3_bucket_name" {
