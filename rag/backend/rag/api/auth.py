@@ -111,6 +111,7 @@ async def get_current_user(
         **user,
         "email": db_user.email,
         "display_name": db_user.display_name,
+        "user_type": db_user.user_type,
         "role": db_user.role,
     }
 

@@ -31,7 +31,12 @@ interface AuthContextValue {
 	/** Mensaje a mostrar en el login cuando la sesión se cerró por expiración, no por logout manual. */
 	sessionExpiredMessage: string | null;
 	signIn: (email: string, password: string) => Promise<void>;
-	signUp: (email: string, password: string, displayName: string | null) => Promise<void>;
+	signUp: (
+		email: string,
+		password: string,
+		displayName: string | null,
+		userType: string | null,
+	) => Promise<void>;
 	signOut: () => Promise<void>;
 }
 
@@ -150,12 +155,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 			user_id: string;
 			email: string;
 			display_name: string | null;
+			user_type: string | null;
 			role: string;
 		};
 		const authUser: AuthUser = {
 			user_id: data.user_id,
 			email: data.email,
 			display_name: data.display_name,
+			user_type: data.user_type,
 			role: data.role,
 		};
 		setAuth(data.access_token, authUser);
@@ -168,11 +175,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 		email: string,
 		password: string,
 		displayName: string | null,
+		userType: string | null,
 	): Promise<void> {
 		const res = await fetch(`${API_URL}/api/auth/register`, {
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify({ email, password, display_name: displayName }),
+			body: JSON.stringify({
+				email,
+				password,
+				display_name: displayName,
+				user_type: userType,
+			}),
 			signal: withRestTimeout(),
 		});
 		if (!res.ok) {
@@ -185,12 +198,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 			user_id: string;
 			email: string;
 			display_name: string | null;
+			user_type: string | null;
 			role: string;
 		};
 		const authUser: AuthUser = {
 			user_id: data.user_id,
 			email: data.email,
 			display_name: data.display_name,
+			user_type: data.user_type,
 			role: data.role,
 		};
 		setAuth(data.access_token, authUser);

@@ -66,6 +66,7 @@ export function AuthModal({ open, onClose, dismissible = true }: AuthModalProps)
   const [confirmPassword, setConfirmPassword] = useState("");
   const [nombres, setNombres] = useState("");
   const [apellidos, setApellidos] = useState("");
+  const [userType, setUserType] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -77,6 +78,7 @@ export function AuthModal({ open, onClose, dismissible = true }: AuthModalProps)
     setConfirmPassword("");
     setNombres("");
     setApellidos("");
+    setUserType("");
     setShowPassword(false);
     setError(null);
     setSubmitting(false);
@@ -87,6 +89,7 @@ export function AuthModal({ open, onClose, dismissible = true }: AuthModalProps)
     setMode(next);
     setPassword("");
     setConfirmPassword("");
+    setUserType("");
     setError(null);
   }
 
@@ -94,6 +97,11 @@ export function AuthModal({ open, onClose, dismissible = true }: AuthModalProps)
     e.preventDefault();
     if (submitting) return;
     setError(null);
+
+    if (mode === "register" && password.length < 8) {
+      setError("La contraseña debe tener al menos 8 caracteres.");
+      return;
+    }
 
     if (mode === "register" && password !== confirmPassword) {
       setError("Las contraseñas no coinciden.");
@@ -104,7 +112,7 @@ export function AuthModal({ open, onClose, dismissible = true }: AuthModalProps)
     try {
       if (mode === "register") {
         const displayName = `${nombres.trim()} ${apellidos.trim()}`.trim() || null;
-        await signUp(email, password, displayName);
+        await signUp(email, password, displayName, userType.trim() || null);
       } else {
         await signIn(email, password);
       }
@@ -282,6 +290,26 @@ export function AuthModal({ open, onClose, dismissible = true }: AuthModalProps)
                 </div>
               )}
 
+              {mode === "register" && (
+                <div>
+                  <label
+                    htmlFor="auth-user-type"
+                    className="mb-1.5 block text-xs font-medium text-muted"
+                  >
+                    Tipo de usuario
+                  </label>
+                  <input
+                    id="auth-user-type"
+                    type="text"
+                    value={userType}
+                    onChange={(e) => setUserType(e.target.value)}
+                    placeholder="Ej. turista, pescador, comerciante"
+                    className={inputClass}
+                    disabled={submitting}
+                  />
+                </div>
+              )}
+
               <div>
                 <label
                   htmlFor="auth-email"
@@ -315,6 +343,7 @@ export function AuthModal({ open, onClose, dismissible = true }: AuthModalProps)
                     type={showPassword ? "text" : "password"}
                     autoComplete={mode === "register" ? "new-password" : "current-password"}
                     required
+                    minLength={mode === "register" ? 8 : undefined}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"
@@ -330,6 +359,9 @@ export function AuthModal({ open, onClose, dismissible = true }: AuthModalProps)
                     <EyeIcon open={showPassword} />
                   </button>
                 </div>
+                {mode === "register" && (
+                  <p className="mt-1 text-xs text-subtle">Mínimo 8 caracteres.</p>
+                )}
               </div>
 
               {mode === "register" && (

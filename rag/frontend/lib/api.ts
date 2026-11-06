@@ -78,6 +78,23 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 }
 
 /**
+ * FastAPI serializa los errores de validación de Pydantic como
+ * `{"detail": [{"msg": "...", "loc": [...], "type": "..."}, ...]}`, no como
+ * `{"detail": "..."}`. Sin esto, cualquier 422 (p. ej. contraseña menor a 8
+ * caracteres en el registro) caía al `fallback` genérico y el usuario nunca
+ * veía por qué falló. Devuelve `null` si no hay ningún `msg` usable, para
+ * que el llamador use el `fallback` igual que con cualquier otro cuerpo sin
+ * detalle aprovechable.
+ */
+function formatValidationErrors(detail: unknown[]): string | null {
+	const messages = detail
+		.map((item) => (isRecord(item) && typeof item.msg === "string" ? item.msg.trim() : ""))
+		.filter((msg) => msg.length > 0);
+	if (messages.length === 0) return null;
+	return Array.from(new Set(messages)).join(" ");
+}
+
+/**
  * `true` si el cuerpo no debe mostrarse como texto plano: un content-type
  * que no sea `text/plain`/`application/json` (p. ej. `text/html` de un
  * proxy o balanceador, o algo binario), o un cuerpo que empieza como HTML
@@ -124,6 +141,10 @@ export async function readErrorDetail(
 		const data: unknown = await res.clone().json();
 		if (isRecord(data) && typeof data.detail === "string" && data.detail.trim()) {
 			return data.detail.trim().slice(0, MAX_ERROR_DETAIL_LENGTH);
+		}
+		if (isRecord(data) && Array.isArray(data.detail)) {
+			const formatted = formatValidationErrors(data.detail);
+			if (formatted) return formatted.slice(0, MAX_ERROR_DETAIL_LENGTH);
 		}
 		// JSON válido pero sin `detail` usable: nunca se reintenta como texto
 		// plano (eso mostraría el JSON serializado tal cual).

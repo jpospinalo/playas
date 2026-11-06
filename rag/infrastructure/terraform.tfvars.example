@@ -16,3 +16,4 @@ google_api_key = ""
 # s3_bucket_name = "rag-playas-data-xxxxxxxxx"
 # backend_image_tag  = "v1.0.0"
 # frontend_image_tag = "v1.0.0"
+# register_enabled = true   # habilita /api/auth/register (por defecto: false)

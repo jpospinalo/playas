@@ -73,6 +73,32 @@ describe("readErrorDetail — lectura vigente del detalle de un error HTTP", () 
 		const res = new Response("", { status: 500 });
 		await expect(readErrorDetail(res)).resolves.toBe("Error del servidor (500)");
 	});
+
+	it("extrae los mensajes de un `detail` en forma de lista (422 de Pydantic/FastAPI)", async () => {
+		const res = new Response(
+			JSON.stringify({
+				detail: [
+					{
+						type: "string_too_short",
+						loc: ["body", "password"],
+						msg: "String should have at least 8 characters",
+					},
+				],
+			}),
+			{ status: 422, headers: { "Content-Type": "application/json" } },
+		);
+		await expect(readErrorDetail(res)).resolves.toBe(
+			"String should have at least 8 characters",
+		);
+	});
+
+	it("cae al fallback cuando el `detail` en lista no tiene ningún `msg` usable", async () => {
+		const res = new Response(JSON.stringify({ detail: [{ loc: ["body", "password"] }] }), {
+			status: 422,
+			headers: { "Content-Type": "application/json" },
+		});
+		await expect(readErrorDetail(res, "Fallback")).resolves.toBe("Fallback");
+	});
 });
 
 describe("queryRagStream — contrato vigente del parser SSE (casos ya soportados hoy)", () => {

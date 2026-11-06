@@ -124,7 +124,8 @@ resource "aws_ecs_task_definition" "app" {
         { name = "OLLAMA_EMBEDDING_MODEL",   value = var.ollama_embedding_model },
         { name = "OLLAMA_RERANKER_MODEL",    value = var.ollama_reranker_model },
         { name = "QUERY_ENRICHMENT_ENABLED", value = tostring(var.query_enrichment_enabled) },
-        { name = "S3_BUCKET_NAME",           value = var.s3_bucket_name }
+        { name = "S3_BUCKET_NAME",           value = var.s3_bucket_name },
+        { name = "REGISTER_ENABLED",         value = tostring(var.register_enabled) }
       ]
 
       dependsOn = [{
