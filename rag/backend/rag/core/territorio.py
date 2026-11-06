@@ -17,6 +17,7 @@ ofrece:
 
 from __future__ import annotations
 
+import re
 import unicodedata
 from collections.abc import Iterable, Mapping, Sequence
 from typing import Any
@@ -73,6 +74,11 @@ def plano(texto: str) -> str:
     return "".join(c for c in descompuesto if unicodedata.category(c) != "Mn")
 
 
+def _nombra(texto_plano: str, palabra: str) -> bool:
+    """``palabra`` aparece como palabra completa: «turbocompresor» no es Turbo."""
+    return re.search(rf"(?<!\w){re.escape(palabra)}(?!\w)", texto_plano) is not None
+
+
 def lugar_de_norma(metadata: Mapping[str, Any] | None) -> str | None:
     """Lugar de una norma local, o ``None`` si no es normativa local.
 
@@ -84,7 +90,7 @@ def lugar_de_norma(metadata: Mapping[str, Any] | None) -> str | None:
         return None
     titulo = plano(str(metadata.get("title", "")))
     for lugar, palabras in LUGARES.items():
-        if any(palabra in titulo for palabra in palabras):
+        if any(_nombra(titulo, palabra) for palabra in palabras):
             return lugar
     return None
 
@@ -95,7 +101,7 @@ def lugares_mencionados(textos: Iterable[str]) -> set[str]:
     return {
         lugar
         for lugar, palabras in LUGARES.items()
-        if any(palabra in unidos for palabra in palabras)
+        if any(_nombra(unidos, palabra) for palabra in palabras)
     }
 
 

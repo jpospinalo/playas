@@ -118,7 +118,7 @@ def _tokenize_bm25(text: str) -> list[str]:
     ``plano`` (minúsculas y sin tildes), se extraen palabras con
     ``\\w+``, se descartan las palabras vacías del español y los tokens de
     una sola letra, y se reduce un plural ligero final ("playas" → "playa",
-    "concesiones" → "concesion").
+    "concesiones" → "concesion"; "parque" y "parques" → "parqu").
 
     Medido sobre el corpus congelado (ground truth v0.2, 66 casos) junto con
     el cambio de pesos a BM25 0.8 / vector 0.2: hit@4 de la ruta de producción
@@ -133,6 +133,10 @@ def _tokenize_bm25(text: str) -> list[str]:
         if len(token) > 4 and token.endswith("es"):
             token = token[:-2]
         elif len(token) > 4 and token.endswith("s"):
+            token = token[:-1]
+        elif len(token) > 3 and token.endswith("e"):
+            # «parque»/«parques» → «parqu»: sin esto el singular conservaba la
+            # «e» y el plural la perdía al quitar «es», y nunca coincidían.
             token = token[:-1]
         resultado.append(token)
     return resultado

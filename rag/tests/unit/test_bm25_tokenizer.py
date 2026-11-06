@@ -34,3 +34,22 @@ def test_los_numeros_se_conservan_y_los_digitos_sueltos_se_descartan():
     assert _tokenize_bm25("2324") == ["2324"]
     # "5.3.6.2" se parte en cuatro tokens de longitud 1, que se descartan.
     assert _tokenize_bm25("5.3.6.2") == []
+
+
+def test_singular_y_plural_en_e_dan_el_mismo_termino():
+    """«parque» y «parques» deben coincidir: antes daban «parque» y «parqu»."""
+    for singular, plural in [
+        ("parque", "parques"),
+        ("ambiente", "ambientes"),
+        ("deslinde", "deslindes"),
+        ("restaurante", "restaurantes"),
+        ("nave", "naves"),
+        ("base", "bases"),
+    ]:
+        assert _tokenize_bm25(singular) == _tokenize_bm25(plural), singular
+
+
+def test_plural_en_es_tras_consonante_sigue_igual():
+    assert _tokenize_bm25("concesiones") == _tokenize_bm25("concesion")
+    assert _tokenize_bm25("bienes") == _tokenize_bm25("bien")
+    assert _tokenize_bm25("playas") == _tokenize_bm25("playa")

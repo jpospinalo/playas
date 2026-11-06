@@ -137,3 +137,14 @@ def test_no_se_descarta_ningun_documento():
 
     assert Counter(_ids(resultado)) == Counter(_ids(docs))
     assert LUGARES["turbo"] == ("turbo",)
+
+
+def test_lugares_mencionados_exige_palabra_completa():
+    """«turbocompresor» no es Turbo ni «barullo» es Barú."""
+    from rag.core.territorio import lugares_mencionados
+
+    assert lugares_mencionados(["la lancha tiene un turbocompresor"]) == set()
+    assert lugares_mencionados(["hubo mucho barullo en la playa"]) == set()
+    assert lugares_mencionados(["vendo en Barú"]) == {"cartagena"}
+    assert lugares_mencionados(["playa de Turbo, Antioquia"]) == {"turbo"}
+    assert lugares_mencionados(["El Rodadero."]) == {"santa marta"}
