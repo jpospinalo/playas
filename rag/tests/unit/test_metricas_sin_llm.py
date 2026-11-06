@@ -142,6 +142,28 @@ def test_una_referencia_mencionada_en_la_pregunta_no_cuenta_como_sin_respaldo():
     assert fila["refs_sin_respaldo"] == []
 
 
+def test_referencia_en_metadatos_del_contexto_si_tiene_respaldo():
+    """El modelo ve «Artículo: 5.3.1.2» en el bloque de contexto aunque el texto
+    del fragmento no lo repita: citarlo no es inventarlo."""
+    fila = metricas_respuesta(
+        _caso(),
+        answer="El artículo 5.3.1.2 del REMAC [doc1] exige la solicitud.",
+        contexts=["La solicitud debe contener copia de..."],
+        context_block="[doc1]\nNorma: REMAC 5\nArtículo: 5.3.1.2\nLa solicitud debe contener copia de...",
+    )
+    assert fila["refs_sin_respaldo"] == []
+    assert fila["respuestas_con_refs_sin_respaldo"] is False
+
+
+def test_sin_bloque_de_contexto_se_mide_contra_los_fragmentos():
+    fila = metricas_respuesta(
+        _caso(),
+        answer="El artículo 5.3.1.2 del REMAC [doc1] exige la solicitud.",
+        contexts=["La solicitud debe contener copia de..."],
+    )
+    assert fila["refs_sin_respaldo"] == ["art 5.3.1.2"]
+
+
 def test_cita_fuera_de_rango_es_invalida():
     fila = metricas_respuesta(_caso(), answer="Según [doc3].", contexts=["a", "b"])
     assert fila["citas_validas"] is False

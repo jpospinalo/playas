@@ -121,3 +121,27 @@ def test_el_contador_atribuye_el_respaldo_solo_al_caso_que_lo_produjo() -> None:
         return await asyncio.gather(caso(True), caso(False))
 
     assert asyncio.run(ambos()) == [1, 0]
+
+
+def test_la_cache_guarda_el_bloque_de_contexto_que_vio_el_modelo() -> None:
+    from langchain_core.documents import Document
+
+    from evaluation.generation_cache import context_fields
+    from rag.core.tools import build_context_block
+
+    docs = [
+        Document(
+            page_content="La solicitud debe contener copia de...",
+            metadata={"doc_type": "normativa", "title": "REMAC 5", "articulo": "5.3.1.2"},
+        )
+    ]
+    campos = context_fields(docs)
+    assert campos["contexts"] == ["La solicitud debe contener copia de..."]
+    assert campos["context_titles"] == ["REMAC 5"]
+    assert campos["context_block"] == build_context_block(docs)
+
+
+def test_sin_fuentes_el_bloque_de_contexto_queda_vacio() -> None:
+    from evaluation.generation_cache import context_fields
+
+    assert context_fields([]) == {"contexts": [], "context_titles": [], "context_block": ""}

@@ -320,10 +320,22 @@ def metricas_respuesta(
     answer: str,
     contexts: list[str],
     context_titles: list[str] | None = None,
+    context_block: str | None = None,
 ) -> dict[str, Any]:
-    """Métricas de una respuesta ya generada, contra sus propios fragmentos."""
+    """Métricas de una respuesta ya generada, contra sus propios fragmentos.
+
+    ``context_block`` es el texto exacto que recibió el modelo (fragmentos más
+    las líneas de metadatos «Norma:», «Artículo:», «Radicado:»). Si está, el
+    respaldo se mide contra él: citar el artículo que el modelo vio en los
+    metadatos no es inventarlo. Las cachés antiguas no lo guardan y se miden
+    solo contra los fragmentos.
+    """
     citadas = referencias_legales(answer)
-    respaldo = referencias_legales(" ".join(contexts)) | referencias_legales(caso["pregunta"])
+    respaldo = (
+        referencias_legales(" ".join(contexts))
+        | referencias_legales(context_block or "")
+        | referencias_legales(caso["pregunta"])
+    )
     sin_respaldo = sorted(citadas - respaldo)
     esperados = caso["documentos_esperados"]
     return {
@@ -675,7 +687,11 @@ def main() -> int:
     if cache:
         filas_r = [
             metricas_respuesta(
-                por_id[r["case_id"]], r["answer"], r["contexts"] or [], r.get("context_titles")
+                por_id[r["case_id"]],
+                r["answer"],
+                r["contexts"] or [],
+                r.get("context_titles"),
+                r.get("context_block"),
             )
             for r in cache
             if r.get("answer") and r.get("contexts")

@@ -141,6 +141,22 @@ def case_fallback_counter() -> Iterator[EnrichmentFallbackCounter]:
         _CURRENT_FALLBACK.reset(token)
 
 
+def context_fields(sources: list[Any]) -> dict[str, Any]:
+    """Fragmentos, títulos y el bloque de contexto exacto que recibió el modelo.
+
+    ``context_block`` incluye las líneas de metadatos («Norma:», «Artículo:»,
+    «Radicado:») que ``build_context_block`` añade; ``metricas_sin_llm`` lo usa
+    para no contar como inventada una referencia que el modelo sí vio.
+    """
+    from rag.core.tools import build_context_block
+
+    return {
+        "contexts": [d.page_content for d in sources],
+        "context_titles": [str((d.metadata or {}).get("title", "")) for d in sources],
+        "context_block": build_context_block(sources) if sources else "",
+    }
+
+
 def pending_cases(cases: list[dict[str, Any]], done_ids: set[str]) -> list[dict[str, Any]]:
     return [case for case in cases if case["id"] not in done_ids]
 
@@ -195,8 +211,7 @@ async def _run_case(graph: Any, case: dict[str, Any]) -> dict[str, Any]:
         "route": route,
         "enriched_query": final_state.get("enriched_query"),
         "answer": answer,
-        "contexts": [d.page_content for d in sources],
-        "context_titles": [str((d.metadata or {}).get("title", "")) for d in sources],
+        **context_fields(sources),
         "outcome": classify_outcome(route, answer) if error is None else "error",
         "error": error,
         "duration_seconds": round(time.monotonic() - start, 2),
