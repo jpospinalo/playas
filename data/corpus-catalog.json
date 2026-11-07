@@ -831,7 +831,7 @@
         "Magistrado ponente": 72,
         "Radicado": 72,
         "entities": 12,
-        "summary": 2
+        "summary": 3
       },
       "export_records_matched_by_id": 72,
       "export_text_mismatches": 28,
@@ -1039,7 +1039,7 @@
         "Magistrado ponente": 117,
         "Radicado": 117,
         "entities": 28,
-        "summary": 1,
+        "summary": 2,
         "total_chunks_in_section": 103
       },
       "export_records_matched_by_id": 117,
@@ -2357,7 +2357,7 @@
         "section_heading": 1072,
         "section_index": 953,
         "section_name": 946,
-        "summary": 421,
+        "summary": 423,
         "titulo": 32,
         "total_chunks_in_section": 3655
       },
@@ -4021,9 +4021,9 @@
         "sha256": "1603b25704f829fb39336a84a33bb382536bc018275f9dc584fb7dd3eed05133"
       },
       {
-        "bytes": 162544,
+        "bytes": 162661,
         "path": "data/documents/gold/jurisprudencia/CE_2da_NYR_1998_102_Flury_Valencia_VS_MinDefensa_Uso_Urbanistico_Playa.jsonl",
-        "sha256": "8877168fd51518673caadfb8da2b872199acc88bd8c9b7e999d058e15eaacbca"
+        "sha256": "058f2f6490caf1bc5c27b069c3fd4f683576273e759624eec6cba5eddbff9d38"
       },
       {
         "bytes": 75304,
@@ -4046,9 +4046,9 @@
         "sha256": "453f4f9ce30066cb83b63400a341b920b7b97b892c49929056ac285af26bda2a"
       },
       {
-        "bytes": 255102,
+        "bytes": 255215,
         "path": "data/documents/gold/jurisprudencia/CE_Consulta_2010_071_MinAmbiente_Bienes_De_Uso_Publico.jsonl",
-        "sha256": "20eb711a1561369fb7c9bd6878d117e6825d6a2961d201de75c9afa93ac4c3d4"
+        "sha256": "2665a4b7a4e9bdf1811ba36aa8777e2f535389b3f8b6978768e2d4e862e6d270"
       },
       {
         "bytes": 676397,

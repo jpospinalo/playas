@@ -82,7 +82,7 @@ def build_context_block(docs: list[Document]) -> str:
             if articulo:
                 meta_lines.append(f"Artículo: {articulo}")
             if summary:
-                meta_lines.append(f"Resumen: {summary}")
+                meta_lines.append(f"Resumen auxiliar (contrastar con el cuerpo): {summary}")
         else:
             # Jurisprudencia (o tipo ausente/desconocido por compatibilidad).
             # Chroma puede almacenar la clave con distintas variantes de encoding
@@ -92,6 +92,7 @@ def build_context_block(docs: list[Document]) -> str:
             magistrado = sanitize_replacement_chars(meta.get("Magistrado ponente", ""))
             tema = sanitize_replacement_chars(meta.get("Tema principal", ""))
             section = sanitize_replacement_chars(meta.get("section_name", ""))
+            section_heading = sanitize_replacement_chars(meta.get("section_heading", ""))
 
             meta_lines = []
             if corporacion:
@@ -102,12 +103,15 @@ def build_context_block(docs: list[Document]) -> str:
                 meta_lines.append(f"Tema principal: {tema}")
             if section:
                 meta_lines.append(f"Sección: {section}")
+            if section_heading:
+                meta_lines.append(f"Encabezado: {section_heading}")
             if summary:
-                meta_lines.append(f"Resumen: {summary}")
+                meta_lines.append(f"Resumen auxiliar (contrastar con el cuerpo): {summary}")
 
         parts = [header]
         if meta_lines:
             parts.append("\n".join(meta_lines))
+        parts.append("Texto del fragmento:")
         parts.append(sanitize_replacement_chars(d.page_content or ""))
         bloques.append("\n".join(parts))
 
