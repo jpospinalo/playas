@@ -6,6 +6,33 @@ sistema dual de feedback y panel de administración.
 
 ---
 
+## Estado de esta rama
+
+Versión final del frontend integrada con el backend (rama `juan-felipe`).
+
+**Qué incluye**
+
+- Conexión real con el servicio RAG: respuestas con streaming y fuentes completas, con opción de copiar la referencia.
+- Hilo de conversación: seguimiento de preguntas del mismo tema, retomar una pregunta después de que la sesión vence y plegado del hilo largo ("Ver las N preguntas anteriores").
+- Panel de administración con temas y seguimientos del hilo, encuestas (una vez por persona) y descargas.
+- Diseño v3.1 (colores y espera por etapas) y ajustes de accesibilidad: letra grande, pantallas de 320 px, zoom al 200 %.
+- Protección de privacidad en el mismo celular: el borrador y la pregunta pendiente pertenecen a su dueño.
+
+**Cómo correrlo**
+
+```bash
+cd rag/frontend
+bun install
+bun dev            # http://localhost:3000, requiere .env.local con NEXT_PUBLIC_API_URL
+bun run test       # 365 pruebas
+bun run typecheck && bun run lint
+bun run build
+```
+
+**Dependencia con el backend.** El hilo y el panel usan endpoints nuevos de `rag/backend`, así que esta rama trae también esos cambios. Las migraciones de base de datos (`rag/infrastructure/migrations/`) solo agregan tablas y traen su `down.sql`. No se modificó `main`.
+
+---
+
 ## Stack tecnológico
 
 | Paquete | Versión | Propósito |
