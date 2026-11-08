@@ -797,7 +797,7 @@
         "total_chunks_in_section": 2
       },
       "export_records_matched_by_id": 66,
-      "export_text_mismatches": 20,
+      "export_text_mismatches": 21,
       "format": ".pdf",
       "gold_chunks": 68,
       "gold_ids_missing_export": 2,
@@ -1994,7 +1994,7 @@
     },
     {
       "code": "text_mismatches",
-      "detail": "1278 registros; diferencia de snapshots, no autorización para reemplazar datos",
+      "detail": "1279 registros; diferencia de snapshots, no autorización para reemplazar datos",
       "path": "data/chroma-rag_playas_magdalena-20260731-135720.jsonl.gz",
       "severity": "warning"
     },
@@ -2649,7 +2649,7 @@
           "source": "decreto-2324-de-1984.md"
         }
       ],
-      "text_mismatches": 1278
+      "text_mismatches": 1279
     },
     "files": [
       {
@@ -3123,9 +3123,9 @@
         "sha256": "9b97922ecea0b05f655e035650d010886b7d48b43ff1cbf2b2e220c6d19264c3"
       },
       {
-        "bytes": 44394,
+        "bytes": 44397,
         "path": "data/documents/bronze/jurisprudencia/CE_2da_NYR_1994_993_Inversiones_Araujo_VS_Capitania_Puerto_Cartagena_Urbanismo_Playa.md",
-        "sha256": "ec946fc35f18a34d39ea7849535d065a5e6749e6d3d7194c50172446e27caf6a"
+        "sha256": "711424ba1aa12406fbf88be514a2e4a38a4e21ac88acb5b1cdb38367ee467414"
       },
       {
         "bytes": 714,
@@ -4018,9 +4018,9 @@
         "sha256": "5f9ce27cdf67c3fe069d5952c6a089b2750c08ea9310b9666a2902e6020bad92"
       },
       {
-        "bytes": 149020,
+        "bytes": 149023,
         "path": "data/documents/gold/jurisprudencia/CE_2da_NYR_1994_993_Inversiones_Araujo_VS_Capitania_Puerto_Cartagena_Urbanismo_Playa.jsonl",
-        "sha256": "16a22ac2d9de90c7f1e2d971565f3a22ebd3636150a0ffacfb3922bc201757ea"
+        "sha256": "c085293d99047eaba186367f15d77d7a3475ce53e6ebd2a344c8754adfaf6069"
       },
       {
         "bytes": 162661,
@@ -4583,9 +4583,9 @@
         "sha256": "ca5549ac9d3d7f28a2c24f5b141f90de2d77d1f9e8639a78d3701c60c1d6d583"
       },
       {
-        "bytes": 46060,
+        "bytes": 46063,
         "path": "data/documents/silver/jurisprudencia/CE_2da_NYR_1994_993_Inversiones_Araujo_VS_Capitania_Puerto_Cartagena_Urbanismo_Playa.jsonl",
-        "sha256": "fe5b531b22761e239e475c66d5363ebcf30946b1b16d55d0dca94d2d04ffadbf"
+        "sha256": "518ec8087cd2b5a87ee5829a36d869ea4bebfda7dfff1278f71428d2eea10c7c"
       },
       {
         "bytes": 51824,
