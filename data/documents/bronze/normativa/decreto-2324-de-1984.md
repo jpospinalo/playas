@@ -1850,36 +1850,36 @@ pendientes fluctuantes entre los 45º y 90º con altura variable.
 Artículo 168: Reglamentaci ón. Se reglamentará el uso y goce de todas las playas marítimas y de los 
 terrenos de bajamar.  
  
-Artículo 169: Concesiones. La Dirección Marítima y Portuaria podrá otorgar concesiones para uso y go ce 
-de las playas marítimas y de los terrenos de bajamar, exi girá para tal fin los siguientes requisitos:  
+Artículo 169: Concesiones. La Dirección Marítima y Portuaria podrá otorgar concesiones para uso y goce 
+de las playas marítimas y de los terrenos de bajamar, exigirá para tal fin los siguientes requisitos:  
  
-1. Presentar solicitud formal de concesión ante la Dirección General Marítima y Portuaria, por inter medio 
-de las Capitanías de Puerto, indicando ubicación y linderos del terreno o zona en que se quiere cons truir, 
+1. Presentar solicitud formal de concesión ante la Dirección General Marítima y Portuaria, por intermedio 
+de las Capitanías de Puerto, indicando ubicación y linderos del terreno o zona en que se quiere construir, 
 así como su extensión:  
  
 2. La solicitud debe acompañarse de los siguientes documentos:  
  
-a. Una certificación del Alcalde o autoridad policiva correspondiente en la cual conste que el terre no 
-sobre el cual se va a construir no está ocupado por otra pe rsona; que no está destinado a ningún uso 
+a. Una certificación del Alcalde o autoridad policiva correspondiente en la cual conste que el terreno 
+sobre el cual se va a construir no está ocupado por otra persona; que no está destinado a ningún uso 
 público, ni a ningún servicio oficial; que la construcción proyectada no ofrece ningún inconveniente  a la 
 respectiva municipalidad.  
  
-b. Los planos de la construcción proyectada, levantados por personas o firmas au torizadas para estos 
+b. Los planos de la construcción proyectada, levantados por personas o firmas autorizadas para estos 
 fines.  
  
 c. Un concepto del Instituto de Desarrollo de los Recursos Naturales Renovables (INDERENA), en que 
 se exprese que las explotaciones o construcciones para las cuales se solicita el permiso no son 
-contrarias a las normas de cons ervación y protección de los recursos naturales renovables existentes en 
+contrarias a las normas de conservación y protección de los recursos naturales renovables existentes en 
 la zona.  
  
 d. Concepto de la Corporación Nacional de Turismo de Colombia en que conste que las explotaciones o 
-construcciones que se pretenden adelantar no interfieren los programas d e desarrollo turístico de la 
+construcciones que se pretenden adelantar no interfieren los programas de desarrollo turístico de la 
 zona.  
  
-e. Estudios de vientos, mareas, corrientes y profundidades, así como de constitución y resistencia d e los 
+e. Estudios de vientos, mareas, corrientes y profundidades, así como de constitución y resistencia de los 
 suelos.  
  
-f. Certificación de la empresa "Puertos de Colombia" en la que se exprese que no existe ningún proye cto 
+f. Certificación de la empresa "Puertos de Colombia" en la que se exprese que no existe ningún proyecto 
 de instalaciones portuarias sobre el terreno o zona.  
  
 g. Paz y salvo de la Administración de Hacienda Nacional y de la Contraloría General de la República  por 

@@ -1960,7 +1960,7 @@
         "norma": 239
       },
       "export_records_matched_by_id": 239,
-      "export_text_mismatches": 0,
+      "export_text_mismatches": 3,
       "format": ".md",
       "gold_chunks": 239,
       "gold_ids_missing_export": 0,
@@ -1994,7 +1994,7 @@
     },
     {
       "code": "text_mismatches",
-      "detail": "1275 registros; diferencia de snapshots, no autorización para reemplazar datos",
+      "detail": "1278 registros; diferencia de snapshots, no autorización para reemplazar datos",
       "path": "data/chroma-rag_playas_magdalena-20260731-135720.jsonl.gz",
       "severity": "warning"
     },
@@ -2649,7 +2649,7 @@
           "source": "decreto-2324-de-1984.md"
         }
       ],
-      "text_mismatches": 1275
+      "text_mismatches": 1278
     },
     "files": [
       {
@@ -3923,9 +3923,9 @@
         "sha256": "06139556e7f0112a6c7c06996b876f22310b6ae05ccb2c9e675339f5599be64d"
       },
       {
-        "bytes": 121541,
+        "bytes": 121530,
         "path": "data/documents/bronze/normativa/decreto-2324-de-1984.md",
-        "sha256": "e495d6d7e97dee0d0f0a4fe139ac8a530d61046bfd904bd4511d917b78ed5081"
+        "sha256": "9ce109fed979f001e4a09e1f2c80c9a8619a12a5386f3f9a9584c0c487375164"
       },
       {
         "bytes": 286499,
@@ -4203,9 +4203,9 @@
         "sha256": "1c9de00c3e4b6b01e7b2ab404383db938356222e321096a1cfa0f8b6f177c5f0"
       },
       {
-        "bytes": 433641,
+        "bytes": 433628,
         "path": "data/documents/gold/normativa/decreto-2324-de-1984.jsonl",
-        "sha256": "21fec4d8c2be02231a64a3c4837b5280dfb2ec49a2bb092ac2cc1369377c6166"
+        "sha256": "d5e88ba02ef740c9da9047af98604ae4949040c60a5ebab1837c21508dd41d13"
       },
       {
         "bytes": 1232386,
@@ -4768,9 +4768,9 @@
         "sha256": "87eeaac692c86411bf4518cd06dabc16ef80f0ede500bad551388419912f22f9"
       },
       {
-        "bytes": 180695,
+        "bytes": 180684,
         "path": "data/documents/silver/normativa/decreto-2324-de-1984.jsonl",
-        "sha256": "2852e813ac62529f410aa810551813848195fd5665a4ace873f3b640d45971e7"
+        "sha256": "cb83a294effc00390ebbbcfad0098be7247c29aa0ab6ddbc5589ffcb7c3485d0"
       }
     ]
   },
