@@ -218,7 +218,7 @@
       "coverage": "not_verified",
       "doc_type": "jurisprudencia",
       "export_metadata_differences": {
-        "summary": 2,
+        "summary": 3,
         "total_chunks_in_section": 82
       },
       "export_records_matched_by_id": 105,
@@ -478,11 +478,13 @@
         "Corporación": 103,
         "Magistrado ponente": 103,
         "Radicado": 103,
-        "entities": 11,
+        "entities": 12,
+        "keywords": 2,
+        "keywords_str": 2,
         "section_heading": 1,
         "section_index": 1,
         "section_name": 1,
-        "summary": 1,
+        "summary": 2,
         "total_chunks_in_section": 54
       },
       "export_records_matched_by_id": 103,
@@ -1647,7 +1649,7 @@
       "coverage": "not_verified",
       "doc_type": "normativa",
       "export_metadata_differences": {
-        "entities": 6,
+        "entities": 7,
         "norma": 28,
         "summary": 2
       },
@@ -1986,7 +1988,7 @@
     },
     {
       "code": "records_with_metadata_differences",
-      "detail": "4782 registros; diferencia de snapshots, no autorización para reemplazar datos",
+      "detail": "4783 registros; diferencia de snapshots, no autorización para reemplazar datos",
       "path": "data/chroma-rag_playas_magdalena-20260731-135720.jsonl.gz",
       "severity": "warning"
     },
@@ -2350,20 +2352,20 @@
         "articulo_titulo": 136,
         "capitulo": 66,
         "chunk_index": 1363,
-        "entities": 1061,
-        "keywords": 344,
-        "keywords_str": 345,
+        "entities": 1063,
+        "keywords": 346,
+        "keywords_str": 347,
         "norma": 524,
         "section_heading": 1072,
         "section_index": 953,
         "section_name": 946,
-        "summary": 424,
+        "summary": 426,
         "titulo": 32,
         "total_chunks_in_section": 3655
       },
       "path": "data/chroma-rag_playas_magdalena-20260731-135720.jsonl.gz",
       "records": 5888,
-      "records_with_metadata_differences": 4782,
+      "records_with_metadata_differences": 4783,
       "sha256": "28b7a3076d1c7ad0aa3ef2a4394e31423cdd5358f691fdc6a6104f7e15712d2d",
       "sources": [
         {
@@ -3951,9 +3953,9 @@
         "sha256": "331cc96d4a1aed88862ac8fd6819073c214b274b6a9428543109be088d5a3992"
       },
       {
-        "bytes": 253252,
+        "bytes": 253318,
         "path": "data/documents/gold/jurisprudencia/AP Inversiones E y D S.A.S VS DIMAR y otros.jsonl",
-        "sha256": "7453467f6beafd39cd03f79eac2fbfc7a9c05c0b33d1db16cc2bc42ea2d30c6b"
+        "sha256": "97570ba69d86cf1e23ae5a9c12cfefd2325d7bdc03c9f3313577eeadacb0a226"
       },
       {
         "bytes": 200752,
@@ -3981,9 +3983,9 @@
         "sha256": "dbad21d250bbdfe2f40fc5c553f1792ca3185f90fbd6885bbb5b3c3515fea8fa"
       },
       {
-        "bytes": 240268,
+        "bytes": 240270,
         "path": "data/documents/gold/jurisprudencia/CE_2da_AP_2010_028_Radley_Bent_VS_Dimar_Daños_Ambientales_Embarcaciones.jsonl",
-        "sha256": "2e34279eb75db1f1e2e144c137f5ff7def4c3df6b7d495abf6775c58ac223b8c"
+        "sha256": "c7b23c8cfd61aec8dcc2c1ca76f58cf976e254793f3e03b27dbab68618468401"
       },
       {
         "bytes": 360370,
@@ -4151,9 +4153,9 @@
         "sha256": "9b25f6a88725fb941f48e1b786daa70b52cb85fc2f8fca80726eb7dc1d14e39e"
       },
       {
-        "bytes": 56489,
+        "bytes": 56501,
         "path": "data/documents/gold/normativa/Por medio de la cual se reglamenta el área de playa en el Balneario Turístico El Rodadero.jsonl",
-        "sha256": "dc52981a562ae2f69e3a129fb9938a86c77ac7935ffac5c9c4dda70ff8aab73e"
+        "sha256": "23311317b3eaf512048d8bb407a98371efed1bab063dba0baa555713febc3513"
       },
       {
         "bytes": 36918,
