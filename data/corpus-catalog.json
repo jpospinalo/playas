@@ -793,7 +793,7 @@
         "section_heading": 2,
         "section_index": 2,
         "section_name": 2,
-        "summary": 1,
+        "summary": 2,
         "total_chunks_in_section": 2
       },
       "export_records_matched_by_id": 66,
@@ -2359,7 +2359,7 @@
         "section_heading": 1072,
         "section_index": 953,
         "section_name": 946,
-        "summary": 426,
+        "summary": 427,
         "titulo": 32,
         "total_chunks_in_section": 3655
       },
@@ -4018,9 +4018,9 @@
         "sha256": "5f9ce27cdf67c3fe069d5952c6a089b2750c08ea9310b9666a2902e6020bad92"
       },
       {
-        "bytes": 148831,
+        "bytes": 149020,
         "path": "data/documents/gold/jurisprudencia/CE_2da_NYR_1994_993_Inversiones_Araujo_VS_Capitania_Puerto_Cartagena_Urbanismo_Playa.jsonl",
-        "sha256": "1603b25704f829fb39336a84a33bb382536bc018275f9dc584fb7dd3eed05133"
+        "sha256": "16a22ac2d9de90c7f1e2d971565f3a22ebd3636150a0ffacfb3922bc201757ea"
       },
       {
         "bytes": 162661,
