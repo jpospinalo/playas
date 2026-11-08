@@ -660,7 +660,7 @@
         "section_heading": 112,
         "section_index": 18,
         "section_name": 18,
-        "summary": 3,
+        "summary": 4,
         "total_chunks_in_section": 116
       },
       "export_records_matched_by_id": 116,
@@ -2357,7 +2357,7 @@
         "section_heading": 1072,
         "section_index": 953,
         "section_name": 946,
-        "summary": 423,
+        "summary": 424,
         "titulo": 32,
         "total_chunks_in_section": 3655
       },
@@ -4001,9 +4001,9 @@
         "sha256": "1b9b7cf562a569214e905f5a7cb4e3501afdc5329091dacb0eaf35dcbc89444a"
       },
       {
-        "bytes": 261368,
+        "bytes": 261467,
         "path": "data/documents/gold/jurisprudencia/CE_2da_AP_2016_328_Ricardo_Cabrales_VS_Mun_Coveñas_Playa_Uso_Publico.jsonl",
-        "sha256": "35fcd50d61e8379c08b3fe22f241ba481302025b2850dcd4b5918ab6d04ad5dc"
+        "sha256": "bba086162de6114dcc95a53d1f7d943c90d2607effb385c708b35b128bd6b3ba"
       },
       {
         "bytes": 272812,
