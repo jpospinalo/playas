@@ -115,9 +115,9 @@ variable "chroma_port" {
 }
 
 variable "chroma_collection" {
-  description = "Nombre de la colección de ChromaDB"
+  description = "Colección de la entrega Gold A; el deploy la verifica antes de aplicar ECS"
   type        = string
-  default     = "rag_playas"
+  default     = "rag_playas_gold_a_cc7bf44b54a9"
 }
 
 # ── Ollama ────────────────────────────────────────────────────────────────────

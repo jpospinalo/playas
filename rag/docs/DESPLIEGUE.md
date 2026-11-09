@@ -9,15 +9,14 @@ Para el despliegue en AWS ECS Fargate (alternativa a este stack de un solo host)
 
 El código y la entrega Gold A actual se conservan en `corpus`. Consultar
 [versiones y recuperación de Chroma](../../data/chroma-releases/README.md) antes
-de elegir un respaldo. El despliegue automático mediante bastion clona la rama
-predeterminada remota y selecciona un archivo de `data/*.jsonl.gz`; ejecutarlo
-desde una copia local de `corpus` no selecciona esa rama ni el paquete nuevo.
+de elegir un respaldo. El despliegue mediante bastion de esta rama clona
+`corpus`, comprueba el commit publicado y restaura Gold A en
+`rag_playas_gold_a_cc7bf44b54a9`. Mantiene la colección antigua como histórica.
 
 Registrar explícitamente el commit de código, versión del paquete, perfil de
-embeddings y colección de destino. La restauración comprobada en una colección
-nueva y su prueba funcional no autorizan cambiar la colección activa. La
-selección de la entrega para producción requiere una operación revisada aparte;
-esta guía no cambia los scripts ni la configuración desplegada.
+embeddings y colección de destino. Ejecutar los scripts de despliegue es una
+operación distinta de publicarlos. Este camino está preparado en `corpus` y
+no modifica `main` ni cambia una aplicación desplegada hasta que se ejecute.
 
 ---
 
@@ -33,7 +32,7 @@ esta guía no cambia los scripts ni la configuración desplegada.
 ## 1. Clonar el repositorio y ubicarse en `rag/`
 
 ```bash
-git clone https://github.com/jpospinalo/playas.git
+git clone --branch corpus --single-branch https://github.com/jpospinalo/playas.git
 cd playas/rag
 ```
 
@@ -53,7 +52,7 @@ Valores obligatorios a definir:
 # ── Servicios externos (EC2) ──────────────────────────────────────────────────
 CHROMA_HOST=<dominio-o-IP-del-servidor-ChromaDB>
 CHROMA_PORT=8000
-CHROMA_COLLECTION=rag_playas
+CHROMA_COLLECTION=rag_playas_gold_a_cc7bf44b54a9
 
 OLLAMA_BASE_URL=http://<dominio-o-IP-del-servidor-Ollama>:11434
 OLLAMA_EMBEDDING_MODEL=embeddinggemma:latest
@@ -84,11 +83,10 @@ NEXT_PUBLIC_API_URL=
 
 ## 3. Importar documentos en ChromaDB
 
-El ejemplo siguiente corresponde al export histórico de `data/`. Para Gold A,
-seguir la [referencia de recuperación](../../data/chroma-releases/README.md):
-el importador genérico permite reutilizar o borrar colecciones y no sustituye
-al restaurador supervisado. No mover el paquete nuevo a la raíz de `data/`
-para forzar su selección automática.
+Usar la [recuperación de Gold A](../../data/chroma-releases/README.md), con el
+restaurador dedicado. No mover el paquete a la raíz de `data/` ni usar el
+importador histórico para este despliegue. La restauración conserva los
+vectores y no necesita generar embeddings nuevos.
 
 Antes de presentar la aplicación, comprobar conectividad y que la colección
 seleccionada contiene la entrega esperada. El índice BM25 vacío ya se maneja
@@ -96,29 +94,24 @@ sin `ZeroDivisionError`; eso no hace que una colección vacía sea apta para
 responder con evidencia.
 
 ```bash
-cd /ruta/al/archivo/exportacion
-
-python3 import_to_chromadb.py chroma-rag_playas_magdalena-YYYYMMDD-HHMMSS.jsonl.gz \
+cd /ruta/al/repositorio
+python3 -B data/restore_gold_release.py --execute \
   --host <CHROMA_HOST> \
   --port 8000 \
-  --collection rag_playas
+  --ollama-base-url http://<OLLAMA_HOST>:11434 \
+  --receipt /ruta/recibo-nuevo.jsonl
 ```
 
-Verificar el conteo tras la importación:
-
-```bash
-python3 - <<'EOF'
-import chromadb
-c = chromadb.HttpClient(host="<CHROMA_HOST>", port=8000)
-print(c.get_collection("rag_playas").count(), "documentos")
-EOF
-```
+El restaurador verifica los registros completos; un conteo aislado no basta.
+Para comprobar un destino ya preparado, añadir `--verify-only`; nunca se
+reescribe una colección existente.
 
 ---
 
 ## 4. Construir y levantar el stack
 
 ```bash
+cd /ruta/al/repositorio/rag
 docker compose up -d --build
 ```
 

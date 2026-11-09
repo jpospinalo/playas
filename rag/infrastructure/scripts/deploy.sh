@@ -13,6 +13,9 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 INFRA_DIR="${SCRIPT_DIR}/.."
+REPO_DIR="$(cd "${SCRIPT_DIR}/../../.." && pwd)"
+# shellcheck source=../../../scripts/corpus_release.sh
+source "${REPO_DIR}/scripts/corpus_release.sh"
 REGION="${AWS_DEFAULT_REGION:-us-east-1}"
 # Coincide con local.name_prefix = var.project + "-" + var.environment (defaults)
 NAME_PREFIX="rag-playas-prod"
@@ -26,6 +29,21 @@ reset='\033[0m'
 log()  { echo -e "${bold}▶ $*${reset}"; }
 ok()   { echo -e "${green}✓ $*${reset}"; }
 warn() { echo -e "${yellow}⚠ $*${reset}"; }
+
+# A direct ECS deploy must not activate a legacy tfvars collection or skip the
+# package/profile check. Only concrete endpoint fields are read from tfvars.
+corpus_release_check_local "${REPO_DIR}"
+TFVARS="${INFRA_DIR}/terraform.tfvars"
+[[ -f "${TFVARS}" ]] || { echo "Falta terraform.tfvars con destinos concretos." >&2; exit 1; }
+CHROMA_HOST_VAL="$(corpus_release_tfvar "${TFVARS}" chroma_host)"
+CHROMA_PORT_VAL="$(corpus_release_tfvar "${TFVARS}" chroma_port 8000)"
+OLLAMA_URL_VAL="$(corpus_release_tfvar "${TFVARS}" ollama_base_url)"
+corpus_release_wait_ollama "${REPO_DIR}" "${OLLAMA_URL_VAL}"
+RECEIPT_DIR="$(corpus_release_receipt_directory verify)"
+log "Verificando Gold y su modelo de consultas antes de activar la colección en ECS..."
+corpus_release_restore "${REPO_DIR}" "${CHROMA_HOST_VAL}" "${CHROMA_PORT_VAL}" \
+  "${OLLAMA_URL_VAL}" "${RECEIPT_DIR}/receipt.json" --verify-only
+ok "Entrega verificada; recibo: ${RECEIPT_DIR}/receipt.json"
 
 # ── Helpers de reconciliación ─────────────────────────────────────────────────
 # Si un SG existe en AWS con distinto ID al del state (o sin estado), lo importa.
@@ -69,7 +87,11 @@ reconcile_sg "aws_security_group.frontend" "${NAME_PREFIX}-frontend" "${VPC_ID}"
 # ── 2. Terraform apply ────────────────────────────────────────────────────────
 log "Aplicando infraestructura ECS..."
 
-APPLY_ARGS=()
+APPLY_ARGS=(-var "chroma_collection=${CORPUS_RELEASE_COLLECTION}"
+            -var "ollama_embedding_model=${CORPUS_RELEASE_MODEL}"
+            -var "chroma_host=${CHROMA_HOST_VAL}"
+            -var "chroma_port=${CHROMA_PORT_VAL}"
+            -var "ollama_base_url=${OLLAMA_URL_VAL}")
 if [[ "${1:-}" == "--auto-approve" ]]; then
   APPLY_ARGS+=("-auto-approve")
 fi

@@ -79,7 +79,10 @@ El script crea las EC2 con IP estática, actualiza las variables de entorno del 
 ./vector-infraestructura/scripts/deploy.sh --auto-approve
 ```
 
-Al finalizar, `rag/.env` y `rag/infrastructure/terraform.tfvars` quedan actualizados con `CHROMA_HOST` y `OLLAMA_BASE_URL`.
+En `corpus`, se restaura la entrega Gold A corregida y se verifica su contenido
+antes de actualizar host, colección y modelo en `rag/.env` y
+`rag/infrastructure/terraform.tfvars`. La versión antigua se conserva como
+histórica. Ver [selección y recuperación](data/chroma-releases/README.md).
 
 ### 2. Aplicación RAG en ECS Fargate
 
@@ -138,8 +141,11 @@ repositorio y ejecuta los pasos 1 y 2 del despliegue automático descritos arrib
 Requisitos:
 
 - Key pair `vockey` ya creado en EC2 (estándar en AWS Academy) y su `.pem` descargado localmente
-- `rag/.env` con `OPENAI_API_KEY` configurada (se transfiere a la EC2 por stdin, nunca queda
-  expuesta en logs ni en el script)
+- `rag/.env` con una única asignación `OPENAI_API_KEY`, sin comillas o con
+  comillas simples/dobles coincidentes. Se comprueba localmente su formato
+  antes de AWS, sin autenticarla ni mostrarla en errores. Se transfiere por stdin.
+- Rama local `corpus` limpia y publicada en el remoto; Python 3.11 o posterior
+  para comprobar el respaldo antes de crear recursos.
 
 ```bash
 KEY_FILE=/ruta/a/vockey.pem ./scripts/deploy_bastion_ec2.sh
@@ -156,20 +162,22 @@ Terraform, AWS CLI, uv, Session Manager Plugin) sin ejecutar los despliegues de 
 BOOTSTRAP_ONLY=1 KEY_FILE=/ruta/a/vockey.pem ./scripts/deploy_bastion_ec2.sh
 ```
 
-Si ya existe una instancia bastion (`rag-playas-bastion`) corriendo, el script la reutiliza en
-vez de crear una nueva.
+Si ya existe una instancia bastion (`rag-playas-bastion`) corriendo, el script
+puede reutilizarla si no existe su checkout `~/playas`.
 
 > Antes de repetir este despliegue, el responsable de infraestructura debe
 > resguardar los estados Terraform y las configuraciones locales del bastion.
-> El script actual elimina su checkout `~/playas` antes de clonar, también si
-> reutiliza la instancia. No usarlo para encendido/apagado diario ni asumir que
-> conserva esos archivos. `BOOTSTRAP_ONLY=1` tampoco evita esa eliminación.
+> El script se detiene si `~/playas` existe, antes de copiar credenciales o
+> semillas. No elimina ni migra ese checkout. Preparar un destino nuevo solo
+> después de resguardar su contenido; `BOOTSTRAP_ONLY=1` también aplica esta
+> guarda. No usar este despliegue para el encendido/apagado diario.
 
-La versión de Gold y el código de `corpus` requieren selección explícita. El
-bootstrap clona la rama predeterminada remota; los scripts actuales importan un
-export de la raíz de `data/`, no la entrega Gold de `data/chroma-releases/`.
-Consultar [versiones y recuperación](data/chroma-releases/README.md) antes de
-redesplegar. Publicar un respaldo en otra rama no cambia la colección activa.
+En esta rama el bootstrap clona `corpus` y comprueba el commit publicado.
+Selecciona `gold-a-cc7bf44b54a9`, conserva los vectores existentes y configura
+la colección nueva `rag_playas_gold_a_cc7bf44b54a9`. No selecciona exports por
+fecha ni modifica `rag_playas`. Si el paquete, el modelo o la verificación
+fallan, se detiene. Publicar estos cambios no ejecuta un despliegue ni modifica
+`main`. Consultar [versiones y recuperación](data/chroma-releases/README.md).
 
 ---
 
@@ -191,27 +199,29 @@ Actualiza manualmente `rag/.env` y `rag/infrastructure/terraform.tfvars` con los
 ```bash
 # rag/.env
 CHROMA_HOST=<chromadb_public_ip>
+CHROMA_COLLECTION=rag_playas_gold_a_cc7bf44b54a9
 OLLAMA_BASE_URL=http://<ollama_public_ip>:11434
 
 # rag/infrastructure/terraform.tfvars
 chroma_host     = "<chromadb_public_ip>"
+chroma_collection = "rag_playas_gold_a_cc7bf44b54a9"
 ollama_base_url = "http://<ollama_public_ip>:11434"
 ```
 
-El ejemplo siguiente usa el export histórico de la raíz de `data/` y el nombre
-de colección del despliegue tradicional. Requiere haber confirmado servidor y
-destino. Para la entrega Gold A actual, seguir la
-[referencia de recuperación](data/chroma-releases/README.md); no sustituir aquí
-el archivo sin revisar las guardas y la selección de colección.
+Para preparar Gold A manualmente, usar el restaurador dedicado desde la raíz
+del repositorio, con servidor y destino confirmados. El recibo debe ser un
+archivo nuevo en una carpeta local conservada. No se generan embeddings:
 
 ```bash
-cd rag
-uv run python3 ../data/import_to_chromadb.py \
-  ../data/<export-historico>.jsonl.gz \
+python3 -B data/restore_gold_release.py --execute \
   --host <chromadb_public_ip> \
   --port 8000 \
-  --collection rag_playas
+  --ollama-base-url http://<ollama_public_ip>:11434 \
+  --receipt /ruta/recibo-nuevo.jsonl
 ```
+
+El importador genérico y el export de julio se conservan para recuperación
+histórica explícita; no forman parte del despliegue actual de `corpus`.
 
 ### 2. Aplicación RAG en ECS Fargate
 

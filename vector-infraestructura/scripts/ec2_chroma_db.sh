@@ -34,12 +34,22 @@ sleep 10
 # 4. Directorio persistente
 mkdir -p /opt/chroma-data
 
+# This is the observed Docker image configuration ID, not a registry digest.
+# A changed image must be reviewed before accepting the pinned HNSW readback.
+CHROMA_IMAGE="chromadb/chroma:1.3.5"
+CHROMA_IMAGE_ID="sha256:111a6bd768be19721f5b4e88567d0e1d1f5c2ab5161129e711c0a431e667b128"
+docker pull "${CHROMA_IMAGE}"
+if [[ "$(docker image inspect --format '{{.Id}}' "${CHROMA_IMAGE}")" != "${CHROMA_IMAGE_ID}" ]]; then
+  echo "La imagen Chroma no coincide con el build de readback acreditado." >&2
+  exit 1
+fi
+
 # 5. Ejecutar ChromaDB
 docker run -d --name chromadb \
   --restart unless-stopped \
   -p 8000:8000 \
-  -v /opt/chroma-data:/chroma/chroma \
+  -v /opt/chroma-data:/data \
   -e IS_PERSISTENT=TRUE \
-  chromadb/chroma:1.3.5
+  "${CHROMA_IMAGE}"
 
 echo "==== FIN SETUP CHROMADB ===="

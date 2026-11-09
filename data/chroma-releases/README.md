@@ -1,6 +1,6 @@
 # Respaldos lógicos Gold de Chroma
 
-Esta carpeta conserva paquetes versionados con documentos, metadata adaptada y vectores existentes. Un respaldo, una colección restaurada y la colección utilizada por el RAG son estados distintos: publicar o recuperar un paquete no activa esa colección.
+Esta carpeta conserva paquetes versionados con documentos, metadata adaptada y vectores existentes. En la rama `corpus`, el despliegue selecciona Gold A `cc7bf44b54a9` y configura `rag_playas_gold_a_cc7bf44b54a9` después de verificarla. Publicar el código no ejecuta ese despliegue ni modifica la colección de una aplicación que ya está funcionando.
 
 ## Paquetes y evidencia
 
@@ -30,17 +30,54 @@ El commit `9c5dc755…` identifica la incorporación del respaldo probado; la gu
 
 El verificador usa Python 3.11 o posterior y solo su biblioteca estándar. Comprueba los cinco archivos, registros, IDs, payloads, vectores y procedencia anclada; no conecta servicios, genera embeddings ni necesita rutas históricas. Un retorno distinto de cero exige detenerse. Conservar juntos los cinco archivos y sus nombres; la carpeta puede trasladarse sin cambiar el contenido.
 
-## Recuperar en un servidor nuevo
+## Restaurador del despliegue de corpus
+
+El punto de entrada es [deploy_bastion_ec2.sh](../../scripts/deploy_bastion_ec2.sh).
+Exige una copia limpia y publicada de `corpus`, comprueba el paquete antes de
+crear recursos y clona esa rama verificando el commit. La entrega se obtiene
+del repositorio: no se copian automáticamente exports locales antiguos.
+
+[restore_gold_release.py](../restore_gold_release.py) verifica y restaura la
+entrega fija, con biblioteca estándar de Python 3.11 o posterior:
+
+```sh
+# Solo lectura local: sin AWS, Chroma u Ollama.
+python3 -I -S -B data/restore_gold_release.py --check
+
+# Operación remota: ejecutar solo con el destino confirmado y sin otras escrituras.
+python3 -B data/restore_gold_release.py --execute \
+  --host <chroma-host> --port 8000 \
+  --ollama-base-url http://<ollama-host>:11434 \
+  --receipt /ruta/recibo-nuevo.jsonl
+```
+
+El recibo debe estar fuera del repositorio, ser nuevo y tener su carpeta con
+permisos `0700`; se conserva ante
+fallos. Los scripts crean esa carpeta bajo `~/.local/state/playas-corpus/`.
+Resguardar los recibos antes de terminar el laboratorio. El restaurador no solicita
+embeddings, no borra colecciones y no escribe en `rag_playas`. Si la colección
+versionada ya existe, solo la verifica: reutiliza una coincidencia completa y
+se detiene ante una carga parcial o diferente. No continúa ni corrige lotes de
+una ejecución incierta. `--verify-only` comprueba un destino existente sin
+crearlo ni escribir; el script de ECS lo usa antes de aplicar su configuración.
+
+La colección, los modelos y el destino se configuran después de la verificación.
+Un fallo no permite volver automáticamente al export de julio. Los scripts de
+esta rama fuerzan la colección versionada también frente a un `tfvars` antiguo.
+Ejecutar Terraform manualmente fuera de los scripts requiere conservar esa
+selección explícita y hacer previamente las mismas comprobaciones.
+
+## Controles de recuperación
 
 La recuperación requiere una configuración operativa nueva y explícita. Las direcciones, claves públicas, UUID y aprobaciones de un laboratorio anterior no se convierten en valores predeterminados.
 
 1. Acreditar servidor, acceso, tenant/database, runtime y capacidad actuales. Identificar la colección activa e inventariar los UUID preexistentes; protegerlos contra escrituras y conservar sus referencias de contenido.
-2. Elegir un nombre nuevo, acreditar su ausencia y crear una sola colección sin reutilización. Su UUID será nuevo: no exigir ni adoptar el UUID del ensayo anterior. No usar `--recreate`, borrar colecciones ni cambiar la configuración activa del RAG.
-3. Cargar exclusivamente los registros y vectores existentes del paquete, con un restaurador revisado para ese destino. No ejecutar ingesta, reindexar Gold ni generar embeddings documentales. La restauración de estos datos no necesita Ollama ni un LLM.
-4. Registrar intención y resultados durables, cargar serialmente y comprobar readback por ID: cuerpos, metadata con sus tipos, dimensión, representación vectorial acreditada y conteos. Al terminar, exigir 5.862 IDs únicos sin faltantes ni extras, búsquedas técnicas comprobadas y preservación de las colecciones protegidas. Un ACK o un conteo aislados no bastan.
+2. Usar el nombre versionado. Si existe, verificarlo por completo sin escribir; si falta, crear una sola colección con UUID nuevo, sin adoptar el del ensayo anterior. No usar `--recreate` ni borrar colecciones. El cambio de configuración del RAG ocurre después de la verificación.
+3. Cargar exclusivamente los registros y vectores existentes del paquete. No ejecutar ingesta, reindexar Gold ni generar embeddings documentales. Los datos no necesitan un modelo para restaurarse; el camino de despliegue consulta Ollama por lectura para comprobar la compatibilidad del modelo que después usará el RAG.
+4. Registrar intención y resultados durables, cargar serialmente y comprobar readback por ID: cuerpos, metadata con sus tipos, dimensión, representación vectorial acreditada y conteos. Al terminar, exigir 5.862 IDs únicos sin faltantes ni extras, configuración del índice correcta y preservación de las colecciones protegidas. Un ACK o un conteo aislados no bastan. Estas comprobaciones no califican la calidad de recuperación.
 5. Conservar fallos y resultados inciertos sin reenviar automáticamente. Conciliar por lectura antes de continuar. Dejar la colección nueva inactiva; la selección por el RAG y cualquier despliegue son operaciones separadas.
 
-El archivo de evidencia de validación conserva los auxiliares ejecutados, recibos, seis vectores de consulta, prompts y trazas. **Es evidencia archivada, no una herramienta portable de restauración o despliegue.** Sus auxiliares fijan rutas, roles y destinos particulares: deben adaptarse y revisarse antes de otra ejecución. No ejecutar directamente sus CLI históricas.
+El archivo de evidencia de validación conserva los auxiliares ejecutados, recibos, seis vectores de consulta, prompts y trazas. **Es evidencia archivada, no el restaurador actual.** Sus auxiliares fijan rutas, roles y destinos particulares: no ejecutar directamente sus CLI históricas. La herramienta actual está fuera de los cinco archivos inmutables del paquete.
 
 ## Perfil y lectura vectorial
 
@@ -58,20 +95,42 @@ Los números JSON fuente, su transporte Float32 little-endian/Base64 y el readba
 
 ## Relación con el despliegue existente
 
-El bootstrap [deploy_bastion_ec2.sh](../../scripts/deploy_bastion_ec2.sh) clona la rama predeterminada remota sin fijar `corpus` o commit. Tanto ese bootstrap como [el despliegue vectorial](../../vector-infraestructura/scripts/deploy.sh) buscan únicamente `data/*.jsonl.gz` por fecha de modificación; no seleccionan estas subcarpetas. El despliegue vectorial importa a `rag_playas`. Ejecutarlos no equivale a recuperar ni activar este Gold nuevo.
+El bootstrap [deploy_bastion_ec2.sh](../../scripts/deploy_bastion_ec2.sh),
+[el despliegue vectorial](../../vector-infraestructura/scripts/deploy.sh) y
+[el despliegue ECS](../../rag/infrastructure/scripts/deploy.sh) de `corpus`
+comparten la selección de la entrega corregida. La colección anterior
+`rag_playas`, el export de julio y el paquete padre se conservan como históricos.
+No se renombran ni se migran automáticamente. `main` conserva su propio código
+de despliegue hasta una integración aprobada aparte.
 
 [import_to_chromadb.py](../import_to_chromadb.py) puede leer el formato del gzip, pero permite reutilizar una colección, borrarla con `--recreate` y continuar después de errores por lote. La cabecera de este paquete no fija host, puerto o colección: sin argumentos operativos explícitos el importador utiliza sus valores predeterminados. No ofrece las garantías de la recuperación supervisada acreditada.
 
-Antes de otro despliegue, fijar por separado commit, paquete, destino y configuración de modelos. Los scripts actuales que descargan Ollama y `embeddinggemma:latest` no fijan por sí solos el perfil de esta tabla. Consultar también [Despliegue del RAG](../../rag/docs/DESPLIEGUE.md) y [Scripts operacionales](../../rag/docs/SCRIPTS.md).
+Los scripts que descargan Ollama y `embeddinggemma:latest` no garantizan por sí
+solos el perfil de esta tabla. Antes de aceptar la restauración, el restaurador
+contrasta versión, digest, dimensión y contexto declarados por Ollama y se
+detiene ante diferencias. Estas consultas no acreditan paralelismo, tamaños de
+lote ni la identidad completa del runtime histórico. Consultar también
+[Despliegue del RAG](../../rag/docs/DESPLIEGUE.md) y
+[Scripts operacionales](../../rag/docs/SCRIPTS.md).
 
 ## Alcance de la validación y conservación
 
 La restauración lógica y la prueba funcional de seis casos se completaron en el laboratorio del 8 de noviembre de 2026 sin activar la candidata. El PASS técnico coexistió con hallazgos de respaldo textual; no acredita calidad jurídica global, funcionamiento completo de la aplicación o superioridad frente a otras colecciones. Las observaciones del laboratorio no prueban su disponibilidad futura.
 
-Se conserva la reserva de persistencia: en el entorno ensayado SQLite residía en `/data`, fuera del montaje previsto. No se corrigió infraestructura ni se probó supervivencia ante recrear el contenedor. El respaldo lógico permite reconstruir los datos; no es una copia física del servidor.
+En el entorno del ensayo histórico SQLite residía en `/data`, fuera del
+montaje previsto. El aprovisionamiento actual corrige ese montaje para
+contenedores nuevos. No migra los existentes ni acredita su durabilidad;
+tampoco conserva EBS si se destruye la instancia o termina el laboratorio.
+El respaldo lógico permite reconstruir los datos y no es una copia física del
+servidor. El resultado histórico de persistencia permanece sin cambios.
 
 Estos archivos tampoco incluyen pesos o imágenes de modelos, PostgreSQL y sus interacciones, secretos ni estados Terraform. El responsable de cada recurso debe conservar lo necesario bajo su política de respaldo y acceso, fuera del corpus y de la documentación pública. Conservar la cadena externa completa cuando se necesite su alcance forense, además del paquete y la evidencia de validación versionados.
 
 ## Pendientes antes de usar esta entrega en otro despliegue
 
-La preservación de los datos ya no depende del laboratorio. La operación automática todavía debe incorporar selección explícita del código y respaldo, una restauración revisada para el destino nuevo, verificación del modelo de consultas y comprobación de persistencia. Esos cambios del despliegue corresponden a una etapa separada. Las fuentes de los auxiliares quedaron archivadas para poder preparar esa etapa sin depender de esta máquina o del laboratorio anterior.
+La preservación de los datos no depende del laboratorio. Antes de desplegar,
+publicar el commit de `corpus`, confirmar destino, capacidad, perfil y ausencia
+de otras escrituras, y conservar los recibos. Los controles offline de los
+scripts no sustituyen un ensayo real. La persistencia debe verificarse en el
+servidor nuevo; no aplicar automáticamente estas instrucciones a una colección
+activa o a una instancia reutilizada con datos sin respaldar.

@@ -19,6 +19,12 @@ pipeline de datos, provisionado en `../../ingesta/infrastructure/`.
   `postgres_password`, `jwt_secret_key`, `chroma_host`, `ollama_base_url`, y
   al menos una API key de LLM (`openai_api_key` o `google_api_key`).
 
+En `corpus`, `scripts/deploy.sh` verifica Gold A y el modelo antes de aplicar
+Terraform y selecciona `rag_playas_gold_a_cc7bf44b54a9`, incluso si el archivo
+de variables conserva otro nombre. Debe haberse completado el paso vectorial;
+ECS solo verifica y no restaura datos. La colección anterior permanece intacta.
+Ver [entrega y recuperación](../../data/chroma-releases/README.md).
+
 Terraform solo es necesario para **provisionar/desplegar** (`deploy.sh`,
 `push_images.sh`, `terraform plan/apply/destroy`). Las operaciones diarias
 de encendido/apagado (`start.sh`/`stop.sh`) **no usan Terraform en absoluto**:

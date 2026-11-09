@@ -102,8 +102,11 @@ generación de embeddings documentales.
 Los cinco archivos de cada paquete son inmutables. Su estado al empaquetar no
 describe los ensayos posteriores, registrados en la referencia y en la
 [validación de la entrega actual](chroma-releases/gold-a-cc7bf44b54a9-validation/README.md).
-Los scripts de despliegue actuales seleccionan `data/*.jsonl.gz`, no estas
-subcarpetas. Publicar la entrega en `corpus` no la integra en `main` ni la activa.
+Los scripts de despliegue de `corpus` seleccionan esta entrega explícitamente
+y configuran `rag_playas_gold_a_cc7bf44b54a9` solo después de verificarla.
+El export de julio y la colección `rag_playas` quedan como históricos; no se
+borran ni se usan como alternativa automática. Publicar `corpus` no modifica
+`main` ni cambia por sí solo una aplicación ya desplegada.
 
 ## Ground truth
 

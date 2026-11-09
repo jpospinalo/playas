@@ -6,11 +6,11 @@ Los scripts de infraestructura ECS Fargate (`deploy.sh`, `push_images.sh`, `star
 
 Los respaldos lógicos Gold, su estado de validación y la selección explícita
 para recuperarlos están en [versiones y recuperación](../../data/chroma-releases/README.md).
-El exportador y el importador genérico son herramientas distintas: disponer de
-un respaldo no implica que el despliegue lo seleccione o que la colección esté
-activada. Las fuentes congeladas de los auxiliares de ensayo se conservan como
-evidencia de la entrega, con configuración histórica; requieren adaptación y
-revisión antes de ejecutarse en otro laboratorio.
+El despliegue de `corpus` usa `data/restore_gold_release.py` para restaurar o
+verificar la entrega actual y después configurar su colección. El importador
+genérico queda para operaciones históricas explícitas. Las fuentes congeladas
+de auxiliares de ensayo siguen siendo evidencia histórica; no son los scripts
+que ejecuta el despliegue. Publicar un respaldo no lo activa por sí solo.
 
 ---
 
