@@ -109,3 +109,16 @@ data/chroma-releases/gold-a-769a847f096b/*
 !data/chroma-releases/gold-a-769a847f096b/manifest.json
 !data/chroma-releases/gold-a-769a847f096b/README.md
 !data/chroma-releases/gold-a-769a847f096b/verificar_paquete.py
+!data/chroma-releases/README.md
+!data/chroma-releases/gold-a-cc7bf44b54a9/
+data/chroma-releases/gold-a-cc7bf44b54a9/*
+!data/chroma-releases/gold-a-cc7bf44b54a9/GOLD_A.jsonl.gz
+!data/chroma-releases/gold-a-cc7bf44b54a9/PROCEDENCIA_GOLD_A.json
+!data/chroma-releases/gold-a-cc7bf44b54a9/manifest.json
+!data/chroma-releases/gold-a-cc7bf44b54a9/README.md
+!data/chroma-releases/gold-a-cc7bf44b54a9/verificar_paquete.py
+!data/chroma-releases/gold-a-cc7bf44b54a9-validation/
+data/chroma-releases/gold-a-cc7bf44b54a9-validation/*
+!data/chroma-releases/gold-a-cc7bf44b54a9-validation/README.md
+!data/chroma-releases/gold-a-cc7bf44b54a9-validation/validation.json
+!data/chroma-releases/gold-a-cc7bf44b54a9-validation/evidence.jsonl.gz

@@ -4,6 +4,14 @@ Referencia de scripts de despliegue, SageMaker, pruebas de carga, utilidades Chr
 
 Los scripts de infraestructura ECS Fargate (`deploy.sh`, `push_images.sh`, `start.sh`, `stop.sh`, `export_postgres.sh`) están documentados en [`../infrastructure/README.md`](../infrastructure/README.md), no aquí.
 
+Los respaldos lógicos Gold, su estado de validación y la selección explícita
+para recuperarlos están en [versiones y recuperación](../../data/chroma-releases/README.md).
+El exportador y el importador genérico son herramientas distintas: disponer de
+un respaldo no implica que el despliegue lo seleccione o que la colección esté
+activada. Las fuentes congeladas de los auxiliares de ensayo se conservan como
+evidencia de la entrega, con configuración histórica; requieren adaptación y
+revisión antes de ejecutarse en otro laboratorio.
+
 ---
 
 ## Despliegue

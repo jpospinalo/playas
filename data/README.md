@@ -93,7 +93,17 @@ Los dumps PostgreSQL de `backups/` son locales y no se versionan.
 
 ## Respaldo lógico Gold para recuperación
 
-La [entrega versionada Gold A](chroma-releases/gold-a-769a847f096b/README.md) conserva los vectores originales y su procedencia. Su manifiesto registra el estado al empaquetar y los ensayos de recuperación pendientes. Se selecciona explícitamente: los scripts de despliegue actuales no consumen esta subcarpeta ni activan su colección.
+La [referencia de versiones y recuperación](chroma-releases/README.md) identifica
+`gold-a-cc7bf44b54a9` como entrega actual y conserva `gold-a-769a847f096b` como
+padre histórico. El paquete actual contiene cuerpos, metadata y vectores; para
+restaurarlo no se necesitan el laboratorio anterior, el padre ni una nueva
+generación de embeddings documentales.
+
+Los cinco archivos de cada paquete son inmutables. Su estado al empaquetar no
+describe los ensayos posteriores, registrados en la referencia y en la
+[validación de la entrega actual](chroma-releases/gold-a-cc7bf44b54a9-validation/README.md).
+Los scripts de despliegue actuales seleccionan `data/*.jsonl.gz`, no estas
+subcarpetas. Publicar la entrega en `corpus` no la integra en `main` ni la activa.
 
 ## Ground truth
 

@@ -5,6 +5,20 @@ Servicios externos requeridos: ChromaDB y Ollama (embeddings) en EC2.
 
 Para el despliegue en AWS ECS Fargate (alternativa a este stack de un solo host) ver [`infrastructure/README.md`](../infrastructure/README.md). Para la arquitectura del sistema ver [`ARCHITECTURE.md`](ARCHITECTURE.md).
 
+## Selección de código y datos
+
+El código y la entrega Gold A actual se conservan en `corpus`. Consultar
+[versiones y recuperación de Chroma](../../data/chroma-releases/README.md) antes
+de elegir un respaldo. El despliegue automático mediante bastion clona la rama
+predeterminada remota y selecciona un archivo de `data/*.jsonl.gz`; ejecutarlo
+desde una copia local de `corpus` no selecciona esa rama ni el paquete nuevo.
+
+Registrar explícitamente el commit de código, versión del paquete, perfil de
+embeddings y colección de destino. La restauración comprobada en una colección
+nueva y su prueba funcional no autorizan cambiar la colección activa. La
+selección de la entrega para producción requiere una operación revisada aparte;
+esta guía no cambia los scripts ni la configuración desplegada.
+
 ---
 
 ## Requisitos previos
@@ -70,9 +84,16 @@ NEXT_PUBLIC_API_URL=
 
 ## 3. Importar documentos en ChromaDB
 
-Si la colección está vacía, importar el archivo de exportación antes de levantar
-el stack (el backend falla en arranque si ChromaDB no responde o la colección
-está vacía y se necesita BM25).
+El ejemplo siguiente corresponde al export histórico de `data/`. Para Gold A,
+seguir la [referencia de recuperación](../../data/chroma-releases/README.md):
+el importador genérico permite reutilizar o borrar colecciones y no sustituye
+al restaurador supervisado. No mover el paquete nuevo a la raíz de `data/`
+para forzar su selección automática.
+
+Antes de presentar la aplicación, comprobar conectividad y que la colección
+seleccionada contiene la entrega esperada. El índice BM25 vacío ya se maneja
+sin `ZeroDivisionError`; eso no hace que una colección vacía sea apta para
+responder con evidencia.
 
 ```bash
 cd /ruta/al/archivo/exportacion
@@ -170,7 +191,8 @@ docker compose down -v       # elimina también el volumen de PostgreSQL
 
 | Síntoma | Causa | Solución |
 |---------|-------|----------|
-| Backend `unhealthy` al arrancar | ChromaDB inaccesible o colección vacía | Verificar `CHROMA_HOST` y ejecutar el paso 3 |
+| Backend sin conexión a ChromaDB | Host o puerto inaccesible | Verificar destino, conectividad y logs antes de importar datos |
+| `/api/ready` no indica disponibilidad | Base de datos sin respuesta, grafo sin compilar o índice BM25 vacío | Revisar el detalle de readiness y la colección seleccionada |
 | `NetworkError` al consultar en la app | `NEXT_PUBLIC_API_URL` apunta a `localhost:8080` | Dejarlo vacío y reconstruir el frontend |
 | `{"detail":"Not Found"}` en consultas | `NEXT_PUBLIC_API_URL=/api` genera rutas duplicadas (`/api/api/...`) | Dejarlo vacío y reconstruir el frontend |
-| `ZeroDivisionError` en BM25 | Colección ChromaDB vacía al arrancar | Importar documentos antes de levantar el stack |
+| Corpus vacío o sin fuentes recuperables | Colección vacía o distinta de la esperada | Comprobar destino y conteo de la entrega; no iniciar una ingesta para diagnosticarlo |

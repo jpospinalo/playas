@@ -165,6 +165,12 @@ vez de crear una nueva.
 > reutiliza la instancia. No usarlo para encendido/apagado diario ni asumir que
 > conserva esos archivos. `BOOTSTRAP_ONLY=1` tampoco evita esa eliminación.
 
+La versión de Gold y el código de `corpus` requieren selección explícita. El
+bootstrap clona la rama predeterminada remota; los scripts actuales importan un
+export de la raíz de `data/`, no la entrega Gold de `data/chroma-releases/`.
+Consultar [versiones y recuperación](data/chroma-releases/README.md) antes de
+redesplegar. Publicar un respaldo en otra rama no cambia la colección activa.
+
 ---
 
 ## Despliegue manual
@@ -192,14 +198,19 @@ chroma_host     = "<chromadb_public_ip>"
 ollama_base_url = "http://<ollama_public_ip>:11434"
 ```
 
-Importa los datos en ChromaDB una vez que la instancia esté disponible:
+El ejemplo siguiente usa el export histórico de la raíz de `data/` y el nombre
+de colección del despliegue tradicional. Requiere haber confirmado servidor y
+destino. Para la entrega Gold A actual, seguir la
+[referencia de recuperación](data/chroma-releases/README.md); no sustituir aquí
+el archivo sin revisar las guardas y la selección de colección.
 
 ```bash
 cd rag
 uv run python3 ../data/import_to_chromadb.py \
-  ../data/<archivo>.jsonl.gz \
+  ../data/<export-historico>.jsonl.gz \
   --host <chromadb_public_ip> \
-  --port 8000
+  --port 8000 \
+  --collection rag_playas
 ```
 
 ### 2. Aplicación RAG en ECS Fargate
