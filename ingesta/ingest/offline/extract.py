@@ -13,7 +13,7 @@ import unicodedata
 from collections import Counter
 from pathlib import Path
 
-EXTRACTOR_VERSION = "pymupdf-tesseract-spa-2"
+EXTRACTOR_VERSION = "pymupdf-tesseract-spa-3"
 NORMALIZER_VERSION = "nfc-mapped-1"
 MIN_PAGE_CHARS = 80
 
@@ -63,8 +63,14 @@ def _ocr(page, cache, key):
     import csv
     import io
 
+    # El TSV de Tesseract no usa comillas: con el modo por defecto, una palabra que
+    # empieza por '"' abre un campo que se traga las filas siguientes del TSV.
     rows = list(
-        csv.DictReader(io.StringIO(result.stdout.decode("utf-8", "replace")), delimiter="\t")
+        csv.DictReader(
+            io.StringIO(result.stdout.decode("utf-8", "replace")),
+            delimiter="\t",
+            quoting=csv.QUOTE_NONE,
+        )
     )
     lines = {}
     confidences = []

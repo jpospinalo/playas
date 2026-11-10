@@ -1056,6 +1056,31 @@ class ObjectiveMetricsTests(unittest.TestCase):
             self.assertEqual(_ocr(page, Path(temporary), "page"), ("Las playas", False, 70.0))
             self.assertEqual(run.call_count, 1)
 
+    def test_ocr_tsv_word_with_quote_does_not_swallow_rows(self):
+        # Una palabra que empieza por '"' no debe abrir un campo entre comillas.
+        output = (
+            b"level\tpage_num\tblock_num\tpar_num\tline_num\tword_num\tconf\ttext\n"
+            b'5\t1\t1\t1\t1\t1\t90\t"Por\n'
+            b"5\t1\t1\t1\t1\t2\t80\tmedio\n"
+            b"5\t1\t1\t1\t2\t1\t70\tdel\n"
+            b"5\t1\t1\t1\t2\t2\t60\tcual\n"
+        )
+        page = SimpleNamespace(
+            get_pixmap=lambda **kwargs: SimpleNamespace(tobytes=lambda kind: b"png")
+        )
+        with (
+            tempfile.TemporaryDirectory() as temporary,
+            patch.dict(sys.modules, {"fitz": SimpleNamespace(Matrix=lambda *args: None)}),
+            patch(
+                "ingest.offline.extract.subprocess.run",
+                return_value=SimpleNamespace(returncode=0, stdout=output),
+            ),
+        ):
+            text, _, confidence = _ocr(page, Path(temporary), "page")
+        self.assertEqual(text, '"Por medio\ndel cual')
+        self.assertNotIn("\t", text)
+        self.assertEqual(confidence, 75.0)
+
     def test_extraction_metrics_are_objective_and_thresholded(self):
         result = extraction_metrics(
             {
