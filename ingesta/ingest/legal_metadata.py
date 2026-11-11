@@ -6,7 +6,7 @@ import datetime as dt
 import re
 import unicodedata
 
-SCHEMA_VERSION = "legal-metadata-2"
+SCHEMA_VERSION = "legal-metadata-3"
 FIELDS = (
     "tipo_documento",
     "corporacion",
@@ -20,7 +20,96 @@ FIELDS = (
     "ambito",
     "municipio",
     "normas_citadas",
+    "entidad_emisora",
 )
+TIPOS_NORMA = ("Ley", "Decreto", "Decreto Ley", "Resolución", "Acuerdo", "Circular")
+# Campos que identifican cada tipo de documento (puerta de identidad).
+IDENTIDAD_REQUERIDA = {
+    "jurisprudencia": ("corporacion",),
+    "normativa": ("tipo_documento", "numero", "anio"),
+}
+IDENTIDAD_RECOMENDADA = {
+    "jurisprudencia": ("magistrado_ponente",),
+    "normativa": ("entidad_emisora", "fecha_iso"),
+}
+_TIPO = r"(DECRETO(?:[ \t]*-?[ \t]*LEY)?|LEY|RESOLUCI[ÓO]N|ACUERDO|CIRCULAR)"
+_NUMERO = r"(?:N[ÚU]MERO|No\.?|N[°º*]|Nro\.?)?[ \t]*[:.]?[ \t]*(\d{1,5}(?:\.\d{3})?)"
+# Encabezado propio de la norma: una línea que solo contiene tipo, número y año.
+_ENCABEZADO = re.compile(
+    r"(?im)^[ \t]*" + _TIPO + r"[ \t]+" + _NUMERO + r"(?:[ \t]+DEL?[ \t]+(\d{4}))?[ \t]*\.?[ \t]*$"
+)
+# Impresiones de SUIN-Juriscol: «DECRETO 1436 DE 1984 - Colombia | SUIN Juriscol».
+_SUIN = re.compile(
+    r"(?im)^[ \t]*"
+    + _TIPO
+    + r"[ \t]+(\d{1,5})[ \t]+DE[ \t]+(\d{4})[ \t]*-[ \t]*Colombia[ \t]*\|[ \t]*SUIN"
+)
+# Pie del Gestor Normativo de Función Pública: «Decreto 1076 de 2015 Sector ... EVA - Gestor Normativo».
+_GESTOR = re.compile(
+    r"(?im)^[ \t]*"
+    + _TIPO
+    + r"[ \t]+(\d{1,5})[ \t]+de[ \t]+(\d{4})\b[^\n]{0,80}EVA[ \t]*-[ \t]*Gestor[ \t]+Normativo"
+)
+_EMISOR = re.compile(
+    r"(?im)^[ \t]*(?:EL|LA)[ \t]+(PRESIDENTE[ \t]+DE[ \t]+LA[ \t]+REP[ÚU]BLICA"
+    r"|ALCALDE(?:SA)?[^\n,]{0,90}|MINISTR[OA][ \t]+DE[^\n,]{3,70}"
+    r"|CONGRESO[ \t]+DE[ \t]+(?:LA[ \t]+REP[ÚU]BLICA|COLOMBIA)"
+    r"|DIRECTOR[ \t]+GENERAL[ \t]+MAR[ÍI]TIMO[^\n,]{0,40}|GOBERNADOR(?:A)?[^\n,]{0,70}"
+    r"|CONCEJO[^\n,]{0,70}|SUPERINTENDENTE[^\n,]{0,60})"
+)
+
+
+def _tipo_norma(texto):
+    tipo = " ".join(texto.replace("-", " ").split()).casefold()
+    return {
+        "ley": "Ley",
+        "decreto": "Decreto",
+        "decreto ley": "Decreto Ley",
+        "resolución": "Resolución",
+        "resolucion": "Resolución",
+        "acuerdo": "Acuerdo",
+        "circular": "Circular",
+    }[tipo]
+
+
+def identidad_normativa(text):
+    """Tipo, número y año de la PROPIA norma, solo desde formas de encabezado.
+
+    Nunca toma una norma citada dentro de una frase. Devuelve None si el texto
+    (p. ej. un fragmento de compilación) no contiene la identidad de la norma.
+    """
+    head = text[:6000]
+    for patron, origen in ((_ENCABEZADO, "encabezado"), (_SUIN, "suin"), (_GESTOR, "gestor")):
+        match = patron.search(head if patron is not _GESTOR else text)
+        if match:
+            anio = match.group(3)
+            fecha = None
+            if origen == "encabezado":
+                # La fecha de expedición suele ir en las líneas siguientes; una
+                # fecha de otro año es de una norma citada y no se usa. Una fecha
+                # corta «(agosto 2)» justo tras el encabezado toma su año.
+                corta = _FECHA_CORTA.match(text, match.end()) if anio else None
+                if corta:
+                    mes = corta.group(1) or corta.group(4)
+                    dia = corta.group(2) or corta.group(3)
+                    fecha = (int(anio), MONTHS[mes.casefold()], int(dia), corta.group().strip())
+                for candidata in [] if fecha else _fechas(text, match.end(), match.end() + 600):
+                    if not anio or candidata[0] == int(anio):
+                        fecha = candidata
+                        break
+                if not anio and fecha:
+                    anio = fecha[0]
+            return {
+                "tipo": _tipo_norma(match.group(1)),
+                "numero": match.group(2).replace(".", ""),
+                "anio": int(anio) if anio else None,
+                "evidencia": match.group(),
+                "fecha": fecha,
+                "origen": origen,
+            }
+    return None
+
+
 MONTHS = {
     name: i
     for i, name in enumerate(
@@ -30,12 +119,64 @@ MONTHS = {
 }
 
 
+_FECHA = re.compile(
+    r"\b(\d{1,2})(?:\s*\(\d{1,2}\))?\s+de\s+(" + "|".join(MONTHS) + r")\s+de(?:l)?\s+(\d{4})\b",
+    re.I,
+)
+
+
+_FECHA_MES_PRIMERO = re.compile(
+    r"\b(" + "|".join(MONTHS) + r")\s+(\d{1,2})\s+de(?:l)?\s+(\d{4})\b",
+    re.I,
+)
+
+
+_FECHA_CORTA = re.compile(
+    r"\s*\(\s*(?:("
+    + "|".join(MONTHS)
+    + r")\s+(\d{1,2})|(\d{1,2})\s+de\s+("
+    + "|".join(MONTHS)
+    + r"))\s*\)",
+    re.I,
+)
+
+
+def _fechas(text, inicio, fin):
+    """Fechas «15 de octubre de 2024» u «octubre 15 de 2024» en orden de aparición."""
+    encontradas = [
+        (m.start(), int(m.group(3)), MONTHS[m.group(2).casefold()], int(m.group(1)), m.group())
+        for m in _FECHA.finditer(text, inicio, fin)
+    ] + [
+        (m.start(), int(m.group(3)), MONTHS[m.group(1).casefold()], int(m.group(2)), m.group())
+        for m in _FECHA_MES_PRIMERO.finditer(text, inicio, fin)
+    ]
+    return [f[1:] for f in sorted(encontradas)]
+
+
 def empty(reason="sin_evidencia"):
     return {"valor": None, "evidencia": None, "confianza": 0.0, "razon": reason}
 
 
-def extract_legal_metadata(original):
-    """Cada evidencia es subcadena NFC del original; ausencias explícitas."""
+def identity_gate(metadata, doc_type):
+    """Puerta de identidad por tipo: campos requeridos con evidencia y faltantes."""
+    tipo = doc_type if doc_type in IDENTIDAD_REQUERIDA else "jurisprudencia"
+    campos = metadata["campos"]
+    faltan = [c for c in IDENTIDAD_REQUERIDA[tipo] if campos.get(c, {}).get("valor") is None]
+    if tipo == "normativa" and campos["tipo_documento"]["valor"] not in TIPOS_NORMA:
+        faltan = list(dict.fromkeys(["tipo_documento", *faltan]))
+    recomendados = [
+        c for c in IDENTIDAD_RECOMENDADA[tipo] if campos.get(c, {}).get("valor") is None
+    ]
+    return {"pasa": not faltan, "faltan": faltan, "recomendados_ausentes": recomendados}
+
+
+def extract_legal_metadata(original, doc_type=None):
+    """Cada evidencia es subcadena NFC del original; ausencias explícitas.
+
+    Con ``doc_type="normativa"`` la identidad (tipo, número, año, fecha y
+    entidad emisora) sale solo del encabezado de la propia norma; si el texto
+    no la contiene, esos campos quedan vacíos en lugar de tomar una cita.
+    """
     text = unicodedata.normalize("NFC", original)
     head = text[:10000]
     fields = {name: empty() for name in FIELDS}
@@ -151,6 +292,30 @@ def extract_legal_metadata(original):
             "confianza": 0.8,
             "razon": None,
         }
+    if doc_type == "normativa":
+        identidad = identidad_normativa(text)
+        for name in ("tipo_documento", "numero", "anio", "fecha_iso"):
+            fields[name] = empty("sin_identidad_en_texto")
+        if identidad:
+            confianza = {"encabezado": 0.9, "suin": 0.85, "gestor": 0.75}[identidad["origen"]]
+            assign("tipo_documento", identidad["tipo"], identidad["evidencia"], confianza)
+            assign("numero", identidad["numero"], identidad["evidencia"], confianza)
+            if identidad["anio"]:
+                assign("anio", identidad["anio"], identidad["evidencia"], confianza)
+            fecha = identidad["fecha"]
+            if fecha:
+                anio, mes, dia, evidencia = fecha
+                try:
+                    assign("fecha_iso", dt.date(anio, mes, dia).isoformat(), evidencia, 0.85)
+                    if fields["anio"]["valor"] is None:
+                        assign("anio", anio, evidencia, 0.8)
+                except ValueError:
+                    fields["fecha_iso"] = empty("fecha_invalida")
+        emisor = _EMISOR.search(head)
+        if emisor:
+            valor = " ".join(emisor.group(1).split())
+            valor = re.sub(r"\s+DE$", "", valor, flags=re.I)
+            assign("entidad_emisora", valor[:1].upper() + valor[1:].lower(), emisor.group(), 0.8)
     return {"schema_version": SCHEMA_VERSION, "campos": fields, "conflictos": conflicts}
 
 

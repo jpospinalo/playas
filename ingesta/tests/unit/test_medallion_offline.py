@@ -765,16 +765,18 @@ class QualityComparisonTests(unittest.TestCase):
     def test_quality_bytes_match_previous_reports_and_comparison_uses_chunk_body(self):
         root = self.comparison_layers()
         # Huellas de los tres informes anteriores al procesamiento documento a documento.
+        # legal-metadata-3 añade el campo entidad_emisora: cambia solo el conteo de
+        # metadatos ausentes (verificado retirando el campo: las huellas previas coinciden).
         expected = {
             False: {
-                "quality_por_documento.csv": "915986d02f46344922988ac2ac49bc7430e1b0bc895bca7f53b2fc4d3ab1935a",
-                "quality_report.json": "49ce781ad1208429f7ca7fa927340a3ff2bd9fc12d68fa49e4628e6a07203e0a",
-                "quality_report.md": "df92fdf0d99e753fa471a4d4f115ecc3343b1474d9354424868a2521c39e0621",
+                "quality_por_documento.csv": "2278ed86f50545844821e3911add0efaa214c844fadb013438b15b0db4c5eb31",
+                "quality_report.json": "8ce8f2b1d53ccd5031f9f3f09866e8cae7cc9ee21baac750d3d47feb1c976cf9",
+                "quality_report.md": "3b6177e5919ccbadfef14316ca603847084eaac15bff36b99520955ae8aaa5b3",
             },
             True: {
-                "quality_por_documento.csv": "3af2d5a1d853af4433f6e2127f69faef108a27eb36194ad08206469fb0592613",
-                "quality_report.json": "c5a92aa7672f563a8a88db1d22e6218f4f70c2bcbdf9e7fd876009bc340004d7",
-                "quality_report.md": "8cf143d5b47c8970c3352f492ee45f7fa6d81094d7c8e69fcec3463192760adf",
+                "quality_por_documento.csv": "b28682ac9261640b6fba91c285c52d55a7313d1e3af8bc1e1585402e57ae6061",
+                "quality_report.json": "fe21445b630783d0bb4001086850708d22aee65c5fc9862a5c5fa4ec372b9cad",
+                "quality_report.md": "8b6b41a5fef389751243a18f99b7dc390160b5ee1348aba078d12215cdfe926e",
             },
         }
         for compare in (None, self.v1):

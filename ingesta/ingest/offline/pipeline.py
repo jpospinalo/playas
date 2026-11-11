@@ -17,7 +17,7 @@ from contextlib import contextmanager, nullcontext
 from functools import partial
 from pathlib import Path
 
-from ..legal_metadata import FIELDS, SCHEMA_VERSION
+from ..legal_metadata import FIELDS, SCHEMA_VERSION, identity_gate
 from ..offline_embeddings import DIGEST, DIMENSION, MODEL
 from .chunks import CHUNKER_VERSION, HEADING
 from .extract import (
@@ -94,7 +94,9 @@ def quality(document, cleaned, metadata):
     fields = metadata["campos"]
     return {
         "schema": set(fields) == set(FIELDS),
-        "identity": fields["corporacion"]["valor"] is not None,
+        # Cada tipo se evalúa con sus campos: corporación (jurisprudencia) o
+        # tipo, número y año de la propia norma (normativa).
+        "identity": identity_gate(metadata, metadata.get("doc_type"))["pasa"],
         "characters": document["original"].count("\ufffd") / max(1, len(document["original"]))
         < 0.002,
         "ocr": not document["ocr_failed_pages"],

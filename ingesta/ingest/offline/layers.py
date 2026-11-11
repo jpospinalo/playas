@@ -375,13 +375,15 @@ class Layers:
             metadata = timed(
                 "metadata",
                 lambda: apply_overrides(
-                    extract_legal_metadata(document["original"]),
+                    extract_legal_metadata(document["original"], doc_type),
                     overrides,
                     doc_id,
                     document["original"],
                 ),
             )
             cleaned = timed("cleaning", lambda: clean_pages(document["raw_pages"]))
+            # La puerta de identidad depende del tipo de documento.
+            metadata["doc_type"] = doc_type
             metadata["metadata_curada"] = curated
             metadata["cobertura_csv"] = csv_coverage(curated, metadata)
             metadata["origen_csv"] = csv_source
