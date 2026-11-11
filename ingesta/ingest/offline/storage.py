@@ -108,14 +108,30 @@ def writer_lock(*directories):
     try:
         for directory in sorted({guard_output(p) for p in directories}):
             directory.mkdir(parents=True, exist_ok=True)
-            path = directory / ".writer.lock"
+            # El cerrojo del sistema se libera incluso tras kill -9. El archivo
+            # guard permanece para no cambiar el inodo entre dos escritores.
+            guard = guard_output(directory / ".writer.guard")
+            descriptor = os.open(guard, os.O_CREAT | os.O_RDWR, 0o600)
             try:
-                descriptor = os.open(path, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
-            except FileExistsError:
-                raise RuntimeError(f"Ya hay un escritor; comprobar el bloqueo {path}") from None
-            os.close(descriptor)
-            locks.append(path)
+                if os.name == "nt":
+                    import msvcrt
+
+                    if os.fstat(descriptor).st_size == 0:
+                        os.write(descriptor, b"0")
+                    os.lseek(descriptor, 0, os.SEEK_SET)
+                    msvcrt.locking(descriptor, msvcrt.LK_NBLCK, 1)
+                else:
+                    import fcntl
+
+                    fcntl.flock(descriptor, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            except OSError:
+                os.close(descriptor)
+                raise RuntimeError(f"Ya hay un escritor; bloqueo {guard}") from None
+            path = guard_output(directory / ".writer.lock")
+            locks.append((path, descriptor))
+            path.write_text(str(os.getpid()), encoding="ascii")
         yield
     finally:
-        for path in reversed(locks):
+        for path, descriptor in reversed(locks):
             path.unlink(missing_ok=True)
+            os.close(descriptor)

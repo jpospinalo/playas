@@ -17,6 +17,28 @@ DIGEST = "85462619ee721b466c5927d109d4cb765861907d5417b9109caebc4e614679f1"
 DIMENSION = 768
 
 
+def validar_url_ollama(base_url, allow_remote=False):
+    """Valida el destino antes de crear cachés o analizar entradas."""
+    parsed = urllib.parse.urlparse(base_url)
+    if (
+        parsed.scheme not in {"http", "https"}
+        or not parsed.hostname
+        or parsed.username
+        or parsed.password
+        or parsed.query
+        or parsed.fragment
+    ):
+        raise ValueError("URL Ollama inválida")
+    if parsed.hostname not in {"localhost", "127.0.0.1", "::1"} and not allow_remote:
+        raise ValueError("Ollama remoto requiere autorización explícita --allow-remote-ollama")
+    try:
+        puerto = parsed.port
+        if puerto is not None and puerto < 1:
+            raise ValueError("Puerto fuera de rango")
+    except ValueError as exc:
+        raise ValueError("Puerto Ollama inválido") from exc
+
+
 def validate_vector(vector, dimension=DIMENSION):
     if not isinstance(vector, list) or len(vector) != dimension:
         raise ValueError("Dimensión de embedding incorrecta")
@@ -47,11 +69,7 @@ class OllamaBatchEmbeddings:
         from .offline.storage import guard_output
 
         cache = guard_output(cache)
-        parsed = urllib.parse.urlparse(base_url)
-        if parsed.scheme not in {"http", "https"} or parsed.username or parsed.password:
-            raise ValueError("URL Ollama inválida")
-        if parsed.hostname not in {"localhost", "127.0.0.1", "::1"} and not allow_remote:
-            raise ValueError("Ollama remoto requiere autorización explícita --allow-remote-ollama")
+        validar_url_ollama(base_url, allow_remote)
         if batch_size <= 0:
             raise ValueError("batch-size debe ser positivo")
         self.base_url = base_url.rstrip("/")

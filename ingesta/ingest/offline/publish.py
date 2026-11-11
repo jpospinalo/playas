@@ -34,7 +34,16 @@ def retry(operation):
 
 
 class ChromaPublisher:
-    def __init__(self, collection, config_hash, port=8000, fake_embeddings=False, legacy_hashes=()):
+    def __init__(
+        self,
+        collection,
+        config_hash,
+        port=8000,
+        fake_embeddings=False,
+        legacy_hashes=(),
+        *,
+        client=None,
+    ):
         if fake_embeddings and not collection.startswith("bench_"):
             raise ValueError("Embeddings ficticios requieren colección bench_")
         self.collection_name = collection
@@ -45,7 +54,9 @@ class ChromaPublisher:
         self.lock_directory = chroma_lock_directory(collection, port)
         self._publishing = False
         with writer_lock(self.lock_directory):
-            client = chromadb.HttpClient(host="127.0.0.1", port=port)
+            client = (
+                client if client is not None else chromadb.HttpClient(host="127.0.0.1", port=port)
+            )
             try:
                 self.collection = client.get_collection(collection)
             except chromadb.errors.NotFoundError:

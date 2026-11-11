@@ -8,6 +8,7 @@ import sys
 from pathlib import Path
 
 from ..offline_embeddings import FakeBatchEmbeddings, OllamaBatchEmbeddings
+from .intake import agregar_comandos, ejecutar
 from .pipeline import Pipeline, config_hash, configuration, legacy_config_hashes
 from .publish import ChromaPublisher
 from .quality import report_quality
@@ -32,6 +33,10 @@ def main(argv=None):
     parser.add_argument("--from-stage", choices=["bronze", "silver", "gold", "embeddings"])
     parser.add_argument("--fake-embeddings", action="store_true")
     commands = parser.add_subparsers(dest="command", required=True)
+    agregar_comandos(commands)
+    commands.add_parser("verify-export", help="Verificar un paquete sin conexiones").add_argument(
+        "file", type=Path
+    )
     sync = commands.add_parser("sync")
     add = commands.add_parser("add")
     add.add_argument("file", type=Path)
@@ -59,6 +64,32 @@ def main(argv=None):
         quality.add_argument("--" + name, type=kind, default=argparse.SUPPRESS)
     quality.add_argument("--enforce", action="store_true", default=argparse.SUPPRESS)
     args = parser.parse_args(argv)
+    if args.command == "verify-export":
+        from .exports import verificar_exportacion
+
+        try:
+            print(json.dumps(verificar_exportacion(args.file), ensure_ascii=False))
+            return 0
+        except Exception as exc:
+            print(f"Exportación inválida: {exc}", file=sys.stderr)
+            return 2
+    if args.command in {"intake", "retire"}:
+        if args.token_budget is None:
+            args.token_budget = 1024 if args.chunker == "structure" else 512
+        return ejecutar(args)
+    if (
+        args.command == "export"
+        and args.collection
+        and ((args.state or Path(".offline") / args.collection) / "intake_config.json").exists()
+    ):
+        from .exports import exportar_intake
+
+        try:
+            print(json.dumps({"registros_exportados": exportar_intake(args), "llm_api_calls": 0}))
+            return 0
+        except Exception as exc:
+            print(f"Error de exportación: {exc}", file=sys.stderr)
+            return 2
     if args.command == "quality" and args.compare_exclude and not args.compare_v1:
         parser.error("--compare-exclude requiere --compare-v1")
     if args.command != "quality" and not args.collection:

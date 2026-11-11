@@ -281,6 +281,7 @@ class Layers:
         digest=DIGEST,
         from_stage=None,
         measure=None,
+        doc_type=None,
     ):
         def timed(name, operation):
             return measure(name, operation) if measure else operation()
@@ -358,7 +359,14 @@ class Layers:
                 old_metadata.get("origen_csv", {}),
             )
         origin_source = previous_context.get("source_path") or aliases[0]
-        doc_type = "normativa" if "normativa" in Path(origin_source).parts else "jurisprudencia"
+        # El intake clasifica el encabezado del bronce; sync conserva su convención.
+        if callable(doc_type):
+            doc_type = doc_type(document)
+        doc_type = doc_type or (
+            "normativa" if "normativa" in Path(origin_source).parts else "jurisprudencia"
+        )
+        if doc_type not in {"normativa", "jurisprudencia"}:
+            raise ValueError("Categoría de documento inválida")
         silver_inputs = [
             self.artifacts(doc_id, "bronze"),
             NORMALIZER_VERSION,

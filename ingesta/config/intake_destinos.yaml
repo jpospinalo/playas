@@ -1,0 +1,13 @@
+# Las restricciones fijas (colecciones históricas y loopback) no se pueden relajar.
+colecciones_protegidas: [v1, atlas_v1, rag_playas, rag_playas_magdalena]
+prefijos_permitidos: [atlas_intake_, bench_intake_]
+hosts_chroma_permitidos: [127.0.0.1, localhost, '::1']
+hosts_protegidos: []
+tamano_maximo_bytes: 104857600
+paginas_maximas: 1000
+tiempo_maximo_documento_segundos: 600
+memoria_maxima_mb: 2048
+simhash_umbral: 3
+simhash_palabras_shingle: 3
+# Ruta local opcional: solo se añade JSONL; nunca se ejecutan comandos.
+gancho_notificacion: null

@@ -27,7 +27,7 @@ from .extract import (
     sha256_file,
 )
 from .layers import STAGE_VERSIONS, Layers, canonical, signature
-from .storage import atomic_bytes, atomic_stream, guard_output, input_scope, writer_lock
+from .storage import atomic_bytes, guard_output, input_scope, writer_lock
 
 PIPELINE_VERSION = "offline-1"
 
@@ -577,19 +577,9 @@ class Pipeline:
             return self._export(path)
 
     def _export(self, path):
-        digest = hashlib.sha256()
-        count = 0
-        path = guard_output(path)
-        path.parent.mkdir(parents=True, exist_ok=True)
-        # El export se obtiene del manifiesto, no de colecciones ajenas.
-        with (
-            atomic_stream(path) as raw,
-            gzip.GzipFile(filename="", fileobj=raw, mode="wb", mtime=0) as compressed,
-            io.TextIOWrapper(compressed, encoding="utf-8", newline="\n") as stream,
-        ):
-            stream.write(
-                json.dumps({"__manifest__": {**self.config, "config_hash": self.hash}}) + "\n"
-            )
+        from .exports import escribir_exportacion
+
+        def registros():
             for (artifact,) in self.db.execute(
                 "SELECT artifact FROM documents WHERE status='published' ORDER BY doc_id"
             ):
@@ -598,28 +588,16 @@ class Pipeline:
                 records = item["chunks"]
                 vectors = self.embedder.embed([r["document"] for r in records])
                 for record, vector in zip(records, vectors, strict=True):
-                    row = {
+                    yield {
                         "id": record["id"],
                         "document": record["document"],
                         "metadata": record["metadata"],
                         "embedding": vector,
                     }
-                    body = json.dumps(row, ensure_ascii=False, allow_nan=False)
-                    stream.write(body + "\n")
-                    digest.update((body + "\n").encode())
-                    count += 1
-        atomic_bytes(
-            path.parent / (path.name + ".manifest.json"),
-            canonical(
-                {
-                    "configuration": self.config,
-                    "records": count,
-                    "records_sha256": digest.hexdigest(),
-                    "compressed_sha256": sha256_file(path),
-                }
-            ),
+
+        return escribir_exportacion(
+            path, self.config, self.hash, self.publisher.collection_name, registros()
         )
-        return count
 
     def close(self):
         self.db.close()
