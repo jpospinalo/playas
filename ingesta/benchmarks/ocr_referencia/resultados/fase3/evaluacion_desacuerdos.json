@@ -1,0 +1,59 @@
+{
+  "estado": "estimado",
+  "total": 30,
+  "adjudicados": 30,
+  "pendientes": 0,
+  "veredictos": {
+    "A": 12,
+    "ambos": 6,
+    "B": 11,
+    "ninguno": 1
+  },
+  "estimaciones": {
+    "error_S": 0.6,
+    "error_U": 0.23333333333333334,
+    "fraccion_solo_S": 0.5666666666666667,
+    "fraccion_solo_U": 0.2,
+    "fraccion_ambos_erroneos": 0.03333333333333333,
+    "fraccion_ambos_correctos": 0.2,
+    "fraccion_U_entre_errores_atribuidos": 0.28,
+    "fraccion_U_entre_errores_unilaterales": 0.2608695652173913
+  },
+  "ic95": {
+    "error_S": [
+      0.5333333333333333,
+      0.7
+    ],
+    "error_U": [
+      0.1,
+      0.36666666666666664
+    ],
+    "fraccion_solo_S": [
+      0.4666666666666667,
+      0.6666666666666666
+    ],
+    "fraccion_solo_U": [
+      0.06666666666666667,
+      0.3333333333333333
+    ],
+    "fraccion_ambos_erroneos": [
+      0.0,
+      0.1
+    ],
+    "fraccion_ambos_correctos": [
+      0.06666666666666667,
+      0.3
+    ],
+    "fraccion_U_entre_errores_atribuidos": [
+      0.13636363636363635,
+      0.4074074074074074
+    ],
+    "fraccion_U_entre_errores_unilaterales": [
+      0.1111111111111111,
+      0.391304347826087
+    ]
+  },
+  "semilla": 27102026,
+  "repeticiones": 2000,
+  "alcance": "Probabilidades por segmento condicionado a esta muestra estratificada de desacuerdos adjudicados; no CER/WER ni error global del corpus. Sin extrapolación a pendientes. Bootstrap dentro de tipo/prioridad; una página por segmento en la muestra generada. Ambos erróneos cuenta para ambas fuentes en fracción entre errores atribuidos."
+}

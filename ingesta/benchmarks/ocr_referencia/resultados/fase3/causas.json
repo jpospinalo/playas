@@ -1,0 +1,368 @@
+{
+  "peores_15_paginas": [
+    {
+      "slug": "por_medio_del_cual_se_implementa_el_reglamento_de_playas_del_distrito_portuario__d6b7",
+      "pagina": 25,
+      "cer": 6.881954350927247,
+      "wer": 14.322815533980583,
+      "ediciones_caracteres": 19297,
+      "caracteres_ref": 2804,
+      "confianza_ocr": 67.34364017647059,
+      "orden_lcs": 0.0024390243902439024,
+      "recuperacion": 0.8980582524271845,
+      "tabla_u": true,
+      "capa_ocr_incrustada": false,
+      "causas": [
+        "OCR_baja_confianza",
+        "tablas"
+      ]
+    },
+    {
+      "slug": "por_el_cual_se_reglamentan_las_unidades_ambientales_costeras_uac_y_las_comisione_e828",
+      "pagina": 1,
+      "cer": 6.794037940379404,
+      "wer": 12.83855421686747,
+      "ediciones_caracteres": 17549,
+      "caracteres_ref": 2583,
+      "confianza_ocr": 73.4941135263158,
+      "orden_lcs": 0.012106537530266344,
+      "recuperacion": 0.9855421686746988,
+      "tabla_u": false,
+      "capa_ocr_incrustada": false,
+      "causas": [
+        "OCR_baja_confianza",
+        "columnas_u_orden"
+      ]
+    },
+    {
+      "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+      "pagina": 30,
+      "cer": 6.332693046484825,
+      "wer": 12.764102564102565,
+      "ediciones_caracteres": 16484,
+      "caracteres_ref": 2603,
+      "confianza_ocr": 92.31022585714285,
+      "orden_lcs": 0.028350515463917526,
+      "recuperacion": 0.958974358974359,
+      "tabla_u": false,
+      "capa_ocr_incrustada": false,
+      "causas": [
+        "columnas_u_orden"
+      ]
+    },
+    {
+      "slug": "ap_rodrigo_martinez_silva_vs_minambiente_y_otros_19a7",
+      "pagina": 41,
+      "cer": 6.015520389531345,
+      "wer": 10.930147058823529,
+      "ediciones_caracteres": 19767,
+      "caracteres_ref": 3286,
+      "confianza_ocr": 92.27787210714287,
+      "orden_lcs": 0.08487084870848709,
+      "recuperacion": 0.9742647058823529,
+      "tabla_u": false,
+      "capa_ocr_incrustada": false,
+      "causas": [
+        "columnas_u_orden"
+      ]
+    },
+    {
+      "slug": "ap_rodrigo_martinez_silva_vs_minambiente_y_otros_19a7",
+      "pagina": 66,
+      "cer": 5.7112970711297075,
+      "wer": 11.132286995515695,
+      "ediciones_caracteres": 16380,
+      "caracteres_ref": 2868,
+      "confianza_ocr": 96.13579557142857,
+      "orden_lcs": 0.1036036036036036,
+      "recuperacion": 0.9955156950672646,
+      "tabla_u": false,
+      "capa_ocr_incrustada": false,
+      "causas": [
+        "columnas_u_orden"
+      ]
+    },
+    {
+      "slug": "ap_rodrigo_martinez_silva_vs_minambiente_y_otros_19a7",
+      "pagina": 70,
+      "cer": 4.1609740670461735,
+      "wer": 8.103869653767822,
+      "ediciones_caracteres": 13157,
+      "caracteres_ref": 3162,
+      "confianza_ocr": 95.69439291860463,
+      "orden_lcs": 0.32719836400818,
+      "recuperacion": 0.9674134419551935,
+      "tabla_u": false,
+      "capa_ocr_incrustada": false,
+      "causas": [
+        "columnas_u_orden",
+        "notas_llamadas_pegadas"
+      ]
+    },
+    {
+      "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+      "pagina": 15,
+      "cer": 3.4039366709456567,
+      "wer": 6.3138297872340425,
+      "ediciones_caracteres": 7955,
+      "caracteres_ref": 2337,
+      "confianza_ocr": 94.7437191923077,
+      "orden_lcs": 0.5106951871657754,
+      "recuperacion": 0.9787234042553191,
+      "tabla_u": false,
+      "capa_ocr_incrustada": false,
+      "causas": [
+        "columnas_u_orden"
+      ]
+    },
+    {
+      "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+      "pagina": 24,
+      "cer": 3.1594857539958303,
+      "wer": 5.955357142857143,
+      "ediciones_caracteres": 9093,
+      "caracteres_ref": 2878,
+      "confianza_ocr": 93.97847497510374,
+      "orden_lcs": 0.4730941704035874,
+      "recuperacion": 0.96875,
+      "tabla_u": false,
+      "capa_ocr_incrustada": false,
+      "causas": [
+        "columnas_u_orden"
+      ]
+    },
+    {
+      "slug": "ap_rodrigo_martinez_silva_vs_minambiente_y_otros_19a7",
+      "pagina": 72,
+      "cer": 2.041926541926542,
+      "wer": 4.252983293556086,
+      "ediciones_caracteres": 5893,
+      "caracteres_ref": 2886,
+      "confianza_ocr": 95.7438479010239,
+      "orden_lcs": 0.6858513189448441,
+      "recuperacion": 0.9880668257756563,
+      "tabla_u": false,
+      "capa_ocr_incrustada": false,
+      "causas": [
+        "columnas_u_orden"
+      ]
+    },
+    {
+      "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+      "pagina": 20,
+      "cer": 1.9586065573770493,
+      "wer": 3.7369791666666665,
+      "ediciones_caracteres": 4779,
+      "caracteres_ref": 2440,
+      "confianza_ocr": 95.1872985335689,
+      "orden_lcs": 0.6963350785340314,
+      "recuperacion": 0.9921875,
+      "tabla_u": false,
+      "capa_ocr_incrustada": false,
+      "causas": [
+        "columnas_u_orden"
+      ]
+    },
+    {
+      "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+      "pagina": 14,
+      "cer": 1.810004589261129,
+      "wer": 3.4746268656716417,
+      "ediciones_caracteres": 3944,
+      "caracteres_ref": 2179,
+      "confianza_ocr": 95.49233019834712,
+      "orden_lcs": 0.6816816816816816,
+      "recuperacion": 0.9761194029850746,
+      "tabla_u": false,
+      "capa_ocr_incrustada": false,
+      "causas": [
+        "columnas_u_orden"
+      ]
+    },
+    {
+      "slug": "ap_rodrigo_martinez_silva_vs_minambiente_y_otros_19a7",
+      "pagina": 39,
+      "cer": 1.476978906781583,
+      "wer": 2.7840579710144926,
+      "ediciones_caracteres": 6512,
+      "caracteres_ref": 4409,
+      "confianza_ocr": 95.88308053658537,
+      "orden_lcs": 0.686046511627907,
+      "recuperacion": 0.9289855072463769,
+      "tabla_u": false,
+      "capa_ocr_incrustada": false,
+      "causas": [
+        "columnas_u_orden"
+      ]
+    },
+    {
+      "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+      "pagina": 19,
+      "cer": 1.4731530076705692,
+      "wer": 2.787341772151899,
+      "ediciones_caracteres": 3649,
+      "caracteres_ref": 2477,
+      "confianza_ocr": 95.60153515384616,
+      "orden_lcs": 0.7480916030534351,
+      "recuperacion": 0.9772151898734177,
+      "tabla_u": false,
+      "capa_ocr_incrustada": false,
+      "causas": [
+        "columnas_u_orden",
+        "notas_llamadas_pegadas"
+      ]
+    },
+    {
+      "slug": "ap_rodrigo_martinez_silva_vs_minambiente_y_otros_19a7",
+      "pagina": 7,
+      "cer": 1.2463249900675408,
+      "wer": 2.3392857142857144,
+      "ediciones_caracteres": 3137,
+      "caracteres_ref": 2517,
+      "confianza_ocr": 96.02249293146417,
+      "orden_lcs": 0.8076923076923077,
+      "recuperacion": 0.9948979591836735,
+      "tabla_u": false,
+      "capa_ocr_incrustada": false,
+      "causas": [
+        "sin_causa_reglada"
+      ]
+    },
+    {
+      "slug": "ce_consulta_2010_071_minambiente_bienes_de_uso_publico_1d4e",
+      "pagina": 17,
+      "cer": 1.1951577402787967,
+      "wer": 2.4452554744525545,
+      "ediciones_caracteres": 3258,
+      "caracteres_ref": 2726,
+      "confianza_ocr": 94.82081020241692,
+      "orden_lcs": 0.7334963325183375,
+      "recuperacion": 0.9732360097323601,
+      "tabla_u": false,
+      "capa_ocr_incrustada": false,
+      "causas": [
+        "columnas_u_orden"
+      ]
+    }
+  ],
+  "peores_5_documentos": [
+    {
+      "slug": "por_el_cual_se_reglamentan_las_unidades_ambientales_costeras_uac_y_las_comisione_e828",
+      "cer": 3.4074505238649593,
+      "wer": 6.598269468479605,
+      "ediciones_caracteres": 17562,
+      "orden_lcs": 0.4646840148698885,
+      "recuperacion": 0.9839307787391842,
+      "causas_paginas": {
+        "OCR_baja_confianza": 1,
+        "columnas_u_orden": 1,
+        "sin_causa_reglada": 1
+      }
+    },
+    {
+      "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+      "cer": 0.418514214710586,
+      "wer": 0.7899225917431193,
+      "ediciones_caracteres": 36376,
+      "orden_lcs": 0.8926164874551972,
+      "recuperacion": 0.9804329128440367,
+      "causas_paginas": {
+        "sin_causa_reglada": 27,
+        "notas_llamadas_pegadas": 2,
+        "tablas": 1,
+        "columnas_u_orden": 4
+      }
+    },
+    {
+      "slug": "por_medio_del_cual_se_implementa_el_reglamento_de_playas_del_distrito_portuario__d6b7",
+      "cer": 0.37615939122084047,
+      "wer": 0.7208460672350008,
+      "ediciones_caracteres": 30944,
+      "orden_lcs": 0.8493404118404119,
+      "recuperacion": 0.9438635998069809,
+      "causas_paginas": {
+        "tablas": 25,
+        "OCR_baja_confianza": 2
+      }
+    },
+    {
+      "slug": "ap_rodrigo_martinez_silva_vs_minambiente_y_otros_19a7",
+      "cer": 0.31220582510528366,
+      "wer": 0.5998877822976575,
+      "ediciones_caracteres": 70576,
+      "orden_lcs": 0.9119602727043178,
+      "recuperacion": 0.9859166783560107,
+      "causas_paginas": {
+        "sin_causa_reglada": 72,
+        "columnas_u_orden": 6,
+        "tablas": 1,
+        "notas_llamadas_pegadas": 4
+      }
+    },
+    {
+      "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+      "cer": 0.18579620373493608,
+      "wer": 0.350114198705748,
+      "ediciones_caracteres": 12118,
+      "orden_lcs": 0.940415000951837,
+      "recuperacion": 0.9891511229539398,
+      "causas_paginas": {
+        "sin_causa_reglada": 27,
+        "columnas_u_orden": 2
+      }
+    }
+  ],
+  "top_causas": [
+    {
+      "causa": "columnas_u_orden",
+      "ediciones_repartidas": 115882.5,
+      "fraccion_ediciones": 0.5442613788471564,
+      "ediciones_solapadas": 133694
+    },
+    {
+      "causa": "sin_causa_reglada",
+      "ediciones_repartidas": 35404.0,
+      "fraccion_ediciones": 0.16628075729039954,
+      "ediciones_solapadas": 35404
+    },
+    {
+      "causa": "tablas",
+      "ediciones_repartidas": 26891.0,
+      "fraccion_ediciones": 0.12629804102067943,
+      "ediciones_solapadas": 37955
+    },
+    {
+      "causa": "OCR_baja_confianza",
+      "ediciones_repartidas": 18657.5,
+      "fraccion_ediciones": 0.0876280428523791,
+      "ediciones_solapadas": 37315
+    },
+    {
+      "causa": "notas_llamadas_pegadas",
+      "ediciones_repartidas": 13737.5,
+      "fraccion_ediciones": 0.06452044693472105,
+      "ediciones_solapadas": 22561
+    },
+    {
+      "causa": "ligaduras_o_caracteres_privados",
+      "ediciones_repartidas": 1846.5,
+      "fraccion_ediciones": 0.008672393467877154,
+      "ediciones_solapadas": 2561
+    },
+    {
+      "causa": "capa_OCR_incrustada",
+      "ediciones_repartidas": 498.0,
+      "fraccion_ediciones": 0.0023389395867873396,
+      "ediciones_solapadas": 504
+    }
+  ],
+  "ediciones_totales_paginas": 212917,
+  "regla_aporte": "Por página se reparten sus ediciones entre los indicios presentes con peso 1/k; la suma conserva el total. También se informa conteo solapado. Es distribución descriptiva, no atribución causal de cada edición.",
+  "umbrales": {
+    "baja_confianza": 85,
+    "orden_lcs_bajo": 0.8,
+    "recuperacion_alta": 0.9,
+    "encabezados_min_palabras": 5,
+    "encabezados_min_fraccion_extras": 0.2
+  }
+}

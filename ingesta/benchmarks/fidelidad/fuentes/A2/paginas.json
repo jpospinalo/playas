@@ -1,0 +1,112 @@
+{
+  "paginas": [
+    {
+      "documento": "sentencia",
+      "pagina": 1,
+      "tipo_pagina": "digital",
+      "estado": "disponible"
+    },
+    {
+      "documento": "sentencia",
+      "pagina": 2,
+      "tipo_pagina": "digital",
+      "estado": "disponible"
+    },
+    {
+      "documento": "sentencia",
+      "pagina": 9,
+      "tipo_pagina": "digital",
+      "estado": "disponible"
+    },
+    {
+      "documento": "sentencia",
+      "pagina": 16,
+      "tipo_pagina": "digital",
+      "estado": "disponible"
+    },
+    {
+      "documento": "sentencia",
+      "pagina": 24,
+      "tipo_pagina": "digital",
+      "estado": "disponible"
+    },
+    {
+      "documento": "sentencia",
+      "pagina": 31,
+      "tipo_pagina": "digital",
+      "estado": "disponible"
+    },
+    {
+      "documento": "escaneado",
+      "pagina": 1,
+      "tipo_pagina": "ocr",
+      "estado": "no aplica"
+    },
+    {
+      "documento": "escaneado",
+      "pagina": 2,
+      "tipo_pagina": "ocr",
+      "estado": "no aplica"
+    },
+    {
+      "documento": "tablas",
+      "pagina": 1,
+      "tipo_pagina": "digital",
+      "estado": "disponible"
+    },
+    {
+      "documento": "tablas",
+      "pagina": 3,
+      "tipo_pagina": "digital",
+      "estado": "disponible"
+    },
+    {
+      "documento": "tablas",
+      "pagina": 4,
+      "tipo_pagina": "digital",
+      "estado": "disponible"
+    },
+    {
+      "documento": "tablas",
+      "pagina": 5,
+      "tipo_pagina": "digital",
+      "estado": "disponible"
+    },
+    {
+      "documento": "tablas",
+      "pagina": 6,
+      "tipo_pagina": "digital",
+      "estado": "disponible"
+    },
+    {
+      "documento": "tablas",
+      "pagina": 7,
+      "tipo_pagina": "digital",
+      "estado": "disponible"
+    },
+    {
+      "documento": "norma",
+      "pagina": 1,
+      "tipo_pagina": "digital",
+      "estado": "disponible"
+    },
+    {
+      "documento": "norma",
+      "pagina": 3,
+      "tipo_pagina": "digital",
+      "estado": "disponible"
+    },
+    {
+      "documento": "norma",
+      "pagina": 5,
+      "tipo_pagina": "digital",
+      "estado": "disponible"
+    },
+    {
+      "documento": "norma",
+      "pagina": 7,
+      "tipo_pagina": "digital",
+      "estado": "disponible"
+    }
+  ]
+}

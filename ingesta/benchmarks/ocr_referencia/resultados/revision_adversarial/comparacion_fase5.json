@@ -1,0 +1,318 @@
+{
+  "ajuste_ocr": {
+    "base": {
+      "cer": {
+        "anterior": 0.17954832758208344,
+        "actual": 0.17954832758208344,
+        "igual": true
+      },
+      "wer": {
+        "anterior": 0.34082486292017944,
+        "actual": 0.34082486292017944,
+        "igual": true
+      },
+      "recall_critico": {
+        "anterior": 0.9322528363047001,
+        "actual": 0.9322528363047001,
+        "igual": true
+      },
+      "ic95_cer_documento": {
+        "anterior": [
+          0.023262512834569943,
+          0.3111711351019108
+        ],
+        "actual": [
+          0.023262512834569943,
+          0.3111711351019108
+        ],
+        "igual": true
+      }
+    },
+    "tsv_fix": {
+      "cer": {
+        "anterior": 0.016522600703816323,
+        "actual": 0.016522600703816323,
+        "igual": true
+      },
+      "wer": {
+        "anterior": 0.03224897596497692,
+        "actual": 0.03224897596497692,
+        "igual": true
+      },
+      "recall_critico": {
+        "anterior": 0.93322528363047,
+        "actual": 0.93322528363047,
+        "igual": true
+      },
+      "ic95_cer_documento": {
+        "anterior": [
+          0.004383472684471142,
+          0.03734269782357567
+        ],
+        "actual": [
+          0.004383472684471142,
+          0.03734269782357567
+        ],
+        "igual": true
+      }
+    },
+    "z2_psm3": {
+      "cer": {
+        "anterior": 0.016522600703816323,
+        "actual": 0.016522600703816323,
+        "igual": true
+      },
+      "wer": {
+        "anterior": 0.03224897596497692,
+        "actual": 0.03224897596497692,
+        "igual": true
+      },
+      "recall_critico": {
+        "anterior": 0.93322528363047,
+        "actual": 0.93322528363047,
+        "igual": true
+      },
+      "ic95_cer_documento": {
+        "anterior": [
+          0.004383472684471142,
+          0.03734269782357567
+        ],
+        "actual": [
+          0.004383472684471142,
+          0.03734269782357567
+        ],
+        "igual": true
+      }
+    },
+    "z2_psm6": {
+      "cer": {
+        "anterior": 0.020868495678021116,
+        "actual": 0.020868495678021116,
+        "igual": true
+      },
+      "wer": {
+        "anterior": 0.041329836804577275,
+        "actual": 0.041329836804577275,
+        "igual": true
+      },
+      "recall_critico": {
+        "anterior": 0.9257698541329011,
+        "actual": 0.9257698541329011,
+        "igual": true
+      },
+      "ic95_cer_documento": {
+        "anterior": [
+          0.007799453971956424,
+          0.03986328540058086
+        ],
+        "actual": [
+          0.007799453971956424,
+          0.03986328540058086
+        ],
+        "igual": true
+      }
+    },
+    "z300dpi_psm3": {
+      "cer": {
+        "anterior": 0.0223410434247839,
+        "actual": 0.0223410434247839,
+        "igual": true
+      },
+      "wer": {
+        "anterior": 0.037298714808955157,
+        "actual": 0.037298714808955157,
+        "igual": true
+      },
+      "recall_critico": {
+        "anterior": 0.9423014586709887,
+        "actual": 0.9423014586709887,
+        "igual": true
+      },
+      "ic95_cer_documento": {
+        "anterior": [
+          0.004325752400282336,
+          0.053740866522589276
+        ],
+        "actual": [
+          0.004325752400282336,
+          0.053740866522589276
+        ],
+        "igual": true
+      }
+    }
+  },
+  "validacion_ocr": {
+    "base": {
+      "cer": {
+        "anterior": 0.23484347171086442,
+        "actual": 0.23484347171086442,
+        "igual": true
+      },
+      "wer": {
+        "anterior": 0.45177911614820504,
+        "actual": 0.45177911614820504,
+        "igual": true
+      },
+      "recall_critico": {
+        "anterior": 0.920969993021633,
+        "actual": 0.920969993021633,
+        "igual": true
+      },
+      "ic95_cer_documento": {
+        "anterior": [
+          0.0644152136633526,
+          0.3420254545726307
+        ],
+        "actual": [
+          0.0644152136633526,
+          0.3420254545726307
+        ],
+        "igual": true
+      }
+    },
+    "tsv_fix": {
+      "cer": {
+        "anterior": 0.01936452400898269,
+        "actual": 0.01936452400898269,
+        "igual": true
+      },
+      "wer": {
+        "anterior": 0.0335935999276828,
+        "actual": 0.0335935999276828,
+        "igual": true
+      },
+      "recall_critico": {
+        "anterior": 0.9129448709002094,
+        "actual": 0.9129448709002094,
+        "igual": true
+      },
+      "ic95_cer_documento": {
+        "anterior": [
+          0.00787244968069026,
+          0.0421588264547735
+        ],
+        "actual": [
+          0.00787244968069026,
+          0.0421588264547735
+        ],
+        "igual": true
+      }
+    }
+  },
+  "todos_ocr": {
+    "base": {
+      "cer": {
+        "anterior": 0.2160440193566223,
+        "actual": 0.2160440193566223,
+        "igual": true
+      },
+      "wer": {
+        "anterior": 0.4137551990493167,
+        "actual": 0.4137551990493167,
+        "igual": true
+      },
+      "recall_critico": {
+        "anterior": 0.9249177724849722,
+        "actual": 0.9249177724849722,
+        "igual": true
+      },
+      "ic95_cer_documento": {
+        "anterior": [
+          0.10020901151535141,
+          0.30067256429355066
+        ],
+        "actual": [
+          0.10020901151535141,
+          0.30067256429355066
+        ],
+        "igual": true
+      }
+    },
+    "tsv_fix": {
+      "cer": {
+        "anterior": 0.018398316169005707,
+        "actual": 0.018398316169005707,
+        "igual": true
+      },
+      "wer": {
+        "anterior": 0.033132798573975046,
+        "actual": 0.033132798573975046,
+        "igual": true
+      },
+      "recall_critico": {
+        "anterior": 0.9200408302143587,
+        "actual": 0.9200408302143587,
+        "igual": true
+      },
+      "ic95_cer_documento": {
+        "anterior": [
+          0.008098307161093435,
+          0.033553001519491775
+        ],
+        "actual": [
+          0.008098307161093435,
+          0.033553001519491775
+        ],
+        "igual": true
+      }
+    }
+  },
+  "todos_digital": {
+    "base": {
+      "cer": {
+        "anterior": 0.010634179638277516,
+        "actual": 0.010634179638277516,
+        "igual": true
+      },
+      "wer": {
+        "anterior": 0.018955719899123213,
+        "actual": 0.018965737454889695,
+        "igual": false
+      },
+      "recall_critico": {
+        "anterior": 0.9425274520751907,
+        "actual": 0.9425274520751907,
+        "igual": true
+      },
+      "ic95_cer_documento": {
+        "anterior": [
+          0.006296944043767173,
+          0.016140094750728265
+        ],
+        "actual": [
+          0.006298468819853804,
+          0.016140518653413774
+        ],
+        "igual": false
+      }
+    },
+    "tsv_fix": {
+      "cer": {
+        "anterior": 0.010634179638277516,
+        "actual": 0.010634179638277516,
+        "igual": true
+      },
+      "wer": {
+        "anterior": 0.018955719899123213,
+        "actual": 0.018965737454889695,
+        "igual": false
+      },
+      "recall_critico": {
+        "anterior": 0.9425274520751907,
+        "actual": 0.9425274520751907,
+        "igual": true
+      },
+      "ic95_cer_documento": {
+        "anterior": [
+          0.006296944043767173,
+          0.016140094750728265
+        ],
+        "actual": [
+          0.006298468819853804,
+          0.016140518653413774
+        ],
+        "igual": false
+      }
+    }
+  }
+}

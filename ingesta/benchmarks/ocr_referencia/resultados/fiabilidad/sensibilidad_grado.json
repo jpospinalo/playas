@@ -1,0 +1,324 @@
+{
+  "ap_carlos_alberto_zuniga_mejia_y_otros_vs_dimar_y_otros_d512": {
+    "cer": 0.007814109009849413,
+    "cer_grado_unificado": 0.007814109009849413,
+    "huella_u": "4e650724267c535dd7ad903592df29f2c51f45ce5a55e76b0662bff0abe1c60e",
+    "huella_bronce": "81b7cb24754ce447790e03b100a27c12fcb2ea092e4d2a3a1f5eb54f53c6de5d"
+  },
+  "ap_felipe_jose_campo_fernandez_vs_corpamag_y_otros_ce3c": {
+    "cer": 0.0038639255340520992,
+    "cer_grado_unificado": 0.0038639255340520992,
+    "huella_u": "6a7fba01e2c798e9c81e83b7c82b46bc3d69526acfca25106f183dce873759bd",
+    "huella_bronce": "d91dba8fe6828e47fc53030970dad8958bcee54a735ce53b5dd2492eff92cebd"
+  },
+  "ap_gabriel_antonio_carrero_vs_dimar_y_otros_a44a": {
+    "cer": 0.005794102431453699,
+    "cer_grado_unificado": 0.005782606196470656,
+    "huella_u": "ec957e68a50e3320379bcca2e95c345c1bc2c30872a24bd9b5cfc9f1921c354b",
+    "huella_bronce": "db5226e4f389e10a55d94793a77f4b1f1ee3ba634e607c3e3936b4ccb66ccb44"
+  },
+  "ap_gerardo_antenor_lemus_orozco_vs_distrito_de_santa_mata_y_otros_7c8c": {
+    "cer": 0.04238934578874785,
+    "cer_grado_unificado": 0.04228868241712888,
+    "huella_u": "66270853d66baf4745a2e71c8421c32cb0e0c8a830a9ad0bde513e954033ff85",
+    "huella_bronce": "5036300b8c89819ab48f471a5ace08df46c33ce0bb746e95be290b26802cc2f4"
+  },
+  "ap_gieseken_cuello_cia_s_en_c_vs_dimar_y_otros_a4be": {
+    "cer": 0.0013306606388877042,
+    "cer_grado_unificado": 0.0012368320040943405,
+    "huella_u": "b957ca3662261cf318fe283d6e2730b861a126c00bdfe448425837074684eedf",
+    "huella_bronce": "668e84b180fe84216abf95c3a92be0f63a40e4db9034e73d39f13e37e4d7c7a2"
+  },
+  "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0": {
+    "cer": 0.007964550843068423,
+    "cer_grado_unificado": 0.007964550843068423,
+    "huella_u": "dc8e6e01c12af5c6ff1807c3a1a93ff01e6f5cb04ba7c42331a6edaea4b780e1",
+    "huella_bronce": "a257075a7797455e825d5c9d35d37bc4d46d7acf9ac9ff7f96625ea0c6e654c2"
+  },
+  "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab": {
+    "cer": 0.0036813203669049297,
+    "cer_grado_unificado": 0.0036813203669049297,
+    "huella_u": "3d5cf7c33478e5a7720b19f2b53865fe3d8213a42ccb85769a73d4e742a004a7",
+    "huella_bronce": "292d0ab83705c19aba67531ee64330708637ebe981639e241ce70ad86606f552"
+  },
+  "ap_procuraduria_general_de_la_ancion_vs_coorpamag_y_otros_9523": {
+    "cer": 0.011731672004562804,
+    "cer_grado_unificado": 0.011714122756986795,
+    "huella_u": "638fdb12db2c8eceb824ed8d5b4f8082a9e5b9a1fd6d0e4ebec72e301a95df07",
+    "huella_bronce": "93ec82d3a4df00dc0b0bc9a7cd74f290bd1a705e4951b8c291ffaed5deb9ad32"
+  },
+  "ap_rodrigo_martinez_silva_vs_minambiente_y_otros_19a7": {
+    "cer": 0.010753354338513824,
+    "cer_grado_unificado": 0.010753354338513824,
+    "huella_u": "163fa7fad7a1221bd7322e9082aa4205db68abba48f84a22e6fafd34f7cb992d",
+    "huella_bronce": "23b2e6d84d2371b7b7bea1c5e5f722a5cd4d879366b42df6b44e9beb025ee877"
+  },
+  "cc_tu_039_2024_modesto_manjarrez_vs_autopistas_del_caribe_consulta_previa_via_d92b": {
+    "cer": 0.004179232473379547,
+    "cer_grado_unificado": 0.004153505324090616,
+    "huella_u": "2a2dfb7d4c784833aad63dd2a9af01411d96bf10b074908b787383a0ff40769b",
+    "huella_bronce": "5dcca96c656e3032cad899f0c741622a8b6293d1f2a56e1332179d7e78bc29db"
+  },
+  "ce_1era_ns_2009_603_jose_palencia_vs_mindefensa_resolucion_pilotos_embargaciones_99fd": {
+    "cer": 0.0029070250336384325,
+    "cer_grado_unificado": 0.002309008455289955,
+    "huella_u": "2cbcddb7e7950e75fbee97cef5259fdbe417ccf9751c75ccfeb7c87c402f6e91",
+    "huella_bronce": "32836344efc443a1b568c6306a4f3cc6299f6892337ca56865c4871c3cf083e0"
+  },
+  "ce_2da_ap_2010_028_radley_bent_vs_dimar_danos_ambientales_embarcaciones_ba1e": {
+    "cer": 0.00141643059490085,
+    "cer_grado_unificado": 0.00141643059490085,
+    "huella_u": "979a62b5f1908ede37b08588b7b0cdf73fb1c5d5d6c414237444cd9b3e07766a",
+    "huella_bronce": "2b8ab42313edc184f60c84d9e693a08991f0827a2eb9c1288dee74497c57623d"
+  },
+  "ce_2da_ap_2011_178_jose_caballero_vs_distrito_cartagena_venta_inmueble_valor_cul_092f": {
+    "cer": 0.004144328765118109,
+    "cer_grado_unificado": 0.00409858562201526,
+    "huella_u": "908826517ff41d6106a78ed0c7a5799d67effe74b4a4d9838045f557695ac3ad",
+    "huella_bronce": "4b678af9936dead31d96733d335f2820d7d091bf2b31fb934fc3c89abde4dc81"
+  },
+  "ce_2da_ap_2011_842_gabriel_carrero_vs_dimar_erosion_costera_93f6": {
+    "cer": 0.0019792798811434954,
+    "cer_grado_unificado": 0.0019792798811434954,
+    "huella_u": "76f6179fb456cf85b21c6b238991d10308acda6068d7ef93708ff994c415dcbe",
+    "huella_bronce": "866fd18bd3bb6978c62564925b7f916f67b4b5c03096fea3f58df17e0e65afe6"
+  },
+  "ce_2da_ap_2015_550_angela_munoz_vs_dpto_cordoba_bienes_de_uso_publico_bcec": {
+    "cer": 0.014487957345100203,
+    "cer_grado_unificado": 0.014475700189985905,
+    "huella_u": "8f73a2347a698bf714415aaf69322aa8b50e3d88722330614bc5736c835d3f1f",
+    "huella_bronce": "8ce18146690045e251dfcb5d609707fa504e1ae92a394c867a1752e8dedf11dc"
+  },
+  "ce_2da_ap_2016_328_ricardo_cabrales_vs_mun_covenas_playa_uso_publico_37b2": {
+    "cer": 0.019094945314098014,
+    "cer_grado_unificado": 0.019070881110803625,
+    "huella_u": "ef0917c1adcd4c2c9d6887c3282ad3586140bf1e18b34c216d274d1c9030cc1f",
+    "huella_bronce": "522c7a51d9e7558361845a2eb72123be4ef30dbbbf3df6a0a63cdb3d18b1ab80"
+  },
+  "ce_2da_ap_2017_103_personeria_vs_distrito_cartagena_desembocadura_afb0": {
+    "cer": 0.017049735155371653,
+    "cer_grado_unificado": 0.017049735155371653,
+    "huella_u": "ca214f71d855c3f39b0b25b211fd164cd9a2c7e884b3b9f32d427c2be8487cda",
+    "huella_bronce": "92a9439ec8b229dc2956c613b54a047d88aa3edde60e680fa9303bd6192d5fc6"
+  },
+  "ce_2da_ap_2021_041_edgar_stephengs_vs_archipielago_san_andres_desarrollo_urbanis_0b8f": {
+    "cer": 0.031225714821663048,
+    "cer_grado_unificado": 0.03119891738349814,
+    "huella_u": "6b10c832e2bb977ba52e8431164f6699387b649e1bde48045ff842385b560473",
+    "huella_bronce": "775773d123501b3b8d4e963ec64f86bf7509fbc08fed76c1e4f8881b0f524c0d"
+  },
+  "ce_2da_nyr_1994_993_inversiones_araujo_vs_capitania_puerto_cartagena_urbanismo_p_86ff": {
+    "cer": 0.0012301013024602027,
+    "cer_grado_unificado": 0.0011577424023154848,
+    "huella_u": "26410bdba24ee8dc087d9942fa298572c45a07384019b8cec183b4e3cc7ab3e6",
+    "huella_bronce": "5c09c1c8fa7db1f98dd91db0460dae1bb16b89e1b197e537f522b4a1f2c14a60"
+  },
+  "ce_2da_nyr_1998_102_flury_valencia_vs_mindefensa_uso_urbanistico_playa_ba43": {
+    "cer": 0.0018506700701978302,
+    "cer_grado_unificado": 0.0018293980004254415,
+    "huella_u": "7d61910e8e9996afab6a2a47e26e0bc5ace690eac81ed35dca2ab97baf86e530",
+    "huella_bronce": "1c5cb61fd48219a8dd9611f2f2a0812ff1c81a4bdb8a180c699d281cee3e4d30"
+  },
+  "ce_2da_nyr_1999_503_inversiones_mercedes_vs_dimar_concesiones_uso_playa_f07f": {
+    "cer": 0.0030102851408980685,
+    "cer_grado_unificado": 0.0027594280458232293,
+    "huella_u": "bef35179f73e7fb831b6135f0b1ca63bc22e843aed2baf5af605356a37b0a981",
+    "huella_bronce": "b87481422e030efe297fa3b01d1945ef162d3ad1054593175332146487e04ab1"
+  },
+  "ce_2da_nyr_2009_164_fepep_vs_dimar_playa_uso_urbanistico_e806": {
+    "cer": 0.017899523524829247,
+    "cer_grado_unificado": 0.017899523524829247,
+    "huella_u": "d6c0b3f98bb248499e501d950b0cfe603a557cca0f408f4453dd87ec356e2ae7",
+    "huella_bronce": "cdede5b3ff36dd100b8354ffd039a72ff459a9d7e623205f22b5895ff4d0de1b"
+  },
+  "ce_consulta_1990_horacio_serpa_uso_publico_playa_00a7": {
+    "cer": 0.0009681984061964698,
+    "cer_grado_unificado": 0.000633052804051538,
+    "huella_u": "d647dc5110e5dec33d535637b4db8b790be1a6ab6f0212fccd6e72ba13225258",
+    "huella_bronce": "9f301b53d861b1d5f1edff2b750063b5f9cd0da1bacfd448e586e21142e8cb7c"
+  },
+  "ce_consulta_2005_168_mindefensa_bienes_de_uso_publico_ea75": {
+    "cer": 0.0016841610527964907,
+    "cer_grado_unificado": 0.0015666614444618519,
+    "huella_u": "14af9dbf95befc0c8f6a21ea6dc5f54da37b2bcc2749a0c18947ff9f8eef0f6a",
+    "huella_bronce": "f1ee00758e1392e0fbc6ae7dadb6654437f4ea5036f6de22773a03629c021ce8"
+  },
+  "ce_consulta_2010_071_minambiente_bienes_de_uso_publico_1d4e": {
+    "cer": 0.006658860542407361,
+    "cer_grado_unificado": 0.006658860542407361,
+    "huella_u": "9e2c2ffb6c0663966bbf1f46f1dfbd4d9fdcb21a529d6658de306cd008ec353e",
+    "huella_bronce": "046fe4193bc1a472ea7c89ac51977494b6f72a2f2e6a841100e5f8288960877c"
+  },
+  "taa_2da_rd_2015_281_xxxx_vs_dpto_antioquia_responsabilidad_del_estado_98ef": {
+    "cer": 0.03892298951730591,
+    "cer_grado_unificado": 0.03892298951730591,
+    "huella_u": "ee58f580dcf8fd24dcbff0c6bf7d0abc53e401693a20d30082e3a47650276c9e",
+    "huella_bronce": "be8c6a522df290c7bcbd1c2116c16d3cbdfb5e2d2c7393aa62fb3a59556a5358"
+  },
+  "por_el_cual_adiciona_al_titulo_4_de_la_parte_2_del_libro_2_del_decreto_1076_de_2_be8f": {
+    "cer": 0.006794033510420924,
+    "cer_grado_unificado": 0.006794033510420924,
+    "huella_u": "fbb881762478ebb083da1385fd47516686d6363804af171fbffbb325501f7b50",
+    "huella_bronce": "f02458db63f83a248211a27d7de122f9ed66f71ef28a7b1d7c4d385c8b5efd89"
+  },
+  "por_el_cual_se_aprueba_el_ajuste_y_la_modificacion_a_la_planta_de_personal_de_em_cc7b": {
+    "cer": 0.00975437771771066,
+    "cer_grado_unificado": 0.00975437771771066,
+    "huella_u": "11595ac3cd47813cb6de789896de045dab3aa75cf61b6433955e004dbcae1a83",
+    "huella_bronce": "3d43411e6c763ba7911e6776cb877c07a13036f1e94a7acfd10fd51998bfef3d"
+  },
+  "por_el_cual_se_dicta_el_codigo_nacional_de_recursos_naturales_renovables_y_de_pr_2880": {
+    "cer": 0.002305764411027569,
+    "cer_grado_unificado": 0.002305764411027569,
+    "huella_u": "7df0e17807991241b6e23eab352bd47ee99db2fae201382db47d3d7e5fc7fe8a",
+    "huella_bronce": "4d1312a9cbcff7e2815ddddddb6e304d48fdb0b3d281c2e973daed09712c3230"
+  },
+  "por_el_cual_se_dictan_normas_para_simplificar_suprimir_y_reformar_tramites_proce_5f39": {
+    "cer": 0.0010367652922880612,
+    "cer_grado_unificado": 0.0010367652922880612,
+    "huella_u": "aee854fd35c625c4507d96406bf07d6a1d44a10079f912a9c9920abffc7db9a4",
+    "huella_bronce": "05eb9ba36286abf7c3c9593cf825a5fe145cf2d08538a7747ee5a904a827b191"
+  },
+  "por_el_cual_se_dictan_normas_sobre_la_prevencion_de_la_contaminacion_del_medio_m_c9b9": {
+    "cer": 0.0021167557932263814,
+    "cer_grado_unificado": 0.0021167557932263814,
+    "huella_u": "5b09433c2c21a1b2be5a0fee29a5f5cd73e527cef6c15646c1670eef17b9d4c8",
+    "huella_bronce": "e671c7011e6c2aa1436a4b3891d07a9fc1423bab520da2ea4b260c553f83130f"
+  },
+  "por_el_cual_se_expide_el_codigo_de_comercio_05d5": {
+    "cer": 0.004807692307692308,
+    "cer_grado_unificado": 0.004807692307692308,
+    "huella_u": "bdbb18e4e86d395d48d47425fb4a01ec2e654d8023de043d997c02876fff1ade",
+    "huella_bronce": "8801616e8645765daaabe708f601bf39f7a56129a4cf824a92783ba29b0498c2"
+  },
+  "por_el_cual_se_modifica_el_articulo_16_del_decreto_3888_del_10_de_octubre_de_200_0be7": {
+    "cer": 0.0008960573476702509,
+    "cer_grado_unificado": 0.0008960573476702509,
+    "huella_u": "db355b72b8afa56bb3bce7af424d89620ca7310090cccdfe39fd3a2413c7b0f4",
+    "huella_bronce": "b0482bffcb0dc5e678ec0acbe0fb1552bebeb489dea7d30283dd07a7a1c47b57"
+  },
+  "por_el_cual_se_reglamenta_el_funcionamiento_de_los_comites_locales_para_la_organ_cb33": {
+    "cer": 0.00597119775201967,
+    "cer_grado_unificado": 0.00597119775201967,
+    "huella_u": "df56d101be58585a0a50ce65c1c8302271db8688c3690e267f91cc6da7ad5f21",
+    "huella_bronce": "1d4af8197187bf59f33cff57b983910253239ed60c4a1f898247e6c773ec4a2d"
+  },
+  "por_el_cual_se_reglamenta_el_funcionamiento_de_los_comites_locales_para_la_organ_c8e5": {
+    "cer": 0.001336898395721925,
+    "cer_grado_unificado": 0.001336898395721925,
+    "huella_u": "1c939b24717a8a0a89970f0bf54250dc814bfcfbc3ed7717c1c94894d28eeef5",
+    "huella_bronce": "4981e365c5edfd48338bdfbb8aead464bf700dab3df8ba02506bfce389b8c12d"
+  },
+  "por_el_cual_se_reglamenta_el_manejo_del_espacio_publico_en_los_planes_de_ordenam_d195": {
+    "cer": 0.002913401647578863,
+    "cer_grado_unificado": 0.002913401647578863,
+    "huella_u": "0216577581adceef0a2977b27d2674c6dc43bd0d6869a095ea10afd9015f6bbc",
+    "huella_bronce": "c16d8d1bf1374bb00a3a71c5c7c7980cfeac167a01effefa88059a1b64fa6894"
+  },
+  "por_el_cual_se_reglamenta_el_servicio_publico_de_transporte_maritimo_cdf2": {
+    "cer": 0.0003963142772218369,
+    "cer_grado_unificado": 0.0003963142772218369,
+    "huella_u": "9b1893da5bfe3ceeca32d5c0f40529713b4a1b3503a9291d8c2271daf7af2440",
+    "huella_bronce": "cf3268c0e657817904b4472facded01adbc98969d4656bf7d4dbfb4344d6558b"
+  },
+  "por_el_cual_se_reglamenta_la_ley_13_de_1990_15e7": {
+    "cer": 0.0003160556257901391,
+    "cer_grado_unificado": 0.0003160556257901391,
+    "huella_u": "abb94d3f3fb356dcc5793401e219ea903d319cad45118317238136c5cd7a42c5",
+    "huella_bronce": "a9335bff3cf1fd795ec7ce47256e371776365b52409f4832d1f230abe727d2eb"
+  },
+  "por_el_cual_se_reglamenta_la_habilitacion_y_la_prestacion_del_servicio_publico_d_aeb1": {
+    "cer": 0.00015661707126076742,
+    "cer_grado_unificado": 0.00015661707126076742,
+    "huella_u": "52fa4b69c7713c50faecb7b33cc060007852214c6c14d31852d40b6eeba35bbd",
+    "huella_bronce": "9194fa8bc4b58d453bdec0cd7bca7d93235831a4d68ad714a3a286626905ba7d"
+  },
+  "por_el_cual_se_reglamenta_parcialmente_el_articulo_noveno_de_la_ley_10_de_1978_922e": {
+    "cer": 0.08517960851796086,
+    "cer_grado_unificado": 0.07227360722736072,
+    "huella_u": "05006c99c11a447c65f12fb8840cbebd13a5c758471f5fc151086d7e29037dc6",
+    "huella_bronce": "5b8610ed7b8f99a8b13813cfc228357abdf0fcef155e17c0bf58f75bd8c3528a"
+  },
+  "por_el_cual_se_reglamenta_parcialmente_la_ley_47_del_19_de_febrero_de_1993_3e80": {
+    "cer": 0.0016789791806581598,
+    "cer_grado_unificado": 0.0010073875083948958,
+    "huella_u": "5028be8ab23ab39a70f419ec5e7eabfb60271fd71fa146621e9de9551e6ad356",
+    "huella_bronce": "aaf5331b2ff861675310e9cc7db0233551c74edd7f770c6a34a6706e77693a60"
+  },
+  "por_el_cual_se_reglamentan_las_unidades_ambientales_costeras_uac_y_las_comisione_e828": {
+    "cer": 0.00834465359984475,
+    "cer_grado_unificado": 0.00834465359984475,
+    "huella_u": "1da5a25bcb6c3f9a147c3561988cc881f7c623177aff2411cd14bf2ff61159c8",
+    "huella_bronce": "16281318255529d7cac551a77594378dfe0bd597413ca18b341b70213437e2c9"
+  },
+  "por_el_cual_se_reglamentan_las_disposiciones_sobre_licencias_urbanisticas_recono_e4a6": {
+    "cer": 0.0018037518037518038,
+    "cer_grado_unificado": 0.0018037518037518038,
+    "huella_u": "f02e99f238f107a436003a2fa5b2c95703c340d25b02af97ded975f4268f5073",
+    "huella_bronce": "3486773f13219eaa0dbaa83c8b25d664f29ea35b4a4a6743e8f1f6bda4d862cf"
+  },
+  "por_el_cual_se_reorganiza_la_direccion_general_maritima_y_portuaria_0fec": {
+    "cer": 0.0001374570446735395,
+    "cer_grado_unificado": 0.0001374570446735395,
+    "huella_u": "5165b283a419299a4b51fb5362918939de9c384614a0e64ee0219db4789fbcba",
+    "huella_bronce": "336aeb21f867145f691975a05bddcf99a9b654c719392b0dcd0013ed21f7639f"
+  },
+  "por_medio_de_la_cual_se_reglamenta_el_area_de_playa_en_el_balneario_turistico_el_9c01": {
+    "cer": 0.05920073285239895,
+    "cer_grado_unificado": 0.05920073285239895,
+    "huella_u": "789698e951dd7c5ccd0d754a729a64a52a087dbee880c6448730214b92481211",
+    "huella_bronce": "996f9ea526c016291c97207346d8c4513ca33be13a4ad9cede62b0b9cbc51d65"
+  },
+  "por_medio_del_cual_se_expide_el_decreto_unico_reglamentario_del_sector_ambiente__f508": {
+    "cer": 0.012421807832557589,
+    "cer_grado_unificado": 0.012421807832557589,
+    "huella_u": "985f3f11c345d5eb49f7a52c338f60475809bcab026d54c4bb9c5167eca0984e",
+    "huella_bronce": "0f57a74905eaf2f7479913f4af28320d8238772faca2046cd54aad15260248aa"
+  },
+  "por_medio_del_cual_se_expide_el_decreto_unico_reglamentario_del_sector_comercio__38da": {
+    "cer": 0.010789345521297719,
+    "cer_grado_unificado": 0.010789345521297719,
+    "huella_u": "7024b7ef8fb226805a60130410bdcb31d82e38dcdd0f28ec50b0deb572a21ded",
+    "huella_bronce": "d2502dd73492c70a830b74f492b868c33ebac45e213764cef6e22983d21a07d9"
+  },
+  "por_medio_del_cual_se_expide_el_decreto_unico_reglamentario_del_sector_transport_1cd3": {
+    "cer": 0.0006322202425426748,
+    "cer_grado_unificado": 0.0006322202425426748,
+    "huella_u": "85cd5b1410ace79d1871e352a2df41a5900d0525895e2c7e5c11503d8356eaa9",
+    "huella_bronce": "404c730869c37eeedb9d7d07d9fc385fd23c40ea3f04e0ba343db13e24b77c81"
+  },
+  "por_medio_del_cual_se_expide_el_decreto_unico_reglamentario_del_sector_vivienda__404e": {
+    "cer": 0.008477500123219479,
+    "cer_grado_unificado": 0.008477500123219479,
+    "huella_u": "c34afb48eca579328437d8d7c75b9e8fa27cf426f129be72f616203541fdcc0a",
+    "huella_bronce": "2758ad212be2e3540e9a10a9d733bef62b48c892121e2fbe1ab51c568e551d59"
+  },
+  "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb": {
+    "cer": 0.055413679075401893,
+    "cer_grado_unificado": 0.055413679075401893,
+    "huella_u": "999beef51387c48cd762b06bd94665e0ade97e2ef838517d2726aa4b13881801",
+    "huella_bronce": "94b4e4d46cd9eb5637800eb2f1a0952ee8b4dd476fc49d95803f11b554d7fc12"
+  },
+  "por_medio_del_cual_se_implementa_el_reglamento_de_playas_del_distrito_portuario__d6b7": {
+    "cer": 0.07036807354175026,
+    "cer_grado_unificado": 0.07036807354175026,
+    "huella_u": "cefaa48436f2c260eb10bd05e7dcc1d9841e3c0bbe287a02ae8f011cc1850c60",
+    "huella_bronce": "c5f2d4bd4d81b2ce7fa1564613ca10336f829caeef03f2231a5b756f7ed9cf73"
+  },
+  "por_medio_del_cual_se_reglamenta_el_tramite_de_solicitud_de_concesiones_para_el__1ee0": {
+    "cer": 0.0027154938319497246,
+    "cer_grado_unificado": 0.0027154938319497246,
+    "huella_u": "56956b16da9293bd9df48206f2a319b0e68c67ac046956d61e1141f9f5fb1f21",
+    "huella_bronce": "679e0ba40601437de7a8980662fb2319e6b6b720893ce301ca3ac02abd0eedbd"
+  },
+  "por_medio_del_cual_se_reglamenta_el_uso_zonificacion_y_horario_de_las_playas_con_8351": {
+    "cer": 0.009841151851073801,
+    "cer_grado_unificado": 0.009841151851073801,
+    "huella_u": "f03bd70f7d53c03e084cf8c490aa3cbefadf126935c46416c17ed3407fb0ff66",
+    "huella_bronce": "8625797a4d900ab0af46db1eaef4f07f97d7cba10271eb99ae42a84aec4a4337"
+  },
+  "_corpus": {
+    "cer": 0.012605911469448682,
+    "cer_grado_unificado": 0.012553147336325069
+  }
+}

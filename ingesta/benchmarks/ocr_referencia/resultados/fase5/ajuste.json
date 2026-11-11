@@ -1,0 +1,5623 @@
+{
+ "conjunto": "ajuste",
+ "semilla_division": 20261110,
+ "resumen": {
+  "tsv_fix": {
+   "paginas": 111,
+   "documentos": 8,
+   "cer": 0.016522600703816323,
+   "wer": 0.03224897596497692,
+   "ic95_cer_documento": [
+    0.004383472684471142,
+    0.03734269782357567
+   ],
+   "recall_critico": 0.93322528363047
+  },
+  "z2_psm3": {
+   "paginas": 111,
+   "documentos": 8,
+   "cer": 0.016522600703816323,
+   "wer": 0.03224897596497692,
+   "ic95_cer_documento": [
+    0.004383472684471142,
+    0.03734269782357567
+   ],
+   "recall_critico": 0.93322528363047
+  },
+  "z2_psm6": {
+   "paginas": 111,
+   "documentos": 8,
+   "cer": 0.020868495678021116,
+   "wer": 0.041329836804577275,
+   "ic95_cer_documento": [
+    0.007799453971956424,
+    0.03986328540058086
+   ],
+   "recall_critico": 0.9257698541329011
+  },
+  "z300dpi_psm3": {
+   "paginas": 111,
+   "documentos": 8,
+   "cer": 0.0223410434247839,
+   "wer": 0.037298714808955157,
+   "ic95_cer_documento": [
+    0.004325752400282336,
+    0.053740866522589276
+   ],
+   "recall_critico": 0.9423014586709887
+  },
+  "base": {
+   "paginas": 111,
+   "documentos": 8,
+   "cer": 0.17954832758208344,
+   "wer": 0.34082486292017944,
+   "ic95_cer_documento": [
+    0.023262512834569943,
+    0.3111711351019108
+   ],
+   "recall_critico": 0.9322528363047001
+  }
+ },
+ "filas": {
+  "tsv_fix": [
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 1,
+    "ed_c": 168,
+    "ref_c": 2088,
+    "ed_p": 36,
+    "ref_p": 312,
+    "crit_ref": 26,
+    "crit_ok": 22
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 2,
+    "ed_c": 5,
+    "ref_c": 2657,
+    "ed_p": 5,
+    "ref_p": 420,
+    "crit_ref": 16,
+    "crit_ok": 15
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 3,
+    "ed_c": 13,
+    "ref_c": 2684,
+    "ed_p": 8,
+    "ref_p": 414,
+    "crit_ref": 24,
+    "crit_ok": 21
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 4,
+    "ed_c": 16,
+    "ref_c": 2922,
+    "ed_p": 10,
+    "ref_p": 484,
+    "crit_ref": 29,
+    "crit_ok": 27
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 5,
+    "ed_c": 27,
+    "ref_c": 2500,
+    "ed_p": 7,
+    "ref_p": 391,
+    "crit_ref": 27,
+    "crit_ok": 25
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 6,
+    "ed_c": 17,
+    "ref_c": 2356,
+    "ed_p": 13,
+    "ref_p": 380,
+    "crit_ref": 23,
+    "crit_ok": 19
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 7,
+    "ed_c": 19,
+    "ref_c": 2628,
+    "ed_p": 5,
+    "ref_p": 422,
+    "crit_ref": 18,
+    "crit_ok": 17
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 8,
+    "ed_c": 14,
+    "ref_c": 2708,
+    "ed_p": 9,
+    "ref_p": 428,
+    "crit_ref": 24,
+    "crit_ok": 23
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 9,
+    "ed_c": 40,
+    "ref_c": 2753,
+    "ed_p": 10,
+    "ref_p": 440,
+    "crit_ref": 18,
+    "crit_ok": 17
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 10,
+    "ed_c": 14,
+    "ref_c": 2419,
+    "ed_p": 7,
+    "ref_p": 393,
+    "crit_ref": 31,
+    "crit_ok": 29
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 11,
+    "ed_c": 27,
+    "ref_c": 5191,
+    "ed_p": 15,
+    "ref_p": 862,
+    "crit_ref": 231,
+    "crit_ok": 229
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 12,
+    "ed_c": 17,
+    "ref_c": 2989,
+    "ed_p": 15,
+    "ref_p": 509,
+    "crit_ref": 45,
+    "crit_ok": 40
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 13,
+    "ed_c": 14,
+    "ref_c": 2928,
+    "ed_p": 11,
+    "ref_p": 472,
+    "crit_ref": 58,
+    "crit_ok": 55
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 14,
+    "ed_c": 25,
+    "ref_c": 2711,
+    "ed_p": 16,
+    "ref_p": 445,
+    "crit_ref": 40,
+    "crit_ok": 38
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 15,
+    "ed_c": 10,
+    "ref_c": 2443,
+    "ed_p": 11,
+    "ref_p": 416,
+    "crit_ref": 45,
+    "crit_ok": 45
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 16,
+    "ed_c": 12,
+    "ref_c": 2154,
+    "ed_p": 11,
+    "ref_p": 353,
+    "crit_ref": 46,
+    "crit_ok": 46
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 17,
+    "ed_c": 18,
+    "ref_c": 3029,
+    "ed_p": 13,
+    "ref_p": 489,
+    "crit_ref": 56,
+    "crit_ok": 52
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 18,
+    "ed_c": 20,
+    "ref_c": 2551,
+    "ed_p": 12,
+    "ref_p": 451,
+    "crit_ref": 82,
+    "crit_ok": 80
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 19,
+    "ed_c": 8,
+    "ref_c": 2477,
+    "ed_p": 7,
+    "ref_p": 395,
+    "crit_ref": 23,
+    "crit_ok": 19
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 20,
+    "ed_c": 5,
+    "ref_c": 2440,
+    "ed_p": 3,
+    "ref_p": 384,
+    "crit_ref": 14,
+    "crit_ok": 14
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 21,
+    "ed_c": 5,
+    "ref_c": 2420,
+    "ed_p": 5,
+    "ref_p": 383,
+    "crit_ref": 28,
+    "crit_ok": 28
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 22,
+    "ed_c": 15,
+    "ref_c": 2552,
+    "ed_p": 11,
+    "ref_p": 386,
+    "crit_ref": 21,
+    "crit_ok": 21
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 23,
+    "ed_c": 8,
+    "ref_c": 2332,
+    "ed_p": 6,
+    "ref_p": 351,
+    "crit_ref": 18,
+    "crit_ok": 18
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 24,
+    "ed_c": 28,
+    "ref_c": 2878,
+    "ed_p": 16,
+    "ref_p": 448,
+    "crit_ref": 42,
+    "crit_ok": 40
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 25,
+    "ed_c": 12,
+    "ref_c": 1815,
+    "ed_p": 9,
+    "ref_p": 303,
+    "crit_ref": 34,
+    "crit_ok": 34
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 26,
+    "ed_c": 14,
+    "ref_c": 3023,
+    "ed_p": 12,
+    "ref_p": 496,
+    "crit_ref": 49,
+    "crit_ok": 45
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 27,
+    "ed_c": 8,
+    "ref_c": 3213,
+    "ed_p": 7,
+    "ref_p": 491,
+    "crit_ref": 41,
+    "crit_ok": 40
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 28,
+    "ed_c": 20,
+    "ref_c": 2492,
+    "ed_p": 13,
+    "ref_p": 374,
+    "crit_ref": 24,
+    "crit_ok": 22
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 29,
+    "ed_c": 0,
+    "ref_c": 2735,
+    "ed_p": 0,
+    "ref_p": 452,
+    "crit_ref": 42,
+    "crit_ok": 42
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 30,
+    "ed_c": 16,
+    "ref_c": 2603,
+    "ed_p": 15,
+    "ref_p": 390,
+    "crit_ref": 26,
+    "crit_ok": 26
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 31,
+    "ed_c": 19,
+    "ref_c": 3215,
+    "ed_p": 15,
+    "ref_p": 537,
+    "crit_ref": 36,
+    "crit_ok": 28
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 32,
+    "ed_c": 9,
+    "ref_c": 2418,
+    "ed_p": 9,
+    "ref_p": 395,
+    "crit_ref": 25,
+    "crit_ok": 20
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 33,
+    "ed_c": 49,
+    "ref_c": 561,
+    "ed_p": 9,
+    "ref_p": 86,
+    "crit_ref": 8,
+    "crit_ok": 8
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 1,
+    "ed_c": 4,
+    "ref_c": 1345,
+    "ed_p": 3,
+    "ref_p": 202,
+    "crit_ref": 21,
+    "crit_ok": 21
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 2,
+    "ed_c": 7,
+    "ref_c": 2113,
+    "ed_p": 5,
+    "ref_p": 358,
+    "crit_ref": 13,
+    "crit_ok": 13
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 3,
+    "ed_c": 7,
+    "ref_c": 2638,
+    "ed_p": 6,
+    "ref_p": 429,
+    "crit_ref": 12,
+    "crit_ok": 11
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 4,
+    "ed_c": 15,
+    "ref_c": 2225,
+    "ed_p": 14,
+    "ref_p": 379,
+    "crit_ref": 53,
+    "crit_ok": 52
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 5,
+    "ed_c": 2,
+    "ref_c": 2470,
+    "ed_p": 1,
+    "ref_p": 421,
+    "crit_ref": 5,
+    "crit_ok": 4
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 6,
+    "ed_c": 4,
+    "ref_c": 2374,
+    "ed_p": 4,
+    "ref_p": 384,
+    "crit_ref": 16,
+    "crit_ok": 15
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 7,
+    "ed_c": 5,
+    "ref_c": 2296,
+    "ed_p": 2,
+    "ref_p": 373,
+    "crit_ref": 18,
+    "crit_ok": 17
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 8,
+    "ed_c": 9,
+    "ref_c": 1935,
+    "ed_p": 6,
+    "ref_p": 310,
+    "crit_ref": 20,
+    "crit_ok": 19
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 9,
+    "ed_c": 5,
+    "ref_c": 1983,
+    "ed_p": 5,
+    "ref_p": 318,
+    "crit_ref": 9,
+    "crit_ok": 8
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 10,
+    "ed_c": 3,
+    "ref_c": 2124,
+    "ed_p": 3,
+    "ref_p": 334,
+    "crit_ref": 24,
+    "crit_ok": 24
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 11,
+    "ed_c": 2,
+    "ref_c": 2627,
+    "ed_p": 2,
+    "ref_p": 411,
+    "crit_ref": 17,
+    "crit_ok": 17
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 12,
+    "ed_c": 21,
+    "ref_c": 2936,
+    "ed_p": 20,
+    "ref_p": 445,
+    "crit_ref": 47,
+    "crit_ok": 41
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 13,
+    "ed_c": 9,
+    "ref_c": 2388,
+    "ed_p": 5,
+    "ref_p": 360,
+    "crit_ref": 12,
+    "crit_ok": 12
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 14,
+    "ed_c": 12,
+    "ref_c": 2179,
+    "ed_p": 8,
+    "ref_p": 335,
+    "crit_ref": 19,
+    "crit_ok": 17
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 15,
+    "ed_c": 9,
+    "ref_c": 2337,
+    "ed_p": 8,
+    "ref_p": 376,
+    "crit_ref": 14,
+    "crit_ok": 13
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 16,
+    "ed_c": 2,
+    "ref_c": 2136,
+    "ed_p": 2,
+    "ref_p": 341,
+    "crit_ref": 22,
+    "crit_ok": 22
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 17,
+    "ed_c": 8,
+    "ref_c": 3137,
+    "ed_p": 8,
+    "ref_p": 509,
+    "crit_ref": 69,
+    "crit_ok": 68
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 18,
+    "ed_c": 7,
+    "ref_c": 2324,
+    "ed_p": 8,
+    "ref_p": 388,
+    "crit_ref": 24,
+    "crit_ok": 24
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 19,
+    "ed_c": 0,
+    "ref_c": 2503,
+    "ed_p": 0,
+    "ref_p": 418,
+    "crit_ref": 20,
+    "crit_ok": 20
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 20,
+    "ed_c": 0,
+    "ref_c": 2443,
+    "ed_p": 0,
+    "ref_p": 422,
+    "crit_ref": 22,
+    "crit_ok": 22
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 21,
+    "ed_c": 7,
+    "ref_c": 2410,
+    "ed_p": 5,
+    "ref_p": 402,
+    "crit_ref": 17,
+    "crit_ok": 15
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 22,
+    "ed_c": 2,
+    "ref_c": 2212,
+    "ed_p": 2,
+    "ref_p": 365,
+    "crit_ref": 15,
+    "crit_ok": 15
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 23,
+    "ed_c": 16,
+    "ref_c": 2399,
+    "ed_p": 9,
+    "ref_p": 371,
+    "crit_ref": 27,
+    "crit_ok": 27
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 24,
+    "ed_c": 8,
+    "ref_c": 2589,
+    "ed_p": 6,
+    "ref_p": 422,
+    "crit_ref": 21,
+    "crit_ok": 18
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 25,
+    "ed_c": 10,
+    "ref_c": 2685,
+    "ed_p": 7,
+    "ref_p": 433,
+    "crit_ref": 30,
+    "crit_ok": 26
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 26,
+    "ed_c": 3,
+    "ref_c": 2447,
+    "ed_p": 1,
+    "ref_p": 387,
+    "crit_ref": 15,
+    "crit_ok": 14
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 27,
+    "ed_c": 6,
+    "ref_c": 1766,
+    "ed_p": 3,
+    "ref_p": 289,
+    "crit_ref": 19,
+    "crit_ok": 18
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 28,
+    "ed_c": 10,
+    "ref_c": 1766,
+    "ed_p": 7,
+    "ref_p": 266,
+    "crit_ref": 13,
+    "crit_ok": 12
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 29,
+    "ed_c": 47,
+    "ref_c": 407,
+    "ed_p": 7,
+    "ref_p": 60,
+    "crit_ref": 7,
+    "crit_ok": 6
+   },
+   {
+    "slug": "ce_2da_nyr_1994_993_inversiones_araujo_vs_capitania_puerto_cartagena_urbanismo_p_86ff",
+    "pagina": 19,
+    "ed_c": 0,
+    "ref_c": 54,
+    "ed_p": 0,
+    "ref_p": 8,
+    "crit_ref": 0,
+    "crit_ok": 0
+   },
+   {
+    "slug": "por_el_cual_se_dicta_el_codigo_nacional_de_recursos_naturales_renovables_y_de_pr_2880",
+    "pagina": 1,
+    "ed_c": 5,
+    "ref_c": 3462,
+    "ed_p": 4,
+    "ref_p": 543,
+    "crit_ref": 37,
+    "crit_ok": 37
+   },
+   {
+    "slug": "por_el_cual_se_dicta_el_codigo_nacional_de_recursos_naturales_renovables_y_de_pr_2880",
+    "pagina": 2,
+    "ed_c": 13,
+    "ref_c": 3397,
+    "ed_p": 6,
+    "ref_p": 553,
+    "crit_ref": 33,
+    "crit_ok": 32
+   },
+   {
+    "slug": "por_el_cual_se_dicta_el_codigo_nacional_de_recursos_naturales_renovables_y_de_pr_2880",
+    "pagina": 3,
+    "ed_c": 12,
+    "ref_c": 3498,
+    "ed_p": 8,
+    "ref_p": 556,
+    "crit_ref": 47,
+    "crit_ok": 47
+   },
+   {
+    "slug": "por_el_cual_se_dicta_el_codigo_nacional_de_recursos_naturales_renovables_y_de_pr_2880",
+    "pagina": 4,
+    "ed_c": 0,
+    "ref_c": 3505,
+    "ed_p": 0,
+    "ref_p": 548,
+    "crit_ref": 29,
+    "crit_ok": 29
+   },
+   {
+    "slug": "por_el_cual_se_dicta_el_codigo_nacional_de_recursos_naturales_renovables_y_de_pr_2880",
+    "pagina": 5,
+    "ed_c": 11,
+    "ref_c": 3430,
+    "ed_p": 9,
+    "ref_p": 520,
+    "crit_ref": 24,
+    "crit_ok": 24
+   },
+   {
+    "slug": "por_el_cual_se_dicta_el_codigo_nacional_de_recursos_naturales_renovables_y_de_pr_2880",
+    "pagina": 6,
+    "ed_c": 5,
+    "ref_c": 2658,
+    "ed_p": 5,
+    "ref_p": 419,
+    "crit_ref": 27,
+    "crit_ok": 27
+   },
+   {
+    "slug": "por_el_cual_se_dictan_normas_para_simplificar_suprimir_y_reformar_tramites_proce_5f39",
+    "pagina": 1,
+    "ed_c": 2,
+    "ref_c": 4106,
+    "ed_p": 2,
+    "ref_p": 628,
+    "crit_ref": 39,
+    "crit_ok": 39
+   },
+   {
+    "slug": "por_el_cual_se_dictan_normas_para_simplificar_suprimir_y_reformar_tramites_proce_5f39",
+    "pagina": 2,
+    "ed_c": 2,
+    "ref_c": 4552,
+    "ed_p": 2,
+    "ref_p": 708,
+    "crit_ref": 27,
+    "crit_ok": 27
+   },
+   {
+    "slug": "por_el_cual_se_dictan_normas_para_simplificar_suprimir_y_reformar_tramites_proce_5f39",
+    "pagina": 3,
+    "ed_c": 9,
+    "ref_c": 3881,
+    "ed_p": 8,
+    "ref_p": 598,
+    "crit_ref": 33,
+    "crit_ok": 33
+   },
+   {
+    "slug": "por_medio_del_cual_se_expide_el_decreto_unico_reglamentario_del_sector_comercio__38da",
+    "pagina": 1,
+    "ed_c": 88,
+    "ref_c": 5407,
+    "ed_p": 24,
+    "ref_p": 769,
+    "crit_ref": 28,
+    "crit_ok": 25
+   },
+   {
+    "slug": "por_medio_del_cual_se_expide_el_decreto_unico_reglamentario_del_sector_comercio__38da",
+    "pagina": 2,
+    "ed_c": 54,
+    "ref_c": 6266,
+    "ed_p": 21,
+    "ref_p": 898,
+    "crit_ref": 39,
+    "crit_ok": 34
+   },
+   {
+    "slug": "por_medio_del_cual_se_expide_el_decreto_unico_reglamentario_del_sector_comercio__38da",
+    "pagina": 3,
+    "ed_c": 44,
+    "ref_c": 6074,
+    "ed_p": 12,
+    "ref_p": 881,
+    "crit_ref": 24,
+    "crit_ok": 22
+   },
+   {
+    "slug": "por_medio_del_cual_se_expide_el_decreto_unico_reglamentario_del_sector_comercio__38da",
+    "pagina": 4,
+    "ed_c": 50,
+    "ref_c": 4346,
+    "ed_p": 18,
+    "ref_p": 639,
+    "crit_ref": 35,
+    "crit_ok": 35
+   },
+   {
+    "slug": "por_medio_del_cual_se_expide_el_decreto_unico_reglamentario_del_sector_comercio__38da",
+    "pagina": 5,
+    "ed_c": 52,
+    "ref_c": 4600,
+    "ed_p": 19,
+    "ref_p": 674,
+    "crit_ref": 39,
+    "crit_ok": 36
+   },
+   {
+    "slug": "por_medio_del_cual_se_expide_el_decreto_unico_reglamentario_del_sector_vivienda__404e",
+    "pagina": 1,
+    "ed_c": 38,
+    "ref_c": 4525,
+    "ed_p": 8,
+    "ref_p": 647,
+    "crit_ref": 60,
+    "crit_ok": 60
+   },
+   {
+    "slug": "por_medio_del_cual_se_expide_el_decreto_unico_reglamentario_del_sector_vivienda__404e",
+    "pagina": 2,
+    "ed_c": 40,
+    "ref_c": 4853,
+    "ed_p": 10,
+    "ref_p": 758,
+    "crit_ref": 78,
+    "crit_ok": 78
+   },
+   {
+    "slug": "por_medio_del_cual_se_expide_el_decreto_unico_reglamentario_del_sector_vivienda__404e",
+    "pagina": 3,
+    "ed_c": 41,
+    "ref_c": 5924,
+    "ed_p": 9,
+    "ref_p": 898,
+    "crit_ref": 72,
+    "crit_ok": 71
+   },
+   {
+    "slug": "por_medio_del_cual_se_expide_el_decreto_unico_reglamentario_del_sector_vivienda__404e",
+    "pagina": 4,
+    "ed_c": 53,
+    "ref_c": 4987,
+    "ed_p": 15,
+    "ref_p": 761,
+    "crit_ref": 42,
+    "crit_ok": 42
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 1,
+    "ed_c": 81,
+    "ref_c": 2303,
+    "ed_p": 18,
+    "ref_p": 380,
+    "crit_ref": 44,
+    "crit_ok": 42
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 2,
+    "ed_c": 70,
+    "ref_c": 1819,
+    "ed_p": 15,
+    "ref_p": 293,
+    "crit_ref": 23,
+    "crit_ok": 20
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 3,
+    "ed_c": 81,
+    "ref_c": 2345,
+    "ed_p": 16,
+    "ref_p": 381,
+    "crit_ref": 22,
+    "crit_ok": 19
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 4,
+    "ed_c": 59,
+    "ref_c": 2140,
+    "ed_p": 12,
+    "ref_p": 340,
+    "crit_ref": 12,
+    "crit_ok": 10
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 5,
+    "ed_c": 84,
+    "ref_c": 1987,
+    "ed_p": 27,
+    "ref_p": 328,
+    "crit_ref": 28,
+    "crit_ok": 19
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 6,
+    "ed_c": 87,
+    "ref_c": 2175,
+    "ed_p": 29,
+    "ref_p": 343,
+    "crit_ref": 17,
+    "crit_ok": 10
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 7,
+    "ed_c": 56,
+    "ref_c": 2205,
+    "ed_p": 21,
+    "ref_p": 342,
+    "crit_ref": 8,
+    "crit_ok": 4
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 8,
+    "ed_c": 64,
+    "ref_c": 2284,
+    "ed_p": 19,
+    "ref_p": 354,
+    "crit_ref": 22,
+    "crit_ok": 18
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 9,
+    "ed_c": 89,
+    "ref_c": 1691,
+    "ed_p": 25,
+    "ref_p": 247,
+    "crit_ref": 11,
+    "crit_ok": 8
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 10,
+    "ed_c": 138,
+    "ref_c": 1274,
+    "ed_p": 37,
+    "ref_p": 225,
+    "crit_ref": 21,
+    "crit_ok": 13
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 11,
+    "ed_c": 178,
+    "ref_c": 2232,
+    "ed_p": 31,
+    "ref_p": 368,
+    "crit_ref": 10,
+    "crit_ok": 8
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 12,
+    "ed_c": 601,
+    "ref_c": 2310,
+    "ed_p": 103,
+    "ref_p": 385,
+    "crit_ref": 17,
+    "crit_ok": 15
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 13,
+    "ed_c": 65,
+    "ref_c": 2172,
+    "ed_p": 15,
+    "ref_p": 349,
+    "crit_ref": 14,
+    "crit_ok": 14
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 14,
+    "ed_c": 97,
+    "ref_c": 2238,
+    "ed_p": 26,
+    "ref_p": 339,
+    "crit_ref": 19,
+    "crit_ok": 16
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 15,
+    "ed_c": 63,
+    "ref_c": 2191,
+    "ed_p": 13,
+    "ref_p": 365,
+    "crit_ref": 19,
+    "crit_ok": 19
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 16,
+    "ed_c": 74,
+    "ref_c": 1815,
+    "ed_p": 23,
+    "ref_p": 270,
+    "crit_ref": 14,
+    "crit_ok": 9
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 17,
+    "ed_c": 97,
+    "ref_c": 2009,
+    "ed_p": 30,
+    "ref_p": 295,
+    "crit_ref": 13,
+    "crit_ok": 3
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 18,
+    "ed_c": 67,
+    "ref_c": 1743,
+    "ed_p": 21,
+    "ref_p": 293,
+    "crit_ref": 18,
+    "crit_ok": 11
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 19,
+    "ed_c": 63,
+    "ref_c": 1804,
+    "ed_p": 18,
+    "ref_p": 284,
+    "crit_ref": 11,
+    "crit_ok": 9
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 20,
+    "ed_c": 359,
+    "ref_c": 1712,
+    "ed_p": 75,
+    "ref_p": 258,
+    "crit_ref": 18,
+    "crit_ok": 15
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 21,
+    "ed_c": 93,
+    "ref_c": 1881,
+    "ed_p": 20,
+    "ref_p": 294,
+    "crit_ref": 12,
+    "crit_ok": 12
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 22,
+    "ed_c": 71,
+    "ref_c": 1928,
+    "ed_p": 19,
+    "ref_p": 285,
+    "crit_ref": 17,
+    "crit_ok": 14
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 23,
+    "ed_c": 71,
+    "ref_c": 2341,
+    "ed_p": 22,
+    "ref_p": 374,
+    "crit_ref": 8,
+    "crit_ok": 6
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 24,
+    "ed_c": 74,
+    "ref_c": 2423,
+    "ed_p": 18,
+    "ref_p": 381,
+    "crit_ref": 11,
+    "crit_ok": 9
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 25,
+    "ed_c": 153,
+    "ref_c": 2273,
+    "ed_p": 27,
+    "ref_p": 354,
+    "crit_ref": 12,
+    "crit_ok": 11
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 26,
+    "ed_c": 85,
+    "ref_c": 2281,
+    "ed_p": 25,
+    "ref_p": 361,
+    "crit_ref": 8,
+    "crit_ok": 7
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 27,
+    "ed_c": 78,
+    "ref_c": 2192,
+    "ed_p": 25,
+    "ref_p": 340,
+    "crit_ref": 11,
+    "crit_ok": 11
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 28,
+    "ed_c": 95,
+    "ref_c": 2079,
+    "ed_p": 20,
+    "ref_p": 338,
+    "crit_ref": 10,
+    "crit_ok": 8
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 29,
+    "ed_c": 48,
+    "ref_c": 2034,
+    "ed_p": 10,
+    "ref_p": 315,
+    "crit_ref": 15,
+    "crit_ok": 12
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 30,
+    "ed_c": 144,
+    "ref_c": 1205,
+    "ed_p": 40,
+    "ref_p": 194,
+    "crit_ref": 16,
+    "crit_ok": 13
+   }
+  ],
+  "z2_psm3": [
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 1,
+    "ed_c": 168,
+    "ref_c": 2088,
+    "ed_p": 36,
+    "ref_p": 312,
+    "crit_ref": 26,
+    "crit_ok": 22
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 2,
+    "ed_c": 5,
+    "ref_c": 2657,
+    "ed_p": 5,
+    "ref_p": 420,
+    "crit_ref": 16,
+    "crit_ok": 15
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 3,
+    "ed_c": 13,
+    "ref_c": 2684,
+    "ed_p": 8,
+    "ref_p": 414,
+    "crit_ref": 24,
+    "crit_ok": 21
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 4,
+    "ed_c": 16,
+    "ref_c": 2922,
+    "ed_p": 10,
+    "ref_p": 484,
+    "crit_ref": 29,
+    "crit_ok": 27
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 5,
+    "ed_c": 27,
+    "ref_c": 2500,
+    "ed_p": 7,
+    "ref_p": 391,
+    "crit_ref": 27,
+    "crit_ok": 25
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 6,
+    "ed_c": 17,
+    "ref_c": 2356,
+    "ed_p": 13,
+    "ref_p": 380,
+    "crit_ref": 23,
+    "crit_ok": 19
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 7,
+    "ed_c": 19,
+    "ref_c": 2628,
+    "ed_p": 5,
+    "ref_p": 422,
+    "crit_ref": 18,
+    "crit_ok": 17
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 8,
+    "ed_c": 14,
+    "ref_c": 2708,
+    "ed_p": 9,
+    "ref_p": 428,
+    "crit_ref": 24,
+    "crit_ok": 23
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 9,
+    "ed_c": 40,
+    "ref_c": 2753,
+    "ed_p": 10,
+    "ref_p": 440,
+    "crit_ref": 18,
+    "crit_ok": 17
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 10,
+    "ed_c": 14,
+    "ref_c": 2419,
+    "ed_p": 7,
+    "ref_p": 393,
+    "crit_ref": 31,
+    "crit_ok": 29
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 11,
+    "ed_c": 27,
+    "ref_c": 5191,
+    "ed_p": 15,
+    "ref_p": 862,
+    "crit_ref": 231,
+    "crit_ok": 229
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 12,
+    "ed_c": 17,
+    "ref_c": 2989,
+    "ed_p": 15,
+    "ref_p": 509,
+    "crit_ref": 45,
+    "crit_ok": 40
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 13,
+    "ed_c": 14,
+    "ref_c": 2928,
+    "ed_p": 11,
+    "ref_p": 472,
+    "crit_ref": 58,
+    "crit_ok": 55
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 14,
+    "ed_c": 25,
+    "ref_c": 2711,
+    "ed_p": 16,
+    "ref_p": 445,
+    "crit_ref": 40,
+    "crit_ok": 38
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 15,
+    "ed_c": 10,
+    "ref_c": 2443,
+    "ed_p": 11,
+    "ref_p": 416,
+    "crit_ref": 45,
+    "crit_ok": 45
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 16,
+    "ed_c": 12,
+    "ref_c": 2154,
+    "ed_p": 11,
+    "ref_p": 353,
+    "crit_ref": 46,
+    "crit_ok": 46
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 17,
+    "ed_c": 18,
+    "ref_c": 3029,
+    "ed_p": 13,
+    "ref_p": 489,
+    "crit_ref": 56,
+    "crit_ok": 52
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 18,
+    "ed_c": 20,
+    "ref_c": 2551,
+    "ed_p": 12,
+    "ref_p": 451,
+    "crit_ref": 82,
+    "crit_ok": 80
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 19,
+    "ed_c": 8,
+    "ref_c": 2477,
+    "ed_p": 7,
+    "ref_p": 395,
+    "crit_ref": 23,
+    "crit_ok": 19
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 20,
+    "ed_c": 5,
+    "ref_c": 2440,
+    "ed_p": 3,
+    "ref_p": 384,
+    "crit_ref": 14,
+    "crit_ok": 14
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 21,
+    "ed_c": 5,
+    "ref_c": 2420,
+    "ed_p": 5,
+    "ref_p": 383,
+    "crit_ref": 28,
+    "crit_ok": 28
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 22,
+    "ed_c": 15,
+    "ref_c": 2552,
+    "ed_p": 11,
+    "ref_p": 386,
+    "crit_ref": 21,
+    "crit_ok": 21
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 23,
+    "ed_c": 8,
+    "ref_c": 2332,
+    "ed_p": 6,
+    "ref_p": 351,
+    "crit_ref": 18,
+    "crit_ok": 18
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 24,
+    "ed_c": 28,
+    "ref_c": 2878,
+    "ed_p": 16,
+    "ref_p": 448,
+    "crit_ref": 42,
+    "crit_ok": 40
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 25,
+    "ed_c": 12,
+    "ref_c": 1815,
+    "ed_p": 9,
+    "ref_p": 303,
+    "crit_ref": 34,
+    "crit_ok": 34
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 26,
+    "ed_c": 14,
+    "ref_c": 3023,
+    "ed_p": 12,
+    "ref_p": 496,
+    "crit_ref": 49,
+    "crit_ok": 45
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 27,
+    "ed_c": 8,
+    "ref_c": 3213,
+    "ed_p": 7,
+    "ref_p": 491,
+    "crit_ref": 41,
+    "crit_ok": 40
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 28,
+    "ed_c": 20,
+    "ref_c": 2492,
+    "ed_p": 13,
+    "ref_p": 374,
+    "crit_ref": 24,
+    "crit_ok": 22
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 29,
+    "ed_c": 0,
+    "ref_c": 2735,
+    "ed_p": 0,
+    "ref_p": 452,
+    "crit_ref": 42,
+    "crit_ok": 42
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 30,
+    "ed_c": 16,
+    "ref_c": 2603,
+    "ed_p": 15,
+    "ref_p": 390,
+    "crit_ref": 26,
+    "crit_ok": 26
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 31,
+    "ed_c": 19,
+    "ref_c": 3215,
+    "ed_p": 15,
+    "ref_p": 537,
+    "crit_ref": 36,
+    "crit_ok": 28
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 32,
+    "ed_c": 9,
+    "ref_c": 2418,
+    "ed_p": 9,
+    "ref_p": 395,
+    "crit_ref": 25,
+    "crit_ok": 20
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 33,
+    "ed_c": 49,
+    "ref_c": 561,
+    "ed_p": 9,
+    "ref_p": 86,
+    "crit_ref": 8,
+    "crit_ok": 8
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 1,
+    "ed_c": 4,
+    "ref_c": 1345,
+    "ed_p": 3,
+    "ref_p": 202,
+    "crit_ref": 21,
+    "crit_ok": 21
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 2,
+    "ed_c": 7,
+    "ref_c": 2113,
+    "ed_p": 5,
+    "ref_p": 358,
+    "crit_ref": 13,
+    "crit_ok": 13
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 3,
+    "ed_c": 7,
+    "ref_c": 2638,
+    "ed_p": 6,
+    "ref_p": 429,
+    "crit_ref": 12,
+    "crit_ok": 11
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 4,
+    "ed_c": 15,
+    "ref_c": 2225,
+    "ed_p": 14,
+    "ref_p": 379,
+    "crit_ref": 53,
+    "crit_ok": 52
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 5,
+    "ed_c": 2,
+    "ref_c": 2470,
+    "ed_p": 1,
+    "ref_p": 421,
+    "crit_ref": 5,
+    "crit_ok": 4
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 6,
+    "ed_c": 4,
+    "ref_c": 2374,
+    "ed_p": 4,
+    "ref_p": 384,
+    "crit_ref": 16,
+    "crit_ok": 15
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 7,
+    "ed_c": 5,
+    "ref_c": 2296,
+    "ed_p": 2,
+    "ref_p": 373,
+    "crit_ref": 18,
+    "crit_ok": 17
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 8,
+    "ed_c": 9,
+    "ref_c": 1935,
+    "ed_p": 6,
+    "ref_p": 310,
+    "crit_ref": 20,
+    "crit_ok": 19
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 9,
+    "ed_c": 5,
+    "ref_c": 1983,
+    "ed_p": 5,
+    "ref_p": 318,
+    "crit_ref": 9,
+    "crit_ok": 8
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 10,
+    "ed_c": 3,
+    "ref_c": 2124,
+    "ed_p": 3,
+    "ref_p": 334,
+    "crit_ref": 24,
+    "crit_ok": 24
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 11,
+    "ed_c": 2,
+    "ref_c": 2627,
+    "ed_p": 2,
+    "ref_p": 411,
+    "crit_ref": 17,
+    "crit_ok": 17
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 12,
+    "ed_c": 21,
+    "ref_c": 2936,
+    "ed_p": 20,
+    "ref_p": 445,
+    "crit_ref": 47,
+    "crit_ok": 41
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 13,
+    "ed_c": 9,
+    "ref_c": 2388,
+    "ed_p": 5,
+    "ref_p": 360,
+    "crit_ref": 12,
+    "crit_ok": 12
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 14,
+    "ed_c": 12,
+    "ref_c": 2179,
+    "ed_p": 8,
+    "ref_p": 335,
+    "crit_ref": 19,
+    "crit_ok": 17
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 15,
+    "ed_c": 9,
+    "ref_c": 2337,
+    "ed_p": 8,
+    "ref_p": 376,
+    "crit_ref": 14,
+    "crit_ok": 13
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 16,
+    "ed_c": 2,
+    "ref_c": 2136,
+    "ed_p": 2,
+    "ref_p": 341,
+    "crit_ref": 22,
+    "crit_ok": 22
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 17,
+    "ed_c": 8,
+    "ref_c": 3137,
+    "ed_p": 8,
+    "ref_p": 509,
+    "crit_ref": 69,
+    "crit_ok": 68
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 18,
+    "ed_c": 7,
+    "ref_c": 2324,
+    "ed_p": 8,
+    "ref_p": 388,
+    "crit_ref": 24,
+    "crit_ok": 24
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 19,
+    "ed_c": 0,
+    "ref_c": 2503,
+    "ed_p": 0,
+    "ref_p": 418,
+    "crit_ref": 20,
+    "crit_ok": 20
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 20,
+    "ed_c": 0,
+    "ref_c": 2443,
+    "ed_p": 0,
+    "ref_p": 422,
+    "crit_ref": 22,
+    "crit_ok": 22
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 21,
+    "ed_c": 7,
+    "ref_c": 2410,
+    "ed_p": 5,
+    "ref_p": 402,
+    "crit_ref": 17,
+    "crit_ok": 15
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 22,
+    "ed_c": 2,
+    "ref_c": 2212,
+    "ed_p": 2,
+    "ref_p": 365,
+    "crit_ref": 15,
+    "crit_ok": 15
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 23,
+    "ed_c": 16,
+    "ref_c": 2399,
+    "ed_p": 9,
+    "ref_p": 371,
+    "crit_ref": 27,
+    "crit_ok": 27
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 24,
+    "ed_c": 8,
+    "ref_c": 2589,
+    "ed_p": 6,
+    "ref_p": 422,
+    "crit_ref": 21,
+    "crit_ok": 18
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 25,
+    "ed_c": 10,
+    "ref_c": 2685,
+    "ed_p": 7,
+    "ref_p": 433,
+    "crit_ref": 30,
+    "crit_ok": 26
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 26,
+    "ed_c": 3,
+    "ref_c": 2447,
+    "ed_p": 1,
+    "ref_p": 387,
+    "crit_ref": 15,
+    "crit_ok": 14
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 27,
+    "ed_c": 6,
+    "ref_c": 1766,
+    "ed_p": 3,
+    "ref_p": 289,
+    "crit_ref": 19,
+    "crit_ok": 18
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 28,
+    "ed_c": 10,
+    "ref_c": 1766,
+    "ed_p": 7,
+    "ref_p": 266,
+    "crit_ref": 13,
+    "crit_ok": 12
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 29,
+    "ed_c": 47,
+    "ref_c": 407,
+    "ed_p": 7,
+    "ref_p": 60,
+    "crit_ref": 7,
+    "crit_ok": 6
+   },
+   {
+    "slug": "ce_2da_nyr_1994_993_inversiones_araujo_vs_capitania_puerto_cartagena_urbanismo_p_86ff",
+    "pagina": 19,
+    "ed_c": 0,
+    "ref_c": 54,
+    "ed_p": 0,
+    "ref_p": 8,
+    "crit_ref": 0,
+    "crit_ok": 0
+   },
+   {
+    "slug": "por_el_cual_se_dicta_el_codigo_nacional_de_recursos_naturales_renovables_y_de_pr_2880",
+    "pagina": 1,
+    "ed_c": 5,
+    "ref_c": 3462,
+    "ed_p": 4,
+    "ref_p": 543,
+    "crit_ref": 37,
+    "crit_ok": 37
+   },
+   {
+    "slug": "por_el_cual_se_dicta_el_codigo_nacional_de_recursos_naturales_renovables_y_de_pr_2880",
+    "pagina": 2,
+    "ed_c": 13,
+    "ref_c": 3397,
+    "ed_p": 6,
+    "ref_p": 553,
+    "crit_ref": 33,
+    "crit_ok": 32
+   },
+   {
+    "slug": "por_el_cual_se_dicta_el_codigo_nacional_de_recursos_naturales_renovables_y_de_pr_2880",
+    "pagina": 3,
+    "ed_c": 12,
+    "ref_c": 3498,
+    "ed_p": 8,
+    "ref_p": 556,
+    "crit_ref": 47,
+    "crit_ok": 47
+   },
+   {
+    "slug": "por_el_cual_se_dicta_el_codigo_nacional_de_recursos_naturales_renovables_y_de_pr_2880",
+    "pagina": 4,
+    "ed_c": 0,
+    "ref_c": 3505,
+    "ed_p": 0,
+    "ref_p": 548,
+    "crit_ref": 29,
+    "crit_ok": 29
+   },
+   {
+    "slug": "por_el_cual_se_dicta_el_codigo_nacional_de_recursos_naturales_renovables_y_de_pr_2880",
+    "pagina": 5,
+    "ed_c": 11,
+    "ref_c": 3430,
+    "ed_p": 9,
+    "ref_p": 520,
+    "crit_ref": 24,
+    "crit_ok": 24
+   },
+   {
+    "slug": "por_el_cual_se_dicta_el_codigo_nacional_de_recursos_naturales_renovables_y_de_pr_2880",
+    "pagina": 6,
+    "ed_c": 5,
+    "ref_c": 2658,
+    "ed_p": 5,
+    "ref_p": 419,
+    "crit_ref": 27,
+    "crit_ok": 27
+   },
+   {
+    "slug": "por_el_cual_se_dictan_normas_para_simplificar_suprimir_y_reformar_tramites_proce_5f39",
+    "pagina": 1,
+    "ed_c": 2,
+    "ref_c": 4106,
+    "ed_p": 2,
+    "ref_p": 628,
+    "crit_ref": 39,
+    "crit_ok": 39
+   },
+   {
+    "slug": "por_el_cual_se_dictan_normas_para_simplificar_suprimir_y_reformar_tramites_proce_5f39",
+    "pagina": 2,
+    "ed_c": 2,
+    "ref_c": 4552,
+    "ed_p": 2,
+    "ref_p": 708,
+    "crit_ref": 27,
+    "crit_ok": 27
+   },
+   {
+    "slug": "por_el_cual_se_dictan_normas_para_simplificar_suprimir_y_reformar_tramites_proce_5f39",
+    "pagina": 3,
+    "ed_c": 9,
+    "ref_c": 3881,
+    "ed_p": 8,
+    "ref_p": 598,
+    "crit_ref": 33,
+    "crit_ok": 33
+   },
+   {
+    "slug": "por_medio_del_cual_se_expide_el_decreto_unico_reglamentario_del_sector_comercio__38da",
+    "pagina": 1,
+    "ed_c": 88,
+    "ref_c": 5407,
+    "ed_p": 24,
+    "ref_p": 769,
+    "crit_ref": 28,
+    "crit_ok": 25
+   },
+   {
+    "slug": "por_medio_del_cual_se_expide_el_decreto_unico_reglamentario_del_sector_comercio__38da",
+    "pagina": 2,
+    "ed_c": 54,
+    "ref_c": 6266,
+    "ed_p": 21,
+    "ref_p": 898,
+    "crit_ref": 39,
+    "crit_ok": 34
+   },
+   {
+    "slug": "por_medio_del_cual_se_expide_el_decreto_unico_reglamentario_del_sector_comercio__38da",
+    "pagina": 3,
+    "ed_c": 44,
+    "ref_c": 6074,
+    "ed_p": 12,
+    "ref_p": 881,
+    "crit_ref": 24,
+    "crit_ok": 22
+   },
+   {
+    "slug": "por_medio_del_cual_se_expide_el_decreto_unico_reglamentario_del_sector_comercio__38da",
+    "pagina": 4,
+    "ed_c": 50,
+    "ref_c": 4346,
+    "ed_p": 18,
+    "ref_p": 639,
+    "crit_ref": 35,
+    "crit_ok": 35
+   },
+   {
+    "slug": "por_medio_del_cual_se_expide_el_decreto_unico_reglamentario_del_sector_comercio__38da",
+    "pagina": 5,
+    "ed_c": 52,
+    "ref_c": 4600,
+    "ed_p": 19,
+    "ref_p": 674,
+    "crit_ref": 39,
+    "crit_ok": 36
+   },
+   {
+    "slug": "por_medio_del_cual_se_expide_el_decreto_unico_reglamentario_del_sector_vivienda__404e",
+    "pagina": 1,
+    "ed_c": 38,
+    "ref_c": 4525,
+    "ed_p": 8,
+    "ref_p": 647,
+    "crit_ref": 60,
+    "crit_ok": 60
+   },
+   {
+    "slug": "por_medio_del_cual_se_expide_el_decreto_unico_reglamentario_del_sector_vivienda__404e",
+    "pagina": 2,
+    "ed_c": 40,
+    "ref_c": 4853,
+    "ed_p": 10,
+    "ref_p": 758,
+    "crit_ref": 78,
+    "crit_ok": 78
+   },
+   {
+    "slug": "por_medio_del_cual_se_expide_el_decreto_unico_reglamentario_del_sector_vivienda__404e",
+    "pagina": 3,
+    "ed_c": 41,
+    "ref_c": 5924,
+    "ed_p": 9,
+    "ref_p": 898,
+    "crit_ref": 72,
+    "crit_ok": 71
+   },
+   {
+    "slug": "por_medio_del_cual_se_expide_el_decreto_unico_reglamentario_del_sector_vivienda__404e",
+    "pagina": 4,
+    "ed_c": 53,
+    "ref_c": 4987,
+    "ed_p": 15,
+    "ref_p": 761,
+    "crit_ref": 42,
+    "crit_ok": 42
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 1,
+    "ed_c": 81,
+    "ref_c": 2303,
+    "ed_p": 18,
+    "ref_p": 380,
+    "crit_ref": 44,
+    "crit_ok": 42
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 2,
+    "ed_c": 70,
+    "ref_c": 1819,
+    "ed_p": 15,
+    "ref_p": 293,
+    "crit_ref": 23,
+    "crit_ok": 20
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 3,
+    "ed_c": 81,
+    "ref_c": 2345,
+    "ed_p": 16,
+    "ref_p": 381,
+    "crit_ref": 22,
+    "crit_ok": 19
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 4,
+    "ed_c": 59,
+    "ref_c": 2140,
+    "ed_p": 12,
+    "ref_p": 340,
+    "crit_ref": 12,
+    "crit_ok": 10
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 5,
+    "ed_c": 84,
+    "ref_c": 1987,
+    "ed_p": 27,
+    "ref_p": 328,
+    "crit_ref": 28,
+    "crit_ok": 19
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 6,
+    "ed_c": 87,
+    "ref_c": 2175,
+    "ed_p": 29,
+    "ref_p": 343,
+    "crit_ref": 17,
+    "crit_ok": 10
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 7,
+    "ed_c": 56,
+    "ref_c": 2205,
+    "ed_p": 21,
+    "ref_p": 342,
+    "crit_ref": 8,
+    "crit_ok": 4
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 8,
+    "ed_c": 64,
+    "ref_c": 2284,
+    "ed_p": 19,
+    "ref_p": 354,
+    "crit_ref": 22,
+    "crit_ok": 18
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 9,
+    "ed_c": 89,
+    "ref_c": 1691,
+    "ed_p": 25,
+    "ref_p": 247,
+    "crit_ref": 11,
+    "crit_ok": 8
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 10,
+    "ed_c": 138,
+    "ref_c": 1274,
+    "ed_p": 37,
+    "ref_p": 225,
+    "crit_ref": 21,
+    "crit_ok": 13
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 11,
+    "ed_c": 178,
+    "ref_c": 2232,
+    "ed_p": 31,
+    "ref_p": 368,
+    "crit_ref": 10,
+    "crit_ok": 8
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 12,
+    "ed_c": 601,
+    "ref_c": 2310,
+    "ed_p": 103,
+    "ref_p": 385,
+    "crit_ref": 17,
+    "crit_ok": 15
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 13,
+    "ed_c": 65,
+    "ref_c": 2172,
+    "ed_p": 15,
+    "ref_p": 349,
+    "crit_ref": 14,
+    "crit_ok": 14
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 14,
+    "ed_c": 97,
+    "ref_c": 2238,
+    "ed_p": 26,
+    "ref_p": 339,
+    "crit_ref": 19,
+    "crit_ok": 16
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 15,
+    "ed_c": 63,
+    "ref_c": 2191,
+    "ed_p": 13,
+    "ref_p": 365,
+    "crit_ref": 19,
+    "crit_ok": 19
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 16,
+    "ed_c": 74,
+    "ref_c": 1815,
+    "ed_p": 23,
+    "ref_p": 270,
+    "crit_ref": 14,
+    "crit_ok": 9
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 17,
+    "ed_c": 97,
+    "ref_c": 2009,
+    "ed_p": 30,
+    "ref_p": 295,
+    "crit_ref": 13,
+    "crit_ok": 3
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 18,
+    "ed_c": 67,
+    "ref_c": 1743,
+    "ed_p": 21,
+    "ref_p": 293,
+    "crit_ref": 18,
+    "crit_ok": 11
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 19,
+    "ed_c": 63,
+    "ref_c": 1804,
+    "ed_p": 18,
+    "ref_p": 284,
+    "crit_ref": 11,
+    "crit_ok": 9
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 20,
+    "ed_c": 359,
+    "ref_c": 1712,
+    "ed_p": 75,
+    "ref_p": 258,
+    "crit_ref": 18,
+    "crit_ok": 15
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 21,
+    "ed_c": 93,
+    "ref_c": 1881,
+    "ed_p": 20,
+    "ref_p": 294,
+    "crit_ref": 12,
+    "crit_ok": 12
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 22,
+    "ed_c": 71,
+    "ref_c": 1928,
+    "ed_p": 19,
+    "ref_p": 285,
+    "crit_ref": 17,
+    "crit_ok": 14
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 23,
+    "ed_c": 71,
+    "ref_c": 2341,
+    "ed_p": 22,
+    "ref_p": 374,
+    "crit_ref": 8,
+    "crit_ok": 6
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 24,
+    "ed_c": 74,
+    "ref_c": 2423,
+    "ed_p": 18,
+    "ref_p": 381,
+    "crit_ref": 11,
+    "crit_ok": 9
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 25,
+    "ed_c": 153,
+    "ref_c": 2273,
+    "ed_p": 27,
+    "ref_p": 354,
+    "crit_ref": 12,
+    "crit_ok": 11
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 26,
+    "ed_c": 85,
+    "ref_c": 2281,
+    "ed_p": 25,
+    "ref_p": 361,
+    "crit_ref": 8,
+    "crit_ok": 7
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 27,
+    "ed_c": 78,
+    "ref_c": 2192,
+    "ed_p": 25,
+    "ref_p": 340,
+    "crit_ref": 11,
+    "crit_ok": 11
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 28,
+    "ed_c": 95,
+    "ref_c": 2079,
+    "ed_p": 20,
+    "ref_p": 338,
+    "crit_ref": 10,
+    "crit_ok": 8
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 29,
+    "ed_c": 48,
+    "ref_c": 2034,
+    "ed_p": 10,
+    "ref_p": 315,
+    "crit_ref": 15,
+    "crit_ok": 12
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 30,
+    "ed_c": 144,
+    "ref_c": 1205,
+    "ed_p": 40,
+    "ref_p": 194,
+    "crit_ref": 16,
+    "crit_ok": 13
+   }
+  ],
+  "z2_psm6": [
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 1,
+    "ed_c": 161,
+    "ref_c": 2088,
+    "ed_p": 43,
+    "ref_p": 312,
+    "crit_ref": 26,
+    "crit_ok": 22
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 2,
+    "ed_c": 18,
+    "ref_c": 2657,
+    "ed_p": 12,
+    "ref_p": 420,
+    "crit_ref": 16,
+    "crit_ok": 15
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 3,
+    "ed_c": 15,
+    "ref_c": 2684,
+    "ed_p": 9,
+    "ref_p": 414,
+    "crit_ref": 24,
+    "crit_ok": 21
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 4,
+    "ed_c": 23,
+    "ref_c": 2922,
+    "ed_p": 15,
+    "ref_p": 484,
+    "crit_ref": 29,
+    "crit_ok": 27
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 5,
+    "ed_c": 14,
+    "ref_c": 2500,
+    "ed_p": 6,
+    "ref_p": 391,
+    "crit_ref": 27,
+    "crit_ok": 26
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 6,
+    "ed_c": 33,
+    "ref_c": 2356,
+    "ed_p": 20,
+    "ref_p": 380,
+    "crit_ref": 23,
+    "crit_ok": 19
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 7,
+    "ed_c": 25,
+    "ref_c": 2628,
+    "ed_p": 11,
+    "ref_p": 422,
+    "crit_ref": 18,
+    "crit_ok": 16
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 8,
+    "ed_c": 25,
+    "ref_c": 2708,
+    "ed_p": 13,
+    "ref_p": 428,
+    "crit_ref": 24,
+    "crit_ok": 23
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 9,
+    "ed_c": 40,
+    "ref_c": 2753,
+    "ed_p": 11,
+    "ref_p": 440,
+    "crit_ref": 18,
+    "crit_ok": 17
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 10,
+    "ed_c": 23,
+    "ref_c": 2419,
+    "ed_p": 13,
+    "ref_p": 393,
+    "crit_ref": 31,
+    "crit_ok": 29
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 11,
+    "ed_c": 29,
+    "ref_c": 5191,
+    "ed_p": 20,
+    "ref_p": 862,
+    "crit_ref": 231,
+    "crit_ok": 229
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 12,
+    "ed_c": 24,
+    "ref_c": 2989,
+    "ed_p": 17,
+    "ref_p": 509,
+    "crit_ref": 45,
+    "crit_ok": 40
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 13,
+    "ed_c": 194,
+    "ref_c": 2928,
+    "ed_p": 53,
+    "ref_p": 472,
+    "crit_ref": 58,
+    "crit_ok": 46
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 14,
+    "ed_c": 24,
+    "ref_c": 2711,
+    "ed_p": 17,
+    "ref_p": 445,
+    "crit_ref": 40,
+    "crit_ok": 37
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 15,
+    "ed_c": 18,
+    "ref_c": 2443,
+    "ed_p": 15,
+    "ref_p": 416,
+    "crit_ref": 45,
+    "crit_ok": 45
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 16,
+    "ed_c": 18,
+    "ref_c": 2154,
+    "ed_p": 14,
+    "ref_p": 353,
+    "crit_ref": 46,
+    "crit_ok": 46
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 17,
+    "ed_c": 27,
+    "ref_c": 3029,
+    "ed_p": 18,
+    "ref_p": 489,
+    "crit_ref": 56,
+    "crit_ok": 52
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 18,
+    "ed_c": 26,
+    "ref_c": 2551,
+    "ed_p": 15,
+    "ref_p": 451,
+    "crit_ref": 82,
+    "crit_ok": 80
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 19,
+    "ed_c": 14,
+    "ref_c": 2477,
+    "ed_p": 11,
+    "ref_p": 395,
+    "crit_ref": 23,
+    "crit_ok": 19
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 20,
+    "ed_c": 14,
+    "ref_c": 2440,
+    "ed_p": 6,
+    "ref_p": 384,
+    "crit_ref": 14,
+    "crit_ok": 14
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 21,
+    "ed_c": 9,
+    "ref_c": 2420,
+    "ed_p": 6,
+    "ref_p": 383,
+    "crit_ref": 28,
+    "crit_ok": 28
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 22,
+    "ed_c": 24,
+    "ref_c": 2552,
+    "ed_p": 18,
+    "ref_p": 386,
+    "crit_ref": 21,
+    "crit_ok": 21
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 23,
+    "ed_c": 27,
+    "ref_c": 2332,
+    "ed_p": 13,
+    "ref_p": 351,
+    "crit_ref": 18,
+    "crit_ok": 18
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 24,
+    "ed_c": 105,
+    "ref_c": 2878,
+    "ed_p": 18,
+    "ref_p": 448,
+    "crit_ref": 42,
+    "crit_ok": 38
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 25,
+    "ed_c": 16,
+    "ref_c": 1815,
+    "ed_p": 10,
+    "ref_p": 303,
+    "crit_ref": 34,
+    "crit_ok": 34
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 26,
+    "ed_c": 29,
+    "ref_c": 3023,
+    "ed_p": 17,
+    "ref_p": 496,
+    "crit_ref": 49,
+    "crit_ok": 44
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 27,
+    "ed_c": 13,
+    "ref_c": 3213,
+    "ed_p": 10,
+    "ref_p": 491,
+    "crit_ref": 41,
+    "crit_ok": 38
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 28,
+    "ed_c": 65,
+    "ref_c": 2492,
+    "ed_p": 19,
+    "ref_p": 374,
+    "crit_ref": 24,
+    "crit_ok": 22
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 29,
+    "ed_c": 9,
+    "ref_c": 2735,
+    "ed_p": 6,
+    "ref_p": 452,
+    "crit_ref": 42,
+    "crit_ok": 42
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 30,
+    "ed_c": 19,
+    "ref_c": 2603,
+    "ed_p": 15,
+    "ref_p": 390,
+    "crit_ref": 26,
+    "crit_ok": 26
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 31,
+    "ed_c": 26,
+    "ref_c": 3215,
+    "ed_p": 19,
+    "ref_p": 537,
+    "crit_ref": 36,
+    "crit_ok": 28
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 32,
+    "ed_c": 20,
+    "ref_c": 2418,
+    "ed_p": 14,
+    "ref_p": 395,
+    "crit_ref": 25,
+    "crit_ok": 20
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 33,
+    "ed_c": 108,
+    "ref_c": 561,
+    "ed_p": 27,
+    "ref_p": 86,
+    "crit_ref": 8,
+    "crit_ok": 8
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 1,
+    "ed_c": 44,
+    "ref_c": 1345,
+    "ed_p": 17,
+    "ref_p": 202,
+    "crit_ref": 21,
+    "crit_ok": 21
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 2,
+    "ed_c": 14,
+    "ref_c": 2113,
+    "ed_p": 8,
+    "ref_p": 358,
+    "crit_ref": 13,
+    "crit_ok": 13
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 3,
+    "ed_c": 9,
+    "ref_c": 2638,
+    "ed_p": 7,
+    "ref_p": 429,
+    "crit_ref": 12,
+    "crit_ok": 11
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 4,
+    "ed_c": 19,
+    "ref_c": 2225,
+    "ed_p": 16,
+    "ref_p": 379,
+    "crit_ref": 53,
+    "crit_ok": 53
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 5,
+    "ed_c": 3,
+    "ref_c": 2470,
+    "ed_p": 2,
+    "ref_p": 421,
+    "crit_ref": 5,
+    "crit_ok": 5
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 6,
+    "ed_c": 46,
+    "ref_c": 2374,
+    "ed_p": 11,
+    "ref_p": 384,
+    "crit_ref": 16,
+    "crit_ok": 13
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 7,
+    "ed_c": 46,
+    "ref_c": 2296,
+    "ed_p": 9,
+    "ref_p": 373,
+    "crit_ref": 18,
+    "crit_ok": 15
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 8,
+    "ed_c": 9,
+    "ref_c": 1935,
+    "ed_p": 6,
+    "ref_p": 310,
+    "crit_ref": 20,
+    "crit_ok": 20
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 9,
+    "ed_c": 43,
+    "ref_c": 1983,
+    "ed_p": 10,
+    "ref_p": 318,
+    "crit_ref": 9,
+    "crit_ok": 6
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 10,
+    "ed_c": 3,
+    "ref_c": 2124,
+    "ed_p": 3,
+    "ref_p": 334,
+    "crit_ref": 24,
+    "crit_ok": 24
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 11,
+    "ed_c": 4,
+    "ref_c": 2627,
+    "ed_p": 3,
+    "ref_p": 411,
+    "crit_ref": 17,
+    "crit_ok": 17
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 12,
+    "ed_c": 17,
+    "ref_c": 2936,
+    "ed_p": 17,
+    "ref_p": 445,
+    "crit_ref": 47,
+    "crit_ok": 41
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 13,
+    "ed_c": 11,
+    "ref_c": 2388,
+    "ed_p": 6,
+    "ref_p": 360,
+    "crit_ref": 12,
+    "crit_ok": 11
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 14,
+    "ed_c": 19,
+    "ref_c": 2179,
+    "ed_p": 11,
+    "ref_p": 335,
+    "crit_ref": 19,
+    "crit_ok": 17
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 15,
+    "ed_c": 12,
+    "ref_c": 2337,
+    "ed_p": 11,
+    "ref_p": 376,
+    "crit_ref": 14,
+    "crit_ok": 12
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 16,
+    "ed_c": 15,
+    "ref_c": 2136,
+    "ed_p": 7,
+    "ref_p": 341,
+    "crit_ref": 22,
+    "crit_ok": 22
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 17,
+    "ed_c": 26,
+    "ref_c": 3137,
+    "ed_p": 15,
+    "ref_p": 509,
+    "crit_ref": 69,
+    "crit_ok": 68
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 18,
+    "ed_c": 11,
+    "ref_c": 2324,
+    "ed_p": 10,
+    "ref_p": 388,
+    "crit_ref": 24,
+    "crit_ok": 24
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 19,
+    "ed_c": 28,
+    "ref_c": 2503,
+    "ed_p": 11,
+    "ref_p": 418,
+    "crit_ref": 20,
+    "crit_ok": 20
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 20,
+    "ed_c": 74,
+    "ref_c": 2443,
+    "ed_p": 9,
+    "ref_p": 422,
+    "crit_ref": 22,
+    "crit_ok": 19
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 21,
+    "ed_c": 12,
+    "ref_c": 2410,
+    "ed_p": 7,
+    "ref_p": 402,
+    "crit_ref": 17,
+    "crit_ok": 14
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 22,
+    "ed_c": 49,
+    "ref_c": 2212,
+    "ed_p": 10,
+    "ref_p": 365,
+    "crit_ref": 15,
+    "crit_ok": 11
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 23,
+    "ed_c": 14,
+    "ref_c": 2399,
+    "ed_p": 8,
+    "ref_p": 371,
+    "crit_ref": 27,
+    "crit_ok": 26
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 24,
+    "ed_c": 10,
+    "ref_c": 2589,
+    "ed_p": 7,
+    "ref_p": 422,
+    "crit_ref": 21,
+    "crit_ok": 19
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 25,
+    "ed_c": 10,
+    "ref_c": 2685,
+    "ed_p": 7,
+    "ref_p": 433,
+    "crit_ref": 30,
+    "crit_ok": 27
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 26,
+    "ed_c": 41,
+    "ref_c": 2447,
+    "ed_p": 7,
+    "ref_p": 387,
+    "crit_ref": 15,
+    "crit_ok": 15
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 27,
+    "ed_c": 6,
+    "ref_c": 1766,
+    "ed_p": 3,
+    "ref_p": 289,
+    "crit_ref": 19,
+    "crit_ok": 19
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 28,
+    "ed_c": 78,
+    "ref_c": 1766,
+    "ed_p": 14,
+    "ref_p": 266,
+    "crit_ref": 13,
+    "crit_ok": 10
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 29,
+    "ed_c": 64,
+    "ref_c": 407,
+    "ed_p": 12,
+    "ref_p": 60,
+    "crit_ref": 7,
+    "crit_ok": 6
+   },
+   {
+    "slug": "ce_2da_nyr_1994_993_inversiones_araujo_vs_capitania_puerto_cartagena_urbanismo_p_86ff",
+    "pagina": 19,
+    "ed_c": 0,
+    "ref_c": 54,
+    "ed_p": 0,
+    "ref_p": 8,
+    "crit_ref": 0,
+    "crit_ok": 0
+   },
+   {
+    "slug": "por_el_cual_se_dicta_el_codigo_nacional_de_recursos_naturales_renovables_y_de_pr_2880",
+    "pagina": 1,
+    "ed_c": 4,
+    "ref_c": 3462,
+    "ed_p": 3,
+    "ref_p": 543,
+    "crit_ref": 37,
+    "crit_ok": 37
+   },
+   {
+    "slug": "por_el_cual_se_dicta_el_codigo_nacional_de_recursos_naturales_renovables_y_de_pr_2880",
+    "pagina": 2,
+    "ed_c": 14,
+    "ref_c": 3397,
+    "ed_p": 8,
+    "ref_p": 553,
+    "crit_ref": 33,
+    "crit_ok": 32
+   },
+   {
+    "slug": "por_el_cual_se_dicta_el_codigo_nacional_de_recursos_naturales_renovables_y_de_pr_2880",
+    "pagina": 3,
+    "ed_c": 15,
+    "ref_c": 3498,
+    "ed_p": 11,
+    "ref_p": 556,
+    "crit_ref": 47,
+    "crit_ok": 47
+   },
+   {
+    "slug": "por_el_cual_se_dicta_el_codigo_nacional_de_recursos_naturales_renovables_y_de_pr_2880",
+    "pagina": 4,
+    "ed_c": 0,
+    "ref_c": 3505,
+    "ed_p": 0,
+    "ref_p": 548,
+    "crit_ref": 29,
+    "crit_ok": 29
+   },
+   {
+    "slug": "por_el_cual_se_dicta_el_codigo_nacional_de_recursos_naturales_renovables_y_de_pr_2880",
+    "pagina": 5,
+    "ed_c": 16,
+    "ref_c": 3430,
+    "ed_p": 10,
+    "ref_p": 520,
+    "crit_ref": 24,
+    "crit_ok": 23
+   },
+   {
+    "slug": "por_el_cual_se_dicta_el_codigo_nacional_de_recursos_naturales_renovables_y_de_pr_2880",
+    "pagina": 6,
+    "ed_c": 5,
+    "ref_c": 2658,
+    "ed_p": 5,
+    "ref_p": 419,
+    "crit_ref": 27,
+    "crit_ok": 27
+   },
+   {
+    "slug": "por_el_cual_se_dictan_normas_para_simplificar_suprimir_y_reformar_tramites_proce_5f39",
+    "pagina": 1,
+    "ed_c": 1,
+    "ref_c": 4106,
+    "ed_p": 1,
+    "ref_p": 628,
+    "crit_ref": 39,
+    "crit_ok": 39
+   },
+   {
+    "slug": "por_el_cual_se_dictan_normas_para_simplificar_suprimir_y_reformar_tramites_proce_5f39",
+    "pagina": 2,
+    "ed_c": 5,
+    "ref_c": 4552,
+    "ed_p": 5,
+    "ref_p": 708,
+    "crit_ref": 27,
+    "crit_ok": 27
+   },
+   {
+    "slug": "por_el_cual_se_dictan_normas_para_simplificar_suprimir_y_reformar_tramites_proce_5f39",
+    "pagina": 3,
+    "ed_c": 10,
+    "ref_c": 3881,
+    "ed_p": 9,
+    "ref_p": 598,
+    "crit_ref": 33,
+    "crit_ok": 33
+   },
+   {
+    "slug": "por_medio_del_cual_se_expide_el_decreto_unico_reglamentario_del_sector_comercio__38da",
+    "pagina": 1,
+    "ed_c": 90,
+    "ref_c": 5407,
+    "ed_p": 26,
+    "ref_p": 769,
+    "crit_ref": 28,
+    "crit_ok": 25
+   },
+   {
+    "slug": "por_medio_del_cual_se_expide_el_decreto_unico_reglamentario_del_sector_comercio__38da",
+    "pagina": 2,
+    "ed_c": 55,
+    "ref_c": 6266,
+    "ed_p": 22,
+    "ref_p": 898,
+    "crit_ref": 39,
+    "crit_ok": 33
+   },
+   {
+    "slug": "por_medio_del_cual_se_expide_el_decreto_unico_reglamentario_del_sector_comercio__38da",
+    "pagina": 3,
+    "ed_c": 46,
+    "ref_c": 6074,
+    "ed_p": 13,
+    "ref_p": 881,
+    "crit_ref": 24,
+    "crit_ok": 20
+   },
+   {
+    "slug": "por_medio_del_cual_se_expide_el_decreto_unico_reglamentario_del_sector_comercio__38da",
+    "pagina": 4,
+    "ed_c": 51,
+    "ref_c": 4346,
+    "ed_p": 19,
+    "ref_p": 639,
+    "crit_ref": 35,
+    "crit_ok": 35
+   },
+   {
+    "slug": "por_medio_del_cual_se_expide_el_decreto_unico_reglamentario_del_sector_comercio__38da",
+    "pagina": 5,
+    "ed_c": 53,
+    "ref_c": 4600,
+    "ed_p": 20,
+    "ref_p": 674,
+    "crit_ref": 39,
+    "crit_ok": 37
+   },
+   {
+    "slug": "por_medio_del_cual_se_expide_el_decreto_unico_reglamentario_del_sector_vivienda__404e",
+    "pagina": 1,
+    "ed_c": 40,
+    "ref_c": 4525,
+    "ed_p": 10,
+    "ref_p": 647,
+    "crit_ref": 60,
+    "crit_ok": 60
+   },
+   {
+    "slug": "por_medio_del_cual_se_expide_el_decreto_unico_reglamentario_del_sector_vivienda__404e",
+    "pagina": 2,
+    "ed_c": 42,
+    "ref_c": 4853,
+    "ed_p": 11,
+    "ref_p": 758,
+    "crit_ref": 78,
+    "crit_ok": 77
+   },
+   {
+    "slug": "por_medio_del_cual_se_expide_el_decreto_unico_reglamentario_del_sector_vivienda__404e",
+    "pagina": 3,
+    "ed_c": 41,
+    "ref_c": 5924,
+    "ed_p": 9,
+    "ref_p": 898,
+    "crit_ref": 72,
+    "crit_ok": 71
+   },
+   {
+    "slug": "por_medio_del_cual_se_expide_el_decreto_unico_reglamentario_del_sector_vivienda__404e",
+    "pagina": 4,
+    "ed_c": 54,
+    "ref_c": 4987,
+    "ed_p": 16,
+    "ref_p": 761,
+    "crit_ref": 42,
+    "crit_ok": 42
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 1,
+    "ed_c": 80,
+    "ref_c": 2303,
+    "ed_p": 21,
+    "ref_p": 380,
+    "crit_ref": 44,
+    "crit_ok": 42
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 2,
+    "ed_c": 79,
+    "ref_c": 1819,
+    "ed_p": 28,
+    "ref_p": 293,
+    "crit_ref": 23,
+    "crit_ok": 21
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 3,
+    "ed_c": 78,
+    "ref_c": 2345,
+    "ed_p": 18,
+    "ref_p": 381,
+    "crit_ref": 22,
+    "crit_ok": 20
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 4,
+    "ed_c": 75,
+    "ref_c": 2140,
+    "ed_p": 18,
+    "ref_p": 340,
+    "crit_ref": 12,
+    "crit_ok": 9
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 5,
+    "ed_c": 86,
+    "ref_c": 1987,
+    "ed_p": 26,
+    "ref_p": 328,
+    "crit_ref": 28,
+    "crit_ok": 20
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 6,
+    "ed_c": 120,
+    "ref_c": 2175,
+    "ed_p": 35,
+    "ref_p": 343,
+    "crit_ref": 17,
+    "crit_ok": 7
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 7,
+    "ed_c": 76,
+    "ref_c": 2205,
+    "ed_p": 24,
+    "ref_p": 342,
+    "crit_ref": 8,
+    "crit_ok": 5
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 8,
+    "ed_c": 94,
+    "ref_c": 2284,
+    "ed_p": 23,
+    "ref_p": 354,
+    "crit_ref": 22,
+    "crit_ok": 17
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 9,
+    "ed_c": 85,
+    "ref_c": 1691,
+    "ed_p": 23,
+    "ref_p": 247,
+    "crit_ref": 11,
+    "crit_ok": 8
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 10,
+    "ed_c": 108,
+    "ref_c": 1274,
+    "ed_p": 26,
+    "ref_p": 225,
+    "crit_ref": 21,
+    "crit_ok": 18
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 11,
+    "ed_c": 191,
+    "ref_c": 2232,
+    "ed_p": 39,
+    "ref_p": 368,
+    "crit_ref": 10,
+    "crit_ok": 8
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 12,
+    "ed_c": 687,
+    "ref_c": 2310,
+    "ed_p": 115,
+    "ref_p": 385,
+    "crit_ref": 17,
+    "crit_ok": 16
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 13,
+    "ed_c": 62,
+    "ref_c": 2172,
+    "ed_p": 21,
+    "ref_p": 349,
+    "crit_ref": 14,
+    "crit_ok": 12
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 14,
+    "ed_c": 97,
+    "ref_c": 2238,
+    "ed_p": 25,
+    "ref_p": 339,
+    "crit_ref": 19,
+    "crit_ok": 18
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 15,
+    "ed_c": 55,
+    "ref_c": 2191,
+    "ed_p": 22,
+    "ref_p": 365,
+    "crit_ref": 19,
+    "crit_ok": 18
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 16,
+    "ed_c": 65,
+    "ref_c": 1815,
+    "ed_p": 30,
+    "ref_p": 270,
+    "crit_ref": 14,
+    "crit_ok": 8
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 17,
+    "ed_c": 81,
+    "ref_c": 2009,
+    "ed_p": 26,
+    "ref_p": 295,
+    "crit_ref": 13,
+    "crit_ok": 11
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 18,
+    "ed_c": 72,
+    "ref_c": 1743,
+    "ed_p": 26,
+    "ref_p": 293,
+    "crit_ref": 18,
+    "crit_ok": 11
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 19,
+    "ed_c": 79,
+    "ref_c": 1804,
+    "ed_p": 24,
+    "ref_p": 284,
+    "crit_ref": 11,
+    "crit_ok": 10
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 20,
+    "ed_c": 400,
+    "ref_c": 1712,
+    "ed_p": 98,
+    "ref_p": 258,
+    "crit_ref": 18,
+    "crit_ok": 17
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 21,
+    "ed_c": 99,
+    "ref_c": 1881,
+    "ed_p": 26,
+    "ref_p": 294,
+    "crit_ref": 12,
+    "crit_ok": 12
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 22,
+    "ed_c": 88,
+    "ref_c": 1928,
+    "ed_p": 23,
+    "ref_p": 285,
+    "crit_ref": 17,
+    "crit_ok": 13
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 23,
+    "ed_c": 82,
+    "ref_c": 2341,
+    "ed_p": 21,
+    "ref_p": 374,
+    "crit_ref": 8,
+    "crit_ok": 6
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 24,
+    "ed_c": 76,
+    "ref_c": 2423,
+    "ed_p": 20,
+    "ref_p": 381,
+    "crit_ref": 11,
+    "crit_ok": 9
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 25,
+    "ed_c": 98,
+    "ref_c": 2273,
+    "ed_p": 22,
+    "ref_p": 354,
+    "crit_ref": 12,
+    "crit_ok": 12
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 26,
+    "ed_c": 103,
+    "ref_c": 2281,
+    "ed_p": 26,
+    "ref_p": 361,
+    "crit_ref": 8,
+    "crit_ok": 5
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 27,
+    "ed_c": 80,
+    "ref_c": 2192,
+    "ed_p": 27,
+    "ref_p": 340,
+    "crit_ref": 11,
+    "crit_ok": 9
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 28,
+    "ed_c": 77,
+    "ref_c": 2079,
+    "ed_p": 22,
+    "ref_p": 338,
+    "crit_ref": 10,
+    "crit_ok": 9
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 29,
+    "ed_c": 82,
+    "ref_c": 2034,
+    "ed_p": 20,
+    "ref_p": 315,
+    "crit_ref": 15,
+    "crit_ok": 9
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 30,
+    "ed_c": 139,
+    "ref_c": 1205,
+    "ed_p": 39,
+    "ref_p": 194,
+    "crit_ref": 16,
+    "crit_ok": 13
+   }
+  ],
+  "z300dpi_psm3": [
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 1,
+    "ed_c": 155,
+    "ref_c": 2088,
+    "ed_p": 36,
+    "ref_p": 312,
+    "crit_ref": 26,
+    "crit_ok": 21
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 2,
+    "ed_c": 17,
+    "ref_c": 2657,
+    "ed_p": 12,
+    "ref_p": 420,
+    "crit_ref": 16,
+    "crit_ok": 15
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 3,
+    "ed_c": 15,
+    "ref_c": 2684,
+    "ed_p": 10,
+    "ref_p": 414,
+    "crit_ref": 24,
+    "crit_ok": 21
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 4,
+    "ed_c": 18,
+    "ref_c": 2922,
+    "ed_p": 11,
+    "ref_p": 484,
+    "crit_ref": 29,
+    "crit_ok": 28
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 5,
+    "ed_c": 19,
+    "ref_c": 2500,
+    "ed_p": 7,
+    "ref_p": 391,
+    "crit_ref": 27,
+    "crit_ok": 26
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 6,
+    "ed_c": 16,
+    "ref_c": 2356,
+    "ed_p": 13,
+    "ref_p": 380,
+    "crit_ref": 23,
+    "crit_ok": 18
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 7,
+    "ed_c": 24,
+    "ref_c": 2628,
+    "ed_p": 9,
+    "ref_p": 422,
+    "crit_ref": 18,
+    "crit_ok": 17
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 8,
+    "ed_c": 16,
+    "ref_c": 2708,
+    "ed_p": 10,
+    "ref_p": 428,
+    "crit_ref": 24,
+    "crit_ok": 23
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 9,
+    "ed_c": 47,
+    "ref_c": 2753,
+    "ed_p": 13,
+    "ref_p": 440,
+    "crit_ref": 18,
+    "crit_ok": 17
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 10,
+    "ed_c": 14,
+    "ref_c": 2419,
+    "ed_p": 7,
+    "ref_p": 393,
+    "crit_ref": 31,
+    "crit_ok": 29
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 11,
+    "ed_c": 29,
+    "ref_c": 5191,
+    "ed_p": 18,
+    "ref_p": 862,
+    "crit_ref": 231,
+    "crit_ok": 229
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 12,
+    "ed_c": 22,
+    "ref_c": 2989,
+    "ed_p": 17,
+    "ref_p": 509,
+    "crit_ref": 45,
+    "crit_ok": 40
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 13,
+    "ed_c": 28,
+    "ref_c": 2928,
+    "ed_p": 19,
+    "ref_p": 472,
+    "crit_ref": 58,
+    "crit_ok": 54
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 14,
+    "ed_c": 30,
+    "ref_c": 2711,
+    "ed_p": 19,
+    "ref_p": 445,
+    "crit_ref": 40,
+    "crit_ok": 38
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 15,
+    "ed_c": 9,
+    "ref_c": 2443,
+    "ed_p": 9,
+    "ref_p": 416,
+    "crit_ref": 45,
+    "crit_ok": 45
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 16,
+    "ed_c": 11,
+    "ref_c": 2154,
+    "ed_p": 11,
+    "ref_p": 353,
+    "crit_ref": 46,
+    "crit_ok": 46
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 17,
+    "ed_c": 29,
+    "ref_c": 3029,
+    "ed_p": 19,
+    "ref_p": 489,
+    "crit_ref": 56,
+    "crit_ok": 52
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 18,
+    "ed_c": 13,
+    "ref_c": 2551,
+    "ed_p": 10,
+    "ref_p": 451,
+    "crit_ref": 82,
+    "crit_ok": 79
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 19,
+    "ed_c": 11,
+    "ref_c": 2477,
+    "ed_p": 10,
+    "ref_p": 395,
+    "crit_ref": 23,
+    "crit_ok": 21
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 20,
+    "ed_c": 9,
+    "ref_c": 2440,
+    "ed_p": 7,
+    "ref_p": 384,
+    "crit_ref": 14,
+    "crit_ok": 14
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 21,
+    "ed_c": 3,
+    "ref_c": 2420,
+    "ed_p": 3,
+    "ref_p": 383,
+    "crit_ref": 28,
+    "crit_ok": 28
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 22,
+    "ed_c": 7,
+    "ref_c": 2552,
+    "ed_p": 7,
+    "ref_p": 386,
+    "crit_ref": 21,
+    "crit_ok": 21
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 23,
+    "ed_c": 17,
+    "ref_c": 2332,
+    "ed_p": 11,
+    "ref_p": 351,
+    "crit_ref": 18,
+    "crit_ok": 18
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 24,
+    "ed_c": 106,
+    "ref_c": 2878,
+    "ed_p": 14,
+    "ref_p": 448,
+    "crit_ref": 42,
+    "crit_ok": 38
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 25,
+    "ed_c": 7,
+    "ref_c": 1815,
+    "ed_p": 7,
+    "ref_p": 303,
+    "crit_ref": 34,
+    "crit_ok": 34
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 26,
+    "ed_c": 6,
+    "ref_c": 3023,
+    "ed_p": 9,
+    "ref_p": 496,
+    "crit_ref": 49,
+    "crit_ok": 44
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 27,
+    "ed_c": 9,
+    "ref_c": 3213,
+    "ed_p": 10,
+    "ref_p": 491,
+    "crit_ref": 41,
+    "crit_ok": 40
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 28,
+    "ed_c": 6,
+    "ref_c": 2492,
+    "ed_p": 4,
+    "ref_p": 374,
+    "crit_ref": 24,
+    "crit_ok": 24
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 29,
+    "ed_c": 3,
+    "ref_c": 2735,
+    "ed_p": 3,
+    "ref_p": 452,
+    "crit_ref": 42,
+    "crit_ok": 42
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 30,
+    "ed_c": 13,
+    "ref_c": 2603,
+    "ed_p": 13,
+    "ref_p": 390,
+    "crit_ref": 26,
+    "crit_ok": 26
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 31,
+    "ed_c": 22,
+    "ref_c": 3215,
+    "ed_p": 19,
+    "ref_p": 537,
+    "crit_ref": 36,
+    "crit_ok": 28
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 32,
+    "ed_c": 10,
+    "ref_c": 2418,
+    "ed_p": 8,
+    "ref_p": 395,
+    "crit_ref": 25,
+    "crit_ok": 22
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 33,
+    "ed_c": 71,
+    "ref_c": 561,
+    "ed_p": 10,
+    "ref_p": 86,
+    "crit_ref": 8,
+    "crit_ok": 8
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 1,
+    "ed_c": 5,
+    "ref_c": 1345,
+    "ed_p": 4,
+    "ref_p": 202,
+    "crit_ref": 21,
+    "crit_ok": 21
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 2,
+    "ed_c": 7,
+    "ref_c": 2113,
+    "ed_p": 5,
+    "ref_p": 358,
+    "crit_ref": 13,
+    "crit_ok": 13
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 3,
+    "ed_c": 9,
+    "ref_c": 2638,
+    "ed_p": 8,
+    "ref_p": 429,
+    "crit_ref": 12,
+    "crit_ok": 11
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 4,
+    "ed_c": 22,
+    "ref_c": 2225,
+    "ed_p": 17,
+    "ref_p": 379,
+    "crit_ref": 53,
+    "crit_ok": 52
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 5,
+    "ed_c": 2,
+    "ref_c": 2470,
+    "ed_p": 1,
+    "ref_p": 421,
+    "crit_ref": 5,
+    "crit_ok": 4
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 6,
+    "ed_c": 5,
+    "ref_c": 2374,
+    "ed_p": 5,
+    "ref_p": 384,
+    "crit_ref": 16,
+    "crit_ok": 15
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 7,
+    "ed_c": 4,
+    "ref_c": 2296,
+    "ed_p": 2,
+    "ref_p": 373,
+    "crit_ref": 18,
+    "crit_ok": 17
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 8,
+    "ed_c": 9,
+    "ref_c": 1935,
+    "ed_p": 6,
+    "ref_p": 310,
+    "crit_ref": 20,
+    "crit_ok": 19
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 9,
+    "ed_c": 5,
+    "ref_c": 1983,
+    "ed_p": 5,
+    "ref_p": 318,
+    "crit_ref": 9,
+    "crit_ok": 8
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 10,
+    "ed_c": 1,
+    "ref_c": 2124,
+    "ed_p": 2,
+    "ref_p": 334,
+    "crit_ref": 24,
+    "crit_ok": 24
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 11,
+    "ed_c": 3,
+    "ref_c": 2627,
+    "ed_p": 3,
+    "ref_p": 411,
+    "crit_ref": 17,
+    "crit_ok": 17
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 12,
+    "ed_c": 17,
+    "ref_c": 2936,
+    "ed_p": 17,
+    "ref_p": 445,
+    "crit_ref": 47,
+    "crit_ok": 41
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 13,
+    "ed_c": 12,
+    "ref_c": 2388,
+    "ed_p": 6,
+    "ref_p": 360,
+    "crit_ref": 12,
+    "crit_ok": 12
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 14,
+    "ed_c": 9,
+    "ref_c": 2179,
+    "ed_p": 8,
+    "ref_p": 335,
+    "crit_ref": 19,
+    "crit_ok": 17
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 15,
+    "ed_c": 9,
+    "ref_c": 2337,
+    "ed_p": 8,
+    "ref_p": 376,
+    "crit_ref": 14,
+    "crit_ok": 12
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 16,
+    "ed_c": 2,
+    "ref_c": 2136,
+    "ed_p": 2,
+    "ref_p": 341,
+    "crit_ref": 22,
+    "crit_ok": 22
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 17,
+    "ed_c": 8,
+    "ref_c": 3137,
+    "ed_p": 8,
+    "ref_p": 509,
+    "crit_ref": 69,
+    "crit_ok": 68
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 18,
+    "ed_c": 6,
+    "ref_c": 2324,
+    "ed_p": 7,
+    "ref_p": 388,
+    "crit_ref": 24,
+    "crit_ok": 24
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 19,
+    "ed_c": 0,
+    "ref_c": 2503,
+    "ed_p": 0,
+    "ref_p": 418,
+    "crit_ref": 20,
+    "crit_ok": 20
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 20,
+    "ed_c": 0,
+    "ref_c": 2443,
+    "ed_p": 0,
+    "ref_p": 422,
+    "crit_ref": 22,
+    "crit_ok": 22
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 21,
+    "ed_c": 6,
+    "ref_c": 2410,
+    "ed_p": 4,
+    "ref_p": 402,
+    "crit_ref": 17,
+    "crit_ok": 15
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 22,
+    "ed_c": 2,
+    "ref_c": 2212,
+    "ed_p": 2,
+    "ref_p": 365,
+    "crit_ref": 15,
+    "crit_ok": 15
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 23,
+    "ed_c": 13,
+    "ref_c": 2399,
+    "ed_p": 7,
+    "ref_p": 371,
+    "crit_ref": 27,
+    "crit_ok": 27
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 24,
+    "ed_c": 13,
+    "ref_c": 2589,
+    "ed_p": 8,
+    "ref_p": 422,
+    "crit_ref": 21,
+    "crit_ok": 19
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 25,
+    "ed_c": 10,
+    "ref_c": 2685,
+    "ed_p": 7,
+    "ref_p": 433,
+    "crit_ref": 30,
+    "crit_ok": 26
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 26,
+    "ed_c": 1,
+    "ref_c": 2447,
+    "ed_p": 1,
+    "ref_p": 387,
+    "crit_ref": 15,
+    "crit_ok": 15
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 27,
+    "ed_c": 5,
+    "ref_c": 1766,
+    "ed_p": 2,
+    "ref_p": 289,
+    "crit_ref": 19,
+    "crit_ok": 18
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 28,
+    "ed_c": 9,
+    "ref_c": 1766,
+    "ed_p": 7,
+    "ref_p": 266,
+    "crit_ref": 13,
+    "crit_ok": 13
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 29,
+    "ed_c": 57,
+    "ref_c": 407,
+    "ed_p": 10,
+    "ref_p": 60,
+    "crit_ref": 7,
+    "crit_ok": 6
+   },
+   {
+    "slug": "ce_2da_nyr_1994_993_inversiones_araujo_vs_capitania_puerto_cartagena_urbanismo_p_86ff",
+    "pagina": 19,
+    "ed_c": 0,
+    "ref_c": 54,
+    "ed_p": 0,
+    "ref_p": 8,
+    "crit_ref": 0,
+    "crit_ok": 0
+   },
+   {
+    "slug": "por_el_cual_se_dicta_el_codigo_nacional_de_recursos_naturales_renovables_y_de_pr_2880",
+    "pagina": 1,
+    "ed_c": 2,
+    "ref_c": 3462,
+    "ed_p": 1,
+    "ref_p": 543,
+    "crit_ref": 37,
+    "crit_ok": 37
+   },
+   {
+    "slug": "por_el_cual_se_dicta_el_codigo_nacional_de_recursos_naturales_renovables_y_de_pr_2880",
+    "pagina": 2,
+    "ed_c": 9,
+    "ref_c": 3397,
+    "ed_p": 5,
+    "ref_p": 553,
+    "crit_ref": 33,
+    "crit_ok": 33
+   },
+   {
+    "slug": "por_el_cual_se_dicta_el_codigo_nacional_de_recursos_naturales_renovables_y_de_pr_2880",
+    "pagina": 3,
+    "ed_c": 14,
+    "ref_c": 3498,
+    "ed_p": 9,
+    "ref_p": 556,
+    "crit_ref": 47,
+    "crit_ok": 47
+   },
+   {
+    "slug": "por_el_cual_se_dicta_el_codigo_nacional_de_recursos_naturales_renovables_y_de_pr_2880",
+    "pagina": 4,
+    "ed_c": 0,
+    "ref_c": 3505,
+    "ed_p": 0,
+    "ref_p": 548,
+    "crit_ref": 29,
+    "crit_ok": 29
+   },
+   {
+    "slug": "por_el_cual_se_dicta_el_codigo_nacional_de_recursos_naturales_renovables_y_de_pr_2880",
+    "pagina": 5,
+    "ed_c": 6,
+    "ref_c": 3430,
+    "ed_p": 4,
+    "ref_p": 520,
+    "crit_ref": 24,
+    "crit_ok": 24
+   },
+   {
+    "slug": "por_el_cual_se_dicta_el_codigo_nacional_de_recursos_naturales_renovables_y_de_pr_2880",
+    "pagina": 6,
+    "ed_c": 4,
+    "ref_c": 2658,
+    "ed_p": 4,
+    "ref_p": 419,
+    "crit_ref": 27,
+    "crit_ok": 27
+   },
+   {
+    "slug": "por_el_cual_se_dictan_normas_para_simplificar_suprimir_y_reformar_tramites_proce_5f39",
+    "pagina": 1,
+    "ed_c": 1,
+    "ref_c": 4106,
+    "ed_p": 1,
+    "ref_p": 628,
+    "crit_ref": 39,
+    "crit_ok": 39
+   },
+   {
+    "slug": "por_el_cual_se_dictan_normas_para_simplificar_suprimir_y_reformar_tramites_proce_5f39",
+    "pagina": 2,
+    "ed_c": 2,
+    "ref_c": 4552,
+    "ed_p": 2,
+    "ref_p": 708,
+    "crit_ref": 27,
+    "crit_ok": 27
+   },
+   {
+    "slug": "por_el_cual_se_dictan_normas_para_simplificar_suprimir_y_reformar_tramites_proce_5f39",
+    "pagina": 3,
+    "ed_c": 6,
+    "ref_c": 3881,
+    "ed_p": 5,
+    "ref_p": 598,
+    "crit_ref": 33,
+    "crit_ok": 33
+   },
+   {
+    "slug": "por_medio_del_cual_se_expide_el_decreto_unico_reglamentario_del_sector_comercio__38da",
+    "pagina": 1,
+    "ed_c": 86,
+    "ref_c": 5407,
+    "ed_p": 24,
+    "ref_p": 769,
+    "crit_ref": 28,
+    "crit_ok": 26
+   },
+   {
+    "slug": "por_medio_del_cual_se_expide_el_decreto_unico_reglamentario_del_sector_comercio__38da",
+    "pagina": 2,
+    "ed_c": 46,
+    "ref_c": 6266,
+    "ed_p": 16,
+    "ref_p": 898,
+    "crit_ref": 39,
+    "crit_ok": 39
+   },
+   {
+    "slug": "por_medio_del_cual_se_expide_el_decreto_unico_reglamentario_del_sector_comercio__38da",
+    "pagina": 3,
+    "ed_c": 45,
+    "ref_c": 6074,
+    "ed_p": 12,
+    "ref_p": 881,
+    "crit_ref": 24,
+    "crit_ok": 24
+   },
+   {
+    "slug": "por_medio_del_cual_se_expide_el_decreto_unico_reglamentario_del_sector_comercio__38da",
+    "pagina": 4,
+    "ed_c": 50,
+    "ref_c": 4346,
+    "ed_p": 18,
+    "ref_p": 639,
+    "crit_ref": 35,
+    "crit_ok": 35
+   },
+   {
+    "slug": "por_medio_del_cual_se_expide_el_decreto_unico_reglamentario_del_sector_comercio__38da",
+    "pagina": 5,
+    "ed_c": 44,
+    "ref_c": 4600,
+    "ed_p": 12,
+    "ref_p": 674,
+    "crit_ref": 39,
+    "crit_ok": 39
+   },
+   {
+    "slug": "por_medio_del_cual_se_expide_el_decreto_unico_reglamentario_del_sector_vivienda__404e",
+    "pagina": 1,
+    "ed_c": 36,
+    "ref_c": 4525,
+    "ed_p": 6,
+    "ref_p": 647,
+    "crit_ref": 60,
+    "crit_ok": 60
+   },
+   {
+    "slug": "por_medio_del_cual_se_expide_el_decreto_unico_reglamentario_del_sector_vivienda__404e",
+    "pagina": 2,
+    "ed_c": 38,
+    "ref_c": 4853,
+    "ed_p": 8,
+    "ref_p": 758,
+    "crit_ref": 78,
+    "crit_ok": 78
+   },
+   {
+    "slug": "por_medio_del_cual_se_expide_el_decreto_unico_reglamentario_del_sector_vivienda__404e",
+    "pagina": 3,
+    "ed_c": 41,
+    "ref_c": 5924,
+    "ed_p": 9,
+    "ref_p": 898,
+    "crit_ref": 72,
+    "crit_ok": 71
+   },
+   {
+    "slug": "por_medio_del_cual_se_expide_el_decreto_unico_reglamentario_del_sector_vivienda__404e",
+    "pagina": 4,
+    "ed_c": 52,
+    "ref_c": 4987,
+    "ed_p": 13,
+    "ref_p": 761,
+    "crit_ref": 42,
+    "crit_ok": 42
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 1,
+    "ed_c": 71,
+    "ref_c": 2303,
+    "ed_p": 15,
+    "ref_p": 380,
+    "crit_ref": 44,
+    "crit_ok": 43
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 2,
+    "ed_c": 246,
+    "ref_c": 1819,
+    "ed_p": 45,
+    "ref_p": 293,
+    "crit_ref": 23,
+    "crit_ok": 17
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 3,
+    "ed_c": 539,
+    "ref_c": 2345,
+    "ed_p": 90,
+    "ref_p": 381,
+    "crit_ref": 22,
+    "crit_ok": 18
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 4,
+    "ed_c": 341,
+    "ref_c": 2140,
+    "ed_p": 59,
+    "ref_p": 340,
+    "crit_ref": 12,
+    "crit_ok": 10
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 5,
+    "ed_c": 170,
+    "ref_c": 1987,
+    "ed_p": 42,
+    "ref_p": 328,
+    "crit_ref": 28,
+    "crit_ok": 22
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 6,
+    "ed_c": 163,
+    "ref_c": 2175,
+    "ed_p": 38,
+    "ref_p": 343,
+    "crit_ref": 17,
+    "crit_ok": 12
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 7,
+    "ed_c": 54,
+    "ref_c": 2205,
+    "ed_p": 20,
+    "ref_p": 342,
+    "crit_ref": 8,
+    "crit_ok": 4
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 8,
+    "ed_c": 61,
+    "ref_c": 2284,
+    "ed_p": 23,
+    "ref_p": 354,
+    "crit_ref": 22,
+    "crit_ok": 18
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 9,
+    "ed_c": 169,
+    "ref_c": 1691,
+    "ed_p": 36,
+    "ref_p": 247,
+    "crit_ref": 11,
+    "crit_ok": 7
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 10,
+    "ed_c": 114,
+    "ref_c": 1274,
+    "ed_p": 32,
+    "ref_p": 225,
+    "crit_ref": 21,
+    "crit_ok": 20
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 11,
+    "ed_c": 202,
+    "ref_c": 2232,
+    "ed_p": 33,
+    "ref_p": 368,
+    "crit_ref": 10,
+    "crit_ok": 8
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 12,
+    "ed_c": 670,
+    "ref_c": 2310,
+    "ed_p": 112,
+    "ref_p": 385,
+    "crit_ref": 17,
+    "crit_ok": 15
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 13,
+    "ed_c": 49,
+    "ref_c": 2172,
+    "ed_p": 17,
+    "ref_p": 349,
+    "crit_ref": 14,
+    "crit_ok": 14
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 14,
+    "ed_c": 144,
+    "ref_c": 2238,
+    "ed_p": 31,
+    "ref_p": 339,
+    "crit_ref": 19,
+    "crit_ok": 17
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 15,
+    "ed_c": 89,
+    "ref_c": 2191,
+    "ed_p": 20,
+    "ref_p": 365,
+    "crit_ref": 19,
+    "crit_ok": 16
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 16,
+    "ed_c": 73,
+    "ref_c": 1815,
+    "ed_p": 22,
+    "ref_p": 270,
+    "crit_ref": 14,
+    "crit_ok": 10
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 17,
+    "ed_c": 78,
+    "ref_c": 2009,
+    "ed_p": 20,
+    "ref_p": 295,
+    "crit_ref": 13,
+    "crit_ok": 11
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 18,
+    "ed_c": 54,
+    "ref_c": 1743,
+    "ed_p": 18,
+    "ref_p": 293,
+    "crit_ref": 18,
+    "crit_ok": 13
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 19,
+    "ed_c": 66,
+    "ref_c": 1804,
+    "ed_p": 17,
+    "ref_p": 284,
+    "crit_ref": 11,
+    "crit_ok": 9
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 20,
+    "ed_c": 633,
+    "ref_c": 1712,
+    "ed_p": 112,
+    "ref_p": 258,
+    "crit_ref": 18,
+    "crit_ok": 12
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 21,
+    "ed_c": 81,
+    "ref_c": 1881,
+    "ed_p": 18,
+    "ref_p": 294,
+    "crit_ref": 12,
+    "crit_ok": 12
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 22,
+    "ed_c": 71,
+    "ref_c": 1928,
+    "ed_p": 21,
+    "ref_p": 285,
+    "crit_ref": 17,
+    "crit_ok": 14
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 23,
+    "ed_c": 72,
+    "ref_c": 2341,
+    "ed_p": 18,
+    "ref_p": 374,
+    "crit_ref": 8,
+    "crit_ok": 6
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 24,
+    "ed_c": 86,
+    "ref_c": 2423,
+    "ed_p": 21,
+    "ref_p": 381,
+    "crit_ref": 11,
+    "crit_ok": 9
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 25,
+    "ed_c": 201,
+    "ref_c": 2273,
+    "ed_p": 33,
+    "ref_p": 354,
+    "crit_ref": 12,
+    "crit_ok": 12
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 26,
+    "ed_c": 81,
+    "ref_c": 2281,
+    "ed_p": 24,
+    "ref_p": 361,
+    "crit_ref": 8,
+    "crit_ok": 7
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 27,
+    "ed_c": 68,
+    "ref_c": 2192,
+    "ed_p": 18,
+    "ref_p": 340,
+    "crit_ref": 11,
+    "crit_ok": 11
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 28,
+    "ed_c": 117,
+    "ref_c": 2079,
+    "ed_p": 21,
+    "ref_p": 338,
+    "crit_ref": 10,
+    "crit_ok": 8
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 29,
+    "ed_c": 27,
+    "ref_c": 2034,
+    "ed_p": 8,
+    "ref_p": 315,
+    "crit_ref": 15,
+    "crit_ok": 12
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 30,
+    "ed_c": 204,
+    "ref_c": 1205,
+    "ed_p": 41,
+    "ref_p": 194,
+    "crit_ref": 16,
+    "crit_ok": 11
+   }
+  ],
+  "base": [
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 1,
+    "ed_c": 168,
+    "ref_c": 2088,
+    "ed_p": 36,
+    "ref_p": 312,
+    "crit_ref": 26,
+    "crit_ok": 22
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 2,
+    "ed_c": 5,
+    "ref_c": 2657,
+    "ed_p": 5,
+    "ref_p": 420,
+    "crit_ref": 16,
+    "crit_ok": 15
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 3,
+    "ed_c": 13,
+    "ref_c": 2684,
+    "ed_p": 8,
+    "ref_p": 414,
+    "crit_ref": 24,
+    "crit_ok": 21
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 4,
+    "ed_c": 16,
+    "ref_c": 2922,
+    "ed_p": 10,
+    "ref_p": 484,
+    "crit_ref": 29,
+    "crit_ok": 27
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 5,
+    "ed_c": 27,
+    "ref_c": 2500,
+    "ed_p": 7,
+    "ref_p": 391,
+    "crit_ref": 27,
+    "crit_ok": 25
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 6,
+    "ed_c": 17,
+    "ref_c": 2356,
+    "ed_p": 13,
+    "ref_p": 380,
+    "crit_ref": 23,
+    "crit_ok": 19
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 7,
+    "ed_c": 19,
+    "ref_c": 2628,
+    "ed_p": 5,
+    "ref_p": 422,
+    "crit_ref": 18,
+    "crit_ok": 17
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 8,
+    "ed_c": 14,
+    "ref_c": 2708,
+    "ed_p": 9,
+    "ref_p": 428,
+    "crit_ref": 24,
+    "crit_ok": 23
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 9,
+    "ed_c": 40,
+    "ref_c": 2753,
+    "ed_p": 10,
+    "ref_p": 440,
+    "crit_ref": 18,
+    "crit_ok": 17
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 10,
+    "ed_c": 14,
+    "ref_c": 2419,
+    "ed_p": 7,
+    "ref_p": 393,
+    "crit_ref": 31,
+    "crit_ok": 29
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 11,
+    "ed_c": 27,
+    "ref_c": 5191,
+    "ed_p": 15,
+    "ref_p": 862,
+    "crit_ref": 231,
+    "crit_ok": 229
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 12,
+    "ed_c": 17,
+    "ref_c": 2989,
+    "ed_p": 15,
+    "ref_p": 509,
+    "crit_ref": 45,
+    "crit_ok": 40
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 13,
+    "ed_c": 14,
+    "ref_c": 2928,
+    "ed_p": 11,
+    "ref_p": 472,
+    "crit_ref": 58,
+    "crit_ok": 55
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 14,
+    "ed_c": 363,
+    "ref_c": 2711,
+    "ed_p": 124,
+    "ref_p": 445,
+    "crit_ref": 40,
+    "crit_ok": 40
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 15,
+    "ed_c": 10,
+    "ref_c": 2443,
+    "ed_p": 11,
+    "ref_p": 416,
+    "crit_ref": 45,
+    "crit_ok": 45
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 16,
+    "ed_c": 12,
+    "ref_c": 2154,
+    "ed_p": 11,
+    "ref_p": 353,
+    "crit_ref": 46,
+    "crit_ok": 46
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 17,
+    "ed_c": 18,
+    "ref_c": 3029,
+    "ed_p": 13,
+    "ref_p": 489,
+    "crit_ref": 56,
+    "crit_ok": 52
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 18,
+    "ed_c": 20,
+    "ref_c": 2551,
+    "ed_p": 12,
+    "ref_p": 451,
+    "crit_ref": 82,
+    "crit_ok": 80
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 19,
+    "ed_c": 3649,
+    "ref_c": 2477,
+    "ed_p": 1101,
+    "ref_p": 395,
+    "crit_ref": 23,
+    "crit_ok": 20
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 20,
+    "ed_c": 4779,
+    "ref_c": 2440,
+    "ed_p": 1435,
+    "ref_p": 384,
+    "crit_ref": 14,
+    "crit_ok": 14
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 21,
+    "ed_c": 5,
+    "ref_c": 2420,
+    "ed_p": 5,
+    "ref_p": 383,
+    "crit_ref": 28,
+    "crit_ok": 28
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 22,
+    "ed_c": 1421,
+    "ref_c": 2552,
+    "ed_p": 432,
+    "ref_p": 386,
+    "crit_ref": 21,
+    "crit_ok": 20
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 23,
+    "ed_c": 8,
+    "ref_c": 2332,
+    "ed_p": 6,
+    "ref_p": 351,
+    "crit_ref": 18,
+    "crit_ok": 18
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 24,
+    "ed_c": 9093,
+    "ref_c": 2878,
+    "ed_p": 2668,
+    "ref_p": 448,
+    "crit_ref": 42,
+    "crit_ok": 39
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 25,
+    "ed_c": 12,
+    "ref_c": 1815,
+    "ed_p": 9,
+    "ref_p": 303,
+    "crit_ref": 34,
+    "crit_ok": 34
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 26,
+    "ed_c": 14,
+    "ref_c": 3023,
+    "ed_p": 12,
+    "ref_p": 496,
+    "crit_ref": 49,
+    "crit_ok": 45
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 27,
+    "ed_c": 8,
+    "ref_c": 3213,
+    "ed_p": 7,
+    "ref_p": 491,
+    "crit_ref": 41,
+    "crit_ok": 40
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 28,
+    "ed_c": 20,
+    "ref_c": 2492,
+    "ed_p": 13,
+    "ref_p": 374,
+    "crit_ref": 24,
+    "crit_ok": 22
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 29,
+    "ed_c": 0,
+    "ref_c": 2735,
+    "ed_p": 0,
+    "ref_p": 452,
+    "crit_ref": 42,
+    "crit_ok": 42
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 30,
+    "ed_c": 16484,
+    "ref_c": 2603,
+    "ed_p": 4978,
+    "ref_p": 390,
+    "crit_ref": 26,
+    "crit_ok": 20
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 31,
+    "ed_c": 19,
+    "ref_c": 3215,
+    "ed_p": 15,
+    "ref_p": 537,
+    "crit_ref": 36,
+    "crit_ok": 28
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 32,
+    "ed_c": 9,
+    "ref_c": 2418,
+    "ed_p": 9,
+    "ref_p": 395,
+    "crit_ref": 25,
+    "crit_ok": 20
+   },
+   {
+    "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+    "pagina": 33,
+    "ed_c": 49,
+    "ref_c": 561,
+    "ed_p": 9,
+    "ref_p": 86,
+    "crit_ref": 8,
+    "crit_ok": 8
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 1,
+    "ed_c": 4,
+    "ref_c": 1345,
+    "ed_p": 3,
+    "ref_p": 202,
+    "crit_ref": 21,
+    "crit_ok": 21
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 2,
+    "ed_c": 7,
+    "ref_c": 2113,
+    "ed_p": 5,
+    "ref_p": 358,
+    "crit_ref": 13,
+    "crit_ok": 13
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 3,
+    "ed_c": 7,
+    "ref_c": 2638,
+    "ed_p": 6,
+    "ref_p": 429,
+    "crit_ref": 12,
+    "crit_ok": 11
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 4,
+    "ed_c": 15,
+    "ref_c": 2225,
+    "ed_p": 14,
+    "ref_p": 379,
+    "crit_ref": 53,
+    "crit_ok": 52
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 5,
+    "ed_c": 2,
+    "ref_c": 2470,
+    "ed_p": 1,
+    "ref_p": 421,
+    "crit_ref": 5,
+    "crit_ok": 4
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 6,
+    "ed_c": 4,
+    "ref_c": 2374,
+    "ed_p": 4,
+    "ref_p": 384,
+    "crit_ref": 16,
+    "crit_ok": 15
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 7,
+    "ed_c": 5,
+    "ref_c": 2296,
+    "ed_p": 2,
+    "ref_p": 373,
+    "crit_ref": 18,
+    "crit_ok": 17
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 8,
+    "ed_c": 9,
+    "ref_c": 1935,
+    "ed_p": 6,
+    "ref_p": 310,
+    "crit_ref": 20,
+    "crit_ok": 19
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 9,
+    "ed_c": 5,
+    "ref_c": 1983,
+    "ed_p": 5,
+    "ref_p": 318,
+    "crit_ref": 9,
+    "crit_ok": 8
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 10,
+    "ed_c": 3,
+    "ref_c": 2124,
+    "ed_p": 3,
+    "ref_p": 334,
+    "crit_ref": 24,
+    "crit_ok": 24
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 11,
+    "ed_c": 2,
+    "ref_c": 2627,
+    "ed_p": 2,
+    "ref_p": 411,
+    "crit_ref": 17,
+    "crit_ok": 17
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 12,
+    "ed_c": 21,
+    "ref_c": 2936,
+    "ed_p": 20,
+    "ref_p": 445,
+    "crit_ref": 47,
+    "crit_ok": 41
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 13,
+    "ed_c": 9,
+    "ref_c": 2388,
+    "ed_p": 5,
+    "ref_p": 360,
+    "crit_ref": 12,
+    "crit_ok": 12
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 14,
+    "ed_c": 3944,
+    "ref_c": 2179,
+    "ed_p": 1164,
+    "ref_p": 335,
+    "crit_ref": 19,
+    "crit_ok": 18
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 15,
+    "ed_c": 7955,
+    "ref_c": 2337,
+    "ed_p": 2374,
+    "ref_p": 376,
+    "crit_ref": 14,
+    "crit_ok": 14
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 16,
+    "ed_c": 2,
+    "ref_c": 2136,
+    "ed_p": 2,
+    "ref_p": 341,
+    "crit_ref": 22,
+    "crit_ok": 22
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 17,
+    "ed_c": 8,
+    "ref_c": 3137,
+    "ed_p": 8,
+    "ref_p": 509,
+    "crit_ref": 69,
+    "crit_ok": 68
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 18,
+    "ed_c": 7,
+    "ref_c": 2324,
+    "ed_p": 8,
+    "ref_p": 388,
+    "crit_ref": 24,
+    "crit_ok": 24
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 19,
+    "ed_c": 0,
+    "ref_c": 2503,
+    "ed_p": 0,
+    "ref_p": 418,
+    "crit_ref": 20,
+    "crit_ok": 20
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 20,
+    "ed_c": 0,
+    "ref_c": 2443,
+    "ed_p": 0,
+    "ref_p": 422,
+    "crit_ref": 22,
+    "crit_ok": 22
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 21,
+    "ed_c": 7,
+    "ref_c": 2410,
+    "ed_p": 5,
+    "ref_p": 402,
+    "crit_ref": 17,
+    "crit_ok": 15
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 22,
+    "ed_c": 2,
+    "ref_c": 2212,
+    "ed_p": 2,
+    "ref_p": 365,
+    "crit_ref": 15,
+    "crit_ok": 15
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 23,
+    "ed_c": 16,
+    "ref_c": 2399,
+    "ed_p": 9,
+    "ref_p": 371,
+    "crit_ref": 27,
+    "crit_ok": 27
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 24,
+    "ed_c": 8,
+    "ref_c": 2589,
+    "ed_p": 6,
+    "ref_p": 422,
+    "crit_ref": 21,
+    "crit_ok": 18
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 25,
+    "ed_c": 10,
+    "ref_c": 2685,
+    "ed_p": 7,
+    "ref_p": 433,
+    "crit_ref": 30,
+    "crit_ok": 26
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 26,
+    "ed_c": 3,
+    "ref_c": 2447,
+    "ed_p": 1,
+    "ref_p": 387,
+    "crit_ref": 15,
+    "crit_ok": 14
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 27,
+    "ed_c": 6,
+    "ref_c": 1766,
+    "ed_p": 3,
+    "ref_p": 289,
+    "crit_ref": 19,
+    "crit_ok": 18
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 28,
+    "ed_c": 10,
+    "ref_c": 1766,
+    "ed_p": 7,
+    "ref_p": 266,
+    "crit_ref": 13,
+    "crit_ok": 12
+   },
+   {
+    "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+    "pagina": 29,
+    "ed_c": 47,
+    "ref_c": 407,
+    "ed_p": 7,
+    "ref_p": 60,
+    "crit_ref": 7,
+    "crit_ok": 6
+   },
+   {
+    "slug": "ce_2da_nyr_1994_993_inversiones_araujo_vs_capitania_puerto_cartagena_urbanismo_p_86ff",
+    "pagina": 19,
+    "ed_c": 0,
+    "ref_c": 54,
+    "ed_p": 0,
+    "ref_p": 8,
+    "crit_ref": 0,
+    "crit_ok": 0
+   },
+   {
+    "slug": "por_el_cual_se_dicta_el_codigo_nacional_de_recursos_naturales_renovables_y_de_pr_2880",
+    "pagina": 1,
+    "ed_c": 5,
+    "ref_c": 3462,
+    "ed_p": 4,
+    "ref_p": 543,
+    "crit_ref": 37,
+    "crit_ok": 37
+   },
+   {
+    "slug": "por_el_cual_se_dicta_el_codigo_nacional_de_recursos_naturales_renovables_y_de_pr_2880",
+    "pagina": 2,
+    "ed_c": 13,
+    "ref_c": 3397,
+    "ed_p": 6,
+    "ref_p": 553,
+    "crit_ref": 33,
+    "crit_ok": 32
+   },
+   {
+    "slug": "por_el_cual_se_dicta_el_codigo_nacional_de_recursos_naturales_renovables_y_de_pr_2880",
+    "pagina": 3,
+    "ed_c": 12,
+    "ref_c": 3498,
+    "ed_p": 8,
+    "ref_p": 556,
+    "crit_ref": 47,
+    "crit_ok": 47
+   },
+   {
+    "slug": "por_el_cual_se_dicta_el_codigo_nacional_de_recursos_naturales_renovables_y_de_pr_2880",
+    "pagina": 4,
+    "ed_c": 0,
+    "ref_c": 3505,
+    "ed_p": 0,
+    "ref_p": 548,
+    "crit_ref": 29,
+    "crit_ok": 29
+   },
+   {
+    "slug": "por_el_cual_se_dicta_el_codigo_nacional_de_recursos_naturales_renovables_y_de_pr_2880",
+    "pagina": 5,
+    "ed_c": 11,
+    "ref_c": 3430,
+    "ed_p": 9,
+    "ref_p": 520,
+    "crit_ref": 24,
+    "crit_ok": 24
+   },
+   {
+    "slug": "por_el_cual_se_dicta_el_codigo_nacional_de_recursos_naturales_renovables_y_de_pr_2880",
+    "pagina": 6,
+    "ed_c": 5,
+    "ref_c": 2658,
+    "ed_p": 5,
+    "ref_p": 419,
+    "crit_ref": 27,
+    "crit_ok": 27
+   },
+   {
+    "slug": "por_el_cual_se_dictan_normas_para_simplificar_suprimir_y_reformar_tramites_proce_5f39",
+    "pagina": 1,
+    "ed_c": 2,
+    "ref_c": 4106,
+    "ed_p": 2,
+    "ref_p": 628,
+    "crit_ref": 39,
+    "crit_ok": 39
+   },
+   {
+    "slug": "por_el_cual_se_dictan_normas_para_simplificar_suprimir_y_reformar_tramites_proce_5f39",
+    "pagina": 2,
+    "ed_c": 2,
+    "ref_c": 4552,
+    "ed_p": 2,
+    "ref_p": 708,
+    "crit_ref": 27,
+    "crit_ok": 27
+   },
+   {
+    "slug": "por_el_cual_se_dictan_normas_para_simplificar_suprimir_y_reformar_tramites_proce_5f39",
+    "pagina": 3,
+    "ed_c": 9,
+    "ref_c": 3881,
+    "ed_p": 8,
+    "ref_p": 598,
+    "crit_ref": 33,
+    "crit_ok": 33
+   },
+   {
+    "slug": "por_medio_del_cual_se_expide_el_decreto_unico_reglamentario_del_sector_comercio__38da",
+    "pagina": 1,
+    "ed_c": 88,
+    "ref_c": 5407,
+    "ed_p": 24,
+    "ref_p": 769,
+    "crit_ref": 28,
+    "crit_ok": 25
+   },
+   {
+    "slug": "por_medio_del_cual_se_expide_el_decreto_unico_reglamentario_del_sector_comercio__38da",
+    "pagina": 2,
+    "ed_c": 54,
+    "ref_c": 6266,
+    "ed_p": 21,
+    "ref_p": 898,
+    "crit_ref": 39,
+    "crit_ok": 34
+   },
+   {
+    "slug": "por_medio_del_cual_se_expide_el_decreto_unico_reglamentario_del_sector_comercio__38da",
+    "pagina": 3,
+    "ed_c": 44,
+    "ref_c": 6074,
+    "ed_p": 12,
+    "ref_p": 881,
+    "crit_ref": 24,
+    "crit_ok": 22
+   },
+   {
+    "slug": "por_medio_del_cual_se_expide_el_decreto_unico_reglamentario_del_sector_comercio__38da",
+    "pagina": 4,
+    "ed_c": 50,
+    "ref_c": 4346,
+    "ed_p": 18,
+    "ref_p": 639,
+    "crit_ref": 35,
+    "crit_ok": 35
+   },
+   {
+    "slug": "por_medio_del_cual_se_expide_el_decreto_unico_reglamentario_del_sector_comercio__38da",
+    "pagina": 5,
+    "ed_c": 52,
+    "ref_c": 4600,
+    "ed_p": 19,
+    "ref_p": 674,
+    "crit_ref": 39,
+    "crit_ok": 36
+   },
+   {
+    "slug": "por_medio_del_cual_se_expide_el_decreto_unico_reglamentario_del_sector_vivienda__404e",
+    "pagina": 1,
+    "ed_c": 38,
+    "ref_c": 4525,
+    "ed_p": 8,
+    "ref_p": 647,
+    "crit_ref": 60,
+    "crit_ok": 60
+   },
+   {
+    "slug": "por_medio_del_cual_se_expide_el_decreto_unico_reglamentario_del_sector_vivienda__404e",
+    "pagina": 2,
+    "ed_c": 182,
+    "ref_c": 4853,
+    "ed_p": 54,
+    "ref_p": 758,
+    "crit_ref": 78,
+    "crit_ok": 78
+   },
+   {
+    "slug": "por_medio_del_cual_se_expide_el_decreto_unico_reglamentario_del_sector_vivienda__404e",
+    "pagina": 3,
+    "ed_c": 41,
+    "ref_c": 5924,
+    "ed_p": 9,
+    "ref_p": 898,
+    "crit_ref": 72,
+    "crit_ok": 71
+   },
+   {
+    "slug": "por_medio_del_cual_se_expide_el_decreto_unico_reglamentario_del_sector_vivienda__404e",
+    "pagina": 4,
+    "ed_c": 57,
+    "ref_c": 4987,
+    "ed_p": 17,
+    "ref_p": 761,
+    "crit_ref": 42,
+    "crit_ok": 42
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 1,
+    "ed_c": 81,
+    "ref_c": 2303,
+    "ed_p": 18,
+    "ref_p": 380,
+    "crit_ref": 44,
+    "crit_ok": 42
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 2,
+    "ed_c": 70,
+    "ref_c": 1819,
+    "ed_p": 15,
+    "ref_p": 293,
+    "crit_ref": 23,
+    "crit_ok": 20
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 3,
+    "ed_c": 81,
+    "ref_c": 2345,
+    "ed_p": 16,
+    "ref_p": 381,
+    "crit_ref": 22,
+    "crit_ok": 19
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 4,
+    "ed_c": 59,
+    "ref_c": 2140,
+    "ed_p": 12,
+    "ref_p": 340,
+    "crit_ref": 12,
+    "crit_ok": 10
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 5,
+    "ed_c": 84,
+    "ref_c": 1987,
+    "ed_p": 27,
+    "ref_p": 328,
+    "crit_ref": 28,
+    "crit_ok": 19
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 6,
+    "ed_c": 87,
+    "ref_c": 2175,
+    "ed_p": 29,
+    "ref_p": 343,
+    "crit_ref": 17,
+    "crit_ok": 10
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 7,
+    "ed_c": 56,
+    "ref_c": 2205,
+    "ed_p": 21,
+    "ref_p": 342,
+    "crit_ref": 8,
+    "crit_ok": 4
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 8,
+    "ed_c": 64,
+    "ref_c": 2284,
+    "ed_p": 19,
+    "ref_p": 354,
+    "crit_ref": 22,
+    "crit_ok": 18
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 9,
+    "ed_c": 89,
+    "ref_c": 1691,
+    "ed_p": 25,
+    "ref_p": 247,
+    "crit_ref": 11,
+    "crit_ok": 8
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 10,
+    "ed_c": 138,
+    "ref_c": 1274,
+    "ed_p": 37,
+    "ref_p": 225,
+    "crit_ref": 21,
+    "crit_ok": 13
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 11,
+    "ed_c": 178,
+    "ref_c": 2232,
+    "ed_p": 31,
+    "ref_p": 368,
+    "crit_ref": 10,
+    "crit_ok": 8
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 12,
+    "ed_c": 601,
+    "ref_c": 2310,
+    "ed_p": 103,
+    "ref_p": 385,
+    "crit_ref": 17,
+    "crit_ok": 15
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 13,
+    "ed_c": 65,
+    "ref_c": 2172,
+    "ed_p": 15,
+    "ref_p": 349,
+    "crit_ref": 14,
+    "crit_ok": 14
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 14,
+    "ed_c": 97,
+    "ref_c": 2238,
+    "ed_p": 26,
+    "ref_p": 339,
+    "crit_ref": 19,
+    "crit_ok": 16
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 15,
+    "ed_c": 63,
+    "ref_c": 2191,
+    "ed_p": 13,
+    "ref_p": 365,
+    "crit_ref": 19,
+    "crit_ok": 19
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 16,
+    "ed_c": 74,
+    "ref_c": 1815,
+    "ed_p": 23,
+    "ref_p": 270,
+    "crit_ref": 14,
+    "crit_ok": 9
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 17,
+    "ed_c": 97,
+    "ref_c": 2009,
+    "ed_p": 30,
+    "ref_p": 295,
+    "crit_ref": 13,
+    "crit_ok": 3
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 18,
+    "ed_c": 67,
+    "ref_c": 1743,
+    "ed_p": 21,
+    "ref_p": 293,
+    "crit_ref": 18,
+    "crit_ok": 11
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 19,
+    "ed_c": 63,
+    "ref_c": 1804,
+    "ed_p": 18,
+    "ref_p": 284,
+    "crit_ref": 11,
+    "crit_ok": 9
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 20,
+    "ed_c": 359,
+    "ref_c": 1712,
+    "ed_p": 75,
+    "ref_p": 258,
+    "crit_ref": 18,
+    "crit_ok": 15
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 21,
+    "ed_c": 93,
+    "ref_c": 1881,
+    "ed_p": 20,
+    "ref_p": 294,
+    "crit_ref": 12,
+    "crit_ok": 12
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 22,
+    "ed_c": 71,
+    "ref_c": 1928,
+    "ed_p": 19,
+    "ref_p": 285,
+    "crit_ref": 17,
+    "crit_ok": 14
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 23,
+    "ed_c": 71,
+    "ref_c": 2341,
+    "ed_p": 22,
+    "ref_p": 374,
+    "crit_ref": 8,
+    "crit_ok": 6
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 24,
+    "ed_c": 74,
+    "ref_c": 2423,
+    "ed_p": 18,
+    "ref_p": 381,
+    "crit_ref": 11,
+    "crit_ok": 9
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 25,
+    "ed_c": 153,
+    "ref_c": 2273,
+    "ed_p": 27,
+    "ref_p": 354,
+    "crit_ref": 12,
+    "crit_ok": 11
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 26,
+    "ed_c": 85,
+    "ref_c": 2281,
+    "ed_p": 25,
+    "ref_p": 361,
+    "crit_ref": 8,
+    "crit_ok": 7
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 27,
+    "ed_c": 78,
+    "ref_c": 2192,
+    "ed_p": 25,
+    "ref_p": 340,
+    "crit_ref": 11,
+    "crit_ok": 11
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 28,
+    "ed_c": 95,
+    "ref_c": 2079,
+    "ed_p": 20,
+    "ref_p": 338,
+    "crit_ref": 10,
+    "crit_ok": 8
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 29,
+    "ed_c": 48,
+    "ref_c": 2034,
+    "ed_p": 10,
+    "ref_p": 315,
+    "crit_ref": 15,
+    "crit_ok": 12
+   },
+   {
+    "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+    "pagina": 30,
+    "ed_c": 144,
+    "ref_c": 1205,
+    "ed_p": 40,
+    "ref_p": 194,
+    "crit_ref": 16,
+    "crit_ok": 13
+   }
+  ]
+ }
+}

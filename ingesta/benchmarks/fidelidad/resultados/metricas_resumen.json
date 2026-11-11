@@ -1,0 +1,2956 @@
+{
+  "fuentes_solicitadas": [
+    "S",
+    "A",
+    "V",
+    "C1",
+    "C2"
+  ],
+  "normalizacion": [
+    "NFC y minúsculas; CRLF/CR se convierten a LF.",
+    "Se une letra-guion ASCII-salto de línea-letra (incluido espacio horizontal).",
+    "Se quitan FF y líneas completas Página/Pág./Page N [de/of N], <!-- page N --> y [[página N]].",
+    "También se quitan 'página N de M' y 'page N of M' en cualquier posición (incluso junto a URL).",
+    "No se quitan líneas que solo son un número, encabezados ni pies repetidos.",
+    "Se quitan imágenes Markdown ![alt](ruta) y etiquetas HTML img.",
+    "Se quitan # de encabezados al inicio, delimitadores ** y __ de negrita y líneas separadoras de tabla Markdown.",
+    "La barra | se trata como separador de celdas y se sustituye por espacio en todas las fuentes (las transcripciones la usan como convención; también desaparece la barra literal de encabezados como 'Colombia | SUIN Juriscol').",
+    "Cada racha de dígitos en superíndice (⁰-⁹, ¹²³) se convierte en un número aparte, precedido de espacio ('2008³' -> '2008 3'), para no ocultar extracciones que fusionan la llamada de nota con el número anterior ('20083'). No se aplica NFKC para no ocultar ligaduras.",
+    "Se conservan enlaces, cursivas, puntuación, dígitos y tildes.",
+    "Finalmente todo espacio Unicode se colapsa a un espacio y se recortan extremos."
+  ],
+  "semilla": 27102026,
+  "bootstrap_remuestreos": 2000,
+  "disponibilidad": [
+    {
+      "documento": "sentencia",
+      "pagina": 1,
+      "tipo_pagina": "digital",
+      "fuente": "S",
+      "estado": "disponible"
+    },
+    {
+      "documento": "sentencia",
+      "pagina": 1,
+      "tipo_pagina": "digital",
+      "fuente": "A",
+      "estado": "disponible"
+    },
+    {
+      "documento": "sentencia",
+      "pagina": 1,
+      "tipo_pagina": "digital",
+      "fuente": "V",
+      "estado": "disponible"
+    },
+    {
+      "documento": "sentencia",
+      "pagina": 1,
+      "tipo_pagina": "digital",
+      "fuente": "C1",
+      "estado": "disponible"
+    },
+    {
+      "documento": "sentencia",
+      "pagina": 1,
+      "tipo_pagina": "digital",
+      "fuente": "C2",
+      "estado": "disponible"
+    },
+    {
+      "documento": "sentencia",
+      "pagina": 2,
+      "tipo_pagina": "digital",
+      "fuente": "S",
+      "estado": "disponible"
+    },
+    {
+      "documento": "sentencia",
+      "pagina": 2,
+      "tipo_pagina": "digital",
+      "fuente": "A",
+      "estado": "disponible"
+    },
+    {
+      "documento": "sentencia",
+      "pagina": 2,
+      "tipo_pagina": "digital",
+      "fuente": "V",
+      "estado": "disponible"
+    },
+    {
+      "documento": "sentencia",
+      "pagina": 2,
+      "tipo_pagina": "digital",
+      "fuente": "C1",
+      "estado": "disponible"
+    },
+    {
+      "documento": "sentencia",
+      "pagina": 2,
+      "tipo_pagina": "digital",
+      "fuente": "C2",
+      "estado": "disponible"
+    },
+    {
+      "documento": "sentencia",
+      "pagina": 9,
+      "tipo_pagina": "digital",
+      "fuente": "S",
+      "estado": "disponible"
+    },
+    {
+      "documento": "sentencia",
+      "pagina": 9,
+      "tipo_pagina": "digital",
+      "fuente": "A",
+      "estado": "disponible"
+    },
+    {
+      "documento": "sentencia",
+      "pagina": 9,
+      "tipo_pagina": "digital",
+      "fuente": "V",
+      "estado": "disponible"
+    },
+    {
+      "documento": "sentencia",
+      "pagina": 9,
+      "tipo_pagina": "digital",
+      "fuente": "C1",
+      "estado": "disponible"
+    },
+    {
+      "documento": "sentencia",
+      "pagina": 9,
+      "tipo_pagina": "digital",
+      "fuente": "C2",
+      "estado": "disponible"
+    },
+    {
+      "documento": "sentencia",
+      "pagina": 16,
+      "tipo_pagina": "digital",
+      "fuente": "S",
+      "estado": "disponible"
+    },
+    {
+      "documento": "sentencia",
+      "pagina": 16,
+      "tipo_pagina": "digital",
+      "fuente": "A",
+      "estado": "disponible"
+    },
+    {
+      "documento": "sentencia",
+      "pagina": 16,
+      "tipo_pagina": "digital",
+      "fuente": "V",
+      "estado": "disponible"
+    },
+    {
+      "documento": "sentencia",
+      "pagina": 16,
+      "tipo_pagina": "digital",
+      "fuente": "C1",
+      "estado": "disponible"
+    },
+    {
+      "documento": "sentencia",
+      "pagina": 16,
+      "tipo_pagina": "digital",
+      "fuente": "C2",
+      "estado": "disponible"
+    },
+    {
+      "documento": "sentencia",
+      "pagina": 24,
+      "tipo_pagina": "digital",
+      "fuente": "S",
+      "estado": "disponible"
+    },
+    {
+      "documento": "sentencia",
+      "pagina": 24,
+      "tipo_pagina": "digital",
+      "fuente": "A",
+      "estado": "disponible"
+    },
+    {
+      "documento": "sentencia",
+      "pagina": 24,
+      "tipo_pagina": "digital",
+      "fuente": "V",
+      "estado": "disponible"
+    },
+    {
+      "documento": "sentencia",
+      "pagina": 24,
+      "tipo_pagina": "digital",
+      "fuente": "C1",
+      "estado": "disponible"
+    },
+    {
+      "documento": "sentencia",
+      "pagina": 24,
+      "tipo_pagina": "digital",
+      "fuente": "C2",
+      "estado": "disponible"
+    },
+    {
+      "documento": "sentencia",
+      "pagina": 31,
+      "tipo_pagina": "digital",
+      "fuente": "S",
+      "estado": "disponible"
+    },
+    {
+      "documento": "sentencia",
+      "pagina": 31,
+      "tipo_pagina": "digital",
+      "fuente": "A",
+      "estado": "disponible"
+    },
+    {
+      "documento": "sentencia",
+      "pagina": 31,
+      "tipo_pagina": "digital",
+      "fuente": "V",
+      "estado": "disponible"
+    },
+    {
+      "documento": "sentencia",
+      "pagina": 31,
+      "tipo_pagina": "digital",
+      "fuente": "C1",
+      "estado": "disponible"
+    },
+    {
+      "documento": "sentencia",
+      "pagina": 31,
+      "tipo_pagina": "digital",
+      "fuente": "C2",
+      "estado": "disponible"
+    },
+    {
+      "documento": "escaneado",
+      "pagina": 1,
+      "tipo_pagina": "ocr",
+      "fuente": "S",
+      "estado": "PENDIENTE"
+    },
+    {
+      "documento": "escaneado",
+      "pagina": 1,
+      "tipo_pagina": "ocr",
+      "fuente": "A",
+      "estado": "no aplica"
+    },
+    {
+      "documento": "escaneado",
+      "pagina": 1,
+      "tipo_pagina": "ocr",
+      "fuente": "V",
+      "estado": "solo_documento"
+    },
+    {
+      "documento": "escaneado",
+      "pagina": 1,
+      "tipo_pagina": "ocr",
+      "fuente": "C1",
+      "estado": "disponible"
+    },
+    {
+      "documento": "escaneado",
+      "pagina": 1,
+      "tipo_pagina": "ocr",
+      "fuente": "C2",
+      "estado": "disponible"
+    },
+    {
+      "documento": "escaneado",
+      "pagina": 2,
+      "tipo_pagina": "ocr",
+      "fuente": "S",
+      "estado": "PENDIENTE"
+    },
+    {
+      "documento": "escaneado",
+      "pagina": 2,
+      "tipo_pagina": "ocr",
+      "fuente": "A",
+      "estado": "no aplica"
+    },
+    {
+      "documento": "escaneado",
+      "pagina": 2,
+      "tipo_pagina": "ocr",
+      "fuente": "V",
+      "estado": "solo_documento"
+    },
+    {
+      "documento": "escaneado",
+      "pagina": 2,
+      "tipo_pagina": "ocr",
+      "fuente": "C1",
+      "estado": "disponible"
+    },
+    {
+      "documento": "escaneado",
+      "pagina": 2,
+      "tipo_pagina": "ocr",
+      "fuente": "C2",
+      "estado": "disponible"
+    },
+    {
+      "documento": "tablas",
+      "pagina": 1,
+      "tipo_pagina": "digital",
+      "fuente": "S",
+      "estado": "disponible"
+    },
+    {
+      "documento": "tablas",
+      "pagina": 1,
+      "tipo_pagina": "digital",
+      "fuente": "A",
+      "estado": "disponible"
+    },
+    {
+      "documento": "tablas",
+      "pagina": 1,
+      "tipo_pagina": "digital",
+      "fuente": "V",
+      "estado": "solo_documento"
+    },
+    {
+      "documento": "tablas",
+      "pagina": 1,
+      "tipo_pagina": "digital",
+      "fuente": "C1",
+      "estado": "disponible"
+    },
+    {
+      "documento": "tablas",
+      "pagina": 1,
+      "tipo_pagina": "digital",
+      "fuente": "C2",
+      "estado": "disponible"
+    },
+    {
+      "documento": "tablas",
+      "pagina": 3,
+      "tipo_pagina": "digital",
+      "fuente": "S",
+      "estado": "disponible"
+    },
+    {
+      "documento": "tablas",
+      "pagina": 3,
+      "tipo_pagina": "digital",
+      "fuente": "A",
+      "estado": "disponible"
+    },
+    {
+      "documento": "tablas",
+      "pagina": 3,
+      "tipo_pagina": "digital",
+      "fuente": "V",
+      "estado": "disponible"
+    },
+    {
+      "documento": "tablas",
+      "pagina": 3,
+      "tipo_pagina": "digital",
+      "fuente": "C1",
+      "estado": "disponible"
+    },
+    {
+      "documento": "tablas",
+      "pagina": 3,
+      "tipo_pagina": "digital",
+      "fuente": "C2",
+      "estado": "disponible"
+    },
+    {
+      "documento": "tablas",
+      "pagina": 4,
+      "tipo_pagina": "digital",
+      "fuente": "S",
+      "estado": "disponible"
+    },
+    {
+      "documento": "tablas",
+      "pagina": 4,
+      "tipo_pagina": "digital",
+      "fuente": "A",
+      "estado": "disponible"
+    },
+    {
+      "documento": "tablas",
+      "pagina": 4,
+      "tipo_pagina": "digital",
+      "fuente": "V",
+      "estado": "disponible"
+    },
+    {
+      "documento": "tablas",
+      "pagina": 4,
+      "tipo_pagina": "digital",
+      "fuente": "C1",
+      "estado": "disponible"
+    },
+    {
+      "documento": "tablas",
+      "pagina": 4,
+      "tipo_pagina": "digital",
+      "fuente": "C2",
+      "estado": "disponible"
+    },
+    {
+      "documento": "tablas",
+      "pagina": 5,
+      "tipo_pagina": "digital",
+      "fuente": "S",
+      "estado": "disponible"
+    },
+    {
+      "documento": "tablas",
+      "pagina": 5,
+      "tipo_pagina": "digital",
+      "fuente": "A",
+      "estado": "disponible"
+    },
+    {
+      "documento": "tablas",
+      "pagina": 5,
+      "tipo_pagina": "digital",
+      "fuente": "V",
+      "estado": "disponible"
+    },
+    {
+      "documento": "tablas",
+      "pagina": 5,
+      "tipo_pagina": "digital",
+      "fuente": "C1",
+      "estado": "disponible"
+    },
+    {
+      "documento": "tablas",
+      "pagina": 5,
+      "tipo_pagina": "digital",
+      "fuente": "C2",
+      "estado": "disponible"
+    },
+    {
+      "documento": "tablas",
+      "pagina": 6,
+      "tipo_pagina": "digital",
+      "fuente": "S",
+      "estado": "disponible"
+    },
+    {
+      "documento": "tablas",
+      "pagina": 6,
+      "tipo_pagina": "digital",
+      "fuente": "A",
+      "estado": "disponible"
+    },
+    {
+      "documento": "tablas",
+      "pagina": 6,
+      "tipo_pagina": "digital",
+      "fuente": "V",
+      "estado": "disponible"
+    },
+    {
+      "documento": "tablas",
+      "pagina": 6,
+      "tipo_pagina": "digital",
+      "fuente": "C1",
+      "estado": "disponible"
+    },
+    {
+      "documento": "tablas",
+      "pagina": 6,
+      "tipo_pagina": "digital",
+      "fuente": "C2",
+      "estado": "disponible"
+    },
+    {
+      "documento": "tablas",
+      "pagina": 7,
+      "tipo_pagina": "digital",
+      "fuente": "S",
+      "estado": "disponible"
+    },
+    {
+      "documento": "tablas",
+      "pagina": 7,
+      "tipo_pagina": "digital",
+      "fuente": "A",
+      "estado": "disponible"
+    },
+    {
+      "documento": "tablas",
+      "pagina": 7,
+      "tipo_pagina": "digital",
+      "fuente": "V",
+      "estado": "solo_documento"
+    },
+    {
+      "documento": "tablas",
+      "pagina": 7,
+      "tipo_pagina": "digital",
+      "fuente": "C1",
+      "estado": "disponible"
+    },
+    {
+      "documento": "tablas",
+      "pagina": 7,
+      "tipo_pagina": "digital",
+      "fuente": "C2",
+      "estado": "disponible"
+    },
+    {
+      "documento": "norma",
+      "pagina": 1,
+      "tipo_pagina": "digital",
+      "fuente": "S",
+      "estado": "disponible"
+    },
+    {
+      "documento": "norma",
+      "pagina": 1,
+      "tipo_pagina": "digital",
+      "fuente": "A",
+      "estado": "disponible"
+    },
+    {
+      "documento": "norma",
+      "pagina": 1,
+      "tipo_pagina": "digital",
+      "fuente": "V",
+      "estado": "solo_documento"
+    },
+    {
+      "documento": "norma",
+      "pagina": 1,
+      "tipo_pagina": "digital",
+      "fuente": "C1",
+      "estado": "disponible"
+    },
+    {
+      "documento": "norma",
+      "pagina": 1,
+      "tipo_pagina": "digital",
+      "fuente": "C2",
+      "estado": "disponible"
+    },
+    {
+      "documento": "norma",
+      "pagina": 3,
+      "tipo_pagina": "digital",
+      "fuente": "S",
+      "estado": "disponible"
+    },
+    {
+      "documento": "norma",
+      "pagina": 3,
+      "tipo_pagina": "digital",
+      "fuente": "A",
+      "estado": "disponible"
+    },
+    {
+      "documento": "norma",
+      "pagina": 3,
+      "tipo_pagina": "digital",
+      "fuente": "V",
+      "estado": "solo_documento"
+    },
+    {
+      "documento": "norma",
+      "pagina": 3,
+      "tipo_pagina": "digital",
+      "fuente": "C1",
+      "estado": "disponible"
+    },
+    {
+      "documento": "norma",
+      "pagina": 3,
+      "tipo_pagina": "digital",
+      "fuente": "C2",
+      "estado": "disponible"
+    },
+    {
+      "documento": "norma",
+      "pagina": 5,
+      "tipo_pagina": "digital",
+      "fuente": "S",
+      "estado": "disponible"
+    },
+    {
+      "documento": "norma",
+      "pagina": 5,
+      "tipo_pagina": "digital",
+      "fuente": "A",
+      "estado": "disponible"
+    },
+    {
+      "documento": "norma",
+      "pagina": 5,
+      "tipo_pagina": "digital",
+      "fuente": "V",
+      "estado": "disponible"
+    },
+    {
+      "documento": "norma",
+      "pagina": 5,
+      "tipo_pagina": "digital",
+      "fuente": "C1",
+      "estado": "disponible"
+    },
+    {
+      "documento": "norma",
+      "pagina": 5,
+      "tipo_pagina": "digital",
+      "fuente": "C2",
+      "estado": "disponible"
+    },
+    {
+      "documento": "norma",
+      "pagina": 7,
+      "tipo_pagina": "digital",
+      "fuente": "S",
+      "estado": "disponible"
+    },
+    {
+      "documento": "norma",
+      "pagina": 7,
+      "tipo_pagina": "digital",
+      "fuente": "A",
+      "estado": "disponible"
+    },
+    {
+      "documento": "norma",
+      "pagina": 7,
+      "tipo_pagina": "digital",
+      "fuente": "V",
+      "estado": "solo_documento"
+    },
+    {
+      "documento": "norma",
+      "pagina": 7,
+      "tipo_pagina": "digital",
+      "fuente": "C1",
+      "estado": "disponible"
+    },
+    {
+      "documento": "norma",
+      "pagina": 7,
+      "tipo_pagina": "digital",
+      "fuente": "C2",
+      "estado": "disponible"
+    }
+  ],
+  "resumen": [
+    {
+      "documento": "TODOS",
+      "tipo_pagina": "digital",
+      "fuente": "A",
+      "referencia": "C1",
+      "paginas": 16,
+      "ediciones_caracteres": 1205,
+      "caracteres_ref": 27685,
+      "ediciones_palabras": 289,
+      "palabras_ref": 4419,
+      "palabras_hip": 4404,
+      "palabras_comunes": 4390,
+      "cer": 0.04352537475167058,
+      "wer": 0.06539941163159085,
+      "recuperacion": 0.9934374292826431,
+      "precision": 0.9968210717529519,
+      "ic95_bootstrap_paginas": {
+        "cer": [
+          0.00791113147151605,
+          0.10237478063267881
+        ],
+        "wer": [
+          0.012266163105844195,
+          0.14851580693419117
+        ]
+      }
+    },
+    {
+      "documento": "TODOS",
+      "tipo_pagina": "digital",
+      "fuente": "A",
+      "referencia": "C2",
+      "paginas": 16,
+      "ediciones_caracteres": 1192,
+      "caracteres_ref": 27687,
+      "ediciones_palabras": 292,
+      "palabras_ref": 4420,
+      "palabras_hip": 4404,
+      "palabras_comunes": 4386,
+      "cer": 0.04305269621121826,
+      "wer": 0.0660633484162896,
+      "recuperacion": 0.9923076923076923,
+      "precision": 0.9959128065395095,
+      "ic95_bootstrap_paginas": {
+        "cer": [
+          0.007564282927450051,
+          0.10149467582261855
+        ],
+        "wer": [
+          0.012851138498212365,
+          0.14954813057639135
+        ]
+      }
+    },
+    {
+      "documento": "TODOS",
+      "tipo_pagina": "digital",
+      "fuente": "A",
+      "referencia": "S",
+      "paginas": 16,
+      "ediciones_caracteres": 1132,
+      "caracteres_ref": 27619,
+      "ediciones_palabras": 262,
+      "palabras_ref": 4405,
+      "palabras_hip": 4404,
+      "palabras_comunes": 4403,
+      "cer": 0.040986277562547524,
+      "wer": 0.05947786606129398,
+      "recuperacion": 0.9995459704880817,
+      "precision": 0.9997729336966394,
+      "ic95_bootstrap_paginas": {
+        "cer": [
+          0.0047771326687150424,
+          0.09775715529072616
+        ],
+        "wer": [
+          0.004591073682224031,
+          0.14279523379804523
+        ]
+      }
+    },
+    {
+      "documento": "TODOS",
+      "tipo_pagina": "digital",
+      "fuente": "A",
+      "referencia": "V",
+      "paginas": 11,
+      "ediciones_caracteres": 1832,
+      "caracteres_ref": 20295,
+      "ediciones_palabras": 401,
+      "palabras_ref": 3308,
+      "palabras_hip": 3417,
+      "palabras_comunes": 3257,
+      "cer": 0.09026853904902686,
+      "wer": 0.12122128174123338,
+      "recuperacion": 0.9845828295042321,
+      "precision": 0.9531752999707346,
+      "ic95_bootstrap_paginas": {
+        "cer": [
+          0.03411150066294746,
+          0.1825430976413435
+        ],
+        "wer": [
+          0.049785941260897,
+          0.23708698957866287
+        ]
+      }
+    },
+    {
+      "documento": "TODOS",
+      "tipo_pagina": "digital",
+      "fuente": "C1",
+      "referencia": "A",
+      "paginas": 16,
+      "ediciones_caracteres": 1205,
+      "caracteres_ref": 27617,
+      "ediciones_palabras": 289,
+      "palabras_ref": 4404,
+      "palabras_hip": 4419,
+      "palabras_comunes": 4390,
+      "cer": 0.04363254517145237,
+      "wer": 0.06562216167120799,
+      "recuperacion": 0.9968210717529519,
+      "precision": 0.9934374292826431,
+      "ic95_bootstrap_paginas": {
+        "cer": [
+          0.007926715998257122,
+          0.10293332483695791
+        ],
+        "wer": [
+          0.012267430533925483,
+          0.14934009969088502
+        ]
+      }
+    },
+    {
+      "documento": "TODOS",
+      "tipo_pagina": "digital",
+      "fuente": "C1",
+      "referencia": "C2",
+      "paginas": 16,
+      "ediciones_caracteres": 31,
+      "caracteres_ref": 27687,
+      "ediciones_palabras": 7,
+      "palabras_ref": 4420,
+      "palabras_hip": 4419,
+      "palabras_comunes": 4415,
+      "cer": 0.0011196590457615487,
+      "wer": 0.001583710407239819,
+      "recuperacion": 0.998868778280543,
+      "precision": 0.9990948178320888,
+      "ic95_bootstrap_paginas": {
+        "cer": [
+          9.46428299793634e-05,
+          0.0031250034878789234
+        ],
+        "wer": [
+          0.00045511201056109153,
+          0.002934057509259627
+        ]
+      }
+    },
+    {
+      "documento": "TODOS",
+      "tipo_pagina": "digital",
+      "fuente": "C1",
+      "referencia": "S",
+      "paginas": 16,
+      "ediciones_caracteres": 77,
+      "caracteres_ref": 27619,
+      "ediciones_palabras": 31,
+      "palabras_ref": 4405,
+      "palabras_hip": 4419,
+      "palabras_comunes": 4389,
+      "cer": 0.002787935841268692,
+      "wer": 0.007037457434733258,
+      "recuperacion": 0.9963677639046538,
+      "precision": 0.9932111337406653,
+      "ic95_bootstrap_paginas": {
+        "cer": [
+          0.0,
+          0.008943400891611475
+        ],
+        "wer": [
+          0.0,
+          0.017608909043508033
+        ]
+      }
+    },
+    {
+      "documento": "TODOS",
+      "tipo_pagina": "digital",
+      "fuente": "C1",
+      "referencia": "V",
+      "paginas": 11,
+      "ediciones_caracteres": 905,
+      "caracteres_ref": 20295,
+      "ediciones_palabras": 169,
+      "palabras_ref": 3308,
+      "palabras_hip": 3424,
+      "palabras_comunes": 3257,
+      "cer": 0.044592264104459226,
+      "wer": 0.05108827085852479,
+      "recuperacion": 0.9845828295042321,
+      "precision": 0.9512266355140186,
+      "ic95_bootstrap_paginas": {
+        "cer": [
+          0.02418544464299634,
+          0.07348492641191369
+        ],
+        "wer": [
+          0.032624436356409076,
+          0.0700834996962069
+        ]
+      }
+    },
+    {
+      "documento": "TODOS",
+      "tipo_pagina": "digital",
+      "fuente": "C2",
+      "referencia": "A",
+      "paginas": 16,
+      "ediciones_caracteres": 1192,
+      "caracteres_ref": 27617,
+      "ediciones_palabras": 292,
+      "palabras_ref": 4404,
+      "palabras_hip": 4420,
+      "palabras_comunes": 4386,
+      "cer": 0.04316182061773545,
+      "wer": 0.06630336058128973,
+      "recuperacion": 0.9959128065395095,
+      "precision": 0.9923076923076923,
+      "ic95_bootstrap_paginas": {
+        "cer": [
+          0.007577109540589986,
+          0.10211142815654653
+        ],
+        "wer": [
+          0.0129202776329076,
+          0.15049175149175148
+        ]
+      }
+    },
+    {
+      "documento": "TODOS",
+      "tipo_pagina": "digital",
+      "fuente": "C2",
+      "referencia": "C1",
+      "paginas": 16,
+      "ediciones_caracteres": 31,
+      "caracteres_ref": 27685,
+      "ediciones_palabras": 7,
+      "palabras_ref": 4419,
+      "palabras_hip": 4420,
+      "palabras_comunes": 4415,
+      "cer": 0.0011197399313707785,
+      "wer": 0.0015840687938447613,
+      "recuperacion": 0.9990948178320888,
+      "precision": 0.998868778280543,
+      "ic95_bootstrap_paginas": {
+        "cer": [
+          9.463685882217628e-05,
+          0.003124734580829232
+        ],
+        "wer": [
+          0.00045511201056109153,
+          0.0029340935707661323
+        ]
+      }
+    },
+    {
+      "documento": "TODOS",
+      "tipo_pagina": "digital",
+      "fuente": "C2",
+      "referencia": "S",
+      "paginas": 16,
+      "ediciones_caracteres": 108,
+      "caracteres_ref": 27619,
+      "ediciones_palabras": 38,
+      "palabras_ref": 4405,
+      "palabras_hip": 4420,
+      "palabras_comunes": 4385,
+      "cer": 0.003910351569571671,
+      "wer": 0.008626560726447218,
+      "recuperacion": 0.9954597048808173,
+      "precision": 0.9920814479638009,
+      "ic95_bootstrap_paginas": {
+        "cer": [
+          0.000208891093072235,
+          0.010929127961717832
+        ],
+        "wer": [
+          0.0010048994974874374,
+          0.019979160065129883
+        ]
+      }
+    },
+    {
+      "documento": "TODOS",
+      "tipo_pagina": "digital",
+      "fuente": "C2",
+      "referencia": "V",
+      "paginas": 11,
+      "ediciones_caracteres": 929,
+      "caracteres_ref": 20295,
+      "ediciones_palabras": 174,
+      "palabras_ref": 3308,
+      "palabras_hip": 3424,
+      "palabras_comunes": 3254,
+      "cer": 0.04577482138457748,
+      "wer": 0.05259975816203144,
+      "recuperacion": 0.9836759371221282,
+      "precision": 0.9503504672897196,
+      "ic95_bootstrap_paginas": {
+        "cer": [
+          0.025422176986828908,
+          0.07390180004607065
+        ],
+        "wer": [
+          0.03414329950776689,
+          0.07171856806639415
+        ]
+      }
+    },
+    {
+      "documento": "TODOS",
+      "tipo_pagina": "digital",
+      "fuente": "S",
+      "referencia": "A",
+      "paginas": 16,
+      "ediciones_caracteres": 1132,
+      "caracteres_ref": 27617,
+      "ediciones_palabras": 262,
+      "palabras_ref": 4404,
+      "palabras_hip": 4405,
+      "palabras_comunes": 4403,
+      "cer": 0.04098924575442662,
+      "wer": 0.059491371480472295,
+      "recuperacion": 0.9997729336966394,
+      "precision": 0.9995459704880817,
+      "ic95_bootstrap_paginas": {
+        "cer": [
+          0.004777148178741226,
+          0.09776559844022933
+        ],
+        "wer": [
+          0.004592008758300861,
+          0.14283421663948004
+        ]
+      }
+    },
+    {
+      "documento": "TODOS",
+      "tipo_pagina": "digital",
+      "fuente": "S",
+      "referencia": "C1",
+      "paginas": 16,
+      "ediciones_caracteres": 77,
+      "caracteres_ref": 27685,
+      "ediciones_palabras": 31,
+      "palabras_ref": 4419,
+      "palabras_hip": 4405,
+      "palabras_comunes": 4389,
+      "cer": 0.002781289506953224,
+      "wer": 0.007015161801312514,
+      "recuperacion": 0.9932111337406653,
+      "precision": 0.9963677639046538,
+      "ic95_bootstrap_paginas": {
+        "cer": [
+          0.0,
+          0.0088696409528369
+        ],
+        "wer": [
+          0.0,
+          0.017478327653290732
+        ]
+      }
+    },
+    {
+      "documento": "TODOS",
+      "tipo_pagina": "digital",
+      "fuente": "S",
+      "referencia": "C2",
+      "paginas": 16,
+      "ediciones_caracteres": 108,
+      "caracteres_ref": 27687,
+      "ediciones_palabras": 38,
+      "palabras_ref": 4420,
+      "palabras_hip": 4405,
+      "palabras_comunes": 4385,
+      "cer": 0.0039007476432982987,
+      "wer": 0.008597285067873304,
+      "recuperacion": 0.9920814479638009,
+      "precision": 0.9954597048808173,
+      "ic95_bootstrap_paginas": {
+        "cer": [
+          0.00020892039356999338,
+          0.010837548659576772
+        ],
+        "wer": [
+          0.0010051015028096088,
+          0.01981345249450223
+        ]
+      }
+    },
+    {
+      "documento": "TODOS",
+      "tipo_pagina": "digital",
+      "fuente": "S",
+      "referencia": "V",
+      "paginas": 11,
+      "ediciones_caracteres": 900,
+      "caracteres_ref": 20295,
+      "ediciones_palabras": 171,
+      "palabras_ref": 3308,
+      "palabras_hip": 3418,
+      "palabras_comunes": 3256,
+      "cer": 0.04434589800443459,
+      "wer": 0.05169286577992745,
+      "recuperacion": 0.9842805320435308,
+      "precision": 0.9526038619075483,
+      "ic95_bootstrap_paginas": {
+        "cer": [
+          0.023621925586675523,
+          0.07323129312624782
+        ],
+        "wer": [
+          0.03295010518692233,
+          0.07121984630805211
+        ]
+      }
+    },
+    {
+      "documento": "TODOS",
+      "tipo_pagina": "digital",
+      "fuente": "V",
+      "referencia": "A",
+      "paginas": 11,
+      "ediciones_caracteres": 1832,
+      "caracteres_ref": 21144,
+      "ediciones_palabras": 401,
+      "palabras_ref": 3417,
+      "palabras_hip": 3308,
+      "palabras_comunes": 3257,
+      "cer": 0.08664396519107076,
+      "wer": 0.11735440444834651,
+      "recuperacion": 0.9531752999707346,
+      "precision": 0.9845828295042321,
+      "ic95_bootstrap_paginas": {
+        "cer": [
+          0.03311859182127328,
+          0.1716429006044308
+        ],
+        "wer": [
+          0.04855370578160779,
+          0.22729037399518112
+        ]
+      }
+    },
+    {
+      "documento": "TODOS",
+      "tipo_pagina": "digital",
+      "fuente": "V",
+      "referencia": "C1",
+      "paginas": 11,
+      "ediciones_caracteres": 905,
+      "caracteres_ref": 21151,
+      "ediciones_palabras": 169,
+      "palabras_ref": 3424,
+      "palabras_hip": 3308,
+      "palabras_comunes": 3257,
+      "cer": 0.04278757505555293,
+      "wer": 0.04935747663551402,
+      "recuperacion": 0.9512266355140186,
+      "precision": 0.9845828295042321,
+      "ic95_bootstrap_paginas": {
+        "cer": [
+          0.023668159495584807,
+          0.06856364999042842
+        ],
+        "wer": [
+          0.031782151381797435,
+          0.06711331665366474
+        ]
+      }
+    },
+    {
+      "documento": "TODOS",
+      "tipo_pagina": "digital",
+      "fuente": "V",
+      "referencia": "C2",
+      "paginas": 11,
+      "ediciones_caracteres": 929,
+      "caracteres_ref": 21148,
+      "ediciones_palabras": 174,
+      "palabras_ref": 3424,
+      "palabras_hip": 3308,
+      "palabras_comunes": 3254,
+      "cer": 0.043928503877435215,
+      "wer": 0.05081775700934579,
+      "recuperacion": 0.9503504672897196,
+      "precision": 0.9836759371221282,
+      "ic95_bootstrap_paginas": {
+        "cer": [
+          0.024832360343073786,
+          0.06892202658092153
+        ],
+        "wer": [
+          0.033265160579638554,
+          0.06852293192276165
+        ]
+      }
+    },
+    {
+      "documento": "TODOS",
+      "tipo_pagina": "digital",
+      "fuente": "V",
+      "referencia": "S",
+      "paginas": 11,
+      "ediciones_caracteres": 900,
+      "caracteres_ref": 21146,
+      "ediciones_palabras": 171,
+      "palabras_ref": 3418,
+      "palabras_hip": 3308,
+      "palabras_comunes": 3256,
+      "cer": 0.04256124089662348,
+      "wer": 0.05002925687536571,
+      "recuperacion": 0.9526038619075483,
+      "precision": 0.9842805320435308,
+      "ic95_bootstrap_paginas": {
+        "cer": [
+          0.023156884752419952,
+          0.06828715701398201
+        ],
+        "wer": [
+          0.03205595952539718,
+          0.06843217181636846
+        ]
+      }
+    },
+    {
+      "documento": "TODOS",
+      "tipo_pagina": "ocr",
+      "fuente": "C1",
+      "referencia": "C2",
+      "paginas": 2,
+      "ediciones_caracteres": 15,
+      "caracteres_ref": 5164,
+      "ediciones_palabras": 7,
+      "palabras_ref": 815,
+      "palabras_hip": 815,
+      "palabras_comunes": 808,
+      "cer": 0.0029047250193648335,
+      "wer": 0.008588957055214725,
+      "recuperacion": 0.9914110429447853,
+      "precision": 0.9914110429447853,
+      "ic95_bootstrap_paginas": {
+        "cer": [
+          0.0011587485515643105,
+          0.004660194174757282
+        ],
+        "wer": [
+          0.007177033492822967,
+          0.010075566750629723
+        ]
+      }
+    },
+    {
+      "documento": "TODOS",
+      "tipo_pagina": "ocr",
+      "fuente": "C2",
+      "referencia": "C1",
+      "paginas": 2,
+      "ediciones_caracteres": 15,
+      "caracteres_ref": 5173,
+      "ediciones_palabras": 7,
+      "palabras_ref": 815,
+      "palabras_hip": 815,
+      "palabras_comunes": 808,
+      "cer": 0.002899671370578001,
+      "wer": 0.008588957055214725,
+      "recuperacion": 0.9914110429447853,
+      "precision": 0.9914110429447853,
+      "ic95_bootstrap_paginas": {
+        "cer": [
+          0.0011587485515643105,
+          0.0046439628482972135
+        ],
+        "wer": [
+          0.007177033492822967,
+          0.010075566750629723
+        ]
+      }
+    },
+    {
+      "documento": "escaneado",
+      "tipo_pagina": "ocr",
+      "fuente": "C1",
+      "referencia": "C2",
+      "paginas": 2,
+      "ediciones_caracteres": 15,
+      "caracteres_ref": 5164,
+      "ediciones_palabras": 7,
+      "palabras_ref": 815,
+      "palabras_hip": 815,
+      "palabras_comunes": 808,
+      "cer": 0.0029047250193648335,
+      "wer": 0.008588957055214725,
+      "recuperacion": 0.9914110429447853,
+      "precision": 0.9914110429447853,
+      "ic95_bootstrap_paginas": {
+        "cer": [
+          0.0011587485515643105,
+          0.004660194174757282
+        ],
+        "wer": [
+          0.007177033492822967,
+          0.010075566750629723
+        ]
+      }
+    },
+    {
+      "documento": "escaneado",
+      "tipo_pagina": "ocr",
+      "fuente": "C2",
+      "referencia": "C1",
+      "paginas": 2,
+      "ediciones_caracteres": 15,
+      "caracteres_ref": 5173,
+      "ediciones_palabras": 7,
+      "palabras_ref": 815,
+      "palabras_hip": 815,
+      "palabras_comunes": 808,
+      "cer": 0.002899671370578001,
+      "wer": 0.008588957055214725,
+      "recuperacion": 0.9914110429447853,
+      "precision": 0.9914110429447853,
+      "ic95_bootstrap_paginas": {
+        "cer": [
+          0.0011587485515643105,
+          0.0046439628482972135
+        ],
+        "wer": [
+          0.007177033492822967,
+          0.010075566750629723
+        ]
+      }
+    },
+    {
+      "documento": "norma",
+      "tipo_pagina": "digital",
+      "fuente": "A",
+      "referencia": "C1",
+      "paginas": 4,
+      "ediciones_caracteres": 0,
+      "caracteres_ref": 8424,
+      "ediciones_palabras": 0,
+      "palabras_ref": 1333,
+      "palabras_hip": 1333,
+      "palabras_comunes": 1333,
+      "cer": 0.0,
+      "wer": 0.0,
+      "recuperacion": 1.0,
+      "precision": 1.0,
+      "ic95_bootstrap_paginas": {
+        "cer": [
+          0.0,
+          0.0
+        ],
+        "wer": [
+          0.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "documento": "norma",
+      "tipo_pagina": "digital",
+      "fuente": "A",
+      "referencia": "C2",
+      "paginas": 4,
+      "ediciones_caracteres": 1,
+      "caracteres_ref": 8424,
+      "ediciones_palabras": 1,
+      "palabras_ref": 1333,
+      "palabras_hip": 1333,
+      "palabras_comunes": 1332,
+      "cer": 0.00011870845204178538,
+      "wer": 0.0007501875468867217,
+      "recuperacion": 0.9992498124531133,
+      "precision": 0.9992498124531133,
+      "ic95_bootstrap_paginas": {
+        "cer": [
+          0.0,
+          0.0003135123837391577
+        ],
+        "wer": [
+          0.0,
+          0.0018963337547408343
+        ]
+      }
+    },
+    {
+      "documento": "norma",
+      "tipo_pagina": "digital",
+      "fuente": "A",
+      "referencia": "S",
+      "paginas": 4,
+      "ediciones_caracteres": 0,
+      "caracteres_ref": 8424,
+      "ediciones_palabras": 0,
+      "palabras_ref": 1333,
+      "palabras_hip": 1333,
+      "palabras_comunes": 1333,
+      "cer": 0.0,
+      "wer": 0.0,
+      "recuperacion": 1.0,
+      "precision": 1.0,
+      "ic95_bootstrap_paginas": {
+        "cer": [
+          0.0,
+          0.0
+        ],
+        "wer": [
+          0.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "documento": "norma",
+      "tipo_pagina": "digital",
+      "fuente": "A",
+      "referencia": "V",
+      "paginas": 1,
+      "ediciones_caracteres": 0,
+      "caracteres_ref": 2550,
+      "ediciones_palabras": 0,
+      "palabras_ref": 421,
+      "palabras_hip": 421,
+      "palabras_comunes": 421,
+      "cer": 0.0,
+      "wer": 0.0,
+      "recuperacion": 1.0,
+      "precision": 1.0,
+      "ic95_bootstrap_paginas": {
+        "cer": [
+          0.0,
+          0.0
+        ],
+        "wer": [
+          0.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "documento": "norma",
+      "tipo_pagina": "digital",
+      "fuente": "C1",
+      "referencia": "A",
+      "paginas": 4,
+      "ediciones_caracteres": 0,
+      "caracteres_ref": 8424,
+      "ediciones_palabras": 0,
+      "palabras_ref": 1333,
+      "palabras_hip": 1333,
+      "palabras_comunes": 1333,
+      "cer": 0.0,
+      "wer": 0.0,
+      "recuperacion": 1.0,
+      "precision": 1.0,
+      "ic95_bootstrap_paginas": {
+        "cer": [
+          0.0,
+          0.0
+        ],
+        "wer": [
+          0.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "documento": "norma",
+      "tipo_pagina": "digital",
+      "fuente": "C1",
+      "referencia": "C2",
+      "paginas": 4,
+      "ediciones_caracteres": 1,
+      "caracteres_ref": 8424,
+      "ediciones_palabras": 1,
+      "palabras_ref": 1333,
+      "palabras_hip": 1333,
+      "palabras_comunes": 1332,
+      "cer": 0.00011870845204178538,
+      "wer": 0.0007501875468867217,
+      "recuperacion": 0.9992498124531133,
+      "precision": 0.9992498124531133,
+      "ic95_bootstrap_paginas": {
+        "cer": [
+          0.0,
+          0.0003135123837391577
+        ],
+        "wer": [
+          0.0,
+          0.0018963337547408343
+        ]
+      }
+    },
+    {
+      "documento": "norma",
+      "tipo_pagina": "digital",
+      "fuente": "C1",
+      "referencia": "S",
+      "paginas": 4,
+      "ediciones_caracteres": 0,
+      "caracteres_ref": 8424,
+      "ediciones_palabras": 0,
+      "palabras_ref": 1333,
+      "palabras_hip": 1333,
+      "palabras_comunes": 1333,
+      "cer": 0.0,
+      "wer": 0.0,
+      "recuperacion": 1.0,
+      "precision": 1.0,
+      "ic95_bootstrap_paginas": {
+        "cer": [
+          0.0,
+          0.0
+        ],
+        "wer": [
+          0.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "documento": "norma",
+      "tipo_pagina": "digital",
+      "fuente": "C1",
+      "referencia": "V",
+      "paginas": 1,
+      "ediciones_caracteres": 0,
+      "caracteres_ref": 2550,
+      "ediciones_palabras": 0,
+      "palabras_ref": 421,
+      "palabras_hip": 421,
+      "palabras_comunes": 421,
+      "cer": 0.0,
+      "wer": 0.0,
+      "recuperacion": 1.0,
+      "precision": 1.0,
+      "ic95_bootstrap_paginas": {
+        "cer": [
+          0.0,
+          0.0
+        ],
+        "wer": [
+          0.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "documento": "norma",
+      "tipo_pagina": "digital",
+      "fuente": "C2",
+      "referencia": "A",
+      "paginas": 4,
+      "ediciones_caracteres": 1,
+      "caracteres_ref": 8424,
+      "ediciones_palabras": 1,
+      "palabras_ref": 1333,
+      "palabras_hip": 1333,
+      "palabras_comunes": 1332,
+      "cer": 0.00011870845204178538,
+      "wer": 0.0007501875468867217,
+      "recuperacion": 0.9992498124531133,
+      "precision": 0.9992498124531133,
+      "ic95_bootstrap_paginas": {
+        "cer": [
+          0.0,
+          0.0003135123837391577
+        ],
+        "wer": [
+          0.0,
+          0.0018963337547408343
+        ]
+      }
+    },
+    {
+      "documento": "norma",
+      "tipo_pagina": "digital",
+      "fuente": "C2",
+      "referencia": "C1",
+      "paginas": 4,
+      "ediciones_caracteres": 1,
+      "caracteres_ref": 8424,
+      "ediciones_palabras": 1,
+      "palabras_ref": 1333,
+      "palabras_hip": 1333,
+      "palabras_comunes": 1332,
+      "cer": 0.00011870845204178538,
+      "wer": 0.0007501875468867217,
+      "recuperacion": 0.9992498124531133,
+      "precision": 0.9992498124531133,
+      "ic95_bootstrap_paginas": {
+        "cer": [
+          0.0,
+          0.0003135123837391577
+        ],
+        "wer": [
+          0.0,
+          0.0018963337547408343
+        ]
+      }
+    },
+    {
+      "documento": "norma",
+      "tipo_pagina": "digital",
+      "fuente": "C2",
+      "referencia": "S",
+      "paginas": 4,
+      "ediciones_caracteres": 1,
+      "caracteres_ref": 8424,
+      "ediciones_palabras": 1,
+      "palabras_ref": 1333,
+      "palabras_hip": 1333,
+      "palabras_comunes": 1332,
+      "cer": 0.00011870845204178538,
+      "wer": 0.0007501875468867217,
+      "recuperacion": 0.9992498124531133,
+      "precision": 0.9992498124531133,
+      "ic95_bootstrap_paginas": {
+        "cer": [
+          0.0,
+          0.0003135123837391577
+        ],
+        "wer": [
+          0.0,
+          0.0018963337547408343
+        ]
+      }
+    },
+    {
+      "documento": "norma",
+      "tipo_pagina": "digital",
+      "fuente": "C2",
+      "referencia": "V",
+      "paginas": 1,
+      "ediciones_caracteres": 1,
+      "caracteres_ref": 2550,
+      "ediciones_palabras": 1,
+      "palabras_ref": 421,
+      "palabras_hip": 421,
+      "palabras_comunes": 420,
+      "cer": 0.000392156862745098,
+      "wer": 0.0023752969121140144,
+      "recuperacion": 0.997624703087886,
+      "precision": 0.997624703087886,
+      "ic95_bootstrap_paginas": {
+        "cer": [
+          0.000392156862745098,
+          0.000392156862745098
+        ],
+        "wer": [
+          0.0023752969121140144,
+          0.0023752969121140144
+        ]
+      }
+    },
+    {
+      "documento": "norma",
+      "tipo_pagina": "digital",
+      "fuente": "S",
+      "referencia": "A",
+      "paginas": 4,
+      "ediciones_caracteres": 0,
+      "caracteres_ref": 8424,
+      "ediciones_palabras": 0,
+      "palabras_ref": 1333,
+      "palabras_hip": 1333,
+      "palabras_comunes": 1333,
+      "cer": 0.0,
+      "wer": 0.0,
+      "recuperacion": 1.0,
+      "precision": 1.0,
+      "ic95_bootstrap_paginas": {
+        "cer": [
+          0.0,
+          0.0
+        ],
+        "wer": [
+          0.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "documento": "norma",
+      "tipo_pagina": "digital",
+      "fuente": "S",
+      "referencia": "C1",
+      "paginas": 4,
+      "ediciones_caracteres": 0,
+      "caracteres_ref": 8424,
+      "ediciones_palabras": 0,
+      "palabras_ref": 1333,
+      "palabras_hip": 1333,
+      "palabras_comunes": 1333,
+      "cer": 0.0,
+      "wer": 0.0,
+      "recuperacion": 1.0,
+      "precision": 1.0,
+      "ic95_bootstrap_paginas": {
+        "cer": [
+          0.0,
+          0.0
+        ],
+        "wer": [
+          0.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "documento": "norma",
+      "tipo_pagina": "digital",
+      "fuente": "S",
+      "referencia": "C2",
+      "paginas": 4,
+      "ediciones_caracteres": 1,
+      "caracteres_ref": 8424,
+      "ediciones_palabras": 1,
+      "palabras_ref": 1333,
+      "palabras_hip": 1333,
+      "palabras_comunes": 1332,
+      "cer": 0.00011870845204178538,
+      "wer": 0.0007501875468867217,
+      "recuperacion": 0.9992498124531133,
+      "precision": 0.9992498124531133,
+      "ic95_bootstrap_paginas": {
+        "cer": [
+          0.0,
+          0.0003135123837391577
+        ],
+        "wer": [
+          0.0,
+          0.0018963337547408343
+        ]
+      }
+    },
+    {
+      "documento": "norma",
+      "tipo_pagina": "digital",
+      "fuente": "S",
+      "referencia": "V",
+      "paginas": 1,
+      "ediciones_caracteres": 0,
+      "caracteres_ref": 2550,
+      "ediciones_palabras": 0,
+      "palabras_ref": 421,
+      "palabras_hip": 421,
+      "palabras_comunes": 421,
+      "cer": 0.0,
+      "wer": 0.0,
+      "recuperacion": 1.0,
+      "precision": 1.0,
+      "ic95_bootstrap_paginas": {
+        "cer": [
+          0.0,
+          0.0
+        ],
+        "wer": [
+          0.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "documento": "norma",
+      "tipo_pagina": "digital",
+      "fuente": "V",
+      "referencia": "A",
+      "paginas": 1,
+      "ediciones_caracteres": 0,
+      "caracteres_ref": 2550,
+      "ediciones_palabras": 0,
+      "palabras_ref": 421,
+      "palabras_hip": 421,
+      "palabras_comunes": 421,
+      "cer": 0.0,
+      "wer": 0.0,
+      "recuperacion": 1.0,
+      "precision": 1.0,
+      "ic95_bootstrap_paginas": {
+        "cer": [
+          0.0,
+          0.0
+        ],
+        "wer": [
+          0.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "documento": "norma",
+      "tipo_pagina": "digital",
+      "fuente": "V",
+      "referencia": "C1",
+      "paginas": 1,
+      "ediciones_caracteres": 0,
+      "caracteres_ref": 2550,
+      "ediciones_palabras": 0,
+      "palabras_ref": 421,
+      "palabras_hip": 421,
+      "palabras_comunes": 421,
+      "cer": 0.0,
+      "wer": 0.0,
+      "recuperacion": 1.0,
+      "precision": 1.0,
+      "ic95_bootstrap_paginas": {
+        "cer": [
+          0.0,
+          0.0
+        ],
+        "wer": [
+          0.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "documento": "norma",
+      "tipo_pagina": "digital",
+      "fuente": "V",
+      "referencia": "C2",
+      "paginas": 1,
+      "ediciones_caracteres": 1,
+      "caracteres_ref": 2550,
+      "ediciones_palabras": 1,
+      "palabras_ref": 421,
+      "palabras_hip": 421,
+      "palabras_comunes": 420,
+      "cer": 0.000392156862745098,
+      "wer": 0.0023752969121140144,
+      "recuperacion": 0.997624703087886,
+      "precision": 0.997624703087886,
+      "ic95_bootstrap_paginas": {
+        "cer": [
+          0.000392156862745098,
+          0.000392156862745098
+        ],
+        "wer": [
+          0.0023752969121140144,
+          0.0023752969121140144
+        ]
+      }
+    },
+    {
+      "documento": "norma",
+      "tipo_pagina": "digital",
+      "fuente": "V",
+      "referencia": "S",
+      "paginas": 1,
+      "ediciones_caracteres": 0,
+      "caracteres_ref": 2550,
+      "ediciones_palabras": 0,
+      "palabras_ref": 421,
+      "palabras_hip": 421,
+      "palabras_comunes": 421,
+      "cer": 0.0,
+      "wer": 0.0,
+      "recuperacion": 1.0,
+      "precision": 1.0,
+      "ic95_bootstrap_paginas": {
+        "cer": [
+          0.0,
+          0.0
+        ],
+        "wer": [
+          0.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "documento": "sentencia",
+      "tipo_pagina": "digital",
+      "fuente": "A",
+      "referencia": "C1",
+      "paginas": 6,
+      "ediciones_caracteres": 36,
+      "caracteres_ref": 12570,
+      "ediciones_palabras": 23,
+      "palabras_ref": 2057,
+      "palabras_hip": 2050,
+      "palabras_comunes": 2036,
+      "cer": 0.002863961813842482,
+      "wer": 0.01118133203694701,
+      "recuperacion": 0.9897909577053962,
+      "precision": 0.9931707317073171,
+      "ic95_bootstrap_paginas": {
+        "cer": [
+          0.0,
+          0.0071614000537105005
+        ],
+        "wer": [
+          0.0,
+          0.026223438619302816
+        ]
+      }
+    },
+    {
+      "documento": "sentencia",
+      "tipo_pagina": "digital",
+      "fuente": "A",
+      "referencia": "C2",
+      "paginas": 6,
+      "ediciones_caracteres": 17,
+      "caracteres_ref": 12567,
+      "ediciones_palabras": 24,
+      "palabras_ref": 2057,
+      "palabras_hip": 2050,
+      "palabras_comunes": 2033,
+      "cer": 0.0013527492639452533,
+      "wer": 0.01166747690811862,
+      "recuperacion": 0.9883325230918814,
+      "precision": 0.9917073170731707,
+      "ic95_bootstrap_paginas": {
+        "cer": [
+          0.0,
+          0.003395938734493035
+        ],
+        "wer": [
+          0.0,
+          0.02837454398054317
+        ]
+      }
+    },
+    {
+      "documento": "sentencia",
+      "tipo_pagina": "digital",
+      "fuente": "A",
+      "referencia": "S",
+      "paginas": 6,
+      "ediciones_caracteres": 24,
+      "caracteres_ref": 12565,
+      "ediciones_palabras": 4,
+      "palabras_ref": 2051,
+      "palabras_hip": 2050,
+      "palabras_comunes": 2049,
+      "cer": 0.001910067648229208,
+      "wer": 0.0019502681618722574,
+      "recuperacion": 0.9990248659190639,
+      "precision": 0.9995121951219512,
+      "ic95_bootstrap_paginas": {
+        "cer": [
+          0.0,
+          0.006754072308303536
+        ],
+        "wer": [
+          0.0,
+          0.005076142131979695
+        ]
+      }
+    },
+    {
+      "documento": "sentencia",
+      "tipo_pagina": "digital",
+      "fuente": "A",
+      "referencia": "V",
+      "paginas": 6,
+      "ediciones_caracteres": 360,
+      "caracteres_ref": 12270,
+      "ediciones_palabras": 111,
+      "palabras_ref": 1998,
+      "palabras_hip": 2050,
+      "palabras_comunes": 1950,
+      "cer": 0.029339853300733496,
+      "wer": 0.05555555555555555,
+      "recuperacion": 0.975975975975976,
+      "precision": 0.9512195121951219,
+      "ic95_bootstrap_paginas": {
+        "cer": [
+          0.017104714226115977,
+          0.04755352996818299
+        ],
+        "wer": [
+          0.03466509988249119,
+          0.07337108074468392
+        ]
+      }
+    },
+    {
+      "documento": "sentencia",
+      "tipo_pagina": "digital",
+      "fuente": "C1",
+      "referencia": "A",
+      "paginas": 6,
+      "ediciones_caracteres": 36,
+      "caracteres_ref": 12563,
+      "ediciones_palabras": 23,
+      "palabras_ref": 2050,
+      "palabras_hip": 2057,
+      "palabras_comunes": 2036,
+      "cer": 0.0028655575897476716,
+      "wer": 0.01121951219512195,
+      "recuperacion": 0.9931707317073171,
+      "precision": 0.9897909577053962,
+      "ic95_bootstrap_paginas": {
+        "cer": [
+          0.0,
+          0.007165890361877463
+        ],
+        "wer": [
+          0.0,
+          0.02644750699735938
+        ]
+      }
+    },
+    {
+      "documento": "sentencia",
+      "tipo_pagina": "digital",
+      "fuente": "C1",
+      "referencia": "C2",
+      "paginas": 6,
+      "ediciones_caracteres": 25,
+      "caracteres_ref": 12567,
+      "ediciones_palabras": 5,
+      "palabras_ref": 2057,
+      "palabras_hip": 2057,
+      "palabras_comunes": 2054,
+      "cer": 0.0019893371528606667,
+      "wer": 0.0024307243558580457,
+      "recuperacion": 0.9985415653864852,
+      "precision": 0.9985415653864852,
+      "ic95_bootstrap_paginas": {
+        "cer": [
+          7.799095304944626e-05,
+          0.006619528256907345
+        ],
+        "wer": [
+          0.0004995004995004995,
+          0.004797441364605544
+        ]
+      }
+    },
+    {
+      "documento": "sentencia",
+      "tipo_pagina": "digital",
+      "fuente": "C1",
+      "referencia": "S",
+      "paginas": 6,
+      "ediciones_caracteres": 16,
+      "caracteres_ref": 12565,
+      "ediciones_palabras": 23,
+      "palabras_ref": 2051,
+      "palabras_hip": 2057,
+      "palabras_comunes": 2035,
+      "cer": 0.0012733784321528054,
+      "wer": 0.01121404193076548,
+      "recuperacion": 0.9921989273525109,
+      "precision": 0.9893048128342246,
+      "ic95_bootstrap_paginas": {
+        "cer": [
+          0.0,
+          0.0029958466671205827
+        ],
+        "wer": [
+          0.0,
+          0.025886236647493822
+        ]
+      }
+    },
+    {
+      "documento": "sentencia",
+      "tipo_pagina": "digital",
+      "fuente": "C1",
+      "referencia": "V",
+      "paginas": 6,
+      "ediciones_caracteres": 345,
+      "caracteres_ref": 12270,
+      "ediciones_palabras": 109,
+      "palabras_ref": 1998,
+      "palabras_hip": 2057,
+      "palabras_comunes": 1950,
+      "cer": 0.028117359413202935,
+      "wer": 0.05455455455455455,
+      "recuperacion": 0.975975975975976,
+      "precision": 0.9479824987846378,
+      "ic95_bootstrap_paginas": {
+        "cer": [
+          0.014701233006639267,
+          0.04615203933869388
+        ],
+        "wer": [
+          0.03231492361927144,
+          0.07278608976951072
+        ]
+      }
+    },
+    {
+      "documento": "sentencia",
+      "tipo_pagina": "digital",
+      "fuente": "C2",
+      "referencia": "A",
+      "paginas": 6,
+      "ediciones_caracteres": 17,
+      "caracteres_ref": 12563,
+      "ediciones_palabras": 24,
+      "palabras_ref": 2050,
+      "palabras_hip": 2057,
+      "palabras_comunes": 2033,
+      "cer": 0.0013531799729364006,
+      "wer": 0.011707317073170732,
+      "recuperacion": 0.9917073170731707,
+      "precision": 0.9883325230918814,
+      "ic95_bootstrap_paginas": {
+        "cer": [
+          0.0,
+          0.0033992369060006937
+        ],
+        "wer": [
+          0.0,
+          0.028618152085036794
+        ]
+      }
+    },
+    {
+      "documento": "sentencia",
+      "tipo_pagina": "digital",
+      "fuente": "C2",
+      "referencia": "C1",
+      "paginas": 6,
+      "ediciones_caracteres": 25,
+      "caracteres_ref": 12570,
+      "ediciones_palabras": 5,
+      "palabras_ref": 2057,
+      "palabras_hip": 2057,
+      "palabras_comunes": 2054,
+      "cer": 0.001988862370723946,
+      "wer": 0.0024307243558580457,
+      "recuperacion": 0.9985415653864852,
+      "precision": 0.9985415653864852,
+      "ic95_bootstrap_paginas": {
+        "cer": [
+          7.79848709350386e-05,
+          0.006619528256907345
+        ],
+        "wer": [
+          0.0004995004995004995,
+          0.004797441364605544
+        ]
+      }
+    },
+    {
+      "documento": "sentencia",
+      "tipo_pagina": "digital",
+      "fuente": "C2",
+      "referencia": "S",
+      "paginas": 6,
+      "ediciones_caracteres": 41,
+      "caracteres_ref": 12565,
+      "ediciones_palabras": 28,
+      "palabras_ref": 2051,
+      "palabras_hip": 2057,
+      "palabras_comunes": 2032,
+      "cer": 0.003263032232391564,
+      "wer": 0.013651877133105802,
+      "recuperacion": 0.9907362262311068,
+      "precision": 0.9878463782207098,
+      "ic95_bootstrap_paginas": {
+        "cer": [
+          0.00023391812865497077,
+          0.007446016381236039
+        ],
+        "wer": [
+          0.0014749262536873156,
+          0.029435813573180702
+        ]
+      }
+    },
+    {
+      "documento": "sentencia",
+      "tipo_pagina": "digital",
+      "fuente": "C2",
+      "referencia": "V",
+      "paginas": 6,
+      "ediciones_caracteres": 368,
+      "caracteres_ref": 12270,
+      "ediciones_palabras": 113,
+      "palabras_ref": 1998,
+      "palabras_hip": 2057,
+      "palabras_comunes": 1948,
+      "cer": 0.029991850040749796,
+      "wer": 0.05655655655655656,
+      "recuperacion": 0.974974974974975,
+      "precision": 0.9470102090422946,
+      "ic95_bootstrap_paginas": {
+        "cer": [
+          0.017855652899457654,
+          0.04729555421790352
+        ],
+        "wer": [
+          0.03466509988249119,
+          0.07596123804583019
+        ]
+      }
+    },
+    {
+      "documento": "sentencia",
+      "tipo_pagina": "digital",
+      "fuente": "S",
+      "referencia": "A",
+      "paginas": 6,
+      "ediciones_caracteres": 24,
+      "caracteres_ref": 12563,
+      "ediciones_palabras": 4,
+      "palabras_ref": 2050,
+      "palabras_hip": 2051,
+      "palabras_comunes": 2049,
+      "cer": 0.0019103717264984479,
+      "wer": 0.001951219512195122,
+      "recuperacion": 0.9995121951219512,
+      "precision": 0.9990248659190639,
+      "ic95_bootstrap_paginas": {
+        "cer": [
+          0.0,
+          0.00675541426584542
+        ],
+        "wer": [
+          0.0,
+          0.005079365079365079
+        ]
+      }
+    },
+    {
+      "documento": "sentencia",
+      "tipo_pagina": "digital",
+      "fuente": "S",
+      "referencia": "C1",
+      "paginas": 6,
+      "ediciones_caracteres": 16,
+      "caracteres_ref": 12570,
+      "ediciones_palabras": 23,
+      "palabras_ref": 2057,
+      "palabras_hip": 2051,
+      "palabras_comunes": 2035,
+      "cer": 0.0012728719172633255,
+      "wer": 0.01118133203694701,
+      "recuperacion": 0.9893048128342246,
+      "precision": 0.9921989273525109,
+      "ic95_bootstrap_paginas": {
+        "cer": [
+          0.0,
+          0.0029919760641914863
+        ],
+        "wer": [
+          0.0,
+          0.02567446212292182
+        ]
+      }
+    },
+    {
+      "documento": "sentencia",
+      "tipo_pagina": "digital",
+      "fuente": "S",
+      "referencia": "C2",
+      "paginas": 6,
+      "ediciones_caracteres": 41,
+      "caracteres_ref": 12567,
+      "ediciones_palabras": 28,
+      "palabras_ref": 2057,
+      "palabras_hip": 2051,
+      "palabras_comunes": 2032,
+      "cer": 0.0032625129306914935,
+      "wer": 0.013612056392805057,
+      "recuperacion": 0.9878463782207098,
+      "precision": 0.9907362262311068,
+      "ic95_bootstrap_paginas": {
+        "cer": [
+          0.0002339728591483388,
+          0.0074491859103969355
+        ],
+        "wer": [
+          0.0014756517461878996,
+          0.029185245237130116
+        ]
+      }
+    },
+    {
+      "documento": "sentencia",
+      "tipo_pagina": "digital",
+      "fuente": "S",
+      "referencia": "V",
+      "paginas": 6,
+      "ediciones_caracteres": 340,
+      "caracteres_ref": 12270,
+      "ediciones_palabras": 111,
+      "palabras_ref": 1998,
+      "palabras_hip": 2051,
+      "palabras_comunes": 1949,
+      "cer": 0.027709861450692746,
+      "wer": 0.05555555555555555,
+      "recuperacion": 0.9754754754754755,
+      "precision": 0.9502681618722575,
+      "ic95_bootstrap_paginas": {
+        "cer": [
+          0.013980187019720397,
+          0.04596293574985713
+        ],
+        "wer": [
+          0.033483415262039615,
+          0.07409158057543971
+        ]
+      }
+    },
+    {
+      "documento": "sentencia",
+      "tipo_pagina": "digital",
+      "fuente": "V",
+      "referencia": "A",
+      "paginas": 6,
+      "ediciones_caracteres": 360,
+      "caracteres_ref": 12563,
+      "ediciones_palabras": 111,
+      "palabras_ref": 2050,
+      "palabras_hip": 1998,
+      "palabras_comunes": 1950,
+      "cer": 0.028655575897476717,
+      "wer": 0.054146341463414634,
+      "recuperacion": 0.9512195121951219,
+      "precision": 0.975975975975976,
+      "ic95_bootstrap_paginas": {
+        "cer": [
+          0.016937949268776335,
+          0.04557441898796769
+        ],
+        "wer": [
+          0.034025374855824686,
+          0.07169970476592155
+        ]
+      }
+    },
+    {
+      "documento": "sentencia",
+      "tipo_pagina": "digital",
+      "fuente": "V",
+      "referencia": "C1",
+      "paginas": 6,
+      "ediciones_caracteres": 345,
+      "caracteres_ref": 12570,
+      "ediciones_palabras": 109,
+      "palabras_ref": 2057,
+      "palabras_hip": 1998,
+      "palabras_comunes": 1950,
+      "cer": 0.027446300715990454,
+      "wer": 0.052989790957705396,
+      "recuperacion": 0.9479824987846378,
+      "precision": 0.975975975975976,
+      "ic95_bootstrap_paginas": {
+        "cer": [
+          0.014558547276142768,
+          0.04424189455616676
+        ],
+        "wer": [
+          0.031718569780853516,
+          0.07071583514099783
+        ]
+      }
+    },
+    {
+      "documento": "sentencia",
+      "tipo_pagina": "digital",
+      "fuente": "V",
+      "referencia": "C2",
+      "paginas": 6,
+      "ediciones_caracteres": 368,
+      "caracteres_ref": 12567,
+      "ediciones_palabras": 113,
+      "palabras_ref": 2057,
+      "palabras_hip": 1998,
+      "palabras_comunes": 1948,
+      "cer": 0.029283042890109016,
+      "wer": 0.054934370442391835,
+      "recuperacion": 0.9470102090422946,
+      "precision": 0.974974974974975,
+      "ic95_bootstrap_paginas": {
+        "cer": [
+          0.017655638289705997,
+          0.045338389250680074
+        ],
+        "wer": [
+          0.034025374855824686,
+          0.07341269841269842
+        ]
+      }
+    },
+    {
+      "documento": "sentencia",
+      "tipo_pagina": "digital",
+      "fuente": "V",
+      "referencia": "S",
+      "paginas": 6,
+      "ediciones_caracteres": 340,
+      "caracteres_ref": 12565,
+      "ediciones_palabras": 111,
+      "palabras_ref": 2051,
+      "palabras_hip": 1998,
+      "palabras_comunes": 1949,
+      "cer": 0.027059291683247114,
+      "wer": 0.05411994149195514,
+      "recuperacion": 0.9502681618722575,
+      "precision": 0.9754754754754755,
+      "ic95_bootstrap_paginas": {
+        "cer": [
+          0.013837976539589443,
+          0.04407045009784736
+        ],
+        "wer": [
+          0.032842701698621676,
+          0.0724373576309795
+        ]
+      }
+    },
+    {
+      "documento": "tablas",
+      "tipo_pagina": "digital",
+      "fuente": "A",
+      "referencia": "C1",
+      "paginas": 6,
+      "ediciones_caracteres": 1169,
+      "caracteres_ref": 6691,
+      "ediciones_palabras": 266,
+      "palabras_ref": 1029,
+      "palabras_hip": 1021,
+      "palabras_comunes": 1021,
+      "cer": 0.17471230010461813,
+      "wer": 0.2585034013605442,
+      "recuperacion": 0.9922254616132167,
+      "precision": 1.0,
+      "ic95_bootstrap_paginas": {
+        "cer": [
+          0.05129533678756477,
+          0.3927935943889628
+        ],
+        "wer": [
+          0.07129455909943715,
+          0.5565911261060534
+        ]
+      }
+    },
+    {
+      "documento": "tablas",
+      "tipo_pagina": "digital",
+      "fuente": "A",
+      "referencia": "C2",
+      "paginas": 6,
+      "ediciones_caracteres": 1174,
+      "caracteres_ref": 6696,
+      "ediciones_palabras": 267,
+      "palabras_ref": 1030,
+      "palabras_hip": 1021,
+      "palabras_comunes": 1021,
+      "cer": 0.17532855436081243,
+      "wer": 0.25922330097087376,
+      "recuperacion": 0.9912621359223301,
+      "precision": 1.0,
+      "ic95_bootstrap_paginas": {
+        "cer": [
+          0.05357878829509548,
+          0.3928886141432595
+        ],
+        "wer": [
+          0.07273838630806846,
+          0.5578569195145857
+        ]
+      }
+    },
+    {
+      "documento": "tablas",
+      "tipo_pagina": "digital",
+      "fuente": "A",
+      "referencia": "S",
+      "paginas": 6,
+      "ediciones_caracteres": 1108,
+      "caracteres_ref": 6630,
+      "ediciones_palabras": 258,
+      "palabras_ref": 1021,
+      "palabras_hip": 1021,
+      "palabras_comunes": 1021,
+      "cer": 0.16711915535444946,
+      "wer": 0.25269343780607245,
+      "recuperacion": 1.0,
+      "precision": 1.0,
+      "ic95_bootstrap_paginas": {
+        "cer": [
+          0.039832869080779945,
+          0.37830578667773607
+        ],
+        "wer": [
+          0.059534883720930236,
+          0.5461960655017024
+        ]
+      }
+    },
+    {
+      "documento": "tablas",
+      "tipo_pagina": "digital",
+      "fuente": "A",
+      "referencia": "V",
+      "paginas": 4,
+      "ediciones_caracteres": 1472,
+      "caracteres_ref": 5475,
+      "ediciones_palabras": 290,
+      "palabras_ref": 889,
+      "palabras_hip": 946,
+      "palabras_comunes": 886,
+      "cer": 0.26885844748858445,
+      "wer": 0.3262092238470191,
+      "recuperacion": 0.9966254218222722,
+      "precision": 0.9365750528541226,
+      "ic95_bootstrap_paginas": {
+        "cer": [
+          0.11846965699208444,
+          0.6071216617210683
+        ],
+        "wer": [
+          0.12562814070351758,
+          0.7363013698630136
+        ]
+      }
+    },
+    {
+      "documento": "tablas",
+      "tipo_pagina": "digital",
+      "fuente": "C1",
+      "referencia": "A",
+      "paginas": 6,
+      "ediciones_caracteres": 1169,
+      "caracteres_ref": 6630,
+      "ediciones_palabras": 266,
+      "palabras_ref": 1021,
+      "palabras_hip": 1029,
+      "palabras_comunes": 1021,
+      "cer": 0.17631975867269986,
+      "wer": 0.2605288932419197,
+      "recuperacion": 1.0,
+      "precision": 0.9922254616132167,
+      "ic95_bootstrap_paginas": {
+        "cer": [
+          0.052969502407704656,
+          0.39454333318794416
+        ],
+        "wer": [
+          0.07238095238095238,
+          0.5660211012199138
+        ]
+      }
+    },
+    {
+      "documento": "tablas",
+      "tipo_pagina": "digital",
+      "fuente": "C1",
+      "referencia": "C2",
+      "paginas": 6,
+      "ediciones_caracteres": 5,
+      "caracteres_ref": 6696,
+      "ediciones_palabras": 1,
+      "palabras_ref": 1030,
+      "palabras_hip": 1029,
+      "palabras_comunes": 1029,
+      "cer": 0.0007467144563918758,
+      "wer": 0.000970873786407767,
+      "recuperacion": 0.9990291262135922,
+      "precision": 1.0,
+      "ic95_bootstrap_paginas": {
+        "cer": [
+          0.0,
+          0.0035302424099788185
+        ],
+        "wer": [
+          0.0,
+          0.004673999294657021
+        ]
+      }
+    },
+    {
+      "documento": "tablas",
+      "tipo_pagina": "digital",
+      "fuente": "C1",
+      "referencia": "S",
+      "paginas": 6,
+      "ediciones_caracteres": 61,
+      "caracteres_ref": 6630,
+      "ediciones_palabras": 8,
+      "palabras_ref": 1021,
+      "palabras_hip": 1029,
+      "palabras_comunes": 1021,
+      "cer": 0.009200603318250377,
+      "wer": 0.007835455435847209,
+      "recuperacion": 1.0,
+      "precision": 0.9922254616132167,
+      "ic95_bootstrap_paginas": {
+        "cer": [
+          0.0,
+          0.04517403110343125
+        ],
+        "wer": [
+          0.0,
+          0.03903400216268167
+        ]
+      }
+    },
+    {
+      "documento": "tablas",
+      "tipo_pagina": "digital",
+      "fuente": "C1",
+      "referencia": "V",
+      "paginas": 4,
+      "ediciones_caracteres": 560,
+      "caracteres_ref": 5475,
+      "ediciones_palabras": 60,
+      "palabras_ref": 889,
+      "palabras_hip": 946,
+      "palabras_comunes": 886,
+      "cer": 0.10228310502283106,
+      "wer": 0.06749156355455568,
+      "recuperacion": 0.9966254218222722,
+      "precision": 0.9365750528541226,
+      "ic95_bootstrap_paginas": {
+        "cer": [
+          0.0762532981530343,
+          0.16083086053412463
+        ],
+        "wer": [
+          0.051926298157453935,
+          0.09931506849315068
+        ]
+      }
+    },
+    {
+      "documento": "tablas",
+      "tipo_pagina": "digital",
+      "fuente": "C2",
+      "referencia": "A",
+      "paginas": 6,
+      "ediciones_caracteres": 1174,
+      "caracteres_ref": 6630,
+      "ediciones_palabras": 267,
+      "palabras_ref": 1021,
+      "palabras_hip": 1030,
+      "palabras_comunes": 1021,
+      "cer": 0.1770739064856712,
+      "wer": 0.2615083251714006,
+      "recuperacion": 1.0,
+      "precision": 0.9912621359223301,
+      "ic95_bootstrap_paginas": {
+        "cer": [
+          0.05406904200748648,
+          0.39559471365638765
+        ],
+        "wer": [
+          0.07314074984634296,
+          0.5680067402388765
+        ]
+      }
+    },
+    {
+      "documento": "tablas",
+      "tipo_pagina": "digital",
+      "fuente": "C2",
+      "referencia": "C1",
+      "paginas": 6,
+      "ediciones_caracteres": 5,
+      "caracteres_ref": 6691,
+      "ediciones_palabras": 1,
+      "palabras_ref": 1029,
+      "palabras_hip": 1030,
+      "palabras_comunes": 1029,
+      "cer": 0.0007472724555372889,
+      "wer": 0.0009718172983479105,
+      "recuperacion": 1.0,
+      "precision": 0.9990291262135922,
+      "ic95_bootstrap_paginas": {
+        "cer": [
+          0.0,
+          0.0035427491733585263
+        ],
+        "wer": [
+          0.0,
+          0.0046959482010546635
+        ]
+      }
+    },
+    {
+      "documento": "tablas",
+      "tipo_pagina": "digital",
+      "fuente": "C2",
+      "referencia": "S",
+      "paginas": 6,
+      "ediciones_caracteres": 66,
+      "caracteres_ref": 6630,
+      "ediciones_palabras": 9,
+      "palabras_ref": 1021,
+      "palabras_hip": 1030,
+      "palabras_comunes": 1021,
+      "cer": 0.009954751131221719,
+      "wer": 0.00881488736532811,
+      "recuperacion": 1.0,
+      "precision": 0.9912621359223301,
+      "ic95_bootstrap_paginas": {
+        "cer": [
+          0.0,
+          0.04887682053813873
+        ],
+        "wer": [
+          0.0,
+          0.04391325243301688
+        ]
+      }
+    },
+    {
+      "documento": "tablas",
+      "tipo_pagina": "digital",
+      "fuente": "C2",
+      "referencia": "V",
+      "paginas": 4,
+      "ediciones_caracteres": 560,
+      "caracteres_ref": 5475,
+      "ediciones_palabras": 60,
+      "palabras_ref": 889,
+      "palabras_hip": 946,
+      "palabras_comunes": 886,
+      "cer": 0.10228310502283106,
+      "wer": 0.06749156355455568,
+      "recuperacion": 0.9966254218222722,
+      "precision": 0.9365750528541226,
+      "ic95_bootstrap_paginas": {
+        "cer": [
+          0.0762532981530343,
+          0.16083086053412463
+        ],
+        "wer": [
+          0.051926298157453935,
+          0.09931506849315068
+        ]
+      }
+    },
+    {
+      "documento": "tablas",
+      "tipo_pagina": "digital",
+      "fuente": "S",
+      "referencia": "A",
+      "paginas": 6,
+      "ediciones_caracteres": 1108,
+      "caracteres_ref": 6630,
+      "ediciones_palabras": 258,
+      "palabras_ref": 1021,
+      "palabras_hip": 1021,
+      "palabras_comunes": 1021,
+      "cer": 0.16711915535444946,
+      "wer": 0.25269343780607245,
+      "recuperacion": 1.0,
+      "precision": 1.0,
+      "ic95_bootstrap_paginas": {
+        "cer": [
+          0.039832869080779945,
+          0.37830578667773607
+        ],
+        "wer": [
+          0.059534883720930236,
+          0.5461960655017024
+        ]
+      }
+    },
+    {
+      "documento": "tablas",
+      "tipo_pagina": "digital",
+      "fuente": "S",
+      "referencia": "C1",
+      "paginas": 6,
+      "ediciones_caracteres": 61,
+      "caracteres_ref": 6691,
+      "ediciones_palabras": 8,
+      "palabras_ref": 1029,
+      "palabras_hip": 1021,
+      "palabras_comunes": 1021,
+      "cer": 0.009116723957554924,
+      "wer": 0.007774538386783284,
+      "recuperacion": 0.9922254616132167,
+      "precision": 1.0,
+      "ic95_bootstrap_paginas": {
+        "cer": [
+          0.0,
+          0.043221539914974016
+        ],
+        "wer": [
+          0.0,
+          0.03756758560843731
+        ]
+      }
+    },
+    {
+      "documento": "tablas",
+      "tipo_pagina": "digital",
+      "fuente": "S",
+      "referencia": "C2",
+      "paginas": 6,
+      "ediciones_caracteres": 66,
+      "caracteres_ref": 6696,
+      "ediciones_palabras": 9,
+      "palabras_ref": 1030,
+      "palabras_hip": 1021,
+      "palabras_comunes": 1021,
+      "cer": 0.00985663082437276,
+      "wer": 0.008737864077669903,
+      "recuperacion": 0.9912621359223301,
+      "precision": 1.0,
+      "ic95_bootstrap_paginas": {
+        "cer": [
+          0.0,
+          0.04659919981172041
+        ],
+        "wer": [
+          0.0,
+          0.042065993651913186
+        ]
+      }
+    },
+    {
+      "documento": "tablas",
+      "tipo_pagina": "digital",
+      "fuente": "S",
+      "referencia": "V",
+      "paginas": 4,
+      "ediciones_caracteres": 560,
+      "caracteres_ref": 5475,
+      "ediciones_palabras": 60,
+      "palabras_ref": 889,
+      "palabras_hip": 946,
+      "palabras_comunes": 886,
+      "cer": 0.10228310502283106,
+      "wer": 0.06749156355455568,
+      "recuperacion": 0.9966254218222722,
+      "precision": 0.9365750528541226,
+      "ic95_bootstrap_paginas": {
+        "cer": [
+          0.0762532981530343,
+          0.16083086053412463
+        ],
+        "wer": [
+          0.051926298157453935,
+          0.09931506849315068
+        ]
+      }
+    },
+    {
+      "documento": "tablas",
+      "tipo_pagina": "digital",
+      "fuente": "V",
+      "referencia": "A",
+      "paginas": 4,
+      "ediciones_caracteres": 1472,
+      "caracteres_ref": 6031,
+      "ediciones_palabras": 290,
+      "palabras_ref": 946,
+      "palabras_hip": 889,
+      "palabras_comunes": 886,
+      "cer": 0.24407229315204776,
+      "wer": 0.30655391120507397,
+      "recuperacion": 0.9365750528541226,
+      "precision": 0.9966254218222722,
+      "ic95_bootstrap_paginas": {
+        "cer": [
+          0.11012999754721609,
+          0.5235414534288638
+        ],
+        "wer": [
+          0.11961722488038277,
+          0.6739811912225705
+        ]
+      }
+    },
+    {
+      "documento": "tablas",
+      "tipo_pagina": "digital",
+      "fuente": "V",
+      "referencia": "C1",
+      "paginas": 4,
+      "ediciones_caracteres": 560,
+      "caracteres_ref": 6031,
+      "ediciones_palabras": 60,
+      "palabras_ref": 946,
+      "palabras_hip": 889,
+      "palabras_comunes": 886,
+      "cer": 0.09285358978610513,
+      "wer": 0.06342494714587738,
+      "recuperacion": 0.9365750528541226,
+      "precision": 0.9966254218222722,
+      "ic95_bootstrap_paginas": {
+        "cer": [
+          0.07088545499141526,
+          0.13868986693961105
+        ],
+        "wer": [
+          0.049441786283891544,
+          0.09090909090909091
+        ]
+      }
+    },
+    {
+      "documento": "tablas",
+      "tipo_pagina": "digital",
+      "fuente": "V",
+      "referencia": "C2",
+      "paginas": 4,
+      "ediciones_caracteres": 560,
+      "caracteres_ref": 6031,
+      "ediciones_palabras": 60,
+      "palabras_ref": 946,
+      "palabras_hip": 889,
+      "palabras_comunes": 886,
+      "cer": 0.09285358978610513,
+      "wer": 0.06342494714587738,
+      "recuperacion": 0.9365750528541226,
+      "precision": 0.9966254218222722,
+      "ic95_bootstrap_paginas": {
+        "cer": [
+          0.07088545499141526,
+          0.13868986693961105
+        ],
+        "wer": [
+          0.049441786283891544,
+          0.09090909090909091
+        ]
+      }
+    },
+    {
+      "documento": "tablas",
+      "tipo_pagina": "digital",
+      "fuente": "V",
+      "referencia": "S",
+      "paginas": 4,
+      "ediciones_caracteres": 560,
+      "caracteres_ref": 6031,
+      "ediciones_palabras": 60,
+      "palabras_ref": 946,
+      "palabras_hip": 889,
+      "palabras_comunes": 886,
+      "cer": 0.09285358978610513,
+      "wer": 0.06342494714587738,
+      "recuperacion": 0.9365750528541226,
+      "precision": 0.9966254218222722,
+      "ic95_bootstrap_paginas": {
+        "cer": [
+          0.07088545499141526,
+          0.13868986693961105
+        ],
+        "wer": [
+          0.049441786283891544,
+          0.09090909090909091
+        ]
+      }
+    }
+  ],
+  "revision": {
+    "filas_por_prioridad": {
+      "a": 18,
+      "b": 5,
+      "c": 40,
+      "d": 23,
+      "e": 1
+    },
+    "candidatos_a_b_agrupados": 23,
+    "limite_a_b_superado": false,
+    "filas_a_b_fuera": 0,
+    "cobertura_segmentos_S": {
+      "contradicho_por_consenso": {
+        "total": 2,
+        "incluidos": 2
+      },
+      "en_disputa": {
+        "total": 17,
+        "incluidos": 17
+      },
+      "indeterminado": {
+        "total": 0,
+        "incluidos": 0
+      }
+    },
+    "todos_S_contradichos_en_disputa_incluidos": true,
+    "desacuerdos": 87,
+    "controles": 20,
+    "coincidencia_controles": "Todas las fuentes solicitadas deben estar presentes y coincidir; si no hay suficientes ventanas se informa un conteo menor de 20"
+  }
+}

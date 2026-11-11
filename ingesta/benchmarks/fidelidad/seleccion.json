@@ -1,0 +1,38 @@
+{
+  "descripcion": "Muestra de fidelidad del bronce v2 frente al PDF original. Páginas 1-indexadas. Elegida con conteos por página (caracteres de la capa de texto y tablas detectadas por PyMuPDF), sin leer el texto, para no contaminar la transcripción ciega C1.",
+  "dpi": 200,
+  "documentos": [
+    {
+      "id": "sentencia",
+      "archivo": "03e009c1602a.pdf",
+      "ruta": "jurisprudencia/CE_2da_AP_2010_028_Radley_Bent_VS_Dimar_Daños_Ambientales_Embarcaciones.pdf",
+      "tipo_pagina": "digital",
+      "paginas": [1, 2, 9, 16, 24, 31],
+      "porque": "Sentencia del Consejo de Estado con capa de texto en las 31 páginas y sin tablas. Páginas de inicio (1-2), medio (9, 16, 24) y final (31)."
+    },
+    {
+      "id": "escaneado",
+      "archivo": "e820f079f4ad.pdf",
+      "ruta": "normativa/Por el cual se reglamentan las Unidades Ambientales Costeras - UAC- y las comisiones conjuntas, se establecen las reglas de procedimiento y criterios para reglamentar la restricción de ciertas actividades en.pdf",
+      "tipo_pagina": "ocr",
+      "paginas": [1, 2],
+      "porque": "Decreto 1120 de 2013: ninguna de sus 2 páginas tiene capa de texto, así que todo pasa por OCR. Se toman ambas, que son también las de menor confianza OCR. REMAC 5 se descartó porque su original es un .md y no requiere OCR."
+    },
+    {
+      "id": "tablas",
+      "archivo": "cb344ef6d284.pdf",
+      "ruta": "normativa/Por el cual se aprueba el ajuste y la modificación a la planta de personal de Empleados Públicos del Ministerio de Defensa Nacional - Dirección General Marítima y se dictan otras disposiciones.pdf",
+      "tipo_pagina": "digital",
+      "paginas": [1, 3, 4, 5, 6, 7],
+      "porque": "Decreto digital con tablas detectadas en las páginas 3 a 6 (7 tablas). Se toman todas las páginas con tabla, el inicio (1) y el final (7)."
+    },
+    {
+      "id": "norma",
+      "archivo": "c2fb5502b786.pdf",
+      "ruta": "normativa/Por el cual se reorganiza la Dirección General Marítima y Portuaria.pdf",
+      "tipo_pagina": "digital",
+      "paginas": [1, 3, 5, 7],
+      "porque": "Norma digital de 7 páginas sin tablas. Inicio (1), medio (3, 5) y final (7)."
+    }
+  ]
+}

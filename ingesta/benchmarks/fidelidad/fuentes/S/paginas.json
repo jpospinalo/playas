@@ -1,0 +1,151 @@
+{
+  "paginas": [
+    {
+      "documento": "sentencia",
+      "pagina": 1,
+      "estado": "disponible",
+      "origen": "texto PDF",
+      "confianza_ocr": null,
+      "doc_id": "03e009c1602a465e493d6b9ddcd6983ba0a1e66f3a5f31cfa90312a16f2030dd"
+    },
+    {
+      "documento": "sentencia",
+      "pagina": 2,
+      "estado": "disponible",
+      "origen": "texto PDF",
+      "confianza_ocr": null,
+      "doc_id": "03e009c1602a465e493d6b9ddcd6983ba0a1e66f3a5f31cfa90312a16f2030dd"
+    },
+    {
+      "documento": "sentencia",
+      "pagina": 9,
+      "estado": "disponible",
+      "origen": "texto PDF",
+      "confianza_ocr": null,
+      "doc_id": "03e009c1602a465e493d6b9ddcd6983ba0a1e66f3a5f31cfa90312a16f2030dd"
+    },
+    {
+      "documento": "sentencia",
+      "pagina": 16,
+      "estado": "disponible",
+      "origen": "texto PDF",
+      "confianza_ocr": null,
+      "doc_id": "03e009c1602a465e493d6b9ddcd6983ba0a1e66f3a5f31cfa90312a16f2030dd"
+    },
+    {
+      "documento": "sentencia",
+      "pagina": 24,
+      "estado": "disponible",
+      "origen": "texto PDF",
+      "confianza_ocr": null,
+      "doc_id": "03e009c1602a465e493d6b9ddcd6983ba0a1e66f3a5f31cfa90312a16f2030dd"
+    },
+    {
+      "documento": "sentencia",
+      "pagina": 31,
+      "estado": "disponible",
+      "origen": "texto PDF",
+      "confianza_ocr": null,
+      "doc_id": "03e009c1602a465e493d6b9ddcd6983ba0a1e66f3a5f31cfa90312a16f2030dd"
+    },
+    {
+      "documento": "escaneado",
+      "pagina": 1,
+      "estado": "PENDIENTE",
+      "origen": "OCR",
+      "confianza_ocr": null,
+      "error": "Chocolatey detected you are not running from an elevated command shell\r\n (cmd/powershell).\r\n\r\n You may experience errors - many functions/packages\r\n require admin rights. Only advanced users should run choco w/out an\r\n elevated shell. When you open the command shell, you should ensure\r\n that you do so with \"Run as Administrator\" selected. If you are\r\n attempting to use Chocolatey in a non-administrator setting, you\r\n must select a different location other than the default install\r\n location. See\r\n https://docs.chocolatey.org/en-us/choco/setup#non-administrative-install\r\n for details.\r\n\r\nFor the question below, you have 20 seconds to make a selection.\r\n\r\n Do you want to continue?([Y]es/[N]o): \r\nTimeout or your choice of '' is not a valid selection.\r\nInstalling the following packages:\r\ntesseract\r\nBy installing, you accept licenses for the packages.\r\nUnable to load the service index for source https://community.chocolatey.org/api/v2/.\r\nIntento de acceso a un socket no permitido por sus permisos de acceso 104.18.20.76:443\r\nFor more information on this issue and guidance in resolving the problem, see https://ch0.co/t/svcidx\r\nUnable to connect to source 'https://community.chocolatey.org/api/v2/':\r\n Referencia a objeto no establecida como instancia de un objeto.\r\ntesseract not installed. The package was not found with the source(s) listed.\r\n Source(s): 'https://community.chocolatey.org/api/v2/'\r\n NOTE: When you specify explicit sources, it overrides default sources.\r\nIf the package version is a prerelease and you didn't specify `--pre`,\r\n the package may not be found.\r\nPlease see https://docs.chocolatey.org/en-us/troubleshooting for more\r\n assistance.\r\n\r\nChocolatey installed 0/1 packages. 1 packages failed.\r\n See the log for details (C:\\ProgramData\\chocolatey\\logs\\chocolatey.log).\r\n\r\nFailures\r\n - tesseract - tesseract not installed. The package was not found with the source(s) listed.\r\n Source(s): 'https://community.chocolatey.org/api/v2/'\r\n NOTE: When you specify explicit sources, it overrides default sources.\r\nIf the package version is a prerelease and you didn't specify `--pre`,\r\n the package may not be found.\r\nPlease see https://docs.chocolatey.org/en-us/troubleshooting for more\r\n assistance.\r\n"
+    },
+    {
+      "documento": "escaneado",
+      "pagina": 2,
+      "estado": "PENDIENTE",
+      "origen": "OCR",
+      "confianza_ocr": null,
+      "error": "Chocolatey detected you are not running from an elevated command shell\r\n (cmd/powershell).\r\n\r\n You may experience errors - many functions/packages\r\n require admin rights. Only advanced users should run choco w/out an\r\n elevated shell. When you open the command shell, you should ensure\r\n that you do so with \"Run as Administrator\" selected. If you are\r\n attempting to use Chocolatey in a non-administrator setting, you\r\n must select a different location other than the default install\r\n location. See\r\n https://docs.chocolatey.org/en-us/choco/setup#non-administrative-install\r\n for details.\r\n\r\nFor the question below, you have 20 seconds to make a selection.\r\n\r\n Do you want to continue?([Y]es/[N]o): \r\nTimeout or your choice of '' is not a valid selection.\r\nInstalling the following packages:\r\ntesseract\r\nBy installing, you accept licenses for the packages.\r\nUnable to load the service index for source https://community.chocolatey.org/api/v2/.\r\nIntento de acceso a un socket no permitido por sus permisos de acceso 104.18.20.76:443\r\nFor more information on this issue and guidance in resolving the problem, see https://ch0.co/t/svcidx\r\nUnable to connect to source 'https://community.chocolatey.org/api/v2/':\r\n Referencia a objeto no establecida como instancia de un objeto.\r\ntesseract not installed. The package was not found with the source(s) listed.\r\n Source(s): 'https://community.chocolatey.org/api/v2/'\r\n NOTE: When you specify explicit sources, it overrides default sources.\r\nIf the package version is a prerelease and you didn't specify `--pre`,\r\n the package may not be found.\r\nPlease see https://docs.chocolatey.org/en-us/troubleshooting for more\r\n assistance.\r\n\r\nChocolatey installed 0/1 packages. 1 packages failed.\r\n See the log for details (C:\\ProgramData\\chocolatey\\logs\\chocolatey.log).\r\n\r\nFailures\r\n - tesseract - tesseract not installed. The package was not found with the source(s) listed.\r\n Source(s): 'https://community.chocolatey.org/api/v2/'\r\n NOTE: When you specify explicit sources, it overrides default sources.\r\nIf the package version is a prerelease and you didn't specify `--pre`,\r\n the package may not be found.\r\nPlease see https://docs.chocolatey.org/en-us/troubleshooting for more\r\n assistance.\r\n"
+    },
+    {
+      "documento": "tablas",
+      "pagina": 1,
+      "estado": "disponible",
+      "origen": "texto PDF",
+      "confianza_ocr": null,
+      "doc_id": "cb344ef6d28447d882e669618da06f06bd5a8271a4e3079845c69ac32ef8435b"
+    },
+    {
+      "documento": "tablas",
+      "pagina": 3,
+      "estado": "disponible",
+      "origen": "texto PDF",
+      "confianza_ocr": null,
+      "doc_id": "cb344ef6d28447d882e669618da06f06bd5a8271a4e3079845c69ac32ef8435b"
+    },
+    {
+      "documento": "tablas",
+      "pagina": 4,
+      "estado": "disponible",
+      "origen": "texto PDF",
+      "confianza_ocr": null,
+      "doc_id": "cb344ef6d28447d882e669618da06f06bd5a8271a4e3079845c69ac32ef8435b"
+    },
+    {
+      "documento": "tablas",
+      "pagina": 5,
+      "estado": "disponible",
+      "origen": "texto PDF",
+      "confianza_ocr": null,
+      "doc_id": "cb344ef6d28447d882e669618da06f06bd5a8271a4e3079845c69ac32ef8435b"
+    },
+    {
+      "documento": "tablas",
+      "pagina": 6,
+      "estado": "disponible",
+      "origen": "texto PDF",
+      "confianza_ocr": null,
+      "doc_id": "cb344ef6d28447d882e669618da06f06bd5a8271a4e3079845c69ac32ef8435b"
+    },
+    {
+      "documento": "tablas",
+      "pagina": 7,
+      "estado": "disponible",
+      "origen": "texto PDF",
+      "confianza_ocr": null,
+      "doc_id": "cb344ef6d28447d882e669618da06f06bd5a8271a4e3079845c69ac32ef8435b"
+    },
+    {
+      "documento": "norma",
+      "pagina": 1,
+      "estado": "disponible",
+      "origen": "texto PDF",
+      "confianza_ocr": null,
+      "doc_id": "c2fb5502b786e7c075916676b17f3ab5bd4ca29c1107a33d0787390bcd25ca27"
+    },
+    {
+      "documento": "norma",
+      "pagina": 3,
+      "estado": "disponible",
+      "origen": "texto PDF",
+      "confianza_ocr": null,
+      "doc_id": "c2fb5502b786e7c075916676b17f3ab5bd4ca29c1107a33d0787390bcd25ca27"
+    },
+    {
+      "documento": "norma",
+      "pagina": 5,
+      "estado": "disponible",
+      "origen": "texto PDF",
+      "confianza_ocr": null,
+      "doc_id": "c2fb5502b786e7c075916676b17f3ab5bd4ca29c1107a33d0787390bcd25ca27"
+    },
+    {
+      "documento": "norma",
+      "pagina": 7,
+      "estado": "disponible",
+      "origen": "texto PDF",
+      "confianza_ocr": null,
+      "doc_id": "c2fb5502b786e7c075916676b17f3ab5bd4ca29c1107a33d0787390bcd25ca27"
+    }
+  ],
+  "tesseract": "PENDIENTE",
+  "error_instalacion": "Chocolatey detected you are not running from an elevated command shell\r\n (cmd/powershell).\r\n\r\n You may experience errors - many functions/packages\r\n require admin rights. Only advanced users should run choco w/out an\r\n elevated shell. When you open the command shell, you should ensure\r\n that you do so with \"Run as Administrator\" selected. If you are\r\n attempting to use Chocolatey in a non-administrator setting, you\r\n must select a different location other than the default install\r\n location. See\r\n https://docs.chocolatey.org/en-us/choco/setup#non-administrative-install\r\n for details.\r\n\r\nFor the question below, you have 20 seconds to make a selection.\r\n\r\n Do you want to continue?([Y]es/[N]o): \r\nTimeout or your choice of '' is not a valid selection.\r\nInstalling the following packages:\r\ntesseract\r\nBy installing, you accept licenses for the packages.\r\nUnable to load the service index for source https://community.chocolatey.org/api/v2/.\r\nIntento de acceso a un socket no permitido por sus permisos de acceso 104.18.20.76:443\r\nFor more information on this issue and guidance in resolving the problem, see https://ch0.co/t/svcidx\r\nUnable to connect to source 'https://community.chocolatey.org/api/v2/':\r\n Referencia a objeto no establecida como instancia de un objeto.\r\ntesseract not installed. The package was not found with the source(s) listed.\r\n Source(s): 'https://community.chocolatey.org/api/v2/'\r\n NOTE: When you specify explicit sources, it overrides default sources.\r\nIf the package version is a prerelease and you didn't specify `--pre`,\r\n the package may not be found.\r\nPlease see https://docs.chocolatey.org/en-us/troubleshooting for more\r\n assistance.\r\n\r\nChocolatey installed 0/1 packages. 1 packages failed.\r\n See the log for details (C:\\ProgramData\\chocolatey\\logs\\chocolatey.log).\r\n\r\nFailures\r\n - tesseract - tesseract not installed. The package was not found with the source(s) listed.\r\n Source(s): 'https://community.chocolatey.org/api/v2/'\r\n NOTE: When you specify explicit sources, it overrides default sources.\r\nIf the package version is a prerelease and you didn't specify `--pre`,\r\n the package may not be found.\r\nPlease see https://docs.chocolatey.org/en-us/troubleshooting for more\r\n assistance.\r\n",
+  "registro": "trabajo/instalacion/intento.txt"
+}

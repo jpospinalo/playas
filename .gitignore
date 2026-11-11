@@ -105,3 +105,20 @@ session-manager-plugin.deb
 data/documents-v2/*
 !data/documents-v2/sample/
 !data/documents-v2/sample/**
+
+# Fidelidad del bronce: imágenes de páginas y trabajo local (originales, capas, venv)
+ingesta/benchmarks/fidelidad/imagenes/
+ingesta/benchmarks/fidelidad/trabajo/
+
+# Referencia OCR (zip y descomprimido, datos externos no versionados)
+ingesta/benchmarks/ocr_referencia/entrada/
+ingesta/benchmarks/ocr_referencia/trabajo/
+ingesta/benchmarks/ocr_referencia/resultados/fase3/paginas.csv
+ingesta/benchmarks/ocr_referencia/resultados/fase3/documentos.csv
+
+# CSV con nombres de particulares leidos en imagenes del corpus (no versionar)
+ingesta/benchmarks/ocr_referencia/resultados/u_sospechosas.csv
+ingesta/benchmarks/ocr_referencia/resultados/u_vs_capa_texto.csv
+
+# Intake autonomo: trabajo local (no versionar)
+ingesta/benchmarks/intake/trabajo/

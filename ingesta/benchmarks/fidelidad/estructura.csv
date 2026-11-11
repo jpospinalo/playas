@@ -1,0 +1,19 @@
+documento,pagina,tipo_pagina,columnas_mezcladas,tabla_aplanada,nota_al_pie_perdida,encabezado_pie_queda,llamada_nota_fusionada,tiene_tabla,tiene_nota_al_pie,observacion
+sentencia,1,digital,0,0,0,0,0,0,0,Una columna; S conserva títulos y radicado en orden.
+sentencia,2,digital,0,0,0,0,0,0,0,Una columna.
+sentencia,9,digital,0,0,0,0,0,0,0,Una columna.
+sentencia,16,digital,0,0,0,0,0,0,0,Una columna.
+sentencia,24,digital,0,0,0,0,1,0,1,"Las 7 notas al pie se conservan al final, pero las llamadas en superíndice se pegan al año: '2008³' sale como '20083' (también en A)."
+sentencia,31,digital,1,0,0,0,0,0,0,"Bloque de firmas a dos columnas: S pone los dos nombres en una línea y 'Presidenta' después, separado del nombre al que pertenece."
+escaneado,1,ocr,NA,NA,NA,NA,NA,0,0,S PENDIENTE: no hay Tesseract en esta máquina. La imagen tiene encabezado 'DECRETO NÚMERO 1120 DE Hoja No. 4 de 10' y recuadro de continuación del título.
+escaneado,2,ocr,NA,NA,NA,NA,NA,0,0,S PENDIENTE: no hay Tesseract en esta máquina. Mismo encabezado y recuadro (Hoja No. 5 de 10).
+tablas,1,digital,0,0,0,1,0,0,0,"Página de portada web: S conserva el encabezado y pie de impresión del navegador (título, fecha, URL, 'Página 1 de 7') y las etiquetas de los botones de SUIN. El texto del logotipo es imagen y no se extrae (correcto)."
+tablas,3,digital,0,0,0,1,0,1,0,"Tabla con filas conservadas en orden (celdas separadas por espacios, sin delimitador). Encabezado y pie del navegador presentes."
+tablas,4,digital,0,0,0,1,0,1,0,Filas de tabla conservadas; encabezado y pie del navegador presentes.
+tablas,5,digital,0,0,0,1,0,1,0,Filas de tabla conservadas; encabezado y pie del navegador presentes.
+tablas,6,digital,0,0,0,1,0,1,0,Fila de tabla conservada; encabezado y pie del navegador presentes; '[Mostrar]' es un enlace de la página web.
+tablas,7,digital,0,0,0,1,0,0,0,"Encabezado y pie del navegador presentes, y el botón flotante 'A-Z' de la web."
+norma,1,digital,0,0,0,0,0,0,0,"Una columna. La numeración salta de 4 a 6 en el original; S lo conserva."
+norma,3,digital,0,0,0,0,0,0,0,Una columna.
+norma,5,digital,0,0,0,0,0,0,0,Una columna.
+norma,7,digital,0,0,0,0,0,0,0,Una columna.

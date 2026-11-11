@@ -1,0 +1,733 @@
+{
+  "semilla": 27102026,
+  "n": 30,
+  "digital": 15,
+  "OCR": 15,
+  "prioridad_critica": 15,
+  "azar": 15,
+  "normalizacion": "contenido",
+  "un_segmento_por_pagina": true,
+  "regla": "Páginas barajadas sin reemplazo dentro de tipo; 8 digitales+7 OCR de prioridad crítica, 7+8 al azar. En prioridad crítica se exige regex en el tramo editado; azar puede incluir críticos por casualidad. A/B se asigna después de mezclar con la misma semilla. No inferir prevalencia poblacional de esta muestra.",
+  "recortes": [
+    {
+      "id": "D001",
+      "critico": true,
+      "muestreo": "critico",
+      "rango_s": [
+        26,
+        35
+      ],
+      "rango_u": [
+        26,
+        35
+      ],
+      "ruta": "trabajo/recortes_desacuerdos/D001.png",
+      "coordenadas_pdf": [
+        0.0,
+        0.0,
+        612.47998046875,
+        186.5406951904297
+      ],
+      "metodo": "palabras_PyMuPDF_ancla_unica",
+      "dpi": 200,
+      "ancho": 1702,
+      "alto": 519
+    },
+    {
+      "id": "D002",
+      "critico": true,
+      "muestreo": "azar",
+      "rango_s": [
+        113,
+        122
+      ],
+      "rango_u": [
+        113,
+        122
+      ],
+      "ruta": "trabajo/recortes_desacuerdos/D002.png",
+      "coordenadas_pdf": [
+        0.0,
+        273.8139953613281,
+        612.1199951171875,
+        486.3179931640625
+      ],
+      "metodo": "palabras_PyMuPDF_ancla_unica",
+      "dpi": 200,
+      "ancho": 1701,
+      "alto": 591
+    },
+    {
+      "id": "D003",
+      "critico": false,
+      "muestreo": "azar",
+      "rango_s": [
+        287,
+        296
+      ],
+      "rango_u": [
+        287,
+        296
+      ],
+      "ruta": "trabajo/recortes_desacuerdos/D003.png",
+      "coordenadas_pdf": [
+        0.0,
+        523.5599975585938,
+        612.1199951171875,
+        736.9400024414062
+      ],
+      "metodo": "palabras_PyMuPDF_ancla_unica",
+      "dpi": 200,
+      "ancho": 1701,
+      "alto": 594
+    },
+    {
+      "id": "D004",
+      "critico": true,
+      "muestreo": "azar",
+      "rango_s": [
+        343,
+        351
+      ],
+      "rango_u": [
+        343,
+        353
+      ],
+      "ruta": "trabajo/recortes_desacuerdos/D004.png",
+      "coordenadas_pdf": [
+        0.0,
+        0.0,
+        612.0,
+        937.0
+      ],
+      "metodo": "pagina_completa_sin_ancla_unica",
+      "dpi": 200,
+      "ancho": 1700,
+      "alto": 2603
+    },
+    {
+      "id": "D005",
+      "critico": true,
+      "muestreo": "critico",
+      "rango_s": [
+        162,
+        171
+      ],
+      "rango_u": [
+        162,
+        173
+      ],
+      "ruta": "trabajo/recortes_desacuerdos/D005.png",
+      "coordenadas_pdf": [
+        0.0,
+        289.510009765625,
+        612.1199951171875,
+        504.05401611328125
+      ],
+      "metodo": "palabras_PyMuPDF_ancla_unica",
+      "dpi": 200,
+      "ancho": 1701,
+      "alto": 597
+    },
+    {
+      "id": "D006",
+      "critico": true,
+      "muestreo": "azar",
+      "rango_s": [
+        139,
+        148
+      ],
+      "rango_u": [
+        139,
+        151
+      ],
+      "ruta": "trabajo/recortes_desacuerdos/D006.png",
+      "coordenadas_pdf": [
+        0.0,
+        73.87701416015625,
+        595.3040161132812,
+        289.375
+      ],
+      "metodo": "palabras_PyMuPDF_ancla_unica",
+      "dpi": 200,
+      "ancho": 1654,
+      "alto": 599
+    },
+    {
+      "id": "D007",
+      "critico": true,
+      "muestreo": "critico",
+      "rango_s": [
+        5,
+        14
+      ],
+      "rango_u": [
+        5,
+        15
+      ],
+      "ruta": "trabajo/recortes_desacuerdos/D007.png",
+      "coordenadas_pdf": [
+        0.0,
+        0.0,
+        612.0,
+        939.0
+      ],
+      "metodo": "pagina_completa_sin_ancla_unica",
+      "dpi": 200,
+      "ancho": 1700,
+      "alto": 2609
+    },
+    {
+      "id": "D008",
+      "critico": false,
+      "muestreo": "azar",
+      "rango_s": [
+        261,
+        270
+      ],
+      "rango_u": [
+        261,
+        270
+      ],
+      "ruta": "trabajo/recortes_desacuerdos/D008.png",
+      "coordenadas_pdf": [
+        0.0,
+        0.0,
+        611.0,
+        933.0
+      ],
+      "metodo": "pagina_completa_sin_ancla_unica",
+      "dpi": 200,
+      "ancho": 1698,
+      "alto": 2592
+    },
+    {
+      "id": "D009",
+      "critico": true,
+      "muestreo": "critico",
+      "rango_s": [
+        140,
+        149
+      ],
+      "rango_u": [
+        142,
+        152
+      ],
+      "ruta": "trabajo/recortes_desacuerdos/D009.png",
+      "coordenadas_pdf": [
+        0.0,
+        239.22998046875,
+        612.1199951171875,
+        487.3740234375
+      ],
+      "metodo": "palabras_PyMuPDF_ancla_unica",
+      "dpi": 200,
+      "ancho": 1701,
+      "alto": 690
+    },
+    {
+      "id": "D010",
+      "critico": true,
+      "muestreo": "critico",
+      "rango_s": [
+        133,
+        142
+      ],
+      "rango_u": [
+        140,
+        151
+      ],
+      "ruta": "trabajo/recortes_desacuerdos/D010.png",
+      "coordenadas_pdf": [
+        0.0,
+        431.80194091796875,
+        612.0,
+        666.4462280273438
+      ],
+      "metodo": "palabras_PyMuPDF_ancla_unica",
+      "dpi": 200,
+      "ancho": 1700,
+      "alto": 653
+    },
+    {
+      "id": "D011",
+      "critico": true,
+      "muestreo": "critico",
+      "rango_s": [
+        225,
+        231
+      ],
+      "rango_u": [
+        225,
+        235
+      ],
+      "ruta": "trabajo/recortes_desacuerdos/D011.png",
+      "coordenadas_pdf": [
+        0.0,
+        375.7270202636719,
+        595.3040161132812,
+        591.2249755859375
+      ],
+      "metodo": "palabras_PyMuPDF_ancla_unica",
+      "dpi": 200,
+      "ancho": 1654,
+      "alto": 600
+    },
+    {
+      "id": "D012",
+      "critico": true,
+      "muestreo": "critico",
+      "rango_s": [
+        187,
+        195
+      ],
+      "rango_u": [
+        187,
+        196
+      ],
+      "ruta": "trabajo/recortes_desacuerdos/D012.png",
+      "coordenadas_pdf": [
+        0.0,
+        0.0,
+        612.0,
+        792.0
+      ],
+      "metodo": "pagina_completa_sin_ancla_unica",
+      "dpi": 200,
+      "ancho": 1700,
+      "alto": 2200
+    },
+    {
+      "id": "D013",
+      "critico": true,
+      "muestreo": "critico",
+      "rango_s": [
+        344,
+        353
+      ],
+      "rango_u": [
+        344,
+        353
+      ],
+      "ruta": "trabajo/recortes_desacuerdos/D013.png",
+      "coordenadas_pdf": [
+        0.0,
+        0.0,
+        612.0,
+        792.0
+      ],
+      "metodo": "pagina_completa_sin_ancla_unica",
+      "dpi": 200,
+      "ancho": 1700,
+      "alto": 2200
+    },
+    {
+      "id": "D014",
+      "critico": false,
+      "muestreo": "azar",
+      "rango_s": [
+        9,
+        18
+      ],
+      "rango_u": [
+        11,
+        17
+      ],
+      "ruta": "trabajo/recortes_desacuerdos/D014.png",
+      "coordenadas_pdf": [
+        0.0,
+        0.0,
+        612.0,
+        1008.0
+      ],
+      "metodo": "pagina_completa_sin_ancla_unica",
+      "dpi": 200,
+      "ancho": 1700,
+      "alto": 2800
+    },
+    {
+      "id": "D015",
+      "critico": true,
+      "muestreo": "azar",
+      "rango_s": [
+        381,
+        390
+      ],
+      "rango_u": [
+        386,
+        396
+      ],
+      "ruta": "trabajo/recortes_desacuerdos/D015.png",
+      "coordenadas_pdf": [
+        0.0,
+        482.54095458984375,
+        612.0,
+        713.083984375
+      ],
+      "metodo": "palabras_PyMuPDF_ancla_unica",
+      "dpi": 200,
+      "ancho": 1700,
+      "alto": 641
+    },
+    {
+      "id": "D016",
+      "critico": false,
+      "muestreo": "azar",
+      "rango_s": [
+        172,
+        179
+      ],
+      "rango_u": [
+        160,
+        178
+      ],
+      "ruta": "trabajo/recortes_desacuerdos/D016.png",
+      "coordenadas_pdf": [
+        0.0,
+        0.0,
+        612.0,
+        792.0
+      ],
+      "metodo": "pagina_completa_sin_ancla_unica",
+      "dpi": 200,
+      "ancho": 1700,
+      "alto": 2200
+    },
+    {
+      "id": "D017",
+      "critico": true,
+      "muestreo": "azar",
+      "rango_s": [
+        117,
+        126
+      ],
+      "rango_u": [
+        117,
+        126
+      ],
+      "ruta": "trabajo/recortes_desacuerdos/D017.png",
+      "coordenadas_pdf": [
+        0.0,
+        0.0,
+        609.0,
+        911.0
+      ],
+      "metodo": "pagina_completa_sin_ancla_unica",
+      "dpi": 200,
+      "ancho": 1692,
+      "alto": 2531
+    },
+    {
+      "id": "D018",
+      "critico": true,
+      "muestreo": "azar",
+      "rango_s": [
+        161,
+        168
+      ],
+      "rango_u": [
+        161,
+        172
+      ],
+      "ruta": "trabajo/recortes_desacuerdos/D018.png",
+      "coordenadas_pdf": [
+        0.0,
+        168.927001953125,
+        595.3040161132812,
+        384.42498779296875
+      ],
+      "metodo": "palabras_PyMuPDF_ancla_unica",
+      "dpi": 200,
+      "ancho": 1654,
+      "alto": 599
+    },
+    {
+      "id": "D019",
+      "critico": true,
+      "muestreo": "critico",
+      "rango_s": [
+        2717,
+        2726
+      ],
+      "rango_u": [
+        245,
+        248
+      ],
+      "ruta": "trabajo/recortes_desacuerdos/D019.png",
+      "coordenadas_pdf": [
+        0.0,
+        0.0,
+        610.0,
+        937.0
+      ],
+      "metodo": "pagina_completa_sin_ancla_unica",
+      "dpi": 200,
+      "ancho": 1695,
+      "alto": 2603
+    },
+    {
+      "id": "D020",
+      "critico": true,
+      "muestreo": "critico",
+      "rango_s": [
+        124,
+        133
+      ],
+      "rango_u": [
+        124,
+        133
+      ],
+      "ruta": "trabajo/recortes_desacuerdos/D020.png",
+      "coordenadas_pdf": [
+        0.0,
+        0.0,
+        612.0,
+        792.0
+      ],
+      "metodo": "pagina_completa_sin_ancla_unica",
+      "dpi": 200,
+      "ancho": 1700,
+      "alto": 2200
+    },
+    {
+      "id": "D021",
+      "critico": true,
+      "muestreo": "critico",
+      "rango_s": [
+        456,
+        465
+      ],
+      "rango_u": [
+        462,
+        473
+      ],
+      "ruta": "trabajo/recortes_desacuerdos/D021.png",
+      "coordenadas_pdf": [
+        0.0,
+        616.8931274414062,
+        612.0,
+        831.4769897460938
+      ],
+      "metodo": "palabras_PyMuPDF_ancla_unica",
+      "dpi": 200,
+      "ancho": 1700,
+      "alto": 597
+    },
+    {
+      "id": "D022",
+      "critico": false,
+      "muestreo": "azar",
+      "rango_s": [
+        278,
+        283
+      ],
+      "rango_u": [
+        286,
+        293
+      ],
+      "ruta": "trabajo/recortes_desacuerdos/D022.png",
+      "coordenadas_pdf": [
+        0.0,
+        0.0,
+        612.0,
+        792.0
+      ],
+      "metodo": "pagina_completa_sin_ancla_unica",
+      "dpi": 200,
+      "ancho": 1700,
+      "alto": 2200
+    },
+    {
+      "id": "D023",
+      "critico": false,
+      "muestreo": "azar",
+      "rango_s": [
+        166,
+        175
+      ],
+      "rango_u": [
+        165,
+        174
+      ],
+      "ruta": "trabajo/recortes_desacuerdos/D023.png",
+      "coordenadas_pdf": [
+        0.0,
+        0.0,
+        612.0,
+        792.0
+      ],
+      "metodo": "pagina_completa_sin_ancla_unica",
+      "dpi": 200,
+      "ancho": 1700,
+      "alto": 2200
+    },
+    {
+      "id": "D024",
+      "critico": true,
+      "muestreo": "azar",
+      "rango_s": [
+        141,
+        149
+      ],
+      "rango_u": [
+        141,
+        150
+      ],
+      "ruta": "trabajo/recortes_desacuerdos/D024.png",
+      "coordenadas_pdf": [
+        0.0,
+        0.0,
+        612.0,
+        792.0
+      ],
+      "metodo": "pagina_completa_sin_ancla_unica",
+      "dpi": 200,
+      "ancho": 1700,
+      "alto": 2200
+    },
+    {
+      "id": "D025",
+      "critico": true,
+      "muestreo": "azar",
+      "rango_s": [
+        469,
+        478
+      ],
+      "rango_u": [
+        469,
+        482
+      ],
+      "ruta": "trabajo/recortes_desacuerdos/D025.png",
+      "coordenadas_pdf": [
+        0.0,
+        528.927001953125,
+        595.3040161132812,
+        744.4249877929688
+      ],
+      "metodo": "palabras_PyMuPDF_ancla_unica",
+      "dpi": 200,
+      "ancho": 1654,
+      "alto": 599
+    },
+    {
+      "id": "D026",
+      "critico": true,
+      "muestreo": "critico",
+      "rango_s": [
+        0,
+        4
+      ],
+      "rango_u": [
+        0,
+        5
+      ],
+      "ruta": "trabajo/recortes_desacuerdos/D026.png",
+      "coordenadas_pdf": [
+        0.0,
+        0.0,
+        612.0,
+        931.0
+      ],
+      "metodo": "pagina_completa_sin_ancla_unica",
+      "dpi": 200,
+      "ancho": 1700,
+      "alto": 2587
+    },
+    {
+      "id": "D027",
+      "critico": true,
+      "muestreo": "critico",
+      "rango_s": [
+        45,
+        53
+      ],
+      "rango_u": [
+        45,
+        54
+      ],
+      "ruta": "trabajo/recortes_desacuerdos/D027.png",
+      "coordenadas_pdf": [
+        0.0,
+        54.27703857421875,
+        595.3040161132812,
+        269.7750244140625
+      ],
+      "metodo": "palabras_PyMuPDF_ancla_unica",
+      "dpi": 200,
+      "ancho": 1654,
+      "alto": 600
+    },
+    {
+      "id": "D028",
+      "critico": true,
+      "muestreo": "critico",
+      "rango_s": [
+        318,
+        326
+      ],
+      "rango_u": [
+        322,
+        332
+      ],
+      "ruta": "trabajo/recortes_desacuerdos/D028.png",
+      "coordenadas_pdf": [
+        0.0,
+        716.9462280273438,
+        612.0,
+        928.0516357421875
+      ],
+      "metodo": "palabras_PyMuPDF_ancla_unica",
+      "dpi": 200,
+      "ancho": 1700,
+      "alto": 587
+    },
+    {
+      "id": "D029",
+      "critico": true,
+      "muestreo": "critico",
+      "rango_s": [
+        74,
+        82
+      ],
+      "rango_u": [
+        74,
+        83
+      ],
+      "ruta": "trabajo/recortes_desacuerdos/D029.png",
+      "coordenadas_pdf": [
+        0.0,
+        0.0,
+        612.0,
+        792.0
+      ],
+      "metodo": "pagina_completa_sin_ancla_unica",
+      "dpi": 200,
+      "ancho": 1700,
+      "alto": 2200
+    },
+    {
+      "id": "D030",
+      "critico": false,
+      "muestreo": "azar",
+      "rango_s": [
+        34,
+        43
+      ],
+      "rango_u": [
+        34,
+        43
+      ],
+      "ruta": "trabajo/recortes_desacuerdos/D030.png",
+      "coordenadas_pdf": [
+        0.0,
+        0.0,
+        612.1199951171875,
+        211.25997924804688
+      ],
+      "metodo": "palabras_PyMuPDF_ancla_unica",
+      "dpi": 200,
+      "ancho": 1701,
+      "alto": 587
+    }
+  ]
+}

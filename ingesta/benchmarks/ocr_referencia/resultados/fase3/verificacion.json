@@ -1,0 +1,60 @@
+{
+  "pytest": {
+    "pasadas": 119,
+    "fallidas": 0,
+    "codigo_salida": 0
+  },
+  "ruff_check": {
+    "codigo_salida": 0,
+    "archivos": 9
+  },
+  "ruff_format": {
+    "codigo_salida": 0,
+    "archivos": 9,
+    "cambios_pendientes": 0
+  },
+  "calibracion": {
+    "metricas_correctas": 64,
+    "metricas_totales": 64,
+    "controles_bucles_correctos": 12,
+    "modos": [
+      "contenido",
+      "estricto"
+    ]
+  },
+  "ejecucion": {
+    "corrida_completa": 0,
+    "reanudar_solo_resumen": 0,
+    "calcular_desacuerdos": 0
+  },
+  "consistencia": {
+    "paginas_csv": 4270,
+    "documentos_csv": 406,
+    "paginas_unicas_S_mio_vs_U": 1217,
+    "estratos_comprobados": 108,
+    "desacuerdos_y_recortes_comprobados": 30,
+    "adjudicados": 0,
+    "resultado": "correcto"
+  },
+  "huellas_sha256": {
+    "metricas.py": "f043c750777102375ede223a69ab85d58b6e7e567eeee509caa7a8583d02df56",
+    "validar_u.py": "0509782d391d2e26f41d3e310ecd26a87e56e95bbe40584bcf3f6809e10ce2bd",
+    "comun.py": "54e0114bf7b7046f28358e94aaa842078e820f31cf3fdca44ac0f8d380ace622",
+    "comparar_fuentes.py": "c31f485a28556e598511f6565956a19d68dadc3285f423441e8a8405c18e05c1",
+    "estadistica.py": "2f985df61b1de35287f04353d0b179cebc551fc8067dcef33251108f59d7f783",
+    "fase4.py": "8aeb2190e70364774aeb6da476951c78f80f8e794fc1af5536277a900c95d801",
+    "preparar_desacuerdos.py": "7f6c80a746ef6f7c8057663878eb89db9e06d24d9359e4b9f9135f46ea6c61cb",
+    "calcular_desacuerdos.py": "a17f3758cdd8601cd17eee1bd56ba305d72aeb97f4dd6ec2799a40a42b94ef92",
+    "FASES_3_4.md": "9b3913b71119ffafb044d5079fb843ba346b08dd850f57b99f771efa8568f8c8",
+    "resultados\\fase3\\paginas.csv": "75632d2faa13e0f247d6fe6461bbcfef4ec6b1e9e329e9d0625e817dc8598d07",
+    "resultados\\fase3\\documentos.csv": "9922bffb36058f5bd3dc31753c32b54245d7d49ded93534f892ac098c0a36b82",
+    "resultados\\fase3\\resumen.json": "0169275aad1cf3dd24bd07ab27595088f68be7d8b0c005ee20a5694b21276310",
+    "resultados\\fase3\\alertas.json": "d4fb22cbbcedd556b1dc0cb67903d3d22e484b320b3b8dc1e5ec2e8994cced51",
+    "resultados\\fase3\\causas.json": "158bf7dab12c8a7c2639aff17f93a57badf0fe53ee70212bc836b03c144c3662",
+    "resultados\\fase3\\repetibilidad.json": "0f70740202bf966c19262e1ab67b298476839becbf77fbb963f062dcfd74418d",
+    "resultados\\fase3\\desacuerdos.csv": "de7b636ddc68050bd61403e897148d6ebecbf8082dcac13bce26f18870a4e5ab",
+    "resultados\\fase3\\clave_desacuerdos.csv": "06024e470cc66dc8eb0a49b75ebff4e4d9bdbb1e4c8f4fde895e1a9be8c1ce8d",
+    "resultados\\fase3\\muestreo_desacuerdos.json": "858a748fec353645a69e8225c94bec3b16cce47c56644253936820c5ae452b18",
+    "resultados\\fase3\\evaluacion_desacuerdos.json": "efc080e47c455fcea1d21cb70f7d62c1217b8d408a35f37d19fac6a21efc2649"
+  }
+}

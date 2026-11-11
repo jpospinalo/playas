@@ -1,0 +1,37 @@
+{
+  "base": {
+    "esperadas": 111,
+    "presentes": 111,
+    "faltantes": 0,
+    "cobertura": 1.0,
+    "paginas_faltantes": []
+  },
+  "tsv_fix": {
+    "esperadas": 111,
+    "presentes": 111,
+    "faltantes": 0,
+    "cobertura": 1.0,
+    "paginas_faltantes": []
+  },
+  "z2_psm3": {
+    "esperadas": 111,
+    "presentes": 111,
+    "faltantes": 0,
+    "cobertura": 1.0,
+    "paginas_faltantes": []
+  },
+  "z2_psm6": {
+    "esperadas": 111,
+    "presentes": 111,
+    "faltantes": 0,
+    "cobertura": 1.0,
+    "paginas_faltantes": []
+  },
+  "z300dpi_psm3": {
+    "esperadas": 111,
+    "presentes": 111,
+    "faltantes": 0,
+    "cobertura": 1.0,
+    "paginas_faltantes": []
+  }
+}

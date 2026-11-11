@@ -1,0 +1,449 @@
+{
+  "pymupdf": "1.26.5",
+  "huellas_fuentes": {
+    "U": {
+      "entrada\\descomprimido\\texto\\jurisprudencia\\ap_carlos_alberto_zuniga_mejia_y_otros_vs_dimar_y_otros_d512.md": "4e650724267c535dd7ad903592df29f2c51f45ce5a55e76b0662bff0abe1c60e",
+      "entrada\\descomprimido\\texto\\jurisprudencia\\ap_felipe_jose_campo_fernandez_vs_corpamag_y_otros_ce3c.md": "6a7fba01e2c798e9c81e83b7c82b46bc3d69526acfca25106f183dce873759bd",
+      "entrada\\descomprimido\\texto\\jurisprudencia\\ap_gabriel_antonio_carrero_vs_dimar_y_otros_a44a.md": "ec957e68a50e3320379bcca2e95c345c1bc2c30872a24bd9b5cfc9f1921c354b",
+      "entrada\\descomprimido\\texto\\jurisprudencia\\ap_gerardo_antenor_lemus_orozco_vs_distrito_de_santa_mata_y_otros_7c8c.md": "66270853d66baf4745a2e71c8421c32cb0e0c8a830a9ad0bde513e954033ff85",
+      "entrada\\descomprimido\\texto\\jurisprudencia\\ap_gieseken_cuello_cia_s_en_c_vs_dimar_y_otros_a4be.md": "b957ca3662261cf318fe283d6e2730b861a126c00bdfe448425837074684eedf",
+      "entrada\\descomprimido\\texto\\jurisprudencia\\ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0.md": "dc8e6e01c12af5c6ff1807c3a1a93ff01e6f5cb04ba7c42331a6edaea4b780e1",
+      "entrada\\descomprimido\\texto\\jurisprudencia\\ap_miguel_angel_enciso_vs_distrito_y_otros_ffab.md": "3d5cf7c33478e5a7720b19f2b53865fe3d8213a42ccb85769a73d4e742a004a7",
+      "entrada\\descomprimido\\texto\\jurisprudencia\\ap_procuraduria_general_de_la_ancion_vs_coorpamag_y_otros_9523.md": "638fdb12db2c8eceb824ed8d5b4f8082a9e5b9a1fd6d0e4ebec72e301a95df07",
+      "entrada\\descomprimido\\texto\\jurisprudencia\\ap_rodrigo_martinez_silva_vs_minambiente_y_otros_19a7.md": "163fa7fad7a1221bd7322e9082aa4205db68abba48f84a22e6fafd34f7cb992d",
+      "entrada\\descomprimido\\texto\\jurisprudencia\\cc_tu_039_2024_modesto_manjarrez_vs_autopistas_del_caribe_consulta_previa_via_d92b.md": "2a2dfb7d4c784833aad63dd2a9af01411d96bf10b074908b787383a0ff40769b",
+      "entrada\\descomprimido\\texto\\jurisprudencia\\ce_1era_ns_2009_603_jose_palencia_vs_mindefensa_resolucion_pilotos_embargaciones_99fd.md": "2cbcddb7e7950e75fbee97cef5259fdbe417ccf9751c75ccfeb7c87c402f6e91",
+      "entrada\\descomprimido\\texto\\jurisprudencia\\ce_2da_ap_2010_028_radley_bent_vs_dimar_danos_ambientales_embarcaciones_ba1e.md": "979a62b5f1908ede37b08588b7b0cdf73fb1c5d5d6c414237444cd9b3e07766a",
+      "entrada\\descomprimido\\texto\\jurisprudencia\\ce_2da_ap_2011_178_jose_caballero_vs_distrito_cartagena_venta_inmueble_valor_cul_092f.md": "908826517ff41d6106a78ed0c7a5799d67effe74b4a4d9838045f557695ac3ad",
+      "entrada\\descomprimido\\texto\\jurisprudencia\\ce_2da_ap_2011_842_gabriel_carrero_vs_dimar_erosion_costera_93f6.md": "76f6179fb456cf85b21c6b238991d10308acda6068d7ef93708ff994c415dcbe",
+      "entrada\\descomprimido\\texto\\jurisprudencia\\ce_2da_ap_2015_550_angela_munoz_vs_dpto_cordoba_bienes_de_uso_publico_bcec.md": "8f73a2347a698bf714415aaf69322aa8b50e3d88722330614bc5736c835d3f1f",
+      "entrada\\descomprimido\\texto\\jurisprudencia\\ce_2da_ap_2016_328_ricardo_cabrales_vs_mun_covenas_playa_uso_publico_37b2.md": "ef0917c1adcd4c2c9d6887c3282ad3586140bf1e18b34c216d274d1c9030cc1f",
+      "entrada\\descomprimido\\texto\\jurisprudencia\\ce_2da_ap_2017_103_personeria_vs_distrito_cartagena_desembocadura_afb0.md": "ca214f71d855c3f39b0b25b211fd164cd9a2c7e884b3b9f32d427c2be8487cda",
+      "entrada\\descomprimido\\texto\\jurisprudencia\\ce_2da_ap_2021_041_edgar_stephengs_vs_archipielago_san_andres_desarrollo_urbanis_0b8f.md": "6b10c832e2bb977ba52e8431164f6699387b649e1bde48045ff842385b560473",
+      "entrada\\descomprimido\\texto\\jurisprudencia\\ce_2da_nyr_1994_993_inversiones_araujo_vs_capitania_puerto_cartagena_urbanismo_p_86ff.md": "26410bdba24ee8dc087d9942fa298572c45a07384019b8cec183b4e3cc7ab3e6",
+      "entrada\\descomprimido\\texto\\jurisprudencia\\ce_2da_nyr_1998_102_flury_valencia_vs_mindefensa_uso_urbanistico_playa_ba43.md": "7d61910e8e9996afab6a2a47e26e0bc5ace690eac81ed35dca2ab97baf86e530",
+      "entrada\\descomprimido\\texto\\jurisprudencia\\ce_2da_nyr_1999_503_inversiones_mercedes_vs_dimar_concesiones_uso_playa_f07f.md": "bef35179f73e7fb831b6135f0b1ca63bc22e843aed2baf5af605356a37b0a981",
+      "entrada\\descomprimido\\texto\\jurisprudencia\\ce_2da_nyr_2009_164_fepep_vs_dimar_playa_uso_urbanistico_e806.md": "d6c0b3f98bb248499e501d950b0cfe603a557cca0f408f4453dd87ec356e2ae7",
+      "entrada\\descomprimido\\texto\\jurisprudencia\\ce_consulta_1990_horacio_serpa_uso_publico_playa_00a7.md": "d647dc5110e5dec33d535637b4db8b790be1a6ab6f0212fccd6e72ba13225258",
+      "entrada\\descomprimido\\texto\\jurisprudencia\\ce_consulta_2005_168_mindefensa_bienes_de_uso_publico_ea75.md": "14af9dbf95befc0c8f6a21ea6dc5f54da37b2bcc2749a0c18947ff9f8eef0f6a",
+      "entrada\\descomprimido\\texto\\jurisprudencia\\ce_consulta_2010_071_minambiente_bienes_de_uso_publico_1d4e.md": "9e2c2ffb6c0663966bbf1f46f1dfbd4d9fdcb21a529d6658de306cd008ec353e",
+      "entrada\\descomprimido\\texto\\jurisprudencia\\taa_2da_rd_2015_281_xxxx_vs_dpto_antioquia_responsabilidad_del_estado_98ef.md": "ee58f580dcf8fd24dcbff0c6bf7d0abc53e401693a20d30082e3a47650276c9e",
+      "entrada\\descomprimido\\texto\\normativa\\por_el_cual_adiciona_al_titulo_4_de_la_parte_2_del_libro_2_del_decreto_1076_de_2_be8f.md": "fbb881762478ebb083da1385fd47516686d6363804af171fbffbb325501f7b50",
+      "entrada\\descomprimido\\texto\\normativa\\por_el_cual_se_aprueba_el_ajuste_y_la_modificacion_a_la_planta_de_personal_de_em_cc7b.md": "11595ac3cd47813cb6de789896de045dab3aa75cf61b6433955e004dbcae1a83",
+      "entrada\\descomprimido\\texto\\normativa\\por_el_cual_se_dicta_el_codigo_nacional_de_recursos_naturales_renovables_y_de_pr_2880.md": "7df0e17807991241b6e23eab352bd47ee99db2fae201382db47d3d7e5fc7fe8a",
+      "entrada\\descomprimido\\texto\\normativa\\por_el_cual_se_dictan_normas_para_simplificar_suprimir_y_reformar_tramites_proce_5f39.md": "aee854fd35c625c4507d96406bf07d6a1d44a10079f912a9c9920abffc7db9a4",
+      "entrada\\descomprimido\\texto\\normativa\\por_el_cual_se_dictan_normas_sobre_la_prevencion_de_la_contaminacion_del_medio_m_c9b9.md": "5b09433c2c21a1b2be5a0fee29a5f5cd73e527cef6c15646c1670eef17b9d4c8",
+      "entrada\\descomprimido\\texto\\normativa\\por_el_cual_se_expide_el_codigo_de_comercio_05d5.md": "bdbb18e4e86d395d48d47425fb4a01ec2e654d8023de043d997c02876fff1ade",
+      "entrada\\descomprimido\\texto\\normativa\\por_el_cual_se_modifica_el_articulo_16_del_decreto_3888_del_10_de_octubre_de_200_0be7.md": "db355b72b8afa56bb3bce7af424d89620ca7310090cccdfe39fd3a2413c7b0f4",
+      "entrada\\descomprimido\\texto\\normativa\\por_el_cual_se_reglamenta_el_funcionamiento_de_los_comites_locales_para_la_organ_cb33.md": "df56d101be58585a0a50ce65c1c8302271db8688c3690e267f91cc6da7ad5f21",
+      "entrada\\descomprimido\\texto\\normativa\\por_el_cual_se_reglamenta_el_funcionamiento_de_los_comites_locales_para_la_organ_c8e5.md": "1c939b24717a8a0a89970f0bf54250dc814bfcfbc3ed7717c1c94894d28eeef5",
+      "entrada\\descomprimido\\texto\\normativa\\por_el_cual_se_reglamenta_el_manejo_del_espacio_publico_en_los_planes_de_ordenam_d195.md": "0216577581adceef0a2977b27d2674c6dc43bd0d6869a095ea10afd9015f6bbc",
+      "entrada\\descomprimido\\texto\\normativa\\por_el_cual_se_reglamenta_el_servicio_publico_de_transporte_maritimo_cdf2.md": "9b1893da5bfe3ceeca32d5c0f40529713b4a1b3503a9291d8c2271daf7af2440",
+      "entrada\\descomprimido\\texto\\normativa\\por_el_cual_se_reglamenta_la_ley_13_de_1990_15e7.md": "abb94d3f3fb356dcc5793401e219ea903d319cad45118317238136c5cd7a42c5",
+      "entrada\\descomprimido\\texto\\normativa\\por_el_cual_se_reglamenta_la_habilitacion_y_la_prestacion_del_servicio_publico_d_aeb1.md": "52fa4b69c7713c50faecb7b33cc060007852214c6c14d31852d40b6eeba35bbd",
+      "entrada\\descomprimido\\texto\\normativa\\por_el_cual_se_reglamenta_parcialmente_el_articulo_noveno_de_la_ley_10_de_1978_922e.md": "05006c99c11a447c65f12fb8840cbebd13a5c758471f5fc151086d7e29037dc6",
+      "entrada\\descomprimido\\texto\\normativa\\por_el_cual_se_reglamenta_parcialmente_la_ley_47_del_19_de_febrero_de_1993_3e80.md": "5028be8ab23ab39a70f419ec5e7eabfb60271fd71fa146621e9de9551e6ad356",
+      "entrada\\descomprimido\\texto\\normativa\\por_el_cual_se_reglamentan_las_unidades_ambientales_costeras_uac_y_las_comisione_e828.md": "1da5a25bcb6c3f9a147c3561988cc881f7c623177aff2411cd14bf2ff61159c8",
+      "entrada\\descomprimido\\texto\\normativa\\por_el_cual_se_reglamentan_las_disposiciones_sobre_licencias_urbanisticas_recono_e4a6.md": "f02e99f238f107a436003a2fa5b2c95703c340d25b02af97ded975f4268f5073",
+      "entrada\\descomprimido\\texto\\normativa\\por_el_cual_se_reorganiza_la_direccion_general_maritima_y_portuaria_0fec.md": "5165b283a419299a4b51fb5362918939de9c384614a0e64ee0219db4789fbcba",
+      "entrada\\descomprimido\\texto\\normativa\\por_medio_de_la_cual_se_reglamenta_el_area_de_playa_en_el_balneario_turistico_el_9c01.md": "789698e951dd7c5ccd0d754a729a64a52a087dbee880c6448730214b92481211",
+      "entrada\\descomprimido\\texto\\normativa\\por_medio_del_cual_se_expide_el_decreto_unico_reglamentario_del_sector_ambiente__f508.md": "985f3f11c345d5eb49f7a52c338f60475809bcab026d54c4bb9c5167eca0984e",
+      "entrada\\descomprimido\\texto\\normativa\\por_medio_del_cual_se_expide_el_decreto_unico_reglamentario_del_sector_comercio__38da.md": "7024b7ef8fb226805a60130410bdcb31d82e38dcdd0f28ec50b0deb572a21ded",
+      "entrada\\descomprimido\\texto\\normativa\\por_medio_del_cual_se_expide_el_decreto_unico_reglamentario_del_sector_transport_1cd3.md": "85cd5b1410ace79d1871e352a2df41a5900d0525895e2c7e5c11503d8356eaa9",
+      "entrada\\descomprimido\\texto\\normativa\\por_medio_del_cual_se_expide_el_decreto_unico_reglamentario_del_sector_vivienda__404e.md": "c34afb48eca579328437d8d7c75b9e8fa27cf426f129be72f616203541fdcc0a",
+      "entrada\\descomprimido\\texto\\normativa\\por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb.md": "999beef51387c48cd762b06bd94665e0ade97e2ef838517d2726aa4b13881801",
+      "entrada\\descomprimido\\texto\\normativa\\por_medio_del_cual_se_implementa_el_reglamento_de_playas_del_distrito_portuario__d6b7.md": "cefaa48436f2c260eb10bd05e7dcc1d9841e3c0bbe287a02ae8f011cc1850c60",
+      "entrada\\descomprimido\\texto\\normativa\\por_medio_del_cual_se_reglamenta_el_tramite_de_solicitud_de_concesiones_para_el__1ee0.md": "56956b16da9293bd9df48206f2a319b0e68c67ac046956d61e1141f9f5fb1f21",
+      "entrada\\descomprimido\\texto\\normativa\\por_medio_del_cual_se_reglamenta_el_uso_zonificacion_y_horario_de_las_playas_con_8351.md": "f03bd70f7d53c03e084cf8c490aa3cbefadf126935c46416c17ed3407fb0ff66"
+    },
+    "S_mio": {
+      "trabajo\\s_mio\\run1\\capas\\bronze\\cdf6172fabdb42477c25d374d7d42b3a6e91d31c4ec553e85d056036f82c47b3.txt": "81b7cb24754ce447790e03b100a27c12fcb2ea092e4d2a3a1f5eb54f53c6de5d",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\cdf6172fabdb42477c25d374d7d42b3a6e91d31c4ec553e85d056036f82c47b3.extraction.json": "1e6b1163ac3d516ec9b14c48b65e5f9f36397e22650dc961ba5982b99cb16e00",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\cdf6172fabdb42477c25d374d7d42b3a6e91d31c4ec553e85d056036f82c47b3.quality.json": "688c5326c4105a2d0db650911a572efc85e432efba7f86a600ac15a10123c548",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\4c2617061848464576823dfea2e8f11220664e4c719d56535682951e939be983.txt": "d91dba8fe6828e47fc53030970dad8958bcee54a735ce53b5dd2492eff92cebd",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\4c2617061848464576823dfea2e8f11220664e4c719d56535682951e939be983.extraction.json": "d267523896b705185d0c04c6b88bf3be51f437b2a0fc423d6954b66f3a266c30",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\4c2617061848464576823dfea2e8f11220664e4c719d56535682951e939be983.quality.json": "978f318be919d82b79bff288c16da42b571ada6fcd7438165c9c5b1c1b46222b",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\4a24d93603bf282965fbbc7154672fc8a938015f5ece90acf6f036504c6dc565.txt": "db5226e4f389e10a55d94793a77f4b1f1ee3ba634e607c3e3936b4ccb66ccb44",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\4a24d93603bf282965fbbc7154672fc8a938015f5ece90acf6f036504c6dc565.extraction.json": "88f27c38ce50554d5e2a7856d70a6010bc745cb03f648aadecd5ebc5da67d324",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\4a24d93603bf282965fbbc7154672fc8a938015f5ece90acf6f036504c6dc565.quality.json": "b4f8a219a12655a7654281074ba2ea5e97559046d7489aa3517ecbcf41688cb8",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\39b9b682861845800f858579e6523aea2663612a56837b3c4811476681be0c3d.txt": "5036300b8c89819ab48f471a5ace08df46c33ce0bb746e95be290b26802cc2f4",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\39b9b682861845800f858579e6523aea2663612a56837b3c4811476681be0c3d.extraction.json": "286d0829080fa7db01a4db753992ac09be6c6219ea891e4d6d8dd91211a05352",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\39b9b682861845800f858579e6523aea2663612a56837b3c4811476681be0c3d.quality.json": "13797c6557af870b0dc058c885e12c50422efae792f3146bb7c91ce65c9d13a0",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\cd99d30acb8bc912f968336f0cdafc93e14ce224449f4b9e86023ba7ffd3d247.txt": "668e84b180fe84216abf95c3a92be0f63a40e4db9034e73d39f13e37e4d7c7a2",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\cd99d30acb8bc912f968336f0cdafc93e14ce224449f4b9e86023ba7ffd3d247.extraction.json": "777956e8a5331bbe3cc819f0aa6f7dd71b3176bfb49543ba4a5d2cf7ac018731",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\cd99d30acb8bc912f968336f0cdafc93e14ce224449f4b9e86023ba7ffd3d247.quality.json": "bb30aee2c8ef5f3a67f93f60b50b2688063c7ba5bc4a3adaed150512b59091bf",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\8767ea352084c54abe68cb6ea25d200f2eb63455937766dff9bef56dca3a2356.txt": "acbff9ece36c5fb17f81c9d75fa8ab318400f9ff5617dcd6516af66f65b2c4f8",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\8767ea352084c54abe68cb6ea25d200f2eb63455937766dff9bef56dca3a2356.extraction.json": "4be9fe712565484f1f9c21a0e38a091ff35e0d6b057a383712b7368ff7ac8eac",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\8767ea352084c54abe68cb6ea25d200f2eb63455937766dff9bef56dca3a2356.quality.json": "3d3af2d4e1c68ce3e604e14a9748b6a48b15757e47f43a0e8e2655c954bf7bac",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\873661fbf4b7aa77cfcf3ed3cfb8c95fcc63b7181c3dfe3cfcc9fed6168e87b6.txt": "1281192c680863843652b5161feff7f1cb363f26461a559bf99de3b170dd2f40",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\873661fbf4b7aa77cfcf3ed3cfb8c95fcc63b7181c3dfe3cfcc9fed6168e87b6.extraction.json": "247fd2d20064486d18976793cb09e1a9974768af5066c24e02bee606fa6e1027",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\873661fbf4b7aa77cfcf3ed3cfb8c95fcc63b7181c3dfe3cfcc9fed6168e87b6.quality.json": "3daebf7b059bb43c0e664fe68f1ada9a6965a9e8a6d400f57b1f7da36fbcdb2b",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\4f08704b7c76bd2a6792cdc5743162aec1742a18f69dbb4a4125197147d71b73.txt": "93ec82d3a4df00dc0b0bc9a7cd74f290bd1a705e4951b8c291ffaed5deb9ad32",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\4f08704b7c76bd2a6792cdc5743162aec1742a18f69dbb4a4125197147d71b73.extraction.json": "8fe2d5b5c2c6211cc93eb6b35370fd8644b2640cf5b6b521d054f1b604e3bc4e",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\4f08704b7c76bd2a6792cdc5743162aec1742a18f69dbb4a4125197147d71b73.quality.json": "188f5e6644dd5240ddb4857699043528011b39f704fcbc820ced47fbb61473de",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\0c26a7cb41434bb05dd6969ef5a31039e3de0904c64f2534e10e2e3862fe9ec4.txt": "ef381a3ad88196bcb35cd8398bb92cbeb6f2ba9b733cd10e5d8d7895b541f9d2",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\0c26a7cb41434bb05dd6969ef5a31039e3de0904c64f2534e10e2e3862fe9ec4.extraction.json": "584b869332366689ea22e4c57552597a0e2f138008ec44a3e2636484137b6d0f",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\0c26a7cb41434bb05dd6969ef5a31039e3de0904c64f2534e10e2e3862fe9ec4.quality.json": "bf4f275950e71bee35825324c55fe7d71afa242fd439a050402ea1a6625de577",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\a3aa6bf5f1893ed3609be73db110297401aaa6eaeb93e3deccb3b101ae82c628.txt": "5dcca96c656e3032cad899f0c741622a8b6293d1f2a56e1332179d7e78bc29db",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\a3aa6bf5f1893ed3609be73db110297401aaa6eaeb93e3deccb3b101ae82c628.extraction.json": "708772aac55171040c19dae7008988397bc96f3aa5c6bd5b0557bbc21036c10d",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\a3aa6bf5f1893ed3609be73db110297401aaa6eaeb93e3deccb3b101ae82c628.quality.json": "f1e262ed1f3c342b4b7c15e04f81dbaffef827c76f8f1506903ab3bfd11de9da",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\98cdaeff3860fa527d4e605b11567ed38c8af17d150cd14d9a3a81a59782e4e9.txt": "32836344efc443a1b568c6306a4f3cc6299f6892337ca56865c4871c3cf083e0",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\98cdaeff3860fa527d4e605b11567ed38c8af17d150cd14d9a3a81a59782e4e9.extraction.json": "8f7a09ed68eb3ba13b55101b218b38ac57240459f600e3d31620b7f468b223d8",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\98cdaeff3860fa527d4e605b11567ed38c8af17d150cd14d9a3a81a59782e4e9.quality.json": "6de1f2e48ec3fe7257acf1b50ba56548bd5b151c8ec613f208ba35027ef726cd",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\03e009c1602a465e493d6b9ddcd6983ba0a1e66f3a5f31cfa90312a16f2030dd.txt": "2b8ab42313edc184f60c84d9e693a08991f0827a2eb9c1288dee74497c57623d",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\03e009c1602a465e493d6b9ddcd6983ba0a1e66f3a5f31cfa90312a16f2030dd.extraction.json": "c267a614d56171335ff139a66fe481be826d6f9493d092aadbf26f294e7247bc",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\03e009c1602a465e493d6b9ddcd6983ba0a1e66f3a5f31cfa90312a16f2030dd.quality.json": "eedd9d3a024520791e6c1a34b6a7011d836bb9b783808172f93d5a9a9c540620",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\735e943c4c638ee8fca44d35fbd3179f1ddb47368e3ef68eeb02f3736070e360.txt": "4b678af9936dead31d96733d335f2820d7d091bf2b31fb934fc3c89abde4dc81",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\735e943c4c638ee8fca44d35fbd3179f1ddb47368e3ef68eeb02f3736070e360.extraction.json": "820006d3d9e328fafef85a9f4d47074854945c861938f601de32828eb6cecf84",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\735e943c4c638ee8fca44d35fbd3179f1ddb47368e3ef68eeb02f3736070e360.quality.json": "780f48cc8551561bb15a98fb0dd5b353f605045f29aef1ca566c373346676403",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\376195b011c3f52d6176617a8175b3de9d507ea6d26cc99b7a74a0517b7d562e.txt": "866fd18bd3bb6978c62564925b7f916f67b4b5c03096fea3f58df17e0e65afe6",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\376195b011c3f52d6176617a8175b3de9d507ea6d26cc99b7a74a0517b7d562e.extraction.json": "6563ce017ccfa08a03b4605f3f5871d15fd7375c3b80153ce58115fb7fde62a5",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\376195b011c3f52d6176617a8175b3de9d507ea6d26cc99b7a74a0517b7d562e.quality.json": "6c5e690b0ea300bb9cda73be1694f7cae84c6a876232a46df9c34c47d4274323",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\1d08315fb0c629010d1b755a1c29f43ee3703c61cdb569c346b246bef040a046.txt": "8ce18146690045e251dfcb5d609707fa504e1ae92a394c867a1752e8dedf11dc",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\1d08315fb0c629010d1b755a1c29f43ee3703c61cdb569c346b246bef040a046.extraction.json": "b782cf58e36fe38080b40633fc7a2d83a278cebe998f64fcbb70fa55b65a317d",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\1d08315fb0c629010d1b755a1c29f43ee3703c61cdb569c346b246bef040a046.quality.json": "f1c1387233c1b1e1470f373776cc3154bb7bfae7df0c1073430b31ef3ba37bf0",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\665747b6f8e03a7e9473fc5bb2e29f5c4d8a11f25564b9292f89070c666d23d2.txt": "522c7a51d9e7558361845a2eb72123be4ef30dbbbf3df6a0a63cdb3d18b1ab80",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\665747b6f8e03a7e9473fc5bb2e29f5c4d8a11f25564b9292f89070c666d23d2.extraction.json": "c0ed11622479da673e9f73d79636747111dc6170f7ab85bedcedf4f75bf44be2",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\665747b6f8e03a7e9473fc5bb2e29f5c4d8a11f25564b9292f89070c666d23d2.quality.json": "f5e5e093252fb1908083373322ef54fa45b6afa38b83e94762544711e88fea94",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\44967f498aeb586b9adbb2e95be0319e3f78cbc4cabfae4f3f39ed735dfcc705.txt": "92a9439ec8b229dc2956c613b54a047d88aa3edde60e680fa9303bd6192d5fc6",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\44967f498aeb586b9adbb2e95be0319e3f78cbc4cabfae4f3f39ed735dfcc705.extraction.json": "5396f7fea6936f0f84bcfe0821e700f078c99b67320ae4ca90c94cf0aa25c706",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\44967f498aeb586b9adbb2e95be0319e3f78cbc4cabfae4f3f39ed735dfcc705.quality.json": "715cfade73a70680e6eb85b8596d2f1c10b3757f0cb013c56583fce9f5975dbf",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\2f4215147caaf2c5bc851eea326f65aa52a3e6a7712ff0725c1f72b6594b9245.txt": "775773d123501b3b8d4e963ec64f86bf7509fbc08fed76c1e4f8881b0f524c0d",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\2f4215147caaf2c5bc851eea326f65aa52a3e6a7712ff0725c1f72b6594b9245.extraction.json": "17647eec0c17576abcaa73042aab2892563886433b1a80bf5ba9ff7392a2c911",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\2f4215147caaf2c5bc851eea326f65aa52a3e6a7712ff0725c1f72b6594b9245.quality.json": "377e0ba0910cb72b3a12398730f34c2fe704cdeeeeb08f3f230a0a6c329369c9",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\889ce44641f6624c2b4084fe611e3de358b87957b8572d9224ae489260d379e8.txt": "5c09c1c8fa7db1f98dd91db0460dae1bb16b89e1b197e537f522b4a1f2c14a60",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\889ce44641f6624c2b4084fe611e3de358b87957b8572d9224ae489260d379e8.extraction.json": "e2cc49bae0b244a0abeef4ecf427350e364eda31c035749de57c22e8d9bd5a42",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\889ce44641f6624c2b4084fe611e3de358b87957b8572d9224ae489260d379e8.quality.json": "078e73f5eb9c7dcb107623aff70599e9160ad021291bb1361b79302b10e31249",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\70fc0abaf0d1de720c0b38bba58fb6a252e3ec8b75ec325d5865877a431100ea.txt": "1c5cb61fd48219a8dd9611f2f2a0812ff1c81a4bdb8a180c699d281cee3e4d30",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\70fc0abaf0d1de720c0b38bba58fb6a252e3ec8b75ec325d5865877a431100ea.extraction.json": "04556b2e76cdca3e214935511744098f532ce25442c0ceb390e2ff13bfe58354",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\70fc0abaf0d1de720c0b38bba58fb6a252e3ec8b75ec325d5865877a431100ea.quality.json": "d04b587e06252cc394c79e143c104402686981d00e277675ef63ecb058ffeade",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\10387c6fbe01c74ca9785658239f0883bb864d86890d2ea02b4ee7fc22cb8239.txt": "b87481422e030efe297fa3b01d1945ef162d3ad1054593175332146487e04ab1",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\10387c6fbe01c74ca9785658239f0883bb864d86890d2ea02b4ee7fc22cb8239.extraction.json": "a85881f1f793caff753b6a6db76c1ecc2b94d251a292ffacdcd70d770b12c135",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\10387c6fbe01c74ca9785658239f0883bb864d86890d2ea02b4ee7fc22cb8239.quality.json": "cc05132c4c224cbc70e49c996a3a8086f508117e4672267deae2cd9ee6abbcb6",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\f898b193a5d79170d179ee4e43388eae478815894e46add8d911ab833439c166.txt": "cdede5b3ff36dd100b8354ffd039a72ff459a9d7e623205f22b5895ff4d0de1b",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\f898b193a5d79170d179ee4e43388eae478815894e46add8d911ab833439c166.extraction.json": "6b071f00c5652855b5c88844f5e14253a987dbc3167bad24ae2bc641c62c650d",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\f898b193a5d79170d179ee4e43388eae478815894e46add8d911ab833439c166.quality.json": "78a74a6d712d709ccffdc8f3d5818a45af47f1be634389c83be6f69316bb6f5c",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\3d138b060f20e0fb31e72912f89e8dfa6061935106799ceb74cf9231d2741bb7.txt": "9f301b53d861b1d5f1edff2b750063b5f9cd0da1bacfd448e586e21142e8cb7c",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\3d138b060f20e0fb31e72912f89e8dfa6061935106799ceb74cf9231d2741bb7.extraction.json": "2e750f3b1274fe345f3313d03f5710de75ecc400ee403dd4094a688588a25924",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\3d138b060f20e0fb31e72912f89e8dfa6061935106799ceb74cf9231d2741bb7.quality.json": "cef86de1f7d55ca8574684341569d8d8eff2a1ff9b601e06d72a3db1f5fcb8b2",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\c4e2a931403664039099bcad9c955e6e18414b0656c97834cfce58f763aa474e.txt": "f1ee00758e1392e0fbc6ae7dadb6654437f4ea5036f6de22773a03629c021ce8",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\c4e2a931403664039099bcad9c955e6e18414b0656c97834cfce58f763aa474e.extraction.json": "89c69eed687f511946bb88c2e228996e9759a812f277e69ba50baf5eacc95fe6",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\c4e2a931403664039099bcad9c955e6e18414b0656c97834cfce58f763aa474e.quality.json": "e38cb80675818c7765a22085de0cfe22a8582fda2273d6e80c46a2520b8d3470",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\cfe17c3386aef4bb01dfe4a91a6026a6b1be31e97c38d38f02651a2fbb51f41a.txt": "d543380f29b9cd1ebc60e1dc232903bc14b6202ad799348aa6f1851cce1d8900",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\cfe17c3386aef4bb01dfe4a91a6026a6b1be31e97c38d38f02651a2fbb51f41a.extraction.json": "a59e81c2a261131bee13e76606a43bd1187622acede53842f497ee0d170defaa",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\cfe17c3386aef4bb01dfe4a91a6026a6b1be31e97c38d38f02651a2fbb51f41a.quality.json": "6fea6dcd13c9c876c14e9fb7d272137b30b24cdd938efb702abcf0c362b55d70",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\cfc6780cb3add10595e8d852b8537179cc4a5c22baeddfabe40833d19c3164fe.txt": "be8c6a522df290c7bcbd1c2116c16d3cbdfb5e2d2c7393aa62fb3a59556a5358",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\cfc6780cb3add10595e8d852b8537179cc4a5c22baeddfabe40833d19c3164fe.extraction.json": "194c45833e2853af55f4dee65a1a8d923097ae21f2d26c598f4e8252da988aa5",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\cfc6780cb3add10595e8d852b8537179cc4a5c22baeddfabe40833d19c3164fe.quality.json": "6c4387e12ed873ebb47ecd7e5b51c3dd412db802c121a580953d89347b7ef0ef",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\7f8cacb216710ec6501d5f2a52189de565ed8f8fa46ee1dc3abc9e16dd3d6aec.txt": "f02458db63f83a248211a27d7de122f9ed66f71ef28a7b1d7c4d385c8b5efd89",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\7f8cacb216710ec6501d5f2a52189de565ed8f8fa46ee1dc3abc9e16dd3d6aec.extraction.json": "858ac917054d929a812f21ebaef4663ea1e42134a739c22e954040cfd5af18c4",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\7f8cacb216710ec6501d5f2a52189de565ed8f8fa46ee1dc3abc9e16dd3d6aec.quality.json": "1a7333908c22fc4439766dbbf4fc0091d9d859869cfa538c0e3b2eab91c174b2",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\cb344ef6d28447d882e669618da06f06bd5a8271a4e3079845c69ac32ef8435b.txt": "3d43411e6c763ba7911e6776cb877c07a13036f1e94a7acfd10fd51998bfef3d",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\cb344ef6d28447d882e669618da06f06bd5a8271a4e3079845c69ac32ef8435b.extraction.json": "9a73209578565441b29aa21f863513d10a7d7e2b943fa31a4a4509d89e8c9fea",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\cb344ef6d28447d882e669618da06f06bd5a8271a4e3079845c69ac32ef8435b.quality.json": "e08857e47e7b0bdaaf33df08dfd61bb5f9c165faf16ffcafaf13ed108288373c",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\a8cb22ceba9c6745038ad499cc33c6c3bc4084de768f1f2aedb8b12bb73a01a0.txt": "4d1312a9cbcff7e2815ddddddb6e304d48fdb0b3d281c2e973daed09712c3230",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\a8cb22ceba9c6745038ad499cc33c6c3bc4084de768f1f2aedb8b12bb73a01a0.extraction.json": "39a7f3f4dbb0492887b0c7869f0c9606547125cfa9ab8f5502dcb44504104f96",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\a8cb22ceba9c6745038ad499cc33c6c3bc4084de768f1f2aedb8b12bb73a01a0.quality.json": "c4fc31215ac285024404871fad6d59727907c20566c6759a393ff41239eab60a",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\a22960ee6affae1f8c416fa02006d3a9bbf76d2c1fc572f4bbd483aa7bafe178.txt": "05eb9ba36286abf7c3c9593cf825a5fe145cf2d08538a7747ee5a904a827b191",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\a22960ee6affae1f8c416fa02006d3a9bbf76d2c1fc572f4bbd483aa7bafe178.extraction.json": "9e5fd2d92d4b598b41203bd980e04c5404994f6beacccd0e213e221f4eb3d720",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\a22960ee6affae1f8c416fa02006d3a9bbf76d2c1fc572f4bbd483aa7bafe178.quality.json": "becaa965454799aa7d6b59ea5253529bbb13d9fac7655ff09059188df80993e2",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\806bf6ddda0b606454dcca3d24ef9cdd2401770e218fcd30690b6952c59bd9b5.txt": "e671c7011e6c2aa1436a4b3891d07a9fc1423bab520da2ea4b260c553f83130f",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\806bf6ddda0b606454dcca3d24ef9cdd2401770e218fcd30690b6952c59bd9b5.extraction.json": "d5ab83a257e0ce515621218b54bcd5d3ab6ec7816f31ee3eaf4def2a407f2946",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\806bf6ddda0b606454dcca3d24ef9cdd2401770e218fcd30690b6952c59bd9b5.quality.json": "de0e86ee51ffe010d3b569e37f0be3e9305c69cf7b05da1d1fefaebe33fbdccc",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\726fdd46244b72e04926a8780f3d7261610b1a25baa95369f0cae1925bf85f10.txt": "8801616e8645765daaabe708f601bf39f7a56129a4cf824a92783ba29b0498c2",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\726fdd46244b72e04926a8780f3d7261610b1a25baa95369f0cae1925bf85f10.extraction.json": "a889075ff512e24de84308db664bf589f21264caedf8c34ece78462e4ec5454a",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\726fdd46244b72e04926a8780f3d7261610b1a25baa95369f0cae1925bf85f10.quality.json": "44dc9c8a752f0081b559636eb1a0def2fc5c4cde61587f8ec8d0b62618851627",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\9cd38a2e2d8a4885fa6635e500ec6dc3d196d992edcad7cb7be479d7d7baa8a3.txt": "b0482bffcb0dc5e678ec0acbe0fb1552bebeb489dea7d30283dd07a7a1c47b57",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\9cd38a2e2d8a4885fa6635e500ec6dc3d196d992edcad7cb7be479d7d7baa8a3.extraction.json": "c46fcc1504adccd3489faa0122fd3bbd4ee3a19263fa9b2d9a850e4c9fef8b58",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\9cd38a2e2d8a4885fa6635e500ec6dc3d196d992edcad7cb7be479d7d7baa8a3.quality.json": "979336186fd51166f8055c709d5820cc5f88d3a25fcb2cf08131c18dcfff7d81",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\86f2865bf61ce17a92c24de51dd5ef8787972a44c634ff071929e4101c2e94f8.txt": "1d4af8197187bf59f33cff57b983910253239ed60c4a1f898247e6c773ec4a2d",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\86f2865bf61ce17a92c24de51dd5ef8787972a44c634ff071929e4101c2e94f8.extraction.json": "a93ff8802799acf19fdeda2f3ff83facfb372ca08246c53bda263dbe231910c8",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\86f2865bf61ce17a92c24de51dd5ef8787972a44c634ff071929e4101c2e94f8.quality.json": "d39776732f83439395677ec713f24a27c75f98d95ea5c281f6796982713ce2d1",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\896646ecc76401dc95ace08f8e586bd98d368dafdfa9287ad88213cfefcc9f8f.txt": "4981e365c5edfd48338bdfbb8aead464bf700dab3df8ba02506bfce389b8c12d",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\896646ecc76401dc95ace08f8e586bd98d368dafdfa9287ad88213cfefcc9f8f.extraction.json": "f7e96be0ade05272e173504758c89f6a60306a3c5b62bfc33235081f0007f4a0",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\896646ecc76401dc95ace08f8e586bd98d368dafdfa9287ad88213cfefcc9f8f.quality.json": "f1e8e6c498dad13af6bd58e7c487a03368b9a3b50d76b66ac906e5342d9b6e8d",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\907021edf55bd5334a992546b582985b1a606986cde94d860e4567d1bc971795.txt": "c16d8d1bf1374bb00a3a71c5c7c7980cfeac167a01effefa88059a1b64fa6894",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\907021edf55bd5334a992546b582985b1a606986cde94d860e4567d1bc971795.extraction.json": "f7b7372b8866819dcf3324c6eb2bb01c7fab56de70e477995d4554e0c008ba14",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\907021edf55bd5334a992546b582985b1a606986cde94d860e4567d1bc971795.quality.json": "5ab7055ba4dd3ce3034b47e91935e48f272d264609c1e38c41fe7d1426986e2d",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\d85a4046092c00bab319adfdfd52e28e6db92d883378dbfbe3c4dec7a4efb217.txt": "cf3268c0e657817904b4472facded01adbc98969d4656bf7d4dbfb4344d6558b",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\d85a4046092c00bab319adfdfd52e28e6db92d883378dbfbe3c4dec7a4efb217.extraction.json": "af7b769710c6b14f56bbf9e4b3fe2abcdda6ba8eed5f83a8fcac8aeed0136c62",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\d85a4046092c00bab319adfdfd52e28e6db92d883378dbfbe3c4dec7a4efb217.quality.json": "824f9bf6295eefe43e3d42ff8acf4ffc5e81579e1ef9d9fd6138f9c4ee602ae5",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\2dc9684da826f4ca3dccdd7d5ef2bc41852eb2f4f5cef750c4666a2c4717d9e5.txt": "a9335bff3cf1fd795ec7ce47256e371776365b52409f4832d1f230abe727d2eb",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\2dc9684da826f4ca3dccdd7d5ef2bc41852eb2f4f5cef750c4666a2c4717d9e5.extraction.json": "2cebe0497a9d821d95f492a000213d1e59deb2d4ba77615d9a4afe78c9b516da",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\2dc9684da826f4ca3dccdd7d5ef2bc41852eb2f4f5cef750c4666a2c4717d9e5.quality.json": "dcd5ccc57b39ea9d075f9977798a4ace0b2b766a6f170b1cc857429f6851eb23",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\ca6c92bddb4dd5675a81bdb934b895269480b374521dff64543ba40920109f6d.txt": "9194fa8bc4b58d453bdec0cd7bca7d93235831a4d68ad714a3a286626905ba7d",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\ca6c92bddb4dd5675a81bdb934b895269480b374521dff64543ba40920109f6d.extraction.json": "5aa737eca8e618b7460d80dca73fb3b6a63edc15ee7d5312898b3bc483203d7e",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\ca6c92bddb4dd5675a81bdb934b895269480b374521dff64543ba40920109f6d.quality.json": "b439c1e60e25454510ea70f3f905545b739973c76226feda3a34126e9ced00b5",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\4b3572e33fe75767dbc23d20ccaae73bb0df23e4a09fbfa49554b433be28ae3f.txt": "5b8610ed7b8f99a8b13813cfc228357abdf0fcef155e17c0bf58f75bd8c3528a",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\4b3572e33fe75767dbc23d20ccaae73bb0df23e4a09fbfa49554b433be28ae3f.extraction.json": "92094a47e39ab3251e0be23d67155a0ccfa493b76b625bb982755afed68a051a",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\4b3572e33fe75767dbc23d20ccaae73bb0df23e4a09fbfa49554b433be28ae3f.quality.json": "2686a2456d8179bf852f6cbcdfffb2b89ecc91f60574b9832adcbf45873ae285",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\6c078770b277a7baa7dd78be5beb650cff6441c751dbe3a43f16a8b4e4750384.txt": "aaf5331b2ff861675310e9cc7db0233551c74edd7f770c6a34a6706e77693a60",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\6c078770b277a7baa7dd78be5beb650cff6441c751dbe3a43f16a8b4e4750384.extraction.json": "52b0b9bc021bfcdb0b93cd5020f6403420233b690eb5c2e69e569fa8f8f0c3e0",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\6c078770b277a7baa7dd78be5beb650cff6441c751dbe3a43f16a8b4e4750384.quality.json": "86042544ffcb00014100423934797ee991b8af851267de9e8edd4985783ffec1",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\e820f079f4ad0777151ed4b7673f096edbca8547b84047868a9e34d93857778c.txt": "435926f6a2cd6c57cd92681aba4828c2fc0d4d6a57d58e2ab89406ffe3ff7e60",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\e820f079f4ad0777151ed4b7673f096edbca8547b84047868a9e34d93857778c.extraction.json": "7701153644511ad88625336965d94dac9b0ad8095e3d059337357f69ef04d61c",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\e820f079f4ad0777151ed4b7673f096edbca8547b84047868a9e34d93857778c.quality.json": "eaac859f301589f7193276d74d1b3be61d9650248b45f3a1d1168ad1e595bccd",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\1c5b6f4ab37379e6e2286a45eec056647dbcf3a5fe08dfd335a5e730ae17f6b6.txt": "3486773f13219eaa0dbaa83c8b25d664f29ea35b4a4a6743e8f1f6bda4d862cf",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\1c5b6f4ab37379e6e2286a45eec056647dbcf3a5fe08dfd335a5e730ae17f6b6.extraction.json": "e5ce86da6d4e1de262ddb531a10f6569ce5e15fec54eaf6cda52d5f7ecff6fe6",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\1c5b6f4ab37379e6e2286a45eec056647dbcf3a5fe08dfd335a5e730ae17f6b6.quality.json": "187d05fa753ef89065f078330ba9b0429df1e0b7f7d9333beafcd1c1acbc1832",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\c2fb5502b786e7c075916676b17f3ab5bd4ca29c1107a33d0787390bcd25ca27.txt": "336aeb21f867145f691975a05bddcf99a9b654c719392b0dcd0013ed21f7639f",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\c2fb5502b786e7c075916676b17f3ab5bd4ca29c1107a33d0787390bcd25ca27.extraction.json": "07b6112538f4e3ec92a5ea513d4c63cc8664f449e032110467585f33f679156d",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\c2fb5502b786e7c075916676b17f3ab5bd4ca29c1107a33d0787390bcd25ca27.quality.json": "c4873635fea0c5b9a0e240e6254a9afdf901147c1f8feed4300ced79c193a8b5",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\a0bf9588ade80b79915f69983aa64f610a540a73fd0b19e3ab41dd00d062ee32.txt": "996f9ea526c016291c97207346d8c4513ca33be13a4ad9cede62b0b9cbc51d65",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\a0bf9588ade80b79915f69983aa64f610a540a73fd0b19e3ab41dd00d062ee32.extraction.json": "acbb226aced4798a71feb314f4a00d52f296acf9cb46d70b9fbba8e201c410d7",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\a0bf9588ade80b79915f69983aa64f610a540a73fd0b19e3ab41dd00d062ee32.quality.json": "da6cbd53d8974c3720f7739161df5465523e31486aeeb93fc09dc0bf5e42ab09",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\78af35fecb0ae3068733a39e72a9bc633becff8cf34848c23ac2d9485ab92b2a.txt": "0f57a74905eaf2f7479913f4af28320d8238772faca2046cd54aad15260248aa",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\78af35fecb0ae3068733a39e72a9bc633becff8cf34848c23ac2d9485ab92b2a.extraction.json": "43549fcb3a69ed4dfa6e231736e6e4f72a0691557e94d5a27a20923d1fec7596",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\78af35fecb0ae3068733a39e72a9bc633becff8cf34848c23ac2d9485ab92b2a.quality.json": "0321decd633e3b34f67e28e1e50a53251f26b8bfdb26d5acab0a8ea27781ea74",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\bb879704f4a16df1d7111533b76ed25f0967c51dc7f21530d753071365fa8ed8.txt": "d2502dd73492c70a830b74f492b868c33ebac45e213764cef6e22983d21a07d9",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\bb879704f4a16df1d7111533b76ed25f0967c51dc7f21530d753071365fa8ed8.extraction.json": "3dbab5cd4a26943eca750bbb6a417af232e8a12635ce53295ef50e654a7116d3",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\bb879704f4a16df1d7111533b76ed25f0967c51dc7f21530d753071365fa8ed8.quality.json": "eee37599f8f681535d3c4a6021f8dbd04b4f5355abc9784c34ecf3e73a20eacc",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\1d4aab7f474e7fbd2f071042d990fe781ea5eb74a1531d322bd610bc2114e35d.txt": "404c730869c37eeedb9d7d07d9fc385fd23c40ea3f04e0ba343db13e24b77c81",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\1d4aab7f474e7fbd2f071042d990fe781ea5eb74a1531d322bd610bc2114e35d.extraction.json": "8cacb0ce131e8dee3154174cc1112a8b9528215ac30dd2e670a4a7a693493870",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\1d4aab7f474e7fbd2f071042d990fe781ea5eb74a1531d322bd610bc2114e35d.quality.json": "bc68df96a698f7d51a420fd7d6f5d86e61e23fc6e23878e3489d7fce3f66266f",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\a863f4899a72052c0883fb80450de04525f75398d2177f9304dff88b9554665f.txt": "ed7bc491b4f68049fa385f9ad6fc508bcab117f9ecb39fddbc2ad016e0754c9e",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\a863f4899a72052c0883fb80450de04525f75398d2177f9304dff88b9554665f.extraction.json": "c857e3f3ddfb0529607a3a8f56920a2d04e12020b9ef15e64b6656414e3a84a3",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\a863f4899a72052c0883fb80450de04525f75398d2177f9304dff88b9554665f.quality.json": "295dd7da8858766f0b294d1296ae1d74a0f1d0f33064a73faecc3a9e4ad0a594",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\146a9127ede00a90c2d1e5cf80a31ebe8734e8e56a05b9192e1e1ab8b948f204.txt": "0aaca0a0cb22800036bf09337ec4a9a6d7c0ba1def3411362cd6fef37deb42f9",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\146a9127ede00a90c2d1e5cf80a31ebe8734e8e56a05b9192e1e1ab8b948f204.extraction.json": "a794c84d18a7b92bf7b2df86b68e4511132596c42948af2434986ce2661556a2",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\146a9127ede00a90c2d1e5cf80a31ebe8734e8e56a05b9192e1e1ab8b948f204.quality.json": "c291d3a8c7a12c312cf789ea6310581fd9c2bedb9cff7223f8f3191ef6fec5fb",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\b0006c9414d19ff8d301a028312258324208cfb25bafb1f2b6d52c2558fda801.txt": "6373daac0fdbae6e13bf34979797263fa6004f398f68b3aad0122e4a3b588523",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\b0006c9414d19ff8d301a028312258324208cfb25bafb1f2b6d52c2558fda801.extraction.json": "613a7f7d26de525077c45c7ac0644a88df8b063277b808f7b542d29f3b05ee5e",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\b0006c9414d19ff8d301a028312258324208cfb25bafb1f2b6d52c2558fda801.quality.json": "ca669c9d97a70c775827f3fc3afd3695ce1b4a23627be2ccc9476ac00f892a41",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\d4ee8f2c8fbbc3663d06df95c5a437eb6af4104f10bfa24fe832a0282d206841.txt": "679e0ba40601437de7a8980662fb2319e6b6b720893ce301ca3ac02abd0eedbd",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\d4ee8f2c8fbbc3663d06df95c5a437eb6af4104f10bfa24fe832a0282d206841.extraction.json": "f65a3b1b850594540f90776d89eeb4090c68ed3fb801c85e21debc2c9660cdb5",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\d4ee8f2c8fbbc3663d06df95c5a437eb6af4104f10bfa24fe832a0282d206841.quality.json": "d513717765f7923a903b17284d062e76945d26dd3522d9c39b3523e58b50afed",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\e3b99341f41a6e1c5080be22fcf10f8ba1d98e5495c78ca0eabefc79703bd0f7.txt": "d646fce3341c5deb9beac41232e414db062b88b25eb1cfb69b3e61f09637f8a3",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\e3b99341f41a6e1c5080be22fcf10f8ba1d98e5495c78ca0eabefc79703bd0f7.extraction.json": "37464006460d662c98492809241c8c5db350ab79d172413ae2dfcdbd97b3a301",
+      "trabajo\\s_mio\\run1\\capas\\bronze\\e3b99341f41a6e1c5080be22fcf10f8ba1d98e5495c78ca0eabefc79703bd0f7.quality.json": "5dd4550507b7c0ba2b97e747b1abdd6eb9c848dfaf64b91c23e597d9d5f6ac14"
+    },
+    "S_prof": {
+      "data/documents/bronze/jurisprudencia/AP  Carlos Alberto Zúñiga Mejía y otros VS DIMAR y otros.md": {
+        "blob": "cfcf00c24898cfaee32e108fac954247478a12a3",
+        "sha256": "a99a169962d0478ea19c9c97e357ae0be82a43d6778a7117622059bad12728d7"
+      },
+      "data/documents/bronze/jurisprudencia/AP Felipe José Campo Fernández VS Corpamag y otros.md": {
+        "blob": "4c4ad39c74cbcfdc2032d51e6be1191cb343a619",
+        "sha256": "8ab36d9d625423a111ebe63da9c1eb89eea087f42cd3107fa09ab8f192bf3a77"
+      },
+      "data/documents/bronze/jurisprudencia/AP Gabriel Antonio Carrero VS DIMAR y otros.md": {
+        "blob": "0f0d53487177910b76e3a96ad81122ea7bd61a67",
+        "sha256": "49f18d7523279c71a98474d1c4da23ba8f059e9fd752f6246b7295f9d775e159"
+      },
+      "data/documents/bronze/jurisprudencia/AP Gerardo Antenor Lemus Orozco VS Distrito de Santa Mata y otros.md": {
+        "blob": "60990143a8e1865741c8572098858e61bad935ed",
+        "sha256": "83462ab665e4944710b20eeb34504e8ace04a885f8a2a8f5a097b988b222a9e2"
+      },
+      "data/documents/bronze/jurisprudencia/AP Gieseken Cuello & Cía. S. en C. VS DIMAR y otros.md": {
+        "blob": "283e053ddf6f96f1dd5cbfd0aff2d8b0e0664014",
+        "sha256": "66aaeee212d56a1cff308b8d471e5e3fd2d711348366d403070372347f90e6ca"
+      },
+      "data/documents/bronze/jurisprudencia/AP Inversiones E y D S.A.S VS DIMAR y otros.md": {
+        "blob": "2da59e78629ef6bcc37ae278c7ba11c26d42095c",
+        "sha256": "a71cadf9d589d10a753ee2b65a0c97d07b3f0f76ecdc2265290cfd5ca23a46d9"
+      },
+      "data/documents/bronze/jurisprudencia/AP Miguel Ángel Enciso VS Distrito y otros.md": {
+        "blob": "707f7e2dc323383c52c027e30532db52f4f0b3b7",
+        "sha256": "c91ff1c750e2cdf0cc53ba505c10449e70db3eec0706d3872f421cc7a97ed3fa"
+      },
+      "data/documents/bronze/jurisprudencia/AP PROCURADURÍA GENERAL DE LA ANCIÓN VS COORPAMAG Y OTROS.md": {
+        "blob": "481ae718d2eae338f9b996b29525338383e7d7fb",
+        "sha256": "184e9a1707fe7400024ec05e6a6cb4334b54607a049bcd5c3f60b8d6e2d0f7ad"
+      },
+      "data/documents/bronze/jurisprudencia/AP Rodrigo Martínez Silva VS Minambiente y otros.md": {
+        "blob": "d9b05b3b80bb31647ef3e9d870cd01b76872b21d",
+        "sha256": "5f086b853e6d31820500f63aba0e5e7b7efb66e8339ee76646798126984172ff"
+      },
+      "data/documents/bronze/jurisprudencia/CC_TU_039_2024_Modesto_Manjarrez_VS_Autopistas_Del_Caribe_Consulta_Previa_Via.md": {
+        "blob": "21d090605459325f44ddbc07482deef2bcfe7a38",
+        "sha256": "f9fbf7613456c3bcea34b69b32ba89ab1ebdf8ebcf47ee7b4056117ad438d365"
+      },
+      "data/documents/bronze/jurisprudencia/CE_1era_NS_2009_603_Jose_Palencia_VS_MinDefensa_Resolución_Pilotos_Embargaciones.md": {
+        "blob": "8af23ed90d02cbb3ddcb4098274c3112b5fd579c",
+        "sha256": "d7a53c43b0b4399bbf9389417ac8d766f55b93bc819e360bf81e2b2cd8a8b22e"
+      },
+      "data/documents/bronze/jurisprudencia/CE_2da_AP_2010_028_Radley_Bent_VS_Dimar_Daños_Ambientales_Embarcaciones.md": {
+        "blob": "4a94698baa18f4e0fb97f26447ddf9d2bb45e9fe",
+        "sha256": "47f6c8c8d8e0247b8274e2b8439e0822e5f8ef945aa37076166a2292ef4ac4c6"
+      },
+      "data/documents/bronze/jurisprudencia/CE_2da_AP_2011_178_Jose_Caballero_VS_Distrito_Cartagena_Venta_Inmueble_Valor_Cultural.md": {
+        "blob": "f68a6e116ce7edf8748adf39c94d6a1b5ebcab6f",
+        "sha256": "579c5945f1f50364ba55c438b69356bb23806f6eb686975f6ab2df78a831e87b"
+      },
+      "data/documents/bronze/jurisprudencia/CE_2da_AP_2011_842_Gabriel_Carrero_VS_Dimar_Erosión_Costera.md": {
+        "blob": "f86289cf4dce0aa77e64a70e66b46714b937f770",
+        "sha256": "6add438320e6b25525f738b9bd0ac09dee2869ae46c536f497a2ae5719187ac3"
+      },
+      "data/documents/bronze/jurisprudencia/CE_2da_AP_2015_550_Angela_Muñoz_VS_Dpto_Cordoba_Bienes_De_Uso_Publico.md": {
+        "blob": "2ba7febfb27ced32286616b8e22245c4ca3f18c5",
+        "sha256": "08654401a5ff99f4712675034acad88759082e29eb21aabc330042443000671e"
+      },
+      "data/documents/bronze/jurisprudencia/CE_2da_AP_2016_328_Ricardo_Cabrales_VS_Mun_Coveñas_Playa_Uso_Publico.md": {
+        "blob": "41bd8d6820e4f870a265c95315b7497aa5e6f04a",
+        "sha256": "0007615219a81466560ba850971da7a29c832ebc51584645dbdda0342b8030dc"
+      },
+      "data/documents/bronze/jurisprudencia/CE_2da_AP_2017_103_Personeria_VS_Distrito_Cartagena_Desembocadura.md": {
+        "blob": "8d1b541f2d2c785b53627cb911fda9d569f6b5ed",
+        "sha256": "46c578389b8aa9e07e85acf490bb9358c3cb32d0d7882f9aba64e8db657bddac"
+      },
+      "data/documents/bronze/jurisprudencia/CE_2da_AP_2021_041_Edgar_Stephengs_VS_Archipielago_San_Andres_Desarrollo_Urbanistico.md": {
+        "blob": "5a0d8d3aac6082ff85fde72c73643e7bfcbe6e2a",
+        "sha256": "470b123259760e59142b387249dd06fdbaf83f09be244578db07b172b61f6ad4"
+      },
+      "data/documents/bronze/jurisprudencia/CE_2da_NYR_1994_993_Inversiones_Araujo_VS_Capitania_Puerto_Cartagena_Urbanismo_Playa.md": {
+        "blob": "89f997fd96d3807c4bc6ece9f6757d578cb8d6b0",
+        "sha256": "711424ba1aa12406fbf88be514a2e4a38a4e21ac88acb5b1cdb38367ee467414"
+      },
+      "data/documents/bronze/jurisprudencia/CE_2da_NYR_1998_102_Flury_Valencia_VS_MinDefensa_Uso_Urbanistico_Playa.md": {
+        "blob": "648dfc37b8e98f4b9986731a82cfd923ebf50b10",
+        "sha256": "44834f2df0b6080c7cf25e5e50e154837b6037bc6faf27af7ef24294b7ad7a29"
+      },
+      "data/documents/bronze/jurisprudencia/CE_2da_NYR_1999_503_Inversiones_Mercedes_VS_Dimar_Concesiones_Uso_Playa.md": {
+        "blob": "ca6c1afd9a92a46195f7eed7253321f7ed9abaef",
+        "sha256": "3e969c8927d5cb5d6c3ff97241ff80cd21e1295973d1914df34ed3aef1aea029"
+      },
+      "data/documents/bronze/jurisprudencia/CE_2da_NYR_2009_164_FEPEP_VS_DIMAR_Playa_Uso_Urbanistico.md": {
+        "blob": "6f4f6fcbb454bf28b2f8d8cbf6dc84d3867273ed",
+        "sha256": "76a440f1ecc26d37ed00eb344bc070692f83e841871b5736d369dfa2392fbc0e"
+      },
+      "data/documents/bronze/jurisprudencia/CE_Consulta_1990_Horacio_Serpa_Uso_Publico_Playa.md": {
+        "blob": "000111a63c0aeb194beb7d2d50a124b19c6eb18f",
+        "sha256": "b4685a275658a98fac720466b3e1ec2ae1d14b8c86e40fe86818e29d1a7233e5"
+      },
+      "data/documents/bronze/jurisprudencia/CE_Consulta_2005_168_MinDefensa_Bienes_De_Uso_Publico.md": {
+        "blob": "4be045ef9fbabe4187403f47ee71bdac905c8e23",
+        "sha256": "dfb1929bdc5666ea2ed553ee811afead735463f1d6f267a593edbd06d5207672"
+      },
+      "data/documents/bronze/jurisprudencia/CE_Consulta_2010_071_MinAmbiente_Bienes_De_Uso_Publico.md": {
+        "blob": "34997199166c6df5e9874b72268c33caa8343352",
+        "sha256": "ff8b77d1a8e42eddf4721765f8fc61aed4c5a41d1d22c131b2c470e9468e0874"
+      },
+      "data/documents/bronze/jurisprudencia/TAA_2da_RD_2015_281_XXXX_VS_Dpto_Antioquia_Responsabilidad_Del_Estado.md": {
+        "blob": "4d82a74a325b26080ff13d107113d156a58b8af6",
+        "sha256": "8faae42a2331c5dfec9cf5c3ff9e17875dc32bc38d5aa57101a293bbaa589ef2"
+      },
+      "data/documents/bronze/normativa/Por el cual adiciona al Título 4 de la Parte 2 del Libro 2 del Decreto 1076 de 2015, un Capítulo 3 en el que se establece el Plan de Ordenación y Manejo Integrado de la Unidad Ambiental Costera -POMIUAC- Caribe In.md": {
+        "blob": "906d0b00ddead340328954242836675529a7e6c8",
+        "sha256": "e858985e2c963eea7b92090b090fecde54323c9b49d58c032eee0abb630cc7a2"
+      },
+      "data/documents/bronze/normativa/Por el cual se aprueba el ajuste y la modificación a la planta de personal de Empleados Públicos del Ministerio de Defensa Nacional - Dirección General Marítima y se dictan otras disposiciones.md": {
+        "blob": "2804facfa284331c874d70c0b6e8631752f8f397",
+        "sha256": "9474f2034055f569279f44e63dc526c20ecbae0e1ca1466170dab27b9adf7331"
+      },
+      "data/documents/bronze/normativa/Por el cual se dicta el Código Nacional de Recursos Naturales Renovables y de Protección al Medio Ambiente.md": {
+        "blob": "b9a20803557c59773b5e0dd0d66e652b072c0930",
+        "sha256": "5ddf60c5cdcfdd34e2dedc8f6e8cb5177f14558642c1b661081769e1a12ca0cf"
+      },
+      "data/documents/bronze/normativa/Por el cual se dictan normas para simplificar, suprimir y reformar trámites, procesos y procedimientos innecesarios existentes en la administración pública.md": {
+        "blob": "318eaeb83b903bba9425712b1d2a2bb1edcc0e3c",
+        "sha256": "15c7f116a724f1d1c9d38defc0f3a72263c053e590729d3cd49490f7767f2ae3"
+      },
+      "data/documents/bronze/normativa/Por el cual se dictan normas sobre la prevención de la contaminación del medio marino y otras disposiciones.md": {
+        "blob": "0dcf1a6a092989fdf0921bd28db1beca3183f00f",
+        "sha256": "f88c8f4a62d6a9ba8455890422dc246c9647ae3793d46958cfed1513004b0781"
+      },
+      "data/documents/bronze/normativa/Por el cual se expide el Código de Comercio.md": {
+        "blob": "c1fc0d362cf234de5f17cda0d4c2bae73eeb1200",
+        "sha256": "f488e3864a41557dc87564b30e91ddfcc74792685c81b5d081ffc152c8fe6102"
+      },
+      "data/documents/bronze/normativa/Por el cual se modifica el artículo 16 del Decreto 3888 del 10 de octubre de 2007.md": {
+        "blob": "cd477cfebb4ea1f949276ca59fde5f7c03202483",
+        "sha256": "0e9ef8df38c38646c313899f68a2d991f96126b0fd1f941dd138bfd6f19b2a23"
+      },
+      "data/documents/bronze/normativa/Por el cual se reglamenta el funcionamiento de los Comités Locales para la  organización de las Playas de que trata el artículo 12 de la Ley 1558 de 2012.md": {
+        "blob": "2bc66f61f7d11e249a003c0ab63f4bc1582e9536",
+        "sha256": "c9c45bca97eb908783d317c6eb1bd468469fbd67fae1727aa32b406506b68216"
+      },
+      "data/documents/bronze/normativa/Por el cual se reglamenta el funcionamiento de los comités locales para la organización de las playas.md": {
+        "blob": "829c07bbff9d9282a0a7aff6c56bfc7899556468",
+        "sha256": "da36db5711263fe3600b828eeb9b9541321be03a76eba21485e9c62910db73d6"
+      },
+      "data/documents/bronze/normativa/Por el cual se reglamenta el manejo del espacio público en los planes de ordenamiento territorial.md": {
+        "blob": "785094450b7fd431d75280ff3e13840280228126",
+        "sha256": "4f06c3f30f4a5ca1a0ceea86a79330e7d207105eb39e2b7849549af0696e16fe"
+      },
+      "data/documents/bronze/normativa/Por el cual se reglamenta el servicio público de transporte marítimo.md": {
+        "blob": "f956ce90c990f8d0cea59440110c79f367ca1665",
+        "sha256": "cb7e69016c08a9fc235603ff9bba7204ea4257a97eee75fa236b1c29d66cc14c"
+      },
+      "data/documents/bronze/normativa/Por el cual se reglamenta la Ley 13 de 1990.md": {
+        "blob": "dd85b88d0f9d3aa468de66f3f98a77a794641995",
+        "sha256": "b56315c4a3daa1d5695785922be3fd28065c3fe840fb930302f23735a0b66148"
+      },
+      "data/documents/bronze/normativa/Por el cual se reglamenta la habilitación y la prestación del servicio público de transporte fluvial.md": {
+        "blob": "88ddc04c1b8004e572b14e7587b6ab9462f75b44",
+        "sha256": "0c63074f4e9ef8917aac74242b90bea29b7c94fe47b040bcaa5782759a6fba58"
+      },
+      "data/documents/bronze/normativa/Por el cual se reglamenta parcialmente el artículo noveno de la Ley 10 de 1978..md": {
+        "blob": "6926658143314eb2f97d5a0bed6e67613c0dc260",
+        "sha256": "7c26081978aac9d4431b84da6a1dc89c268cc2ddcc5c63dd81a1a5ca5f0d39cc"
+      },
+      "data/documents/bronze/normativa/Por el cual se reglamenta parcialmente la Ley 47 del 19 de febrero de 1993.md": {
+        "blob": "5f03965a38dad8e1dd7929069fca242fd3b4f601",
+        "sha256": "2fa5f54ee2f1f0167649cfe77f6ce972e59e0658fb4d5561eb7d93d6bdc697a5"
+      },
+      "data/documents/bronze/normativa/Por el cual se reglamentan las Unidades Ambientales Costeras - UAC- y las comisiones conjuntas, se establecen las reglas de procedimiento y criterios para reglamentar la restricción de ciertas actividades en.md": {
+        "blob": "719658f3f8fd64c572b70ea0bb4d727c9e59b73e",
+        "sha256": "6d389f4bfe3d2d73628e58eb7c46d987e20f9fb34f8cebfdda614a2612f9a4c3"
+      },
+      "data/documents/bronze/normativa/Por el cual se reglamentan las disposiciones sobre licencias urbanísticas, reconocimiento de edificaciones y legalización de asentamientos humanos.md": {
+        "blob": "cf415126b6f9cbdbda41d7ef5e97833ad2e1c598",
+        "sha256": "845970b682442c80d720c3f8568aafc79675fef2d78c2b7bbbdad0b4e1083088"
+      },
+      "data/documents/bronze/normativa/Por el cual se reorganiza la Dirección General Marítima y Portuaria.md": {
+        "blob": "0630080d23b6ff4c28f1f67412bba87d81e26edb",
+        "sha256": "8d97dcbe02d93001afdb0aa4c6f4cfcf80381f03742e1111a57a36962723b151"
+      },
+      "data/documents/bronze/normativa/Por medio de la cual se reglamenta el área de playa en el Balneario Turístico El Rodadero.md": {
+        "blob": "c6d723a96b58ef145264620d86262b1c0b708f6c",
+        "sha256": "0cbe2f11e4f9a330d1c9588a18ce54aa4b13555c05182d8c018e5d3a58998f41"
+      },
+      "data/documents/bronze/normativa/Por medio del cual se expide el Decreto Único Reglamentario del Sector Ambiente y Desarrollo Sostenible.md": {
+        "blob": "694d453e95ad03923208be13aa3b396be590ed0e",
+        "sha256": "5d25e86a107455e4dc6bfa0325114e0a3a258e78be55aea7b6367715c04e4e6f"
+      },
+      "data/documents/bronze/normativa/Por medio del cual se expide el Decreto Único Reglamentario del Sector Comercio, Industria y Turismo.md": {
+        "blob": "6cf5db309a01ec4b648511478605f8322d15869f",
+        "sha256": "45b67d739a77eba8f4bad0534146be9478f433f2724680321894dbaf5ae1a90d"
+      },
+      "data/documents/bronze/normativa/Por medio del cual se expide el Decreto Único Reglamentario del Sector Transporte.md": {
+        "blob": "141540f7da0b9b0f853282140f941f33b2953103",
+        "sha256": "6d46ef6e2686881d6669cb99b9715d43e0d32e793ee3f256ae98ff34e72cfac7"
+      },
+      "data/documents/bronze/normativa/Por medio del cual se expide el Decreto Único Reglamentario del Sector Vivienda, Ciudad y Territorio.md": {
+        "blob": "be1d3c7df068f3339a740af8fadb77b879d94e14",
+        "sha256": "a006ebcf051b6c9a8bfd095b8f06b4126daed38d8ae6f4eca6620bf368fc792f"
+      },
+      "data/documents/bronze/normativa/Por medio del cual se expiden las normas bases para la reglamentación de las actividades en las playas urbanas y rurales en el Distrito de Cartagena de Indias.md": {
+        "blob": "22655b610a040faee0d6de64d40f06fec3f09d9d",
+        "sha256": "2c4998785d01a21e9161218d958e31cf34dbf01fce34b7888d7981f76154e802"
+      },
+      "data/documents/bronze/normativa/Por medio del cual se implementa el Reglamento de Playas del Distrito Portuario, Logístico, Industrial, Turístico y Comercial de Turbo – Antioquia.md": {
+        "blob": "0c10ac0a923544adcda568de22db858f2a9e6c8c",
+        "sha256": "0e0d0f5541460a94541ab5201c5983a4fa7200b292ef9c16ea9e203b0a3b859d"
+      },
+      "data/documents/bronze/normativa/Por medio del cual se reglamenta el trámite de solicitud de concesiones para el desarrollo de actividades portuarias previstas en las Leyes 1ª de 1991 y 1242 de 2008.md": {
+        "blob": "d1aa241b7dd23ae2394342275cde950649fcebfe",
+        "sha256": "79bf2e9b2186f05e5b423b683243bce15bc767dba5287f5d5853b6f00d323dd1"
+      },
+      "data/documents/bronze/normativa/Por medio del cual se reglamenta el uso, zonificación y horario de las playas con vocación turística del Distrito Turístico, Cultural e Histórico de Santa Marta, aptas para la realización de activiades de aprovech.md": {
+        "blob": "be116e2d0925dce78138255e081ea775ccb41e2d",
+        "sha256": "928e648c1f8a230e1948a52fc89f92b0b5179489fbed06f33b447eef6f351cef"
+      }
+    }
+  },
+  "huellas_codigo": {
+    "metricas.py": "a83389b0cfafb25b3f91d9b3095f79433c80245ea5de9f3b8260037fb80adffa",
+    "comparar_fuentes.py": "edd060602c065e8ea31de24524dc978cf6ca54bca9681eee5df7b7d77533de07",
+    "fase4.py": "8aeb2190e70364774aeb6da476951c78f80f8e794fc1af5536277a900c95d801",
+    "estadistica.py": "2f985df61b1de35287f04353d0b179cebc551fc8067dcef33251108f59d7f783",
+    "preparar_desacuerdos.py": "7f6c80a746ef6f7c8057663878eb89db9e06d24d9359e4b9f9135f46ea6c61cb",
+    "calcular_desacuerdos.py": "a17f3758cdd8601cd17eee1bd56ba305d72aeb97f4dd6ec2799a40a42b94ef92",
+    "comun.py": "54e0114bf7b7046f28358e94aaa842078e820f31cf3fdca44ac0f8d380ace622"
+  },
+  "huellas_entrada": {
+    "entrada\\descomprimido\\mapping.csv": "c540da4dfd6ea50dc99d71839fcf1fed878cf2e73f285e6a8df08bcff317dc55",
+    "entrada\\descomprimido\\paginas.csv": "12c021f6d894a71854b9adbb0c329c3299c54b2be57821db50ca50a0fe8704a1",
+    "resultados\\paginas_excluidas.csv": "6b6e4eb90aae39fe19f1c54b9c530ef2e420804333b78b1d4dd2938433c58904"
+  }
+}

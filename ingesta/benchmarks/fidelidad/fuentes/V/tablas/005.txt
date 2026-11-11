@@ -1,0 +1,26 @@
+6 (Seis) | Jefe de División | 2040 | 15 |
+| 2 (Dos) | Director de Centro | 2105 | 14 |
+| 1 (Uno) | Profesional de Defensa | 3-1 | 12 |
+| 4 (Cuatro) | Técnico de Servicios | 5-1 | 27 |
+| 1 (Uno) | Auxiliar de Servicios | 6-1 | 8 |
+| 2 (Dos) | Auxiliar de Servicios | 6-1 | 4 |
+
+**Artículo 3°.** Apruébase la creación en la planta de personal del Ministerio de Defensa Nacional – Dirección General Marítima, los siguientes empleos:
+
+### Despacho del Director General
+
+| N° Empleos | Denominación | Código | Grado |
+|---|---|---|---|
+| 3 (Tres) | Subdirector del Sector Defensa | 1-2-1 | 1 |
+| 2 (Dos) | Asesor del Sector Defensa | 2-2 | 12 |
+| 1 (Uno) | Profesional de Defensa | 3-1 | 17 |
+| 2 (Dos) | Profesional de Defensa | 3-1 | 8 |
+| 3 (Tres) | Profesional de Defensa | 3-1 | 5 |
+| 1 (Uno) | Profesional de Defensa | 3-1 | 3 |
+
+### Planta Global
+
+| N° Empleos | Denominación | Código | Grado |
+|---|---|---|---|
+| 1 (Uno) | Profesional de Defensa | 3-1 | 3 |
+| 5 (Cinco) | Técnico de Servicios | 5-1 | 

@@ -1,0 +1,53 @@
+{
+  "tests": {
+    "aprobados": 143,
+    "previos": 123,
+    "nuevos": 20
+  },
+  "ruff": {
+    "check": "correcto",
+    "format_check": "correcto",
+    "archivos": 12
+  },
+  "ejecuciones_fase5": 4,
+  "comparar_fuentes_exit_code": 0,
+  "documentos_recalculados": 53,
+  "agregados": 108,
+  "calibracion": {
+    "contenido": {
+      "correcto": true,
+      "comprobaciones_metricas": 32,
+      "controles_bucles": 6
+    },
+    "estricto": {
+      "correcto": true,
+      "comprobaciones_metricas": 32,
+      "controles_bucles": 6
+    }
+  },
+  "muestreo_conservado": {
+    "desacuerdos.csv": true,
+    "clave_desacuerdos.csv": true,
+    "muestreo_desacuerdos.json": true,
+    "evaluacion_desacuerdos.json": true
+  },
+  "huellas_codigo": {
+    "metricas.py": true,
+    "comparar_fuentes.py": true,
+    "fase4.py": true,
+    "estadistica.py": true,
+    "preparar_desacuerdos.py": true,
+    "calcular_desacuerdos.py": true,
+    "comun.py": true
+  },
+  "huellas_entradas": {
+    "entrada\\descomprimido\\mapping.csv": true,
+    "entrada\\descomprimido\\paginas.csv": true,
+    "resultados\\paginas_excluidas.csv": true
+  },
+  "repetibilidad": {
+    "identicos": 159,
+    "archivos_run1": 159,
+    "diferencias": 0
+  }
+}

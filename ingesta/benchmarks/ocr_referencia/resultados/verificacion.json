@@ -1,0 +1,41 @@
+{
+  "pytest": {
+    "pasadas": 75,
+    "fallidas": 0,
+    "codigo_salida": 0,
+    "aislamiento": "-I -B; complementos autom?ticos desactivados; sin conftest general ni cach?"
+  },
+  "ruff_check": {
+    "codigo_salida": 0,
+    "resultado": "correcto"
+  },
+  "ruff_format_check": {
+    "codigo_salida": 0,
+    "archivos": 3,
+    "resultado": "ya formateados"
+  },
+  "calibracion": {
+    "codigo_salida": 0,
+    "correcta": true,
+    "pruebas_metricas": 4,
+    "casos_bucles_control": 6
+  },
+  "validar_u": {
+    "codigo_salida": 1,
+    "motivo": "Discrepancia de integridad: <|det|> residual en p?gina 33 del documento 5beb; informes completos"
+  },
+  "consistencia_salidas": "Correcta: unicidad, inclusi?n, duplicado, sumas, peores casos y conteos CSV/JSON",
+  "huellas_sha256": {
+    "ingesta/benchmarks/ocr_referencia/metricas.py": "df233da6ccd5c39c6176bc124178fd9417e245e052d4b8d2fc6fb8508ee618cb",
+    "ingesta/benchmarks/ocr_referencia/validar_u.py": "0509782d391d2e26f41d3e310ecd26a87e56e95bbe40584bcf3f6809e10ce2bd",
+    "ingesta/benchmarks/ocr_referencia/README.md": "e616e01beeddd9c7cdfc1d5f7be0020b594e474639f030c34ac5305aa8e1f0d4",
+    "ingesta/tests/unit/test_ocr_referencia.py": "9977bdd8b63153b9305180e959ac8bc185bb6e9e00cc8dce6939f51ae848c18d",
+    "ingesta/benchmarks/ocr_referencia/resultados/integridad.json": "319ad8cab4ba0fc3cb842fccc178e3e6e89a8d025a8ff1e95d4b4b14805d0ec6",
+    "ingesta/benchmarks/ocr_referencia/resultados/calibracion.json": "b81910a4c4363781edca4b854993e2cc656accc11b5c04e2a82327938aeec6c6",
+    "ingesta/benchmarks/ocr_referencia/resultados/paginas_excluidas.csv": "6b6e4eb90aae39fe19f1c54b9c530ef2e420804333b78b1d4dd2938433c58904",
+    "ingesta/benchmarks/ocr_referencia/resultados/u_vs_capa_texto.csv": "e1b82358d345896bcc5a53bd79db24a29dc3c88f7fcafd8b05d14f3b8a19640f",
+    "ingesta/benchmarks/ocr_referencia/resultados/u_sospechosas.csv": "769131b205d8454e641effe31f4ee4a082a48595d7441f734bef2f4e63516df5",
+    "ingesta/benchmarks/ocr_referencia/resultados/resumen.json": "b96cf3b019264b17e9570c371ccb67a7011b62e04d22121e671d19cb03bc37b3",
+    "ingesta/benchmarks/ocr_referencia/resultados/informe_fase1.md": "4801790a981638e882faa090669d7ee20a261a332e25690ad4c9b38fc910cfcc"
+  }
+}

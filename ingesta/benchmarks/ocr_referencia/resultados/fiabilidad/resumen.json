@@ -1,0 +1,2671 @@
+{
+  "completo": true,
+  "capas": "C:\\Users\\Migue\\Desktop\\playas\\ingesta\\benchmarks\\ocr_referencia\\trabajo\\corridas\\runA\\pdf\\capas",
+  "capas_md": "C:\\Users\\Migue\\Desktop\\playas\\ingesta\\benchmarks\\ocr_referencia\\trabajo\\corridas\\runA\\md\\capas",
+  "semilla": 20261110,
+  "bootstrap_repeticiones": 2000,
+  "calibracion": {
+    "correctas": 64,
+    "total": 64,
+    "controles_bucles_correctos": 12,
+    "controles_bucles": 12
+  },
+  "regla": {
+    "e_U": 0.0054,
+    "ic95_e_U": [
+      0.0031,
+      0.0088
+    ],
+    "verde_cer_menor": 0.0046,
+    "amarillo_cer_desde": 0.0154,
+    "rojo_cer_mayor": 0.03,
+    "gold_rojo_cobertura_menor": 0.99,
+    "silver_campo_degradacion": "perdida_silver_otra",
+    "silver_rojo_perdida_otra_mayor": 0.05,
+    "silver_amarillo_perdida_otra_mayor": 0.02,
+    "critico_amarillo_recall_menor": 0.9
+  },
+  "colores_total": {
+    "verde": 22,
+    "no distinguible de U": 15,
+    "amarillo": 10,
+    "rojo": 6,
+    "sin evaluar": 0
+  },
+  "colores_automaticos_total": {
+    "verde": 22,
+    "no distinguible de U": 14,
+    "amarillo": 10,
+    "rojo": 7,
+    "sin evaluar": 0
+  },
+  "sensibilidad_grado": {
+    "ap_carlos_alberto_zuniga_mejia_y_otros_vs_dimar_y_otros_d512": {
+      "cer": 0.007814109009849413,
+      "cer_grado_unificado": 0.007814109009849413,
+      "huella_u": "4e650724267c535dd7ad903592df29f2c51f45ce5a55e76b0662bff0abe1c60e",
+      "huella_bronce": "81b7cb24754ce447790e03b100a27c12fcb2ea092e4d2a3a1f5eb54f53c6de5d"
+    },
+    "ap_felipe_jose_campo_fernandez_vs_corpamag_y_otros_ce3c": {
+      "cer": 0.0038639255340520992,
+      "cer_grado_unificado": 0.0038639255340520992,
+      "huella_u": "6a7fba01e2c798e9c81e83b7c82b46bc3d69526acfca25106f183dce873759bd",
+      "huella_bronce": "d91dba8fe6828e47fc53030970dad8958bcee54a735ce53b5dd2492eff92cebd"
+    },
+    "ap_gabriel_antonio_carrero_vs_dimar_y_otros_a44a": {
+      "cer": 0.005794102431453699,
+      "cer_grado_unificado": 0.005782606196470656,
+      "huella_u": "ec957e68a50e3320379bcca2e95c345c1bc2c30872a24bd9b5cfc9f1921c354b",
+      "huella_bronce": "db5226e4f389e10a55d94793a77f4b1f1ee3ba634e607c3e3936b4ccb66ccb44"
+    },
+    "ap_gerardo_antenor_lemus_orozco_vs_distrito_de_santa_mata_y_otros_7c8c": {
+      "cer": 0.04238934578874785,
+      "cer_grado_unificado": 0.04228868241712888,
+      "huella_u": "66270853d66baf4745a2e71c8421c32cb0e0c8a830a9ad0bde513e954033ff85",
+      "huella_bronce": "5036300b8c89819ab48f471a5ace08df46c33ce0bb746e95be290b26802cc2f4"
+    },
+    "ap_gieseken_cuello_cia_s_en_c_vs_dimar_y_otros_a4be": {
+      "cer": 0.0013306606388877042,
+      "cer_grado_unificado": 0.0012368320040943405,
+      "huella_u": "b957ca3662261cf318fe283d6e2730b861a126c00bdfe448425837074684eedf",
+      "huella_bronce": "668e84b180fe84216abf95c3a92be0f63a40e4db9034e73d39f13e37e4d7c7a2"
+    },
+    "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0": {
+      "cer": 0.007964550843068423,
+      "cer_grado_unificado": 0.007964550843068423,
+      "huella_u": "dc8e6e01c12af5c6ff1807c3a1a93ff01e6f5cb04ba7c42331a6edaea4b780e1",
+      "huella_bronce": "a257075a7797455e825d5c9d35d37bc4d46d7acf9ac9ff7f96625ea0c6e654c2"
+    },
+    "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab": {
+      "cer": 0.0036813203669049297,
+      "cer_grado_unificado": 0.0036813203669049297,
+      "huella_u": "3d5cf7c33478e5a7720b19f2b53865fe3d8213a42ccb85769a73d4e742a004a7",
+      "huella_bronce": "292d0ab83705c19aba67531ee64330708637ebe981639e241ce70ad86606f552"
+    },
+    "ap_procuraduria_general_de_la_ancion_vs_coorpamag_y_otros_9523": {
+      "cer": 0.011731672004562804,
+      "cer_grado_unificado": 0.011714122756986795,
+      "huella_u": "638fdb12db2c8eceb824ed8d5b4f8082a9e5b9a1fd6d0e4ebec72e301a95df07",
+      "huella_bronce": "93ec82d3a4df00dc0b0bc9a7cd74f290bd1a705e4951b8c291ffaed5deb9ad32"
+    },
+    "ap_rodrigo_martinez_silva_vs_minambiente_y_otros_19a7": {
+      "cer": 0.010753354338513824,
+      "cer_grado_unificado": 0.010753354338513824,
+      "huella_u": "163fa7fad7a1221bd7322e9082aa4205db68abba48f84a22e6fafd34f7cb992d",
+      "huella_bronce": "23b2e6d84d2371b7b7bea1c5e5f722a5cd4d879366b42df6b44e9beb025ee877"
+    },
+    "cc_tu_039_2024_modesto_manjarrez_vs_autopistas_del_caribe_consulta_previa_via_d92b": {
+      "cer": 0.004179232473379547,
+      "cer_grado_unificado": 0.004153505324090616,
+      "huella_u": "2a2dfb7d4c784833aad63dd2a9af01411d96bf10b074908b787383a0ff40769b",
+      "huella_bronce": "5dcca96c656e3032cad899f0c741622a8b6293d1f2a56e1332179d7e78bc29db"
+    },
+    "ce_1era_ns_2009_603_jose_palencia_vs_mindefensa_resolucion_pilotos_embargaciones_99fd": {
+      "cer": 0.0029070250336384325,
+      "cer_grado_unificado": 0.002309008455289955,
+      "huella_u": "2cbcddb7e7950e75fbee97cef5259fdbe417ccf9751c75ccfeb7c87c402f6e91",
+      "huella_bronce": "32836344efc443a1b568c6306a4f3cc6299f6892337ca56865c4871c3cf083e0"
+    },
+    "ce_2da_ap_2010_028_radley_bent_vs_dimar_danos_ambientales_embarcaciones_ba1e": {
+      "cer": 0.00141643059490085,
+      "cer_grado_unificado": 0.00141643059490085,
+      "huella_u": "979a62b5f1908ede37b08588b7b0cdf73fb1c5d5d6c414237444cd9b3e07766a",
+      "huella_bronce": "2b8ab42313edc184f60c84d9e693a08991f0827a2eb9c1288dee74497c57623d"
+    },
+    "ce_2da_ap_2011_178_jose_caballero_vs_distrito_cartagena_venta_inmueble_valor_cul_092f": {
+      "cer": 0.004144328765118109,
+      "cer_grado_unificado": 0.00409858562201526,
+      "huella_u": "908826517ff41d6106a78ed0c7a5799d67effe74b4a4d9838045f557695ac3ad",
+      "huella_bronce": "4b678af9936dead31d96733d335f2820d7d091bf2b31fb934fc3c89abde4dc81"
+    },
+    "ce_2da_ap_2011_842_gabriel_carrero_vs_dimar_erosion_costera_93f6": {
+      "cer": 0.0019792798811434954,
+      "cer_grado_unificado": 0.0019792798811434954,
+      "huella_u": "76f6179fb456cf85b21c6b238991d10308acda6068d7ef93708ff994c415dcbe",
+      "huella_bronce": "866fd18bd3bb6978c62564925b7f916f67b4b5c03096fea3f58df17e0e65afe6"
+    },
+    "ce_2da_ap_2015_550_angela_munoz_vs_dpto_cordoba_bienes_de_uso_publico_bcec": {
+      "cer": 0.014487957345100203,
+      "cer_grado_unificado": 0.014475700189985905,
+      "huella_u": "8f73a2347a698bf714415aaf69322aa8b50e3d88722330614bc5736c835d3f1f",
+      "huella_bronce": "8ce18146690045e251dfcb5d609707fa504e1ae92a394c867a1752e8dedf11dc"
+    },
+    "ce_2da_ap_2016_328_ricardo_cabrales_vs_mun_covenas_playa_uso_publico_37b2": {
+      "cer": 0.019094945314098014,
+      "cer_grado_unificado": 0.019070881110803625,
+      "huella_u": "ef0917c1adcd4c2c9d6887c3282ad3586140bf1e18b34c216d274d1c9030cc1f",
+      "huella_bronce": "522c7a51d9e7558361845a2eb72123be4ef30dbbbf3df6a0a63cdb3d18b1ab80"
+    },
+    "ce_2da_ap_2017_103_personeria_vs_distrito_cartagena_desembocadura_afb0": {
+      "cer": 0.017049735155371653,
+      "cer_grado_unificado": 0.017049735155371653,
+      "huella_u": "ca214f71d855c3f39b0b25b211fd164cd9a2c7e884b3b9f32d427c2be8487cda",
+      "huella_bronce": "92a9439ec8b229dc2956c613b54a047d88aa3edde60e680fa9303bd6192d5fc6"
+    },
+    "ce_2da_ap_2021_041_edgar_stephengs_vs_archipielago_san_andres_desarrollo_urbanis_0b8f": {
+      "cer": 0.031225714821663048,
+      "cer_grado_unificado": 0.03119891738349814,
+      "huella_u": "6b10c832e2bb977ba52e8431164f6699387b649e1bde48045ff842385b560473",
+      "huella_bronce": "775773d123501b3b8d4e963ec64f86bf7509fbc08fed76c1e4f8881b0f524c0d"
+    },
+    "ce_2da_nyr_1994_993_inversiones_araujo_vs_capitania_puerto_cartagena_urbanismo_p_86ff": {
+      "cer": 0.0012301013024602027,
+      "cer_grado_unificado": 0.0011577424023154848,
+      "huella_u": "26410bdba24ee8dc087d9942fa298572c45a07384019b8cec183b4e3cc7ab3e6",
+      "huella_bronce": "5c09c1c8fa7db1f98dd91db0460dae1bb16b89e1b197e537f522b4a1f2c14a60"
+    },
+    "ce_2da_nyr_1998_102_flury_valencia_vs_mindefensa_uso_urbanistico_playa_ba43": {
+      "cer": 0.0018506700701978302,
+      "cer_grado_unificado": 0.0018293980004254415,
+      "huella_u": "7d61910e8e9996afab6a2a47e26e0bc5ace690eac81ed35dca2ab97baf86e530",
+      "huella_bronce": "1c5cb61fd48219a8dd9611f2f2a0812ff1c81a4bdb8a180c699d281cee3e4d30"
+    },
+    "ce_2da_nyr_1999_503_inversiones_mercedes_vs_dimar_concesiones_uso_playa_f07f": {
+      "cer": 0.0030102851408980685,
+      "cer_grado_unificado": 0.0027594280458232293,
+      "huella_u": "bef35179f73e7fb831b6135f0b1ca63bc22e843aed2baf5af605356a37b0a981",
+      "huella_bronce": "b87481422e030efe297fa3b01d1945ef162d3ad1054593175332146487e04ab1"
+    },
+    "ce_2da_nyr_2009_164_fepep_vs_dimar_playa_uso_urbanistico_e806": {
+      "cer": 0.017899523524829247,
+      "cer_grado_unificado": 0.017899523524829247,
+      "huella_u": "d6c0b3f98bb248499e501d950b0cfe603a557cca0f408f4453dd87ec356e2ae7",
+      "huella_bronce": "cdede5b3ff36dd100b8354ffd039a72ff459a9d7e623205f22b5895ff4d0de1b"
+    },
+    "ce_consulta_1990_horacio_serpa_uso_publico_playa_00a7": {
+      "cer": 0.0009681984061964698,
+      "cer_grado_unificado": 0.000633052804051538,
+      "huella_u": "d647dc5110e5dec33d535637b4db8b790be1a6ab6f0212fccd6e72ba13225258",
+      "huella_bronce": "9f301b53d861b1d5f1edff2b750063b5f9cd0da1bacfd448e586e21142e8cb7c"
+    },
+    "ce_consulta_2005_168_mindefensa_bienes_de_uso_publico_ea75": {
+      "cer": 0.0016841610527964907,
+      "cer_grado_unificado": 0.0015666614444618519,
+      "huella_u": "14af9dbf95befc0c8f6a21ea6dc5f54da37b2bcc2749a0c18947ff9f8eef0f6a",
+      "huella_bronce": "f1ee00758e1392e0fbc6ae7dadb6654437f4ea5036f6de22773a03629c021ce8"
+    },
+    "ce_consulta_2010_071_minambiente_bienes_de_uso_publico_1d4e": {
+      "cer": 0.006658860542407361,
+      "cer_grado_unificado": 0.006658860542407361,
+      "huella_u": "9e2c2ffb6c0663966bbf1f46f1dfbd4d9fdcb21a529d6658de306cd008ec353e",
+      "huella_bronce": "046fe4193bc1a472ea7c89ac51977494b6f72a2f2e6a841100e5f8288960877c"
+    },
+    "taa_2da_rd_2015_281_xxxx_vs_dpto_antioquia_responsabilidad_del_estado_98ef": {
+      "cer": 0.03892298951730591,
+      "cer_grado_unificado": 0.03892298951730591,
+      "huella_u": "ee58f580dcf8fd24dcbff0c6bf7d0abc53e401693a20d30082e3a47650276c9e",
+      "huella_bronce": "be8c6a522df290c7bcbd1c2116c16d3cbdfb5e2d2c7393aa62fb3a59556a5358"
+    },
+    "por_el_cual_adiciona_al_titulo_4_de_la_parte_2_del_libro_2_del_decreto_1076_de_2_be8f": {
+      "cer": 0.006794033510420924,
+      "cer_grado_unificado": 0.006794033510420924,
+      "huella_u": "fbb881762478ebb083da1385fd47516686d6363804af171fbffbb325501f7b50",
+      "huella_bronce": "f02458db63f83a248211a27d7de122f9ed66f71ef28a7b1d7c4d385c8b5efd89"
+    },
+    "por_el_cual_se_aprueba_el_ajuste_y_la_modificacion_a_la_planta_de_personal_de_em_cc7b": {
+      "cer": 0.00975437771771066,
+      "cer_grado_unificado": 0.00975437771771066,
+      "huella_u": "11595ac3cd47813cb6de789896de045dab3aa75cf61b6433955e004dbcae1a83",
+      "huella_bronce": "3d43411e6c763ba7911e6776cb877c07a13036f1e94a7acfd10fd51998bfef3d"
+    },
+    "por_el_cual_se_dicta_el_codigo_nacional_de_recursos_naturales_renovables_y_de_pr_2880": {
+      "cer": 0.002305764411027569,
+      "cer_grado_unificado": 0.002305764411027569,
+      "huella_u": "7df0e17807991241b6e23eab352bd47ee99db2fae201382db47d3d7e5fc7fe8a",
+      "huella_bronce": "4d1312a9cbcff7e2815ddddddb6e304d48fdb0b3d281c2e973daed09712c3230"
+    },
+    "por_el_cual_se_dictan_normas_para_simplificar_suprimir_y_reformar_tramites_proce_5f39": {
+      "cer": 0.0010367652922880612,
+      "cer_grado_unificado": 0.0010367652922880612,
+      "huella_u": "aee854fd35c625c4507d96406bf07d6a1d44a10079f912a9c9920abffc7db9a4",
+      "huella_bronce": "05eb9ba36286abf7c3c9593cf825a5fe145cf2d08538a7747ee5a904a827b191"
+    },
+    "por_el_cual_se_dictan_normas_sobre_la_prevencion_de_la_contaminacion_del_medio_m_c9b9": {
+      "cer": 0.0021167557932263814,
+      "cer_grado_unificado": 0.0021167557932263814,
+      "huella_u": "5b09433c2c21a1b2be5a0fee29a5f5cd73e527cef6c15646c1670eef17b9d4c8",
+      "huella_bronce": "e671c7011e6c2aa1436a4b3891d07a9fc1423bab520da2ea4b260c553f83130f"
+    },
+    "por_el_cual_se_expide_el_codigo_de_comercio_05d5": {
+      "cer": 0.004807692307692308,
+      "cer_grado_unificado": 0.004807692307692308,
+      "huella_u": "bdbb18e4e86d395d48d47425fb4a01ec2e654d8023de043d997c02876fff1ade",
+      "huella_bronce": "8801616e8645765daaabe708f601bf39f7a56129a4cf824a92783ba29b0498c2"
+    },
+    "por_el_cual_se_modifica_el_articulo_16_del_decreto_3888_del_10_de_octubre_de_200_0be7": {
+      "cer": 0.0008960573476702509,
+      "cer_grado_unificado": 0.0008960573476702509,
+      "huella_u": "db355b72b8afa56bb3bce7af424d89620ca7310090cccdfe39fd3a2413c7b0f4",
+      "huella_bronce": "b0482bffcb0dc5e678ec0acbe0fb1552bebeb489dea7d30283dd07a7a1c47b57"
+    },
+    "por_el_cual_se_reglamenta_el_funcionamiento_de_los_comites_locales_para_la_organ_cb33": {
+      "cer": 0.00597119775201967,
+      "cer_grado_unificado": 0.00597119775201967,
+      "huella_u": "df56d101be58585a0a50ce65c1c8302271db8688c3690e267f91cc6da7ad5f21",
+      "huella_bronce": "1d4af8197187bf59f33cff57b983910253239ed60c4a1f898247e6c773ec4a2d"
+    },
+    "por_el_cual_se_reglamenta_el_funcionamiento_de_los_comites_locales_para_la_organ_c8e5": {
+      "cer": 0.001336898395721925,
+      "cer_grado_unificado": 0.001336898395721925,
+      "huella_u": "1c939b24717a8a0a89970f0bf54250dc814bfcfbc3ed7717c1c94894d28eeef5",
+      "huella_bronce": "4981e365c5edfd48338bdfbb8aead464bf700dab3df8ba02506bfce389b8c12d"
+    },
+    "por_el_cual_se_reglamenta_el_manejo_del_espacio_publico_en_los_planes_de_ordenam_d195": {
+      "cer": 0.002913401647578863,
+      "cer_grado_unificado": 0.002913401647578863,
+      "huella_u": "0216577581adceef0a2977b27d2674c6dc43bd0d6869a095ea10afd9015f6bbc",
+      "huella_bronce": "c16d8d1bf1374bb00a3a71c5c7c7980cfeac167a01effefa88059a1b64fa6894"
+    },
+    "por_el_cual_se_reglamenta_el_servicio_publico_de_transporte_maritimo_cdf2": {
+      "cer": 0.0003963142772218369,
+      "cer_grado_unificado": 0.0003963142772218369,
+      "huella_u": "9b1893da5bfe3ceeca32d5c0f40529713b4a1b3503a9291d8c2271daf7af2440",
+      "huella_bronce": "cf3268c0e657817904b4472facded01adbc98969d4656bf7d4dbfb4344d6558b"
+    },
+    "por_el_cual_se_reglamenta_la_ley_13_de_1990_15e7": {
+      "cer": 0.0003160556257901391,
+      "cer_grado_unificado": 0.0003160556257901391,
+      "huella_u": "abb94d3f3fb356dcc5793401e219ea903d319cad45118317238136c5cd7a42c5",
+      "huella_bronce": "a9335bff3cf1fd795ec7ce47256e371776365b52409f4832d1f230abe727d2eb"
+    },
+    "por_el_cual_se_reglamenta_la_habilitacion_y_la_prestacion_del_servicio_publico_d_aeb1": {
+      "cer": 0.00015661707126076742,
+      "cer_grado_unificado": 0.00015661707126076742,
+      "huella_u": "52fa4b69c7713c50faecb7b33cc060007852214c6c14d31852d40b6eeba35bbd",
+      "huella_bronce": "9194fa8bc4b58d453bdec0cd7bca7d93235831a4d68ad714a3a286626905ba7d"
+    },
+    "por_el_cual_se_reglamenta_parcialmente_el_articulo_noveno_de_la_ley_10_de_1978_922e": {
+      "cer": 0.08517960851796086,
+      "cer_grado_unificado": 0.07227360722736072,
+      "huella_u": "05006c99c11a447c65f12fb8840cbebd13a5c758471f5fc151086d7e29037dc6",
+      "huella_bronce": "5b8610ed7b8f99a8b13813cfc228357abdf0fcef155e17c0bf58f75bd8c3528a"
+    },
+    "por_el_cual_se_reglamenta_parcialmente_la_ley_47_del_19_de_febrero_de_1993_3e80": {
+      "cer": 0.0016789791806581598,
+      "cer_grado_unificado": 0.0010073875083948958,
+      "huella_u": "5028be8ab23ab39a70f419ec5e7eabfb60271fd71fa146621e9de9551e6ad356",
+      "huella_bronce": "aaf5331b2ff861675310e9cc7db0233551c74edd7f770c6a34a6706e77693a60"
+    },
+    "por_el_cual_se_reglamentan_las_unidades_ambientales_costeras_uac_y_las_comisione_e828": {
+      "cer": 0.00834465359984475,
+      "cer_grado_unificado": 0.00834465359984475,
+      "huella_u": "1da5a25bcb6c3f9a147c3561988cc881f7c623177aff2411cd14bf2ff61159c8",
+      "huella_bronce": "16281318255529d7cac551a77594378dfe0bd597413ca18b341b70213437e2c9"
+    },
+    "por_el_cual_se_reglamentan_las_disposiciones_sobre_licencias_urbanisticas_recono_e4a6": {
+      "cer": 0.0018037518037518038,
+      "cer_grado_unificado": 0.0018037518037518038,
+      "huella_u": "f02e99f238f107a436003a2fa5b2c95703c340d25b02af97ded975f4268f5073",
+      "huella_bronce": "3486773f13219eaa0dbaa83c8b25d664f29ea35b4a4a6743e8f1f6bda4d862cf"
+    },
+    "por_el_cual_se_reorganiza_la_direccion_general_maritima_y_portuaria_0fec": {
+      "cer": 0.0001374570446735395,
+      "cer_grado_unificado": 0.0001374570446735395,
+      "huella_u": "5165b283a419299a4b51fb5362918939de9c384614a0e64ee0219db4789fbcba",
+      "huella_bronce": "336aeb21f867145f691975a05bddcf99a9b654c719392b0dcd0013ed21f7639f"
+    },
+    "por_medio_de_la_cual_se_reglamenta_el_area_de_playa_en_el_balneario_turistico_el_9c01": {
+      "cer": 0.05920073285239895,
+      "cer_grado_unificado": 0.05920073285239895,
+      "huella_u": "789698e951dd7c5ccd0d754a729a64a52a087dbee880c6448730214b92481211",
+      "huella_bronce": "996f9ea526c016291c97207346d8c4513ca33be13a4ad9cede62b0b9cbc51d65"
+    },
+    "por_medio_del_cual_se_expide_el_decreto_unico_reglamentario_del_sector_ambiente__f508": {
+      "cer": 0.012421807832557589,
+      "cer_grado_unificado": 0.012421807832557589,
+      "huella_u": "985f3f11c345d5eb49f7a52c338f60475809bcab026d54c4bb9c5167eca0984e",
+      "huella_bronce": "0f57a74905eaf2f7479913f4af28320d8238772faca2046cd54aad15260248aa"
+    },
+    "por_medio_del_cual_se_expide_el_decreto_unico_reglamentario_del_sector_comercio__38da": {
+      "cer": 0.010789345521297719,
+      "cer_grado_unificado": 0.010789345521297719,
+      "huella_u": "7024b7ef8fb226805a60130410bdcb31d82e38dcdd0f28ec50b0deb572a21ded",
+      "huella_bronce": "d2502dd73492c70a830b74f492b868c33ebac45e213764cef6e22983d21a07d9"
+    },
+    "por_medio_del_cual_se_expide_el_decreto_unico_reglamentario_del_sector_transport_1cd3": {
+      "cer": 0.0006322202425426748,
+      "cer_grado_unificado": 0.0006322202425426748,
+      "huella_u": "85cd5b1410ace79d1871e352a2df41a5900d0525895e2c7e5c11503d8356eaa9",
+      "huella_bronce": "404c730869c37eeedb9d7d07d9fc385fd23c40ea3f04e0ba343db13e24b77c81"
+    },
+    "por_medio_del_cual_se_expide_el_decreto_unico_reglamentario_del_sector_vivienda__404e": {
+      "cer": 0.008477500123219479,
+      "cer_grado_unificado": 0.008477500123219479,
+      "huella_u": "c34afb48eca579328437d8d7c75b9e8fa27cf426f129be72f616203541fdcc0a",
+      "huella_bronce": "2758ad212be2e3540e9a10a9d733bef62b48c892121e2fbe1ab51c568e551d59"
+    },
+    "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb": {
+      "cer": 0.055413679075401893,
+      "cer_grado_unificado": 0.055413679075401893,
+      "huella_u": "999beef51387c48cd762b06bd94665e0ade97e2ef838517d2726aa4b13881801",
+      "huella_bronce": "94b4e4d46cd9eb5637800eb2f1a0952ee8b4dd476fc49d95803f11b554d7fc12"
+    },
+    "por_medio_del_cual_se_implementa_el_reglamento_de_playas_del_distrito_portuario__d6b7": {
+      "cer": 0.07036807354175026,
+      "cer_grado_unificado": 0.07036807354175026,
+      "huella_u": "cefaa48436f2c260eb10bd05e7dcc1d9841e3c0bbe287a02ae8f011cc1850c60",
+      "huella_bronce": "c5f2d4bd4d81b2ce7fa1564613ca10336f829caeef03f2231a5b756f7ed9cf73"
+    },
+    "por_medio_del_cual_se_reglamenta_el_tramite_de_solicitud_de_concesiones_para_el__1ee0": {
+      "cer": 0.0027154938319497246,
+      "cer_grado_unificado": 0.0027154938319497246,
+      "huella_u": "56956b16da9293bd9df48206f2a319b0e68c67ac046956d61e1141f9f5fb1f21",
+      "huella_bronce": "679e0ba40601437de7a8980662fb2319e6b6b720893ce301ca3ac02abd0eedbd"
+    },
+    "por_medio_del_cual_se_reglamenta_el_uso_zonificacion_y_horario_de_las_playas_con_8351": {
+      "cer": 0.009841151851073801,
+      "cer_grado_unificado": 0.009841151851073801,
+      "huella_u": "f03bd70f7d53c03e084cf8c490aa3cbefadf126935c46416c17ed3407fb0ff66",
+      "huella_bronce": "8625797a4d900ab0af46db1eaef4f07f97d7cba10271eb99ae42a84aec4a4337"
+    },
+    "_corpus": {
+      "cer": 0.012605911469448682,
+      "cer_grado_unificado": 0.012553147336325069
+    }
+  },
+  "repetibilidad": {
+    "archivos": 550,
+    "identicos": 550,
+    "distintos": 0,
+    "por_etapa": {
+      "bronze": {
+        "archivos": 220,
+        "identicos": 220,
+        "distintos": 0
+      },
+      "silver": {
+        "archivos": 220,
+        "identicos": 220,
+        "distintos": 0
+      },
+      "gold": {
+        "archivos": 110,
+        "identicos": 110,
+        "distintos": 0
+      }
+    },
+    "por_tipo": {
+      "pdf": {
+        "archivos": 530,
+        "identicos": 530,
+        "distintos": 0,
+        "por_etapa": {
+          "bronze": {
+            "archivos": 212,
+            "identicos": 212,
+            "distintos": 0
+          },
+          "silver": {
+            "archivos": 212,
+            "identicos": 212,
+            "distintos": 0
+          },
+          "gold": {
+            "archivos": 106,
+            "identicos": 106,
+            "distintos": 0
+          }
+        }
+      },
+      "md": {
+        "archivos": 20,
+        "identicos": 20,
+        "distintos": 0,
+        "por_etapa": {
+          "bronze": {
+            "archivos": 8,
+            "identicos": 8,
+            "distintos": 0
+          },
+          "silver": {
+            "archivos": 8,
+            "identicos": 8,
+            "distintos": 0
+          },
+          "gold": {
+            "archivos": 4,
+            "identicos": 4,
+            "distintos": 0
+          }
+        }
+      }
+    },
+    "rutas_distintas": [],
+    "solo_runA": [],
+    "solo_runB": []
+  },
+  "por_conjunto": {
+    "ajuste": {
+      "documentos": 21,
+      "paginas_evaluadas": 429,
+      "colores": {
+        "verde": 6,
+        "no distinguible de U": 7,
+        "amarillo": 4,
+        "rojo": 4,
+        "sin evaluar": 0
+      },
+      "colores_automaticos": {
+        "verde": 6,
+        "no distinguible de U": 6,
+        "amarillo": 4,
+        "rojo": 5,
+        "sin evaluar": 0
+      },
+      "agregado": {
+        "total": {
+          "ediciones_caracteres": 23127,
+          "caracteres_ref": 1136783,
+          "ediciones_palabras": 5187,
+          "palabras_ref": 180092,
+          "palabras_hip": 177698,
+          "palabras_comunes": 175828,
+          "lcs": 171389,
+          "ngramas_ref": 179234,
+          "crit_comunes": 12032,
+          "crit_total_ref": 12975,
+          "cer": 0.020344252157183912,
+          "wer": 0.02880194567221198,
+          "recuperacion": 0.9763232125802368,
+          "precision": 0.9894765275917567,
+          "orden_lcs": 0.9562304027137708,
+          "recall_critico": 0.9273217726396917
+        },
+        "digital": {
+          "ediciones_caracteres": 18291,
+          "caracteres_ref": 844093,
+          "ediciones_palabras": 3699,
+          "palabras_ref": 133951,
+          "palabras_hip": 131811,
+          "palabras_comunes": 130781,
+          "lcs": 128052,
+          "ngramas_ref": 133315,
+          "crit_comunes": 9153,
+          "crit_total_ref": 9890,
+          "cer": 0.021669413204469176,
+          "wer": 0.0276145754790931,
+          "recuperacion": 0.9763346298273249,
+          "precision": 0.9921857811563527,
+          "orden_lcs": 0.9605220717848704,
+          "recall_critico": 0.9254802831142568
+        },
+        "ocr": {
+          "ediciones_caracteres": 4836,
+          "caracteres_ref": 292690,
+          "ediciones_palabras": 1488,
+          "palabras_ref": 46141,
+          "palabras_hip": 45887,
+          "palabras_comunes": 45047,
+          "lcs": 43337,
+          "ngramas_ref": 45919,
+          "crit_comunes": 2879,
+          "crit_total_ref": 3085,
+          "cer": 0.016522600703816323,
+          "wer": 0.03224897596497692,
+          "recuperacion": 0.9762900674020936,
+          "precision": 0.9816941617451566,
+          "orden_lcs": 0.9437705524946101,
+          "recall_critico": 0.93322528363047
+        }
+      },
+      "agregado_capas": {
+        "silver_perdida": {
+          "documentos": 21,
+          "numerador": 2570,
+          "denominador": 175903,
+          "valor": 0.014610325008669552
+        },
+        "perdida_silver_mobiliario": {
+          "documentos": 21,
+          "numerador": 2467,
+          "denominador": 175903,
+          "valor": 0.014024775018049721
+        },
+        "perdida_silver_otra": {
+          "documentos": 21,
+          "numerador": 103,
+          "denominador": 175903,
+          "valor": 0.0005855499906198303
+        },
+        "silver_ruido": {
+          "documentos": 21,
+          "numerador": 1776,
+          "denominador": 175109,
+          "valor": 0.010142254253065234
+        },
+        "bronce_ruido": {
+          "documentos": 21,
+          "numerador": 1795,
+          "denominador": 177698,
+          "valor": 0.01010140800684307
+        },
+        "gold_cobertura_silver": {
+          "documentos": 21,
+          "numerador": 1118209,
+          "denominador": 1119717,
+          "valor": 0.998653231128937
+        },
+        "gold_cobertura_declarada_silver": {
+          "documentos": 21,
+          "numerador": 1118209,
+          "denominador": 1119717,
+          "valor": 0.998653231128937
+        },
+        "gold_cobertura_efectiva_silver": {
+          "documentos": 21,
+          "numerador": 1118209,
+          "denominador": 1119717,
+          "valor": 0.998653231128937
+        },
+        "gold_recuperacion_u": {
+          "documentos": 21,
+          "numerador": 173333,
+          "denominador": 180092,
+          "valor": 0.9624691824178753
+        },
+        "tabla_recall_palabras": {
+          "documentos": 21,
+          "numerador": 1397,
+          "denominador": 1911,
+          "valor": 0.7310308738880168
+        }
+      },
+      "por_documento": {
+        "bronce_total_cer": {
+          "n": 21,
+          "media": 0.017007979708927014,
+          "mediana": 0.007964550843068423
+        },
+        "bronce_total_wer": {
+          "n": 21,
+          "media": 0.03054566168079499,
+          "mediana": 0.018165706690296855
+        },
+        "bronce_total_recuperacion": {
+          "n": 21,
+          "media": 0.9776808503800669,
+          "mediana": 0.9828664042602454
+        },
+        "bronce_total_precision": {
+          "n": 21,
+          "media": 0.9836672528678361,
+          "mediana": 0.9920178799489144
+        },
+        "bronce_total_orden_lcs": {
+          "n": 21,
+          "media": 0.9493418374530322,
+          "mediana": 0.9666028708133971
+        },
+        "bronce_total_recall_critico": {
+          "n": 21,
+          "media": 0.9291043852664608,
+          "mediana": 0.9516908212560387
+        },
+        "bronce_digital_cer": {
+          "n": 14,
+          "media": 0.019107160892979952,
+          "mediana": 0.011151033177474807
+        },
+        "bronce_digital_wer": {
+          "n": 14,
+          "media": 0.03315892208963502,
+          "mediana": 0.01942001525696762
+        },
+        "bronce_digital_recuperacion": {
+          "n": 14,
+          "media": 0.975627162513182,
+          "mediana": 0.9816694995523607
+        },
+        "bronce_digital_precision": {
+          "n": 14,
+          "media": 0.982800267110437,
+          "mediana": 0.9938514297540455
+        },
+        "bronce_digital_orden_lcs": {
+          "n": 14,
+          "media": 0.9471355114411641,
+          "mediana": 0.9663393046027535
+        },
+        "bronce_digital_recall_critico": {
+          "n": 14,
+          "media": 0.9212927747267253,
+          "mediana": 0.9472593158167324
+        },
+        "bronce_ocr_cer": {
+          "n": 8,
+          "media": 0.01120861570415101,
+          "mediana": 0.005822935604986677
+        },
+        "bronce_ocr_wer": {
+          "n": 8,
+          "media": 0.022154837731888182,
+          "mediana": 0.014324284568465056
+        },
+        "bronce_ocr_recuperacion": {
+          "n": 8,
+          "media": 0.9840642709871962,
+          "mediana": 0.9881936613351705
+        },
+        "bronce_ocr_precision": {
+          "n": 8,
+          "media": 0.9872255637443792,
+          "mediana": 0.9903347076647109
+        },
+        "bronce_ocr_orden_lcs": {
+          "n": 8,
+          "media": 0.9595341922309694,
+          "mediana": 0.9682710548502547
+        },
+        "bronce_ocr_recall_critico": {
+          "n": 7,
+          "media": 0.9447276063459317,
+          "mediana": 0.9516908212560387
+        },
+        "silver_perdida": {
+          "n": 21,
+          "media": 0.014071157555968897,
+          "mediana": 0.0176530911221799
+        },
+        "perdida_silver_mobiliario": {
+          "n": 21,
+          "media": 0.013526684944522855,
+          "mediana": 0.015602109581013771
+        },
+        "perdida_silver_otra": {
+          "n": 21,
+          "media": 0.000544472611446041,
+          "mediana": 6.439979392065946e-05
+        },
+        "silver_ruido": {
+          "n": 21,
+          "media": 0.01610824398691854,
+          "mediana": 0.00821827744904668
+        },
+        "bronce_ruido": {
+          "n": 21,
+          "media": 0.0160527300657642,
+          "mediana": 0.007982120051085569
+        },
+        "gold_cobertura_silver": {
+          "n": 21,
+          "media": 0.9990370596534289,
+          "mediana": 0.9992398598491596
+        },
+        "gold_cobertura_declarada_silver": {
+          "n": 21,
+          "media": 0.9990370596534289,
+          "mediana": 0.9992398598491596
+        },
+        "gold_cobertura_efectiva_silver": {
+          "n": 21,
+          "media": 0.9990370596534289,
+          "mediana": 0.9992398598491596
+        },
+        "gold_recuperacion_u": {
+          "n": 21,
+          "media": 0.9641211791202845,
+          "mediana": 0.9611341191462249
+        },
+        "tabla_cer": {
+          "n": 7,
+          "media": 0.12870699643985659,
+          "mediana": 0.08025122121423586
+        },
+        "tabla_recall_palabras": {
+          "n": 7,
+          "media": 0.7801017100032795,
+          "mediana": 0.9552772808586762
+        },
+        "gold_numero_chunks": {
+          "n": 21,
+          "media": 71.80952380952381,
+          "mediana": 86.0
+        },
+        "gold_mediana_caracteres_cuerpo": {
+          "n": 21,
+          "media": 885.8333333333334,
+          "mediana": 929.5
+        },
+        "gold_chunks_cortos": {
+          "n": 21,
+          "media": 0.23809523809523808,
+          "mediana": 0.0
+        },
+        "gold_duplicados_exactos": {
+          "n": 21,
+          "media": 0,
+          "mediana": 0.0
+        },
+        "gold_cuasi_duplicados": {
+          "n": 21,
+          "media": 0.09523809523809523,
+          "mediana": 0.0
+        },
+        "gold_cortes_numeros": {
+          "n": 21,
+          "media": 0,
+          "mediana": 0.0
+        },
+        "gold_cortes_articulos": {
+          "n": 21,
+          "media": 0.047619047619047616,
+          "mediana": 0.0
+        },
+        "gold_discrepancias_cuerpo": {
+          "n": 21,
+          "media": 0,
+          "mediana": 0.0
+        },
+        "ocr_confianza_media": {
+          "n": 8,
+          "media": 94.18772940440338,
+          "mediana": 95.34301941410665
+        },
+        "ocr_confianza_minima": {
+          "n": 8,
+          "media": 87.23403993771569,
+          "mediana": 94.38865304430175
+        },
+        "ocr_fraccion_alertadas": {
+          "n": 8,
+          "media": 0.2795977011494253,
+          "mediana": 0.05172413793103448
+        },
+        "ocr_sensibilidad": {
+          "n": 3,
+          "media": 0.9444444444444444,
+          "mediana": 1.0
+        },
+        "ocr_precision_alertas": {
+          "n": 4,
+          "media": 0.34617918313570484,
+          "mediana": 0.25757575757575757
+        }
+      },
+      "categorias": {
+        "jurisprudencia": {
+          "documentos": 11,
+          "paginas_evaluadas": 366,
+          "colores": {
+            "verde": 2,
+            "no distinguible de U": 3,
+            "amarillo": 3,
+            "rojo": 3,
+            "sin evaluar": 0
+          },
+          "colores_automaticos": {
+            "verde": 2,
+            "no distinguible de U": 3,
+            "amarillo": 3,
+            "rojo": 3,
+            "sin evaluar": 0
+          },
+          "agregado": {
+            "total": {
+              "ediciones_caracteres": 18718,
+              "caracteres_ref": 959784,
+              "ediciones_palabras": 4013,
+              "palabras_ref": 152721,
+              "palabras_hip": 150445,
+              "palabras_comunes": 149215,
+              "lcs": 146026,
+              "ngramas_ref": 151989,
+              "crit_comunes": 10563,
+              "crit_total_ref": 11275,
+              "cer": 0.01950230468522084,
+              "wer": 0.02627667445865336,
+              "recuperacion": 0.977043104746564,
+              "precision": 0.991824254711024,
+              "orden_lcs": 0.9607668976044319,
+              "recall_critico": 0.9368514412416852
+            },
+            "digital": {
+              "ediciones_caracteres": 17786,
+              "caracteres_ref": 807651,
+              "ediciones_palabras": 3505,
+              "palabras_ref": 128253,
+              "palabras_hip": 126083,
+              "palabras_comunes": 125202,
+              "lcs": 122730,
+              "ngramas_ref": 127647,
+              "crit_comunes": 8767,
+              "crit_total_ref": 9384,
+              "cer": 0.02202188816704245,
+              "wer": 0.027328795427787263,
+              "recuperacion": 0.9762110827816893,
+              "precision": 0.9930125393589937,
+              "orden_lcs": 0.9614797057510165,
+              "recall_critico": 0.9342497868712702
+            },
+            "ocr": {
+              "ediciones_caracteres": 932,
+              "caracteres_ref": 152133,
+              "ediciones_palabras": 508,
+              "palabras_ref": 24468,
+              "palabras_hip": 24362,
+              "palabras_comunes": 24013,
+              "lcs": 23296,
+              "ngramas_ref": 24342,
+              "crit_comunes": 1796,
+              "crit_total_ref": 1891,
+              "cer": 0.006126218506175517,
+              "wer": 0.020761811345430765,
+              "recuperacion": 0.9814042831453327,
+              "precision": 0.9856744109679009,
+              "orden_lcs": 0.9570290033686633,
+              "recall_critico": 0.9497620306716024
+            }
+          },
+          "agregado_capas": {
+            "silver_perdida": {
+              "documentos": 11,
+              "numerador": 2195,
+              "denominador": 149260,
+              "valor": 0.014705882352941176
+            },
+            "perdida_silver_mobiliario": {
+              "documentos": 11,
+              "numerador": 2106,
+              "denominador": 149260,
+              "valor": 0.014109607396489348
+            },
+            "perdida_silver_otra": {
+              "documentos": 11,
+              "numerador": 89,
+              "denominador": 149260,
+              "valor": 0.000596274956451829
+            },
+            "silver_ruido": {
+              "documentos": 11,
+              "numerador": 1166,
+              "denominador": 148231,
+              "valor": 0.007866100883081137
+            },
+            "bronce_ruido": {
+              "documentos": 11,
+              "numerador": 1185,
+              "denominador": 150445,
+              "valor": 0.007876632656452524
+            },
+            "gold_cobertura_silver": {
+              "documentos": 11,
+              "numerador": 935760,
+              "denominador": 937130,
+              "valor": 0.9985380896994014
+            },
+            "gold_cobertura_declarada_silver": {
+              "documentos": 11,
+              "numerador": 935760,
+              "denominador": 937130,
+              "valor": 0.9985380896994014
+            },
+            "gold_cobertura_efectiva_silver": {
+              "documentos": 11,
+              "numerador": 935760,
+              "denominador": 937130,
+              "valor": 0.9985380896994014
+            },
+            "gold_recuperacion_u": {
+              "documentos": 11,
+              "numerador": 147065,
+              "denominador": 152721,
+              "valor": 0.9629651455922892
+            },
+            "tabla_recall_palabras": {
+              "documentos": 11,
+              "numerador": 725,
+              "denominador": 1150,
+              "valor": 0.6304347826086957
+            }
+          },
+          "por_documento": {
+            "bronce_total_cer": {
+              "n": 11,
+              "media": 0.016734707115472883,
+              "mediana": 0.014487957345100203
+            },
+            "bronce_total_wer": {
+              "n": 11,
+              "media": 0.023391494172848526,
+              "mediana": 0.021043366938710194
+            },
+            "bronce_total_recuperacion": {
+              "n": 11,
+              "media": 0.9797031757004865,
+              "mediana": 0.981112927778091
+            },
+            "bronce_total_precision": {
+              "n": 11,
+              "media": 0.992106531442662,
+              "mediana": 0.9937185929648241
+            },
+            "bronce_total_orden_lcs": {
+              "n": 11,
+              "media": 0.9638136866171906,
+              "mediana": 0.9666028708133971
+            },
+            "bronce_total_recall_critico": {
+              "n": 11,
+              "media": 0.9401862073981859,
+              "mediana": 0.9488188976377953
+            },
+            "bronce_digital_cer": {
+              "n": 9,
+              "media": 0.019159723478632054,
+              "mediana": 0.017049735155371653
+            },
+            "bronce_digital_wer": {
+              "n": 9,
+              "media": 0.024134718988114742,
+              "mediana": 0.021043366938710194
+            },
+            "bronce_digital_recuperacion": {
+              "n": 9,
+              "media": 0.979183955519601,
+              "mediana": 0.981112927778091
+            },
+            "bronce_digital_precision": {
+              "n": 9,
+              "media": 0.9934556881689749,
+              "mediana": 0.993984266543267
+            },
+            "bronce_digital_orden_lcs": {
+              "n": 9,
+              "media": 0.9650593593255207,
+              "mediana": 0.972302463891249
+            },
+            "bronce_digital_recall_critico": {
+              "n": 9,
+              "media": 0.9379487291651345,
+              "mediana": 0.9175365344467641
+            },
+            "bronce_ocr_cer": {
+              "n": 3,
+              "media": 0.0038819570699911176,
+              "mediana": 0.0036813203669049297
+            },
+            "bronce_ocr_wer": {
+              "n": 3,
+              "media": 0.013366226940534022,
+              "mediana": 0.014940997335363533
+            },
+            "bronce_ocr_recuperacion": {
+              "n": 3,
+              "media": 0.9880253060432186,
+              "mediana": 0.9865816520746098
+            },
+            "bronce_ocr_precision": {
+              "n": 3,
+              "media": 0.9906888638750331,
+              "mediana": 0.9886515353805073
+            },
+            "bronce_ocr_orden_lcs": {
+              "n": 3,
+              "media": 0.9721361434565949,
+              "mediana": 0.9666028708133971
+            },
+            "bronce_ocr_recall_critico": {
+              "n": 2,
+              "media": 0.9502548594469169,
+              "mediana": 0.9502548594469169
+            },
+            "silver_perdida": {
+              "n": 11,
+              "media": 0.014869216992582203,
+              "mediana": 0.0176530911221799
+            },
+            "perdida_silver_mobiliario": {
+              "n": 11,
+              "media": 0.014255920098492475,
+              "mediana": 0.015602109581013771
+            },
+            "perdida_silver_otra": {
+              "n": 11,
+              "media": 0.0006132968940897297,
+              "mediana": 0.00018000180001800017
+            },
+            "silver_ruido": {
+              "n": 11,
+              "media": 0.007631039546505143,
+              "mediana": 0.006386523509811181
+            },
+            "bronce_ruido": {
+              "n": 11,
+              "media": 0.007644828110839582,
+              "mediana": 0.006052992233896756
+            },
+            "gold_cobertura_silver": {
+              "n": 11,
+              "media": 0.9986617440785683,
+              "mediana": 0.9984053085032375
+            },
+            "gold_cobertura_declarada_silver": {
+              "n": 11,
+              "media": 0.9986617440785683,
+              "mediana": 0.9984053085032375
+            },
+            "gold_cobertura_efectiva_silver": {
+              "n": 11,
+              "media": 0.9986617440785683,
+              "mediana": 0.9984053085032375
+            },
+            "gold_recuperacion_u": {
+              "n": 11,
+              "media": 0.9654012816969615,
+              "mediana": 0.9599030051095523
+            },
+            "tabla_cer": {
+              "n": 5,
+              "media": 0.13387526066846528,
+              "mediana": 0.07086956521739131
+            },
+            "tabla_recall_palabras": {
+              "n": 5,
+              "media": 0.7644532744665195,
+              "mediana": 0.9933774834437086
+            },
+            "gold_numero_chunks": {
+              "n": 11,
+              "media": 114.72727272727273,
+              "mediana": 110.0
+            },
+            "gold_mediana_caracteres_cuerpo": {
+              "n": 11,
+              "media": 880.8636363636364,
+              "mediana": 862.0
+            },
+            "gold_chunks_cortos": {
+              "n": 11,
+              "media": 0.45454545454545453,
+              "mediana": 0.0
+            },
+            "gold_duplicados_exactos": {
+              "n": 11,
+              "media": 0,
+              "mediana": 0.0
+            },
+            "gold_cuasi_duplicados": {
+              "n": 11,
+              "media": 0.18181818181818182,
+              "mediana": 0.0
+            },
+            "gold_cortes_numeros": {
+              "n": 11,
+              "media": 0,
+              "mediana": 0.0
+            },
+            "gold_cortes_articulos": {
+              "n": 11,
+              "media": 0.09090909090909091,
+              "mediana": 0.0
+            },
+            "gold_discrepancias_cuerpo": {
+              "n": 11,
+              "media": 0,
+              "mediana": 0.0
+            },
+            "ocr_confianza_media": {
+              "n": 3,
+              "media": 94.57536429154868,
+              "mediana": 94.99222570421902
+            },
+            "ocr_confianza_minima": {
+              "n": 3,
+              "media": 92.73285803298612,
+              "mediana": 93.14374525
+            },
+            "ocr_fraccion_alertadas": {
+              "n": 3,
+              "media": 0.4789272030651341,
+              "mediana": 0.3333333333333333
+            },
+            "ocr_sensibilidad": {
+              "n": 2,
+              "media": 1.0,
+              "mediana": 1.0
+            },
+            "ocr_precision_alertas": {
+              "n": 3,
+              "media": 0.1717171717171717,
+              "mediana": 0.18181818181818182
+            }
+          }
+        },
+        "normativa": {
+          "documentos": 10,
+          "paginas_evaluadas": 63,
+          "colores": {
+            "verde": 4,
+            "no distinguible de U": 4,
+            "amarillo": 1,
+            "rojo": 1,
+            "sin evaluar": 0
+          },
+          "colores_automaticos": {
+            "verde": 4,
+            "no distinguible de U": 3,
+            "amarillo": 1,
+            "rojo": 2,
+            "sin evaluar": 0
+          },
+          "agregado": {
+            "total": {
+              "ediciones_caracteres": 4409,
+              "caracteres_ref": 176999,
+              "ediciones_palabras": 1174,
+              "palabras_ref": 27371,
+              "palabras_hip": 27253,
+              "palabras_comunes": 26613,
+              "lcs": 25363,
+              "ngramas_ref": 27245,
+              "crit_comunes": 1469,
+              "crit_total_ref": 1700,
+              "cer": 0.02490974525279804,
+              "wer": 0.042892112089437724,
+              "recuperacion": 0.9723064557378247,
+              "precision": 0.9765163468242029,
+              "orden_lcs": 0.9309231051569096,
+              "recall_critico": 0.8641176470588235
+            },
+            "digital": {
+              "ediciones_caracteres": 505,
+              "caracteres_ref": 36442,
+              "ediciones_palabras": 194,
+              "palabras_ref": 5698,
+              "palabras_hip": 5728,
+              "palabras_comunes": 5579,
+              "lcs": 5322,
+              "ngramas_ref": 5668,
+              "crit_comunes": 386,
+              "crit_total_ref": 506,
+              "cer": 0.013857636792711707,
+              "wer": 0.03404703404703405,
+              "recuperacion": 0.9791154791154791,
+              "precision": 0.9739874301675978,
+              "orden_lcs": 0.9389555398729711,
+              "recall_critico": 0.7628458498023716
+            },
+            "ocr": {
+              "ediciones_caracteres": 3904,
+              "caracteres_ref": 140557,
+              "ediciones_palabras": 980,
+              "palabras_ref": 21673,
+              "palabras_hip": 21525,
+              "palabras_comunes": 21034,
+              "lcs": 20041,
+              "ngramas_ref": 21577,
+              "crit_comunes": 1083,
+              "crit_total_ref": 1194,
+              "cer": 0.02777520863421957,
+              "wer": 0.04521755179255295,
+              "recuperacion": 0.9705163106168966,
+              "precision": 0.9771893147502904,
+              "orden_lcs": 0.9288130880103814,
+              "recall_critico": 0.907035175879397
+            }
+          },
+          "agregado_capas": {
+            "silver_perdida": {
+              "documentos": 10,
+              "numerador": 375,
+              "denominador": 26643,
+              "valor": 0.014074991555005066
+            },
+            "perdida_silver_mobiliario": {
+              "documentos": 10,
+              "numerador": 361,
+              "denominador": 26643,
+              "valor": 0.01354952520361821
+            },
+            "perdida_silver_otra": {
+              "documentos": 10,
+              "numerador": 14,
+              "denominador": 26643,
+              "valor": 0.0005254663513868559
+            },
+            "silver_ruido": {
+              "documentos": 10,
+              "numerador": 610,
+              "denominador": 26878,
+              "valor": 0.02269514100751544
+            },
+            "bronce_ruido": {
+              "documentos": 10,
+              "numerador": 610,
+              "denominador": 27253,
+              "valor": 0.022382856933181667
+            },
+            "gold_cobertura_silver": {
+              "documentos": 10,
+              "numerador": 182449,
+              "denominador": 182587,
+              "valor": 0.9992441959175626
+            },
+            "gold_cobertura_declarada_silver": {
+              "documentos": 10,
+              "numerador": 182449,
+              "denominador": 182587,
+              "valor": 0.9992441959175626
+            },
+            "gold_cobertura_efectiva_silver": {
+              "documentos": 10,
+              "numerador": 182449,
+              "denominador": 182587,
+              "valor": 0.9992441959175626
+            },
+            "gold_recuperacion_u": {
+              "documentos": 10,
+              "numerador": 26268,
+              "denominador": 27371,
+              "valor": 0.9597018742464652
+            },
+            "tabla_recall_palabras": {
+              "documentos": 10,
+              "numerador": 672,
+              "denominador": 761,
+              "valor": 0.8830486202365309
+            }
+          },
+          "por_documento": {
+            "bronce_total_cer": {
+              "n": 10,
+              "media": 0.01730857956172656,
+              "mediana": 0.004138481081523619
+            },
+            "bronce_total_wer": {
+              "n": 10,
+              "media": 0.03841524593953611,
+              "mediana": 0.0158627949097923
+            },
+            "bronce_total_recuperacion": {
+              "n": 10,
+              "media": 0.9754562925276054,
+              "mediana": 0.9878137790284813
+            },
+            "bronce_total_precision": {
+              "n": 10,
+              "media": 0.9743840464355277,
+              "mediana": 0.9903400057340944
+            },
+            "bronce_total_orden_lcs": {
+              "n": 10,
+              "media": 0.9334228033724581,
+              "mediana": 0.9646076284933298
+            },
+            "bronce_total_recall_critico": {
+              "n": 10,
+              "media": 0.9169143809215631,
+              "mediana": 0.9954778019498831
+            },
+            "bronce_digital_cer": {
+              "n": 5,
+              "media": 0.019012548238806173,
+              "mediana": 0.0016789791806581598
+            },
+            "bronce_digital_wer": {
+              "n": 5,
+              "media": 0.049402487672371535,
+              "mediana": 0.018018018018018018
+            },
+            "bronce_digital_recuperacion": {
+              "n": 5,
+              "media": 0.9692249351016279,
+              "mediana": 0.9858218874612317
+            },
+            "bronce_digital_precision": {
+              "n": 5,
+              "media": 0.9636205092050686,
+              "mediana": 0.9886621315192744
+            },
+            "bronce_digital_orden_lcs": {
+              "n": 5,
+              "media": 0.9148725852493224,
+              "mediana": 0.9592760180995475
+            },
+            "bronce_digital_recall_critico": {
+              "n": 5,
+              "media": 0.8913120567375886,
+              "mediana": 1.0
+            },
+            "bronce_ocr_cer": {
+              "n": 5,
+              "media": 0.015604610884646944,
+              "mediana": 0.008477500123219479
+            },
+            "bronce_ocr_wer": {
+              "n": 5,
+              "media": 0.02742800420670068,
+              "mediana": 0.01370757180156658
+            },
+            "bronce_ocr_recuperacion": {
+              "n": 5,
+              "media": 0.9816876499535828,
+              "mediana": 0.9898056705957311
+            },
+            "bronce_ocr_precision": {
+              "n": 5,
+              "media": 0.9851475836659868,
+              "mediana": 0.9920178799489144
+            },
+            "bronce_ocr_orden_lcs": {
+              "n": 5,
+              "media": 0.9519730214955939,
+              "mediana": 0.9699392388871122
+            },
+            "bronce_ocr_recall_critico": {
+              "n": 5,
+              "media": 0.9425167051055376,
+              "mediana": 0.9949238578680203
+            },
+            "silver_perdida": {
+              "n": 10,
+              "media": 0.013193292175694258,
+              "mediana": 0.011706555671175858
+            },
+            "perdida_silver_mobiliario": {
+              "n": 10,
+              "media": 0.012724526275156274,
+              "mediana": 0.011186264308012487
+            },
+            "perdida_silver_otra": {
+              "n": 10,
+              "media": 0.0004687659005379834,
+              "mediana": 0.0
+            },
+            "silver_ruido": {
+              "n": 10,
+              "media": 0.02543316887137328,
+              "mediana": 0.009778072964886152
+            },
+            "bronce_ruido": {
+              "n": 10,
+              "media": 0.02530142221618128,
+              "mediana": 0.009659994265905596
+            },
+            "gold_cobertura_silver": {
+              "n": 10,
+              "media": 0.9994499067857756,
+              "mediana": 0.9996832606981202
+            },
+            "gold_cobertura_declarada_silver": {
+              "n": 10,
+              "media": 0.9994499067857756,
+              "mediana": 0.9996832606981202
+            },
+            "gold_cobertura_efectiva_silver": {
+              "n": 10,
+              "media": 0.9994499067857756,
+              "mediana": 0.9996832606981202
+            },
+            "gold_recuperacion_u": {
+              "n": 10,
+              "media": 0.9627130662859398,
+              "mediana": 0.9645748924712848
+            },
+            "tabla_cer": {
+              "n": 2,
+              "media": 0.1157863358683349,
+              "mediana": 0.1157863358683349
+            },
+            "tabla_recall_palabras": {
+              "n": 2,
+              "media": 0.8192227988451797,
+              "mediana": 0.8192227988451797
+            },
+            "gold_numero_chunks": {
+              "n": 10,
+              "media": 24.6,
+              "mediana": 18.0
+            },
+            "gold_mediana_caracteres_cuerpo": {
+              "n": 10,
+              "media": 891.3,
+              "mediana": 932.25
+            },
+            "gold_chunks_cortos": {
+              "n": 10,
+              "media": 0,
+              "mediana": 0.0
+            },
+            "gold_duplicados_exactos": {
+              "n": 10,
+              "media": 0,
+              "mediana": 0.0
+            },
+            "gold_cuasi_duplicados": {
+              "n": 10,
+              "media": 0,
+              "mediana": 0.0
+            },
+            "gold_cortes_numeros": {
+              "n": 10,
+              "media": 0,
+              "mediana": 0.0
+            },
+            "gold_cortes_articulos": {
+              "n": 10,
+              "media": 0,
+              "mediana": 0.0
+            },
+            "gold_discrepancias_cuerpo": {
+              "n": 10,
+              "media": 0,
+              "mediana": 0.0
+            },
+            "ocr_confianza_media": {
+              "n": 5,
+              "media": 93.9551484721162,
+              "mediana": 95.35387180930452
+            },
+            "ocr_confianza_minima": {
+              "n": 5,
+              "media": 83.93474908055343,
+              "mediana": 95.10390433076923
+            },
+            "ocr_fraccion_alertadas": {
+              "n": 5,
+              "media": 0.16,
+              "mediana": 0.0
+            },
+            "ocr_sensibilidad": {
+              "n": 1,
+              "media": 0.8333333333333334,
+              "mediana": 0.8333333333333334
+            },
+            "ocr_precision_alertas": {
+              "n": 1,
+              "media": 0.8695652173913043,
+              "mediana": 0.8695652173913043
+            }
+          }
+        }
+      }
+    },
+    "validacion": {
+      "documentos": 32,
+      "paginas_evaluadas": 788,
+      "colores": {
+        "verde": 16,
+        "no distinguible de U": 8,
+        "amarillo": 6,
+        "rojo": 2,
+        "sin evaluar": 0
+      },
+      "colores_automaticos": {
+        "verde": 16,
+        "no distinguible de U": 8,
+        "amarillo": 6,
+        "rojo": 2,
+        "sin evaluar": 0
+      },
+      "agregado": {
+        "total": {
+          "ediciones_caracteres": 19638,
+          "caracteres_ref": 2255673,
+          "ediciones_palabras": 6852,
+          "palabras_ref": 353851,
+          "palabras_hip": 352258,
+          "palabras_comunes": 348444,
+          "lcs": 340316,
+          "ngramas_ref": 352275,
+          "crit_comunes": 21401,
+          "crit_total_ref": 22707,
+          "cer": 0.008706049148081305,
+          "wer": 0.019364082622346693,
+          "recuperacion": 0.984719557101718,
+          "precision": 0.9891727086396902,
+          "orden_lcs": 0.9660520899865163,
+          "recall_critico": 0.9424846963491434
+        },
+        "digital": {
+          "ediciones_caracteres": 8630,
+          "caracteres_ref": 1687465,
+          "ediciones_palabras": 3876,
+          "palabras_ref": 265350,
+          "palabras_hip": 264219,
+          "palabras_comunes": 262089,
+          "lcs": 256894,
+          "ngramas_ref": 264150,
+          "crit_comunes": 16168,
+          "crit_total_ref": 16975,
+          "cer": 0.005114180145958583,
+          "wer": 0.01460712266817411,
+          "recuperacion": 0.9877105709440361,
+          "precision": 0.9919385055578894,
+          "orden_lcs": 0.9725307590384251,
+          "recall_critico": 0.9524594992636229
+        },
+        "ocr": {
+          "ediciones_caracteres": 11008,
+          "caracteres_ref": 568208,
+          "ediciones_palabras": 2976,
+          "palabras_ref": 88501,
+          "palabras_hip": 88039,
+          "palabras_comunes": 86355,
+          "lcs": 83422,
+          "ngramas_ref": 88125,
+          "crit_comunes": 5233,
+          "crit_total_ref": 5732,
+          "cer": 0.019373187283529974,
+          "wer": 0.03362673868091886,
+          "recuperacion": 0.9757516864216224,
+          "precision": 0.9808721134951556,
+          "orden_lcs": 0.9466326241134752,
+          "recall_critico": 0.9129448709002094
+        }
+      },
+      "agregado_capas": {
+        "silver_perdida": {
+          "documentos": 32,
+          "numerador": 4850,
+          "denominador": 348588,
+          "valor": 0.013913272975547064
+        },
+        "perdida_silver_mobiliario": {
+          "documentos": 32,
+          "numerador": 4622,
+          "denominador": 348588,
+          "valor": 0.013259205709892481
+        },
+        "perdida_silver_otra": {
+          "documentos": 32,
+          "numerador": 228,
+          "denominador": 348588,
+          "valor": 0.0006540672656545837
+        },
+        "silver_ruido": {
+          "documentos": 32,
+          "numerador": 3533,
+          "denominador": 347271,
+          "valor": 0.010173610811153248
+        },
+        "bronce_ruido": {
+          "documentos": 32,
+          "numerador": 3670,
+          "denominador": 352258,
+          "valor": 0.010418500076648365
+        },
+        "gold_cobertura_silver": {
+          "documentos": 32,
+          "numerador": 2227146,
+          "denominador": 2230243,
+          "valor": 0.9986113620802756
+        },
+        "gold_cobertura_declarada_silver": {
+          "documentos": 32,
+          "numerador": 2227146,
+          "denominador": 2230243,
+          "valor": 0.9986113620802756
+        },
+        "gold_cobertura_efectiva_silver": {
+          "documentos": 32,
+          "numerador": 2227146,
+          "denominador": 2230243,
+          "valor": 0.9986113620802756
+        },
+        "gold_recuperacion_u": {
+          "documentos": 32,
+          "numerador": 343738,
+          "denominador": 353851,
+          "valor": 0.9714201740280514
+        },
+        "tabla_recall_palabras": {
+          "documentos": 32,
+          "numerador": 1121,
+          "denominador": 1423,
+          "valor": 0.7877723120168658
+        }
+      },
+      "por_documento": {
+        "bronce_total_cer": {
+          "n": 32,
+          "media": 0.008520977880587154,
+          "mediana": 0.0034371053374750837
+        },
+        "bronce_total_wer": {
+          "n": 32,
+          "media": 0.019278066942228337,
+          "mediana": 0.014030354507946353
+        },
+        "bronce_total_recuperacion": {
+          "n": 32,
+          "media": 0.985273230634266,
+          "mediana": 0.9872966049204432
+        },
+        "bronce_total_precision": {
+          "n": 32,
+          "media": 0.9872739494043612,
+          "mediana": 0.9892610501619972
+        },
+        "bronce_total_orden_lcs": {
+          "n": 32,
+          "media": 0.9651478076792679,
+          "mediana": 0.9700625849172466
+        },
+        "bronce_total_recall_critico": {
+          "n": 32,
+          "media": 0.9437017772266332,
+          "mediana": 0.9641951186068833
+        },
+        "bronce_digital_cer": {
+          "n": 20,
+          "media": 0.004110538942801931,
+          "mediana": 0.002511890413432407
+        },
+        "bronce_digital_wer": {
+          "n": 20,
+          "media": 0.012912252774790939,
+          "mediana": 0.011337480369181675
+        },
+        "bronce_digital_recuperacion": {
+          "n": 20,
+          "media": 0.9895649659302113,
+          "mediana": 0.9904352691885032
+        },
+        "bronce_digital_precision": {
+          "n": 20,
+          "media": 0.9909030094373591,
+          "mediana": 0.9935546839142833
+        },
+        "bronce_digital_orden_lcs": {
+          "n": 20,
+          "media": 0.9753332553764561,
+          "mediana": 0.9794482802159121
+        },
+        "bronce_digital_recall_critico": {
+          "n": 20,
+          "media": 0.9497579823584982,
+          "mediana": 0.966068563976503
+        },
+        "bronce_ocr_cer": {
+          "n": 13,
+          "media": 0.014650861107081685,
+          "mediana": 0.006658860542407361
+        },
+        "bronce_ocr_wer": {
+          "n": 13,
+          "media": 0.027588827964551775,
+          "mediana": 0.02086577390221115
+        },
+        "bronce_ocr_recuperacion": {
+          "n": 13,
+          "media": 0.9798032631261113,
+          "mediana": 0.9850513858611024
+        },
+        "bronce_ocr_precision": {
+          "n": 13,
+          "media": 0.9826696633659537,
+          "mediana": 0.9863505747126436
+        },
+        "bronce_ocr_orden_lcs": {
+          "n": 13,
+          "media": 0.9521586779423025,
+          "mediana": 0.9603174603174603
+        },
+        "bronce_ocr_recall_critico": {
+          "n": 12,
+          "media": 0.9336081020068582,
+          "mediana": 0.9498393763099646
+        },
+        "silver_perdida": {
+          "n": 32,
+          "media": 0.011902446898998576,
+          "mediana": 0.0029179707876890977
+        },
+        "perdida_silver_mobiliario": {
+          "n": 32,
+          "media": 0.010780782297642446,
+          "mediana": 0.001998658397114454
+        },
+        "perdida_silver_otra": {
+          "n": 32,
+          "media": 0.0011216646013561297,
+          "mediana": 8.363103631362515e-05
+        },
+        "silver_ruido": {
+          "n": 32,
+          "media": 0.01248763003708682,
+          "mediana": 0.010853596194879089
+        },
+        "bronce_ruido": {
+          "n": 32,
+          "media": 0.01240752119713657,
+          "mediana": 0.010738949838002877
+        },
+        "gold_cobertura_silver": {
+          "n": 32,
+          "media": 0.9989562530396026,
+          "mediana": 0.9990851392764988
+        },
+        "gold_cobertura_declarada_silver": {
+          "n": 32,
+          "media": 0.9989562530396026,
+          "mediana": 0.9990851392764988
+        },
+        "gold_cobertura_efectiva_silver": {
+          "n": 32,
+          "media": 0.9989562530396026,
+          "mediana": 0.9990851392764988
+        },
+        "gold_recuperacion_u": {
+          "n": 32,
+          "media": 0.973857303650617,
+          "mediana": 0.9721799457531148
+        },
+        "tabla_cer": {
+          "n": 6,
+          "media": 0.0571774829824239,
+          "mediana": 0.021812368835633335
+        },
+        "tabla_recall_palabras": {
+          "n": 6,
+          "media": 0.8188232679803708,
+          "mediana": 0.8562158469945356
+        },
+        "gold_numero_chunks": {
+          "n": 32,
+          "media": 95.875,
+          "mediana": 40.5
+        },
+        "gold_mediana_caracteres_cuerpo": {
+          "n": 32,
+          "media": 896.359375,
+          "mediana": 917.75
+        },
+        "gold_chunks_cortos": {
+          "n": 32,
+          "media": 0.96875,
+          "mediana": 0.0
+        },
+        "gold_duplicados_exactos": {
+          "n": 32,
+          "media": 0.09375,
+          "mediana": 0.0
+        },
+        "gold_cuasi_duplicados": {
+          "n": 32,
+          "media": 0.25,
+          "mediana": 0.0
+        },
+        "gold_cortes_numeros": {
+          "n": 32,
+          "media": 0,
+          "mediana": 0.0
+        },
+        "gold_cortes_articulos": {
+          "n": 32,
+          "media": 0.1875,
+          "mediana": 0.0
+        },
+        "gold_discrepancias_cuerpo": {
+          "n": 32,
+          "media": 0,
+          "mediana": 0.0
+        },
+        "ocr_confianza_media": {
+          "n": 13,
+          "media": 95.19436230887754,
+          "mediana": 95.37741634786428
+        },
+        "ocr_confianza_minima": {
+          "n": 13,
+          "media": 91.9578515471829,
+          "mediana": 94.55194848820754
+        },
+        "ocr_fraccion_alertadas": {
+          "n": 13,
+          "media": 0.25534142082529176,
+          "mediana": 0.125
+        },
+        "ocr_sensibilidad": {
+          "n": 6,
+          "media": 0.8488888888888889,
+          "mediana": 1.0
+        },
+        "ocr_precision_alertas": {
+          "n": 7,
+          "media": 0.6238095238095238,
+          "mediana": 1.0
+        }
+      },
+      "categorias": {
+        "jurisprudencia": {
+          "documentos": 15,
+          "paginas_evaluadas": 679,
+          "colores": {
+            "verde": 9,
+            "no distinguible de U": 3,
+            "amarillo": 3,
+            "rojo": 0,
+            "sin evaluar": 0
+          },
+          "colores_automaticos": {
+            "verde": 9,
+            "no distinguible de U": 3,
+            "amarillo": 3,
+            "rojo": 0,
+            "sin evaluar": 0
+          },
+          "agregado": {
+            "total": {
+              "ediciones_caracteres": 11378,
+              "caracteres_ref": 1920466,
+              "ediciones_palabras": 4943,
+              "palabras_ref": 302436,
+              "palabras_hip": 301109,
+              "palabras_comunes": 298381,
+              "lcs": 291941,
+              "ngramas_ref": 301078,
+              "crit_comunes": 18073,
+              "crit_total_ref": 19163,
+              "cer": 0.0059246037159731025,
+              "wer": 0.016343953762118266,
+              "recuperacion": 0.9865922046317237,
+              "precision": 0.9909401578830257,
+              "orden_lcs": 0.9696523824391021,
+              "recall_critico": 0.9431195533058498
+            },
+            "digital": {
+              "ediciones_caracteres": 8385,
+              "caracteres_ref": 1609884,
+              "ediciones_palabras": 3756,
+              "palabras_ref": 253516,
+              "palabras_hip": 252375,
+              "palabras_comunes": 250356,
+              "lcs": 245393,
+              "ngramas_ref": 252384,
+              "crit_comunes": 15145,
+              "crit_total_ref": 15941,
+              "cer": 0.005208449801352147,
+              "wer": 0.014815632938354976,
+              "recuperacion": 0.9875353034916928,
+              "precision": 0.992,
+              "orden_lcs": 0.97230014580956,
+              "recall_critico": 0.9500658678878364
+            },
+            "ocr": {
+              "ediciones_caracteres": 2993,
+              "caracteres_ref": 310582,
+              "ediciones_palabras": 1187,
+              "palabras_ref": 48920,
+              "palabras_hip": 48734,
+              "palabras_comunes": 48025,
+              "lcs": 46548,
+              "ngramas_ref": 48694,
+              "crit_comunes": 2928,
+              "crit_total_ref": 3222,
+              "cer": 0.009636746495289488,
+              "wer": 0.024264104660670482,
+              "recuperacion": 0.98170482420278,
+              "precision": 0.9854516354085443,
+              "orden_lcs": 0.9559288618720992,
+              "recall_critico": 0.9087523277467412
+            }
+          },
+          "agregado_capas": {
+            "silver_perdida": {
+              "documentos": 15,
+              "numerador": 4163,
+              "denominador": 298466,
+              "valor": 0.01394798737544645
+            },
+            "perdida_silver_mobiliario": {
+              "documentos": 15,
+              "numerador": 4005,
+              "denominador": 298466,
+              "valor": 0.013418613845463135
+            },
+            "perdida_silver_otra": {
+              "documentos": 15,
+              "numerador": 158,
+              "denominador": 298466,
+              "valor": 0.0005293735299833147
+            },
+            "silver_ruido": {
+              "documentos": 15,
+              "numerador": 2498,
+              "denominador": 296801,
+              "valor": 0.008416413691328534
+            },
+            "bronce_ruido": {
+              "documentos": 15,
+              "numerador": 2643,
+              "denominador": 301109,
+              "valor": 0.008777552314942429
+            },
+            "gold_cobertura_silver": {
+              "documentos": 15,
+              "numerador": 1898745,
+              "denominador": 1901614,
+              "valor": 0.9984912816165636
+            },
+            "gold_cobertura_declarada_silver": {
+              "documentos": 15,
+              "numerador": 1898745,
+              "denominador": 1901614,
+              "valor": 0.9984912816165636
+            },
+            "gold_cobertura_efectiva_silver": {
+              "documentos": 15,
+              "numerador": 1898745,
+              "denominador": 1901614,
+              "valor": 0.9984912816165636
+            },
+            "gold_recuperacion_u": {
+              "documentos": 15,
+              "numerador": 294303,
+              "denominador": 302436,
+              "valor": 0.9731083601158592
+            },
+            "tabla_recall_palabras": {
+              "documentos": 15,
+              "numerador": 302,
+              "denominador": 326,
+              "valor": 0.9263803680981595
+            }
+          },
+          "por_documento": {
+            "bronce_total_cer": {
+              "n": 15,
+              "media": 0.005330046775156264,
+              "mediana": 0.0038639255340520992
+            },
+            "bronce_total_wer": {
+              "n": 15,
+              "media": 0.016064951387156107,
+              "mediana": 0.014411283728536386
+            },
+            "bronce_total_recuperacion": {
+              "n": 15,
+              "media": 0.9869831827765949,
+              "mediana": 0.9893747245752338
+            },
+            "bronce_total_precision": {
+              "n": 15,
+              "media": 0.9897417193017262,
+              "mediana": 0.9927602849919559
+            },
+            "bronce_total_orden_lcs": {
+              "n": 15,
+              "media": 0.9695203982931181,
+              "mediana": 0.9763838488566327
+            },
+            "bronce_total_recall_critico": {
+              "n": 15,
+              "media": 0.9309932157202141,
+              "mediana": 0.9304347826086956
+            },
+            "bronce_digital_cer": {
+              "n": 13,
+              "media": 0.004810705216594951,
+              "mediana": 0.0030102851408980685
+            },
+            "bronce_digital_wer": {
+              "n": 13,
+              "media": 0.014886784168881674,
+              "mediana": 0.012968778865693701
+            },
+            "bronce_digital_recuperacion": {
+              "n": 13,
+              "media": 0.9878327290119382,
+              "mediana": 0.9897139002866618
+            },
+            "bronce_digital_precision": {
+              "n": 13,
+              "media": 0.9905341288111994,
+              "mediana": 0.9928883784619462
+            },
+            "bronce_digital_orden_lcs": {
+              "n": 13,
+              "media": 0.971783598632494,
+              "mediana": 0.979243183082916
+            },
+            "bronce_digital_recall_critico": {
+              "n": 13,
+              "media": 0.9370269947564026,
+              "mediana": 0.9391143911439115
+            },
+            "bronce_ocr_cer": {
+              "n": 3,
+              "media": 0.005804071626973728,
+              "mediana": 0.006658860542407361
+            },
+            "bronce_ocr_wer": {
+              "n": 3,
+              "media": 0.01581591783185498,
+              "mediana": 0.022535423575520047
+            },
+            "bronce_ocr_recuperacion": {
+              "n": 3,
+              "media": 0.9876402078136298,
+              "mediana": 0.9819890587740217
+            },
+            "bronce_ocr_precision": {
+              "n": 3,
+              "media": 0.9897271821817739,
+              "mediana": 0.9864723952315193
+            },
+            "bronce_ocr_orden_lcs": {
+              "n": 3,
+              "media": 0.9698724224056107,
+              "mediana": 0.9572471324296142
+            },
+            "bronce_ocr_recall_critico": {
+              "n": 2,
+              "media": 0.891773651984989,
+              "mediana": 0.891773651984989
+            },
+            "silver_perdida": {
+              "n": 15,
+              "media": 0.012311770663469227,
+              "mediana": 0.006521905931097982
+            },
+            "perdida_silver_mobiliario": {
+              "n": 15,
+              "media": 0.011869150721246126,
+              "mediana": 0.0046804266093761985
+            },
+            "perdida_silver_otra": {
+              "n": 15,
+              "media": 0.000442619942223102,
+              "mediana": 0.0
+            },
+            "silver_ruido": {
+              "n": 15,
+              "media": 0.009775844297183416,
+              "mediana": 0.006855233596405323
+            },
+            "bronce_ruido": {
+              "n": 15,
+              "media": 0.009997961166697916,
+              "mediana": 0.007124798896805332
+            },
+            "gold_cobertura_silver": {
+              "n": 15,
+              "media": 0.9986636766582594,
+              "mediana": 0.9988850346878098
+            },
+            "gold_cobertura_declarada_silver": {
+              "n": 15,
+              "media": 0.9986636766582594,
+              "mediana": 0.9988850346878098
+            },
+            "gold_cobertura_efectiva_silver": {
+              "n": 15,
+              "media": 0.9986636766582594,
+              "mediana": 0.9988850346878098
+            },
+            "gold_recuperacion_u": {
+              "n": 15,
+              "media": 0.9751383522541728,
+              "mediana": 0.9758818209225204
+            },
+            "tabla_cer": {
+              "n": 3,
+              "media": 0.0792735398272734,
+              "mediana": 0.010570026425066062
+            },
+            "tabla_recall_palabras": {
+              "n": 3,
+              "media": 0.8937812036958389,
+              "mediana": 0.9583333333333334
+            },
+            "gold_numero_chunks": {
+              "n": 15,
+              "media": 175.4,
+              "mediana": 145.0
+            },
+            "gold_mediana_caracteres_cuerpo": {
+              "n": 15,
+              "media": 887.1,
+              "mediana": 930.5
+            },
+            "gold_chunks_cortos": {
+              "n": 15,
+              "media": 1.9333333333333333,
+              "mediana": 1.0
+            },
+            "gold_duplicados_exactos": {
+              "n": 15,
+              "media": 0.2,
+              "mediana": 0.0
+            },
+            "gold_cuasi_duplicados": {
+              "n": 15,
+              "media": 0.5333333333333333,
+              "mediana": 0.0
+            },
+            "gold_cortes_numeros": {
+              "n": 15,
+              "media": 0,
+              "mediana": 0.0
+            },
+            "gold_cortes_articulos": {
+              "n": 15,
+              "media": 0.26666666666666666,
+              "mediana": 0.0
+            },
+            "gold_discrepancias_cuerpo": {
+              "n": 15,
+              "media": 0,
+              "mediana": 0.0
+            },
+            "ocr_confianza_media": {
+              "n": 3,
+              "media": 95.77726060190172,
+              "mediana": 95.49521938161439
+            },
+            "ocr_confianza_minima": {
+              "n": 3,
+              "media": 90.65585999153568,
+              "mediana": 89.32591530317848
+            },
+            "ocr_fraccion_alertadas": {
+              "n": 3,
+              "media": 0.10314615690959776,
+              "mediana": 0.14814814814814814
+            },
+            "ocr_sensibilidad": {
+              "n": 2,
+              "media": 0.6666666666666666,
+              "mediana": 0.6666666666666667
+            },
+            "ocr_precision_alertas": {
+              "n": 2,
+              "media": 0.18333333333333335,
+              "mediana": 0.18333333333333335
+            }
+          }
+        },
+        "normativa": {
+          "documentos": 17,
+          "paginas_evaluadas": 109,
+          "colores": {
+            "verde": 7,
+            "no distinguible de U": 5,
+            "amarillo": 3,
+            "rojo": 2,
+            "sin evaluar": 0
+          },
+          "colores_automaticos": {
+            "verde": 7,
+            "no distinguible de U": 5,
+            "amarillo": 3,
+            "rojo": 2,
+            "sin evaluar": 0
+          },
+          "agregado": {
+            "total": {
+              "ediciones_caracteres": 8260,
+              "caracteres_ref": 335207,
+              "ediciones_palabras": 1909,
+              "palabras_ref": 51415,
+              "palabras_hip": 51149,
+              "palabras_comunes": 50063,
+              "lcs": 48375,
+              "ngramas_ref": 51197,
+              "crit_comunes": 3328,
+              "crit_total_ref": 3544,
+              "cer": 0.024641490183677547,
+              "wer": 0.03712924243897695,
+              "recuperacion": 0.9737041719342604,
+              "precision": 0.9787679133511896,
+              "orden_lcs": 0.944879582788054,
+              "recall_critico": 0.9390519187358917
+            },
+            "digital": {
+              "ediciones_caracteres": 245,
+              "caracteres_ref": 77581,
+              "ediciones_palabras": 120,
+              "palabras_ref": 11834,
+              "palabras_hip": 11844,
+              "palabras_comunes": 11733,
+              "lcs": 11501,
+              "ngramas_ref": 11766,
+              "crit_comunes": 1023,
+              "crit_total_ref": 1034,
+              "cer": 0.00315798971397636,
+              "wer": 0.010140273787392259,
+              "recuperacion": 0.9914652695622782,
+              "precision": 0.9906281661600811,
+              "orden_lcs": 0.9774774774774775,
+              "recall_critico": 0.9893617021276596
+            },
+            "ocr": {
+              "ediciones_caracteres": 8015,
+              "caracteres_ref": 257626,
+              "ediciones_palabras": 1789,
+              "palabras_ref": 39581,
+              "palabras_hip": 39305,
+              "palabras_comunes": 38330,
+              "lcs": 36874,
+              "ngramas_ref": 39431,
+              "crit_comunes": 2305,
+              "crit_total_ref": 2510,
+              "cer": 0.03111099035035284,
+              "wer": 0.04519845380359263,
+              "recuperacion": 0.9683939263788182,
+              "precision": 0.9751939956748505,
+              "orden_lcs": 0.9351525449519413,
+              "recall_critico": 0.9183266932270916
+            }
+          },
+          "agregado_capas": {
+            "silver_perdida": {
+              "documentos": 17,
+              "numerador": 687,
+              "denominador": 50122,
+              "valor": 0.013706556003351822
+            },
+            "perdida_silver_mobiliario": {
+              "documentos": 17,
+              "numerador": 617,
+              "denominador": 50122,
+              "valor": 0.012309963688599816
+            },
+            "perdida_silver_otra": {
+              "documentos": 17,
+              "numerador": 70,
+              "denominador": 50122,
+              "valor": 0.0013965923147520052
+            },
+            "silver_ruido": {
+              "documentos": 17,
+              "numerador": 1035,
+              "denominador": 50470,
+              "valor": 0.0205072320190212
+            },
+            "bronce_ruido": {
+              "documentos": 17,
+              "numerador": 1027,
+              "denominador": 51149,
+              "valor": 0.020078593911904436
+            },
+            "gold_cobertura_silver": {
+              "documentos": 17,
+              "numerador": 328401,
+              "denominador": 328629,
+              "valor": 0.9993062085208548
+            },
+            "gold_cobertura_declarada_silver": {
+              "documentos": 17,
+              "numerador": 328401,
+              "denominador": 328629,
+              "valor": 0.9993062085208548
+            },
+            "gold_cobertura_efectiva_silver": {
+              "documentos": 17,
+              "numerador": 328401,
+              "denominador": 328629,
+              "valor": 0.9993062085208548
+            },
+            "gold_recuperacion_u": {
+              "documentos": 17,
+              "numerador": 49435,
+              "denominador": 51415,
+              "valor": 0.9614898375960322
+            },
+            "tabla_recall_palabras": {
+              "documentos": 17,
+              "numerador": 819,
+              "denominador": 1097,
+              "valor": 0.7465815861440291
+            }
+          },
+          "por_documento": {
+            "bronce_total_cer": {
+              "n": 17,
+              "media": 0.011336505326555587,
+              "mediana": 0.002913401647578863
+            },
+            "bronce_total_wer": {
+              "n": 17,
+              "media": 0.022113168902586185,
+              "mediana": 0.013649425287356323
+            },
+            "bronce_total_recuperacion": {
+              "n": 17,
+              "media": 0.983764449332211,
+              "mediana": 0.9869608826479438
+            },
+            "bronce_total_precision": {
+              "n": 17,
+              "media": 0.9850965053772744,
+              "mediana": 0.9876638396299152
+            },
+            "bronce_total_orden_lcs": {
+              "n": 17,
+              "media": 0.9612896394905766,
+              "mediana": 0.9637826961770624
+            },
+            "bronce_total_recall_critico": {
+              "n": 17,
+              "media": 0.954915213849944,
+              "mediana": 0.989247311827957
+            },
+            "bronce_digital_cer": {
+              "n": 7,
+              "media": 0.0028102301486148925,
+              "mediana": 0.0003963142772218369
+            },
+            "bronce_digital_wer": {
+              "n": 7,
+              "media": 0.009245265900051002,
+              "mediana": 0.0025889967637540453
+            },
+            "bronce_digital_recuperacion": {
+              "n": 7,
+              "media": 0.9927819773498613,
+              "mediana": 0.997411003236246
+            },
+            "bronce_digital_precision": {
+              "n": 7,
+              "media": 0.9915880734573699,
+              "mediana": 0.997411003236246
+            },
+            "bronce_digital_orden_lcs": {
+              "n": 7,
+              "media": 0.9819254750438144,
+              "mediana": 0.9921925829538061
+            },
+            "bronce_digital_recall_critico": {
+              "n": 7,
+              "media": 0.9734012450481041,
+              "mediana": 1.0
+            },
+            "bronce_ocr_cer": {
+              "n": 10,
+              "media": 0.017304897951114073,
+              "mediana": 0.006576172953768529
+            },
+            "bronce_ocr_wer": {
+              "n": 10,
+              "media": 0.03112070100436081,
+              "mediana": 0.019970459205440834
+            },
+            "bronce_ocr_recuperacion": {
+              "n": 10,
+              "media": 0.9774521797198559,
+              "mediana": 0.985700980286873
+            },
+            "bronce_ocr_precision": {
+              "n": 10,
+              "media": 0.9805524077212077,
+              "mediana": 0.986059143579052
+            },
+            "bronce_ocr_orden_lcs": {
+              "n": 10,
+              "media": 0.94684455460331,
+              "mediana": 0.9613145090532025
+            },
+            "bronce_ocr_recall_critico": {
+              "n": 10,
+              "media": 0.941974992011232,
+              "mediana": 0.9674927062986765
+            },
+            "silver_perdida": {
+              "n": 17,
+              "media": 0.011541278871524471,
+              "mediana": 0.001256281407035176
+            },
+            "perdida_silver_mobiliario": {
+              "n": 17,
+              "media": 0.00982045721799214,
+              "mediana": 0.0
+            },
+            "perdida_silver_otra": {
+              "n": 17,
+              "media": 0.0017208216535323304,
+              "mediana": 0.0007700205338809035
+            },
+            "silver_ruido": {
+              "n": 17,
+              "media": 0.014880382160531,
+              "mediana": 0.012728719172633254
+            },
+            "bronce_ruido": {
+              "n": 17,
+              "media": 0.014533603576935382,
+              "mediana": 0.01233616037008481
+            },
+            "gold_cobertura_silver": {
+              "n": 17,
+              "media": 0.9992144086701994,
+              "mediana": 0.9993198821128996
+            },
+            "gold_cobertura_declarada_silver": {
+              "n": 17,
+              "media": 0.9992144086701994,
+              "mediana": 0.9993198821128996
+            },
+            "gold_cobertura_efectiva_silver": {
+              "n": 17,
+              "media": 0.9992144086701994,
+              "mediana": 0.9993198821128996
+            },
+            "gold_recuperacion_u": {
+              "n": 17,
+              "media": 0.9727269666474795,
+              "mediana": 0.9688473520249221
+            },
+            "tabla_cer": {
+              "n": 3,
+              "media": 0.035081426137574395,
+              "mediana": 0.03305471124620061
+            },
+            "tabla_recall_palabras": {
+              "n": 3,
+              "media": 0.7438653322649026,
+              "mediana": 0.6374269005847953
+            },
+            "gold_numero_chunks": {
+              "n": 17,
+              "media": 25.705882352941178,
+              "mediana": 14.0
+            },
+            "gold_mediana_caracteres_cuerpo": {
+              "n": 17,
+              "media": 904.5294117647059,
+              "mediana": 916.5
+            },
+            "gold_chunks_cortos": {
+              "n": 17,
+              "media": 0.11764705882352941,
+              "mediana": 0.0
+            },
+            "gold_duplicados_exactos": {
+              "n": 17,
+              "media": 0,
+              "mediana": 0.0
+            },
+            "gold_cuasi_duplicados": {
+              "n": 17,
+              "media": 0,
+              "mediana": 0.0
+            },
+            "gold_cortes_numeros": {
+              "n": 17,
+              "media": 0,
+              "mediana": 0.0
+            },
+            "gold_cortes_articulos": {
+              "n": 17,
+              "media": 0.11764705882352941,
+              "mediana": 0.0
+            },
+            "gold_discrepancias_cuerpo": {
+              "n": 17,
+              "media": 0,
+              "mediana": 0.0
+            },
+            "ocr_confianza_media": {
+              "n": 10,
+              "media": 95.0194928209703,
+              "mediana": 95.37685883207035
+            },
+            "ocr_confianza_minima": {
+              "n": 10,
+              "media": 92.34844901387706,
+              "mediana": 94.82088759616799
+            },
+            "ocr_fraccion_alertadas": {
+              "n": 10,
+              "media": 0.301,
+              "mediana": 0.0625
+            },
+            "ocr_sensibilidad": {
+              "n": 4,
+              "media": 0.94,
+              "mediana": 1.0
+            },
+            "ocr_precision_alertas": {
+              "n": 5,
+              "media": 0.8,
+              "mediana": 1.0
+            }
+          }
+        }
+      }
+    }
+  },
+  "anomalias": {
+    "capas_faltantes": {},
+    "paginas_sin_u": {},
+    "cuerpos_discrepantes": {},
+    "cobertura_gold_menor_99": {},
+    "md_sin_original_local": [],
+    "md_capas_faltantes": {},
+    "md_doc_id_distinto_del_sha256_original": [],
+    "numero_md_distinto_de_dos": null
+  },
+  "documentos_md": [
+    {
+      "documento": "normativa/Reglamento Maritimo Colombiano REMAC 5-DIMAR (202103).md",
+      "doc_id": "06139556e7f0",
+      "referencia": "SIN referencia de OCR",
+      "capas_faltantes": [],
+      "bronce_identico_bytes": "sí",
+      "original_sha256_coincide": "sí",
+      "original_bytes": 357343,
+      "cambio_bronce": "idéntico",
+      "bronce_bytes": 357343,
+      "bronce_caracteres": 348967,
+      "silver_caracteres": 337099,
+      "perdida_bronce_silver_caracteres": 0.03400894640467437,
+      "bronce_caracteres_sin_mapa": 11868,
+      "gold_caracteres_silver": 337099,
+      "gold_caracteres_cubiertos": 336510,
+      "gold_cobertura_silver": 0.9982527388096671,
+      "gold_numero_huecos": 293,
+      "gold_caracteres_huecos": 589,
+      "gold_huecos_mayores": [
+        {
+          "inicio": 177232,
+          "fin": 177235,
+          "caracteres": 3,
+          "muestra": "\n\n "
+        },
+        {
+          "inicio": 179138,
+          "fin": 179141,
+          "caracteres": 3,
+          "muestra": "\n\n "
+        },
+        {
+          "inicio": 184906,
+          "fin": 184909,
+          "caracteres": 3,
+          "muestra": "\n\n "
+        },
+        {
+          "inicio": 265,
+          "fin": 267,
+          "caracteres": 2,
+          "muestra": "\n\n"
+        },
+        {
+          "inicio": 2309,
+          "fin": 2311,
+          "caracteres": 2,
+          "muestra": "\n\n"
+        }
+      ],
+      "gold_cobertura_declarada_silver": 0.9982527388096671,
+      "gold_cobertura_efectiva_silver": 0.9982527388096671,
+      "gold_caracteres_cubiertos_efectivos": 336510,
+      "gold_discrepancias_cuerpo": 0,
+      "gold_cabeceras_invalidas": 0,
+      "gold_numero_chunks": 547,
+      "gold_mediana_caracteres_cuerpo": 869.0,
+      "gold_chunks_cortos": 76,
+      "gold_duplicados_exactos": 0,
+      "gold_cuasi_duplicados": 0,
+      "gold_cortes_numeros": 0,
+      "gold_cortes_articulos": 0
+    },
+    {
+      "documento": "normativa/decreto-2324-de-1984.md",
+      "doc_id": "e495d6d7e97d",
+      "referencia": "SIN referencia de OCR",
+      "capas_faltantes": [],
+      "bronce_identico_bytes": "sí",
+      "original_sha256_coincide": "sí",
+      "original_bytes": 121541,
+      "cambio_bronce": "idéntico",
+      "bronce_bytes": 121541,
+      "bronce_caracteres": 118989,
+      "silver_caracteres": 116140,
+      "perdida_bronce_silver_caracteres": 0.023943389725100638,
+      "bronce_caracteres_sin_mapa": 2849,
+      "gold_caracteres_silver": 116140,
+      "gold_caracteres_cubiertos": 115988,
+      "gold_cobertura_silver": 0.9986912347167212,
+      "gold_numero_huecos": 76,
+      "gold_caracteres_huecos": 152,
+      "gold_huecos_mayores": [
+        {
+          "inicio": 707,
+          "fin": 709,
+          "caracteres": 2,
+          "muestra": "\n\n"
+        },
+        {
+          "inicio": 6245,
+          "fin": 6247,
+          "caracteres": 2,
+          "muestra": "\n\n"
+        },
+        {
+          "inicio": 6900,
+          "fin": 6902,
+          "caracteres": 2,
+          "muestra": "\n\n"
+        },
+        {
+          "inicio": 7858,
+          "fin": 7860,
+          "caracteres": 2,
+          "muestra": "\n\n"
+        },
+        {
+          "inicio": 10287,
+          "fin": 10289,
+          "caracteres": 2,
+          "muestra": "\n\n"
+        }
+      ],
+      "gold_cobertura_declarada_silver": 0.9986912347167212,
+      "gold_cobertura_efectiva_silver": 0.9986912347167212,
+      "gold_caracteres_cubiertos_efectivos": 115988,
+      "gold_discrepancias_cuerpo": 0,
+      "gold_cabeceras_invalidas": 0,
+      "gold_numero_chunks": 154,
+      "gold_mediana_caracteres_cuerpo": 869.0,
+      "gold_chunks_cortos": 0,
+      "gold_duplicados_exactos": 0,
+      "gold_cuasi_duplicados": 0,
+      "gold_cortes_numeros": 0,
+      "gold_cortes_articulos": 0
+    }
+  ]
+}

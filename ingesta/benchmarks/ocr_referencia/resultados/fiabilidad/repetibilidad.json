@@ -1,0 +1,71 @@
+{
+  "archivos": 550,
+  "identicos": 550,
+  "distintos": 0,
+  "por_etapa": {
+    "bronze": {
+      "archivos": 220,
+      "identicos": 220,
+      "distintos": 0
+    },
+    "silver": {
+      "archivos": 220,
+      "identicos": 220,
+      "distintos": 0
+    },
+    "gold": {
+      "archivos": 110,
+      "identicos": 110,
+      "distintos": 0
+    }
+  },
+  "por_tipo": {
+    "pdf": {
+      "archivos": 530,
+      "identicos": 530,
+      "distintos": 0,
+      "por_etapa": {
+        "bronze": {
+          "archivos": 212,
+          "identicos": 212,
+          "distintos": 0
+        },
+        "silver": {
+          "archivos": 212,
+          "identicos": 212,
+          "distintos": 0
+        },
+        "gold": {
+          "archivos": 106,
+          "identicos": 106,
+          "distintos": 0
+        }
+      }
+    },
+    "md": {
+      "archivos": 20,
+      "identicos": 20,
+      "distintos": 0,
+      "por_etapa": {
+        "bronze": {
+          "archivos": 8,
+          "identicos": 8,
+          "distintos": 0
+        },
+        "silver": {
+          "archivos": 8,
+          "identicos": 8,
+          "distintos": 0
+        },
+        "gold": {
+          "archivos": 4,
+          "identicos": 4,
+          "distintos": 0
+        }
+      }
+    }
+  },
+  "rutas_distintas": [],
+  "solo_runA": [],
+  "solo_runB": []
+}

@@ -1,0 +1,148 @@
+{
+  "paginas": [
+    {
+      "documento": "sentencia",
+      "pagina": 1,
+      "tipo_pagina": "digital",
+      "estado": "disponible",
+      "motivo": null,
+      "comando": "pdftotext -enc UTF-8 -f N -l N original - (sin -layout)"
+    },
+    {
+      "documento": "sentencia",
+      "pagina": 2,
+      "tipo_pagina": "digital",
+      "estado": "disponible",
+      "motivo": null,
+      "comando": "pdftotext -enc UTF-8 -f N -l N original - (sin -layout)"
+    },
+    {
+      "documento": "sentencia",
+      "pagina": 9,
+      "tipo_pagina": "digital",
+      "estado": "disponible",
+      "motivo": null,
+      "comando": "pdftotext -enc UTF-8 -f N -l N original - (sin -layout)"
+    },
+    {
+      "documento": "sentencia",
+      "pagina": 16,
+      "tipo_pagina": "digital",
+      "estado": "disponible",
+      "motivo": null,
+      "comando": "pdftotext -enc UTF-8 -f N -l N original - (sin -layout)"
+    },
+    {
+      "documento": "sentencia",
+      "pagina": 24,
+      "tipo_pagina": "digital",
+      "estado": "disponible",
+      "motivo": null,
+      "comando": "pdftotext -enc UTF-8 -f N -l N original - (sin -layout)"
+    },
+    {
+      "documento": "sentencia",
+      "pagina": 31,
+      "tipo_pagina": "digital",
+      "estado": "disponible",
+      "motivo": null,
+      "comando": "pdftotext -enc UTF-8 -f N -l N original - (sin -layout)"
+    },
+    {
+      "documento": "escaneado",
+      "pagina": 1,
+      "tipo_pagina": "ocr",
+      "estado": "no aplica",
+      "motivo": "sin capa de texto",
+      "comando": "pdftotext -enc UTF-8 -f N -l N original - (sin -layout)"
+    },
+    {
+      "documento": "escaneado",
+      "pagina": 2,
+      "tipo_pagina": "ocr",
+      "estado": "no aplica",
+      "motivo": "sin capa de texto",
+      "comando": "pdftotext -enc UTF-8 -f N -l N original - (sin -layout)"
+    },
+    {
+      "documento": "tablas",
+      "pagina": 1,
+      "tipo_pagina": "digital",
+      "estado": "disponible",
+      "motivo": null,
+      "comando": "pdftotext -enc UTF-8 -f N -l N original - (sin -layout)"
+    },
+    {
+      "documento": "tablas",
+      "pagina": 3,
+      "tipo_pagina": "digital",
+      "estado": "disponible",
+      "motivo": null,
+      "comando": "pdftotext -enc UTF-8 -f N -l N original - (sin -layout)"
+    },
+    {
+      "documento": "tablas",
+      "pagina": 4,
+      "tipo_pagina": "digital",
+      "estado": "disponible",
+      "motivo": null,
+      "comando": "pdftotext -enc UTF-8 -f N -l N original - (sin -layout)"
+    },
+    {
+      "documento": "tablas",
+      "pagina": 5,
+      "tipo_pagina": "digital",
+      "estado": "disponible",
+      "motivo": null,
+      "comando": "pdftotext -enc UTF-8 -f N -l N original - (sin -layout)"
+    },
+    {
+      "documento": "tablas",
+      "pagina": 6,
+      "tipo_pagina": "digital",
+      "estado": "disponible",
+      "motivo": null,
+      "comando": "pdftotext -enc UTF-8 -f N -l N original - (sin -layout)"
+    },
+    {
+      "documento": "tablas",
+      "pagina": 7,
+      "tipo_pagina": "digital",
+      "estado": "disponible",
+      "motivo": null,
+      "comando": "pdftotext -enc UTF-8 -f N -l N original - (sin -layout)"
+    },
+    {
+      "documento": "norma",
+      "pagina": 1,
+      "tipo_pagina": "digital",
+      "estado": "disponible",
+      "motivo": null,
+      "comando": "pdftotext -enc UTF-8 -f N -l N original - (sin -layout)"
+    },
+    {
+      "documento": "norma",
+      "pagina": 3,
+      "tipo_pagina": "digital",
+      "estado": "disponible",
+      "motivo": null,
+      "comando": "pdftotext -enc UTF-8 -f N -l N original - (sin -layout)"
+    },
+    {
+      "documento": "norma",
+      "pagina": 5,
+      "tipo_pagina": "digital",
+      "estado": "disponible",
+      "motivo": null,
+      "comando": "pdftotext -enc UTF-8 -f N -l N original - (sin -layout)"
+    },
+    {
+      "documento": "norma",
+      "pagina": 7,
+      "tipo_pagina": "digital",
+      "estado": "disponible",
+      "motivo": null,
+      "comando": "pdftotext -enc UTF-8 -f N -l N original - (sin -layout)"
+    }
+  ]
+}

@@ -1,0 +1,1102 @@
+{
+  "referencia_operativa": "capa de texto PDF; NO verdad visual",
+  "pymupdf": "1.26.5",
+  "umbrales": {
+    "digital_caracteres": 80,
+    "recuperacion_minima": 0.85,
+    "precision_minima": 0.85,
+    "orden_lcs_minimo": 0.65
+  },
+  "semilla": 27102026,
+  "bootstrap_repeticiones": 2000,
+  "paginas_digitales_csv_incluido_duplicado": 990,
+  "paginas_excluidas": 7,
+  "sospechosas_sin_duplicados": 16,
+  "sospechosas_incluidas_agregados": 14,
+  "incidencias_capa_texto": [
+    {
+      "slug": "ap_gabriel_antonio_carrero_vs_dimar_y_otros_a44a",
+      "pagina": 4,
+      "tipo": "caracteres_capa_difieren",
+      "csv": 2747,
+      "actual": 2748
+    },
+    {
+      "slug": "ap_gabriel_antonio_carrero_vs_dimar_y_otros_a44a",
+      "pagina": 12,
+      "tipo": "caracteres_capa_difieren",
+      "csv": 2779,
+      "actual": 2780
+    },
+    {
+      "slug": "ap_gabriel_antonio_carrero_vs_dimar_y_otros_a44a",
+      "pagina": 14,
+      "tipo": "caracteres_capa_difieren",
+      "csv": 3715,
+      "actual": 3716
+    },
+    {
+      "slug": "ap_gabriel_antonio_carrero_vs_dimar_y_otros_a44a",
+      "pagina": 23,
+      "tipo": "caracteres_capa_difieren",
+      "csv": 3629,
+      "actual": 3630
+    },
+    {
+      "slug": "cc_tu_039_2024_modesto_manjarrez_vs_autopistas_del_caribe_consulta_previa_via_d92b",
+      "pagina": 1,
+      "tipo": "caracteres_capa_difieren",
+      "csv": 1581,
+      "actual": 1609
+    },
+    {
+      "slug": "cc_tu_039_2024_modesto_manjarrez_vs_autopistas_del_caribe_consulta_previa_via_d92b",
+      "pagina": 2,
+      "tipo": "caracteres_capa_difieren",
+      "csv": 1901,
+      "actual": 1928
+    },
+    {
+      "slug": "cc_tu_039_2024_modesto_manjarrez_vs_autopistas_del_caribe_consulta_previa_via_d92b",
+      "pagina": 3,
+      "tipo": "caracteres_capa_difieren",
+      "csv": 1767,
+      "actual": 1813
+    },
+    {
+      "slug": "cc_tu_039_2024_modesto_manjarrez_vs_autopistas_del_caribe_consulta_previa_via_d92b",
+      "pagina": 4,
+      "tipo": "caracteres_capa_difieren",
+      "csv": 1261,
+      "actual": 1276
+    },
+    {
+      "slug": "cc_tu_039_2024_modesto_manjarrez_vs_autopistas_del_caribe_consulta_previa_via_d92b",
+      "pagina": 6,
+      "tipo": "caracteres_capa_difieren",
+      "csv": 2322,
+      "actual": 2330
+    },
+    {
+      "slug": "cc_tu_039_2024_modesto_manjarrez_vs_autopistas_del_caribe_consulta_previa_via_d92b",
+      "pagina": 7,
+      "tipo": "caracteres_capa_difieren",
+      "csv": 2702,
+      "actual": 2720
+    },
+    {
+      "slug": "cc_tu_039_2024_modesto_manjarrez_vs_autopistas_del_caribe_consulta_previa_via_d92b",
+      "pagina": 19,
+      "tipo": "caracteres_capa_difieren",
+      "csv": 3285,
+      "actual": 3298
+    },
+    {
+      "slug": "cc_tu_039_2024_modesto_manjarrez_vs_autopistas_del_caribe_consulta_previa_via_d92b",
+      "pagina": 27,
+      "tipo": "caracteres_capa_difieren",
+      "csv": 3390,
+      "actual": 3406
+    },
+    {
+      "slug": "cc_tu_039_2024_modesto_manjarrez_vs_autopistas_del_caribe_consulta_previa_via_d92b",
+      "pagina": 33,
+      "tipo": "caracteres_capa_difieren",
+      "csv": 3425,
+      "actual": 3426
+    },
+    {
+      "slug": "cc_tu_039_2024_modesto_manjarrez_vs_autopistas_del_caribe_consulta_previa_via_d92b",
+      "pagina": 34,
+      "tipo": "caracteres_capa_difieren",
+      "csv": 3131,
+      "actual": 3152
+    },
+    {
+      "slug": "cc_tu_039_2024_modesto_manjarrez_vs_autopistas_del_caribe_consulta_previa_via_d92b",
+      "pagina": 36,
+      "tipo": "caracteres_capa_difieren",
+      "csv": 3560,
+      "actual": 3579
+    },
+    {
+      "slug": "cc_tu_039_2024_modesto_manjarrez_vs_autopistas_del_caribe_consulta_previa_via_d92b",
+      "pagina": 38,
+      "tipo": "caracteres_capa_difieren",
+      "csv": 3034,
+      "actual": 3071
+    },
+    {
+      "slug": "cc_tu_039_2024_modesto_manjarrez_vs_autopistas_del_caribe_consulta_previa_via_d92b",
+      "pagina": 39,
+      "tipo": "caracteres_capa_difieren",
+      "csv": 3597,
+      "actual": 3620
+    },
+    {
+      "slug": "cc_tu_039_2024_modesto_manjarrez_vs_autopistas_del_caribe_consulta_previa_via_d92b",
+      "pagina": 43,
+      "tipo": "caracteres_capa_difieren",
+      "csv": 3092,
+      "actual": 3114
+    },
+    {
+      "slug": "cc_tu_039_2024_modesto_manjarrez_vs_autopistas_del_caribe_consulta_previa_via_d92b",
+      "pagina": 72,
+      "tipo": "caracteres_capa_difieren",
+      "csv": 3590,
+      "actual": 3617
+    },
+    {
+      "slug": "cc_tu_039_2024_modesto_manjarrez_vs_autopistas_del_caribe_consulta_previa_via_d92b",
+      "pagina": 73,
+      "tipo": "caracteres_capa_difieren",
+      "csv": 3114,
+      "actual": 3147
+    },
+    {
+      "slug": "cc_tu_039_2024_modesto_manjarrez_vs_autopistas_del_caribe_consulta_previa_via_d92b",
+      "pagina": 77,
+      "tipo": "caracteres_capa_difieren",
+      "csv": 3038,
+      "actual": 3043
+    },
+    {
+      "slug": "cc_tu_039_2024_modesto_manjarrez_vs_autopistas_del_caribe_consulta_previa_via_d92b",
+      "pagina": 80,
+      "tipo": "caracteres_capa_difieren",
+      "csv": 1720,
+      "actual": 1730
+    },
+    {
+      "slug": "cc_tu_039_2024_modesto_manjarrez_vs_autopistas_del_caribe_consulta_previa_via_d92b",
+      "pagina": 82,
+      "tipo": "caracteres_capa_difieren",
+      "csv": 2141,
+      "actual": 2147
+    },
+    {
+      "slug": "cc_tu_039_2024_modesto_manjarrez_vs_autopistas_del_caribe_consulta_previa_via_d92b",
+      "pagina": 89,
+      "tipo": "caracteres_capa_difieren",
+      "csv": 1765,
+      "actual": 1783
+    },
+    {
+      "slug": "cc_tu_039_2024_modesto_manjarrez_vs_autopistas_del_caribe_consulta_previa_via_d92b",
+      "pagina": 90,
+      "tipo": "caracteres_capa_difieren",
+      "csv": 2391,
+      "actual": 2413
+    },
+    {
+      "slug": "cc_tu_039_2024_modesto_manjarrez_vs_autopistas_del_caribe_consulta_previa_via_d92b",
+      "pagina": 91,
+      "tipo": "caracteres_capa_difieren",
+      "csv": 3159,
+      "actual": 3184
+    },
+    {
+      "slug": "cc_tu_039_2024_modesto_manjarrez_vs_autopistas_del_caribe_consulta_previa_via_d92b",
+      "pagina": 92,
+      "tipo": "caracteres_capa_difieren",
+      "csv": 3131,
+      "actual": 3193
+    },
+    {
+      "slug": "cc_tu_039_2024_modesto_manjarrez_vs_autopistas_del_caribe_consulta_previa_via_d92b",
+      "pagina": 93,
+      "tipo": "caracteres_capa_difieren",
+      "csv": 3487,
+      "actual": 3561
+    },
+    {
+      "slug": "cc_tu_039_2024_modesto_manjarrez_vs_autopistas_del_caribe_consulta_previa_via_d92b",
+      "pagina": 94,
+      "tipo": "caracteres_capa_difieren",
+      "csv": 2411,
+      "actual": 2415
+    },
+    {
+      "slug": "cc_tu_039_2024_modesto_manjarrez_vs_autopistas_del_caribe_consulta_previa_via_d92b",
+      "pagina": 95,
+      "tipo": "caracteres_capa_difieren",
+      "csv": 3490,
+      "actual": 3525
+    },
+    {
+      "slug": "cc_tu_039_2024_modesto_manjarrez_vs_autopistas_del_caribe_consulta_previa_via_d92b",
+      "pagina": 96,
+      "tipo": "caracteres_capa_difieren",
+      "csv": 4718,
+      "actual": 4739
+    },
+    {
+      "slug": "cc_tu_039_2024_modesto_manjarrez_vs_autopistas_del_caribe_consulta_previa_via_d92b",
+      "pagina": 97,
+      "tipo": "caracteres_capa_difieren",
+      "csv": 3135,
+      "actual": 3167
+    },
+    {
+      "slug": "cc_tu_039_2024_modesto_manjarrez_vs_autopistas_del_caribe_consulta_previa_via_d92b",
+      "pagina": 98,
+      "tipo": "caracteres_capa_difieren",
+      "csv": 4139,
+      "actual": 4155
+    },
+    {
+      "slug": "cc_tu_039_2024_modesto_manjarrez_vs_autopistas_del_caribe_consulta_previa_via_d92b",
+      "pagina": 100,
+      "tipo": "caracteres_capa_difieren",
+      "csv": 3390,
+      "actual": 3393
+    },
+    {
+      "slug": "cc_tu_039_2024_modesto_manjarrez_vs_autopistas_del_caribe_consulta_previa_via_d92b",
+      "pagina": 101,
+      "tipo": "caracteres_capa_difieren",
+      "csv": 3585,
+      "actual": 3586
+    },
+    {
+      "slug": "cc_tu_039_2024_modesto_manjarrez_vs_autopistas_del_caribe_consulta_previa_via_d92b",
+      "pagina": 103,
+      "tipo": "caracteres_capa_difieren",
+      "csv": 3652,
+      "actual": 3653
+    },
+    {
+      "slug": "cc_tu_039_2024_modesto_manjarrez_vs_autopistas_del_caribe_consulta_previa_via_d92b",
+      "pagina": 104,
+      "tipo": "caracteres_capa_difieren",
+      "csv": 4360,
+      "actual": 4363
+    },
+    {
+      "slug": "cc_tu_039_2024_modesto_manjarrez_vs_autopistas_del_caribe_consulta_previa_via_d92b",
+      "pagina": 105,
+      "tipo": "caracteres_capa_difieren",
+      "csv": 3227,
+      "actual": 3239
+    },
+    {
+      "slug": "cc_tu_039_2024_modesto_manjarrez_vs_autopistas_del_caribe_consulta_previa_via_d92b",
+      "pagina": 106,
+      "tipo": "caracteres_capa_difieren",
+      "csv": 2794,
+      "actual": 2807
+    },
+    {
+      "slug": "cc_tu_039_2024_modesto_manjarrez_vs_autopistas_del_caribe_consulta_previa_via_d92b",
+      "pagina": 107,
+      "tipo": "caracteres_capa_difieren",
+      "csv": 3214,
+      "actual": 3219
+    },
+    {
+      "slug": "cc_tu_039_2024_modesto_manjarrez_vs_autopistas_del_caribe_consulta_previa_via_d92b",
+      "pagina": 108,
+      "tipo": "caracteres_capa_difieren",
+      "csv": 3431,
+      "actual": 3445
+    },
+    {
+      "slug": "cc_tu_039_2024_modesto_manjarrez_vs_autopistas_del_caribe_consulta_previa_via_d92b",
+      "pagina": 109,
+      "tipo": "caracteres_capa_difieren",
+      "csv": 3302,
+      "actual": 3318
+    },
+    {
+      "slug": "cc_tu_039_2024_modesto_manjarrez_vs_autopistas_del_caribe_consulta_previa_via_d92b",
+      "pagina": 110,
+      "tipo": "caracteres_capa_difieren",
+      "csv": 4081,
+      "actual": 4147
+    },
+    {
+      "slug": "cc_tu_039_2024_modesto_manjarrez_vs_autopistas_del_caribe_consulta_previa_via_d92b",
+      "pagina": 111,
+      "tipo": "caracteres_capa_difieren",
+      "csv": 3987,
+      "actual": 4013
+    },
+    {
+      "slug": "por_el_cual_adiciona_al_titulo_4_de_la_parte_2_del_libro_2_del_decreto_1076_de_2_be8f",
+      "pagina": 1,
+      "tipo": "caracteres_capa_difieren",
+      "csv": 4280,
+      "actual": 4302
+    },
+    {
+      "slug": "por_el_cual_adiciona_al_titulo_4_de_la_parte_2_del_libro_2_del_decreto_1076_de_2_be8f",
+      "pagina": 3,
+      "tipo": "caracteres_capa_difieren",
+      "csv": 4113,
+      "actual": 4149
+    },
+    {
+      "slug": "por_el_cual_adiciona_al_titulo_4_de_la_parte_2_del_libro_2_del_decreto_1076_de_2_be8f",
+      "pagina": 4,
+      "tipo": "caracteres_capa_difieren",
+      "csv": 4755,
+      "actual": 4871
+    },
+    {
+      "slug": "por_el_cual_se_aprueba_el_ajuste_y_la_modificacion_a_la_planta_de_personal_de_em_cc7b",
+      "pagina": 2,
+      "tipo": "caracteres_capa_difieren",
+      "csv": 1868,
+      "actual": 1872
+    },
+    {
+      "slug": "por_el_cual_se_reglamenta_el_funcionamiento_de_los_comites_locales_para_la_organ_cb33",
+      "pagina": 3,
+      "tipo": "caracteres_capa_difieren",
+      "csv": 5122,
+      "actual": 5162
+    },
+    {
+      "slug": "por_el_cual_se_reglamenta_parcialmente_el_articulo_noveno_de_la_ley_10_de_1978_922e",
+      "pagina": 1,
+      "tipo": "caracteres_capa_difieren",
+      "csv": 1789,
+      "actual": 1793
+    }
+  ],
+  "agregados": {
+    "total": {
+      "paginas": 918,
+      "documentos": 34,
+      "ediciones_caracteres": 63915,
+      "caracteres_ref": 2514276,
+      "ediciones_palabras": 14062,
+      "palabras_ref": 396035,
+      "palabras_hip": 399303,
+      "palabras_comunes": 391743,
+      "cer": 0.025420836853233295,
+      "wer": 0.03550696276844218,
+      "recuperacion": 0.9891625740149229,
+      "precision": 0.9810670092636419,
+      "ic95_por_pagina": {
+        "cer": [
+          0.02278748211198864,
+          0.027928063160427674
+        ],
+        "wer": [
+          0.032793571194490674,
+          0.038053399528953376
+        ],
+        "recuperacion": [
+          0.9884345815682614,
+          0.9899022429451884
+        ],
+        "precision": [
+          0.9793530748951261,
+          0.9825964923564692
+        ]
+      },
+      "ic95_por_documento": {
+        "cer": [
+          0.014602397724795553,
+          0.039084449137762364
+        ],
+        "wer": [
+          0.024577188309761046,
+          0.049284586142514915
+        ],
+        "recuperacion": [
+          0.9866069467465448,
+          0.9912657027012701
+        ],
+        "precision": [
+          0.9757433720903851,
+          0.9850561216737829
+        ]
+      }
+    },
+    "jurisprudencia": {
+      "paginas": 869,
+      "documentos": 22,
+      "ediciones_caracteres": 61272,
+      "caracteres_ref": 2400342,
+      "ediciones_palabras": 13542,
+      "palabras_ref": 378464,
+      "palabras_hip": 381771,
+      "palabras_comunes": 374444,
+      "cer": 0.0255263624933447,
+      "wer": 0.03578147459203517,
+      "recuperacion": 0.9893781178659,
+      "precision": 0.9808078664958837,
+      "ic95_por_pagina": {
+        "cer": [
+          0.02291086156694862,
+          0.028315491257232185
+        ],
+        "wer": [
+          0.03316724577629155,
+          0.0386640748076992
+        ],
+        "recuperacion": [
+          0.9886072960843699,
+          0.9900888109063263
+        ],
+        "precision": [
+          0.979015936570406,
+          0.9823717680341786
+        ]
+      },
+      "ic95_por_documento": {
+        "cer": [
+          0.013263284456939995,
+          0.03931573222170444
+        ],
+        "wer": [
+          0.02360518201730224,
+          0.049502537921757836
+        ],
+        "recuperacion": [
+          0.9869763433770096,
+          0.9913997055484699
+        ],
+        "precision": [
+          0.9754035161634758,
+          0.9849889076254946
+        ]
+      }
+    },
+    "normativa": {
+      "paginas": 49,
+      "documentos": 12,
+      "ediciones_caracteres": 2643,
+      "caracteres_ref": 113934,
+      "ediciones_palabras": 520,
+      "palabras_ref": 17571,
+      "palabras_hip": 17532,
+      "palabras_comunes": 17299,
+      "cer": 0.023197640739375427,
+      "wer": 0.029594217745148255,
+      "recuperacion": 0.9845199476409994,
+      "precision": 0.9867100159707962,
+      "ic95_por_pagina": {
+        "cer": [
+          0.015139487551723375,
+          0.033608402076346994
+        ],
+        "wer": [
+          0.01975168311132311,
+          0.04129014686388068
+        ],
+        "recuperacion": [
+          0.9764113998029926,
+          0.9906974656921241
+        ],
+        "precision": [
+          0.9802610547870482,
+          0.9918842304169314
+        ]
+      },
+      "ic95_por_documento": {
+        "cer": [
+          0.005402748995917457,
+          0.04758635278943329
+        ],
+        "wer": [
+          0.009759840290995926,
+          0.05273945282080789
+        ],
+        "recuperacion": [
+          0.9690744000223803,
+          0.9943902826844542
+        ],
+        "precision": [
+          0.9745232001597849,
+          0.9954588757394046
+        ]
+      }
+    },
+    "sin_tabla": {
+      "paginas": 896,
+      "documentos": 34,
+      "ediciones_caracteres": 58162,
+      "caracteres_ref": 2468888,
+      "ediciones_palabras": 13126,
+      "palabras_ref": 389072,
+      "palabras_hip": 391768,
+      "palabras_comunes": 384980,
+      "cer": 0.02355797427829857,
+      "wer": 0.033736686268865404,
+      "recuperacion": 0.9894826664473414,
+      "precision": 0.9826734189622429,
+      "ic95_por_pagina": {
+        "cer": [
+          0.02142690126158923,
+          0.02565157179918454
+        ],
+        "wer": [
+          0.03146547525344049,
+          0.03587591952695657
+        ],
+        "recuperacion": [
+          0.9887451523941915,
+          0.9901932109749189
+        ],
+        "precision": [
+          0.9816830806830334,
+          0.9837144125789923
+        ]
+      },
+      "ic95_por_documento": {
+        "cer": [
+          0.012498969510102166,
+          0.03730059055445208
+        ],
+        "wer": [
+          0.02282182341959459,
+          0.047265981735386944
+        ],
+        "recuperacion": [
+          0.9870697154706696,
+          0.9915149815277612
+        ],
+        "precision": [
+          0.9785291360486723,
+          0.9858884704291502
+        ]
+      }
+    },
+    "jurisprudencia_sin_tabla": {
+      "paginas": 853,
+      "documentos": 22,
+      "ediciones_caracteres": 56529,
+      "caracteres_ref": 2363938,
+      "ediciones_palabras": 12730,
+      "palabras_ref": 372856,
+      "palabras_hip": 375581,
+      "palabras_comunes": 368953,
+      "cer": 0.023913063709792726,
+      "wer": 0.03414186710150836,
+      "recuperacion": 0.9895321518226876,
+      "precision": 0.9823526749223204,
+      "ic95_por_pagina": {
+        "cer": [
+          0.02178122274252558,
+          0.0260681243531457
+        ],
+        "wer": [
+          0.03188968250641404,
+          0.03642517850999242
+        ],
+        "recuperacion": [
+          0.9887881468939255,
+          0.9902509133478503
+        ],
+        "precision": [
+          0.981322112259231,
+          0.9834124722330649
+        ]
+      },
+      "ic95_por_documento": {
+        "cer": [
+          0.011749862688438138,
+          0.037986006458018695
+        ],
+        "wer": [
+          0.022101362769098673,
+          0.04800385909408518
+        ],
+        "recuperacion": [
+          0.9871523552755315,
+          0.9915311891136172
+        ],
+        "precision": [
+          0.9779062443454872,
+          0.9857265330495149
+        ]
+      }
+    },
+    "normativa_sin_tabla": {
+      "paginas": 43,
+      "documentos": 12,
+      "ediciones_caracteres": 1633,
+      "caracteres_ref": 104950,
+      "ediciones_palabras": 396,
+      "palabras_ref": 16216,
+      "palabras_hip": 16187,
+      "palabras_comunes": 16027,
+      "cer": 0.0155597903763697,
+      "wer": 0.024420325604341393,
+      "recuperacion": 0.9883448445979279,
+      "precision": 0.9901155248038549,
+      "ic95_por_pagina": {
+        "cer": [
+          0.009099434629949879,
+          0.0228243379198922
+        ],
+        "wer": [
+          0.015339663051867871,
+          0.03342383545354159
+        ],
+        "recuperacion": [
+          0.9834105827669287,
+          0.9927623177284758
+        ],
+        "precision": [
+          0.9860028926033867,
+          0.99390576993318
+        ]
+      },
+      "ic95_por_documento": {
+        "cer": [
+          0.0042110887107354375,
+          0.030721878948572943
+        ],
+        "wer": [
+          0.007630221954713409,
+          0.04227591975284286
+        ],
+        "recuperacion": [
+          0.9803327612209981,
+          0.9948662211298119
+        ],
+        "precision": [
+          0.9833430170627214,
+          0.9962549499327142
+        ]
+      }
+    },
+    "con_tabla": {
+      "paginas": 22,
+      "documentos": 8,
+      "ediciones_caracteres": 5753,
+      "caracteres_ref": 45388,
+      "ediciones_palabras": 936,
+      "palabras_ref": 6963,
+      "palabras_hip": 7535,
+      "palabras_comunes": 6763,
+      "cer": 0.12675156429012074,
+      "wer": 0.13442481688927185,
+      "recuperacion": 0.9712767485279333,
+      "precision": 0.8975447909754479,
+      "ic95_por_pagina": {
+        "cer": [
+          0.0572457444344587,
+          0.2291021075486323
+        ],
+        "wer": [
+          0.061956738489297246,
+          0.2409039550878283
+        ],
+        "recuperacion": [
+          0.953422982813809,
+          0.9842139868387797
+        ],
+        "precision": [
+          0.8305985986545105,
+          0.9509874294403381
+        ]
+      },
+      "ic95_por_documento": {
+        "cer": [
+          0.04487660809931421,
+          0.2523913875388265
+        ],
+        "wer": [
+          0.04585250037097492,
+          0.27529412777193896
+        ],
+        "recuperacion": [
+          0.9368379236233609,
+          0.9867658596940829
+        ],
+        "precision": [
+          0.822529021626103,
+          0.966966770827528
+        ]
+      }
+    },
+    "jurisprudencia_con_tabla": {
+      "paginas": 16,
+      "documentos": 6,
+      "ediciones_caracteres": 4743,
+      "caracteres_ref": 36404,
+      "ediciones_palabras": 812,
+      "palabras_ref": 5608,
+      "palabras_hip": 6190,
+      "palabras_comunes": 5491,
+      "cer": 0.1302878804526975,
+      "wer": 0.144793152639087,
+      "recuperacion": 0.9791369472182596,
+      "precision": 0.887075928917609,
+      "ic95_por_pagina": {
+        "cer": [
+          0.04448552042824554,
+          0.26098470880570523
+        ],
+        "wer": [
+          0.059592938792411294,
+          0.2785493405487855
+        ],
+        "recuperacion": [
+          0.9704094695959402,
+          0.9863392327260473
+        ],
+        "precision": [
+          0.8055975634118678,
+          0.9496466584998665
+        ]
+      },
+      "ic95_por_documento": {
+        "cer": [
+          0.027052259834419955,
+          0.30125618925362185
+        ],
+        "wer": [
+          0.04032258064516129,
+          0.32801367911085777
+        ],
+        "recuperacion": [
+          0.961458642158316,
+          0.9875868917576961
+        ],
+        "precision": [
+          0.7947973321412892,
+          0.9674092409240924
+        ]
+      }
+    },
+    "normativa_con_tabla": {
+      "paginas": 6,
+      "documentos": 2,
+      "ediciones_caracteres": 1010,
+      "caracteres_ref": 8984,
+      "ediciones_palabras": 124,
+      "palabras_ref": 1355,
+      "palabras_hip": 1345,
+      "palabras_comunes": 1272,
+      "cer": 0.11242208370436331,
+      "wer": 0.09151291512915129,
+      "recuperacion": 0.9387453874538746,
+      "precision": 0.945724907063197,
+      "ic95_por_pagina": {
+        "cer": [
+          0.08165263364010182,
+          0.1564192849404117
+        ],
+        "wer": [
+          0.030514939605848695,
+          0.1759014951627089
+        ],
+        "recuperacion": [
+          0.8645558487247141,
+          0.993103448275862
+        ],
+        "precision": [
+          0.8800358102059087,
+          0.993103448275862
+        ]
+      },
+      "ic95_por_documento": {
+        "cer": [
+          0.09235615984082242,
+          0.15340331865899084
+        ],
+        "wer": [
+          0.03382663847780127,
+          0.22493887530562348
+        ],
+        "recuperacion": [
+          0.8166259168704156,
+          0.9915433403805497
+        ],
+        "precision": [
+          0.8370927318295739,
+          0.9915433403805497
+        ]
+      }
+    }
+  },
+  "peores_10": [
+    {
+      "slug": "taa_2da_rd_2015_281_xxxx_vs_dpto_antioquia_responsabilidad_del_estado_98ef",
+      "categoria": "jurisprudencia",
+      "pagina": 3,
+      "tabla_u": true,
+      "duplicado_de": "",
+      "no_confiable": false,
+      "incluida_agregados": true,
+      "caracteres_capa_csv": 670,
+      "caracteres_capa_actual": 670,
+      "ediciones_caracteres": 1000,
+      "caracteres_ref": 586,
+      "ediciones_palabras": 164,
+      "palabras_ref": 96,
+      "palabras_hip": 217,
+      "palabras_comunes": 92,
+      "cer": 1.7064846416382253,
+      "wer": 1.7083333333333333,
+      "recuperacion": 0.9583333333333334,
+      "precision": 0.423963133640553,
+      "orden_lcs": 0.6702127659574468,
+      "orden_precision": 0.2930232558139535,
+      "lcs": 63,
+      "ngramas_ref": 94,
+      "ngramas_hip": 215,
+      "n": 3,
+      "motivo_sospecha": "posible_adicion"
+    },
+    {
+      "slug": "taa_2da_rd_2015_281_xxxx_vs_dpto_antioquia_responsabilidad_del_estado_98ef",
+      "categoria": "jurisprudencia",
+      "pagina": 4,
+      "tabla_u": true,
+      "duplicado_de": "",
+      "no_confiable": false,
+      "incluida_agregados": true,
+      "caracteres_capa_csv": 775,
+      "caracteres_capa_actual": 775,
+      "ediciones_caracteres": 913,
+      "caracteres_ref": 680,
+      "ediciones_palabras": 159,
+      "palabras_ref": 121,
+      "palabras_hip": 224,
+      "palabras_comunes": 114,
+      "cer": 1.3426470588235293,
+      "wer": 1.3140495867768596,
+      "recuperacion": 0.9421487603305785,
+      "precision": 0.5089285714285714,
+      "orden_lcs": 0.6218487394957983,
+      "orden_precision": 0.3333333333333333,
+      "lcs": 74,
+      "ngramas_ref": 119,
+      "ngramas_hip": 222,
+      "n": 3,
+      "motivo_sospecha": "posible_adicion;posible_desorden_o_errores"
+    },
+    {
+      "slug": "ap_felipe_jose_campo_fernandez_vs_corpamag_y_otros_ce3c",
+      "categoria": "jurisprudencia",
+      "pagina": 33,
+      "tabla_u": false,
+      "duplicado_de": "",
+      "no_confiable": false,
+      "incluida_agregados": true,
+      "caracteres_capa_csv": 156,
+      "caracteres_capa_actual": 156,
+      "ediciones_caracteres": 160,
+      "caracteres_ref": 123,
+      "ediciones_palabras": 30,
+      "palabras_ref": 14,
+      "palabras_hip": 44,
+      "palabras_comunes": 14,
+      "cer": 1.3008130081300813,
+      "wer": 2.142857142857143,
+      "recuperacion": 1.0,
+      "precision": 0.3181818181818182,
+      "orden_lcs": 1.0,
+      "orden_precision": 0.2857142857142857,
+      "lcs": 12,
+      "ngramas_ref": 12,
+      "ngramas_hip": 42,
+      "n": 3,
+      "motivo_sospecha": "posible_adicion"
+    },
+    {
+      "slug": "ce_2da_ap_2021_041_edgar_stephengs_vs_archipielago_san_andres_desarrollo_urbanis_0b8f",
+      "categoria": "jurisprudencia",
+      "pagina": 44,
+      "tabla_u": true,
+      "duplicado_de": "",
+      "no_confiable": false,
+      "incluida_agregados": true,
+      "caracteres_capa_csv": 2091,
+      "caracteres_capa_actual": 2091,
+      "ediciones_caracteres": 1428,
+      "caracteres_ref": 1998,
+      "ediciones_palabras": 201,
+      "palabras_ref": 289,
+      "palabras_hip": 487,
+      "palabras_comunes": 286,
+      "cer": 0.7147147147147147,
+      "wer": 0.6955017301038062,
+      "recuperacion": 0.9896193771626297,
+      "precision": 0.5872689938398358,
+      "orden_lcs": 0.9616724738675958,
+      "orden_precision": 0.5690721649484536,
+      "lcs": 276,
+      "ngramas_ref": 287,
+      "ngramas_hip": 485,
+      "n": 3,
+      "motivo_sospecha": "posible_adicion"
+    },
+    {
+      "slug": "por_el_cual_se_aprueba_el_ajuste_y_la_modificacion_a_la_planta_de_personal_de_em_cc7b",
+      "categoria": "normativa",
+      "pagina": 1,
+      "tabla_u": false,
+      "duplicado_de": "",
+      "no_confiable": false,
+      "incluida_agregados": true,
+      "caracteres_capa_csv": 300,
+      "caracteres_capa_actual": 300,
+      "ediciones_caracteres": 140,
+      "caracteres_ref": 283,
+      "ediciones_palabras": 13,
+      "palabras_ref": 37,
+      "palabras_hip": 43,
+      "palabras_comunes": 36,
+      "cer": 0.49469964664310956,
+      "wer": 0.35135135135135137,
+      "recuperacion": 0.972972972972973,
+      "precision": 0.8372093023255814,
+      "orden_lcs": 0.8285714285714286,
+      "orden_precision": 0.7073170731707317,
+      "lcs": 29,
+      "ngramas_ref": 35,
+      "ngramas_hip": 41,
+      "n": 3,
+      "motivo_sospecha": "posible_adicion"
+    },
+    {
+      "slug": "ce_2da_ap_2021_041_edgar_stephengs_vs_archipielago_san_andres_desarrollo_urbanis_0b8f",
+      "categoria": "jurisprudencia",
+      "pagina": 51,
+      "tabla_u": false,
+      "duplicado_de": "",
+      "no_confiable": false,
+      "incluida_agregados": true,
+      "caracteres_capa_csv": 1109,
+      "caracteres_capa_actual": 1109,
+      "ediciones_caracteres": 381,
+      "caracteres_ref": 797,
+      "ediciones_palabras": 60,
+      "palabras_ref": 113,
+      "palabras_hip": 80,
+      "palabras_comunes": 76,
+      "cer": 0.4780426599749059,
+      "wer": 0.5309734513274337,
+      "recuperacion": 0.672566371681416,
+      "precision": 0.95,
+      "orden_lcs": 0.4954954954954955,
+      "orden_precision": 0.7051282051282052,
+      "lcs": 55,
+      "ngramas_ref": 111,
+      "ngramas_hip": 78,
+      "n": 3,
+      "motivo_sospecha": "posible_omision;posible_desorden_o_errores"
+    },
+    {
+      "slug": "ce_2da_ap_2017_103_personeria_vs_distrito_cartagena_desembocadura_afb0",
+      "categoria": "jurisprudencia",
+      "pagina": 33,
+      "tabla_u": false,
+      "duplicado_de": "",
+      "no_confiable": false,
+      "incluida_agregados": true,
+      "caracteres_capa_csv": 1203,
+      "caracteres_capa_actual": 1203,
+      "ediciones_caracteres": 303,
+      "caracteres_ref": 657,
+      "ediciones_palabras": 46,
+      "palabras_ref": 90,
+      "palabras_hip": 96,
+      "palabras_comunes": 90,
+      "cer": 0.4611872146118721,
+      "wer": 0.5111111111111111,
+      "recuperacion": 1.0,
+      "precision": 0.9375,
+      "orden_lcs": 0.6590909090909091,
+      "orden_precision": 0.6170212765957447,
+      "lcs": 58,
+      "ngramas_ref": 88,
+      "ngramas_hip": 94,
+      "n": 3,
+      "motivo_sospecha": ""
+    },
+    {
+      "slug": "por_el_cual_se_aprueba_el_ajuste_y_la_modificacion_a_la_planta_de_personal_de_em_cc7b",
+      "categoria": "normativa",
+      "pagina": 7,
+      "tabla_u": false,
+      "duplicado_de": "",
+      "no_confiable": false,
+      "incluida_agregados": true,
+      "caracteres_capa_csv": 356,
+      "caracteres_capa_actual": 356,
+      "ediciones_caracteres": 138,
+      "caracteres_ref": 316,
+      "ediciones_palabras": 7,
+      "palabras_ref": 38,
+      "palabras_hip": 38,
+      "palabras_comunes": 37,
+      "cer": 0.43670886075949367,
+      "wer": 0.18421052631578946,
+      "recuperacion": 0.9736842105263158,
+      "precision": 0.9736842105263158,
+      "orden_lcs": 0.8333333333333334,
+      "orden_precision": 0.8333333333333334,
+      "lcs": 30,
+      "ngramas_ref": 36,
+      "ngramas_hip": 36,
+      "n": 3,
+      "motivo_sospecha": ""
+    },
+    {
+      "slug": "ce_2da_nyr_2009_164_fepep_vs_dimar_playa_uso_urbanistico_e806",
+      "categoria": "jurisprudencia",
+      "pagina": 42,
+      "tabla_u": false,
+      "duplicado_de": "",
+      "no_confiable": false,
+      "incluida_agregados": true,
+      "caracteres_capa_csv": 1135,
+      "caracteres_capa_actual": 1135,
+      "ediciones_caracteres": 362,
+      "caracteres_ref": 906,
+      "ediciones_palabras": 58,
+      "palabras_ref": 127,
+      "palabras_hip": 94,
+      "palabras_comunes": 90,
+      "cer": 0.3995584988962472,
+      "wer": 0.4566929133858268,
+      "recuperacion": 0.7086614173228346,
+      "precision": 0.9574468085106383,
+      "orden_lcs": 0.568,
+      "orden_precision": 0.7717391304347826,
+      "lcs": 71,
+      "ngramas_ref": 125,
+      "ngramas_hip": 92,
+      "n": 3,
+      "motivo_sospecha": "posible_omision;posible_desorden_o_errores"
+    },
+    {
+      "slug": "ap_gerardo_antenor_lemus_orozco_vs_distrito_de_santa_mata_y_otros_7c8c",
+      "categoria": "jurisprudencia",
+      "pagina": 33,
+      "tabla_u": false,
+      "duplicado_de": "",
+      "no_confiable": false,
+      "incluida_agregados": true,
+      "caracteres_capa_csv": 583,
+      "caracteres_capa_actual": 583,
+      "ediciones_caracteres": 171,
+      "caracteres_ref": 478,
+      "ediciones_palabras": 24,
+      "palabras_ref": 75,
+      "palabras_hip": 98,
+      "palabras_comunes": 74,
+      "cer": 0.3577405857740586,
+      "wer": 0.32,
+      "recuperacion": 0.9866666666666667,
+      "precision": 0.7551020408163265,
+      "orden_lcs": 0.9041095890410958,
+      "orden_precision": 0.6875,
+      "lcs": 66,
+      "ngramas_ref": 73,
+      "ngramas_hip": 96,
+      "n": 3,
+      "motivo_sospecha": "posible_adicion"
+    }
+  ]
+}
