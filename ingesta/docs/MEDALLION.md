@@ -383,3 +383,18 @@ python -m unittest discover -s tests/unit -p test_medallion_offline.py -v
 Esas pruebas aíslan el splitter con un generador controlado; las pruebas históricas
 siguen verificando el splitter real, los offsets y el presupuesto. Las pruebas de
 OCR real y publicación requieren el entorno Linux y sus servicios locales.
+
+## Cambios en feat/ingesta-autonoma
+
+- Bronze: extractor `pymupdf-tesseract-spa-4`. Las llamadas de nota en superíndice
+  de páginas digitales se conservan como dígitos superíndice Unicode; no se pegan a
+  la cifra anterior («2002⁴⁴», no «200244»). Silver y gold conservan esos caracteres
+  (una posición Unicode por carácter, `offset_map` intacto); `\d` no los captura.
+- Silver: metadatos `legal-metadata-4` con `entidad_emisora` e identidad normativa
+  tomada solo del encabezado propio; `metadata.doc_type` alimenta la puerta de
+  identidad por tipo.
+- Las capas siguen siendo reproducibles: dos corridas desde cero producen los mismos
+  bytes. La raíz de capas es configurable (`--layers-root`), también en el intake.
+- Para medir cambios que no tocan el OCR en una máquina sin Tesseract,
+  `benchmarks/ocr_referencia/sembrar_cache_ocr.py` siembra la caché OCR con una
+  corrida Linux de referencia (control: 530/530 archivos idénticos).

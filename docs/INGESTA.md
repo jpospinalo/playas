@@ -126,7 +126,7 @@ el campo con razón `correccion_manual`. No hay completado automático.
 Repetir sync aplica cambios solo al doc_id afectado; renombrar no invalida los
 overrides, pero modificar contenido crea otro doc_id. Los campos admitidos son
 tipo_documento, corporacion, sala, clase, numero, anio, radicado, fecha_iso,
-magistrado_ponente, ambito, municipio y normas_citadas.
+magistrado_ponente, ambito, municipio, normas_citadas y entidad_emisora.
 
 ## Variantes, calidad y publicación
 
@@ -184,3 +184,23 @@ Vectores, cachés, manifiestos SQLite y snapshots generados no se versionan.
 documento (incluido OCR hijo). CPU del servicio Ollama, local o remoto, no está
 incluida en ese contador Python/OCR; su latencia sí se mide. Una segunda corrida
 sin cambios debe producir 0 embeddings nuevos.
+
+## Rama feat/ingesta-autonoma: versiones, identidad e intake
+
+- Extractor `pymupdf-tesseract-spa-4`: en páginas digitales, las llamadas de nota
+  en superíndice (flag de PyMuPDF) pasan a dígitos superíndice Unicode («2002⁴⁴»),
+  1:1 y solo si el ordenador de palabras reproduce byte a byte el texto previo.
+  Las páginas OCR no cambian. Requiere colección y estado nuevos.
+- Metadatos `legal-metadata-4`: campo nuevo `entidad_emisora`. En normativa, tipo,
+  número, año, fecha y entidad salen solo del encabezado propio de la norma
+  (línea propia, cabecera SUIN o pie del Gestor Normativo), nunca de una cita.
+- Puerta `identity` por tipo: jurisprudencia exige corporación; normativa exige
+  tipo, número y año con evidencia (entidad y fecha son recomendados). Sobre el
+  corpus pasan 18 de 27 normas: 6 fragmentos sin encabezado y 3 escaneados con el
+  número ilegible siguen fallando por razón real.
+- Entrada autónoma de documentos nuevos: `python -m ingest.offline intake`, con la
+  política calibrada `ingesta/config/intake_policy.yaml` y destinos protegidos en
+  `ingesta/config/intake_destinos.yaml`. Guía del operador: `ingesta/docs/INTAKE.md`.
+  Calibración y prueba de punta a punta: `ingesta/benchmarks/intake/resultados/`.
+- PyYAML llega hoy como dependencia transitiva de chromadb (extra `offline`);
+  conviene declararlo explícitamente al regenerar `uv.lock`.
