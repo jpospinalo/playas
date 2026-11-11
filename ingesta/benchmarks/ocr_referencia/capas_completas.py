@@ -36,10 +36,18 @@ def main():
     parser.add_argument("--cache", type=Path, required=True)
     parser.add_argument("--extension", choices=["pdf", "md"], required=True)
     parser.add_argument("--overrides", type=Path, default=Path("data/metadata_overrides.csv"))
+    parser.add_argument(
+        "--cache-ocr-sembrada",
+        action="store_true",
+        help="Admite una caché que solo contenga ocr/ sembrado por sembrar_cache_ocr.py",
+    )
     args = parser.parse_args()
     entrada = args.entrada.resolve()
     for ruta in (args.layers_root, args.cache):
-        if ruta.exists() and any(ruta.iterdir()):
+        contenido = {p.name for p in ruta.iterdir()} if ruta.exists() else set()
+        if ruta == args.cache and args.cache_ocr_sembrada:
+            contenido -= {"ocr"}
+        if contenido:
             parser.error(f"{ruta} debe estar vacío: la corrida es desde cero")
     overrides = []
     if args.overrides.exists():
