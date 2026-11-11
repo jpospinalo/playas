@@ -6,7 +6,8 @@ of the architecture documentation.
 
 ## Sources of truth
 
-- Repository map and AWS operations: [README.md](README.md).
+- Repository map: [README.md](README.md).
+- AWS operations: [rag/infrastructure/README.md](rag/infrastructure/README.md).
 - Scope, branches and verification gates: [CONTRIBUTING.md](CONTRIBUTING.md).
 - RAG architecture and commands: [rag/README.md](rag/README.md) and
   [rag/docs/ARCHITECTURE.md](rag/docs/ARCHITECTURE.md).

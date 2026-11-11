@@ -1,20 +1,26 @@
 # Respaldos lógicos Gold de Chroma
 
-Esta carpeta conserva paquetes versionados con documentos, metadata adaptada y vectores existentes. En la rama `corpus`, el despliegue selecciona Gold A `cc7bf44b54a9` y configura `rag_playas_gold_a_cc7bf44b54a9` después de verificarla. Publicar el código no ejecuta ese despliegue ni modifica la colección de una aplicación que ya está funcionando.
+Los paquetes contienen documentos, metadata adaptada y vectores listos para
+restaurar. El despliegue de `corpus` selecciona Gold A `cc7bf44b54a9` y
+configura `rag_playas_gold_a_cc7bf44b54a9` después de verificarla.
 
-## Paquetes y evidencia
+## Paquetes
 
 | Entrega | Función |
 | --- | --- |
 | [gold-a-cc7bf44b54a9](gold-a-cc7bf44b54a9/README.md) | Respaldo actual: 5.862 registros, 5.852 vectores reutilizados y diez nuevos; once payloads actualizados. |
-| [gold-a-769a847f096b](gold-a-769a847f096b/README.md) | Paquete padre histórico; conservarlo sin cambios. |
-| [Validación de cc7bf44b54a9](gold-a-cc7bf44b54a9-validation/README.md) | Evidencia posterior de restauración, comparación y prueba funcional; anclajes en [validation.json](gold-a-cc7bf44b54a9-validation/validation.json). |
+| [gold-a-769a847f096b](gold-a-769a847f096b/README.md) | Paquete padre y referencia de procedencia de los vectores reutilizados. |
 
-El paquete actual contiene exactamente cinco archivos: `GOLD_A.jsonl.gz`, `PROCEDENCIA_GOLD_A.json`, `manifest.json`, `verificar_paquete.py` y `README.md`. Son inmutables: no editar, recomprimir ni actualizar sus estados para registrar ensayos posteriores. El manifiesto y su README describen el momento del empaquetado; la validación posterior se conserva por separado.
+Conservar juntos los cinco archivos del paquete actual: `GOLD_A.jsonl.gz`,
+`PROCEDENCIA_GOLD_A.json`, `manifest.json`, `verificar_paquete.py` y
+`README.md`. El verificador comprueba sus huellas. El README y el
+manifiesto internos describen el estado al empaquetar.
 
-El corpus documental fuente corresponde a `323fda951c74099fa92602b7ada634542b967ee3`. Los cinco archivos se incorporaron a `corpus` en `9c5dc755e327ad02000f7721d08e8728c8f163f8`.
-
-En la comprobación remota del 8 de noviembre de 2026, `corpus` apuntaba a ese commit y la rama predeterminada era `main`, en `813b6aab5407bbfc362ce9a6b05aadc34ef0a1d7`, sin este paquete. Es una observación fechada, no una garantía sobre referencias futuras ni una integración en `main`.
+El corpus documental fuente corresponde a
+`323fda951c74099fa92602b7ada634542b967ee3`. El paquete se incorporó en
+`9c5dc755e327ad02000f7721d08e8728c8f163f8` y se puede verificar y restaurar
+de forma autónoma. Para cotejar campos e IDs, consultar el
+[inventario y la descripción de Gold](../README.md).
 
 ## Obtener y comprobar el respaldo
 
@@ -26,9 +32,10 @@ git -C playas-corpus rev-parse HEAD
 python3 -I -S -B playas-corpus/data/chroma-releases/gold-a-cc7bf44b54a9/verificar_paquete.py
 ```
 
-El commit `9c5dc755…` identifica la incorporación del respaldo probado; la guía y su evidencia pueden añadirse en commits posteriores sin cambiar los cinco archivos del paquete. Conservar también ese commit de entrega al archivar una copia.
-
-El verificador usa Python 3.11 o posterior y solo su biblioteca estándar. Comprueba los cinco archivos, registros, IDs, payloads, vectores y procedencia anclada; no conecta servicios, genera embeddings ni necesita rutas históricas. Un retorno distinto de cero exige detenerse. Conservar juntos los cinco archivos y sus nombres; la carpeta puede trasladarse sin cambiar el contenido.
+El verificador usa Python 3.11 o posterior y solo su biblioteca estándar.
+Comprueba localmente archivos, registros, IDs, textos, metadata, vectores y
+procedencia. Conservar los nombres y bytes de los cinco archivos al copiar el
+paquete. Resolver cualquier error del verificador antes de restaurar.
 
 ## Restaurador del despliegue de corpus
 
@@ -38,46 +45,44 @@ crear recursos y clona esa rama verificando el commit. La entrega se obtiene
 del repositorio: no se copian automáticamente exports locales antiguos.
 
 [restore_gold_release.py](../restore_gold_release.py) verifica y restaura la
-entrega fija, con biblioteca estándar de Python 3.11 o posterior:
+entrega fija con Python 3.11 o posterior. Desde la raíz del repositorio se
+puede comprobar el paquete local:
 
 ```sh
-# Solo lectura local: sin AWS, Chroma u Ollama.
 python3 -I -S -B data/restore_gold_release.py --check
-
-# Operación remota: ejecutar solo con el destino confirmado y sin otras escrituras.
-python3 -B data/restore_gold_release.py --execute \
-  --host <chroma-host> --port 8000 \
-  --ollama-base-url http://<ollama-host>:11434 \
-  --receipt /ruta/recibo-nuevo.jsonl
 ```
 
-El recibo debe estar fuera del repositorio, ser nuevo y tener su carpeta con
-permisos `0700`; se conserva ante
-fallos. Los scripts crean esa carpeta bajo `~/.local/state/playas-corpus/`.
-Resguardar los recibos antes de terminar el laboratorio. El restaurador no solicita
-embeddings, no borra colecciones y no escribe en `rag_playas`. Si la colección
-versionada ya existe, solo la verifica: reutiliza una coincidencia completa y
-se detiene ante una carga parcial o diferente. No continúa ni corrige lotes de
-una ejecución incierta. `--verify-only` comprueba un destino existente sin
-crearlo ni escribir; el script de ECS lo usa antes de aplicar su configuración.
+Para preparar una colección ausente, el responsable confirma el servidor,
+el espacio y el perfil de consulta. Ejecuta el comando de la sección
+siguiente con `--execute` como único selector de modo y un recibo nuevo.
+El restaurador carga los vectores del paquete en la colección versionada.
+Si ya existe, la reutiliza únicamente cuando coincide completa. Ante una
+carga parcial o una escritura incierta, cotejar el estado antes de continuar.
 
-La colección, los modelos y el destino se configuran después de la verificación.
-Un fallo no permite volver automáticamente al export de julio. Los scripts de
-esta rama fuerzan la colección versionada también frente a un `tfvars` antiguo.
-Ejecutar Terraform manualmente fuera de los scripts requiere conservar esa
-selección explícita y hacer previamente las mismas comprobaciones.
+## Verificar una colección existente
 
-## Controles de recuperación
+Desde la raíz del repositorio y con acceso a los servicios, sustituir los
+hosts y puertos de ejemplo por los que usa el backend. El restaurador
+consulta `default_tenant/default_database` en Chroma. Guardar el recibo en
+una carpeta privada nueva fuera del repositorio.
 
-La recuperación requiere una configuración operativa nueva y explícita. Las direcciones, claves públicas, UUID y aprobaciones de un laboratorio anterior no se convierten en valores predeterminados.
+```sh
+chroma_host='chroma.equipo.example'
+chroma_port=8000
+ollama_url='http://ollama.equipo.example:11434'
+recibos="$(mktemp -d /tmp/atlas-gold.XXXXXX)"
+python3 -I -S -B data/restore_gold_release.py --execute --verify-only \
+  --host "$chroma_host" --port "$chroma_port" \
+  --ollama-base-url "$ollama_url" --receipt "$recibos/verificacion.jsonl"
+```
 
-1. Acreditar servidor, acceso, tenant/database, runtime y capacidad actuales. Identificar la colección activa e inventariar los UUID preexistentes; protegerlos contra escrituras y conservar sus referencias de contenido.
-2. Usar el nombre versionado. Si existe, verificarlo por completo sin escribir; si falta, crear una sola colección con UUID nuevo, sin adoptar el del ensayo anterior. No usar `--recreate` ni borrar colecciones. El cambio de configuración del RAG ocurre después de la verificación.
-3. Cargar exclusivamente los registros y vectores existentes del paquete. No ejecutar ingesta, reindexar Gold ni generar embeddings documentales. Los datos no necesitan un modelo para restaurarse; el camino de despliegue consulta Ollama por lectura para comprobar la compatibilidad del modelo que después usará el RAG.
-4. Registrar intención y resultados durables, cargar serialmente y comprobar readback por ID: cuerpos, metadata con sus tipos, dimensión, representación vectorial acreditada y conteos. Al terminar, exigir 5.862 IDs únicos sin faltantes ni extras, configuración del índice correcta y preservación de las colecciones protegidas. Un ACK o un conteo aislados no bastan. Estas comprobaciones no califican la calidad de recuperación.
-5. Conservar fallos y resultados inciertos sin reenviar automáticamente. Conciliar por lectura antes de continuar. Dejar la colección nueva inactiva; la selección por el RAG y cualquier despliegue son operaciones separadas.
-
-El archivo de evidencia de validación conserva los auxiliares ejecutados, recibos, seis vectores de consulta, prompts y trazas. **Es evidencia archivada, no el restaurador actual.** Sus auxiliares fijan rutas, roles y destinos particulares: no ejecutar directamente sus CLI históricas. La herramienta actual está fuera de los cinco archivos inmutables del paquete.
+La comprobación en modo de lectura debe devolver `REUSED_VERIFIED`,
+5.862 registros y `Chroma_writes: 0`. Coteja IDs, textos, metadata tipada,
+vectores, configuración del índice y perfil del modelo. Guardar el recibo
+con las evidencias operativas del equipo. Si falla, revisar el destino y el
+resultado antes de conectar el RAG. La
+[configuración del backend](../../rag/docs/DESPLIEGUE.md#conectar-el-rag-a-gold-a)
+detalla las variables y la consulta de comprobación.
 
 ## Perfil y lectura vectorial
 
@@ -85,9 +90,9 @@ El archivo de evidencia de validación conserva los auxiliares ejecutados, recib
 | --- | --- |
 | Embeddings documentales | `embeddinggemma:latest`, digest `85462619ee721b466c5927d109d4cb765861907d5417b9109caebc4e614679f1` |
 | Runtime de generación del respaldo | Ollama `0.40.13`, dimensión 768, contexto 2.048, parallel 1, batch/microbatch 2.048 |
-| Lectura Chroma ensayada | `chromadb/chroma:1.3.5`, ejecutor nativo x86_64 |
-| ID de imagen observado | `sha256:111a6bd768be19721f5b4e88567d0e1d1f5c2ab5161129e711c0a431e667b128` |
-| Índice de la colección de ensayo | cosine, `ef_construction=100`, `ef_search=100`, `max_neighbors=16`, `resize_factor=1.2`, `sync_threshold=1000` |
+| Runtime Chroma verificado | `chromadb/chroma:1.3.5`, Linux/AMD64 |
+| ID de imagen verificado | `sha256:111a6bd768be19721f5b4e88567d0e1d1f5c2ab5161129e711c0a431e667b128` |
+| Índice HNSW | cosine, `ef_construction=100`, `ef_search=100`, `max_neighbors=16`, `resize_factor=1.2`, `sync_threshold=1000` |
 
 El ID observado de imagen identifica el runtime acreditado; no es una instrucción de descarga. La receta y los hashes completos están en el manifiesto. Una etiqueta `latest` o una dimensión coincidente no prueban compatibilidad: las consultas sobre esta colección deben usar embeddings compatibles con ese perfil.
 
@@ -113,24 +118,21 @@ lote ni la identidad completa del runtime histórico. Consultar también
 [Despliegue del RAG](../../rag/docs/DESPLIEGUE.md) y
 [Scripts operacionales](../../rag/docs/SCRIPTS.md).
 
-## Alcance de la validación y conservación
+## Estado de la entrega
 
-La restauración lógica y la prueba funcional de seis casos se completaron en el laboratorio del 8 de noviembre de 2026 sin activar la candidata. El PASS técnico coexistió con hallazgos de respaldo textual; no acredita calidad jurídica global, funcionamiento completo de la aplicación o superioridad frente a otras colecciones. Las observaciones del laboratorio no prueban su disponibilidad futura.
+Se restauraron los 5.862 registros en una colección aislada y se cotejaron
+IDs, textos, metadata y vectores. Una consulta autenticada, con el backend
+`517c399` y el modelo de embeddings restaurado, devolvió HTTP 200 y cuatro
+fuentes que coincidieron con Gold. Para medir la cobertura de consultas y
+el respaldo jurídico de las respuestas, usar el
+[banco y las herramientas de evaluación](../../rag/docs/SCRIPTS.md#evaluación-del-rag).
 
-En el entorno del ensayo histórico SQLite residía en `/data`, fuera del
-montaje previsto. El aprovisionamiento actual corrige ese montaje para
-contenedores nuevos. No migra los existentes ni acredita su durabilidad;
-tampoco conserva EBS si se destruye la instancia o termina el laboratorio.
-El respaldo lógico permite reconstruir los datos y no es una copia física del
-servidor. El resultado histórico de persistencia permanece sin cambios.
-
-Estos archivos tampoco incluyen pesos o imágenes de modelos, PostgreSQL y sus interacciones, secretos ni estados Terraform. El responsable de cada recurso debe conservar lo necesario bajo su política de respaldo y acceso, fuera del corpus y de la documentación pública. Conservar la cadena externa completa cuando se necesite su alcance forense, además del paquete y la evidencia de validación versionados.
-
-## Pendientes antes de usar esta entrega en otro despliegue
-
-La preservación de los datos no depende del laboratorio. Antes de desplegar,
-publicar el commit de `corpus`, confirmar destino, capacidad, perfil y ausencia
-de otras escrituras, y conservar los recibos. Los controles offline de los
-scripts no sustituyen un ensayo real. La persistencia debe verificarse en el
-servidor nuevo; no aplicar automáticamente estas instrucciones a una colección
-activa o a una instancia reutilizada con datos sin respaldar.
+El paquete recupera la colección lógica. Para consultar desde un entorno
+nuevo, el equipo necesita también un Ollama con el modelo del perfil
+verificado. El archivo `MODELO_OLLAMA_v1_1.tar` se restauró con éxito y su
+SHA-256 es `29994bee6e99dd7519ba38f3cd089bf963fb6a21bf46a2eddba2d554978e247d`.
+Solicitar al responsable la copia compartida del modelo y conservar por
+separado PostgreSQL, sus interacciones, los secretos y los estados Terraform.
+La operación de la infraestructura y el montaje persistente de Chroma se
+documentan en
+[infraestructura vectorial](../../vector-infraestructura/README.md#persistencia).

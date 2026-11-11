@@ -183,9 +183,9 @@ de ambos vía Google GenAI).
 
 ## 9. Estructura de documentos indexados
 
-**Jurisprudencia** (sentencias del Consejo de Estado) sigue una estructura
-de 4 secciones (ver `../../ingesta/docs/DOCUMENT_SECTIONS.md`): Contexto del
-caso, Desarrollo procesal, Argumentación jurídica, Decisión.
+La jurisprudencia se organiza en contexto del caso, desarrollo procesal,
+argumentación jurídica y decisión. Los límites y las variantes se describen
+en [Seccionado de jurisprudencia](../../ingesta/docs/DOCUMENT_SECTIONS.md).
 
 **Normativa** (decretos, reglamentos) se segmenta por `Artículo N` (regex
 sobre texto plano), preservando la jerarquía `TÍTULO`/`CAPÍTULO` como
@@ -197,19 +197,18 @@ propaga por todas las capas del pipeline de ingesta; la colección ChromaDB
 es compartida, y el filtrado por `doc_type` permite servir ambos tipos
 desde el mismo retriever.
 
-## 10. Evaluación offline (`evaluation/`)
+El [corpus versionado](../../data/README.md#campos-de-gold) documenta los
+campos de Gold, la adaptación a Chroma y su uso en la recuperación y la
+respuesta.
 
-`evaluation/` es infraestructura offline de evaluación y diagnóstico, nunca
-parte de la ruta de servicio: ningún módulo de `api/` o `core/` la importa
-(la única conexión es al revés — `evaluation/ragas_eval_gemma.py` y
-`evaluation/ragas_eval_ollama.py` usan `rag.core.generator.generate_answer`,
-que sí invoca el grafo real de producción, `rag.core.agent.build_graph()`,
-sin modificarlo, para que la evaluación observe exactamente el mismo
-comportamiento que sirve `/api/query`).
+## 10. Evaluación del RAG (`evaluation/`)
 
-Evalúa con RAGAS (`ragas_common.py` + un adaptador por juez intercambiable,
-Gemini u Ollama) sobre el dataset jurídico versionado y firmado
-`evaluation/data/legal-ground-truth-v0.1.json` (cargador y validación en
-`evaluation/ground_truth.py`); ver
-[`docs/SCRIPTS.md`](SCRIPTS.md#evaluación-del-rag) para los comandos, las
-variables de entorno obligatorias y la forma exacta del reporte.
+Los comandos de evaluación se ejecutan aparte del servicio. Los adaptadores
+de RAGAS usan `rag.core.generator.generate_answer` para invocar el grafo del
+RAG y evaluar su contexto y su respuesta. La corrida completa requiere
+servicios configurados. El modo `--validate-only` comprueba el banco y la
+configuración local.
+
+El banco `evaluation/data/legal-ground-truth-v0.1.json` está versionado y
+pendiente de validación final. `evaluation/ground_truth.py` comprueba su
+estructura. Consultar [los comandos y el reporte](SCRIPTS.md#evaluación-del-rag).

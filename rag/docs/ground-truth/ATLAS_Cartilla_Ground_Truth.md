@@ -1,7 +1,8 @@
 # Cartilla de construcción del Ground Truth — Proyecto ATLAS
 
-> **Documento dirigido a las personas expertas en derecho que validarán el sistema ATLAS.**
-> Esta es la única oportunidad de construcción del ground truth: no habrá segunda ronda.
+> **Referencia metodológica de la primera ronda de anotación de ATLAS.**
+> Los volúmenes y documentos corresponden a la muestra de esa ronda. Consultar el
+> [inventario vigente](../../../data/CORPUS_CATALOG.md) para trabajar con Gold A.
 
 ---
 
@@ -15,9 +16,9 @@ Esa respuesta suya es la regla de medida. ATLAS contestará la misma pregunta y 
 
 ---
 
-## 2. Corpus y volumen de trabajo
+## 2. Muestra y volumen de trabajo de la primera ronda
 
-Los documentos están disponibles en el **OneDrive compartido del proyecto**, organizados en dos carpetas:
+La muestra se organizó en dos carpetas del OneDrive del proyecto:
 
 | Carpeta | Tipo documental | Documentos |
 |---|---|:---:|

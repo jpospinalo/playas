@@ -11,25 +11,65 @@ que coincidan con S3 o con el índice desplegado del RAG.
 | `documents/silver/` | Secciones documentales en JSONL |
 | `documents/gold/` | Fragmentos y metadata de enriquecimiento en JSONL |
 
-## Uso de Gold
+## Campos de Gold
 
-Cada línea contiene `page_content` y `metadata`. Los campos dependen del tipo
-y de la evidencia disponible:
+Cada línea JSONL contiene el cuerpo del fragmento en `page_content` y sus
+metadatos en `metadata`. El seccionado aporta la estructura documental y el
+fragmentador conserva esa metadata y agrega los identificadores e índices
+de cada fragmento.
 
-| Campo | Interpretación |
+| Campos | Función |
 |---|---|
-| `chunk_id` | Identificador del fragmento; se conserva entre reparaciones |
-| `source`, `title`, `doc_type` | Referencia de origen, título y tipo documental |
-| `section_index`, `chunk_index` y campos de sección/artículo | Ubicación dentro de la representación procesada |
-| `Corporación`, `Magistrado ponente`, `Radicado` | Identidad descriptiva de jurisprudencia, cuando está respaldada |
-| `norma` | Identidad normativa incorporada donde hay respaldo suficiente |
-| `summary`, `keywords`, `entities` | Resumen, términos y menciones descriptivas para recuperación |
+| `chunk_id` | Identificador estable del fragmento y clave de cotejo con la colección |
+| `source`, `title`, `doc_type` | Referencia de origen, título documental y tipo (`jurisprudencia` o `normativa`) |
+| `section_index`, `section_name`, `chunk_index`, `total_chunks_in_section` | Localización en la representación procesada |
+| `section_heading`, `Corporación`, `Magistrado ponente`, `Radicado` | Encabezado e identificación de la pieza jurisprudencial |
+| `Archivo`, `Nº`, `Partes procesales`, `Tema principal`, `RELACIÓN PLAYAS`, `CATEGORIA ANALISIS`, `TEMÁTICA` | Campos descriptivos presentes en parte de la jurisprudencia |
+| `titulo`, `capitulo`, `articulo`, `articulo_titulo`, `norma` | Jerarquía de la normativa, identificación del artículo y rótulo de la norma cuando está respaldado |
 
-Los IDs e índices son históricos y pueden tener huecos; no regenerarlos desde
-la posición actual de una fila. El ponente identifica al documento principal,
-no necesariamente a la voz de cada cita, aclaración o salvamento. Los resúmenes
-y entidades son enriquecimiento: para sustentar una respuesta, cotejar el
-pasaje documental y su fuente.
+Conservar los IDs e índices existentes al corregir el texto o la metadata. La
+numeración admite huecos y el número de artículo se conserva como texto.
+`source` suele referir al derivado Markdown. Para identificar el original,
+consultar la asociación de capas del catálogo y el registro de curación.
+`title` es el título del documento y `titulo` corresponde al nivel estructural
+de la norma. El ponente identifica la pieza principal. Para atribuir una cita,
+aclaración o salvamento, cotejar la voz en el cuerpo documental.
+
+### Enriquecimiento de fragmentos
+
+El enriquecedor genera estos tres campos por fragmento. Recibe el texto y,
+cuando existen, `source`, `title`, `section_name`, `section_heading`,
+`doc_type`, `titulo`, `capitulo` y `articulo` como contexto.
+
+| Campo | Forma en Gold | Contenido |
+|---|---|---|
+| `summary` | Cadena | Resumen breve de lo que dice el fragmento |
+| `keywords` | Lista de cadenas | Términos de búsqueda asociados al fragmento |
+| `entities` | Lista de objetos con `type` y `text` | Menciones identificadas de personas, autoridades, lugares, fechas, normas u otras entidades |
+
+En los 5.862 fragmentos del respaldo `gold-a-cc7bf44b54a9` están presentes los
+tres campos. Tienen contenido 5.849 resúmenes, 5.849 listas de palabras clave
+y 5.761 listas de entidades. Para validar una afirmación, usar el pasaje y
+su fuente como evidencia. El enriquecimiento sirve para localizar e
+interpretar el fragmento.
+
+### Representación en Chroma y uso en el RAG
+
+- **Almacenamiento.** El ID del registro corresponde a `chunk_id` y el
+  documento conserva `page_content`. La metadata conserva los valores
+  escalares, omite `null` y serializa listas u objetos como cadenas JSON.
+  `keywords_str` se obtiene al unir `keywords` con coma y espacio.
+- **Recuperación.** La receta del vector documental antepone al cuerpo el
+  encabezado normativo construido con `title` (o `norma`) y `articulo`,
+  cuando corresponda, y agrega `keywords_str` y `summary` cuando tienen
+  contenido. BM25 usa el cuerpo, las palabras clave y el resumen.
+- **Respuesta.** El contexto del modelo incluye el cuerpo, `source`,
+  `chunk_id`, campos de atribución según el tipo documental y el resumen
+  auxiliar. Las entidades se conservan como metadata para inspección.
+
+Consultar [el enriquecedor](../ingesta/ingest/splitter_and_enrich.py),
+[la adaptación de metadatos](../rag/backend/rag/core/vectorstore.py) y
+[el formato del contexto](../rag/backend/rag/core/tools.py).
 
 ## Registro descriptivo de curación
 
@@ -51,8 +91,10 @@ un mapa de cambio sustentado.
   observada y comparación con el backup indicado.
 
 Ambos son artefactos generados del mismo inventario, con `schema_version: 1`.
-No editarlos manualmente. Los recuentos vigentes se consultan allí para evitar
-mantener cifras duplicadas en otros documentos.
+Regenerar ambos con la herramienta si cambian sus entradas. La comparación
+que incluyen corresponde al export histórico de julio. Para comprobar la
+colección Gold actual, usar el [respaldo versionado](chroma-releases/README.md)
+y su restaurador.
 
 La herramienta local, sus comandos y límites están en
 [Inventario técnico local](../ingesta/docs/SCRIPTS.md#inventario-técnico-local).
@@ -62,9 +104,8 @@ Un aviso no equivale a un error ni autoriza una reparación automática.
 
 Para una entrega coherente, compartir desde una misma versión del repositorio
 `documents/`, este README, el registro de curación y los dos inventarios.
-Identificar la versión y comprobar sus huellas; no sustituirlos por un paquete
-o un backup de una fecha anterior. Los planes y reportes de ejecución quedan
-fuera de la documentación del corpus.
+Identificar la versión y comprobar sus huellas. Para recuperar la colección
+se distribuye también el paquete Gold versionado.
 
 El registro conserva las reservas de identidad, procedencia y selección. Hay
 extractos, extensiones sin verificar, referencias discutidas y campos ausentes
@@ -99,14 +140,9 @@ padre histórico. El paquete actual contiene cuerpos, metadata y vectores; para
 restaurarlo no se necesitan el laboratorio anterior, el padre ni una nueva
 generación de embeddings documentales.
 
-Los cinco archivos de cada paquete son inmutables. Su estado al empaquetar no
-describe los ensayos posteriores, registrados en la referencia y en la
-[validación de la entrega actual](chroma-releases/gold-a-cc7bf44b54a9-validation/README.md).
-Los scripts de despliegue de `corpus` seleccionan esta entrega explícitamente
-y configuran `rag_playas_gold_a_cc7bf44b54a9` solo después de verificarla.
-El export de julio y la colección `rag_playas` quedan como históricos; no se
-borran ni se usan como alternativa automática. Publicar `corpus` no modifica
-`main` ni cambia por sí solo una aplicación ya desplegada.
+Conservar juntos los cinco archivos de cada paquete. Sus README y manifiestos
+describen el estado al empaquetar. La guía de recuperación documenta la
+colección `rag_playas_gold_a_cc7bf44b54a9` y su comprobación funcional.
 
 ## Ground truth
 

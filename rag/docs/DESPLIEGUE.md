@@ -1,22 +1,31 @@
-# Guía de despliegue — ATLAS RAG
+# Guía de uso y despliegue — ATLAS RAG
 
 Stack: FastAPI + Next.js + PostgreSQL + Nginx, orquestado con Docker Compose.
 Servicios externos requeridos: ChromaDB y Ollama (embeddings) en EC2.
 
 Para el despliegue en AWS ECS Fargate (alternativa a este stack de un solo host) ver [`infrastructure/README.md`](../infrastructure/README.md). Para la arquitectura del sistema ver [`ARCHITECTURE.md`](ARCHITECTURE.md).
 
-## Selección de código y datos
+## Usar Gold A en ATLAS
 
-El código y la entrega Gold A actual se conservan en `corpus`. Consultar
-[versiones y recuperación de Chroma](../../data/chroma-releases/README.md) antes
-de elegir un respaldo. El despliegue mediante bastion de esta rama clona
-`corpus`, comprueba el commit publicado y restaura Gold A en
-`rag_playas_gold_a_cc7bf44b54a9`. Mantiene la colección antigua como histórica.
+Para consultar o evaluar desde la aplicación, pedir al responsable del
+entorno la URL y una cuenta habilitada. Confirmar que el backend de esa URL
+usa la colección `rag_playas_gold_a_cc7bf44b54a9` y el
+[perfil de embeddings de Gold A](../../data/chroma-releases/README.md#perfil-y-lectura-vectorial).
+Iniciar sesión y hacer una consulta con evidencia conocida. Por ejemplo,
+preguntar qué establece el artículo 166 del Decreto Ley 2324 sobre las
+playas marítimas. Revisar la respuesta y el pasaje citado.
 
-Registrar explícitamente el commit de código, versión del paquete, perfil de
-embeddings y colección de destino. Ejecutar los scripts de despliegue es una
-operación distinta de publicarlos. Este camino está preparado en `corpus` y
-no modifica `main` ni cambia una aplicación desplegada hasta que se ejecute.
+Para ejecutar un RAG propio, seguir la
+[configuración de Gold A](#conectar-el-rag-a-gold-a). El responsable del
+entorno puede [verificar la colección existente](../../data/chroma-releases/README.md#verificar-una-colección-existente)
+o recuperarla desde el paquete versionado.
+
+## Conectar el RAG a Gold A
+
+El código y el paquete Gold A se entregan en `corpus`. Solicitar los
+endpoints autorizados de Chroma y Ollama y las credenciales del proveedor LLM.
+Para una evaluación, registrar el commit, la entrega Gold y el modelo de
+generación utilizados.
 
 ---
 
@@ -25,7 +34,9 @@ no modifica `main` ni cambia una aplicación desplegada hasta que se ejecute.
 - Docker ≥ 24 y Docker Compose v2
 - Acceso a los servicios EC2 de ChromaDB y Ollama
 - API key de OpenAI (u OpenRouter / Google Gemini como alternativa)
-- Archivo de exportación de ChromaDB (`.jsonl.gz`) con los documentos indexados
+- Colección Gold A preparada por el responsable del entorno. El
+  [paquete versionado](../../data/chroma-releases/README.md#paquetes)
+  permite recuperarla con los vectores existentes.
 
 ---
 
@@ -74,6 +85,12 @@ JWT_SECRET_KEY=<clave-aleatoria-larga>
 NEXT_PUBLIC_API_URL=
 ```
 
+Usar en `CHROMA_HOST` el nombre o IP sin esquema, y en `OLLAMA_BASE_URL` la
+URL del servicio con esquema y puerto. Con Compose, las direcciones deben
+ser accesibles desde el contenedor del backend. `localhost` en esa
+configuración apunta al propio contenedor. Completar las credenciales del
+proveedor elegido y retirar del archivo local las claves de ejemplo.
+
 > **Nota:** `NEXT_PUBLIC_API_URL` debe quedar vacío (no `http://localhost:8080` ni `/api`)
 > cuando se despliega con Docker Compose. El frontend construye URLs como
 > `${API_URL}/api/query`; con valor vacío resultan en `/api/query`, que nginx
@@ -81,30 +98,14 @@ NEXT_PUBLIC_API_URL=
 
 ---
 
-## 3. Importar documentos en ChromaDB
+## 3. Comprobar la colección y el modelo
 
-Usar la [recuperación de Gold A](../../data/chroma-releases/README.md), con el
-restaurador dedicado. No mover el paquete a la raíz de `data/` ni usar el
-importador histórico para este despliegue. La restauración conserva los
-vectores y no necesita generar embeddings nuevos.
-
-Antes de presentar la aplicación, comprobar conectividad y que la colección
-seleccionada contiene la entrega esperada. El índice BM25 vacío ya se maneja
-sin `ZeroDivisionError`; eso no hace que una colección vacía sea apta para
-responder con evidencia.
-
-```bash
-cd /ruta/al/repositorio
-python3 -B data/restore_gold_release.py --execute \
-  --host <CHROMA_HOST> \
-  --port 8000 \
-  --ollama-base-url http://<OLLAMA_HOST>:11434 \
-  --receipt /ruta/recibo-nuevo.jsonl
-```
-
-El restaurador verifica los registros completos; un conteo aislado no basta.
-Para comprobar un destino ya preparado, añadir `--verify-only`; nunca se
-reescribe una colección existente.
+Para un entorno ya preparado, usar la
+[verificación de Gold A en modo de lectura](../../data/chroma-releases/README.md#verificar-una-colección-existente)
+con los mismos endpoints configurados en el backend. Esperar
+`REUSED_VERIFIED`, 5.862 registros y `Chroma_writes: 0`.
+Si falta la colección, el responsable puede
+[restaurar el paquete](../../data/chroma-releases/README.md#restaurador-del-despliegue-de-corpus).
 
 ---
 
@@ -138,10 +139,14 @@ docker compose ps
 docker compose logs -f
 
 # Health del backend
-curl http://localhost/api/health
+curl -fsS http://localhost/api/health
+curl -fsS http://localhost/api/ready
 ```
 
 Todos los servicios deben mostrar `(healthy)` o `Up`.
+Una vez disponible el backend, realizar la
+[consulta de comprobación](#usar-gold-a-en-atlas). Las
+[pruebas de humo](SMOKE_TESTS.md) describen la comprobación por API.
 
 ---
 

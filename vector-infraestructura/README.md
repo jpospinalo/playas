@@ -72,17 +72,8 @@ conciliar por lectura antes de decidir una reparación.
 
 ### Después del script
 
-Completar las credenciales LLM en el archivo de variables y usar el punto de
-entrada de ECS, que comprueba de nuevo el destino sin escribir en Chroma:
-
-```bash
-./rag/infrastructure/scripts/deploy.sh --auto-approve
-```
-
-El punto de entrada completo es
-[`scripts/deploy_bastion_ec2.sh`](../scripts/deploy_bastion_ec2.sh), que clona
-el commit publicado de `corpus`. Cambiar solo de rama local no modifica un
-laboratorio ya desplegado.
+Continuar en el
+[despliegue de la aplicación en ECS](../rag/infrastructure/README.md#desplegar-desde-un-equipo-preparado).
 
 ## Preparación manual
 

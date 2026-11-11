@@ -13,11 +13,21 @@ pipeline de datos, provisionado en `../../ingesta/infrastructure/`.
 
 ## Requisitos previos
 
-- Terraform ≥ 1.7, AWS CLI 2.x, credenciales AWS con permisos para ECS/ECR/ALB/EFS/IAM/EC2.
-- ChromaDB y Ollama ya desplegados (ver `../../vector-infraestructura/`).
+- Terraform ≥ 1.7, AWS CLI 2.x, Docker, Python ≥ 3.11 y credenciales AWS
+  con permisos para ECS, ECR, ALB, EFS, IAM y EC2.
+- ChromaDB y Ollama disponibles para el despliegue directo de ECS. Ver
+  [infraestructura vectorial](../../vector-infraestructura/README.md).
 - `terraform.tfvars` (copiar de `terraform.tfvars.example`) con, como mínimo,
   `postgres_password`, `jwt_secret_key`, `chroma_host`, `ollama_base_url`, y
-  al menos una API key de LLM (`openai_api_key` o `google_api_key`).
+  una credencial de proveedor LLM (`openai_api_key`, `openrouter_api_key` o
+  `google_api_key`).
+- Session Manager Plugin para cargar usuarios semilla o exportar PostgreSQL
+  mediante ECS Exec. La exportación usa también `uv` y el entorno de `rag/`.
+
+En AWS Academy, configurar las credenciales de la sesión de laboratorio y
+usar el rol `LabRole`. El
+[README de infraestructura vectorial](../../vector-infraestructura/README.md#requisitos-previos)
+describe cómo cargar las credenciales y preparar el par de claves.
 
 En `corpus`, `scripts/deploy.sh` verifica Gold A y el modelo antes de aplicar
 Terraform y selecciona `rag_playas_gold_a_cc7bf44b54a9`, incluso si el archivo
@@ -61,6 +71,18 @@ Postgres corre en la misma tarea Fargate que el backend.
 | `export_postgres.sh` | Exporta un volcado de la base de datos Postgres en EFS. |
 
 ### Encendido y apagado seguro (`start.sh` / `stop.sh`)
+
+Para encender desde la raíz del repositorio:
+
+```bash
+./rag/infrastructure/scripts/start.sh
+```
+
+Para apagar:
+
+```bash
+./rag/infrastructure/scripts/stop.sh
+```
 
 Ambos scripts descubren sus recursos directamente contra AWS CLI (sin leer
 outputs ni state de Terraform): las EC2 de ChromaDB/Ollama por su tag
@@ -143,24 +165,98 @@ solos** — son responsabilidad de quien los ejecuta:
   compartidos por otros componentes del repositorio, y el script no tiene
   forma fiable de detectar esa actividad desde afuera.
 
-## Despliegue manual paso a paso
+## Despliegue en AWS
+
+### Desplegar desde un bastion
+
+El [script de bastion](../../scripts/deploy_bastion_ec2.sh) instala las
+herramientas en una EC2 y coordina el aprovisionamiento vectorial y ECS.
+Requiere AWS CLI, Git y Python 3.11 o posterior en el equipo local, un par de
+claves EC2 y el archivo `.pem` correspondiente. Ejecutarlo desde una copia
+limpia y publicada de `corpus` con una sola asignación `OPENAI_API_KEY` en
+`rag/.env`. La clave se transfiere por stdin.
+
+Desde la raíz del repositorio:
+
+```bash
+KEY_FILE=/ruta/a/vockey.pem ./scripts/deploy_bastion_ec2.sh
+```
+
+La opción `BOOTSTRAP_ONLY=1` instala las herramientas en el bastion y
+termina antes de los despliegues de Terraform. Para reutilizar una instancia,
+resguardar sus estados y configuraciones y preparar un directorio de trabajo
+nuevo. El script exige que la ruta `~/playas` esté libre antes de copiar
+credenciales o semillas.
+
+### Desplegar desde un equipo preparado
+
+Primero seguir el
+[despliegue vectorial](../../vector-infraestructura/README.md#despliegue-con-el-script).
+Ese paso verifica Gold A y prepara `rag/infrastructure/terraform.tfvars` con
+los endpoints y los secretos de PostgreSQL y JWT. Completar en ese archivo
+la credencial del proveedor LLM y ejecutar desde la raíz:
+
+```bash
+./rag/infrastructure/scripts/deploy.sh
+```
+
+El script admite `--auto-approve` para entornos cuya aplicación de
+Terraform ya esté aprobada.
+
+### Despliegue manual
+
+Preparar primero Chroma y Ollama según
+[infraestructura vectorial](../../vector-infraestructura/README.md#preparación-manual)
+y [verificar Gold A](../../data/chroma-releases/README.md#verificar-una-colección-existente).
+Crear `rag/infrastructure/terraform.tfvars` desde el ejemplo si falta y
+completar las variables con los valores del entorno. Para Gold A, usar
+`chroma_host` y `chroma_port` del servidor verificado, fijar
+`chroma_collection = "rag_playas_gold_a_cc7bf44b54a9"` y configurar
+`ollama_base_url` y `ollama_embedding_model = "embeddinggemma:latest"`.
+
+El ejemplo parte de la raíz del repositorio y usa los nombres y la región
+por defecto.
 
 ```bash
 cd rag/infrastructure
-cp terraform.tfvars.example terraform.tfvars   # completar con valores reales
 terraform init
 terraform plan
 terraform apply
 
-# Construir y subir imágenes, y forzar redespliegue
+# Construir y subir imágenes
 ./scripts/push_images.sh
+
+aws ecs update-service --cluster rag-playas-prod --service rag-playas-prod-app \
+  --force-new-deployment --region us-east-1
+aws ecs update-service --cluster rag-playas-prod --service rag-playas-prod-frontend \
+  --force-new-deployment --region us-east-1
 ```
 
-O con el script que encadena todo:
+### Consultar estado y logs
+
+Desde la raíz del repositorio, obtener la URL de ATLAS y consultar los logs.
+La salida `alb_url` ya incluye el esquema HTTP.
 
 ```bash
-./scripts/deploy.sh --auto-approve
+terraform -chdir=rag/infrastructure output -raw alb_url
+aws logs tail /ecs/rag-playas-prod-app --region us-east-1 --follow
+aws logs tail /ecs/rag-playas-prod-frontend --region us-east-1 --follow
 ```
+
+La [guía de uso de Gold A](../docs/DESPLIEGUE.md#usar-gold-a-en-atlas)
+describe la consulta de comprobación para el equipo.
+
+## Exportar PostgreSQL
+
+El exportador usa un bucket S3 como puente y descarga el volcado en
+`data/backups/`. Desde la raíz del repositorio:
+
+```bash
+./rag/infrastructure/scripts/export_postgres.sh --bucket "nombre-del-bucket"
+```
+
+La copia permanece en S3 por defecto. La opción `--delete-remote` la retira
+después de la descarga.
 
 ## Destruir la infraestructura
 
