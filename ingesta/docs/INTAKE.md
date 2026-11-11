@@ -105,6 +105,7 @@ rechazo, revisión y advertencia. El intake la reutiliza sin alterar los umbrale
 | `simhash_palabras_shingle` | 3 palabras por shingle |
 | `gancho_notificacion` | Ruta opcional de archivo JSONL; nunca se ejecuta como comando |
 
+El sufijo `__staging` está reservado: ninguna colección viva puede contenerlo.
 Tanto la colección viva como `<colección>__staging` deben pasar la validación
 antes de leer el inbox. Las cuatro colecciones históricas y la restricción a
 loopback permanecen protegidas aunque se cambie el YAML. Los prefijos de la
@@ -126,15 +127,23 @@ de esa copia debe medir menos de 240 caracteres, también en Windows.
 | `revision_humana` | Conserva capas/ficha y añade una fila a la cola; no publica |
 | `rechazado` | Conserva el motivo; no publica ni copia a raw |
 
-Firma distinta de `%PDF-`, cifrado, truncamiento, reparación necesaria, cero
-páginas, error al iterar, tamaño/páginas excesivos y falta de texto útil producen
-rechazo. Los errores de extracción/timeout y publicación se registran como
+Firma `%PDF-` ausente del primer KiB, cifrado, truncamiento (sin `%%EOF` final),
+reparación necesaria, cero páginas, error al iterar, tamaño/páginas excesivos y
+falta de texto útil (en bronce o tras la limpieza, en silver) producen rechazo. El
+tamaño se comprueba antes de leer el archivo; un archivo desmesurado se rechaza
+sin calcular su hash completo (su ficha usa una identidad `desmesurado-…`).
+Dos PDF del corpus actual (Decreto 415 de 2017 y Decreto 1766 de 2013) están
+dañados: tienen dos bytes de más al inicio y les faltan los dos últimos de `%%EOF`,
+y por eso se rechazan. Los errores de extracción/timeout y publicación se registran como
 `error_documento` / `error_publicacion` y permiten continuar con los demás.
 PyMuPDF no ejecuta JavaScript; no se abren anexos embebidos. El aislamiento limita
 tiempo y memoria, pero no constituye un contenedor de seguridad del sistema.
 
-La categoría se deduce por reglas del encabezado de las dos primeras páginas del
-bronce, con confianza registrada en la ficha. Una clasificación ambigua produce
+La categoría se deduce por reglas: jurisprudencia si una corporación judicial
+aparece en las dos primeras páginas; normativa si existe el encabezado propio de la
+norma (línea propia «DECRETO 1766 DE 2013», cabecera SUIN o pie del Gestor
+Normativo), nunca por una línea de cuerpo que empiece por «Ley 472 de 1998». Sobre
+los 53 PDF medidos: 39 bien, 14 dudosas y 0 errores. La confianza queda en la ficha. Una clasificación ambigua produce
 `categoría dudosa`. Una persona puede crear, junto al PDF, este archivo:
 
 `data/inbox/ejemplo.pdf.meta.json`:
@@ -182,14 +191,33 @@ La categoría manual no elimina esa revisión: comparar los originales y decidir
 con una persona qué versión conservar. Retirar la anterior y reintentar la nueva
 desde silver permite reevaluar sin compararla contra la versión retirada.
 
+Reglas de la política (`config/intake_policy.yaml`, calibrada en
+`benchmarks/intake/resultados/calibracion/informe.md`): más del 50 % de páginas
+OCR con confianza ≤ 95 o una página por debajo de 70; OCR fallido; identidad
+incompleta (normativa: tipo, número y año; jurisprudencia: corporación); más de
+una página digital con imágenes grandes y poco texto (posible tabla-imagen); capa
+OCR incrustada sin verificar (imagen de página completa con texto); pérdida
+bronze→silver fuera del mobiliario verificado > 5 %; cuasi-duplicado. Cualquiera
+envía a `revision_humana`. Las señales de secuencia de artículos y caída de
+texto se registran pero no bloquean.
+
 ## Publicación, recuperación y retiro
 
 El orden es bronze → silver → gold → señales/política → embeddings → preparación
 → verificación → viva → verificación. La verificación compara conteos e ids y
 consulta un canario con el embedding de un chunk propio (filtrado por doc_id),
-que debe recuperar ese chunk primero. La preparación se vacía por doc_id tras
-el éxito. Un fallo elimina el documento de ambas colecciones y registra el
-error; una reversión incompleta queda pendiente para el siguiente intento.
+que debe recuperar ese chunk primero (se usa un chunk de texto único: dos chunks
+idénticos tienen el mismo vector). La colección de preparación se recrea vacía
+para cada documento: tras miles de altas y bajas, su índice HNSW dejó de encontrar
+el vector propio del canario (medido en la prueba de punta a punta).
+
+Antes de sustituir un documento ya publicado se guarda una instantánea de su
+versión vigente (ids, textos, metadatos y vectores) en
+`<state>/intake/instantaneas/<doc_id>.jsonl.gz`. Si la sustitución falla, la
+versión anterior se restaura y verifica; si no había versión previa, el documento
+se retira de ambas colecciones. Un fallo solo en la limpieza de la preparación
+conserva la viva publicada y queda como `limpieza_preparacion_pendiente`. Un
+reproceso cuyo análisis falla no toca la publicación vigente.
 
 Hay bloqueos de escritor sobre estado, capas, caché y Chroma. Otro escritor falla
 limpio; no ejecutar dos programaciones sobre las mismas raíces. El cerrojo del
@@ -321,6 +349,17 @@ rutas reales de entrada y copias mediante `--inbox` y `--raw-root`, reservar una
 raíz nueva con `--layers-root` y estados/cachés separados, y preparar la categoría
 por lateral o CSV cuando el encabezado no sea concluyente. El intake clasifica
 explícitamente; no necesita carpetas llamadas `normativa` o `jurisprudencia`.
+
+En `origin/corpus` (sin integrar; decisión pendiente) el bronce/silver/gold son
+Markdown de Docling corregido a mano, sin marcas de página: no son compatibles con
+las capas de `ingest.offline` (otro extractor, otro esquema). El intake no los
+lee ni los modifica; si se integra esa rama, usar una raíz de capas y una colección
+propias del intake y, para los documentos ya corregidos a mano allí, decidir si se
+reingestan desde raw o se conservan sus capas fuera del intake.
+
+La política se calibró con 53 documentos que también se usaron para diseñar las
+señales: es un conjunto de desarrollo. Antes de confiar en «0 rojos aceptados»
+hay que congelar la política y evaluarla con documentos nuevos e independientes.
 
 ## Validación local
 
