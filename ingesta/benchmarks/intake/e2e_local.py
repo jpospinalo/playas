@@ -103,7 +103,7 @@ class E2E:
         r = subprocess.run(
             cmd, cwd=INGESTA, env=env, capture_output=True, text=True, encoding="utf-8"
         )
-        fichas = [json.loads(l) for l in r.stdout.splitlines() if l.startswith("{")]
+        fichas = [json.loads(x) for x in r.stdout.splitlines() if x.startswith("{")]
         return r.returncode, fichas, time.monotonic() - inicio, r.stdout + r.stderr
 
     def coleccion(self, nombre="bench_intake_e2e"):
@@ -332,7 +332,6 @@ class E2E:
         except OSError:
             raro = None
         rc, fichas, s, _ = self.intake(ibh)
-        por_motivo = {f["doc_id"][:12]: f for f in fichas}
         for nombre_archivo, etiqueta in (
             ("en_blanco.pdf", "PDF en blanco"),
             ("cifrado.pdf", "PDF cifrado"),
