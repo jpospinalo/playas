@@ -1,0 +1,706 @@
+{
+ "umbrales_elegidos": {
+  "ocr_confianza_media_minima": 0,
+  "ocr_confianza_pagina_minima": 0,
+  "ocr_fraccion_paginas_bajas_maxima": 0.5,
+  "simbolos_sospechosos_maximos": 1000,
+  "anomalias_secuencia_maximas": 1000,
+  "tablas_imagen_maximas": 1,
+  "tablas_imagen_caracteres_maximos": 1500,
+  "caida_texto_paginas_maximas": 1000
+ },
+ "ingenua": {
+  "umbrales": {
+   "ocr_confianza_media_minima": 0,
+   "ocr_confianza_pagina_minima": 0,
+   "ocr_fraccion_paginas_bajas_maxima": 1.0,
+   "simbolos_sospechosos_maximos": 1000,
+   "anomalias_secuencia_maximas": 1000,
+   "tablas_imagen_maximas": 1,
+   "tablas_imagen_caracteres_maximos": 1500,
+   "caida_texto_paginas_maximas": 1000
+  },
+  "ajuste": {
+   "documentos": 21,
+   "matriz": {
+    "verde": {
+     "aceptado": 3,
+     "aceptado_con_advertencias": 3,
+     "revision_humana": 0,
+     "rechazado": 0
+    },
+    "no distinguible de U": {
+     "aceptado": 4,
+     "aceptado_con_advertencias": 3,
+     "revision_humana": 0,
+     "rechazado": 0
+    },
+    "amarillo": {
+     "aceptado": 2,
+     "aceptado_con_advertencias": 0,
+     "revision_humana": 2,
+     "rechazado": 0
+    },
+    "rojo": {
+     "aceptado": 0,
+     "aceptado_con_advertencias": 0,
+     "revision_humana": 4,
+     "rechazado": 0
+    }
+   },
+   "rojos_aceptados": 0,
+   "rojos": 4,
+   "carga_revision_verdes_y_no_distinguibles": 0,
+   "verdes_y_no_distinguibles": 13,
+   "amarillos_aceptados": 2,
+   "amarillos": 4
+  },
+  "validacion": {
+   "documentos": 32,
+   "matriz": {
+    "verde": {
+     "aceptado": 7,
+     "aceptado_con_advertencias": 4,
+     "revision_humana": 5,
+     "rechazado": 0
+    },
+    "no distinguible de U": {
+     "aceptado": 5,
+     "aceptado_con_advertencias": 2,
+     "revision_humana": 1,
+     "rechazado": 0
+    },
+    "amarillo": {
+     "aceptado": 4,
+     "aceptado_con_advertencias": 1,
+     "revision_humana": 1,
+     "rechazado": 0
+    },
+    "rojo": {
+     "aceptado": 1,
+     "aceptado_con_advertencias": 0,
+     "revision_humana": 1,
+     "rechazado": 0
+    }
+   },
+   "rojos_aceptados": 1,
+   "rojos": 2,
+   "carga_revision_verdes_y_no_distinguibles": 6,
+   "verdes_y_no_distinguibles": 24,
+   "amarillos_aceptados": 5,
+   "amarillos": 6
+  }
+ },
+ "ajuste": {
+  "documentos": 21,
+  "matriz": {
+   "verde": {
+    "aceptado": 2,
+    "aceptado_con_advertencias": 3,
+    "revision_humana": 1,
+    "rechazado": 0
+   },
+   "no distinguible de U": {
+    "aceptado": 4,
+    "aceptado_con_advertencias": 3,
+    "revision_humana": 0,
+    "rechazado": 0
+   },
+   "amarillo": {
+    "aceptado": 2,
+    "aceptado_con_advertencias": 0,
+    "revision_humana": 2,
+    "rechazado": 0
+   },
+   "rojo": {
+    "aceptado": 0,
+    "aceptado_con_advertencias": 0,
+    "revision_humana": 4,
+    "rechazado": 0
+   }
+  },
+  "rojos_aceptados": 0,
+  "rojos": 4,
+  "carga_revision_verdes_y_no_distinguibles": 1,
+  "verdes_y_no_distinguibles": 13,
+  "amarillos_aceptados": 2,
+  "amarillos": 4
+ },
+ "validacion": {
+  "documentos": 32,
+  "matriz": {
+   "verde": {
+    "aceptado": 7,
+    "aceptado_con_advertencias": 4,
+    "revision_humana": 5,
+    "rechazado": 0
+   },
+   "no distinguible de U": {
+    "aceptado": 5,
+    "aceptado_con_advertencias": 2,
+    "revision_humana": 1,
+    "rechazado": 0
+   },
+   "amarillo": {
+    "aceptado": 4,
+    "aceptado_con_advertencias": 1,
+    "revision_humana": 1,
+    "rechazado": 0
+   },
+   "rojo": {
+    "aceptado": 0,
+    "aceptado_con_advertencias": 0,
+    "revision_humana": 2,
+    "rechazado": 0
+   }
+  },
+  "rojos_aceptados": 0,
+  "rojos": 2,
+  "carga_revision_verdes_y_no_distinguibles": 6,
+  "verdes_y_no_distinguibles": 24,
+  "amarillos_aceptados": 5,
+  "amarillos": 6
+ },
+ "documentos": [
+  {
+   "slug": "por_medio_del_cual_se_expiden_las_normas_bases_para_la_reglamentacion_de_las_act_5beb",
+   "conjunto": "ajuste",
+   "categoria": "normativa",
+   "veredicto_u": "rojo",
+   "decision": "revision_humana",
+   "motivos": [
+    "80% de páginas OCR con confianza ≤ 95 (máximo 50%)",
+    "identidad incompleta: faltan tipo_documento, numero, anio"
+   ],
+   "avisos": []
+  },
+  {
+   "slug": "ap_gerardo_antenor_lemus_orozco_vs_distrito_de_santa_mata_y_otros_7c8c",
+   "conjunto": "ajuste",
+   "categoria": "jurisprudencia",
+   "veredicto_u": "rojo",
+   "decision": "revision_humana",
+   "motivos": [
+    "páginas digitales con imágenes grandes y poco texto (posible tabla-imagen): [32, 33, 34]"
+   ],
+   "avisos": []
+  },
+  {
+   "slug": "taa_2da_rd_2015_281_xxxx_vs_dpto_antioquia_responsabilidad_del_estado_98ef",
+   "conjunto": "ajuste",
+   "categoria": "jurisprudencia",
+   "veredicto_u": "rojo",
+   "decision": "revision_humana",
+   "motivos": [
+    "páginas digitales con imágenes grandes y poco texto (posible tabla-imagen): [3, 4]"
+   ],
+   "avisos": []
+  },
+  {
+   "slug": "ce_2da_ap_2021_041_edgar_stephengs_vs_archipielago_san_andres_desarrollo_urbanis_0b8f",
+   "conjunto": "ajuste",
+   "categoria": "jurisprudencia",
+   "veredicto_u": "rojo",
+   "decision": "revision_humana",
+   "motivos": [
+    "páginas digitales con imágenes grandes y poco texto (posible tabla-imagen): [22, 33]"
+   ],
+   "avisos": []
+  },
+  {
+   "slug": "ce_2da_nyr_2009_164_fepep_vs_dimar_playa_uso_urbanistico_e806",
+   "conjunto": "ajuste",
+   "categoria": "jurisprudencia",
+   "veredicto_u": "amarillo",
+   "decision": "revision_humana",
+   "motivos": [
+    "páginas digitales con imágenes grandes y poco texto (posible tabla-imagen): [29, 36, 37, 38]"
+   ],
+   "avisos": []
+  },
+  {
+   "slug": "ce_2da_ap_2017_103_personeria_vs_distrito_cartagena_desembocadura_afb0",
+   "conjunto": "ajuste",
+   "categoria": "jurisprudencia",
+   "veredicto_u": "amarillo",
+   "decision": "aceptado",
+   "motivos": [],
+   "avisos": []
+  },
+  {
+   "slug": "por_el_cual_se_reglamenta_parcialmente_la_ley_47_del_19_de_febrero_de_1993_3e80",
+   "conjunto": "ajuste",
+   "categoria": "normativa",
+   "veredicto_u": "amarillo",
+   "decision": "revision_humana",
+   "motivos": [
+    "identidad incompleta: faltan tipo_documento, numero, anio"
+   ],
+   "avisos": []
+  },
+  {
+   "slug": "ce_2da_ap_2010_028_radley_bent_vs_dimar_danos_ambientales_embarcaciones_ba1e",
+   "conjunto": "ajuste",
+   "categoria": "jurisprudencia",
+   "veredicto_u": "amarillo",
+   "decision": "aceptado",
+   "motivos": [],
+   "avisos": []
+  },
+  {
+   "slug": "por_el_cual_se_reglamenta_parcialmente_el_articulo_noveno_de_la_ley_10_de_1978_922e",
+   "conjunto": "ajuste",
+   "categoria": "normativa",
+   "veredicto_u": "no distinguible de U",
+   "decision": "aceptado",
+   "motivos": [],
+   "avisos": []
+  },
+  {
+   "slug": "ce_2da_ap_2015_550_angela_munoz_vs_dpto_cordoba_bienes_de_uso_publico_bcec",
+   "conjunto": "ajuste",
+   "categoria": "jurisprudencia",
+   "veredicto_u": "no distinguible de U",
+   "decision": "aceptado",
+   "motivos": [],
+   "avisos": []
+  },
+  {
+   "slug": "por_medio_del_cual_se_expide_el_decreto_unico_reglamentario_del_sector_comercio__38da",
+   "conjunto": "ajuste",
+   "categoria": "normativa",
+   "veredicto_u": "no distinguible de U",
+   "decision": "aceptado_con_advertencias",
+   "motivos": [],
+   "avisos": [
+    "identidad sin entidad_emisora, fecha_iso"
+   ]
+  },
+  {
+   "slug": "por_medio_del_cual_se_expide_el_decreto_unico_reglamentario_del_sector_vivienda__404e",
+   "conjunto": "ajuste",
+   "categoria": "normativa",
+   "veredicto_u": "no distinguible de U",
+   "decision": "aceptado_con_advertencias",
+   "motivos": [],
+   "avisos": [
+    "identidad sin entidad_emisora, fecha_iso"
+   ]
+  },
+  {
+   "slug": "ap_inversiones_e_y_d_s_a_s_vs_dimar_y_otros_a7c0",
+   "conjunto": "ajuste",
+   "categoria": "jurisprudencia",
+   "veredicto_u": "no distinguible de U",
+   "decision": "aceptado",
+   "motivos": [],
+   "avisos": []
+  },
+  {
+   "slug": "ap_carlos_alberto_zuniga_mejia_y_otros_vs_dimar_y_otros_d512",
+   "conjunto": "ajuste",
+   "categoria": "jurisprudencia",
+   "veredicto_u": "no distinguible de U",
+   "decision": "aceptado",
+   "motivos": [],
+   "avisos": []
+  },
+  {
+   "slug": "por_el_cual_se_reglamenta_el_funcionamiento_de_los_comites_locales_para_la_organ_cb33",
+   "conjunto": "ajuste",
+   "categoria": "normativa",
+   "veredicto_u": "no distinguible de U",
+   "decision": "aceptado_con_advertencias",
+   "motivos": [],
+   "avisos": [
+    "identidad sin fecha_iso"
+   ]
+  },
+  {
+   "slug": "ap_miguel_angel_enciso_vs_distrito_y_otros_ffab",
+   "conjunto": "ajuste",
+   "categoria": "jurisprudencia",
+   "veredicto_u": "verde",
+   "decision": "aceptado_con_advertencias",
+   "motivos": [],
+   "avisos": [
+    "identidad sin magistrado_ponente"
+   ]
+  },
+  {
+   "slug": "por_el_cual_se_dicta_el_codigo_nacional_de_recursos_naturales_renovables_y_de_pr_2880",
+   "conjunto": "ajuste",
+   "categoria": "normativa",
+   "veredicto_u": "verde",
+   "decision": "aceptado_con_advertencias",
+   "motivos": [],
+   "avisos": [
+    "identidad sin entidad_emisora, fecha_iso",
+    "5 salto(s) en la numeración de artículos"
+   ]
+  },
+  {
+   "slug": "por_el_cual_se_reglamenta_el_funcionamiento_de_los_comites_locales_para_la_organ_c8e5",
+   "conjunto": "ajuste",
+   "categoria": "normativa",
+   "veredicto_u": "verde",
+   "decision": "aceptado",
+   "motivos": [],
+   "avisos": []
+  },
+  {
+   "slug": "ce_2da_nyr_1994_993_inversiones_araujo_vs_capitania_puerto_cartagena_urbanismo_p_86ff",
+   "conjunto": "ajuste",
+   "categoria": "jurisprudencia",
+   "veredicto_u": "verde",
+   "decision": "revision_humana",
+   "motivos": [
+    "100% de páginas OCR con confianza ≤ 95 (máximo 50%)"
+   ],
+   "avisos": []
+  },
+  {
+   "slug": "por_el_cual_se_dictan_normas_para_simplificar_suprimir_y_reformar_tramites_proce_5f39",
+   "conjunto": "ajuste",
+   "categoria": "normativa",
+   "veredicto_u": "verde",
+   "decision": "aceptado_con_advertencias",
+   "motivos": [],
+   "avisos": [
+    "identidad sin entidad_emisora, fecha_iso"
+   ]
+  },
+  {
+   "slug": "por_el_cual_se_modifica_el_articulo_16_del_decreto_3888_del_10_de_octubre_de_200_0be7",
+   "conjunto": "ajuste",
+   "categoria": "normativa",
+   "veredicto_u": "verde",
+   "decision": "aceptado",
+   "motivos": [],
+   "avisos": []
+  },
+  {
+   "slug": "por_medio_del_cual_se_implementa_el_reglamento_de_playas_del_distrito_portuario__d6b7",
+   "conjunto": "validacion",
+   "categoria": "normativa",
+   "veredicto_u": "rojo",
+   "decision": "revision_humana",
+   "motivos": [
+    "76% de páginas OCR con confianza ≤ 95 (máximo 50%)"
+   ],
+   "avisos": []
+  },
+  {
+   "slug": "por_medio_de_la_cual_se_reglamenta_el_area_de_playa_en_el_balneario_turistico_el_9c01",
+   "conjunto": "validacion",
+   "categoria": "normativa",
+   "veredicto_u": "rojo",
+   "decision": "revision_humana",
+   "motivos": [
+    "100% de páginas OCR con confianza ≤ 95 (máximo 50%)",
+    "identidad incompleta: faltan tipo_documento, numero, anio"
+   ],
+   "avisos": []
+  },
+  {
+   "slug": "ce_2da_ap_2016_328_ricardo_cabrales_vs_mun_covenas_playa_uso_publico_37b2",
+   "conjunto": "validacion",
+   "categoria": "jurisprudencia",
+   "veredicto_u": "amarillo",
+   "decision": "aceptado",
+   "motivos": [],
+   "avisos": []
+  },
+  {
+   "slug": "por_el_cual_se_reglamentan_las_unidades_ambientales_costeras_uac_y_las_comisione_e828",
+   "conjunto": "validacion",
+   "categoria": "normativa",
+   "veredicto_u": "amarillo",
+   "decision": "revision_humana",
+   "motivos": [
+    "100% de páginas OCR con confianza ≤ 95 (máximo 50%)",
+    "identidad incompleta: faltan tipo_documento, numero, anio"
+   ],
+   "avisos": []
+  },
+  {
+   "slug": "ce_consulta_2010_071_minambiente_bienes_de_uso_publico_1d4e",
+   "conjunto": "validacion",
+   "categoria": "jurisprudencia",
+   "veredicto_u": "amarillo",
+   "decision": "aceptado",
+   "motivos": [],
+   "avisos": []
+  },
+  {
+   "slug": "por_el_cual_se_reglamenta_el_manejo_del_espacio_publico_en_los_planes_de_ordenam_d195",
+   "conjunto": "validacion",
+   "categoria": "normativa",
+   "veredicto_u": "amarillo",
+   "decision": "aceptado_con_advertencias",
+   "motivos": [],
+   "avisos": [
+    "identidad sin fecha_iso",
+    "6 salto(s) en la numeración de artículos"
+   ]
+  },
+  {
+   "slug": "por_el_cual_se_dictan_normas_sobre_la_prevencion_de_la_contaminacion_del_medio_m_c9b9",
+   "conjunto": "validacion",
+   "categoria": "normativa",
+   "veredicto_u": "amarillo",
+   "decision": "aceptado",
+   "motivos": [],
+   "avisos": []
+  },
+  {
+   "slug": "ce_consulta_1990_horacio_serpa_uso_publico_playa_00a7",
+   "conjunto": "validacion",
+   "categoria": "jurisprudencia",
+   "veredicto_u": "amarillo",
+   "decision": "aceptado",
+   "motivos": [],
+   "avisos": []
+  },
+  {
+   "slug": "por_medio_del_cual_se_expide_el_decreto_unico_reglamentario_del_sector_ambiente__f508",
+   "conjunto": "validacion",
+   "categoria": "normativa",
+   "veredicto_u": "no distinguible de U",
+   "decision": "aceptado_con_advertencias",
+   "motivos": [],
+   "avisos": [
+    "identidad sin entidad_emisora, fecha_iso"
+   ]
+  },
+  {
+   "slug": "ap_procuraduria_general_de_la_ancion_vs_coorpamag_y_otros_9523",
+   "conjunto": "validacion",
+   "categoria": "jurisprudencia",
+   "veredicto_u": "no distinguible de U",
+   "decision": "aceptado",
+   "motivos": [],
+   "avisos": []
+  },
+  {
+   "slug": "ap_rodrigo_martinez_silva_vs_minambiente_y_otros_19a7",
+   "conjunto": "validacion",
+   "categoria": "jurisprudencia",
+   "veredicto_u": "no distinguible de U",
+   "decision": "aceptado",
+   "motivos": [],
+   "avisos": []
+  },
+  {
+   "slug": "por_medio_del_cual_se_reglamenta_el_uso_zonificacion_y_horario_de_las_playas_con_8351",
+   "conjunto": "validacion",
+   "categoria": "normativa",
+   "veredicto_u": "no distinguible de U",
+   "decision": "aceptado",
+   "motivos": [],
+   "avisos": []
+  },
+  {
+   "slug": "por_el_cual_se_aprueba_el_ajuste_y_la_modificacion_a_la_planta_de_personal_de_em_cc7b",
+   "conjunto": "validacion",
+   "categoria": "normativa",
+   "veredicto_u": "no distinguible de U",
+   "decision": "aceptado",
+   "motivos": [],
+   "avisos": []
+  },
+  {
+   "slug": "por_el_cual_adiciona_al_titulo_4_de_la_parte_2_del_libro_2_del_decreto_1076_de_2_be8f",
+   "conjunto": "validacion",
+   "categoria": "normativa",
+   "veredicto_u": "no distinguible de U",
+   "decision": "aceptado_con_advertencias",
+   "motivos": [],
+   "avisos": [
+    "identidad sin fecha_iso"
+   ]
+  },
+  {
+   "slug": "ap_gabriel_antonio_carrero_vs_dimar_y_otros_a44a",
+   "conjunto": "validacion",
+   "categoria": "jurisprudencia",
+   "veredicto_u": "no distinguible de U",
+   "decision": "aceptado",
+   "motivos": [],
+   "avisos": []
+  },
+  {
+   "slug": "por_el_cual_se_expide_el_codigo_de_comercio_05d5",
+   "conjunto": "validacion",
+   "categoria": "normativa",
+   "veredicto_u": "no distinguible de U",
+   "decision": "revision_humana",
+   "motivos": [
+    "identidad incompleta: faltan tipo_documento, numero, anio"
+   ],
+   "avisos": []
+  },
+  {
+   "slug": "cc_tu_039_2024_modesto_manjarrez_vs_autopistas_del_caribe_consulta_previa_via_d92b",
+   "conjunto": "validacion",
+   "categoria": "jurisprudencia",
+   "veredicto_u": "verde",
+   "decision": "aceptado",
+   "motivos": [],
+   "avisos": []
+  },
+  {
+   "slug": "ce_2da_ap_2011_178_jose_caballero_vs_distrito_cartagena_venta_inmueble_valor_cul_092f",
+   "conjunto": "validacion",
+   "categoria": "jurisprudencia",
+   "veredicto_u": "verde",
+   "decision": "aceptado",
+   "motivos": [],
+   "avisos": []
+  },
+  {
+   "slug": "ap_felipe_jose_campo_fernandez_vs_corpamag_y_otros_ce3c",
+   "conjunto": "validacion",
+   "categoria": "jurisprudencia",
+   "veredicto_u": "verde",
+   "decision": "revision_humana",
+   "motivos": [
+    "páginas digitales con imágenes grandes y poco texto (posible tabla-imagen): [33, 36]"
+   ],
+   "avisos": []
+  },
+  {
+   "slug": "ce_2da_nyr_1999_503_inversiones_mercedes_vs_dimar_concesiones_uso_playa_f07f",
+   "conjunto": "validacion",
+   "categoria": "jurisprudencia",
+   "veredicto_u": "verde",
+   "decision": "aceptado",
+   "motivos": [],
+   "avisos": []
+  },
+  {
+   "slug": "ce_1era_ns_2009_603_jose_palencia_vs_mindefensa_resolucion_pilotos_embargaciones_99fd",
+   "conjunto": "validacion",
+   "categoria": "jurisprudencia",
+   "veredicto_u": "verde",
+   "decision": "aceptado",
+   "motivos": [],
+   "avisos": []
+  },
+  {
+   "slug": "por_medio_del_cual_se_reglamenta_el_tramite_de_solicitud_de_concesiones_para_el__1ee0",
+   "conjunto": "validacion",
+   "categoria": "normativa",
+   "veredicto_u": "verde",
+   "decision": "aceptado_con_advertencias",
+   "motivos": [],
+   "avisos": [
+    "identidad sin entidad_emisora, fecha_iso"
+   ]
+  },
+  {
+   "slug": "ce_2da_ap_2011_842_gabriel_carrero_vs_dimar_erosion_costera_93f6",
+   "conjunto": "validacion",
+   "categoria": "jurisprudencia",
+   "veredicto_u": "verde",
+   "decision": "aceptado",
+   "motivos": [],
+   "avisos": []
+  },
+  {
+   "slug": "ce_2da_nyr_1998_102_flury_valencia_vs_mindefensa_uso_urbanistico_playa_ba43",
+   "conjunto": "validacion",
+   "categoria": "jurisprudencia",
+   "veredicto_u": "verde",
+   "decision": "aceptado",
+   "motivos": [],
+   "avisos": []
+  },
+  {
+   "slug": "por_el_cual_se_reglamentan_las_disposiciones_sobre_licencias_urbanisticas_recono_e4a6",
+   "conjunto": "validacion",
+   "categoria": "normativa",
+   "veredicto_u": "verde",
+   "decision": "aceptado_con_advertencias",
+   "motivos": [],
+   "avisos": [
+    "identidad sin entidad_emisora, fecha_iso"
+   ]
+  },
+  {
+   "slug": "ce_consulta_2005_168_mindefensa_bienes_de_uso_publico_ea75",
+   "conjunto": "validacion",
+   "categoria": "jurisprudencia",
+   "veredicto_u": "verde",
+   "decision": "aceptado",
+   "motivos": [],
+   "avisos": []
+  },
+  {
+   "slug": "ap_gieseken_cuello_cia_s_en_c_vs_dimar_y_otros_a4be",
+   "conjunto": "validacion",
+   "categoria": "jurisprudencia",
+   "veredicto_u": "verde",
+   "decision": "aceptado_con_advertencias",
+   "motivos": [],
+   "avisos": [
+    "identidad sin magistrado_ponente"
+   ]
+  },
+  {
+   "slug": "por_medio_del_cual_se_expide_el_decreto_unico_reglamentario_del_sector_transport_1cd3",
+   "conjunto": "validacion",
+   "categoria": "normativa",
+   "veredicto_u": "verde",
+   "decision": "aceptado_con_advertencias",
+   "motivos": [],
+   "avisos": [
+    "identidad sin entidad_emisora, fecha_iso"
+   ]
+  },
+  {
+   "slug": "por_el_cual_se_reglamenta_el_servicio_publico_de_transporte_maritimo_cdf2",
+   "conjunto": "validacion",
+   "categoria": "normativa",
+   "veredicto_u": "verde",
+   "decision": "revision_humana",
+   "motivos": [
+    "identidad incompleta: faltan tipo_documento, numero, anio"
+   ],
+   "avisos": []
+  },
+  {
+   "slug": "por_el_cual_se_reglamenta_la_ley_13_de_1990_15e7",
+   "conjunto": "validacion",
+   "categoria": "normativa",
+   "veredicto_u": "verde",
+   "decision": "revision_humana",
+   "motivos": [
+    "identidad incompleta: faltan tipo_documento, numero, anio"
+   ],
+   "avisos": []
+  },
+  {
+   "slug": "por_el_cual_se_reglamenta_la_habilitacion_y_la_prestacion_del_servicio_publico_d_aeb1",
+   "conjunto": "validacion",
+   "categoria": "normativa",
+   "veredicto_u": "verde",
+   "decision": "revision_humana",
+   "motivos": [
+    "identidad incompleta: faltan tipo_documento, numero, anio"
+   ],
+   "avisos": []
+  },
+  {
+   "slug": "por_el_cual_se_reorganiza_la_direccion_general_maritima_y_portuaria_0fec",
+   "conjunto": "validacion",
+   "categoria": "normativa",
+   "veredicto_u": "verde",
+   "decision": "revision_humana",
+   "motivos": [
+    "identidad incompleta: faltan tipo_documento, numero, anio"
+   ],
+   "avisos": []
+  }
+ ]
+}

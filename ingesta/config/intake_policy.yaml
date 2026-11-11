@@ -1,0 +1,42 @@
+# Política de calidad del intake autónomo (ingest.offline intake).
+#
+# Decisiones: aceptado y aceptado_con_advertencias se publican en la colección
+# de pruebas; revision_humana y rechazado se generan y guardan pero NO se
+# publican. Cada decisión lleva sus motivos.
+#
+# Calibrada en la FASE 4 (benchmarks/intake/calibrar_politica.py) con los 21
+# documentos de AJUSTE frente al veredicto por documento (fidelidad frente a U,
+# no error real) y confirmada en los 32 de VALIDACIÓN: 0 rojos aceptados en
+# ambos. Con 53 documentos las conclusiones son frágiles. Nada de esto está
+# validado por abogados.
+version: 1
+rechazo:
+  # Un documento sin texto útil (en blanco, solo imágenes sin OCR) se rechaza.
+  caracteres_minimos_documento: 200
+revision:
+  # Reglas OCR. La de fracción es una regla de seguridad que la calibración no
+  # relaja: sin ella, en validación se aceptaba Turbo (rojo escaneado).
+  ocr_confianza_media_minima: 0
+  ocr_confianza_pagina_minima: 0
+  ocr_umbral_pagina_baja: 95
+  ocr_fraccion_paginas_bajas_maxima: 0.5
+  ocr_paginas_fallidas_maximas: 0
+  # Sin identidad propia (normativa: tipo, número y año; jurisprudencia:
+  # corporación) el documento no se publica solo.
+  identidad_obligatoria: true
+  # Señales de secuencia (defecto 2c): se miden y se registran, pero la
+  # calibración no encontró beneficio en ajuste (desactivadas como bloqueo).
+  simbolos_sospechosos_maximos: 1000
+  anomalias_secuencia_maximas: 1000
+  # Tablas-imagen en páginas digitales (defecto 3): más de una página con
+  # imágenes en ≥ 25 % del área y ≤ 1500 caracteres → revisión.
+  tablas_imagen_maximas: 1
+  tablas_imagen_fraccion_minima: 0.25
+  tablas_imagen_caracteres_maximos: 1500
+  # Caída de texto (defecto 4): registrada, sin bloqueo (no aportó en ajuste).
+  caida_texto_paginas_maximas: 1000
+  caracteres_reemplazo_maximo: 0.002
+advertencia:
+  identidad_recomendada: true
+  chunks_cortos_fraccion_maxima: 0.2
+  saltos_articulos_maximos: 3
