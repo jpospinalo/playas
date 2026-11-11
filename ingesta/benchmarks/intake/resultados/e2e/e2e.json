@@ -1,14 +1,14 @@
 {
  "base": {
   "codigo": 0,
-  "segundos": 84.28099999999904,
+  "segundos": 79.63999999999942,
   "decisiones": {
-   "aceptado/publicado": 22,
-   "revision_humana/revision_humana": 15,
+   "aceptado/publicado": 21,
+   "revision_humana/revision_humana": 16,
    "aceptado_con_advertencias/publicado": 6,
    "rechazado/rechazado": 2
   },
-  "chunks_coleccion": 2989
+  "chunks_coleccion": 2877
  },
  "nuevos": [
   {
@@ -20,20 +20,20 @@
     "identidad sin magistrado_ponente"
    ],
    "tiempos": {
-    "analisis_aislado": 2.9679999999971187,
-    "bronze": 1.1880000000019209,
-    "clasificacion": 0.0,
-    "gold": 0.3279999999977008,
-    "senales": 0.10900000000037835,
-    "silver": 0.062000000001717126,
-    "validacion": 0.09400000000096043,
+    "analisis_aislado": 1.9690000000009604,
+    "bronze": 0.8440000000009604,
+    "clasificacion": 0.01599999999962165,
+    "gold": 0.3129999999982829,
+    "senales": 0.125,
+    "silver": 0.06199999999807915,
+    "validacion": 0.07800000000133878,
     "politica": 0.0,
-    "copia_raw": 0.01600000000325963,
-    "embeddings": 0.2649999999994179,
-    "preparacion": 0.2970000000022992,
-    "publicacion": 0.4679999999971187,
+    "copia_raw": 0.01599999999962165,
+    "embeddings": 0.18800000000192085,
+    "preparacion": 0.28100000000267755,
+    "publicacion": 0.4059999999990396,
     "limpieza_preparacion": 0.09400000000096043,
-    "total": 5.061999999998079
+    "total": 3.9060000000026776
    }
   },
   {
@@ -43,20 +43,20 @@
    "motivos": [],
    "avisos": [],
    "tiempos": {
-    "analisis_aislado": 1.0779999999977008,
-    "bronze": 0.23500000000058208,
+    "analisis_aislado": 1.1569999999992433,
+    "bronze": 0.23400000000037835,
     "clasificacion": 0.0,
-    "gold": 0.2819999999992433,
-    "senales": 0.030999999999039574,
-    "silver": 0.0470000000022992,
+    "gold": 0.2970000000022992,
+    "senales": 0.046999999998661224,
+    "silver": 0.06199999999807915,
     "validacion": 0.0,
     "politica": 0.0,
-    "copia_raw": 0.01599999999962165,
-    "embeddings": 0.2040000000015425,
-    "preparacion": 0.23400000000037835,
-    "publicacion": 0.23500000000058208,
-    "limpieza_preparacion": 0.0930000000007567,
-    "total": 1.9220000000022992
+    "copia_raw": 0.014999999999417923,
+    "embeddings": 0.13999999999941792,
+    "preparacion": 0.21899999999732245,
+    "publicacion": 0.3280000000013388,
+    "limpieza_preparacion": 0.07800000000133878,
+    "total": 1.9840000000003783
    }
   },
   {
@@ -66,20 +66,20 @@
    "motivos": [],
    "avisos": [],
    "tiempos": {
-    "analisis_aislado": 0.8590000000003783,
+    "analisis_aislado": 0.9529999999977008,
     "bronze": 0.0779999999977008,
     "clasificacion": 0.0,
-    "gold": 0.2819999999992433,
-    "senales": 0.01599999999962165,
-    "silver": 0.01599999999962165,
-    "validacion": 0.01599999999962165,
+    "gold": 0.31199999999807915,
+    "senales": 0.030999999999039574,
+    "silver": 0.01600000000325963,
+    "validacion": 0.0,
     "politica": 0.0,
-    "copia_raw": 0.01599999999962165,
-    "embeddings": 0.030999999999039574,
+    "copia_raw": 0.0,
+    "embeddings": 0.01600000000325963,
     "preparacion": 0.0779999999977008,
-    "publicacion": 0.07800000000133878,
-    "limpieza_preparacion": 0.046999999998661224,
-    "total": 1.139999999999418
+    "publicacion": 0.062000000001717126,
+    "limpieza_preparacion": 0.0319999999992433,
+    "total": 1.1719999999986612
    }
   },
   {
@@ -91,15 +91,15 @@
    ],
    "avisos": [],
    "tiempos": {
-    "analisis_aislado": 1.0320000000028813,
-    "bronze": 0.10900000000037835,
+    "analisis_aislado": 1.25,
+    "bronze": 0.18799999999828287,
     "clasificacion": 0.0,
     "gold": 0.2969999999986612,
-    "senales": 0.01600000000325963,
-    "silver": 0.062000000001717126,
+    "senales": 0.030999999999039574,
+    "silver": 0.06300000000192085,
     "validacion": 0.0,
     "politica": 0.0,
-    "total": 1.0470000000022992
+    "total": 1.2659999999996217
    }
   },
   {
@@ -111,20 +111,20 @@
     "identidad sin entidad_emisora, fecha_iso"
    ],
    "tiempos": {
-    "analisis_aislado": 1.0309999999990396,
-    "bronze": 0.11000000000058208,
+    "analisis_aislado": 0.9850000000005821,
+    "bronze": 0.10900000000037835,
     "clasificacion": 0.0,
-    "gold": 0.2820000000028813,
-    "senales": 0.014999999999417923,
+    "gold": 0.2959999999984575,
+    "senales": 0.01599999999962165,
     "silver": 0.01599999999962165,
-    "validacion": 0.0790000000015425,
+    "validacion": 0.07800000000133878,
     "politica": 0.0,
-    "copia_raw": 0.01599999999962165,
-    "embeddings": 0.014999999999417923,
-    "preparacion": 0.09400000000096043,
-    "publicacion": 0.09400000000096043,
-    "limpieza_preparacion": 0.06199999999807915,
-    "total": 1.4529999999977008
+    "copia_raw": 0.014999999999417923,
+    "embeddings": 0.01600000000325963,
+    "preparacion": 0.06199999999807915,
+    "publicacion": 0.0470000000022992,
+    "limpieza_preparacion": 0.030999999999039574,
+    "total": 1.1720000000022992
    }
   }
  ],
@@ -139,14 +139,14 @@
    "despues": {
     "n": 10,
     "hit4": 0.9,
-    "mrr": 0.6466666666666667
+    "mrr": 0.6469298245614035
    },
    "ic95_delta_hit4": [
     0.7,
     1.0
    ],
    "ic95_delta_mrr": [
-    0.41,
+    0.41052631578947374,
     0.8666666666666666
    ]
   },
@@ -160,15 +160,15 @@
    "despues": {
     "n": 48,
     "hit4": 0.14583333333333334,
-    "mrr": 0.1489673520923521
+    "mrr": 0.14915674603174603
    },
    "ic95_delta_hit4": [
     -0.10416666666666667,
     0.0
    ],
    "ic95_delta_mrr": [
-    -0.038938492063492064,
-    -0.0002141955266955264
+    -0.03871527777777778,
+    -2.4801587301586925e-05
    ]
   }
  },
@@ -178,7 +178,7 @@
    "esperado": "publicado",
    "obtenido": "publicado",
    "ok": true,
-   "segundos": 5.9,
+   "segundos": 4.4,
    "detalle": ""
   },
   {
@@ -186,7 +186,7 @@
    "esperado": "publicado",
    "obtenido": "publicado",
    "ok": true,
-   "segundos": 2.5,
+   "segundos": 2.6,
    "detalle": ""
   },
   {
@@ -194,7 +194,7 @@
    "esperado": "publicado",
    "obtenido": "publicado",
    "ok": true,
-   "segundos": 1.5,
+   "segundos": 1.6,
    "detalle": ""
   },
   {
@@ -202,7 +202,7 @@
    "esperado": "revision_humana",
    "obtenido": "revision_humana; 76% de páginas OCR con confianza ≤ 95 (máximo 50%)",
    "ok": true,
-   "segundos": 1.5,
+   "segundos": 1.8,
    "detalle": ""
   },
   {
@@ -210,7 +210,7 @@
    "esperado": "publicado",
    "obtenido": "publicado",
    "ok": true,
-   "segundos": 1.8,
+   "segundos": 1.7,
    "detalle": ""
   },
   {
@@ -218,7 +218,7 @@
    "esperado": "sin trabajo nuevo",
    "obtenido": "sin cambios; doc_id igual: True",
    "ok": true,
-   "segundos": 2.1,
+   "segundos": 2.5,
    "detalle": ""
   },
   {
@@ -226,7 +226,7 @@
    "esperado": "mismo doc_id, sin trabajo nuevo",
    "obtenido": "sin cambios; doc_id igual: True",
    "ok": true,
-   "segundos": 2.1,
+   "segundos": 2.3,
    "detalle": ""
   },
   {
@@ -234,21 +234,21 @@
    "esperado": "cuasi-duplicado → revisión",
    "obtenido": "revision_humana; cuasi-duplicado de 896646ecc76401dc95ace08f8e586bd98d368dafdfa9287ad88213cfefcc9f8f: posible versión nueva, no se fusiona; posible versión nueva de 896646ecc76401dc95ace08f8e586bd98d368dafdfa9287ad88213cfefcc9f8f",
    "ok": true,
-   "segundos": 1.4,
+   "segundos": 1.5,
    "detalle": ""
   },
   {
    "caso": "escaneo degradado (70 dpi, sin capa de texto)",
    "esperado": "revisión o rechazo, nunca aceptado",
-   "obtenido": "rechazado; sin texto útil: 0 caracteres (mínimo 200); categoría dudosa",
+   "obtenido": "rechazado; sin texto útil tras la limpieza: 0 caracteres en silver; categoría dudosa",
    "ok": true,
-   "segundos": 1.4,
+   "segundos": 1.7,
    "detalle": "Sin Tesseract: el OCR falla y la política no acepta. Giro y ruido con OCR real: PENDIENTE."
   },
   {
    "caso": "PDF en blanco",
    "esperado": "rechazado con motivo",
-   "obtenido": "rechazado; sin texto útil: 0 caracteres (mínimo 200); categoría dudosa",
+   "obtenido": "rechazado; sin texto útil tras la limpieza: 0 caracteres en silver; categoría dudosa",
    "ok": true,
    "segundos": null,
    "detalle": ""
@@ -291,14 +291,14 @@
    "obtenido": "códigos 0/2; chunks 86 sin duplicados: True",
    "ok": true,
    "segundos": null,
-   "detalle": " \"estado\": \"completada\", \"segundos\": 0.07800000000133878}, \"validacion\": {\"accion\": \"Comprobar firma, tamaño, integridad, cifrado y páginas\", \"estado\": \"aceptado_con_advertencias\", \"segundos\": 0.0}}}  || Error de entrada autónoma: Ya hay un escritor; bloqueo C:\\Users\\Migue\\herramientas\\e2e3\\cache\\.writer.guard "
+   "detalle": "letada\", \"segundos\": 0.06300000000192085}, \"validacion\": {\"accion\": \"Comprobar firma, tamaño, integridad, cifrado y páginas\", \"estado\": \"aceptado_con_advertencias\", \"segundos\": 0.01600000000325963}}}  || Error de entrada autónoma: El worker previo (PID 55452) sigue vivo; el intake no escribirá. Espere a que termine antes de reiniciar. "
   },
   {
    "caso": "kill -9 durante publicación y reintento",
    "esperado": "sin duplicados ni huérfanos",
    "obtenido": "interrumpido en 'publicando': True; reintento publicado; chunks 293/293; preparación 0",
    "ok": true,
-   "segundos": 5.2,
+   "segundos": 5.5,
    "detalle": "Si no se alcanzó a interrumpir, el caso queda cubierto solo por el test unitario."
   },
   {
@@ -306,7 +306,7 @@
    "esperado": "desaparece de Chroma",
    "obtenido": "código 0; chunks 293 → 0",
    "ok": true,
-   "segundos": 2.1,
+   "segundos": 2.2,
    "detalle": "{\"doc_id\": \"0c26a7cb41434bb05dd6969ef5a31039e3de0904c64f2534e10e2e3862fe9ec4\", \"estado\": \"retirado\"}\n"
   },
   {

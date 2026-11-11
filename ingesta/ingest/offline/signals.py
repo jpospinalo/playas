@@ -162,3 +162,85 @@ def tablas_imagen_sospechosas(marcadas, *, fraccion_minima=0.25, caracteres_maxi
         and m["fraccion_imagen"] >= fraccion_minima
         and m["caracteres"] <= caracteres_maximos
     ]
+
+
+_JURIDICO = re.compile(
+    r"art[íi]culo|\bart\.|par[áa]grafo|considerando|resuelve|decreta|cap[íi]tulo|t[íi]tulo|"
+    r"numeral|literal",
+    re.I,
+)
+
+
+def _margenes(lineas):
+    llenas = [i for i, linea in enumerate(lineas) if linea.strip()]
+    return set(llenas[:3]) | set(llenas[-3:])
+
+
+def _clave_linea(linea):
+    return re.sub(r"\s+", " ", re.sub(r"\d+", "#", linea.casefold())).strip()
+
+
+def mobiliario_verificado(paginas):
+    """Claves de líneas que son mobiliario por un criterio independiente del limpiador.
+
+    Una clave (dígitos → #) cuenta si aparece en los márgenes (3 primeras o 3 últimas
+    líneas no vacías) de ≥ 3 páginas y del ≥ 30 % de ellas, no contiene marcadores
+    jurídicos y sus apariciones son idénticas o solo cambia un número que sigue la
+    paginación (folio). Líneas que solo difieren en importes o plazos NO cuentan.
+    """
+    apariciones = {}
+    for numero, texto in enumerate(paginas, 1):
+        lineas = texto.splitlines()
+        vistas = set()
+        for i in _margenes(lineas):
+            clave = _clave_linea(lineas[i])
+            if clave and clave not in vistas and not _JURIDICO.search(lineas[i]):
+                vistas.add(clave)
+                apariciones.setdefault(clave, []).append((numero, " ".join(lineas[i].split())))
+    verificadas = set()
+    for clave, lista in apariciones.items():
+        if len(lista) < 3 or len(lista) / max(1, len(paginas)) < 0.30:
+            continue
+        textos = {t for _, t in lista}
+        if len(textos) == 1:
+            verificadas.add(clave)
+            continue
+        numeros = [re.findall(r"\d+", t) for _, t in lista]
+        if len({len(n) for n in numeros}) != 1:
+            continue
+        varian = [j for j in range(len(numeros[0])) if len({n[j] for n in numeros}) > 1]
+        if len(varian) == 1:
+            desplazamientos = {
+                int(n[varian[0]]) - p for (p, _), n in zip(lista, numeros, strict=True)
+            }
+            if len(desplazamientos) == 1:
+                verificadas.add(clave)
+    return verificadas
+
+
+def perdida_bronce_silver(bronce, offset_map):
+    """Fracción de caracteres no blancos del bronce que silver elimina fuera del mobiliario.
+
+    Los tramos eliminados son el complemento de ``offset_map`` (source_start/end).
+    Se descuentan solo las líneas de mobiliario verificado (ver mobiliario_verificado).
+    """
+    paginas = bronce.split("\n\f\n")
+    claves = mobiliario_verificado(paginas)
+    cubierto = bytearray(len(bronce))
+    for tramo in offset_map:
+        inicio, fin = max(0, tramo["source_start"]), min(len(bronce), tramo["source_end"])
+        cubierto[inicio:fin] = b"\1" * max(0, fin - inicio)
+    total = perdidos = 0
+    posicion = 0
+    for texto in paginas:
+        for linea in texto.splitlines(keepends=True):
+            fin = posicion + len(linea)
+            utiles = sum(1 for c in linea if not c.isspace())
+            total += utiles
+            if utiles and _clave_linea(linea) not in claves:
+                perdidos += sum(
+                    1 for j, c in enumerate(linea, posicion) if not c.isspace() and not cubierto[j]
+                )
+            posicion = fin
+        posicion += 3  # separador «\n\f\n»
+    return perdidos / total if total else 0.0

@@ -18,6 +18,7 @@ from ..legal_metadata import extract_legal_metadata, identity_gate
 from .signals import (
     caida_texto,
     imagenes_en_paginas_digitales,
+    perdida_bronce_silver,
     secuencia_articulos,
     tablas_imagen_sospechosas,
 )
@@ -60,11 +61,14 @@ _CLAVES = {
         "tablas_imagen_caracteres_maximos",
         "caida_texto_paginas_maximas",
         "caracteres_reemplazo_maximo",
+        "paginas_ocr_incrustado_maximas",
+        "perdida_silver_maxima",
     ),
     "advertencia": (
         "identidad_recomendada",
         "chunks_cortos_fraccion_maxima",
         "saltos_articulos_maximos",
+        "perdida_silver_advertencia",
     ),
 }
 
@@ -88,6 +92,13 @@ def senales_documento(capas, doc_id, pdf=None, doc_type="jurisprudencia"):
 
         with fitz.open(pdf) as documento:
             imagenes = imagenes_en_paginas_digitales(documento, paginas_ocr)
+    # Pérdida bronze→silver fuera del mobiliario verificado, y texto que se publica.
+    perdida_silver, caracteres_silver = None, None
+    contexto = capas / "silver" / (doc_id + ".context.json")
+    if contexto.exists():
+        limpio = json.loads(contexto.read_text(encoding="utf-8"))["cleaned"]
+        perdida_silver = perdida_bronce_silver(bronce, limpio.get("offset_map", []))
+        caracteres_silver = len(re.sub(r"\s", "", limpio.get("text", "")))
     chunks = []
     gold = capas / "gold" / (doc_id + ".jsonl")
     if gold.exists():
@@ -112,6 +123,10 @@ def senales_documento(capas, doc_id, pdf=None, doc_type="jurisprudencia"):
         "caida_texto": caida_texto(extraccion.get("chars_per_page", []))["paginas"],
         "chunks": len(chunks),
         "chunks_cortos": sum(1 for n in chunks if n < 200),
+        "perdida_silver": perdida_silver,
+        "caracteres_silver": caracteres_silver,
+        # Imagen de página completa con capa de texto: OCR incrustado sin verificar.
+        "paginas_ocr_incrustado": [m["pagina"] for m in imagenes if m["pagina_completa"]],
     }
 
 
@@ -119,6 +134,13 @@ def decidir(senales, politica, *, duplicado_exacto=False, cuasi_duplicado_de=Non
     """Aplica la política. Devuelve (decisión, motivos de revisión/rechazo, advertencias)."""
     rechazo, revision, advertencia = (politica[k] for k in ("rechazo", "revision", "advertencia"))
     motivos, avisos = [], []
+    publicados = senales.get("caracteres_silver")
+    if publicados is not None and publicados < rechazo["caracteres_minimos_documento"]:
+        return (
+            "rechazado",
+            [f"sin texto útil tras la limpieza: {publicados} caracteres en silver"],
+            [],
+        )
     if senales["caracteres"] < rechazo["caracteres_minimos_documento"]:
         return (
             "rechazado",
@@ -184,6 +206,15 @@ def decidir(senales, politica, *, duplicado_exacto=False, cuasi_duplicado_de=Non
         )
     if len(senales["caida_texto"]) > revision["caida_texto_paginas_maximas"]:
         motivos.append(f"caída fuerte de texto en páginas {senales['caida_texto']}")
+    incrustado = senales.get("paginas_ocr_incrustado") or []
+    if len(incrustado) > revision["paginas_ocr_incrustado_maximas"]:
+        motivos.append(f"capa OCR incrustada sin verificar: páginas {incrustado}")
+    perdida = senales.get("perdida_silver")
+    if perdida is not None:
+        if perdida > revision["perdida_silver_maxima"]:
+            motivos.append(f"la limpieza elimina {perdida:.1%} del texto fuera del mobiliario")
+        elif perdida > advertencia["perdida_silver_advertencia"]:
+            avisos.append(f"la limpieza elimina {perdida:.1%} del texto fuera del mobiliario")
     if senales["chunks"]:
         cortos = senales["chunks_cortos"] / senales["chunks"]
         if cortos > advertencia["chunks_cortos_fraccion_maxima"]:

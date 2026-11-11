@@ -77,3 +77,28 @@ def test_imagenes_grandes_en_paginas_digitales():
     assert marcadas[0]["fraccion_imagen"] == pytest.approx(500 * 400 / (600 * 800))
     assert marcadas[1]["pagina_completa"]
     assert tablas_imagen_sospechosas(marcadas) == [1]
+
+
+def test_mobiliario_verificado_no_exonera_importes_que_solo_cambian_en_cifras():
+    from ingest.offline.signals import mobiliario_verificado, perdida_bronce_silver
+
+    # Revisión ronda 2: líneas de importes/plazos que difieren solo en cifras.
+    paginas = [
+        f"Ministerio de Comercio\nArtículo {i}. Texto de la disposición número {i}.\n"
+        f"Pagar {i * 100} pesos en {i * 3} días\nPágina {i}"
+        for i in range(1, 5)
+    ]
+    claves = mobiliario_verificado(paginas)
+    assert "ministerio de comercio" in claves  # idéntica en todas las páginas
+    assert "página #" in claves  # folio que sigue la paginación
+    assert "pagar # pesos en # días" not in claves
+    bronce = "\n\f\n".join(paginas)
+    # Silver conserva todo salvo las líneas de importes.
+    mapa, posicion = [], 0
+    for texto in paginas:
+        for linea in texto.splitlines(keepends=True):
+            if not linea.startswith("Pagar"):
+                mapa.append({"source_start": posicion, "source_end": posicion + len(linea)})
+            posicion += len(linea)
+        posicion += 3
+    assert perdida_bronce_silver(bronce, mapa) > 0.05

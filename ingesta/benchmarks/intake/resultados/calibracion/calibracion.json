@@ -65,9 +65,9 @@
      "rechazado": 0
     },
     "no distinguible de U": {
-     "aceptado": 5,
+     "aceptado": 4,
      "aceptado_con_advertencias": 2,
-     "revision_humana": 1,
+     "revision_humana": 2,
      "rechazado": 0
     },
     "amarillo": {
@@ -85,7 +85,7 @@
    },
    "rojos_aceptados": 1,
    "rojos": 2,
-   "carga_revision_verdes_y_no_distinguibles": 6,
+   "carga_revision_verdes_y_no_distinguibles": 7,
    "verdes_y_no_distinguibles": 24,
    "amarillos_aceptados": 5,
    "amarillos": 6
@@ -136,9 +136,9 @@
     "rechazado": 0
    },
    "no distinguible de U": {
-    "aceptado": 5,
+    "aceptado": 4,
     "aceptado_con_advertencias": 2,
-    "revision_humana": 1,
+    "revision_humana": 2,
     "rechazado": 0
    },
    "amarillo": {
@@ -156,7 +156,7 @@
   },
   "rojos_aceptados": 0,
   "rojos": 2,
-  "carga_revision_verdes_y_no_distinguibles": 6,
+  "carga_revision_verdes_y_no_distinguibles": 7,
   "verdes_y_no_distinguibles": 24,
   "amarillos_aceptados": 5,
   "amarillos": 6
@@ -526,8 +526,10 @@
    "conjunto": "validacion",
    "categoria": "jurisprudencia",
    "veredicto_u": "no distinguible de U",
-   "decision": "aceptado",
-   "motivos": [],
+   "decision": "revision_humana",
+   "motivos": [
+    "capa OCR incrustada sin verificar: páginas [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29]"
+   ],
    "avisos": []
   },
   {
@@ -656,7 +658,8 @@
    "decision": "aceptado_con_advertencias",
    "motivos": [],
    "avisos": [
-    "identidad sin entidad_emisora, fecha_iso"
+    "identidad sin entidad_emisora, fecha_iso",
+    "la limpieza elimina 2.2% del texto fuera del mobiliario"
    ]
   },
   {

@@ -61,12 +61,12 @@ OCR, incluidas las de validación): por eso las cifras de validación son algo o
 | Veredicto frente a U | aceptado | con advertencias | revisión humana | rechazado |
 |---|---:|---:|---:|---:|
 | verde | 7 | 4 | 5 | 0 |
-| no distinguible de U | 5 | 2 | 1 | 0 |
+| no distinguible de U | 4 | 2 | 2 | 0 |
 | amarillo | 4 | 1 | 1 | 0 |
 | rojo | 0 | 0 | 2 | 0 |
 
 - Rojos aceptados (falsa aceptación): **0 de 2**.
-- Carga humana: 6 de 24 verdes y no distinguibles van a revisión.
+- Carga humana: 7 de 24 verdes y no distinguibles van a revisión.
 - Amarillos aceptados: 5 de 6.
 
 ## Calibración ingenua (descartada)
@@ -99,6 +99,7 @@ caracteres, más de una página) se eligieron viendo esos tres casos.
 
 | Documento | Veredicto | Motivo |
 |---|---|---|
+| ap_gabriel_antonio_carrero_vs_dimar_y_otros_a44a | no distinguible de U | capa OCR incrustada sin verificar: páginas [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29] |
 | por_el_cual_se_expide_el_codigo_de_comercio_05d5 | no distinguible de U | identidad incompleta: faltan tipo_documento, numero, anio |
 | ap_felipe_jose_campo_fernandez_vs_corpamag_y_otros_ce3c | verde | páginas digitales con imágenes grandes y poco texto (posible tabla-imagen): [33, 36] |
 | por_el_cual_se_reglamenta_el_servicio_publico_de_transporte_ | verde | identidad incompleta: faltan tipo_documento, numero, anio |
@@ -106,10 +107,16 @@ caracteres, más de una página) se eligieron viendo esos tres casos.
 | por_el_cual_se_reglamenta_la_habilitacion_y_la_prestacion_de | verde | identidad incompleta: faltan tipo_documento, numero, anio |
 | por_el_cual_se_reorganiza_la_direccion_general_maritima_y_po | verde | identidad incompleta: faltan tipo_documento, numero, anio |
 
-Cinco de los seis van a revisión por identidad incompleta: son fragmentos de compilaciones sin el
-encabezado de la propia norma. Se resuelven con un archivo lateral de metadatos (override con evidencia).
+Cinco van a revisión por identidad incompleta (fragmentos de compilaciones sin el encabezado propio de la
+norma), uno por tablas-imagen y Carrero por su capa OCR incrustada sin verificar (regla añadida en la ronda 2
+de revisión; antes la carga era de 6 de 24). Los fragmentos se resuelven con un archivo lateral de metadatos
+(override con evidencia).
 
 ## Señales medidas pero sin bloqueo
+
+Reglas añadidas tras la revisión de código (no calibradas, no relajables): capa OCR incrustada sin
+verificar → revisión; pérdida bronze→silver fuera del mobiliario verificado > 5 % → revisión (> 2 %,
+advertencia; en el corpus el máximo es 2,2 %). Ninguna cambia los rojos aceptados (0 y 0).
 
 La secuencia de artículos (símbolos pegados, descensos) y la caída de texto no aportaron en ajuste más
 allá de las reglas elegidas; quedan registradas en la ficha de cada documento y desactivadas como

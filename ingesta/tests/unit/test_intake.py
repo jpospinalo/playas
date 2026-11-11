@@ -800,14 +800,14 @@ def test_lectura_fallida_no_detiene_los_demas(sistema, monkeypatch):
     args, _, _ = sistema
     crear_pdf(args.inbox / "a.pdf")
     crear_pdf(args.inbox / "b.pdf", NORMA)
-    original = modulo.sha256_file
+    original = modulo.sha256_limitado
 
-    def lectura_fallida(ruta):
+    def lectura_fallida(ruta, maximo):
         if ruta.name == "a.pdf":
             raise PermissionError("Entrada ilegible")
-        return original(ruta)
+        return original(ruta, maximo)
 
-    monkeypatch.setattr(modulo, "sha256_file", lectura_fallida)
+    monkeypatch.setattr(modulo, "sha256_limitado", lectura_fallida)
     assert ejecutar(sistema) == 2
     assert fichas(sistema)[0]["estado"] == "publicado"
     eventos = [
@@ -1032,3 +1032,66 @@ def test_canario_con_textos_identicos(sistema, monkeypatch, unico):
     assert ejecutar(sistema) == 0
     assert fichas(sistema)[0]["estado"] == "publicado"
     assert cliente.get_collection(args.collection).count() == (3 if unico else 2)
+
+
+def test_fallo_en_la_viva_durante_reproceso_restaura_la_version_anterior(sistema, monkeypatch):
+    # Revisión ronda 2: la reversión borraba la publicación vigente.
+    args, cliente, _ = sistema
+    crear_pdf(args.inbox / "doc.pdf")
+    assert ejecutar(sistema) == 0
+    viva = cliente.get_collection(args.collection)
+    doc_id = fichas(sistema)[0]["doc_id"]
+    antes = sorted(viva.get(where={"doc_id": doc_id}, include=[])["ids"])
+    original = Intake._verificar
+
+    def canario_vivo_roto(self, publicador, doc, chunks, vectores=None):
+        if vectores is not None and publicador.collection.name == args.collection:
+            raise RuntimeError("canario de la viva fallido (simulado)")
+        return original(self, publicador, doc, chunks, vectores)
+
+    monkeypatch.setattr(Intake, "_verificar", canario_vivo_roto)
+    assert ejecutar(sistema, from_stage="bronze") == 2
+    ficha = fichas(sistema)[0]
+    assert ficha["estado"] == "error_publicacion"
+    assert "versión anterior restaurada en la colección viva" in ficha["motivos"]
+    assert sorted(viva.get(where={"doc_id": doc_id}, include=[])["ids"]) == antes
+    assert (args.state / "intake" / "instantaneas" / (doc_id + ".jsonl.gz")).exists()
+
+
+def test_fallo_solo_en_la_limpieza_de_preparacion_conserva_la_viva(sistema, monkeypatch):
+    args, cliente, _ = sistema
+    crear_pdf(args.inbox / "doc.pdf")
+    original = ChromaPublisher.delete_document
+
+    def borrado_preparacion_roto(self, doc_id):
+        if self.collection_name.endswith("__staging"):
+            raise RuntimeError("borrado de preparación fallido (simulado)")
+        return original(self, doc_id)
+
+    monkeypatch.setattr(ChromaPublisher, "delete_document", borrado_preparacion_roto)
+    ejecutar(sistema)
+    ficha = fichas(sistema)[0]
+    assert ficha["estado"] == "publicado"
+    assert ficha["limpieza_preparacion_pendiente"] is True
+    viva = cliente.get_collection(args.collection)
+    assert len(viva.get(where={"doc_id": ficha["doc_id"]}, include=[])["ids"]) == len(
+        ficha["chunks"]
+    )
+
+
+def test_archivo_desmesurado_se_rechaza_sin_leerse_entero(sistema, monkeypatch):
+    import ingest.offline.intake as modulo
+
+    args, _, _ = sistema
+    grande = crear_pdf(args.inbox / "grande.pdf")
+    destinos = cargar_destinos()
+    destinos["tamano_maximo_bytes"] = grande.stat().st_size - 1
+    monkeypatch.setattr(modulo, "cargar_destinos", lambda *_: destinos)
+    monkeypatch.setattr(
+        modulo, "sha256_limitado", lambda *a: pytest.fail("No debe calcular el hash completo")
+    )
+    assert ejecutar(sistema) == 0
+    ficha = fichas(sistema)[0]
+    assert ficha["estado"] == "rechazado"
+    assert "supera el tamaño máximo" in ficha["motivos"][0]
+    assert ficha["doc_id"].startswith("desmesurado-")

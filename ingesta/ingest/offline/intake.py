@@ -5,6 +5,8 @@ from __future__ import annotations
 import argparse
 import csv
 import datetime as dt
+import gzip
+import hashlib
 import io
 import json
 import math
@@ -84,6 +86,19 @@ def fecha():
 
 def leer_json(ruta):
     return json.loads(Path(ruta).read_text(encoding="utf-8"))
+
+
+def sha256_limitado(ruta, maximo):
+    """SHA-256 leyendo como mucho ``maximo`` bytes; si el archivo crece, ValueError."""
+    resumen = hashlib.sha256()
+    leidos = 0
+    with Path(ruta).open("rb") as entrada:
+        for bloque in iter(lambda: entrada.read(1024 * 1024), b""):
+            leidos += len(bloque)
+            if leidos > maximo:
+                raise ValueError("El archivo supera el tamaño máximo durante la lectura")
+            resumen.update(bloque)
+    return resumen.hexdigest()
 
 
 @contextmanager
@@ -216,6 +231,29 @@ class Intake:
 
     def _ficha(self, doc_id):
         return guard_output(self.state / "intake" / (doc_id + ".json"))
+
+    def _rechazar_desmesurado(self, archivo, inicio):
+        """Rechaza sin leer el archivo entero; identidad barata y explícita."""
+        with archivo.open("rb") as entrada:
+            cabeza = entrada.read(65536)
+        tamano = archivo.stat().st_size
+        identidad = hashlib.sha256(f"{tamano}\0".encode() + cabeza).hexdigest()
+        ficha = {
+            "doc_id": "desmesurado-" + identidad,
+            "hash": None,
+            "coleccion": self.args.collection,
+            "estado": "rechazado",
+            "decision": "rechazado",
+            "motivos": [f"PDF desmesurado: {tamano} bytes supera el tamaño máximo"],
+            "avisos": ["identidad no calculada: el archivo no se leyó entero"],
+            "tiempos": {"total": time.monotonic() - inicio},
+            "fases": {},
+            "chunks": [],
+            "rutas": {"inbox": str(archivo), "capas": str(self.capas), "raw": None},
+        }
+        if not getattr(self.args, "dry_run", False):
+            self._guardar(ficha)
+        return ficha
 
     def _guardar(self, ficha):
         ficha["fecha"] = fecha()
@@ -353,9 +391,49 @@ class Intake:
         if errores:
             raise RuntimeError("Reversión incompleta; reintentar: " + "; ".join(errores))
 
+    def _instantanea(self, viva, doc_id):
+        """Registros vigentes del doc_id en la viva, guardados también en disco."""
+        datos = viva.collection.get(
+            where={"doc_id": doc_id}, include=["documents", "metadatas", "embeddings"]
+        )
+        if not datos["ids"]:
+            return None
+        registros = [
+            {
+                "id": i,
+                "document": d,
+                "metadata": m,
+                "embedding": [float(x) for x in e],
+            }
+            for i, d, m, e in zip(
+                datos["ids"],
+                datos["documents"],
+                datos["metadatas"],
+                datos["embeddings"],
+                strict=True,
+            )
+        ]
+        ruta = guard_output(self.state / "intake" / "instantaneas" / (doc_id + ".jsonl.gz"))
+        cuerpo = "".join(json.dumps(r, ensure_ascii=False) + "\n" for r in registros)
+        atomic_bytes(ruta, gzip.compress(cuerpo.encode(), mtime=0))
+        return registros
+
+    def _restaurar(self, doc_id, registros):
+        """Vuelve a dejar en la viva exactamente la versión anterior del doc_id."""
+        viva, _ = self._publicadores()
+        viva.delete_document(doc_id)
+        viva.collection.upsert(
+            ids=[r["id"] for r in registros],
+            documents=[r["document"] for r in registros],
+            metadatas=[r["metadata"] for r in registros],
+            embeddings=[r["embedding"] for r in registros],
+        )
+        self._verificar(viva, doc_id, registros)
+
     def _publicar(self, ficha):
         doc_id, chunks = ficha["doc_id"], ficha["chunks"]
         viva_modificada = False
+        instantanea = None
         ficha["estado"] = "publicando"
         ficha["publicacion_pendiente"] = True
         self._guardar(ficha)  # Sobrevive a interrupciones entre preparación y viva.
@@ -387,19 +465,29 @@ class Intake:
                         publicador.collection.get(where={"doc_id": doc_id}, include=[])["ids"]
                     )
                     if publicador is viva:
+                        # Instantánea de la versión vigente antes de sustituirla:
+                        # un fallo posterior la restaura en lugar de dejar el
+                        # documento sin chunks (revisión, ronda 2).
+                        instantanea = self._instantanea(viva, doc_id)
                         viva_modificada = True
                     publicador.upsert_document(doc_id, chunks, vectores)
                     self._verificar(publicador, doc_id, chunks, vectores)
                     if publicador.collection.count() != conteo - anteriores + len(chunks):
                         raise RuntimeError("Conteo total de colección inesperado")
-            with medir_fase(
-                ficha, "limpieza_preparacion", "Eliminar preparación y verificar vaciado"
-            ):
-                preparacion.delete_document(doc_id)
-                self._verificar(preparacion, doc_id, [])
             ficha["estado"] = "publicado"
             ficha["publicacion_vigente"] = True
             ficha["publicacion_pendiente"] = False
+            try:
+                with medir_fase(
+                    ficha, "limpieza_preparacion", "Eliminar preparación y verificar vaciado"
+                ):
+                    preparacion.delete_document(doc_id)
+                    self._verificar(preparacion, doc_id, [])
+                ficha.pop("limpieza_preparacion_pendiente", None)
+            except Exception as exc:
+                # La viva ya está verificada: no se toca; se reintenta la limpieza.
+                ficha["limpieza_preparacion_pendiente"] = True
+                ficha["avisos"].append(f"limpieza de preparación pendiente: {exc}")
         except ConfiguracionInvalida:
             raise
         except Exception as exc:
@@ -407,7 +495,11 @@ class Intake:
             ficha["motivos"].append(f"Publicación fallida: {exc}")
             try:
                 with medir_fase(ficha, "reversion", "Limpiar la publicación candidata fallida"):
-                    if viva_modificada:
+                    if viva_modificada and instantanea:
+                        self._restaurar(doc_id, instantanea)
+                        ficha["publicacion_vigente"] = True
+                        ficha["motivos"].append("versión anterior restaurada en la colección viva")
+                    elif viva_modificada:
                         self._revertir(doc_id)
                         ficha["publicacion_vigente"] = False
                     else:
@@ -422,7 +514,15 @@ class Intake:
 
     def _procesar(self, archivo, anteriores, seco):
         inicio = time.monotonic()
-        doc_id = sha256_file(archivo)
+        maximo = self.destinos["tamano_maximo_bytes"]
+        # El tamaño se comprueba ANTES de leer: un archivo enorme no debe ocupar
+        # al intake (con los bloqueos tomados) mientras se calcula su hash.
+        if archivo.stat().st_size > maximo:
+            return self._rechazar_desmesurado(archivo, inicio)
+        try:
+            doc_id = sha256_limitado(archivo, maximo)
+        except ValueError:
+            return self._rechazar_desmesurado(archivo, inicio)
         ficha = {
             "doc_id": doc_id,
             "hash": doc_id,

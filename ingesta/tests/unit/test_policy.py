@@ -134,3 +134,18 @@ def test_senales_desde_capas(tmp_path):
     assert s["ocr_confianza_media"] == 91.5
     assert s["identidad"]["pasa"]
     assert s["chunks"] == 1 and s["chunks_cortos"] == 1
+
+
+def test_capa_ocr_incrustada_va_a_revision(politica):
+    decision, motivos, _ = decidir(senales(paginas_ocr_incrustado=[1, 2]), politica)
+    assert decision == "revision_humana"
+    assert motivos == ["capa OCR incrustada sin verificar: páginas [1, 2]"]
+
+
+def test_perdida_silver_sustantiva_va_a_revision_y_texto_publicado_minimo(politica):
+    decision, motivos, _ = decidir(senales(perdida_silver=0.64), politica)
+    assert decision == "revision_humana" and "64.0%" in motivos[0]
+    decision, _, avisos = decidir(senales(perdida_silver=0.03), politica)
+    assert decision == "aceptado_con_advertencias" and "3.0%" in avisos[0]
+    decision, motivos, _ = decidir(senales(caracteres_silver=50), politica)
+    assert decision == "rechazado" and "tras la limpieza" in motivos[0]

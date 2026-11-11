@@ -39,7 +39,16 @@ revision:
   # Caída de texto (defecto 4): registrada, sin bloqueo (no aportó en ajuste).
   caida_texto_paginas_maximas: 1000
   caracteres_reemplazo_maximo: 0.002
+  # Revisión de código, ronda 2 (reglas nuevas, no calibradas con los datos):
+  # una página escaneada con capa de texto incrustada no pasa por Tesseract ni
+  # tiene confianza: su OCR no está verificado.
+  paginas_ocr_incrustado_maximas: 0
+  # Pérdida bronze→silver fuera del mobiliario verificado (líneas de margen
+  # idénticas o que solo cambian en el folio). Importes o plazos borrados por la
+  # limpieza llevan a revisión.
+  perdida_silver_maxima: 0.05
 advertencia:
   identidad_recomendada: true
   chunks_cortos_fraccion_maxima: 0.2
   saltos_articulos_maximos: 3
+  perdida_silver_advertencia: 0.02
