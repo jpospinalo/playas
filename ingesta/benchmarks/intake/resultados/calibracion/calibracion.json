@@ -1,7 +1,7 @@
 {
  "umbrales_elegidos": {
   "ocr_confianza_media_minima": 0,
-  "ocr_confianza_pagina_minima": 0,
+  "ocr_confianza_pagina_minima": 70,
   "ocr_fraccion_paginas_bajas_maxima": 0.5,
   "simbolos_sospechosos_maximos": 1000,
   "anomalias_secuencia_maximas": 1000,
@@ -12,7 +12,7 @@
  "ingenua": {
   "umbrales": {
    "ocr_confianza_media_minima": 0,
-   "ocr_confianza_pagina_minima": 0,
+   "ocr_confianza_pagina_minima": 70,
    "ocr_fraccion_paginas_bajas_maxima": 1.0,
    "simbolos_sospechosos_maximos": 1000,
    "anomalias_secuencia_maximas": 1000,
@@ -169,6 +169,7 @@
    "veredicto_u": "rojo",
    "decision": "revision_humana",
    "motivos": [
+    "página OCR con confianza 38.6 < 70",
     "80% de páginas OCR con confianza ≤ 95 (máximo 50%)",
     "identidad incompleta: faltan tipo_documento, numero, anio"
    ],

@@ -17,7 +17,10 @@ revision:
   # Reglas OCR. La de fracción es una regla de seguridad que la calibración no
   # relaja: sin ella, en validación se aceptaba Turbo (rojo escaneado).
   ocr_confianza_media_minima: 0
-  ocr_confianza_pagina_minima: 0
+  # Mínimo por página de defecto grave (revisión de código): una página OCR
+  # ilegible no puede publicarse diluida entre páginas buenas. Valor redondo,
+  # no ajustado a los datos; no afecta a ningún documento no rojo del corpus.
+  ocr_confianza_pagina_minima: 70
   ocr_umbral_pagina_baja: 95
   ocr_fraccion_paginas_bajas_maxima: 0.5
   ocr_paginas_fallidas_maximas: 0

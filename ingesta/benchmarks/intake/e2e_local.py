@@ -43,6 +43,24 @@ ESPERADO_NUEVOS = {
 }
 
 
+MARCADOR = ".e2e_intake"
+
+
+def validar_trabajo(trabajo, protegidas):
+    """Antes de borrar --trabajo: sin solapes con repo, raw ni referencias, y con marcador.
+
+    Revisión: un --trabajo mal puesto (p. ej. data/documents o un ancestro de raw)
+    se habría borrado entero. Solo se borra una carpeta creada por este arnés.
+    """
+    trabajo = Path(trabajo).resolve()
+    for ruta in protegidas:
+        ruta = Path(ruta).resolve()
+        if trabajo == ruta or trabajo.is_relative_to(ruta) or ruta.is_relative_to(trabajo):
+            raise SystemExit(f"--trabajo {trabajo} se solapa con {ruta}; elige otra carpeta")
+    if trabajo.exists() and any(trabajo.iterdir()) and not (trabajo / MARCADOR).exists():
+        raise SystemExit(f"--trabajo {trabajo} no está vacío ni lo creó este arnés; no se borra")
+
+
 def sh256(p):
     return hashlib.sha256(Path(p).read_bytes()).hexdigest()
 
@@ -128,10 +146,12 @@ class E2E:
         print(("OK  " if ok else "FALLA ") + nombre + " | " + obtenido, flush=True)
 
     def preparar(self):
+        validar_trabajo(self.t, [REPO, self.a.raw, self.a.capas_referencia])
         if self.t.exists():
             shutil.rmtree(self.t)
         for d in ("ib_base", "ib_nuevos", "raw"):
             (self.t / d).mkdir(parents=True)
+        (self.t / MARCADOR).write_text("Carpeta desechable de e2e_local.py\n", encoding="utf-8")
         subprocess.run(
             [
                 self.py,

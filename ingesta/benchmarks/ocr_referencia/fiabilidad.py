@@ -638,9 +638,12 @@ def veredicto(
         motivos.append(("amarillo", "pérdida silver en páginas sin U", perdida_sin_u))
     if recall_critico is not None and recall_critico < RECALL_CRITICO_AMARILLO:
         motivos.append(("amarillo", "recall crítico", recall_critico))
-    for minimo, factor, valor in motivos:
-        if color == "sin evaluar" or ORDEN_COLOR[minimo] > ORDEN_COLOR[color]:
-            return minimo, f"{factor}: {porcentaje(valor)}"
+    # La degradación más grave gana (revisión: devolver la primera dejaba en
+    # amarillo un documento con otra condición roja simultánea).
+    peor = max(motivos, key=lambda m: ORDEN_COLOR[m[0]], default=None)
+    if peor and (color == "sin evaluar" or ORDEN_COLOR[peor[0]] > ORDEN_COLOR[color]):
+        minimo, factor, valor = peor
+        return minimo, f"{factor}: {porcentaje(valor)}"
     if estado_sin_u == "no evaluada" and color == "verde":
         return "no distinguible de U", "páginas sin U no verificadas"
     return color, ""

@@ -30,7 +30,8 @@ ETIQUETAS = ("verde", "no distinguible de U", "amarillo", "rojo")
 # una decisión de política fija, no un parámetro a ajustar.
 REJILLA = {
     "ocr_confianza_media_minima": [0, 92, 93, 94, 95],
-    "ocr_confianza_pagina_minima": [0, 80, 85, 90],
+    # Mínimo por página de defecto grave (70) que la calibración no relaja.
+    "ocr_confianza_pagina_minima": [70, 80, 85, 90],
     # Regla de seguridad que la calibración no relaja: como máximo la mitad de las
     # páginas OCR con confianza ≤ 95 (recomendación de la fase anterior, fijada
     # tras ver todas las páginas OCR, incluidas las de validación: sus cifras de

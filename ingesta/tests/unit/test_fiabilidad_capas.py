@@ -905,3 +905,10 @@ def test_sensibilidad_grado_usa_las_capas_seleccionadas(tmp_path, monkeypatch):
     assert b["_corpus"]["cer"] == 0
     assert a["_corpus"]["cer_grado_unificado"] == b["_corpus"]["cer_grado_unificado"] == 0
     assert a["sintetico"]["huella_bronce"] != b["sintetico"]["huella_bronce"]
+
+
+def test_veredicto_aplica_la_degradacion_mas_grave():
+    # Revisión: pérdida silver amarilla y pérdida en páginas sin U roja a la vez.
+    color, motivo = f.veredicto(0.0, perdida_otra=0.03, perdida_sin_u=0.90, estado_sin_u="evaluada")
+    assert color == "rojo"
+    assert "páginas sin U" in motivo

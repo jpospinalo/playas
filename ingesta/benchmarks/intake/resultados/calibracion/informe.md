@@ -8,12 +8,26 @@ política menos estricta. VALIDACIÓN (32) no interviene en la elección.
 
 **Con 53 documentos (6 rojos) las conclusiones son frágiles.** Nada está validado por abogados.
 
+## Independencia de la validación (leer antes que las cifras)
+
+El resultado de 0 rojos aceptados en VALIDACIÓN **no es una confirmación independiente**:
+
+- la regla de seguridad OCR (≤ 50 % de páginas con confianza ≤ 95) procede de la recomendación de la
+  fase anterior, calculada con todas las páginas OCR, incluidas las de validación;
+- las señales (tablas-imagen, clasificación por encabezado, mínimo por página de 70) se diseñaron
+  mirando los 53 documentos;
+- la calibración ingenua, sin esas decisiones, aceptaba un rojo de validación.
+
+Este conjunto es de DESARROLLO. Para confirmar la política hay que congelarla (versión 1 de
+`config/intake_policy.yaml`) y evaluarla con documentos nuevos e independientes, etiquetados del mismo
+modo, antes de usar estas cifras como garantía.
+
 ## Umbrales elegidos
 
 ```json
 {
  "ocr_confianza_media_minima": 0,
- "ocr_confianza_pagina_minima": 0,
+ "ocr_confianza_pagina_minima": 70,
  "ocr_fraccion_paginas_bajas_maxima": 0.5,
  "simbolos_sospechosos_maximos": 1000,
  "anomalias_secuencia_maximas": 1000,
@@ -23,7 +37,9 @@ política menos estricta. VALIDACIÓN (32) no interviene en la elección.
 }
 ```
 
-Regla de seguridad: `ocr_fraccion_paginas_bajas_maxima` ≤ 0,5 no se relaja en la calibración. Se fijó
+Reglas de seguridad que la calibración no relaja: `ocr_fraccion_paginas_bajas_maxima` ≤ 0,5 y
+`ocr_confianza_pagina_minima` ≥ 70 (defecto grave: una página ilegible no se diluye entre páginas
+buenas; valor redondo, no ajustado). La primera se fijó
 tras ver la recomendación de la fase anterior (umbral de página ≤ 95, calculado con todas las páginas
 OCR, incluidas las de validación): por eso las cifras de validación son algo optimistas.
 
@@ -55,7 +71,7 @@ OCR, incluidas las de validación): por eso las cifras de validación son algo o
 
 ## Calibración ingenua (descartada)
 
-Sin robustez ni regla de seguridad elige {"ocr_confianza_media_minima": 0, "ocr_confianza_pagina_minima": 0, "ocr_fraccion_paginas_bajas_maxima": 1.0, "simbolos_sospechosos_maximos": 1000, "anomalias_secuencia_maximas": 1000, "tablas_imagen_maximas": 1, "tablas_imagen_caracteres_maximos": 1500, "caida_texto_paginas_maximas": 1000}.
+Sin robustez ni la regla de fracción OCR elige {"ocr_confianza_media_minima": 0, "ocr_confianza_pagina_minima": 70, "ocr_fraccion_paginas_bajas_maxima": 1.0, "simbolos_sospechosos_maximos": 1000, "anomalias_secuencia_maximas": 1000, "tablas_imagen_maximas": 1, "tablas_imagen_caracteres_maximos": 1500, "caida_texto_paginas_maximas": 1000}.
 Ajuste: 0 rojos aceptados; validación: **1 de 2**
 (acepta Turbo, rojo escaneado): el único rojo escaneado de ajuste caía por la identidad, y la
 calibración no tenía motivo para activar ninguna regla de OCR. Se endureció como se describe arriba.

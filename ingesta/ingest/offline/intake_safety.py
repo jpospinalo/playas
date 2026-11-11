@@ -4,15 +4,21 @@ from __future__ import annotations
 
 import hashlib
 import ipaddress
+import json
 import os
 import re
+import signal
+import subprocess
+import sys
 import tempfile
 from collections import Counter
+from contextlib import contextmanager
 from pathlib import Path
 
 from ..legal_metadata import identidad_normativa
 from .extract import sha256_file
-from .layers import key
+from .layers import canonical, key
+from .storage import atomic_bytes
 
 DESTINOS = Path(__file__).resolve().parents[2] / "config" / "intake_destinos.yaml"
 PROTEGIDAS = {"v1", "atlas_v1", "rag_playas", "rag_playas_magdalena"}
@@ -20,6 +26,170 @@ PROTEGIDAS = {"v1", "atlas_v1", "rag_playas", "rag_playas_magdalena"}
 
 class ConfiguracionInvalida(ValueError):
     """La configuración no autoriza este destino o estos límites."""
+
+
+def _kernel_windows():
+    import ctypes
+    from ctypes import wintypes
+
+    kernel = ctypes.WinDLL("kernel32", use_last_error=True)
+    for nombre, argumentos, resultado in (
+        ("OpenProcess", [wintypes.DWORD, wintypes.BOOL, wintypes.DWORD], wintypes.HANDLE),
+        ("CloseHandle", [wintypes.HANDLE], wintypes.BOOL),
+        ("GetExitCodeProcess", [wintypes.HANDLE, ctypes.POINTER(wintypes.DWORD)], wintypes.BOOL),
+        ("CreateJobObjectW", [ctypes.c_void_p, wintypes.LPCWSTR], wintypes.HANDLE),
+        (
+            "SetInformationJobObject",
+            [wintypes.HANDLE, ctypes.c_int, ctypes.c_void_p, wintypes.DWORD],
+            wintypes.BOOL,
+        ),
+        ("AssignProcessToJobObject", [wintypes.HANDLE, wintypes.HANDLE], wintypes.BOOL),
+    ):
+        funcion = getattr(kernel, nombre)
+        funcion.argtypes, funcion.restype = argumentos, resultado
+    return kernel
+
+
+def pid_vivo(pid):
+    if isinstance(pid, bool) or not isinstance(pid, int) or pid <= 0:
+        raise ValueError("PID de worker inválido")
+    if os.name == "nt":
+        import ctypes
+        from ctypes import wintypes
+
+        kernel = _kernel_windows()
+        proceso = kernel.OpenProcess(0x1000, False, pid)  # Consulta limitada.
+        if not proceso:
+            if ctypes.get_last_error() == 87:  # ERROR_INVALID_PARAMETER: PID inexistente.
+                return False
+            raise ctypes.WinError(ctypes.get_last_error())
+        try:
+            codigo = wintypes.DWORD()
+            if not kernel.GetExitCodeProcess(proceso, ctypes.byref(codigo)):
+                raise ctypes.WinError(ctypes.get_last_error())
+            return codigo.value == 259  # STILL_ACTIVE.
+        finally:
+            kernel.CloseHandle(proceso)
+    try:
+        os.kill(pid, 0)
+    except ProcessLookupError:
+        return False
+    except PermissionError:
+        return True
+    return True
+
+
+def comprobar_worker(estado):
+    registro = Path(estado) / "intake_worker.json"
+    if registro.exists():
+        pid = json.loads(registro.read_text(encoding="utf-8"))["pid"]
+        if pid_vivo(pid):
+            raise RuntimeError(
+                f"El worker previo (PID {pid}) sigue vivo; el intake no escribirá. "
+                "Espere a que termine antes de reiniciar."
+            )
+
+
+@contextmanager
+def _job_windows():
+    """El cierre del único handle del padre mata al worker y sus descendientes."""
+    import ctypes
+    from ctypes import wintypes
+
+    class LimitesBasicos(ctypes.Structure):
+        _fields_ = [
+            ("tiempo_proceso", ctypes.c_longlong),
+            ("tiempo_job", ctypes.c_longlong),
+            ("flags", wintypes.DWORD),
+            ("minimo", ctypes.c_size_t),
+            ("maximo", ctypes.c_size_t),
+            ("procesos", wintypes.DWORD),
+            ("afinidad", ctypes.c_size_t),
+            ("prioridad", wintypes.DWORD),
+            ("planificacion", wintypes.DWORD),
+        ]
+
+    class LimitesExtendidos(ctypes.Structure):
+        _fields_ = [
+            ("basicos", LimitesBasicos),
+            ("contadores_io", ctypes.c_ulonglong * 6),
+            ("memoria_proceso", ctypes.c_size_t),
+            ("memoria_job", ctypes.c_size_t),
+            ("pico_proceso", ctypes.c_size_t),
+            ("pico_job", ctypes.c_size_t),
+        ]
+
+    kernel = _kernel_windows()
+    job = kernel.CreateJobObjectW(None, None)
+    if not job:
+        raise ctypes.WinError(ctypes.get_last_error())
+    try:
+        limites = LimitesExtendidos()
+        limites.basicos.flags = 0x2000  # JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE.
+        if not kernel.SetInformationJobObject(
+            job, 9, ctypes.byref(limites), ctypes.sizeof(limites)
+        ):
+            raise ctypes.WinError(ctypes.get_last_error())
+
+        def asignar(pid):
+            proceso = kernel.OpenProcess(0x0101, False, pid)  # SET_QUOTA | TERMINATE.
+            if not proceso:
+                raise ctypes.WinError(ctypes.get_last_error())
+            try:
+                if not kernel.AssignProcessToJobObject(job, proceso):
+                    raise ctypes.WinError(ctypes.get_last_error())
+            finally:
+                kernel.CloseHandle(proceso)
+
+        yield asignar
+    finally:
+        kernel.CloseHandle(job)
+
+
+@contextmanager
+def worker_vinculado(comando, estado, **opciones):
+    """Arranca sin permiso de escribir; registra y vincula antes de liberarlo."""
+    from contextlib import ExitStack
+
+    with ExitStack() as pila:
+        asignar = None
+        if os.name == "nt":
+            asignar = pila.enter_context(_job_windows())
+            opciones["creationflags"] = subprocess.CREATE_NO_WINDOW
+        elif sys.platform.startswith("linux"):
+            import ctypes
+
+            libc = ctypes.CDLL(None, use_errno=True)
+            padre = os.getpid()
+
+            def al_morir_padre():
+                if libc.prctl(1, signal.SIGKILL, 0, 0, 0) != 0:  # PR_SET_PDEATHSIG.
+                    os._exit(1)
+                # Cierra la carrera entre fork y prctl si el padre ya murió.
+                if os.getppid() != padre:
+                    os.kill(os.getpid(), signal.SIGKILL)
+
+            opciones["preexec_fn"] = al_morir_padre
+        registro = Path(estado) / "intake_worker.json"
+        proceso = subprocess.Popen(
+            comando,
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            **opciones,
+        )
+        try:
+            if asignar:
+                asignar(proceso.pid)
+            atomic_bytes(registro, canonical({"pid": proceso.pid}))
+            yield proceso
+        finally:
+            # También en timeout, Ctrl+C o error al registrar/asignar: esperar su
+            # muerte antes de quitar el PID y soltar los bloqueos del intake.
+            if proceso.poll() is None:
+                proceso.kill()
+            proceso.communicate()
+            registro.unlink(missing_ok=True)
 
 
 def loopback(host):
@@ -77,6 +247,10 @@ def validar_destino(coleccion, host, destinos, *, ficticios=False, port=8000):
         r"[a-zA-Z0-9_][a-zA-Z0-9_-]{1,490}", coleccion
     ):
         raise ConfiguracionInvalida("Nombre de colección inválido")
+    # El sufijo de preparación está reservado: una colección viva «x__staging»
+    # sería borrada al recrear la preparación de «x».
+    if "__staging" in coleccion:
+        raise ConfiguracionInvalida("Destino protegido: el sufijo __staging está reservado")
     for nombre in (coleccion, coleccion + "__staging"):
         if nombre in PROTEGIDAS | set(destinos["colecciones_protegidas"]) or not nombre.startswith(
             tuple(destinos["prefijos_permitidos"])

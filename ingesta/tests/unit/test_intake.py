@@ -4,9 +4,12 @@ from __future__ import annotations
 
 import csv
 import json
+import os
+import signal
 import socket
 import subprocess
 import sys
+import time
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -533,16 +536,16 @@ def test_timeout_no_detiene_el_siguiente(sistema, monkeypatch):
     args, _, _ = sistema
     crear_pdf(args.inbox / "a.pdf")
     crear_pdf(args.inbox / "b.pdf", NORMA)
-    original = subprocess.run
+    original = subprocess.Popen.communicate
     intentos = []
 
-    def fallar_una_vez(*a, **k):
-        if not intentos:
+    def fallar_una_vez(self, *a, **k):
+        if k.get("timeout") and not intentos:
             intentos.append(1)
-            raise subprocess.TimeoutExpired(a[0], 1)
-        return original(*a, **k)
+            raise subprocess.TimeoutExpired(self.args, 1)
+        return original(self, *a, **k)
 
-    monkeypatch.setattr(subprocess, "run", fallar_una_vez)
+    monkeypatch.setattr(subprocess.Popen, "communicate", fallar_una_vez)
     assert ejecutar(sistema) == 2
     assert sorted(f["estado"] for f in fichas(sistema)) == ["error_documento", "publicado"]
     assert any("Tiempo límite" in m for f in fichas(sistema) for m in f["motivos"])
@@ -834,3 +837,198 @@ def test_clasificacion_por_encabezado_propio_de_la_norma():
     assert clasificar({"original": norma, "raw_pages": [norma]})["categoria"] == "normativa"
     fragmento = "Artículo 29. Las personas que pretendan realizar labores de extracción.\n"
     assert clasificar({"original": fragmento, "raw_pages": [fragmento]})["confianza"] == 0.0
+
+
+@pytest.mark.parametrize("reproceso", ["desde_etapa", "huella"])
+@pytest.mark.parametrize("fallo", ["analisis", "embeddings", "preparacion"])
+def test_reproceso_fallido_conserva_publicacion(sistema, monkeypatch, reproceso, fallo):
+    args, cliente, _ = sistema
+    pdf = crear_pdf(args.inbox / "publicado.pdf")
+    assert ejecutar(sistema) == 0
+    anterior = fichas(sistema)[0]
+    viva = cliente.get_collection(args.collection)
+    antes = viva.get(include=["documents", "metadatas", "embeddings"])
+    if reproceso == "desde_etapa":
+        args.from_stage = "silver"
+    else:
+        pdf.with_name(pdf.name + ".meta.json").write_text(
+            '{"categoria":"jurisprudencia"}', encoding="utf-8"
+        )
+
+    def fallar(*a, **k):
+        raise RuntimeError("Fallo simulado al preparar la candidata")
+
+    original = Intake._verificar
+
+    def canario(self, publicador, doc_id, chunks, vectores=None):
+        if publicador.collection_name.endswith("__staging") and vectores is not None:
+            fallar()
+        return original(self, publicador, doc_id, chunks, vectores)
+
+    with monkeypatch.context() as contexto:
+        if fallo == "analisis":
+            contexto.setattr(Intake, "_analizar", fallar)
+        elif fallo == "embeddings":
+            contexto.setattr(FakeBatchEmbeddings, "embed", fallar)
+        else:
+            contexto.setattr(Intake, "_verificar", canario)
+        assert ejecutar(sistema) == 2
+    despues = viva.get(include=["documents", "metadatas", "embeddings"])
+    assert despues["ids"] == antes["ids"]
+    assert despues["documents"] == antes["documents"]
+    assert despues["metadatas"] == antes["metadatas"]
+    assert (despues["embeddings"] == antes["embeddings"]).all()
+    ficha = fichas(sistema)[0]
+    assert ficha["publicacion_vigente"]
+    assert not ficha["publicacion_pendiente"]
+    assert ficha["chunks"] == anterior["chunks"]
+    assert ficha["embeddings"] == anterior["embeddings"]
+    assert ficha["rutas"]["raw"] == anterior["rutas"]["raw"]
+    assert ejecutar(sistema) == 0
+    assert fichas(sistema)[0]["estado"] == "publicado"
+
+
+def test_worker_previo_vivo_impide_escribir(sistema, capsys):
+    from ingest.offline.intake import ejecutar as ejecutar_intake
+
+    args, _, _ = sistema
+    crear_pdf(args.inbox / "pendiente.pdf")
+    args.state.mkdir()
+    (args.state / "intake_worker.json").write_text(
+        json.dumps({"pid": os.getpid()}), encoding="utf-8"
+    )
+    antes = instantanea(args.inbox.parent)
+    assert ejecutar_intake(args) != 0
+    assert instantanea(args.inbox.parent) == antes
+    assert "worker previo" in capsys.readouterr().err
+    assert not args.layers_root.exists()
+    assert not args.cache.exists()
+
+
+@pytest.mark.skipif(
+    os.name != "nt" and not sys.platform.startswith("linux"),
+    reason="La vinculación al padre se exige en Windows y Linux",
+)
+def test_worker_muere_con_el_padre(tmp_path):
+    from ingest.offline.intake_safety import pid_vivo
+
+    raiz = Path(__file__).resolve().parents[2]
+    listo = tmp_path / "listo"
+    trabajador = (
+        "import pathlib,sys,time; "
+        "permiso=sys.stdin.buffer.readline(); "
+        "assert permiso == b'analizar\\n'; "
+        "pathlib.Path(sys.argv[1]).write_text('listo'); time.sleep(60)"
+    )
+    lanzador = (
+        "import sys; from ingest.offline.intake_safety import worker_vinculado; "
+        "from ingest.offline.storage import writer_lock;\n"
+        "with writer_lock(sys.argv[1]):\n"
+        " with worker_vinculado([sys.executable, '-c', sys.argv[2], sys.argv[3]], "
+        "sys.argv[1]) as proceso:\n"
+        "  proceso.communicate(input=b'analizar\\n', timeout=60)\n"
+    )
+    pid = None
+    with subprocess.Popen(
+        [sys.executable, "-c", lanzador, str(tmp_path), trabajador, str(listo)],
+        cwd=raiz,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    ) as padre:
+        try:
+            limite = time.monotonic() + 15
+            while not listo.exists() and padre.poll() is None and time.monotonic() < limite:
+                time.sleep(0.05)
+            assert listo.exists(), "El worker no llegó a iniciar su trabajo"
+            pid = json.loads((tmp_path / "intake_worker.json").read_text(encoding="utf-8"))["pid"]
+            padre.kill()
+            padre.wait(timeout=5)
+            limite = time.monotonic() + 5
+            while pid_vivo(pid) and time.monotonic() < limite:
+                # Un huérfano zombi en Linux ya no ejecuta ni escribe; el init
+                # del contenedor puede tardar en recogerlo.
+                estado = Path(f"/proc/{pid}/stat")
+                if sys.platform.startswith("linux") and estado.exists():
+                    if estado.read_text().rsplit(")", 1)[1].split()[0] == "Z":
+                        break
+                time.sleep(0.05)
+            else:
+                assert not pid_vivo(pid), "El worker sobrevivió a la muerte del padre"
+        finally:
+            if padre.poll() is None:
+                padre.kill()
+                padre.wait(timeout=5)
+            if pid and pid_vivo(pid):
+                os.kill(pid, signal.SIGTERM)
+
+
+def test_lateral_invalido_conserva_marcas_y_revision_retira(sistema):
+    args, cliente, _ = sistema
+    pdf = crear_pdf(args.inbox / "publicado.pdf")
+    assert ejecutar(sistema) == 0
+    anterior = fichas(sistema)[0]
+    viva = cliente.get_collection(args.collection)
+    ids = viva.get(include=[])["ids"]
+    lateral = pdf.with_name(pdf.name + ".meta.json")
+    lateral.write_text('{"categoria":', encoding="utf-8")
+    assert ejecutar(sistema) == 2
+    fallida = fichas(sistema)[0]
+    assert fallida["estado"] == "error_documento"
+    assert viva.get(include=[])["ids"] == ids
+    # Tratar una sentencia como norma deja su identidad normativa en revisión.
+    lateral.write_text('{"categoria":"normativa"}', encoding="utf-8")
+    assert ejecutar(sistema) == 0
+    ficha = fichas(sistema)[0]
+    assert ficha["decision"] == "revision_humana"
+    assert viva.count() == 0
+    assert cliente.get_collection(args.collection + "__staging").count() == 0
+    assert fallida["publicacion_vigente"]
+    assert fallida["chunks"] == anterior["chunks"]
+    assert fallida["rutas"]["raw"] == anterior["rutas"]["raw"]
+    assert not ficha["publicacion_vigente"]
+    assert not ficha["publicacion_pendiente"]
+    assert ejecutar(sistema) == 0
+    assert viva.count() == 0
+
+
+@pytest.mark.parametrize("unico", [False, True])
+def test_canario_con_textos_identicos(sistema, monkeypatch, unico):
+    from chromadb.api.models.Collection import Collection
+
+    args, cliente, _ = sistema
+    crear_pdf(args.inbox / "repetidos.pdf")
+    analizar = Intake._analizar
+
+    def duplicar(self, *a):
+        resultado = analizar(self, *a)
+        primero = resultado["chunks"][0]
+        resultado["chunks"] = [primero, {**primero, "id": primero["id"] + "_otro"}]
+        if unico:
+            resultado["chunks"].append(
+                {**primero, "id": primero["id"] + "_unico", "document": "Texto único del canario"}
+            )
+        return resultado
+
+    consultar = Collection.query
+
+    def desempatar(self, *a, **k):
+        resultado = consultar(self, *a, **k)
+        datos = self.get(where=k["where"], include=["documents", "embeddings"])
+        if unico:
+            indice = next(
+                i for i, texto in enumerate(datos["documents"]) if texto.startswith("Texto único")
+            )
+            assert k["query_embeddings"][0] == pytest.approx(datos["embeddings"][indice])
+        else:
+            # Chroma puede elegir cualquiera de los dos vectores idénticos.
+            otro = next(i for i, id_ in enumerate(datos["ids"]) if id_.endswith("_otro"))
+            resultado["ids"] = [[datos["ids"][otro]]]
+            resultado["documents"] = [[datos["documents"][otro]]]
+            resultado["distances"] = [[0.0]]
+        return resultado
+
+    monkeypatch.setattr(Intake, "_analizar", duplicar)
+    monkeypatch.setattr(Collection, "query", desempatar)
+    assert ejecutar(sistema) == 0
+    assert fichas(sistema)[0]["estado"] == "publicado"
+    assert cliente.get_collection(args.collection).count() == (3 if unico else 2)

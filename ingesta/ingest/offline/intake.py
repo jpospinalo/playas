@@ -13,6 +13,7 @@ import subprocess
 import sys
 import tempfile
 import time
+from collections import Counter
 from contextlib import ExitStack, contextmanager
 from pathlib import Path
 
@@ -26,10 +27,12 @@ from .extract import sha256_file
 from .intake_safety import (
     ConfiguracionInvalida,
     cargar_destinos,
+    comprobar_worker,
     copiar_raw,
     nombre_seguro,
     validar_destino,
     validar_raw,
+    worker_vinculado,
 )
 from .layers import canonical, signature
 from .pipeline import configuration
@@ -293,12 +296,15 @@ class Intake:
             ruta = temporal / "solicitud.json"
             atomic_bytes(ruta, canonical(solicitud))
             try:
-                proceso = subprocess.run(
+                with worker_vinculado(
                     [sys.executable, "-m", "ingest.offline.intake_worker", str(ruta)],
+                    self.state,
                     cwd=Path(__file__).resolve().parents[2],
-                    capture_output=True,
-                    timeout=self.destinos["tiempo_maximo_documento_segundos"],
-                )
+                ) as proceso:
+                    proceso.communicate(
+                        input=b"analizar\n",
+                        timeout=self.destinos["tiempo_maximo_documento_segundos"],
+                    )
             except subprocess.TimeoutExpired as exc:
                 raise RuntimeError("Tiempo límite por documento agotado") from exc
             if proceso.returncode or not Path(solicitud["resultado"]).exists():
@@ -315,10 +321,25 @@ class Intake:
         if len(ids) != len(esperados) or set(ids) != set(esperados):
             raise RuntimeError("No coinciden conteo e ids esperados del documento")
         if vectores is not None:
+            frecuencias = Counter(c["document"] for c in chunks)
+            indice = next((i for i, c in enumerate(chunks) if frecuencias[c["document"]] == 1), 0)
+            texto = chunks[indice]["document"]
             canario = coleccion.query(
-                query_embeddings=[vectores[0]], n_results=1, where={"doc_id": doc_id}, include=[]
+                query_embeddings=[vectores[indice]],
+                n_results=1,
+                where={"doc_id": doc_id},
+                include=["documents", "distances"],
             )
-            if not canario["ids"] or canario["ids"][0] != [esperados[0]]:
+            validos = {c["id"] for c in chunks if c["document"] == texto}
+            if (
+                not canario["ids"]
+                or not canario["ids"][0]
+                or canario["ids"][0][0] not in validos
+                or canario.get("documents") != [[texto]]
+                or not canario.get("distances")
+                or not canario["distances"][0]
+                or not math.isclose(canario["distances"][0][0], 0.0, abs_tol=1e-5)
+            ):
                 raise RuntimeError("Consulta canario fallida: el chunk propio no aparece primero")
 
     def _revertir(self, doc_id):
@@ -334,6 +355,7 @@ class Intake:
 
     def _publicar(self, ficha):
         doc_id, chunks = ficha["doc_id"], ficha["chunks"]
+        viva_modificada = False
         ficha["estado"] = "publicando"
         ficha["publicacion_pendiente"] = True
         self._guardar(ficha)  # Sobrevive a interrupciones entre preparación y viva.
@@ -364,6 +386,8 @@ class Intake:
                     anteriores = len(
                         publicador.collection.get(where={"doc_id": doc_id}, include=[])["ids"]
                     )
+                    if publicador is viva:
+                        viva_modificada = True
                     publicador.upsert_document(doc_id, chunks, vectores)
                     self._verificar(publicador, doc_id, chunks, vectores)
                     if publicador.collection.count() != conteo - anteriores + len(chunks):
@@ -374,6 +398,7 @@ class Intake:
                 preparacion.delete_document(doc_id)
                 self._verificar(preparacion, doc_id, [])
             ficha["estado"] = "publicado"
+            ficha["publicacion_vigente"] = True
             ficha["publicacion_pendiente"] = False
         except ConfiguracionInvalida:
             raise
@@ -381,8 +406,16 @@ class Intake:
             ficha["estado"] = "error_publicacion"
             ficha["motivos"].append(f"Publicación fallida: {exc}")
             try:
-                with medir_fase(ficha, "reversion", "Borrar por doc_id en viva y preparación"):
-                    self._revertir(doc_id)
+                with medir_fase(ficha, "reversion", "Limpiar la publicación candidata fallida"):
+                    if viva_modificada:
+                        self._revertir(doc_id)
+                        ficha["publicacion_vigente"] = False
+                    else:
+                        # Embeddings y canario de preparación no deben retirar
+                        # la publicación anterior, que todavía sirve consultas.
+                        _, preparacion = self._publicadores()
+                        preparacion.delete_document(doc_id)
+                        self._verificar(preparacion, doc_id, [])
                 ficha["publicacion_pendiente"] = False
             except Exception as reversion:
                 ficha["motivos"].append(str(reversion))
@@ -410,6 +443,15 @@ class Intake:
         }
         try:
             anterior = anteriores.get(doc_id)
+            if anterior:
+                # Se hereda antes de leer el lateral: también puede fallar.
+                ficha["publicacion_vigente"] = anterior.get("publicacion_vigente", False) or (
+                    anterior["estado"] == "publicado"
+                )
+                ficha["publicacion_pendiente"] = anterior.get("publicacion_pendiente", False)
+                ficha["chunks"] = anterior.get("chunks", [])
+                ficha["embeddings"] = anterior.get("embeddings", {})
+                ficha["rutas"]["raw"] = anterior.get("rutas", {}).get("raw")
             if anterior and (
                 anterior.get("accion_pendiente") == "retirar"
                 or (anterior["estado"] == "retirado" and not self.args.from_stage)
@@ -430,6 +472,8 @@ class Intake:
                 anterior
                 and anterior.get("huella_configuracion") == huella
                 and not self.args.from_stage
+                and not anterior.get("publicacion_pendiente")
+                and (anterior["estado"] == "publicado" or not ficha.get("publicacion_vigente"))
             ):
                 if anterior["estado"] in {"publicado", "retirado", "rechazado", "revision_humana"}:
                     if anterior["estado"] == "publicado" and not seco:
@@ -451,17 +495,6 @@ class Intake:
                             "resultado": "sin cambios",
                             "tiempos": {"total": time.monotonic() - inicio},
                         }
-            if (
-                anterior
-                and (
-                    anterior["estado"] in {"publicando", "error_publicacion", "publicado"}
-                    or anterior.get("publicacion_pendiente")
-                )
-                and not seco
-            ):
-                ficha["publicacion_pendiente"] = True
-                self._revertir(doc_id)
-                ficha["publicacion_pendiente"] = False
             if archivo.stat().st_size > self.destinos["tamano_maximo_bytes"]:
                 ficha.update(
                     decision="rechazado", motivos=["PDF desmesurado: supera tamaño máximo"]
@@ -530,6 +563,25 @@ class Intake:
                 ):
                     ficha["rutas"]["raw"] = str(copiar_raw(archivo, self.raw, doc_id, self.inbox))
                 self._publicar(ficha)
+                if ficha["estado"] == "error_publicacion" and ficha.get("publicacion_vigente"):
+                    ficha["chunks"] = anterior.get("chunks", [])
+                    ficha["embeddings"] = anterior.get("embeddings", {})
+                    ficha["rutas"]["raw"] = anterior.get("rutas", {}).get("raw")
+            elif (
+                not seco
+                and anterior
+                and (
+                    ficha.get("publicacion_vigente")
+                    or ficha.get("publicacion_pendiente")
+                    or anterior["estado"] in {"publicando", "error_publicacion"}
+                )
+            ):
+                # Una decisión terminada de revisión/rechazo sí retira lo vivo.
+                ficha["publicacion_pendiente"] = True
+                self._guardar(ficha)
+                self._revertir(doc_id)
+                ficha["publicacion_vigente"] = False
+                ficha["publicacion_pendiente"] = False
         except ConfiguracionInvalida:
             raise
         except Exception as exc:
@@ -588,6 +640,8 @@ class Intake:
     def run(self):
         seco = getattr(self.args, "dry_run", False)
         originales = self.state, self.capas, self.cache
+        # Debe preceder incluso a writer_lock, que crea sus propios archivos.
+        comprobar_worker(self.state)
         try:
             with ExitStack() as pila:
                 self.pila = pila
@@ -606,6 +660,7 @@ class Intake:
                 else:
                     pila.enter_context(input_scope(self.inbox))
                     pila.enter_context(writer_lock(self.state, self.capas, self.cache))
+                    comprobar_worker(self.state)
                 self.state.mkdir(parents=True, exist_ok=True)
                 self.cache.mkdir(parents=True, exist_ok=True)
                 ajustes = self.state / "intake_config.json"
@@ -713,6 +768,7 @@ class Intake:
             ficha["estado"] = "retirado"
             ficha.pop("accion_pendiente", None)
             ficha["publicacion_pendiente"] = False
+            ficha["publicacion_vigente"] = False
         except ConfiguracionInvalida:
             raise
         except Exception as exc:

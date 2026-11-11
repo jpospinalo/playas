@@ -112,6 +112,10 @@ def analizar(solicitud):
 
 
 def main():
+    # No abrir capas, caché ni SQLite hasta que el padre haya vinculado y
+    # registrado el proceso. EOF implica que murió antes de autorizarlo.
+    if sys.stdin.buffer.readline() != b"analizar\n":
+        return
     solicitud = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
     if sys.platform.startswith("linux"):
         import resource

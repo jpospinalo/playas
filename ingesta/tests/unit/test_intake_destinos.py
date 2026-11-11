@@ -1,0 +1,47 @@
+"""Regresiones de la revisión: sufijo de preparación reservado y borrado seguro del arnés E2E."""
+
+from __future__ import annotations
+
+import importlib.util
+from pathlib import Path
+
+import pytest
+
+from ingest.offline.intake_safety import ConfiguracionInvalida, cargar_destinos, validar_destino
+
+E2E = Path(__file__).resolve().parents[2] / "benchmarks" / "intake" / "e2e_local.py"
+
+
+def test_una_coleccion_viva_no_puede_llevar_el_sufijo_de_preparacion():
+    destinos = cargar_destinos()
+    validar_destino("bench_intake_demo", "127.0.0.1", destinos)
+    for nombre in ("bench_intake_demo__staging", "atlas_intake_x__staging_y"):
+        with pytest.raises(ConfiguracionInvalida, match="__staging"):
+            validar_destino(nombre, "127.0.0.1", destinos)
+
+
+@pytest.fixture
+def e2e():
+    spec = importlib.util.spec_from_file_location("e2e_local", E2E)
+    modulo = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(modulo)
+    return modulo
+
+
+def test_trabajo_e2e_no_puede_solaparse_con_rutas_protegidas(e2e, tmp_path):
+    raw = tmp_path / "raw"
+    (raw / "normativa").mkdir(parents=True)
+    for trabajo in (raw, raw / "normativa", tmp_path):
+        with pytest.raises(SystemExit, match="se solapa"):
+            e2e.validar_trabajo(trabajo, [raw])
+
+
+def test_trabajo_e2e_ajeno_y_no_vacio_no_se_borra(e2e, tmp_path):
+    ajeno = tmp_path / "ajeno"
+    ajeno.mkdir()
+    (ajeno / "importante.txt").write_text("no borrar", encoding="utf-8")
+    with pytest.raises(SystemExit, match="ni lo creó este arnés"):
+        e2e.validar_trabajo(ajeno, [tmp_path / "raw"])
+    (ajeno / e2e.MARCADOR).write_text("", encoding="utf-8")
+    e2e.validar_trabajo(ajeno, [tmp_path / "raw"])
+    e2e.validar_trabajo(tmp_path / "nuevo", [tmp_path / "raw"])
