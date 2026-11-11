@@ -218,6 +218,17 @@ Comprobado el 2026-10-28 con ChromaDB y Ollama locales:
 
 **Lectura:** depurar el corpus no cambió de forma medible la calidad. La diferencia emparejada por caso, ahora menos antes, incluye el cero en las cuatro métricas: fidelidad +0,01 (IC 95 % −0,03 a +0,06), evidencia recuperada +0,06 (−0,01 a +0,13), Factual F1 −0,04 (−0,11 a +0,04) y Answer Accuracy +0,01 (−0,05 a +0,07). Entre una corrida y otra, 17 de 65 casos cambian de diagnóstico aunque el total casi no se mueve, así que la nota de un caso aislado no es concluyente. Las notas son del juez automático, no una validación jurídica.
 
+### Estado al 2026-11-11: Gold A corregido, mejoras de recuperación y QA (sin juez)
+
+Medido en local, sin juez RAGAS. **No reemplaza la línea base**: falta repetir generación y juez con gpt-5-nano cuando haya key.
+
+- **Corpus:** se fusionó `corpus` con el Gold A corregido (release `cc7bf44b54a9`, colección `rag_playas_gold_a_cc7bf44b54a9`, 5.862 fragmentos, coseno). La colección se crea ahora con `hnsw:space=cosine` explícito, lo que cierra el pendiente de la métrica de abajo.
+- **Recuperación (código de esta rama):** documento esperado en el top-4 de la búsqueda 0,586 → **0,741**; documento esperado en los fragmentos que llegan al modelo 0,53 → **0,75–0,79**; la normativa entra en el contexto en 8 de 18 casos con la pregunta original (antes 0 de 18), y no llegan normas locales de otra ciudad.
+- **Efecto del Gold corregido** (mismo código, gemma4:e4b local, k=4; solo cambia la colección): búsqueda idéntica (0,741 en ambos), mismo documento hacia el modelo (0,754), referencias sin respaldo 1 caso → 0 y «evidencia insuficiente» 15 → 13. Las diferencias en las respuestas están dentro del ruido del modelo local: **no hay mejora medible sin juez**.
+- **k=6 frente a k=4** (gemma4, Gold corregido): documento hacia el modelo 0,754 → 0,786 y artículos esperados 0,147 → 0,206. Con Claude como generador y juez, k=6 dio 16 respuestas correctas frente a 11. Pendiente de confirmar con gpt-5-nano antes de cambiar el valor por defecto.
+- **QA de la API:** carga sin LLM (~6.000 peticiones, hasta 200 concurrentes) sin errores 5xx; validación, inyección de prompt, entradas hostiles y streaming correctos. Se corrigió un agotamiento del pool de conexiones: `get_current_user` retenía una conexión durante toda la consulta y, con más de 15 consultas simultáneas, las siguientes fallaban con 500 a los 30 s. En despliegue conviene activar `RAG_BACKPRESSURE_MODE=enforce` para responder 503 de inmediato en lugar de esperar al tiempo máximo (280 s).
+- **Sigue débil:** multas y sanciones responden «evidencia insuficiente» (falta de cobertura en el corpus).
+
 ### Qué hay que trabajar
 
 1. **La normativa no llega al modelo.** Con la pregunta original, REMAC 5 (14 casos) y Decreto 2324 de 1984 (4 casos) quedan en 0 de 18 dentro de los 4 fragmentos. Ambos están en el corpus (573 y 239 fragmentos), así que el problema es de recuperación, no de datos. La jurisprudencia llega en 34 de 40.
@@ -236,7 +247,7 @@ Comprobado el 2026-10-28 con ChromaDB y Ollama locales:
 - **Control de ceros (§ 10):** Factual Correctness se repitió dos veces en los 3 casos con cero. Caso 003: 0 → 0,57 → 0, respuesta incompleta e inestable. Caso 062: 0 → 0 → 0, fallo real, porque no entrega el radicado aunque el documento llega. Caso 070: 0 → 0,60 → 0,46, cero falso del juez.
 - **Costo estimado:** generación 0,22 USD, juez 0,47 USD y control 0,01 USD, ≈0,70 USD en total.
 - **No incluido:** el exportador de snapshots de `origin/corpus` (`c642d09`) no cambia Gold y no está en `main`. `feat/ingesta-medallion-escalabilidad` y `security` tampoco entran, y el frontend no interviene en esta evaluación.
-- **Por verificar antes de reindexar AWS:** `build_or_load_vectorstore` crea la colección sin indicar la métrica, y ChromaDB usa `l2` por defecto, mientras que la colección anterior y esta corrida usan coseno. No se midió su efecto.
+- **Resuelto en `corpus` (ver estado al 2026-11-11):** `build_or_load_vectorstore` creaba la colección sin indicar la métrica, y ChromaDB usa `l2` por defecto, mientras que la colección anterior y esta corrida usan coseno. No se midió su efecto.
 
 ### Prueba en AWS con Claude (no reemplaza la línea base)
 

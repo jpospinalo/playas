@@ -36,5 +36,7 @@ La calidad de ATLAS se mide con [RAGAS](https://docs.ragas.io/) contra el ground
 
 **Línea base vigente (corpus congelado, 2026-11-01, infraestructura local):** 52 de 65 respuestas correctas según el juez, fidelidad 0,88, evidencia recuperada 0,85, Factual F1 0,66 y Answer Accuracy 0,73. Frente a la corrida anterior no hay cambios medibles. El punto débil sigue siendo la normativa: REMAC 5 y Decreto 2324 no llegan a los 4 fragmentos en ninguno de 18 casos con la pregunta original. ATLAS en AWS todavía sirve el corpus anterior. El corpus congelado ya está en AWS en una colección aparte, y falta repetir ahí la evaluación con gpt-5-nano ([prueba con Claude y pendientes](rag/evaluation/README.md#prueba-en-aws-con-claude-no-reemplaza-la-línea-base)).
 
+**Estado al 2026-11-11 (local, sin juez):** con el Gold A corregido y las mejoras de recuperación de esta rama, el documento esperado llega al modelo en el 75–79 % de los casos (antes 53 %) y la normativa entra en el contexto en 8 de 18 casos (antes 0). El Gold corregido no cambia la búsqueda de forma medible. La QA de carga corrigió un agotamiento del pool de conexiones con más de 15 consultas simultáneas. Falta el juez con gpt-5-nano ([detalle](rag/evaluation/README.md#estado-al-2026-11-11-gold-a-corregido-mejoras-de-recuperación-y-qa-sin-juez)).
+
 ![Indicadores de la línea base: corpus anterior frente a corpus congelado](rag/docs/img/linea-base/01-indicadores.png)
 
