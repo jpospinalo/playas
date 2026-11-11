@@ -127,6 +127,28 @@ async def test_current_user_refreshes_profile_from_database() -> None:
 
 
 @pytest.mark.anyio
+async def test_current_user_releases_the_db_connection_before_the_endpoint_runs() -> None:
+    """La sesión de get_current_user vive hasta el final de la solicitud. Si la
+    lectura del usuario deja la transacción abierta, la conexión del pool queda
+    tomada durante toda la consulta (generación del LLM incluida, hasta 280 s):
+    con 16+ consultas simultáneas el pool (5 + 10) se agota y las siguientes
+    fallan con 500 a los 30 s. Tras leer el perfil no debe quedar transacción
+    abierta, y el perfil devuelto debe seguir completo."""
+    session_factory = await _fresh_session_factory()
+    async with session_factory() as session:
+        session.add(User(id="u-pool", email="p@example.com", password_hash="x", role="user"))
+        await session.commit()
+
+    async with session_factory() as session:
+        result = await get_current_user(
+            {"sub": "u-pool", "email": "p@example.com", "role": "user"}, session
+        )
+        assert not session.in_transaction()
+        assert result["email"] == "p@example.com"
+        assert result["role"] == "user"
+
+
+@pytest.mark.anyio
 async def test_current_user_raises_401_when_no_token() -> None:
     session_factory = await _fresh_session_factory()
     async with session_factory() as session:

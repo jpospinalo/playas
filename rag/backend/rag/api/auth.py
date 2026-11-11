@@ -102,17 +102,23 @@ async def get_current_user(
             detail="Se requiere autenticación para este endpoint.",
         )
     db_user = await session.get(User, user["sub"])
-    if db_user is None:
+    profile = (
+        None
+        if db_user is None
+        else {"email": db_user.email, "display_name": db_user.display_name, "role": db_user.role}
+    )
+    # La sesión vive hasta el final de la solicitud; sin esto la transacción de
+    # lectura retiene una conexión del pool durante toda la consulta (LLM
+    # incluido) y con 16+ consultas simultáneas el pool se agota (500 a los
+    # 30 s). Cerrar devuelve la conexión; la sesión sigue siendo utilizable y
+    # el endpoint que la comparte toma otra conexión solo cuando la necesite.
+    await session.close()
+    if profile is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Usuario no encontrado.",
         )
-    return {
-        **user,
-        "email": db_user.email,
-        "display_name": db_user.display_name,
-        "role": db_user.role,
-    }
+    return {**user, **profile}
 
 
 async def require_admin(
