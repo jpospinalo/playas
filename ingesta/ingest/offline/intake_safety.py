@@ -10,6 +10,7 @@ import tempfile
 from collections import Counter
 from pathlib import Path
 
+from ..legal_metadata import identidad_normativa
 from .extract import sha256_file
 from .layers import key
 
@@ -176,13 +177,12 @@ def clasificar(documento, manual=None):
             encabezado,
         )
     )
-    norma = bool(
-        re.search(
-            r"(?m)^\s*(?:ley|decreto|resolucion|acuerdo|ordenanza)\s+(?:numero\s+|no\.?\s*)?\d+",
-            encabezado,
-        )
-    )
-    norma = norma and bool(re.search(r"\b(?:decreta|resuelve|acuerda|articulo)\b", encabezado))
+    # Normativa solo por el encabezado propio de la norma (línea propia, SUIN o
+    # Gestor Normativo). Una línea de cuerpo que empieza por «Ley 472 de 1998»
+    # hacía dudosa una sentencia (prueba E2E). Sobre los 53 documentos: 39 bien,
+    # 14 dudosas a revisión y 0 errores (antes 36, 17 y 0).
+    texto = documento.get("original") or "\n\f\n".join(documento["raw_pages"])
+    norma = identidad_normativa(texto) is not None
     clara = judicial != norma
     return {
         "categoria": "normativa" if norma and not judicial else "jurisprudencia",

@@ -236,6 +236,18 @@ def test_firma_sin_extension_duplicado_y_renombrado(sistema, monkeypatch, capsys
     assert "sin cambios" in capsys.readouterr().out
 
 
+def test_firma_pdf_tras_bytes_iniciales_se_acepta_y_lo_demas_se_rechaza(sistema):
+    # Regresión E2E: dos PDF reales del corpus empiezan con «\t\n» antes de %PDF-.
+    args, _, _ = sistema
+    pdf = crear_pdf(args.inbox / "con_prefijo.pdf")
+    pdf.write_bytes(b"\t\n" + pdf.read_bytes())
+    (args.inbox / "falso.pdf").write_bytes(b"MZ" + b"\0" * 2000 + b"%%EOF")
+    assert ejecutar(sistema) == 0
+    por_estado = {f["estado"]: f for f in fichas(sistema)}
+    assert "publicado" in por_estado
+    assert por_estado["rechazado"]["motivos"] == ["Firma inválida: no es un PDF (%PDF-)"]
+
+
 def test_cuasi_duplicado_no_se_fusiona(sistema):
     args, cliente, _ = sistema
     crear_pdf(args.inbox / "primero.pdf")
@@ -802,3 +814,23 @@ def test_lectura_fallida_no_detiene_los_demas(sistema, monkeypatch):
     assert any(
         e["estado"] == "error_documento" and e["rutas"]["inbox"].endswith("a.pdf") for e in eventos
     )
+
+
+def test_clasificacion_por_encabezado_propio_de_la_norma():
+    # Regresión E2E: una sentencia con una línea de cuerpo «Ley 472 de 1998 contra
+    # la DIMAR» quedaba como categoría dudosa.
+    sentencia = (
+        "TRIBUNAL ADMINISTRATIVO DEL MAGDALENA\nMagistrada sustanciadora: X\n"
+        "establecido en el artículo 144 del CPACA y en la\n"
+        "Ley 472 de 1998 contra la DIMAR, en la que solicitaron\n"
+    )
+    resultado = clasificar({"original": sentencia, "raw_pages": [sentencia]})
+    assert resultado == {
+        "categoria": "jurisprudencia",
+        "confianza": 0.95,
+        "origen": "reglas_encabezado",
+    }
+    norma = "DECRETO NÚMERO 1766 DE 2013\n(16 de agosto de 2013)\nDECRETA:\nArtículo 1. Objeto.\n"
+    assert clasificar({"original": norma, "raw_pages": [norma]})["categoria"] == "normativa"
+    fragmento = "Artículo 29. Las personas que pretendan realizar labores de extracción.\n"
+    assert clasificar({"original": fragmento, "raw_pages": [fragmento]})["confianza"] == 0.0

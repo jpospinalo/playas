@@ -355,6 +355,9 @@ class Intake:
                     "dimension": 768,
                 }
             viva, preparacion = self._publicadores()
+            # Preparación limpia por documento: un HNSW con muchos borrados dejó de
+            # encontrar el vector propio del canario (prueba E2E).
+            preparacion.recreate_staging()
             for publicador, fase in ((preparacion, "preparacion"), (viva, "publicacion")):
                 with medir_fase(ficha, fase, "Upsert por doc_id, conteos, ids y consulta canario"):
                     conteo = publicador.collection.count()
@@ -465,10 +468,12 @@ class Intake:
                 )
             else:
                 with archivo.open("rb") as entrada:
-                    firma = entrada.read(5)
+                    # Como los lectores PDF, se admite la firma en el primer KiB: dos
+                    # PDF reales del corpus empiezan con «\t\n» antes de %PDF-.
+                    firma = entrada.read(1024)
                     entrada.seek(max(0, archivo.stat().st_size - 2048))
                     final = entrada.read()
-                if firma != b"%PDF-":
+                if b"%PDF-" not in firma:
                     ficha.update(
                         decision="rechazado", motivos=["Firma inválida: no es un PDF (%PDF-)"]
                     )

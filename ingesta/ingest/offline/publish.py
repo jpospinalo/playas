@@ -71,6 +71,24 @@ class ChromaPublisher:
                 )
             elif previous_hash != config_hash:
                 raise ValueError("Colección de otra versión/modelo; crea una colección nueva")
+        self._client = client
+
+    def recreate_staging(self):
+        """Recrea vacía una colección de preparación (índice HNSW sin borrados).
+
+        Tras miles de inserciones y borrados, el HNSW de Chroma dejó de encontrar
+        el propio vector de un chunk recién insertado (medido en la prueba E2E):
+        la preparación debe partir limpia en cada documento. Solo se permite con
+        colecciones ``__staging``; la colección viva nunca se recrea.
+        """
+        if not self.collection_name.endswith("__staging"):
+            raise ValueError("Solo se recrea una colección de preparación")
+        with self.publish_phase():
+            metadata = dict(self.collection.metadata)
+            self._client.delete_collection(self.collection_name)
+            self.collection = self._client.create_collection(
+                self.collection_name, metadata=metadata
+            )
 
     @contextmanager
     def publish_phase(self):
