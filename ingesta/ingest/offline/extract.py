@@ -13,9 +13,92 @@ import unicodedata
 from collections import Counter
 from pathlib import Path
 
-EXTRACTOR_VERSION = "pymupdf-tesseract-spa-3"
+EXTRACTOR_VERSION = "pymupdf-tesseract-spa-4"
 NORMALIZER_VERSION = "nfc-mapped-1"
 MIN_PAGE_CHARS = 80
+SUPERINDICES = str.maketrans("0123456789", "⁰¹²³⁴⁵⁶⁷⁸⁹")
+
+
+class _PalabrasPagina:
+    """Vista de palabras para el ordenador de PyMuPDF, sin cambiar geometría.
+
+    get_text('text', sort=True) usa parent y extractWORDS de su TextPage.
+    Cada sustitución conserva la longitud Unicode de la palabra: también se
+    conservan los espacios que el ordenador calcula a partir de esa longitud.
+    """
+
+    def __init__(self, page, words):
+        self.parent = page
+        self.words = words
+
+    def extractWORDS(self, delimiters=None):
+        return self.words[:]
+
+
+def _palabras_superindices(page):
+    """Marca solo dígitos de spans numéricos con flag de superíndice.
+
+    rawdict sirve únicamente para localizar caracteres dentro de cada palabra,
+    nunca para reconstruir el texto ni sus blancos. Se emplean los mismos flags
+    que la extracción de texto, sin imágenes. Ante una correspondencia ambigua
+    se conserva la palabra original. No se infieren notas por su valor textual.
+    """
+    import fitz
+
+    raw = page.get_text("rawdict", flags=fitz.TEXTFLAGS_TEXT)
+    lines = {}
+    found = False
+    for block in raw["blocks"]:
+        for number, line in enumerate(block.get("lines", [])):
+            chars = []
+            for span in line["spans"]:
+                value = "".join(c["c"] for c in span["chars"])
+                numeric = bool(span["flags"] & 1 and re.fullmatch(r"[0-9]+", value.strip()))
+                found |= numeric
+                chars.extend((c, numeric) for c in span["chars"])
+            lines[block["number"], number] = chars
+    if not found:
+        return None
+    words = page.get_text("words", flags=fitz.TEXTFLAGS_TEXT)
+    result = []
+    for word in words:
+        # Las cajas proceden del mismo TextPage. El centro evita incorporar
+        # caracteres de una palabra contigua que solo toca el borde.
+        chars = [
+            (c["c"], numeric)
+            for c, numeric in lines.get((word[5], word[6]), [])
+            if word[0] <= (c["bbox"][0] + c["bbox"][2]) / 2 <= word[2]
+            and word[1] <= (c["bbox"][1] + c["bbox"][3]) / 2 <= word[3]
+        ]
+        value = word[4]
+        if "".join(c for c, _ in chars) == value:
+            value = "".join(c.translate(SUPERINDICES) if numeric else c for c, numeric in chars)
+        result.append((*word[:4], value, *word[5:]))
+    return words, result
+
+
+def digital_text(page, text):
+    """Sustituye llamadas numéricas sin alterar ningún otro carácter.
+
+    Sin candidatos devuelve directamente el texto previo. Con candidatos se
+    verifica la identidad del ordenador sin sustituciones antes de usarlo; una
+    versión incompatible de PyMuPDF conserva el texto previo. Además se exige
+    que todas las diferencias sean sustituciones dígito→superíndice, 1:1.
+    """
+    words = _palabras_superindices(page)
+    if words is None:
+        return text
+    original, marked = words
+    baseline = page.get_text("text", sort=True, textpage=_PalabrasPagina(page, original))
+    if baseline != text:
+        return text
+    result = page.get_text("text", sort=True, textpage=_PalabrasPagina(page, marked))
+    if len(result) != len(text) or any(
+        a != b and (a not in "0123456789" or a.translate(SUPERINDICES) != b)
+        for a, b in zip(text, result, strict=True)
+    ):
+        return text
+    return result
 
 
 def atomic_text(path, content):
@@ -144,6 +227,8 @@ def read_document(path: Path, cache: Path):
                         failures.append(index + 1)
                     finally:
                         ocr_seconds += time.monotonic() - ocr_started
+                else:
+                    text = digital_text(page, text)
                 pages.append(unicodedata.normalize("NFC", text))
     else:
         pages = [

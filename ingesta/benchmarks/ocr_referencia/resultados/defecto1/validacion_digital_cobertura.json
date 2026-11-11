@@ -1,0 +1,16 @@
+{
+  "antes": {
+    "esperadas": 600,
+    "presentes": 600,
+    "faltantes": 0,
+    "cobertura": 1.0,
+    "paginas_faltantes": []
+  },
+  "despues": {
+    "esperadas": 600,
+    "presentes": 600,
+    "faltantes": 0,
+    "cobertura": 1.0,
+    "paginas_faltantes": []
+  }
+}

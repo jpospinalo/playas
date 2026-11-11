@@ -1000,13 +1000,15 @@ def fila_fase5(slug="a", **cambios):
         "ref_p": 0,
         "crit_ok": 0,
         "crit_ref": 0,
+        "num_ok": 0,
+        "num_ref": 0,
         **cambios,
     }
 
 
 def test_fase5_denominadores_nulos_no_inventan_tasas():
     r = f5.agregar([fila_fase5(ed_c=3, ed_p=1)], repeticiones=10)
-    for nombre in ("cer", "wer", "recall_critico"):
+    for nombre in ("cer", "wer", "recall_critico", "recall_numero_anio"):
         assert r[nombre] is None
         assert r[f"ic95_{nombre}_documento"] is None
         assert r["bootstrap_validos"][nombre] == 0
@@ -1020,11 +1022,24 @@ def test_fase5_bootstrap_omite_replicas_indefinidas():
         any(d == "b" for d in [rng.choice(["a", "b"]) for _ in range(2)]) for _ in range(100)
     )
     assert 0 < validas < 100
-    assert r["bootstrap_validos"] == {"cer": validas, "wer": validas, "recall_critico": 0}
+    assert r["bootstrap_validos"] == {
+        "cer": validas,
+        "wer": validas,
+        "recall_critico": 0,
+        "recall_numero_anio": 0,
+    }
     assert r["cer"] == r["wer"] == 0.5
     assert r["ic95_cer_documento"] == r["ic95_wer_documento"] == [0.5, 0.5]
     assert r["recall_critico"] is None
     assert r["ic95_recall_critico_documento"] is None
+
+
+def test_fase5_recall_numero_anio_usa_solo_categoria_numero():
+    filas = [fila_fase5(crit_ok=90, crit_ref=100, num_ok=2, num_ref=4)]
+    r = f5.agregar(filas, repeticiones=10)
+    assert r["recall_critico"] == 0.9
+    assert r["recall_numero_anio"] == 0.5
+    assert r["ic95_recall_numero_anio_documento"] == [0.5, 0.5]
 
 
 def test_fase5_rechaza_evaluacion_sin_paginas(escenario_fase5, capsys):

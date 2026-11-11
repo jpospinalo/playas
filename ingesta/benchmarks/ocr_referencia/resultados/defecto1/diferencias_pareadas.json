@@ -1,0 +1,73 @@
+{
+ "semilla": 20261110,
+ "repeticiones": 2000,
+ "sentido": "despues menos antes",
+ "calibracion": {
+  "correctas": 64,
+  "total": 64,
+  "controles_bucles_correctos": 12,
+  "controles_bucles": 12
+ },
+ "conjuntos": {
+  "ajuste": {
+   "paginas": 318,
+   "documentos": 14,
+   "cer": -0.0004916519862147892,
+   "wer": -0.005173533605572187,
+   "recall_critico": 0.041354903943377146,
+   "recall_numero_anio": 0.04055032585083273,
+   "ic95_cer_documento": [
+    -0.0006568041170212556,
+    -0.0002911198574992969
+   ],
+   "ic95_wer_documento": [
+    -0.006967875895941063,
+    -0.0030004558996596657
+   ],
+   "ic95_recall_critico_documento": [
+    0.0220467596390484,
+    0.0569676430242879
+   ],
+   "ic95_recall_numero_anio_documento": [
+    0.022139764996907854,
+    0.05486313337216075
+   ],
+   "bootstrap_validos": {
+    "cer": 2000,
+    "wer": 2000,
+    "recall_critico": 2000,
+    "recall_numero_anio": 2000
+   }
+  },
+  "validacion": {
+   "paginas": 600,
+   "documentos": 20,
+   "cer": -0.00034963688135753926,
+   "wer": -0.0036027887695496514,
+   "recall_critico": 0.029572901325478646,
+   "recall_numero_anio": 0.028859013162525517,
+   "ic95_cer_documento": [
+    -0.000549241024579866,
+    -0.00015140202422432388
+   ],
+   "ic95_wer_documento": [
+    -0.005695580398925788,
+    -0.0015692280222232905
+   ],
+   "ic95_recall_critico_documento": [
+    0.013614017395688894,
+    0.04484605087014726
+   ],
+   "ic95_recall_numero_anio_documento": [
+    0.013146985668601207,
+    0.044140672046248344
+   ],
+   "bootstrap_validos": {
+    "cer": 2000,
+    "wer": 2000,
+    "recall_critico": 2000,
+    "recall_numero_anio": 2000
+   }
+  }
+ }
+}

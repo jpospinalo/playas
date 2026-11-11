@@ -6,7 +6,7 @@ import datetime as dt
 import re
 import unicodedata
 
-SCHEMA_VERSION = "legal-metadata-3"
+SCHEMA_VERSION = "legal-metadata-4"
 FIELDS = (
     "tipo_documento",
     "corporacion",
@@ -33,22 +33,41 @@ IDENTIDAD_RECOMENDADA = {
     "normativa": ("entidad_emisora", "fecha_iso"),
 }
 _TIPO = r"(DECRETO(?:[ \t]*-?[ \t]*LEY)?|LEY|RESOLUCI[ÓO]N|ACUERDO|CIRCULAR)"
-_NUMERO = r"(?:N[ÚU]MERO|No\.?|N[°º*]|Nro\.?)?[ \t]*[:.]?[ \t]*(\d{1,5}(?:\.\d{3})?)"
+# Los superíndices son \w, pero no \d: una llamada puede seguir a una cifra
+# sin formar parte de ella ni impedir el reconocimiento del año/fecha.
+_SUPERINDICES = "⁰¹²³⁴⁵⁶⁷⁸⁹"
+_NOTA = rf"[{_SUPERINDICES}]*"
+_FIN_NUMERO = rf"(?=\b|[{_SUPERINDICES}])"
+_NUMERO = r"(?:N[ÚU]MERO|No\.?|N[°º*]|Nro\.?)?[ \t]*[:.]?[ \t]*(\d{1,5}(?:\.\d{3})?)" + _NOTA
 # Encabezado propio de la norma: una línea que solo contiene tipo, número y año.
 _ENCABEZADO = re.compile(
-    r"(?im)^[ \t]*" + _TIPO + r"[ \t]+" + _NUMERO + r"(?:[ \t]+DEL?[ \t]+(\d{4}))?[ \t]*\.?[ \t]*$"
+    r"(?im)^[ \t]*"
+    + _TIPO
+    + r"[ \t]+"
+    + _NUMERO
+    + r"(?:[ \t]+DEL?[ \t]+(\d{4}))?"
+    + _NOTA
+    + r"[ \t]*\.?[ \t]*$"
 )
 # Impresiones de SUIN-Juriscol: «DECRETO 1436 DE 1984 - Colombia | SUIN Juriscol».
 _SUIN = re.compile(
     r"(?im)^[ \t]*"
     + _TIPO
-    + r"[ \t]+(\d{1,5})[ \t]+DE[ \t]+(\d{4})[ \t]*-[ \t]*Colombia[ \t]*\|[ \t]*SUIN"
+    + r"[ \t]+(\d{1,5})"
+    + _NOTA
+    + r"[ \t]+DE[ \t]+(\d{4})"
+    + _NOTA
+    + r"[ \t]*-[ \t]*Colombia[ \t]*\|[ \t]*SUIN"
 )
 # Pie del Gestor Normativo de Función Pública: «Decreto 1076 de 2015 Sector ... EVA - Gestor Normativo».
 _GESTOR = re.compile(
     r"(?im)^[ \t]*"
     + _TIPO
-    + r"[ \t]+(\d{1,5})[ \t]+de[ \t]+(\d{4})\b[^\n]{0,80}EVA[ \t]*-[ \t]*Gestor[ \t]+Normativo"
+    + r"[ \t]+(\d{1,5})"
+    + _NOTA
+    + r"[ \t]+de[ \t]+(\d{4})"
+    + _FIN_NUMERO
+    + r"[^\n]{0,80}EVA[ \t]*-[ \t]*Gestor[ \t]+Normativo"
 )
 _EMISOR = re.compile(
     r"(?im)^[ \t]*(?:EL|LA)[ \t]+(PRESIDENTE[ \t]+DE[ \t]+LA[ \t]+REP[ÚU]BLICA"
@@ -120,13 +139,16 @@ MONTHS = {
 
 
 _FECHA = re.compile(
-    r"\b(\d{1,2})(?:\s*\(\d{1,2}\))?\s+de\s+(" + "|".join(MONTHS) + r")\s+de(?:l)?\s+(\d{4})\b",
+    r"\b(\d{1,2})(?:\s*\(\d{1,2}\))?\s+de\s+("
+    + "|".join(MONTHS)
+    + r")\s+de(?:l)?\s+(\d{4})"
+    + _FIN_NUMERO,
     re.I,
 )
 
 
 _FECHA_MES_PRIMERO = re.compile(
-    r"\b(" + "|".join(MONTHS) + r")\s+(\d{1,2})\s+de(?:l)?\s+(\d{4})\b",
+    r"\b(" + "|".join(MONTHS) + r")\s+(\d{1,2})\s+de(?:l)?\s+(\d{4})" + _FIN_NUMERO,
     re.I,
 )
 
@@ -217,7 +239,9 @@ def extract_legal_metadata(original, doc_type=None):
             if len(distinct) > 1:
                 conflicts.append({"campo": name, "valores": distinct})
     norm = re.search(
-        r"\b(Decreto|Resoluci[oó]n|Ley|Acuerdo)\s*(?:No\.?|N[°º])?\s*(\d{1,6})(?:\s+de\s+(\d{4}))?",
+        r"\b(Decreto|Resoluci[oó]n|Ley|Acuerdo)\s*(?:No\.?|N[°º])?\s*(\d{1,6})"
+        + _NOTA
+        + r"(?:\s+de\s+(\d{4}))?",
         head,
         re.I,
     )
@@ -238,7 +262,10 @@ def extract_legal_metadata(original, doc_type=None):
         if number:
             assign("numero", number.group(), judgment.group())
     date = re.search(
-        r"\b(\d{1,2})(?:\s*\(\d{1,2}\))?\s+de\s+(" + "|".join(MONTHS) + r")\s+de(?:l)?\s+(\d{4})\b",
+        r"\b(\d{1,2})(?:\s*\(\d{1,2}\))?\s+de\s+("
+        + "|".join(MONTHS)
+        + r")\s+de(?:l)?\s+(\d{4})"
+        + _FIN_NUMERO,
         head,
         re.I,
     )
@@ -279,7 +306,7 @@ def extract_legal_metadata(original, doc_type=None):
         dict.fromkeys(
             m.group()
             for m in re.finditer(
-                r"\b(?:Ley|Decreto|Resoluci[oó]n|Sentencia|Art[íi]culo)\s+[A-Z]{0,3}[- ]?\d[\w.\-/]*(?:\s+de\s+\d{4})?",
+                rf"\b(?:Ley|Decreto|Resoluci[oó]n|Sentencia|Art[íi]culo)\s+[A-Z]{{0,3}}[- ]?\d(?:(?![{_SUPERINDICES}])[\w.\-/])*(?:{_NOTA}\s+de\s+\d{{4}})?",
                 text,
                 re.I,
             )

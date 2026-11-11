@@ -3,7 +3,8 @@
 Lee el texto por página de cada variante (bronce completo ``<doc_id>.txt`` o
 archivos ``<doc_id>_<pag>.txt`` de ``variantes_ocr.py``), lo compara con U con
 ``metricas`` (modo "contenido") y agrega CER/WER sumando ediciones, con IC
-bootstrap por documento. Solo páginas OCR de S_mio y nunca páginas excluidas de U.
+bootstrap por documento. Páginas OCR o digitales de S_mio, nunca excluidas de U.
+El recall número/año usa exclusivamente la categoría crítica existente ``numero``.
 
     python -I evaluar_fase5.py --conjunto ajuste --variante base=bronce:trabajo/s_mio/run1/capas/bronze \
         --variante tsv=bronce:trabajo/s_mio/run3/capas/bronze --variante z2_psm6=pagina:trabajo/variantes/z2_psm6
@@ -58,6 +59,7 @@ def agregar(filas, repeticiones=2000, semilla=20261110):
         "cer": ("ed_c", "ref_c"),
         "wer": ("ed_p", "ref_p"),
         "recall_critico": ("crit_ok", "crit_ref"),
+        "recall_numero_anio": ("num_ok", "num_ref"),
     }
 
     docs = sorted({f["slug"] for f in filas})
@@ -211,6 +213,8 @@ def main():
                     "ref_p": m["palabras_ref"],
                     "crit_ref": sum(x["total_ref"] for x in c.values()),
                     "crit_ok": sum(x["comunes"] for x in c.values()),
+                    "num_ref": c["numero"]["total_ref"],
+                    "num_ok": c["numero"]["comunes"],
                 }
             )
     resumen = {n: agregar(f) for n, f in filas.items()}
@@ -231,6 +235,7 @@ def main():
             f"{n:12} pags={r['paginas']:3} docs={r['documentos']:2} CER={porcentaje(r['cer'])} "
             f"IC95doc={intervalo_texto(r['ic95_cer_documento'])} "
             f"WER={porcentaje(r['wer'])} recall_crit={porcentaje(r['recall_critico'])} "
+            f"recall_numero_anio={porcentaje(r['recall_numero_anio'])} "
             f"cobertura={cobertura[n]['presentes']}/{cobertura[n]['esperadas']}"
         )
 
