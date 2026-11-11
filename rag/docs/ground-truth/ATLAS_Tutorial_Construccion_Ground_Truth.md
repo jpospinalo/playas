@@ -2,6 +2,8 @@
 
 > **Dirigido a los profesionales en derecho** que participan en la evaluación del sistema ATLAS.
 > No se requiere ningún conocimiento técnico fuera del área jurídica.
+> Los ejemplos corresponden a la muestra de la primera ronda. Para Gold A,
+> consultar el [inventario vigente](../../../data/CORPUS_CATALOG.md).
 
 ---
 
@@ -11,15 +13,15 @@ Este tutorial le explica, paso a paso, cómo construir el conjunto de preguntas 
 
 Su aporte consiste en dos cosas: **formular preguntas** sobre los documentos del corpus y **redactar la respuesta correcta** a cada una de ellas desde su perspectiva como experto en derecho costero y de playas. Ese par pregunta-respuesta es el patrón de medición: cuando ATLAS reciba la misma pregunta, su respuesta se comparará con la suya para determinar si el sistema acierta.
 
-No necesita manejar ninguna herramienta informática especial. Solo necesita acceso al **OneDrive compartido del proyecto**, donde están los documentos, y este tutorial como guía.
+Para aplicar el método, consulte los documentos de la versión del corpus que se va a evaluar.
 
 ---
 
-## 2. El sistema ATLAS y los documentos a los que tiene acceso
+## 2. El sistema ATLAS y la muestra documental del tutorial
 
-ATLAS es un asistente de consulta jurídica especializado en playas y dominio público marítimo-terrestre colombiano. Cuando alguien le formula una pregunta, el sistema busca la respuesta dentro de un corpus documental fijo y cerrado.
+ATLAS es un asistente de consulta jurídica especializado en playas y dominio público marítimo-terrestre colombiano. Cuando alguien le formula una pregunta, el sistema busca evidencia en la colección configurada para ese entorno.
 
-**El sistema únicamente tiene acceso a los siguientes documentos:**
+**El tutorial usa los siguientes documentos de la primera ronda:**
 
 ### Jurisprudencia: Tribunal Administrativo del Magdalena (10 sentencias)
 

@@ -73,6 +73,7 @@ def test_normativa_no_agrega_linea_de_radicado() -> None:
         block == "[doc1 | source=decreto_2324.md | chunk_id=norm_1]\n"
         "Norma: Decreto 2324 de 1984\n"
         "Artículo: 2\n"
-        "Resumen: Define el dominio público marítimo.\n"
+        "Resumen auxiliar (contrastar con el cuerpo): Define el dominio público marítimo.\n"
+        "Texto del fragmento:\n"
         "Contenido del artículo."
     )

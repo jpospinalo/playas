@@ -11,6 +11,7 @@
 #
 # Requisitos locales:
 #   - AWS CLI configurado (usa las credenciales de sesión del Learner Lab)
+#   - Git y Python >= 3.11; corpus limpio y HEAD publicado antes de modificar AWS
 #   - Key pair "vockey" ya creado en EC2 y el archivo vockey.pem disponible localmente
 #   - rag/.env con OPENAI_API_KEY configurada (se usa para el paso 2 del README)
 #
@@ -24,6 +25,8 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 REPO_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
+# shellcheck source=corpus_release.sh
+source "${SCRIPT_DIR}/corpus_release.sh"
 
 PROJECT="rag-playas"
 INSTANCE_NAME="${PROJECT}-bastion"
@@ -38,6 +41,7 @@ IAM_INSTANCE_PROFILE="LabInstanceProfile"
 REPO_URL="https://github.com/jpospinalo/playas.git"
 SSH_USER="ubuntu"
 SSH_OPTS=(-o StrictHostKeyChecking=accept-new -o ConnectTimeout=10 -i "${KEY_FILE}")
+BOOTSTRAP_ONLY="${BOOTSTRAP_ONLY:-0}"
 
 # ── Colores / helpers ──────────────────────────────────────────────────────
 bold='\033[1m'; green='\033[0;32m'; yellow='\033[1;33m'; red='\033[0;31m'; reset='\033[0m'
@@ -53,6 +57,15 @@ fail()  { echo -e "${red}✗ $*${reset}"; exit 1; }
 step "Validando prerrequisitos locales"
 
 command -v aws >/dev/null 2>&1 || fail "aws CLI no está instalado."
+command -v git >/dev/null 2>&1 || fail "git no está instalado."
+[[ "${BOOTSTRAP_ONLY}" == "0" || "${BOOTSTRAP_ONLY}" == "1" ]] || fail "BOOTSTRAP_ONLY debe ser 0 o 1."
+
+# Both checks precede the first AWS operation. Ignored local credentials do
+# not select code; only a clean, published corpus commit can be deployed.
+DEPLOY_COMMIT="$(corpus_release_published_head "${REPO_DIR}" "${REPO_URL}")" \
+  || fail "La copia local debe estar limpia y publicada en corpus."
+corpus_release_check_local "${REPO_DIR}" || fail "El respaldo Gold fijado no pasó la comprobación local."
+ok "Código corpus fijado: ${DEPLOY_COMMIT}; respaldo ${CORPUS_RELEASE_PACKAGE}"
 
 [[ -f "${KEY_FILE}" ]] || fail "No se encontró el key pair local en ${KEY_FILE} (usa KEY_FILE=/ruta/vockey.pem)."
 chmod 400 "${KEY_FILE}"
@@ -60,8 +73,8 @@ chmod 400 "${KEY_FILE}"
 RAG_ENV="${REPO_DIR}/rag/.env"
 [[ -f "${RAG_ENV}" ]] || fail "No se encontró ${RAG_ENV}."
 
-OPENAI_API_KEY="$(grep -E '^OPENAI_API_KEY=' "${RAG_ENV}" | head -1 | cut -d'=' -f2-)"
-[[ -n "${OPENAI_API_KEY}" ]] || fail "OPENAI_API_KEY no está configurada en ${RAG_ENV}."
+OPENAI_API_KEY="$(corpus_release_read_openai_key "${RAG_ENV}")" \
+  || fail "OPENAI_API_KEY debe tener una única asignación simple y válida en rag/.env."
 
 ok "Prerrequisitos OK (key pair, OPENAI_API_KEY presentes)"
 
@@ -146,8 +159,17 @@ for i in $(seq 1 30); do
   sleep 10
 done
 
-# ── 6. Copiar API key de OpenAI y datos semilla al bastion ────────────────
-step "Copiando OPENAI_API_KEY y archivos de datos semilla al bastion (sin exponerlos en logs)"
+# Preserve any prior checkout/state before transferring credentials or seeds.
+ssh "${SSH_OPTS[@]}" "${SSH_USER}@${PUBLIC_IP}" 'bash -s' <<'FRESH_BASTION_CHECK'
+set -euo pipefail
+if [[ -e "${HOME}/playas" || -L "${HOME}/playas" ]]; then
+  echo "El checkout de despliegue ya existe; resguárdelo y muévalo manualmente antes de continuar." >&2
+  exit 1
+fi
+FRESH_BASTION_CHECK
+
+# ── 6. Copiar API key de OpenAI y usuarios semilla al bastion ─────────────
+step "Copiando OPENAI_API_KEY y usuarios semilla al bastion (sin exponerlos en logs)"
 
 printf '%s' "${OPENAI_API_KEY}" | ssh "${SSH_OPTS[@]}" "${SSH_USER}@${PUBLIC_IP}" \
   'umask 077; cat > ~/.openai_api_key'
@@ -155,13 +177,7 @@ ok "OPENAI_API_KEY transferida"
 
 ssh "${SSH_OPTS[@]}" "${SSH_USER}@${PUBLIC_IP}" 'mkdir -p ~/seed_data'
 
-LATEST_EXPORT="$(ls -t "${REPO_DIR}"/data/*.jsonl.gz 2>/dev/null | head -1 || true)"
-if [[ -n "${LATEST_EXPORT}" ]]; then
-  scp "${SSH_OPTS[@]}" "${LATEST_EXPORT}" "${SSH_USER}@${PUBLIC_IP}:~/seed_data/" >/dev/null
-  ok "Export de ChromaDB copiado: $(basename "${LATEST_EXPORT}")"
-else
-  warn "No se encontró ningún data/*.jsonl.gz local; la importación a ChromaDB se omitirá."
-fi
+ok "El respaldo Gold se obtiene del commit fijado; no se copian exports históricos por fecha."
 
 if [[ -f "${REPO_DIR}/data/seed_users.sql" ]]; then
   scp "${SSH_OPTS[@]}" "${REPO_DIR}/data/seed_users.sql" "${SSH_USER}@${PUBLIC_IP}:~/seed_data/" >/dev/null
@@ -169,11 +185,14 @@ if [[ -f "${REPO_DIR}/data/seed_users.sql" ]]; then
 fi
 
 # ── 7. Bootstrap remoto: instalar dependencias y desplegar ────────────────
-BOOTSTRAP_ONLY="${BOOTSTRAP_ONLY:-0}"
 step "Ejecutando bootstrap y despliegue remoto en la EC2 (esto tarda varios minutos)"
 
-ssh "${SSH_OPTS[@]}" "${SSH_USER}@${PUBLIC_IP}" "REPO_URL='${REPO_URL}' BOOTSTRAP_ONLY='${BOOTSTRAP_ONLY}' bash -s" <<'REMOTE_SCRIPT'
+ssh "${SSH_OPTS[@]}" "${SSH_USER}@${PUBLIC_IP}" "REPO_URL='${REPO_URL}' DEPLOY_COMMIT='${DEPLOY_COMMIT}' BOOTSTRAP_ONLY='${BOOTSTRAP_ONLY}' bash -s" <<'REMOTE_SCRIPT'
 set -euo pipefail
+if [[ -e "${HOME}/playas" || -L "${HOME}/playas" ]]; then
+  echo "El checkout de despliegue ya existe; resguárdelo y muévalo manualmente antes de continuar." >&2
+  exit 1
+fi
 export DEBIAN_FRONTEND=noninteractive
 export NEEDRESTART_MODE=a
 
@@ -194,9 +213,9 @@ step "Actualizando paquetes del sistema"
 "${APT_ENV[@]}" apt-get update -y
 "${APT_ENV[@]}" apt-get upgrade -y
 
-step "Instalando git"
-"${APT_ENV[@]}" apt-get install -y git
-ok "git $(git --version)"
+step "Instalando Git y Python para comprobar el paquete Gold"
+"${APT_ENV[@]}" apt-get install -y git python3
+ok "$(git --version); $(python3 --version)"
 
 step "Instalando Docker y agregando ubuntu al grupo docker"
 curl -fsSL https://get.docker.com | sudo sh
@@ -231,10 +250,14 @@ sudo dpkg -i /tmp/session-manager-plugin.deb
 ok "session-manager-plugin instalado"
 
 step "Clonando el repositorio"
-rm -rf ~/playas
-git clone "${REPO_URL}" ~/playas
+git clone --branch corpus --single-branch "${REPO_URL}" ~/playas
 cd ~/playas
-ok "Repositorio clonado en ~/playas ($(git rev-parse --short HEAD))"
+git checkout --detach "${DEPLOY_COMMIT}"
+[[ "$(git rev-parse HEAD)" == "${DEPLOY_COMMIT}" ]] || {
+  echo "El checkout remoto no coincide con el commit corpus aprobado." >&2
+  exit 1
+}
+ok "Repositorio clonado y fijado en ~/playas (${DEPLOY_COMMIT})"
 
 if [[ "${BOOTSTRAP_ONLY:-0}" == "1" ]]; then
   echo ""
@@ -244,7 +267,9 @@ fi
 
 step "Desplegando infraestructura vectorial - README paso 1 (ChromaDB + Ollama)"
 mkdir -p ~/playas/data
-[[ -d ~/seed_data ]] && cp -v ~/seed_data/* ~/playas/data/ 2>/dev/null || true
+if [[ -f ~/seed_data/seed_users.sql ]]; then
+  cp ~/seed_data/seed_users.sql ~/playas/data/seed_users.sql
+fi
 cd ~/playas
 ./vector-infraestructura/scripts/deploy.sh --auto-approve
 

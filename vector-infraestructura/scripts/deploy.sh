@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Despliega la infraestructura de Ollama y ChromaDB en EC2 y actualiza las
 # variables de entorno del proyecto RAG con las IPs estáticas resultantes.
-# Una vez que ChromaDB esté disponible, importa el archivo .jsonl.gz de data/.
+# Verifica y restaura la entrega Gold fijada antes de publicar su configuración.
 #
 # Uso:
 #   ./scripts/deploy.sh [--auto-approve]
@@ -12,9 +12,11 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-VECTOR_INFRA_DIR="${SCRIPT_DIR}/.."
-RAG_DIR="${SCRIPT_DIR}/../../rag"
-DATA_DIR="${SCRIPT_DIR}/../../data"
+REPO_DIR="$(cd "${SCRIPT_DIR}/../.." && pwd)"
+VECTOR_INFRA_DIR="${REPO_DIR}/vector-infraestructura"
+RAG_DIR="${REPO_DIR}/rag"
+# shellcheck source=../../scripts/corpus_release.sh
+source "${REPO_DIR}/scripts/corpus_release.sh"
 RAG_ENV="${RAG_DIR}/.env"
 ECS_TFVARS="${RAG_DIR}/infrastructure/terraform.tfvars"
 
@@ -30,6 +32,9 @@ reset='\033[0m'
 log()  { echo -e "${bold}▶ $*${reset}"; }
 ok()   { echo -e "${green}✓ $*${reset}"; }
 warn() { echo -e "${yellow}⚠ $*${reset}"; }
+
+# Fail locally before Terraform/AWS if the selected package is incomplete.
+corpus_release_check_local "${REPO_DIR}"
 
 # ── 1. Terraform init + apply ─────────────────────────────────────────────────
 log "Inicializando Terraform en vector-infraestructura..."
@@ -101,41 +106,7 @@ auto_generate_secret() {
   fi
 }
 
-# ── 4. Actualizar rag/.env ────────────────────────────────────────────────────
-if [[ -f "${RAG_ENV}" ]]; then
-  log "Actualizando ${RAG_ENV}..."
-  update_env "${RAG_ENV}" "CHROMA_HOST"     "${CHROMA_HOST_VAL}"
-  update_env "${RAG_ENV}" "OLLAMA_BASE_URL" "${OLLAMA_URL_VAL}"
-  ok ".env actualizado"
-else
-  warn "${RAG_ENV} no existe — omitiendo"
-fi
-
-# ── 5. Actualizar rag/infrastructure/terraform.tfvars ────────────────────────
-ECS_TFVARS_EXAMPLE="${RAG_DIR}/infrastructure/terraform.tfvars.example"
-
-if [[ ! -f "${ECS_TFVARS}" ]]; then
-  if [[ -f "${ECS_TFVARS_EXAMPLE}" ]]; then
-    log "Creando ${ECS_TFVARS} desde el ejemplo..."
-    cp "${ECS_TFVARS_EXAMPLE}" "${ECS_TFVARS}"
-    ok "terraform.tfvars creado"
-  else
-    warn "No se encontró terraform.tfvars.example — creando archivo vacío"
-    touch "${ECS_TFVARS}"
-  fi
-fi
-
-log "Generando secretos automáticamente (solo si son placeholders)..."
-PG_PASSWORD=$(auto_generate_secret "${ECS_TFVARS}" "postgres_password" "$(openssl rand -hex 16)")
-JWT_SECRET=$(auto_generate_secret  "${ECS_TFVARS}" "jwt_secret_key"    "$(openssl rand -hex 32)")
-ok "Secretos configurados"
-
-log "Actualizando ${ECS_TFVARS}..."
-update_tfvars "${ECS_TFVARS}" "chroma_host"     "${CHROMA_HOST_VAL}"
-update_tfvars "${ECS_TFVARS}" "ollama_base_url" "${OLLAMA_URL_VAL}"
-ok "terraform.tfvars actualizado"
-
-# ── 6. Esperar a que ChromaDB esté disponible ─────────────────────────────────
+# ── 4. Esperar disponibilidad, sin inferencias ────────────────────────────────
 log "Esperando a que ChromaDB esté disponible en ${CHROMA_HOST_VAL}:8000..."
 echo "   (la EC2 necesita instalar Docker y arrancar el contenedor — puede tardar varios minutos)"
 
@@ -153,38 +124,49 @@ done
 echo ""
 
 if [[ ${chroma_ready} -eq 0 ]]; then
-  warn "ChromaDB no respondió en ${CHROMA_WAIT_SECONDS}s. La importación no se ejecutará."
-  echo "  Puede ejecutarla manualmente cuando ChromaDB esté listo:"
-  echo "    cd rag && uv run python3 ../data/import_to_chromadb.py <archivo.jsonl.gz> --host ${CHROMA_HOST_VAL}"
+  warn "ChromaDB no respondió en ${CHROMA_WAIT_SECONDS}s; no se cambia la configuración del RAG."
+  exit 1
+fi
+ok "ChromaDB disponible"
+log "Esperando que Ollama publique el modelo ${CORPUS_RELEASE_MODEL}, sin cargarlo..."
+corpus_release_wait_ollama "${REPO_DIR}" "${OLLAMA_URL_VAL}"
+
+# ── 5. Restaurar o verificar la colección de esta versión ────────────────────
+RECEIPT_DIR="$(corpus_release_receipt_directory restore)"
+log "Restaurando/verificando ${CORPUS_RELEASE_PACKAGE} → ${CORPUS_RELEASE_COLLECTION}..."
+corpus_release_restore "${REPO_DIR}" "${CHROMA_HOST_VAL}" 8000 "${OLLAMA_URL_VAL}" "${RECEIPT_DIR}/receipt.json"
+ok "Gold verificado; recibo: ${RECEIPT_DIR}/receipt.json"
+
+# Only publish the endpoint/collection/model after the strict restore succeeds.
+# ── 6. Actualizar configuración del RAG ──────────────────────────────────────
+if [[ -f "${RAG_ENV}" ]]; then
+  update_env "${RAG_ENV}" "CHROMA_HOST" "${CHROMA_HOST_VAL}"
+  update_env "${RAG_ENV}" "CHROMA_PORT" "8000"
+  update_env "${RAG_ENV}" "CHROMA_COLLECTION" "${CORPUS_RELEASE_COLLECTION}"
+  update_env "${RAG_ENV}" "OLLAMA_BASE_URL" "${OLLAMA_URL_VAL}"
+  update_env "${RAG_ENV}" "OLLAMA_EMBEDDING_MODEL" "${CORPUS_RELEASE_MODEL}"
+  ok ".env actualizado para la entrega verificada"
 else
-  ok "ChromaDB disponible"
+  warn "${RAG_ENV} no existe; ECS recibirá la configuración mediante Terraform."
+fi
 
-  # ── 7. Localizar el archivo de exportación ──────────────────────────────────
-  EXPORT_FILE=""
-  if [[ ! -d "${DATA_DIR}" ]]; then
-    warn "El directorio ${DATA_DIR} no existe. Asegúrate de clonar el repositorio completo."
+ECS_TFVARS_EXAMPLE="${RAG_DIR}/infrastructure/terraform.tfvars.example"
+if [[ ! -f "${ECS_TFVARS}" ]]; then
+  if [[ -f "${ECS_TFVARS_EXAMPLE}" ]]; then
+    cp "${ECS_TFVARS_EXAMPLE}" "${ECS_TFVARS}"
   else
-    # ls -t ordena por fecha de modificación (compatible con Linux y macOS)
-    EXPORT_FILE=$(ls -t "${DATA_DIR}"/*.jsonl.gz 2>/dev/null | head -1)
-  fi
-
-  if [[ -z "${EXPORT_FILE}" ]]; then
-    warn "No se encontró ningún archivo .jsonl.gz en ${DATA_DIR}. La importación no se ejecutará."
-    echo "  Coloca el archivo de exportación en data/ y ejecuta:"
-    echo "    cd rag && uv run python3 ../data/import_to_chromadb.py <archivo.jsonl.gz> --host ${CHROMA_HOST_VAL}"
-  else
-    log "Importando $(basename "${EXPORT_FILE}") → ChromaDB ${CHROMA_HOST_VAL}:8000..."
-    (
-      cd "${RAG_DIR}"
-      uv run python3 "${DATA_DIR}/import_to_chromadb.py" \
-        "${EXPORT_FILE}" \
-        --host "${CHROMA_HOST_VAL}" \
-        --port 8000 \
-        --collection rag_playas
-    )
-    ok "Importación completada"
+    touch "${ECS_TFVARS}"
   fi
 fi
+log "Generando secretos automáticamente (solo si son placeholders)..."
+PG_PASSWORD=$(auto_generate_secret "${ECS_TFVARS}" "postgres_password" "$(openssl rand -hex 16)")
+JWT_SECRET=$(auto_generate_secret "${ECS_TFVARS}" "jwt_secret_key" "$(openssl rand -hex 32)")
+update_tfvars "${ECS_TFVARS}" "chroma_host" "${CHROMA_HOST_VAL}"
+update_tfvars "${ECS_TFVARS}" "chroma_port" "8000"
+update_tfvars "${ECS_TFVARS}" "chroma_collection" "${CORPUS_RELEASE_COLLECTION}"
+update_tfvars "${ECS_TFVARS}" "ollama_base_url" "${OLLAMA_URL_VAL}"
+update_tfvars "${ECS_TFVARS}" "ollama_embedding_model" "${CORPUS_RELEASE_MODEL}"
+ok "terraform.tfvars actualizado para la entrega verificada"
 
 # ── 8. Resumen ────────────────────────────────────────────────────────────────
 echo ""
@@ -193,8 +175,8 @@ echo -e "${bold}Despliegue completado${reset}"
 echo ""
 echo -e "  CHROMA_HOST       = ${CHROMA_HOST_VAL}"
 echo -e "  OLLAMA_BASE_URL   = ${OLLAMA_URL_VAL}"
-echo -e "  postgres_password = ${PG_PASSWORD}"
-echo -e "  jwt_secret_key    = ${JWT_SECRET}"
+echo -e "  CHROMA_COLLECTION = ${CORPUS_RELEASE_COLLECTION}"
+echo -e "  GOLD_RELEASE      = ${CORPUS_RELEASE_PACKAGE}"
 echo ""
 echo -e "  Archivos actualizados:"
 [[ -f "${RAG_ENV}"     ]] && echo -e "    • rag/.env"

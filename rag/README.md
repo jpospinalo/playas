@@ -12,6 +12,9 @@ workspace RAG. Ver el [`README.md` raíz](../README.md) para el mapa completo.
 
 ---
 
+Para consultar o evaluar la colección, seguir la
+[guía de uso de Gold A](docs/DESPLIEGUE.md#usar-gold-a-en-atlas).
+
 ## Empezar aquí
 
 ```bash
@@ -27,9 +30,9 @@ bun install
 bun dev              # http://localhost:3000
 ```
 
-Requiere `rag/.env` (ver `.env.example`) con credenciales de ChromaDB, Ollama,
-al menos un proveedor LLM (OpenAI/OpenRouter/Gemini), `JWT_SECRET_KEY` y
-`POSTGRES_PASSWORD` (o `DATABASE_URL` para SQLite local). Ver
+Configurar `rag/.env` a partir de `.env.example` con los endpoints de ChromaDB
+y Ollama, las credenciales de un proveedor LLM, `JWT_SECRET_KEY` y los datos
+del entorno de base de datos. Ver
 [`docs/DESPLIEGUE.md`](docs/DESPLIEGUE.md) para el detalle completo.
 
 ## Documentación
@@ -37,7 +40,7 @@ al menos un proveedor LLM (OpenAI/OpenRouter/Gemini), `JWT_SECRET_KEY` y
 | Documento | Contenido |
 |---|---|
 | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | Arquitectura real del sistema: agente LangGraph, retriever híbrido, memoria, streaming SSE, auth JWT+SQL |
-| [`docs/DESPLIEGUE.md`](docs/DESPLIEGUE.md) | Despliegue con Docker Compose, variables de entorno, solución de problemas |
+| [`docs/DESPLIEGUE.md`](docs/DESPLIEGUE.md) | Uso de Gold A, conexión del RAG y despliegue con Docker Compose |
 | [`docs/PRODUCT.md`](docs/PRODUCT.md) | Producto: usuarios, propósito, personalidad de marca |
 | [`docs/DESIGN.md`](docs/DESIGN.md) | Especificación prescriptiva del sistema de diseño ("Bioluminiscencia"): color, tipografía, componentes — el objetivo a implementar |
 | [`docs/SCRIPTS.md`](docs/SCRIPTS.md) | Scripts operacionales: despliegue, SageMaker, utilidades ChromaDB, [evaluación del RAG con RAGAS](docs/SCRIPTS.md#evaluación-del-rag) |

@@ -15,7 +15,7 @@ Cada instancia recibe una **Elastic IP estática** que no cambia entre reinicios
 |---|---|---|
 | Terraform | 1.7 | `terraform version` |
 | AWS CLI | 2.x | `aws --version` |
-| Python + uv | cualquiera | `uv --version` |
+| Python | 3.11 | `python3 --version` |
 | curl | cualquiera | `curl --version` |
 
 **Credenciales AWS** configuradas con permisos para crear EC2, Elastic IP y Security Groups:
@@ -55,93 +55,46 @@ Con aprobación automática (sin confirmación interactiva de Terraform):
 
 ### Qué hace el script
 
-```
-1. terraform apply          — crea/actualiza las EC2 con sus Elastic IPs
-2. terraform output         — lee las IPs estáticas resultantes
-3. Actualiza rag/.env       — CHROMA_HOST y OLLAMA_BASE_URL
-4. Actualiza rag/infrastructure/terraform.tfvars — chroma_host y ollama_base_url
-5. Espera que ChromaDB responda (máx. 15 min)
-6. Importa data/*.jsonl.gz  — carga los documentos en ChromaDB
-```
+1. Comprueba localmente la entrega Gold A fijada, antes de Terraform.
+2. Crea o actualiza las EC2 y obtiene sus direcciones.
+3. Espera a ChromaDB y al modelo de embeddings, sin generarlos desde el restaurador.
+4. Verifica el perfil de consulta y restaura `gold-a-cc7bf44b54a9` en
+   `rag_playas_gold_a_cc7bf44b54a9`, con los vectores existentes.
+5. Contrasta IDs, textos, metadata y vectores. Si la colección ya existe,
+   solo comprueba que coincida completamente; no la sobrescribe ni completa.
+6. Solo después actualiza `rag/.env` y `rag/infrastructure/terraform.tfvars`
+   con el destino, colección y modelo comprobados.
 
-### Salida esperada
-
-```
-▶ Ejecutando terraform apply en vector-infraestructura...
-  ... (plan de Terraform) ...
-▶ Leyendo IPs estáticas desde Terraform outputs...
-✓ ChromaDB IP: 54.x.x.x
-✓ Ollama IP:   3.x.x.x
-▶ Actualizando rag/.env...
-✓ .env actualizado
-▶ Actualizando rag/infrastructure/terraform.tfvars...
-✓ terraform.tfvars actualizado
-▶ Esperando a que ChromaDB esté disponible en 54.x.x.x:8000...
-   (la EC2 necesita instalar Docker y arrancar el contenedor — puede tardar varios minutos)
-..........
-✓ ChromaDB disponible
-▶ Importando chroma-rag_playas_magdalena-20260731-135720.jsonl.gz → ChromaDB 54.x.x.x:8000...
-  Importing 1842 documents in batches of 100 ...
-  1842/1842 (100.0%)  312 docs/s  errors=0
-✓ Importación completada
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Despliegue completado
-
-  CHROMA_HOST     = 54.x.x.x
-  OLLAMA_BASE_URL = http://3.x.x.x:11434
-
-  Archivos actualizados:
-    • rag/.env
-    • rag/infrastructure/terraform.tfvars
-
-  Para aplicar en ECS Fargate:
-    cd rag/infrastructure && terraform apply
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-```
+Un fallo detiene el proceso. No se seleccionan exports por fecha ni se utiliza
+el respaldo de julio como alternativa. `rag_playas` y las entregas anteriores
+se conservan como históricos. Un recibo de carga incompleta se conserva para
+conciliar por lectura antes de decidir una reparación.
 
 ### Después del script
 
-Si también tienes el stack ECS Fargate desplegado, aplica los nuevos valores:
+Continuar en el
+[despliegue de la aplicación en ECS](../rag/infrastructure/README.md#desplegar-desde-un-equipo-preparado).
 
-```bash
-cd rag/infrastructure
-terraform apply
-```
+## Preparación manual
 
----
+Terraform aprovisiona recursos; no equivale a restaurar y validar el corpus.
+Si se usa `terraform apply` directamente, completar después las comprobaciones
+y la configuración descritas en la
+[guía de recuperación de Gold A](../data/chroma-releases/README.md).
 
-## Despliegue manual paso a paso
+El [restaurador dedicado](../data/restore_gold_release.py) admite `--check`
+para verificación estrictamente local. La operación con `--execute` requiere
+confirmar el servidor, conservar un recibo nuevo y evitar otras escrituras.
+No genera embeddings ni borra colecciones. El importador genérico queda para
+recuperaciones históricas expresamente seleccionadas.
 
-Si prefieres ejecutar cada paso por separado:
+## Persistencia
 
-```bash
-# 1. Inicializar Terraform (solo la primera vez)
-cd vector-infraestructura
-terraform init
-
-# 2. Ver el plan
-terraform plan
-
-# 3. Aplicar
-terraform apply
-
-# 4. Ver las IPs asignadas
-terraform output
-
-# 5. Importar datos a ChromaDB manualmente
-cd ../rag
-uv run python3 ../data/import_to_chromadb.py \
-  ../data/chroma-rag_playas_magdalena-20260731-135720.jsonl.gz \
-  --host <chromadb_public_ip> \
-  --port 8000
-```
-
----
-
-## Archivos de importación
-
-El script toma el `.jsonl.gz` más reciente que encuentre en `data/`. Para generar un nuevo archivo de exportación desde una instancia ChromaDB existente consulta la documentación de la pipeline de ingesta.
+El contenedor nuevo monta `/opt/chroma-data` en `/data`, la ruta utilizada por
+la imagen acreditada. Esto no migra contenedores existentes, ni conserva los
+datos cuando se destruye la EC2 o termina el laboratorio. No reprovisionar una
+instancia con datos sin resguardar. El paquete Gold versionado permite recuperar
+la entrega en otro destino compatible.
 
 ---
 

@@ -941,7 +941,7 @@
       <nav id="sidebar-nav">
         <div class="nav-section-title">Contexto</div>
         <a href="#intro" class="active"><span class="nav-num">1</span><span class="nav-text"><span class="nav-label">Para qué sirve este tutorial</span></span></a>
-        <a href="#documentos"><span class="nav-num">2</span><span class="nav-text"><span class="nav-label">El sistema ATLAS y los documentos</span></span></a>
+        <a href="#documentos"><span class="nav-num">2</span><span class="nav-text"><span class="nav-label">ATLAS y la muestra documental</span></span></a>
         <a href="#gt"><span class="nav-num">3</span><span class="nav-text"><span class="nav-label">Qué es el ground truth</span></span></a>
 
         <div class="nav-section-title">Construcción</div>
@@ -967,7 +967,7 @@
     <div class="phase-card">
       <div class="phase-card-label">Fase 1</div>
       <h2>Contexto</h2>
-      <p>Esta fase explica el propósito del tutorial, delimita el corpus y define qué se entiende por ground truth en el proyecto ATLAS.</p>
+      <p>Esta fase explica el propósito del tutorial, describe su muestra documental y define qué se entiende por ground truth en el proyecto ATLAS.</p>
     </div>
 
     <!-- ── 1. PARA QUÉ SIRVE ──────────────────── -->
@@ -977,11 +977,11 @@
         <h2>Para qué sirve este tutorial</h2>
       </div>
       <p>Este tutorial explica cómo construir el conjunto de preguntas y respuestas de referencia (<em>ground truth</em>), que servirá como patrón para evaluar las respuestas generadas por ATLAS.</p>
-      <p>Su aporte consiste en <strong>formular preguntas</strong> sobre los documentos del corpus y <strong>redactar la respuesta de referencia</strong> a cada una de ellas, con base en la información disponible y su criterio profesional. Los documentos del corpus se describen en la Sección 2.</p>
+      <p>Su aporte consiste en <strong>formular preguntas</strong> sobre los documentos del corpus y <strong>redactar la respuesta de referencia</strong> a cada una de ellas, con base en la información disponible y su criterio profesional. La Sección 2 describe la muestra del tutorial.</p>
       <p>Las preguntas y respuestas que usted construya determinarán la calidad de las evaluaciones futuras del sistema. El objetivo no es evaluar la calidad jurídica de los documentos ni proponer cambios normativos, sino construir preguntas y respuestas que puedan responderse con la información del corpus.</p>
       <div class="alert alert-info">
         <span class="alert-icon">&#128196;</span>
-        <p>No necesita manejar ninguna herramienta informática especial. Solo necesita acceso al <strong>OneDrive compartido del proyecto</strong>, donde están los documentos, y este tutorial como guía.</p>
+        <p>Para aplicar el método, consulte los documentos de la versión del corpus que se va a evaluar.</p>
       </div>
     </section>
 
@@ -989,10 +989,10 @@
     <section class="section" id="documentos">
       <div class="sec-head">
         <div class="sec-num">2</div>
-        <h2>El sistema ATLAS y los documentos a los que tiene acceso</h2>
+        <h2>ATLAS y la muestra documental del tutorial</h2>
       </div>
-      <p>ATLAS es un asistente de consulta jurídica especializado en playas y dominio público marítimo-terrestre colombiano. Cuando alguien le formula una pregunta, el sistema busca la respuesta dentro de un corpus documental fijo y cerrado.</p>
-      <p><strong>El sistema únicamente tiene acceso a los siguientes 12 documentos:</strong></p>
+      <p>ATLAS es un asistente de consulta jurídica especializado en playas y dominio público marítimo-terrestre colombiano. Cuando alguien le formula una pregunta, el sistema busca evidencia en la colección configurada para ese entorno.</p>
+      <p><strong>El tutorial usa una muestra de 12 documentos de la primera ronda.</strong> Para trabajar con Gold A, consulte el inventario vigente en <code>data/CORPUS_CATALOG.md</code> del repositorio.</p>
 
       <div class="corpus-grid">
         <!-- Jurisprudencia -->

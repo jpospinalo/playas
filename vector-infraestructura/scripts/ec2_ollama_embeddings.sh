@@ -29,12 +29,15 @@ docker run -d \
   --restart always \
   -p 11434:11434 \
   -v ollama:/root/.ollama \
+  -e OLLAMA_NUM_PARALLEL=1 \
+  -e OLLAMA_CONTEXT_LENGTH=2048 \
   ollama/ollama
 
 echo "Esperando a que Ollama levante..."
 sleep 15
 
-# Descargar modelo
+# Descargar el alias; el restaurador exige después versión/digest/perfil exactos.
+# Si el registro cambia, el despliegue se detiene antes de restaurar o activar.
 docker exec ollama ollama pull embeddinggemma:latest
 
 echo "==== FIN SETUP OLLAMA ===="

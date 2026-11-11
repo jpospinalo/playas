@@ -4,6 +4,10 @@ Referencia de scripts de despliegue, SageMaker, pruebas de carga, utilidades Chr
 
 Los scripts de infraestructura ECS Fargate (`deploy.sh`, `push_images.sh`, `start.sh`, `stop.sh`, `export_postgres.sh`) están documentados en [`../infrastructure/README.md`](../infrastructure/README.md), no aquí.
 
+La colección Gold de `corpus` se restaura y verifica con
+`data/restore_gold_release.py`. La versión del paquete, el perfil de embeddings
+y las instrucciones están en [versiones y recuperación](../../data/chroma-releases/README.md).
+
 ---
 
 ## Despliegue
@@ -62,9 +66,11 @@ docker exec -it ollama ollama pull phi4-mini:3.8b
 
 Lanza N usuarios concurrentes contra `/api/query/stream` (el endpoint SSE que usa el frontend), y reporta latencias (tiempo al primer evento `status`, a la primera fracción de respuesta, total — con min/avg/p50/p95/p99/max).
 
+Desde `rag/`, sustituir el valor de ejemplo por el JWT de una cuenta de prueba:
+
 ```bash
-export RAG_LOAD_TEST_TOKEN=<jwt>   # el endpoint exige autenticación
-uv run python rag/scripts/load_test.py --url http://localhost:8080 --users 10 --timeout 60
+export RAG_LOAD_TEST_TOKEN="jwt-de-prueba"
+uv run python scripts/load_test.py --url http://localhost:8080 --users 10 --timeout 60
 ```
 
 **Sin URL por defecto:** `--url` es obligatorio. Apuntar a un host que no sea local exige además `--allow-remote` y, en una terminal interactiva, escribir el host exacto como confirmación — así se evita generar tráfico de carga contra el ALB de producción por accidente.
@@ -123,8 +129,8 @@ uv run python -m utils.list_gemini_models
 Evaluación reproducible con [RAGAS](https://github.com/vibrantlabsai/ragas)
 sobre un dataset jurídico versionado, en `evaluation/` (`ragas_common.py` +
 un adaptador por juez intercambiable). No forma parte de la ruta de
-servicio — ver la sección "Evaluación offline" de
-[`docs/ARCHITECTURE.md`](ARCHITECTURE.md#10-evaluación-offline-evaluation).
+servicio. El alcance de la herramienta se describe en
+[Arquitectura](ARCHITECTURE.md#10-evaluación-del-rag-evaluation).
 
 **⚠️ Requiere autorización explícita antes de correrse de verdad.** Una
 corrida real invoca el grafo real de producción pregunta por pregunta y
@@ -141,7 +147,8 @@ Hay dos flujos independientes:
 
 ### Dataset (`evaluation/data/legal-ground-truth-v0.1.json`)
 
-El banco activo conserva la anotación **Esperando validación final**. El Excel
+El [banco activo](../evaluation/data/legal-ground-truth-v0.1.json) conserva
+la anotación **Esperando validación final**. El Excel
 `evaluation/data/legal-ground-truth-v0.2.xlsx` es una fuente versionada
 adicional, no una sustitución automática del JSON ni una validación final del
 banco. Ver [datos del proyecto](../../data/README.md#ground-truth).
@@ -155,10 +162,13 @@ contiene un valor vacío, `load_ground_truth_cases()` falla explícitamente
 en vez de evaluar un registro incompleto en silencio.
 
 Los registros `registro-017` a `registro-022` (`AMBIGUOUS_DOCUMENT_CASE_IDS`
-en `ragas_common.py`) tienen referencias documentales aún ambiguas (no
-permiten identificar inequívocamente la sentencia esperada) — se incluyen
-en la evaluación de todas las demás métricas, pero se excluyen por diseño
-de cualquier métrica de "documento esperado".
+en `ragas_common.py`) tienen referencias documentales ambiguas. El reporte
+omite la métrica de documento esperado para los 21 casos porque falta un
+mapeo entre las referencias del banco y los IDs de Gold. Para evaluar
+recuperación, vincular cada caso con los pasajes verificables del
+[corpus versionado](../../data/README.md#campos-de-gold). Registrar la versión
+de Gold y conservar la pregunta, los pasajes recuperados, la respuesta y el
+cotejo de sus citas por caso.
 
 ### Comandos
 
@@ -349,28 +359,20 @@ idéntico con o sin él).
 
 ### Tutorial de construcción de ground truth (`docs/ground-truth/`)
 
-Subsistema autocontenido, ajeno al pipeline de ingesta/servicio del RAG, para
-publicar el tutorial interno de construcción de ground truth como una página
-web independiente:
+El [tutorial web de anotación](index.html), la
+[cartilla de Ground Truth](ground-truth/ATLAS_Cartilla_Ground_Truth.md) y el
+[tutorial escrito](ground-truth/ATLAS_Tutorial_Construccion_Ground_Truth.md)
+explican la metodología con la muestra de la primera ronda. Para evaluar
+Gold A, consultar el [inventario vigente](../../data/CORPUS_CATALOG.md) y el
+[banco de preguntas versionado](#banco-de-preguntas).
 
-- `docs/ground-truth/tutorial2.html` — el tutorial en sí.
-- `docs/index.html` — redirige a `./ground-truth/tutorial2.html`.
-- `scripts/deploy-tutorial-html.ps1` — despliega **únicamente** ese HTML
-  (copiado a una carpeta temporal aislada) al proyecto Vercel
-  `atlas-tutorial-groundtruth`; requiere Vercel CLI (`npm i -g vercel`) y
-  sesión iniciada (`vercel login`).
+`scripts/deploy-tutorial-html.ps1` publica el tutorial HTML en el proyecto
+Vercel `atlas-tutorial-groundtruth`. Requiere Vercel CLI y una sesión iniciada.
 
 ```powershell
 pwsh scripts/deploy-tutorial-html.ps1            # despliega a producción
 pwsh scripts/deploy-tutorial-html.ps1 -Preview   # despliega una preview
 ```
-
-`docs/ground-truth/` también contiene material relacionado con el mismo
-tutorial, no enlazado desde `tutorial2.html`
-(`ATLAS_Cartilla_Ground_Truth.md`, `ATLAS_Tutorial_Construccion_Ground_Truth.md`,
-`ATLAS_Tutorial_Plataforma.md`, `1.jpeg`). Herramienta del equipo
-jurídico/de anotación, no del servicio RAG — no la modifiques al tocar
-`backend/rag/` o `frontend/`.
 
 ---
 
@@ -381,4 +383,4 @@ jurídico/de anotación, no del servicio RAG — no la modifiques al tocar
 | Verificar chunks en ChromaDB | `uv run python -m utils.chroma_count` |
 | Limpiar ChromaDB para re-indexar | `uv run python -m utils.chroma_clear --collection rag_playas --execute` |
 | Instalar Docker en Ubuntu | `sudo bash rag/scripts/install-docker-ubuntu.sh` |
-| Prueba de carga contra ECS | `uv run python rag/scripts/load_test.py --url http://localhost:8080 --users 10` |
+| Prueba de carga | [Comando y requisitos](#pruebas-de-carga) |
