@@ -141,11 +141,11 @@ no tiene ese costo ni ese riesgo.
 Hay dos flujos independientes:
 
 - **Banco v0.1** (21 casos) con los adaptadores `ragas_eval_gemma.py` y
-  `ragas_eval_ollama.py`: secciones *Dataset* y *Reporte* a continuación.
+  `ragas_eval_ollama.py`: secciones *Banco de preguntas* y *Reporte* a continuación.
 - **Línea base v0.2** (66 casos, por fases, juez gpt-5-nano): sección
   [Línea base sobre `legal-ground-truth-v0.2`](#línea-base-sobre-legal-ground-truth-v02).
 
-### Dataset (`evaluation/data/legal-ground-truth-v0.1.json`)
+### Banco de preguntas (`evaluation/data/legal-ground-truth-v0.1.json`)
 
 El [banco activo](../evaluation/data/legal-ground-truth-v0.1.json) conserva
 la anotación **Esperando validación final**. El Excel
@@ -377,7 +377,7 @@ El [tutorial web de anotación](index.html), la
 [tutorial escrito](ground-truth/ATLAS_Tutorial_Construccion_Ground_Truth.md)
 explican la metodología con la muestra de la primera ronda. Para evaluar
 Gold A, consultar el [inventario vigente](../../data/CORPUS_CATALOG.md) y el
-[banco de preguntas versionado](#banco-de-preguntas).
+[banco de preguntas versionado](#banco-de-preguntas-evaluationdatalegal-ground-truth-v01json).
 
 `scripts/deploy-tutorial-html.ps1` publica el tutorial HTML en el proyecto
 Vercel `atlas-tutorial-groundtruth`. Requiere Vercel CLI y una sesión iniciada.
