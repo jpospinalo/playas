@@ -32,7 +32,7 @@ backend/rag/
     ├── rate_limit.py             # Rate limiting (query, generate-title, login) + backpressure de concurrencia global
     ├── passwords.py              # Hash y verificación de contraseñas (SHA-256 + bcrypt)
     ├── auth.py                  # Dependencias JWT: get_optional_user / get_current_user / require_admin
-    ├── database.py              # Motor/sesión async SQLAlchemy (Postgres en prod, SQLite de respaldo)
+    ├── database.py              # Motor/sesión async SQLAlchemy (Postgres en prod, SQLite de respaldo); init_db crea tablas y agrega columnas opcionales nuevas a tablas existentes
     ├── models.py                 # User, Conversation, Message, Feedback, MessageFeedback
     ├── schemas.py                 # Modelos Pydantic de request/response
     └── routes/
