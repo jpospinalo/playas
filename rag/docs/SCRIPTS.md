@@ -336,6 +336,19 @@ OLLAMA_BASE_URL=http://127.0.0.1:11435 uv run python -m evaluation.ragas_v02 --t
 uv run python -m evaluation.registro --tag gemma4-e2b --modelo "gemma4:e2b (local)"
 ```
 
+**Con el Gold A corregido (vigente desde 2026-11-11):** en el paso 1, en vez
+de importar `rag_playas`, restaurar la colección versionada
+`rag_playas_gold_a_cc7bf44b54a9` siguiendo la
+[recuperación de Gold A](../../data/chroma-releases/README.md), y pasar
+`CHROMA_COLLECTION=rag_playas_gold_a_cc7bf44b54a9` (y `CHROMA_PORT` si no es
+8000) en los pasos 3 a 5. Las métricas sin LLM de una corrida se obtienen con
+`uv run python -m evaluation.metricas_sin_llm --tag <tag> --cache
+evaluation/results/generation-cache-v0.2-<tag>.jsonl`; no necesitan key.
+Los modelos con modo de razonamiento (p. ej. Qwen 3.5) deben correr con el
+razonamiento apagado (`reasoning_effort: "none"` en la API compatible con
+OpenAI de Ollama); si no, consumen los tokens pensando y devuelven la
+respuesta vacía.
+
 `generation_cache` registra por caso si el clasificador de consultas tuvo que
 usar su respaldo de reglas (`enrichment_fallback`) porque el modelo no devolvió
 el formato esperado; el conteo es por caso aunque corran varios en paralelo. El costo de generación de un modelo

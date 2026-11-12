@@ -231,7 +231,7 @@ Medido en local, sin juez RAGAS. **No reemplaza la línea base**: falta repetir 
 
 ### Qué hay que trabajar
 
-1. **La normativa no llega al modelo.** Con la pregunta original, REMAC 5 (14 casos) y Decreto 2324 de 1984 (4 casos) quedan en 0 de 18 dentro de los 4 fragmentos. Ambos están en el corpus (573 y 239 fragmentos), así que el problema es de recuperación, no de datos. La jurisprudencia llega en 34 de 40.
+1. **La normativa no llega al modelo.** Con la pregunta original, REMAC 5 (14 casos) y Decreto 2324 de 1984 (4 casos) quedan en 0 de 18 dentro de los 4 fragmentos. Ambos están en el corpus (573 y 239 fragmentos), así que el problema es de recuperación, no de datos. La jurisprudencia llega en 34 de 40. **Avance en esta rama:** con la jerarquía normativa y el tokenizador español la normativa entra en 8 de 18 (ver el estado al 2026-11-11 arriba).
 2. **Las preguntas de secuencia o trámite son las más débiles** (F1 0,40, 8 casos): la respuesta omite etapas. Con tan pocos casos, la caída frente a 0,54 es orientativa.
 3. **Falso fuera de alcance:** el caso 046 sigue sin responderse porque el grafo lo clasifica como `out_of_scope`.
 4. **Texto de plantilla:** 4 respuestas filtran instrucciones internas ("oraciones con [doc"), igual que en la corrida anterior.

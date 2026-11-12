@@ -18,7 +18,8 @@ backend/rag/
 │   ├── prompts.py              # Prompts de sistema/humano del agente + enricher
 │   ├── embeddings.py           # Cliente de embeddings Ollama (ChromaDB + LangChain)
 │   ├── vectorstore.py          # Build/update de la colección ChromaDB desde gold
-│   ├── retriever.py            # BM25 + vector + HybridEnsembleRetriever (RRF c=160)
+│   ├── retriever.py            # BM25 (tokenizador español) + vector + HybridEnsembleRetriever (RRF c=2, multiconsulta, jerarquía normativa) (§3)
+│   ├── territorio.py           # Lugares de las normas locales y prioridad territorial (§3)
 │   ├── query_enricher.py       # Construcción del prompt del enricher, parseo JSON, API pública enrich_query/enrich_query_async
 │   ├── domain_scope.py         # Esquema EnrichedQuery + clasificador determinista de alcance costero/jurídico
 │   ├── generator.py            # Adaptador para scripts de evaluación offline (invoca el mismo grafo real)
@@ -62,24 +63,70 @@ START → enrich_query → route_after_analysis → {retrieve_forced → generat
 - **`route_after_analysis`** es un edge condicional simple: `in_scope` →
   `retrieve_forced`; cualquier otra ruta → `respond_without_retrieval`.
 - **`retrieve_forced`** ejecuta el `HybridEnsembleRetriever` exactamente una
-  vez, solo para consultas `in_scope` — la recuperación no es opcional, a
+  vez (con `afuse_queries`: la pregunta original, la autosuficiente y la
+  enriquecida, recuperadas por separado y fusionadas; ver §3), solo para
+  consultas `in_scope` — la recuperación no es opcional, a
   diferencia de un agente ReAct que podría invocar una herramienta cero, una
   o varias veces. Llena `sources` y, vía `tools.build_context_block`, el
   contexto formateado que ve el LLM.
 - **`generate`** construye la respuesta a partir de `sources`, valida sus
   citas (`_validate_citations`) y, si la validación falla o no hay
   evidencia, cae a una respuesta fija de "sin evidencia/citas inválidas".
+  Antes de validar, `_tidy_answer` quita líneas que solo contienen
+  marcadores `[docN]` y títulos de sección repetidos, sin tocar el contenido.
 - **`respond_without_retrieval`** responde saludos/meta-preguntas, pide
   aclaración o devuelve la respuesta fija de fuera de alcance — sin llamar
-  nunca al retriever ni al LLM de generación.
+  nunca al retriever ni al LLM de generación. Estas respuestas **guían** al
+  usuario: muestran ejemplos de consultas reales (lugar + actividad +
+  autoridad) y los tres datos que faltan (dónde, qué actividad o trámite,
+  quién intervino). Un saludo solo («hola», «buenos días») recibe la guía con
+  ejemplos; un saludo seguido de un asunto («hola, tengo un problema con la
+  playa») se trata como consulta y se pide el dato que falta. Si la
+  heurística de `domain_scope.py` encuentra una sola señal (costera o
+  jurídica) y el modelo dijo `out_of_scope`, la ruta se degrada a
+  `needs_clarification`: se pide el dato en vez de cerrar la consulta.
 
 ## 3. Retrieval híbrido
 
 `core/retriever.py` combina BM25 (léxico) y búsqueda vectorial (ChromaDB,
-embeddings `embeddinggemma:latest` vía Ollama) mediante
-`HybridEnsembleRetriever`, fusionando ambos rankings con Reciprocal Rank
-Fusion (constante `c=160`). Filtra por `doc_type` (`jurisprudencia` /
-`normativa`) cuando la consulta lo especifica.
+embeddings `embeddinggemma:latest` vía Ollama, colección con distancia
+coseno) mediante `HybridEnsembleRetriever`. Filtra por `doc_type`
+(`jurisprudencia` / `normativa`) cuando la consulta lo especifica. Cada
+parámetro de abajo se midió sobre el ground truth v0.2; las cifras están en
+los comentarios del código y en
+[`evaluation/README.md`](../evaluation/README.md#estado-al-2026-11-11-gold-a-corregido-mejoras-de-recuperación-y-qa-sin-juez).
+
+1. **Tokenizador español para BM25** (`_tokenize_bm25`, el mismo para indexar
+   y consultar): minúsculas y sin tildes, palabras con `\w+`, sin palabras
+   vacías del español ni tokens de una letra, y plural ligero (`playas` →
+   `playa`, `concesiones` → `concesion`, `parque`/`parques` → `parqu`).
+2. **Multiconsulta** (`afuse_queries`): la pregunta original, la
+   autosuficiente y la enriquecida se recuperan por separado (sin duplicados
+   ni vacías) en un único `asyncio.gather`, y todas las listas se fusionan
+   juntas.
+3. **Fusión RRF ponderada:** constante `RRF_C = 2`, pesos `BM25_WEIGHT = 0.8`
+   y `VECTOR_WEIGHT = 0.2`. Con la constante anterior (160) el resultado era
+   en la práctica el top vectorial.
+4. **Un fragmento por sentencia** (`fragmentos_por_sentencia = 1`): los
+   fragmentos siguientes de la misma sentencia pasan al final (no se
+   descartan), para que el top-k no se llene con una sola sentencia. Las
+   normas no tienen tope.
+5. **Prioridad territorial** (`core/territorio.py`): las normas locales de
+   Cartagena, Santa Marta o Turbo que la consulta no menciona se demotan al
+   final (no se descartan). Los lugares se reconocen como palabra completa
+   (`LUGARES`: Rodadero, Taganga y Tayrona cuentan como Santa Marta;
+   Bocagrande y Barú como Cartagena; «turbocompresor» no es Turbo).
+6. **Jerarquía normativa** (`_priorizar_normativa`): se reserva
+   `CUPOS_NORMATIVA = 1` puesto a una norma aplicable (nacional, o local del
+   lugar mencionado) si la selección no trae ninguna, reemplazando la
+   jurisprudencia peor ubicada, y las normas se ordenan antes que las
+   sentencias. El prompt (regla 5) pide exponer primero la norma y luego la
+   jurisprudencia que la interpreta.
+
+`tools.build_context_block` arma el contexto que lee el modelo: cabecera de
+la norma (con su ámbito territorial si es local) o de la sentencia
+(corporación, radicado, magistrado, tema, sección), el resumen marcado como
+«auxiliar (contrastar con el cuerpo)» y el «Texto del fragmento».
 
 ## 4. Memoria y persistencia de conversación
 
@@ -143,6 +190,15 @@ terminador `[DONE]` — no cambió; solo su documentación en `/openapi.json`.
 Auth propia con **JWT + PostgreSQL**. `api/auth.py` emite/valida tokens HS256
 (`JWT_SECRET_KEY` / `JWT_ALGORITHM` / `JWT_EXPIRE_MINUTES`); las contraseñas
 se hashean con SHA-256 seguido de bcrypt (`api/passwords.py`).
+
+`get_current_user` lee el usuario con la sesión de la solicitud y la cierra
+enseguida: así devuelve la conexión al pool antes de que el endpoint ejecute
+la consulta (que puede tardar hasta `RAG_QUERY_TOTAL_TIMEOUT_SECONDS`, 280 s).
+Sin esto, cada consulta retenía una conexión todo ese tiempo y con más de 15
+consultas simultáneas el pool (5 + 10) se agotaba (500 a los 30 s). Para
+rechazar el exceso de carga con un 503 inmediato hay que activar
+`RAG_BACKPRESSURE_MODE=enforce` y ajustar `RAG_BACKPRESSURE_MAX_CONCURRENT`;
+por defecto está en `off`.
 
 En el frontend, `lib/auth.ts` guarda el token y el usuario en
 `localStorage` (sin cookies, sin SDK de terceros); `AuthProvider`
