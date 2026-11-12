@@ -38,6 +38,9 @@ La calidad de ATLAS se mide con [RAGAS](https://docs.ragas.io/) contra el ground
 
 ### Qué se hizo en la rama `julian-rincon/evaluacion-ragas-linea-base`
 
+> [!WARNING]
+> **Aviso para `main` (registro con tipo de usuario, PR #23):** la columna nueva `users.user_type` no se crea en bases de datos que ya existían, porque `init_db` solo usa `create_all` y este no altera tablas existentes. En esas bases (por ejemplo, la de AWS si ya estaba desplegada) el login, `/api/auth/me` y todos los endpoints autenticados responden 500 con `column users.user_type does not exist`. En esta rama está corregido en `rag/backend/rag/api/database.py` (commit `cd44c4f`, con la prueba `rag/tests/unit/test_init_db_adds_missing_columns.py`). Si la base de AWS ya tiene la columna, no hay impacto.
+
 Rama de trabajo sobre evaluación y recuperación, a partir de la línea base anterior. Todo se midió sobre los 66 casos del ground truth v0.2 con las métricas fijas sin LLM (`evaluation/metricas_sin_llm.py`); las notas del juez RAGAS de la tabla anterior son las de la línea base del 2026-11-01.
 
 1. **Herramientas de evaluación:** ground truth v0.2 desde el Excel del equipo jurídico, métricas fijas sin LLM con IC 95 % y comparación contra la línea base, caché de generación reanudable, RAGAS con gpt-5-nano y registro versionado de cada corrida.
