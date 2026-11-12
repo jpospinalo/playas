@@ -33,6 +33,7 @@ async def test_register_rejects_duplicate_email_with_409(
     distintas) recibe 409 con el mensaje que el frontend muestra al usuario,
     sin que el commit llegue a ejecutarse para esa segunda solicitud."""
     monkeypatch.setattr("rag.api.routes.auth._REGISTER_ENABLED", True)
+    monkeypatch.setenv("JWT_SECRET_KEY", "test-secret-with-enough-entropy-for-unit-tests")
     engine = create_async_engine("sqlite+aiosqlite:///:memory:")
     session_factory = async_sessionmaker(engine, expire_on_commit=False)
     async with engine.begin() as connection:
