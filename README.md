@@ -45,7 +45,7 @@ Rama de trabajo sobre evaluación y recuperación, a partir de la línea base an
 3. **Respuestas:** el prompt prohíbe nombrar normas que no estén en el contexto y ordena norma → jurisprudencia; las respuestas sin recuperación guían al usuario con ejemplos y con los datos que faltan (lugar, actividad, autoridad).
 4. **Gold A corregido** (rama `corpus`, colección `rag_playas_gold_a_cc7bf44b54a9`) fusionado en la rama.
 5. **QA y carga:** ~6.000 peticiones sin LLM (hasta 200 simultáneas) sin errores 5xx, validación y entradas hostiles correctas, y corrección de un agotamiento del pool de conexiones que producía 500 con más de 15 consultas simultáneas.
-6. **`main` al día (2026-11-12):** se fusionó el registro con tipo de usuario y, al hacerlo, se corrigió que la columna nueva `users.user_type` no se creaba en bases ya existentes (login y endpoints autenticados daban 500); `init_db` ahora agrega las columnas opcionales que falten.
+6. **`main` al día (2026-11-12):** se fusionó el registro con tipo de usuario y, al hacerlo, se corrigió que la columna nueva `users.user_type` no se creaba en bases ya existentes (login y endpoints autenticados daban 500); `init_db` ahora agrega las columnas opcionales que falten. Verificado con el sistema completo (base existente, registro, login, consultas y QA con LLM sin errores 500); 1066 pruebas de backend y 245 de frontend en verde.
 
 | Indicador (66 casos) | Línea base 2026-11-01 | Esta rama |
 |---|---:|---:|
