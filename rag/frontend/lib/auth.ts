@@ -29,6 +29,7 @@ export interface AuthUser {
 	user_id: string;
 	email: string;
 	display_name: string | null;
+	user_type: string | null;
 	role: string;
 }
 

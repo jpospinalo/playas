@@ -7,10 +7,12 @@ vi.mock("@/lib/auth", () => ({
 }));
 
 const signInMock = vi.fn();
+const signUpMock = vi.fn();
 
 vi.mock("@/components/providers/AuthProvider", () => ({
 	useAuth: () => ({
 		signIn: signInMock,
+		signUp: signUpMock,
 		sessionExpiredMessage: null,
 	}),
 }));
@@ -30,7 +32,10 @@ describe("AuthModal — mensaje de error en el límite de presentación", () => 
 		fireEvent.change(screen.getByLabelText("Contraseña"), {
 			target: { value: "x".repeat(8) },
 		});
-		fireEvent.click(screen.getByRole("button", { name: /iniciar sesión/i }));
+		const submitButton = screen
+			.getAllByRole("button", { name: /iniciar sesión/i })
+			.find((button) => button.getAttribute("type") === "submit")!;
+		fireEvent.click(submitButton);
 
 		await waitFor(() =>
 			expect(

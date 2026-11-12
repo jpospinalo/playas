@@ -64,6 +64,7 @@ class RegisterRequest(BaseModel):
     email: str = Field(min_length=3, max_length=320)
     password: str = Field(min_length=8, max_length=1024)
     display_name: str | None = Field(default=None, max_length=120)
+    user_type: str | None = Field(default=None, max_length=120)
 
     @field_validator("email")
     @classmethod
@@ -80,6 +81,7 @@ class TokenResponse(BaseModel):
     user_id: str
     email: str
     display_name: str | None
+    user_type: str | None
     role: str
 
 
@@ -87,6 +89,7 @@ class UserResponse(BaseModel):
     user_id: str
     email: str
     display_name: str | None
+    user_type: str | None
     role: str
 
 
@@ -160,6 +163,7 @@ async def login(
     user_id = user.id
     user_email = user.email
     user_display_name = user.display_name
+    user_type = user.user_type
     user_role = user.role
 
     if needs_rehash(user.password_hash):
@@ -171,6 +175,7 @@ async def login(
         user_id=user_id,
         email=user_email,
         display_name=user_display_name,
+        user_type=user_type,
         role=user_role,
     )
 
@@ -198,6 +203,7 @@ async def register(
         email=payload.email,
         password_hash=password_hash,
         display_name=payload.display_name,
+        user_type=payload.user_type,
         role="user",
     )
     session.add(user)
@@ -226,6 +232,7 @@ async def register(
         user_id=user.id,
         email=user.email,
         display_name=user.display_name,
+        user_type=user.user_type,
         role=user.role,
     )
 
@@ -239,5 +246,6 @@ async def me(
         user_id=user_payload["sub"],
         email=user_payload["email"],
         display_name=user_payload["display_name"],
+        user_type=user_payload["user_type"],
         role=user_payload["role"],
     )

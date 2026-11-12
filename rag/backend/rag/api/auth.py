@@ -105,7 +105,12 @@ async def get_current_user(
     profile = (
         None
         if db_user is None
-        else {"email": db_user.email, "display_name": db_user.display_name, "role": db_user.role}
+        else {
+            "email": db_user.email,
+            "display_name": db_user.display_name,
+            "user_type": db_user.user_type,
+            "role": db_user.role,
+        }
     )
     # La sesión vive hasta el final de la solicitud; sin esto la transacción de
     # lectura retiene una conexión del pool durante toda la consulta (LLM
