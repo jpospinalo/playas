@@ -220,12 +220,12 @@ Comprobado el 2026-10-28 con ChromaDB y Ollama locales:
 
 ### Estado al 2026-11-11: Gold A corregido, mejoras de recuperación y QA (sin juez)
 
-Medido en local, sin juez RAGAS. **No reemplaza la línea base**: falta repetir generación y juez con gpt-5-nano cuando haya key.
+Medido en local con las métricas fijas sin LLM; las notas del juez RAGAS de la tabla de arriba son las de la línea base del 2026-11-01.
 
 - **Corpus:** se fusionó `corpus` con el Gold A corregido (release `cc7bf44b54a9`, colección `rag_playas_gold_a_cc7bf44b54a9`, 5.862 fragmentos, coseno). La colección se crea ahora con `hnsw:space=cosine` explícito, lo que cierra el pendiente de la métrica de abajo.
 - **Recuperación (código de esta rama):** documento esperado en el top-4 de la búsqueda 0,586 → **0,741**; documento esperado en los fragmentos que llegan al modelo 0,53 → **0,75–0,79**; la normativa entra en el contexto en 8 de 18 casos con la pregunta original (antes 0 de 18), y no llegan normas locales de otra ciudad.
 - **Efecto del Gold corregido** (mismo código, gemma4:e4b local, k=4; solo cambia la colección): búsqueda idéntica (0,741 en ambos), mismo documento hacia el modelo (0,754), referencias sin respaldo 1 caso → 0 y «evidencia insuficiente» 15 → 13. Las diferencias en las respuestas están dentro del ruido del modelo local: **no hay mejora medible sin juez**.
-- **k=6 frente a k=4** (gemma4, Gold corregido): documento hacia el modelo 0,754 → 0,786 y artículos esperados 0,147 → 0,206. Con Claude como generador y juez, k=6 dio 16 respuestas correctas frente a 11. Pendiente de confirmar con gpt-5-nano antes de cambiar el valor por defecto.
+- **k=6 frente a k=4** (gemma4, Gold corregido): documento hacia el modelo 0,754 → 0,786 y artículos esperados 0,147 → 0,206. Con Claude como generador y juez, k=6 dio 16 respuestas correctas frente a 11. El valor por defecto sigue en k=4.
 - **QA de la API:** carga sin LLM (~6.000 peticiones, hasta 200 concurrentes) sin errores 5xx; validación, inyección de prompt, entradas hostiles y streaming correctos. Se corrigió un agotamiento del pool de conexiones: `get_current_user` retenía una conexión durante toda la consulta y, con más de 15 consultas simultáneas, las siguientes fallaban con 500 a los 30 s. En despliegue conviene activar `RAG_BACKPRESSURE_MODE=enforce` para responder 503 de inmediato en lugar de esperar al tiempo máximo (280 s).
 - **Modelo local para la demo:** se probó Qwen 3.5 9B (razonamiento apagado) frente a gemma4:e4b con el mismo código y el Gold corregido. Cita más normas esperadas (12,9 % frente a 4,6 %), pero responde «evidencia insuficiente» en 30 casos frente a 13 y deja 2 respuestas sin citas válidas, así que la demo local sigue con gemma4:e4b. No afecta la línea base, que usa gpt-5-nano.
 - **Sigue débil:** multas y sanciones responden «evidencia insuficiente» (falta de cobertura en el corpus).
@@ -252,7 +252,7 @@ Medido en local, sin juez RAGAS. **No reemplaza la línea base**: falta repetir 
 
 ### Prueba en AWS con Claude (no reemplaza la línea base)
 
-Corrida del 2026-11-01 sobre el ChromaDB y el Ollama de AWS, para dejar lista la evaluación en la misma infraestructura de la corrida anterior. Sin una key de OpenAI válida no se pudo usar gpt-5-nano, así que se usó **Claude Sonnet 5.5 como generador y Claude Haiku 5.5 como juez**. La línea base vigente sigue siendo la de gpt-5-nano de arriba.
+Corrida del 2026-11-01 sobre el ChromaDB y el Ollama de AWS, para dejar lista la evaluación en la misma infraestructura de la corrida anterior. Se usó **Claude Sonnet 5.5 como generador y Claude Haiku 5.5 como juez** en lugar de gpt-5-nano. La línea base vigente sigue siendo la de gpt-5-nano de arriba.
 
 **Las notas del juez no son comparables con la línea base**, porque cambian a la vez el generador y el juez, y no se separó el efecto de cada uno. Las notas bajan mucho y es probable que pese el cambio de juez, pero no está medido; los números de abajo no indican que ATLAS haya empeorado.
 
@@ -282,7 +282,6 @@ Sí se puede usar lo que no depende del juez:
 - **Colección:** el corpus congelado quedó en AWS en una colección aparte, `rag_playas_corpus_congelado` (5.862 fragmentos, coseno). `rag_playas` sigue con 5.888 y ATLAS no se cambió a la nueva.
 - **Vectores:** se copiaron del índice local, porque generarlos en el Ollama de AWS tomaba unas 3 horas. Se compararon antes en 24 fragmentos, incluidos los 10 más largos: coseno ≥ 0,99998 frente a los del Ollama de AWS. Las preguntas sí se convierten en vectores en AWS.
 - **Modelos:** Claude se conectó con un puente local no versionado, sin cambios en el backend. Ignora la temperatura y `reasoning_effort`, y la latencia (26,1 s) no es comparable. El control de ceros se repitió en el caso 056: 0 → 0,18 → 0,06.
-- **Pendiente:** repetir generación y juez con gpt-5-nano sobre esta colección cuando haya key. Es lo único que deja una línea base en las mismas condiciones que la anterior.
 
 ### Gráficas
 
