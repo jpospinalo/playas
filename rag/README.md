@@ -46,6 +46,7 @@ del entorno de base de datos. Ver
 | [`docs/SCRIPTS.md`](docs/SCRIPTS.md) | Scripts operacionales: despliegue, SageMaker, utilidades ChromaDB, [evaluación del RAG con RAGAS](docs/SCRIPTS.md#evaluación-del-rag) |
 | [`evaluation/README.md`](evaluation/README.md) | Evaluación offline con RAGAS: módulos, resultados sobre el ground truth jurídico v0.2, informe para el equipo jurídico y registro de evaluaciones |
 | [`docs/SMOKE_TESTS.md`](docs/SMOKE_TESTS.md) | Pruebas de humo contra un despliegue real |
+| [`docs/TRABAJO_RAMA_EVALUACION.md`](docs/TRABAJO_RAMA_EVALUACION.md) | Registro del trabajo de la rama de evaluación y recuperación: cronología, cambios por componente, resultados, decisiones y verificación |
 | [`frontend/README.md`](frontend/README.md) | Inventario del frontend tal como está implementado: stack, rutas, componentes, hooks |
 | [`infrastructure/README.md`](infrastructure/README.md) | Infraestructura ECS Fargate (Terraform) |
 

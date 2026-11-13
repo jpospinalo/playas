@@ -62,7 +62,7 @@ Rama de trabajo sobre evaluación y recuperación, a partir de la línea base an
 - **k=6 frente a k=4:** más evidencia hacia el modelo (0,754 → 0,786; artículos esperados 0,147 → 0,206) y, con Claude como generador y juez, 16 respuestas correctas frente a 11. El valor por defecto sigue en k=4.
 - **Sigue débil:** multas y sanciones responden «evidencia insuficiente» por falta de cobertura en el corpus.
 
-Cifras, condiciones y comandos de cada medición: [`rag/evaluation/README.md`](rag/evaluation/README.md#estado-al-2026-11-11-gold-a-corregido-mejoras-de-recuperación-y-qa-sin-juez). Arquitectura actual: [`rag/docs/ARCHITECTURE.md`](rag/docs/ARCHITECTURE.md).
+Registro completo del trabajo (cronología, cambios por componente, decisiones y verificación): [`rag/docs/TRABAJO_RAMA_EVALUACION.md`](rag/docs/TRABAJO_RAMA_EVALUACION.md). Cifras, condiciones y comandos de cada medición: [`rag/evaluation/README.md`](rag/evaluation/README.md#estado-al-2026-11-11-gold-a-corregido-mejoras-de-recuperación-y-qa-sin-juez). Arquitectura actual: [`rag/docs/ARCHITECTURE.md`](rag/docs/ARCHITECTURE.md).
 
 ![Indicadores de la línea base: corpus anterior frente a corpus congelado](rag/docs/img/linea-base/01-indicadores.png)
 
