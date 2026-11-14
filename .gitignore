@@ -122,3 +122,8 @@ ingesta/benchmarks/ocr_referencia/resultados/u_vs_capa_texto.csv
 
 # Intake autonomo: trabajo local (no versionar)
 ingesta/benchmarks/intake/trabajo/
+
+# Demo AWS: trabajo local (no versionar)
+ingesta/benchmarks/demo_aws/trabajo/
+ingesta/infrastructure/intake/.terraform/
+ingesta/infrastructure/intake/*.tfstate*
