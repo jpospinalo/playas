@@ -2,7 +2,7 @@
 
 `python -m ingest.offline intake` analiza documentos locales sin LLM, sin claves
 y sin servidor web. Ejecutar los comandos desde `ingesta/`. Nunca modifica,
-borra ni mueve los originales del inbox. La identidad es el SHA-256 del archivo;
+borra ni mueve los originales del inbox local. La identidad es el SHA-256 del archivo;
 renombrarlo no crea otro documento.
 
 ## Instalación
@@ -82,6 +82,81 @@ la misma que en `sync`: `legacy`, 512 tokens. `--collection` es obligatoria.
 Ollama remoto exige `--allow-remote-ollama` además de `--ollama URL`. Esta opción
 no autoriza Chroma remoto. El publicador siempre conecta a `127.0.0.1`; `--host`
 sirve para validar el destino declarado y sus alias loopback.
+
+## Buzón en S3
+
+Instalar el adaptador opcional con `python -m pip install -e '.[offline,aws]'`.
+El núcleo local no importa boto3; el SDK se carga únicamente al elegir un
+`--inbox s3://...`. Se usa exclusivamente la cadena predeterminada de credenciales
+de boto3: en EC2, asignar un perfil de instancia. No se admiten argumentos de
+claves ni variables de credenciales propias del intake; no se guardan ni registran
+claves. No se crean ni modifican políticas del bucket.
+
+```sh
+python -m ingest.offline intake --collection atlas_intake_20261110 --inbox s3://BUCKET/inbox/ --once --raw-root data/intake-raw --layers-root data/intake-capas --state .offline/intake-s3 --cache .offline/cache-s3 --policy config/intake_policy.yaml --destinos config/intake_destinos.yaml
+```
+
+Sustituir `BUCKET` por el nombre real del bucket. Tanto el bucket como un prefijo
+no vacío terminado en `/` son obligatorios. Para sondeo, sustituir `--once` por
+`--watch --intervalo 30`. `--dry-run` lista, descarga temporalmente los objetos
+dentro del límite y decide con el intake, sin publicar, subir, mover ni borrar
+objetos ni escribir estado local persistente.
+
+El listado es paginado y abarca los subprefijos. Se ignoran carpetas y claves
+con `..`, barras inversas, caracteres de control o ajenas al prefijo. Los destinos
+se encuentran siempre en el mismo bucket:
+
+```text
+inbox/...                         # entradas pendientes
+processed/<sha256>/original.pdf    # publicado
+review/<sha256>/original.pdf       # revisión humana
+rejected/<sha256>/original.pdf     # rechazado
+```
+
+Cada destino contiene además `ficha.json` y `motivo.txt`, con motivos y avisos en
+español. Las claves de salida nunca contienen el nombre original; este se conserva
+dentro de la ficha. Los errores `error_documento` y `error_publicacion` mantienen
+el objeto en `inbox/` para reintentar. Los prefijos de salida están reservados y
+no pueden elegirse como buzón de entrada.
+
+La descarga usa un archivo temporal y renombrado atómico en
+`<state>/s3_inbox/<sha256-de-la-clave>/entrada.pdf`; el intake calcula la identidad
+del contenido. Las transferencias pendientes se guardan en
+`<state>/s3_transferencias/`. Conservar el estado al reiniciar. Los objetos que
+superan `tamano_maximo_bytes` se rechazan mediante copia en S3, sin descargarlos:
+su carpeta usa SHA-256 de metadatos (bucket, clave, tamaño, ETag y versión si existe),
+la ficha identifica `desmesurado-…` y declara que el hash del contenido no se calculó.
+
+Primero se suben los informes y se copia el original con condición sobre su ETag;
+se comprueban el tamaño y el ETag devuelto por la copia antes de borrar la entrada.
+El ETag no se interpreta como SHA-256. Los metadatos de la copia guardan el SHA-256
+calculado por el intake. Un recibo de transferencia permite terminar solo el borrado
+tras una interrupción, comprobando copia e informes, sin volver a publicar en
+Chroma. El mismo contenido bajo otro nombre produce `sin cambios` y termina en la
+misma carpeta. Cada copia, movimiento, omisión y error S3 se registra en
+`<state>/intake.log.jsonl`, sin mensajes ni cabeceras del SDK.
+
+En observación, los errores transitorios de red se reintentan con espera
+exponencial hasta 60 segundos; `ExpiredToken` y `AccessDenied` se registran por su
+código y terminan con salida distinta de cero para que systemd pueda reiniciar.
+Usar claves de entrada inmutables mientras se procesan y no ejecutar dos
+intakes sobre las mismas raíces. El adaptador también comprueba el ETag y tamaño
+de la entrada inmediatamente antes del borrado.
+
+El perfil de instancia necesita `s3:ListBucket` sobre el ARN del bucket y
+`s3:GetObject`, `s3:PutObject`, `s3:DeleteObject` sobre los objetos de ese bucket
+(limitables a `inbox/`, `processed/`, `review/` y `rejected/`). La copia usa
+GetObject y PutObject. Mantener el bucket privado, con bloqueo de acceso público
+y cifrado por defecto; si se utiliza una clave KMS propia, el perfil también
+necesita los permisos de esa clave que correspondan. Estas configuraciones son
+responsabilidad del operador y el adaptador no las modifica.
+
+Para rechazos mayores de 5 GB, el adaptador usa
+[copia por partes dentro de S3](https://docs.aws.amazon.com/AmazonS3/latest/API/API_CopyObject.html),
+sin descargar bytes. Añadir `s3:AbortMultipartUpload` al perfil para poder limpiar
+una copia por partes fallida. Una interrupción forzada puede dejar partes sin
+completar; el operador puede configurar su limpieza mediante el ciclo de vida
+del bucket.
 
 ## Configuración y protecciones
 

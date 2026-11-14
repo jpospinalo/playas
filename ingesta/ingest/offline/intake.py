@@ -53,7 +53,7 @@ def agregar_comandos(comandos):
     intake.add_argument("--intervalo", type=int, default=30)
     intake.add_argument("--dry-run", action="store_true", help="Decidir sin efectos persistentes")
     for comando in (intake, retiro):
-        comando.add_argument("--inbox", type=Path, default=Path("data/inbox"))
+        comando.add_argument("--inbox", default="data/inbox")
         comando.add_argument("--raw-root", type=Path, default=Path("data/documents/raw"))
         comando.add_argument("--policy", type=Path)
         comando.add_argument("--destinos", type=Path)
@@ -119,7 +119,14 @@ def medir_fase(ficha, nombre, accion):
 class Intake:
     """La fábrica inyectable permite Chroma en memoria sin habilitar hosts remotos."""
 
-    def __init__(self, args, *, fabrica_publicador=ChromaPublisher, fabrica_embeddings=None):
+    def __init__(
+        self,
+        args,
+        *,
+        fabrica_publicador=ChromaPublisher,
+        fabrica_embeddings=None,
+        entrada_temporal=False,
+    ):
         self.args = args
         try:
             self.destinos = cargar_destinos(args.destinos)
@@ -151,8 +158,22 @@ class Intake:
                 raise ValueError("Chunker inválido o token-budget menor de 128")
             if args.fake_embeddings:
                 self.config.update(model="bench_hash", digest="bench-sha256-768-1")
-            self.inbox = args.inbox.resolve()
-            self.state = guard_output(args.state or Path(".offline") / args.collection, self.inbox)
+            self.inbox = Path(args.inbox).resolve()
+            estado = args.state or Path(".offline") / args.collection
+            if entrada_temporal:
+                # Excepción acotada para el buzón de transferencia del adaptador.
+                # Las demás salidas siguen siendo independientes de la entrada.
+                estado = guard_output(estado)
+                identidad = self.inbox.name
+                if (
+                    self.inbox.parent != estado / "s3_inbox"
+                    or len(identidad) != 64
+                    or any(c not in "0123456789abcdef" for c in identidad)
+                ):
+                    raise ValueError("Entrada temporal fuera del buzón de transferencia")
+                self.state = estado
+            else:
+                self.state = guard_output(estado, self.inbox)
             self.capas = guard_output(args.layers_root, self.inbox)
             self.cache = guard_output(args.cache, self.inbox)
             self.raw = validar_raw(args.raw_root, self.inbox)
@@ -275,6 +296,8 @@ class Intake:
             )
         }
         evento.update(fecha=fecha(), llm_api_calls=0)
+        if "s3" in ficha:
+            evento["s3"] = ficha["s3"]
         for ruta in (self.state / "intake.log.jsonl", self.gancho):
             if ruta:
                 ruta = guard_output(ruta, self.inbox)
@@ -737,7 +760,24 @@ class Intake:
         escritor.writerows(acumulado[k] for k in sorted(acumulado))
         atomic_bytes(cola, salida.getvalue().encode())
 
-    def run(self):
+    def validar_estado(self):
+        ajustes = self.state / "intake_config.json"
+        if ajustes.exists() and leer_json(ajustes) != {
+            "coleccion": self.args.collection,
+            "config_hash": self.hash,
+        }:
+            raise ConfiguracionInvalida(
+                "Estado de otra versión/colección; utiliza estado y colección nuevos"
+            )
+
+    def preparar_estado(self):
+        self.validar_estado()
+        atomic_bytes(
+            self.state / "intake_config.json",
+            canonical({"coleccion": self.args.collection, "config_hash": self.hash}),
+        )
+
+    def run(self, *, al_resultado=None):
         seco = getattr(self.args, "dry_run", False)
         originales = self.state, self.capas, self.cache
         # Debe preceder incluso a writer_lock, que crea sus propios archivos.
@@ -758,24 +798,15 @@ class Intake:
                         if origen.exists():
                             shutil.copytree(origen, destino, symlinks=True)
                 else:
-                    pila.enter_context(input_scope(self.inbox))
                     pila.enter_context(writer_lock(self.state, self.capas, self.cache))
+                    pila.enter_context(input_scope(self.inbox))
                     comprobar_worker(self.state)
                 self.state.mkdir(parents=True, exist_ok=True)
                 self.cache.mkdir(parents=True, exist_ok=True)
-                ajustes = self.state / "intake_config.json"
-                if ajustes.exists() and leer_json(ajustes) != {
-                    "coleccion": self.args.collection,
-                    "config_hash": self.hash,
-                }:
-                    raise ConfiguracionInvalida(
-                        "Estado de otra versión/colección; utiliza estado y colección nuevos"
-                    )
-                if not seco:
-                    atomic_bytes(
-                        ajustes,
-                        canonical({"coleccion": self.args.collection, "config_hash": self.hash}),
-                    )
+                if seco:
+                    self.validar_estado()
+                else:
+                    self.preparar_estado()
                 anteriores = {p.stem: leer_json(p) for p in (self.state / "intake").glob("*.json")}
                 if self.args.command == "retire":
                     return self._retirar(anteriores)
@@ -814,6 +845,8 @@ class Intake:
                     fichas.append(ficha)
                     if ficha["doc_id"]:
                         anteriores[ficha["doc_id"]] = ficha
+                    if al_resultado:
+                        al_resultado(ficha)
                     if not seco:
                         self._evento(ficha)
                     print(
@@ -879,6 +912,10 @@ class Intake:
 def ejecutar(args):
     codigo = 0
     try:
+        if str(args.inbox).startswith("s3://"):
+            from .s3_inbox import ejecutar as ejecutar_s3
+
+            return ejecutar_s3(args)
         intake = Intake(args)
         while True:
             codigo = max(codigo, intake.run())
