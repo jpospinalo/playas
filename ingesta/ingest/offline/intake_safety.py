@@ -217,7 +217,9 @@ def cargar_destinos(ruta=None):
         if not isinstance(valores, list) or any(not isinstance(v, str) or not v for v in valores):
             raise ConfiguracionInvalida(f"Lista inválida: {campo}")
     prefijos = datos["prefijos_permitidos"]
-    if not prefijos or any(not p.startswith(("atlas_intake_", "bench_intake_")) for p in prefijos):
+    # Espacios de nombres propios del intake; atlas_demo_ es el del demo en el sandbox.
+    espacios = ("atlas_intake_", "atlas_demo_", "bench_intake_")
+    if not prefijos or any(not p.startswith(espacios) for p in prefijos):
         raise ConfiguracionInvalida("Prefijos permitidos fuera del espacio de intake")
     if not datos["hosts_chroma_permitidos"] or not all(
         loopback(h) for h in datos["hosts_chroma_permitidos"]
