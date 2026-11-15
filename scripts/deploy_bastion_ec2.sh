@@ -286,7 +286,8 @@ ok "openai_api_key configurada en terraform.tfvars"
 
 step "Desplegando aplicación RAG en ECS Fargate - README paso 2"
 cd ~/playas
-sg docker -c "./rag/infrastructure/scripts/deploy.sh --auto-approve"
+# El plugin de ECS Exec puede leer stdin. Reservar el heredoc para bash -s.
+sg docker -c "./rag/infrastructure/scripts/deploy.sh --auto-approve" </dev/null
 
 step "Verificando Atlas por el balanceador"
 cd ~/playas/rag/infrastructure
@@ -294,8 +295,10 @@ ALB_URL=$(terraform output -raw alb_url)
 deadline=$((SECONDS + 600))
 ready=0
 while (( SECONDS < deadline )); do
-  if [[ "$(curl -q -fsS -o /dev/null -w '%{http_code}' --max-time 5 "${ALB_URL%/}/api/ready")" == 200 &&
-        "$(curl -q -fsS -o /dev/null -w '%{http_code}' --max-time 5 "${ALB_URL%/}/")" == 200 ]]; then
+  if backend_code=$(curl -q -fsS -o /dev/null -w '%{http_code}' --max-time 5 "${ALB_URL%/}/api/ready") &&
+     [[ "${backend_code}" == 200 ]] &&
+     frontend_code=$(curl -q -fsS -o /dev/null -w '%{http_code}' --max-time 5 "${ALB_URL%/}/") &&
+     [[ "${frontend_code}" == 200 ]]; then
     ready=1
     break
   fi
