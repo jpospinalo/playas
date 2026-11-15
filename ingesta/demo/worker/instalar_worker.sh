@@ -27,6 +27,8 @@ if [[ ! -x /usr/local/bin/uv ]]; then
 fi
 cd "$RAIZ/ingesta"
 UV_CACHE_DIR="$DATOS/uv" /usr/local/bin/uv sync -q --extra offline --extra aws
+cd "$RAIZ/rag"
+UV_CACHE_DIR="$DATOS/uv" /usr/local/bin/uv sync -q --group dev
 chown -R atlas:atlas "$DATOS"
 
 cat > /etc/atlas-intake.env <<EOF

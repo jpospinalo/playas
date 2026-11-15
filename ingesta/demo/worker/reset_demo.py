@@ -1,6 +1,6 @@
 """Vuelve el worker a la línea base del demo (se ejecuta EN el worker, servicio parado).
 
-- Retira de la colección todo documento publicado que no esté en la base
+- Retira de la colección y __staging todo documento que no esté en la base
   (/var/lib/atlas/base_hashes.txt, escrito por construir_base.sh).
 - Borra sus fichas e instantáneas para que volver a subirlos se procese como nuevo.
 - Archiva sus objetos S3 de processed/, review/ y rejected/ en archive/<fecha>/.
@@ -16,12 +16,54 @@ import datetime as dt
 import json
 import os
 import shutil
-import subprocess
 import sys
 from pathlib import Path
 
 DATOS = Path("/var/lib/atlas")
 ESTADO = DATOS / "estado"
+
+
+def reconciliar_documentos(cliente, coleccion, estado, documentos):
+    """Retira restos de cualquier estado antes de borrar la evidencia local."""
+    from chromadb.errors import NotFoundError
+
+    colecciones = []
+    for nombre in (coleccion, coleccion + "__staging"):
+        try:
+            colecciones.append(cliente.get_collection(nombre))
+        except NotFoundError:
+            pass
+    retirados = 0
+    for doc_id in documentos:
+        habia = False
+        for destino in colecciones:
+            if destino.get(where={"doc_id": doc_id}, include=[])["ids"]:
+                habia = True
+                destino.delete(where={"doc_id": doc_id})
+        for destino in colecciones:
+            if destino.get(where={"doc_id": doc_id}, include=[])["ids"]:
+                raise RuntimeError(
+                    f"Quedan chunks de {doc_id} en {destino.name}; se conserva la ficha"
+                )
+        (estado / "intake" / f"{doc_id}.json").unlink(missing_ok=True)
+        (estado / "intake" / "instantaneas" / f"{doc_id}.jsonl.gz").unlink(missing_ok=True)
+        retirados += habia
+    return retirados
+
+
+def archivar_objeto(s3, bucket, clave, destino):
+    """Copia gestionada (incluye multiparte) fijando la versión de origen."""
+    cabecera = s3.head_object(Bucket=bucket, Key=clave)
+    origen = {"Bucket": bucket, "Key": clave}
+    borrado = {"Bucket": bucket, "Key": clave}
+    if "VersionId" in cabecera:
+        origen["VersionId"] = borrado["VersionId"] = cabecera["VersionId"]
+    s3.copy(origen, bucket, destino, ExtraArgs={"CopySourceIfMatch": cabecera["ETag"]})
+    if "VersionId" not in cabecera:
+        actual = s3.head_object(Bucket=bucket, Key=clave)
+        if any(actual[k] != cabecera[k] for k in ("ETag", "ContentLength")):
+            raise RuntimeError(f"El objeto {clave} cambió; se conserva el original")
+    s3.delete_object(**borrado)
 
 
 def main():
@@ -35,41 +77,10 @@ def main():
         for p in (ESTADO / "intake").glob("*.json")
     }
     demo = sorted(d for d in fichas if d not in base)
-    retirados = 0
-    for doc_id in demo:
-        if fichas[doc_id].get("estado") == "publicado":
-            r = subprocess.run(
-                [
-                    sys.executable,
-                    "-X",
-                    "utf8",
-                    "-m",
-                    "ingest.offline",
-                    "retire",
-                    doc_id,
-                    "--collection",
-                    coleccion,
-                    "--state",
-                    str(ESTADO),
-                    "--layers-root",
-                    str(DATOS / "capas"),
-                    "--cache",
-                    str(DATOS / "cache"),
-                    "--port",
-                    "8000",
-                    "--ollama",
-                    os.environ["ATLAS_OLLAMA"],
-                    "--allow-remote-ollama",
-                ],
-                capture_output=True,
-                text=True,
-            )
-            if r.returncode:
-                sys.exit(f"retire falló para {doc_id}: {r.stderr[-400:]}")
-            print("retirado", doc_id[:12])
-            retirados += 1
-        (ESTADO / "intake" / f"{doc_id}.json").unlink(missing_ok=True)
-        (ESTADO / "intake" / "instantaneas" / f"{doc_id}.jsonl.gz").unlink(missing_ok=True)
+    import chromadb
+
+    cliente = chromadb.HttpClient(host="127.0.0.1", port=8000)
+    retirados = reconciliar_documentos(cliente, coleccion, ESTADO, demo)
     cola = ESTADO / "review_queue.csv"
     if cola.exists():
         with cola.open(encoding="utf-8", newline="") as entrada:
@@ -93,10 +104,7 @@ def main():
                 partes = obj["Key"].split("/")
                 if len(partes) > 2 and partes[1] not in base:
                     destino = f"archive/{marca}/{obj['Key']}"
-                    s3.copy_object(
-                        Bucket=bucket, Key=destino, CopySource={"Bucket": bucket, "Key": obj["Key"]}
-                    )
-                    s3.delete_object(Bucket=bucket, Key=obj["Key"])
+                    archivar_objeto(s3, bucket, obj["Key"], destino)
                     movidos += 1
     if frio:
         for hijo in (DATOS / "cache").iterdir():

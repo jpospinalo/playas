@@ -6,5 +6,19 @@
 source "$(dirname "$0")/comun.sh"
 comprobar_cuenta
 MODO="${1:-}"
-en_worker "sudo systemctl stop atlas-intake && cd /opt/atlas/playas/ingesta && sudo -u atlas env \$(cat /etc/atlas-intake.env | grep -v '^#' | xargs) .venv/bin/python -X utf8 demo/worker/reset_demo.py $MODO && sudo systemctl start atlas-intake"
+if [[ -n "$MODO" && "$MODO" != "--frio" ]]; then
+  error "Única opción admitida: --frio"
+  exit 2
+fi
+en_worker "sudo bash -s -- '$MODO'" <<'EOF'
+set -euo pipefail
+mkdir -p /var/lib/atlas/locks
+exec 9>/var/lib/atlas/locks/operacion.lock
+flock -x 9
+trap 'systemctl start atlas-intake' EXIT
+systemctl stop atlas-intake
+cd /opt/atlas/playas/ingesta
+set -a; source /etc/atlas-intake.env; set +a
+sudo -u atlas --preserve-env=ATLAS_BUCKET,ATLAS_COLECCION,ATLAS_OLLAMA,ATLAS_CHROMA_LOCK_DIR,AWS_DEFAULT_REGION .venv/bin/python -X utf8 demo/worker/reset_demo.py "$1"
+EOF
 "$(dirname "$0")/status.sh"
