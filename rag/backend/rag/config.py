@@ -140,6 +140,10 @@ CHROMA_COLLECTION: str = cast(
     str, _env("CHROMA_COLLECTION", "CHROMA_COLLECTION_NAME", default="rag_playas")
 )
 
+# Activación optativa con un sidecar local autenticado.
+LEGAL_RESOLUTION_PROVENANCE_PATH: str | None = _env("LEGAL_RESOLUTION_PROVENANCE_PATH")
+LEGAL_RESOLUTION_PROVENANCE_SHA256: str | None = _env("LEGAL_RESOLUTION_PROVENANCE_SHA256")
+
 # ── Ollama ─────────────────────────────────────────────────────────────────
 # OLLAMA_BASE_URL/OLLAMA_EMBEDDING_MODEL tienen precedencia sobre los alias
 # legados OLLAMA_EMBED_BASE_URL/OLLAMA_EMBED_MODEL (mismo orden que ya usa

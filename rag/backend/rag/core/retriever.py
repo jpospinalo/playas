@@ -209,6 +209,11 @@ def bm25_index_is_empty() -> bool:
     return _bm25_base is not None and not _bm25_base.docs
 
 
+def bm25_documents() -> list[Document]:
+    """Read the current snapshot without initializing or querying Chroma."""
+    return _bm25_base.docs if _bm25_base is not None else []
+
+
 def init_retrievers() -> None:
     """
     Pre-calienta todos los singletons del retriever.
