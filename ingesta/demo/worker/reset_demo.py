@@ -19,6 +19,12 @@ import shutil
 import sys
 from pathlib import Path
 
+from ingest.offline.intake_safety import (
+    ConfiguracionInvalida,
+    cargar_destinos,
+    validar_destino,
+)
+
 DATOS = Path("/var/lib/atlas")
 ESTADO = DATOS / "estado"
 
@@ -26,6 +32,14 @@ ESTADO = DATOS / "estado"
 def reconciliar_documentos(cliente, coleccion, estado, documentos):
     """Retira restos de cualquier estado antes de borrar la evidencia local."""
     from chromadb.errors import NotFoundError
+
+    validar_destino(coleccion, "127.0.0.1", cargar_destinos())
+    registro = estado / "intake_config.json"
+    if (
+        not registro.exists()
+        or json.loads(registro.read_text(encoding="utf-8")).get("coleccion") != coleccion
+    ):
+        raise ConfiguracionInvalida("La colección no coincide con la registrada en el estado local")
 
     colecciones = []
     for nombre in (coleccion, coleccion + "__staging"):

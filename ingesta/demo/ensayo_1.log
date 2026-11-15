@@ -5,8 +5,8 @@ Iniciando el demo de ATLAS...
   [32m✔[0m Cuenta AWS 679786170402
   Esperando a que las instancias estén encendidas (1-2 min)...
   [32m✔[0m Instancias encendidas
-  [32m✔[0m Ollama responde (3.217.204.19)
-  [32m✔[0m Worker y Chroma activos (3.93.193.36)
+  [32m✔[0m Ollama responde (<ip-ollama>)
+  [32m✔[0m Worker y Chroma activos (<ip-worker>)
   [32m✔[0m Cuenta AWS 679786170402
   Ollama: running
   Worker: running

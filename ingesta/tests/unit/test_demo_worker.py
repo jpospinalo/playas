@@ -15,6 +15,7 @@ import pytest
 
 from demo.worker.base_demo import preparar_base, registrar_base
 from demo.worker.reset_demo import archivar_objeto, reconciliar_documentos
+from ingest.offline.intake_safety import ConfiguracionInvalida
 
 
 @pytest.fixture
@@ -38,12 +39,15 @@ def sembrar_coleccion(coleccion):
     )
 
 
-def sembrar_ficha(estado, estado_ficha):
+def sembrar_ficha(estado, estado_ficha, coleccion):
     ficha = estado / "intake/demo.json"
     instantanea = estado / "intake/instantaneas/demo.jsonl.gz"
     instantanea.parent.mkdir(parents=True)
     ficha.write_text(json.dumps({"estado": estado_ficha}), encoding="utf-8")
     instantanea.write_bytes(b"evidencia")
+    (estado / "intake_config.json").write_text(
+        json.dumps({"coleccion": coleccion, "config_hash": "configuracion"}), encoding="utf-8"
+    )
     return ficha, instantanea
 
 
@@ -63,7 +67,7 @@ def test_reset_reconcilia_ambas_colecciones_para_cualquier_estado(
     colecciones, tmp_path, estado_ficha
 ):
     cliente, nombre, viva, staging = colecciones
-    ficha, instantanea = sembrar_ficha(tmp_path, estado_ficha)
+    ficha, instantanea = sembrar_ficha(tmp_path, estado_ficha, nombre)
     for coleccion in (viva, staging):
         sembrar_coleccion(coleccion)
     assert reconciliar_documentos(cliente, nombre, tmp_path, ["demo"]) == 1
@@ -75,7 +79,7 @@ def test_reset_reconcilia_ambas_colecciones_para_cualquier_estado(
 
 def test_reset_conserva_evidencia_si_quedan_chunks(colecciones, tmp_path, monkeypatch):
     cliente, nombre, viva, staging = colecciones
-    ficha, instantanea = sembrar_ficha(tmp_path, "error_publicacion")
+    ficha, instantanea = sembrar_ficha(tmp_path, "error_publicacion", nombre)
     for coleccion in (viva, staging):
         sembrar_coleccion(coleccion)
     eliminar = type(staging).delete
@@ -92,12 +96,36 @@ def test_reset_conserva_evidencia_si_quedan_chunks(colecciones, tmp_path, monkey
 
 
 def test_reset_sin_colecciones_borra_solo_evidencia_local(tmp_path, colecciones):
-    ficha, instantanea = sembrar_ficha(tmp_path, "rechazado")
-    assert (
-        reconciliar_documentos(colecciones[0], "ausente_" + uuid.uuid4().hex, tmp_path, ["demo"])
-        == 0
-    )
+    nombre = "atlas_demo_ausente_" + uuid.uuid4().hex
+    ficha, instantanea = sembrar_ficha(tmp_path, "rechazado", nombre)
+    assert reconciliar_documentos(colecciones[0], nombre, tmp_path, ["demo"]) == 0
     assert not ficha.exists() and not instantanea.exists()
+
+
+@pytest.mark.parametrize("caso", ["protegida", "distinta", "sin_registro"])
+def test_reset_destino_inseguro_aborta_sin_borrar_chunks_ni_fichas(colecciones, tmp_path, caso):
+    cliente, nombre, viva, staging = colecciones
+    configurada = "rag_playas" if caso == "protegida" else nombre
+    registrada = "atlas_demo_otra" if caso == "distinta" else configurada
+    ficha, instantanea = sembrar_ficha(tmp_path, "publicado", registrada)
+    if caso == "sin_registro":
+        (tmp_path / "intake_config.json").unlink()
+    destinos = [viva, staging]
+    if caso == "protegida":
+        destinos += [
+            cliente.create_collection(configurada),
+            cliente.create_collection(configurada + "__staging"),
+        ]
+    try:
+        for destino in destinos:
+            sembrar_coleccion(destino)
+        with pytest.raises(ConfiguracionInvalida, match="protegido|estado local"):
+            reconciliar_documentos(cliente, configurada, tmp_path, ["demo"])
+        assert all(destino.count() == 2 for destino in destinos)
+        assert ficha.exists() and instantanea.read_bytes() == b"evidencia"
+    finally:
+        for destino in destinos[2:]:
+            cliente.delete_collection(destino.name)
 
 
 @pytest.mark.parametrize("versionado", [True, False])
