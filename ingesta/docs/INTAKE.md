@@ -444,3 +444,69 @@ hay que congelar la política y evaluarla con documentos nuevos e independientes
 & $py -m ruff check ingest/offline tests/unit/test_intake.py
 & $py -m ruff format --check ingest/offline tests/unit/test_intake.py
 ```
+
+## Despliegue permanente en AWS (LabRole)
+
+Arquitectura del demo en el sandbox (cuenta 679786170402, us-east-1). Pensada para una
+cuenta tipo AWS Academy: las sesiones caducan, las instancias se apagan al terminar el
+laboratorio y no se pueden crear roles ni políticas IAM.
+
+```
+ operador ──upload.sh──▶ S3 atlas-demo-intake-<cuenta>/inbox/        (privado, cifrado, sin política)
+                               │  (perfil de instancia LabInstanceProfile, sin claves)
+                               ▼
+          EC2 atlas-demo-worker (t3.medium, Ubuntu 24.04, EBS 30 GB)
+            ├─ atlas-intake.service  intake --watch --inbox s3://…  (Tesseract spa local)
+            │      └─ embeddings ──────────▶ EC2 rag-playas-ollama:11434 (IP privada)
+            └─ atlas-chroma.service  Chroma 127.0.0.1:8000, datos en /var/lib/atlas/chroma
+                               │
+                               ▼
+          S3 processed/<sha256>/ · review/<sha256>/ · rejected/<sha256>/ (ficha, motivo, original)
+```
+
+- **Por qué un worker propio y no el host de Chroma de la aplicación:** el intake solo
+  publica en un Chroma local (127.0.0.1) y necesita el perfil de instancia para leer S3.
+  `rag-playas-chromadb` tiene recursos (2 vCPU, 7 GB libres), pero no tiene perfil de
+  instancia y asociárselo es un cambio sobre una instancia existente que no se aplicó.
+  El worker dedicado se lanzó con `LabInstanceProfile` desde el principio; no se cambió
+  ningún tipo de instancia, puerto ni grupo de seguridad.
+- **Arranque y reinicio:** ambos servicios están habilitados (`systemctl enable`) y
+  arrancan al encender la instancia; `atlas-intake` espera a que Chroma responda
+  (`ExecStartPre`), se reinicia solo (`Restart=always`) y es reanudable: un documento a
+  medio procesar se retoma por su hash sin duplicar. Sin claves en disco: si el laboratorio
+  caduca, el perfil de instancia se renueva solo al volver a iniciarlo.
+- **Encender y apagar:** `ingesta/demo/start_demo.sh` y `stop_demo.sh` (stop, nunca
+  terminate). La IP pública del worker cambia al encender; los scripts la consultan.
+- **Instalar en otra instancia:** copiar el repositorio a `/opt/atlas/playas` y ejecutar
+  `sudo ingesta/demo/worker/instalar_worker.sh <bucket> http://<ip-privada-ollama>:11434`.
+- **Bucket:** `ingesta/infrastructure/intake/crear_bucket.sh` (idempotente);
+  `destruir_bucket.sh <bucket> --confirmo-borrado` lo borra con su contenido.
+
+Costos aproximados (precios de lista públicos de us-east-1, no verificados en vivo):
+worker t3.medium ~0,042 USD/h encendido; Ollama t3.large ~0,083 USD/h; discos gp3 0,08
+USD/GB-mes (30 + 20 GB ≈ 4 USD/mes aunque estén apagados); IP pública 0,005 USD/h por
+dirección asociada mientras la instancia está encendida (y siempre, si es elástica);
+S3 y Chroma del demo, céntimos al mes.
+
+Límites: la aplicación desplegada (`rag/`) no lee este Chroma: para que use la colección
+ampliada habría que exponer el Chroma del worker o publicar en el Chroma de la aplicación
+(decisión humana, ver «Integración con la aplicación»); embeddings en CPU (~0,8–1,0
+fragmentos/s); una sola instancia sin alta disponibilidad.
+
+## Integración con la aplicación (`rag/`)
+
+- **Colección:** la aplicación elige la colección con la variable `CHROMA_COLLECTION`
+  (alias `CHROMA_COLLECTION_NAME`, por defecto `rag_playas`) y el servidor con
+  `CHROMA_HOST`/`CHROMA_PORT`. Para usar la colección ampliada habría que apuntar esas
+  variables a un Chroma que la contenga. No se cambió nada del despliegue.
+- **BM25:** `rag.core.retriever` construye el índice BM25 UNA vez por proceso (singleton
+  `_bm25_base`, al llamar a `init_retrievers()` en el arranque). Los documentos nuevos
+  quedan en la parte vectorial de inmediato, pero NO en el BM25 hasta reiniciar el
+  backend. Arreglo propuesto (barato, no aplicado): reconstruir `_bm25_base` cuando cambie
+  `collection.count()` (comprobación cada N minutos o por petición administrativa).
+- **Metadatos para citar:** la aplicación cita con `source`, `chunk_id`, `doc_type`,
+  `title` y `section_name`, que el intake publica. En jurisprudencia muestra también la
+  corporación y el ponente con las claves de v1 (`Corporación`, `Magistrado ponente`);
+  el intake usa `corporacion` y `magistrado_ponente`, así que esas líneas del contexto
+  saldrían vacías para documentos nuevos. Propuesta: leer ambas variantes en
+  `rag/core/tools.py`.

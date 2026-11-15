@@ -398,3 +398,12 @@ OCR real y publicación requieren el entorno Linux y sus servicios locales.
 - Para medir cambios que no tocan el OCR en una máquina sin Tesseract,
   `benchmarks/ocr_referencia/sembrar_cache_ocr.py` siembra la caché OCR con una
   corrida Linux de referencia (control: 530/530 archivos idénticos).
+
+## Cambios en feat/ingesta-demo-aws
+
+- Sin cambios de extractor ni de esquema: el defecto 2 (º/° en escaneados) se midió en Linux
+  con tessdata_best, mayor resolución y binarización solo en páginas de baja confianza, y
+  ninguna variante mejoró con claridad en validación (ver
+  `benchmarks/ocr_referencia/resultados/defecto2/informe.md`).
+- `title`/`source` de gold salen del nombre original saneado del documento (no del nombre
+  interno `<sha256>.pdf` de la copia de trabajo).

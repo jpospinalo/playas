@@ -204,3 +204,16 @@ sin cambios debe producir 0 embeddings nuevos.
   Calibración y prueba de punta a punta: `ingesta/benchmarks/intake/resultados/`.
 - PyYAML llega hoy como dependencia transitiva de chromadb (extra `offline`);
   conviene declararlo explícitamente al regenerar `uv.lock`.
+
+## Rama feat/ingesta-demo-aws: buzón S3, worker y demo en AWS
+
+- Buzón S3 opcional del intake (`--inbox s3://BUCKET/inbox/`, extra `aws`), worker como
+  servicio systemd con perfil de instancia y Chroma local, y kit del demo en
+  `ingesta/demo/` (guion en `DEMO.md`). Arquitectura, costos y límites en
+  `ingesta/docs/INTAKE.md`, «Despliegue permanente en AWS (LabRole)».
+- Validado en Linux real: suites de ingesta y rag, E2E con OCR de Tesseract y embeddings de
+  Ollama (`ingesta/benchmarks/demo_aws/resultados/informe.md`) y defecto 2 sin mejora
+  adoptable (`ingesta/benchmarks/ocr_referencia/resultados/defecto2/informe.md`).
+- Los chunks del intake usan como `title`/`source` el nombre original saneado del PDF (la
+  identidad sigue siendo el SHA-256). La aplicación construye su BM25 al arrancar: los
+  documentos nuevos solo entran en el BM25 tras reiniciar el backend.
