@@ -1,0 +1,350 @@
+{
+ "base": {
+  "codigo": 0,
+  "segundos": 1396.8,
+  "chunks_publicados": 943,
+  "decisiones": {
+   "aceptado/publicado": 9,
+   "revision_humana/revision_humana": 3,
+   "aceptado_con_advertencias/publicado": 6
+  },
+  "chunks_coleccion": 943
+ },
+ "nuevos": [
+  {
+   "doc": "a4be",
+   "estado": "publicado",
+   "decision": "aceptado_con_advertencias",
+   "motivos": [],
+   "avisos": [
+    "identidad sin magistrado_ponente"
+   ],
+   "tiempos": {
+    "analisis_aislado": 7.8,
+    "bronze": 2.3,
+    "clasificacion": 0.0,
+    "copia_raw": 0.0,
+    "embeddings": 169.1,
+    "gold": 3.4,
+    "limpieza_preparacion": 0.2,
+    "politica": 0.0,
+    "preparacion": 0.5,
+    "publicacion": 0.7,
+    "senales": 0.2,
+    "silver": 0.2,
+    "total": 180.9,
+    "validacion": 0.2
+   },
+   "chunks": 151,
+   "embeddings_nuevos": 151
+  },
+  {
+   "doc": "a7c0",
+   "estado": "publicado",
+   "decision": "aceptado",
+   "motivos": [],
+   "avisos": [],
+   "tiempos": {
+    "analisis_aislado": 81.2,
+    "bronze": 76.4,
+    "clasificacion": 0.0,
+    "copia_raw": 0.0,
+    "embeddings": 130.9,
+    "gold": 3.2,
+    "limpieza_preparacion": 0.1,
+    "politica": 0.0,
+    "preparacion": 0.4,
+    "publicacion": 0.4,
+    "senales": 0.1,
+    "silver": 0.1,
+    "total": 213.1,
+    "validacion": 0.0
+   },
+   "chunks": 110,
+   "embeddings_nuevos": 110
+  },
+  {
+   "doc": "c8e5",
+   "estado": "publicado",
+   "decision": "aceptado",
+   "motivos": [],
+   "avisos": [],
+   "tiempos": {
+    "analisis_aislado": 4.7,
+    "bronze": 0.2,
+    "clasificacion": 0.0,
+    "copia_raw": 0.0,
+    "embeddings": 16.4,
+    "gold": 3.2,
+    "limpieza_preparacion": 0.0,
+    "politica": 0.0,
+    "preparacion": 0.1,
+    "publicacion": 0.1,
+    "senales": 0.0,
+    "silver": 0.0,
+    "total": 21.4,
+    "validacion": 0.0
+   },
+   "chunks": 17,
+   "embeddings_nuevos": 17
+  },
+  {
+   "doc": "d6b7",
+   "estado": "revision_humana",
+   "decision": "revision_humana",
+   "motivos": [
+    "76% de páginas OCR con confianza ≤ 95 (máximo 50%)"
+   ],
+   "avisos": [],
+   "tiempos": {
+    "analisis_aislado": 79.7,
+    "bronze": 74.8,
+    "clasificacion": 0.0,
+    "gold": 3.2,
+    "politica": 0.0,
+    "senales": 0.1,
+    "silver": 0.1,
+    "total": 79.7,
+    "validacion": 0.0
+   },
+   "chunks": 106,
+   "embeddings_nuevos": null
+  }
+ ],
+ "recuperacion": {
+  "nuevos": {
+   "n": 10,
+   "hit4_antes": 0.0,
+   "hit4_despues": 0.0,
+   "mrr_antes": 0.0,
+   "mrr_despues": 0.0,
+   "ic95_delta_hit4": [
+    0.0,
+    0.0
+   ],
+   "ic95_delta_mrr": [
+    0.0,
+    0.0
+   ]
+  },
+  "resto": {
+   "n": 48,
+   "hit4_antes": 0.0,
+   "hit4_despues": 0.0,
+   "mrr_antes": 0.0,
+   "mrr_despues": 0.0,
+   "ic95_delta_hit4": [
+    0.0,
+    0.0
+   ],
+   "ic95_delta_mrr": [
+    0.0,
+    0.0
+   ]
+  }
+ },
+ "resumen_antes": {
+  "todos": {
+   "n": 58,
+   "hit_at_4": 0.0,
+   "hit_at_20": 0.0,
+   "mrr": 0.0,
+   "doc_recall_at_4": 0.0
+  }
+ },
+ "resumen_despues": {
+  "todos": {
+   "n": 58,
+   "hit_at_4": 0.0,
+   "hit_at_20": 0.0,
+   "mrr": 0.0,
+   "doc_recall_at_4": 0.0
+  }
+ },
+ "casos": [
+  {
+   "caso": "nuevo: sentencia digital (a4be)",
+   "esperado": "publicado",
+   "obtenido": "publicado",
+   "ok": true,
+   "segundos": 180.9,
+   "detalle": ""
+  },
+  {
+   "caso": "nuevo: sentencia escaneada (a7c0)",
+   "esperado": "publicado",
+   "obtenido": "publicado",
+   "ok": true,
+   "segundos": 213.1,
+   "detalle": ""
+  },
+  {
+   "caso": "nuevo: norma digital (c8e5)",
+   "esperado": "publicado",
+   "obtenido": "publicado",
+   "ok": true,
+   "segundos": 21.4,
+   "detalle": ""
+  },
+  {
+   "caso": "nuevo: control: rojo escaneado (Turbo) (d6b7)",
+   "esperado": "revision_humana",
+   "obtenido": "revision_humana; 76% de páginas OCR con confianza ≤ 95 (máximo 50%)",
+   "ok": true,
+   "segundos": 79.7,
+   "detalle": ""
+  },
+  {
+   "caso": "copia exacta",
+   "esperado": "sin trabajo nuevo",
+   "obtenido": "sin cambios",
+   "ok": true,
+   "segundos": 3.5,
+   "detalle": ""
+  },
+  {
+   "caso": "copia renombrada",
+   "esperado": "mismo doc_id, sin trabajo nuevo",
+   "obtenido": "sin cambios; doc_id igual: True",
+   "ok": true,
+   "segundos": 3.5,
+   "detalle": ""
+  },
+  {
+   "caso": "copia modificada",
+   "esperado": "cuasi-duplicado → revisión",
+   "obtenido": "revision_humana; cuasi-duplicado de 896646ecc76401dc95ace08f8e586bd98d368dafdfa9287ad88213cfefcc9f8f: posible versión nueva, no se fusiona; posible versión nueva de 896646ecc76401dc95ace08f8e586bd98d368dafdfa9287ad88213cfefcc9f8f",
+   "ok": true,
+   "segundos": 5.1,
+   "detalle": ""
+  },
+  {
+   "caso": "escaneo degradado (70 dpi, 2°, ruido; OCR real)",
+   "esperado": "revisión o rechazo, nunca aceptado",
+   "obtenido": "revision_humana; 2 página(s) OCR sin confianza; página OCR con confianza 51.9 < 70; identidad incompleta: faltan corporacion; categoría dudosa",
+   "ok": true,
+   "segundos": 9.1,
+   "detalle": ""
+  },
+  {
+   "caso": "PDF en blanco",
+   "esperado": "rechazado con motivo",
+   "obtenido": "rechazado; sin texto útil tras la limpieza: 0 caracteres en silver; categoría dudosa",
+   "ok": true,
+   "segundos": null,
+   "detalle": ""
+  },
+  {
+   "caso": "PDF cifrado",
+   "esperado": "rechazado con motivo",
+   "obtenido": "rechazado; PDF cifrado",
+   "ok": true,
+   "segundos": null,
+   "detalle": ""
+  },
+  {
+   "caso": "PDF truncado",
+   "esperado": "rechazado con motivo",
+   "obtenido": "rechazado; PDF truncado: falta marcador final %%EOF",
+   "ok": true,
+   "segundos": null,
+   "detalle": ""
+  },
+  {
+   "caso": "falso PDF",
+   "esperado": "rechazado con motivo",
+   "obtenido": "rechazado; Firma inválida: no es un PDF (%PDF-)",
+   "ok": true,
+   "segundos": null,
+   "detalle": ""
+  },
+  {
+   "caso": "PDF de 1.001 páginas",
+   "esperado": "rechazado con motivo",
+   "obtenido": "rechazado; PDF desmesurado: supera páginas máximas",
+   "ok": true,
+   "segundos": null,
+   "detalle": ""
+  },
+  {
+   "caso": "nombre hostil (.., RTL, tabulador, control, 190 car.)",
+   "esperado": "neutralizado (identidad por hash)",
+   "obtenido": "publicado; copias en raw con nombre seguro: True",
+   "ok": true,
+   "segundos": null,
+   "detalle": ""
+  },
+  {
+   "caso": "dos intakes a la vez",
+   "esperado": "uno espera o falla limpio, sin corrupción",
+   "obtenido": "códigos 0/2",
+   "ok": true,
+   "segundos": null,
+   "detalle": "Error de entrada autónoma: El worker previo (PID 7743) sigue vivo; el intake no escribirá. Espere a que termine antes de reiniciar. "
+  },
+  {
+   "caso": "kill -9 durante extracción (OCR) y reintento",
+   "esperado": "sin duplicados, huérfanos ni worker vivo",
+   "obtenido": "interrumpido: True; workers vivos tras matar: 0; reintento publicado; chunks 118/118; preparación 0",
+   "ok": true,
+   "segundos": 177.3,
+   "detalle": ""
+  },
+  {
+   "caso": "kill -9 durante embeddings y reintento",
+   "esperado": "sin duplicados, huérfanos ni worker vivo",
+   "obtenido": "interrumpido: True; workers vivos tras matar: 0; reintento publicado; chunks 145/145; preparación 0",
+   "ok": true,
+   "segundos": 173.5,
+   "detalle": ""
+  },
+  {
+   "caso": "retire",
+   "esperado": "desaparece de Chroma",
+   "obtenido": "código 0; chunks 145 → 0",
+   "ok": true,
+   "segundos": 3.7,
+   "detalle": ""
+  },
+  {
+   "caso": "colección protegida «v1»",
+   "esperado": "rechazo (código 3)",
+   "obtenido": "código 3",
+   "ok": true,
+   "segundos": null,
+   "detalle": ""
+  },
+  {
+   "caso": "colección protegida «atlas_v1»",
+   "esperado": "rechazo (código 3)",
+   "obtenido": "código 3",
+   "ok": true,
+   "segundos": null,
+   "detalle": ""
+  },
+  {
+   "caso": "colección protegida «rag_playas»",
+   "esperado": "rechazo (código 3)",
+   "obtenido": "código 3",
+   "ok": true,
+   "segundos": null,
+   "detalle": ""
+  },
+  {
+   "caso": "colección protegida «rag_playas_magdalena»",
+   "esperado": "rechazo (código 3)",
+   "obtenido": "código 3",
+   "ok": true,
+   "segundos": null,
+   "detalle": ""
+  },
+  {
+   "caso": "colección protegida «atlas_otra»",
+   "esperado": "rechazo (código 3)",
+   "obtenido": "código 3",
+   "ok": true,
+   "segundos": null,
+   "detalle": ""
+  }
+ ]
+}

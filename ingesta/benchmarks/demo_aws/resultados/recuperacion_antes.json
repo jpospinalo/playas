@@ -1,0 +1,1009 @@
+{
+ "casos": [
+  {
+   "case_id": "registro-002",
+   "documentos_esperados": [
+    "decreto-2324-de-1984"
+   ],
+   "top_prod": [
+    "CE 2da NYR 1999 503 Inversiones Mercedes VS Dimar Concesiones Uso Playa",
+    "CE Consulta 1990 Horacio Serpa Uso Publico Playa",
+    "CE 2da NYR 1999 503 Inversiones Mercedes VS Dimar Concesiones Uso Playa",
+    "CE 2da NYR 1999 503 Inversiones Mercedes VS Dimar Concesiones Uso Playa"
+   ],
+   "rank": null,
+   "hit4": 0,
+   "rr": 0.0,
+   "doc_recall_at_4": 0.0,
+   "segundos": 3.47
+  },
+  {
+   "case_id": "registro-003",
+   "documentos_esperados": [
+    "Reglamento Maritimo Colombiano REMAC 5-DIMAR (202103)"
+   ],
+   "top_prod": [
+    "Por el cual se dictan normas para simplificar, suprimir y reformar trámites, procesos y procedimientos innecesarios exis",
+    "AP PROCURADURÍA GENERAL DE LA ANCIÓN VS COORPAMAG Y OTROS",
+    "CE 2da NYR 1999 503 Inversiones Mercedes VS Dimar Concesiones Uso Playa",
+    "Por medio del cual se expide el Decreto Único Reglamentario del Sector Transporte"
+   ],
+   "rank": null,
+   "hit4": 0,
+   "rr": 0.0,
+   "doc_recall_at_4": 0.0,
+   "segundos": 0.82
+  },
+  {
+   "case_id": "registro-004",
+   "documentos_esperados": [
+    "Reglamento Maritimo Colombiano REMAC 5-DIMAR (202103)"
+   ],
+   "top_prod": [
+    "CE 2da NYR 1999 503 Inversiones Mercedes VS Dimar Concesiones Uso Playa",
+    "CE 2da NYR 1999 503 Inversiones Mercedes VS Dimar Concesiones Uso Playa",
+    "CE 2da NYR 1999 503 Inversiones Mercedes VS Dimar Concesiones Uso Playa",
+    "CE 2da NYR 1999 503 Inversiones Mercedes VS Dimar Concesiones Uso Playa"
+   ],
+   "rank": null,
+   "hit4": 0,
+   "rr": 0.0,
+   "doc_recall_at_4": 0.0,
+   "segundos": 1.0
+  },
+  {
+   "case_id": "registro-005",
+   "documentos_esperados": [
+    "Reglamento Maritimo Colombiano REMAC 5-DIMAR (202103)"
+   ],
+   "top_prod": [
+    "AP Rodrigo Martínez Silva VS Minambiente y otros",
+    "CE 2da NYR 1999 503 Inversiones Mercedes VS Dimar Concesiones Uso Playa",
+    "CE 2da NYR 1999 503 Inversiones Mercedes VS Dimar Concesiones Uso Playa",
+    "CE Consulta 1990 Horacio Serpa Uso Publico Playa"
+   ],
+   "rank": null,
+   "hit4": 0,
+   "rr": 0.0,
+   "doc_recall_at_4": 0.0,
+   "segundos": 1.37
+  },
+  {
+   "case_id": "registro-006",
+   "documentos_esperados": [
+    "Reglamento Maritimo Colombiano REMAC 5-DIMAR (202103)"
+   ],
+   "top_prod": [
+    "Por medio del cual se expide el Decreto Único Reglamentario del Sector Vivienda, Ciudad y Territorio",
+    "CE Consulta 1990 Horacio Serpa Uso Publico Playa",
+    "AP Rodrigo Martínez Silva VS Minambiente y otros",
+    "Por medio del cual se expide el Decreto Único Reglamentario del Sector Transporte"
+   ],
+   "rank": null,
+   "hit4": 0,
+   "rr": 0.0,
+   "doc_recall_at_4": 0.0,
+   "segundos": 1.33
+  },
+  {
+   "case_id": "registro-007",
+   "documentos_esperados": [
+    "Reglamento Maritimo Colombiano REMAC 5-DIMAR (202103)"
+   ],
+   "top_prod": [
+    "AP PROCURADURÍA GENERAL DE LA ANCIÓN VS COORPAMAG Y OTROS",
+    "AP PROCURADURÍA GENERAL DE LA ANCIÓN VS COORPAMAG Y OTROS",
+    "AP PROCURADURÍA GENERAL DE LA ANCIÓN VS COORPAMAG Y OTROS",
+    "AP Carlos Alberto Zúñiga Mejía y otros VS DIMAR y otros"
+   ],
+   "rank": null,
+   "hit4": 0,
+   "rr": 0.0,
+   "doc_recall_at_4": 0.0,
+   "segundos": 0.93
+  },
+  {
+   "case_id": "registro-008",
+   "documentos_esperados": [
+    "Reglamento Maritimo Colombiano REMAC 5-DIMAR (202103)"
+   ],
+   "top_prod": [
+    "CE 2da NYR 1999 503 Inversiones Mercedes VS Dimar Concesiones Uso Playa",
+    "AP Rodrigo Martínez Silva VS Minambiente y otros",
+    "CE Consulta 1990 Horacio Serpa Uso Publico Playa",
+    "Por el cual se dicta el Código Nacional de Recursos Naturales Renovables y de Protección al Medio Ambiente"
+   ],
+   "rank": null,
+   "hit4": 0,
+   "rr": 0.0,
+   "doc_recall_at_4": 0.0,
+   "segundos": 1.21
+  },
+  {
+   "case_id": "registro-009",
+   "documentos_esperados": [
+    "Reglamento Maritimo Colombiano REMAC 5-DIMAR (202103)"
+   ],
+   "top_prod": [
+    "AP Rodrigo Martínez Silva VS Minambiente y otros",
+    "AP Rodrigo Martínez Silva VS Minambiente y otros",
+    "AP Rodrigo Martínez Silva VS Minambiente y otros",
+    "AP PROCURADURÍA GENERAL DE LA ANCIÓN VS COORPAMAG Y OTROS"
+   ],
+   "rank": null,
+   "hit4": 0,
+   "rr": 0.0,
+   "doc_recall_at_4": 0.0,
+   "segundos": 0.9
+  },
+  {
+   "case_id": "registro-010",
+   "documentos_esperados": [
+    "Reglamento Maritimo Colombiano REMAC 5-DIMAR (202103)"
+   ],
+   "top_prod": [
+    "AP Rodrigo Martínez Silva VS Minambiente y otros",
+    "AP Rodrigo Martínez Silva VS Minambiente y otros",
+    "AP Rodrigo Martínez Silva VS Minambiente y otros",
+    "AP Rodrigo Martínez Silva VS Minambiente y otros"
+   ],
+   "rank": null,
+   "hit4": 0,
+   "rr": 0.0,
+   "doc_recall_at_4": 0.0,
+   "segundos": 0.94
+  },
+  {
+   "case_id": "registro-011",
+   "documentos_esperados": [
+    "Reglamento Maritimo Colombiano REMAC 5-DIMAR (202103)"
+   ],
+   "top_prod": [
+    "CE 2da NYR 1999 503 Inversiones Mercedes VS Dimar Concesiones Uso Playa",
+    "Por medio del cual se expide el Decreto Único Reglamentario del Sector Vivienda, Ciudad y Territorio",
+    "AP Rodrigo Martínez Silva VS Minambiente y otros",
+    "Por medio del cual se expide el Decreto Único Reglamentario del Sector Vivienda, Ciudad y Territorio"
+   ],
+   "rank": null,
+   "hit4": 0,
+   "rr": 0.0,
+   "doc_recall_at_4": 0.0,
+   "segundos": 0.96
+  },
+  {
+   "case_id": "registro-012",
+   "documentos_esperados": [
+    "Reglamento Maritimo Colombiano REMAC 5-DIMAR (202103)"
+   ],
+   "top_prod": [
+    "AP Rodrigo Martínez Silva VS Minambiente y otros",
+    "Por medio del cual se expide el Decreto Único Reglamentario del Sector Vivienda, Ciudad y Territorio",
+    "Por medio del cual se expide el Decreto Único Reglamentario del Sector Transporte",
+    "CE 2da NYR 1999 503 Inversiones Mercedes VS Dimar Concesiones Uso Playa"
+   ],
+   "rank": null,
+   "hit4": 0,
+   "rr": 0.0,
+   "doc_recall_at_4": 0.0,
+   "segundos": 0.89
+  },
+  {
+   "case_id": "registro-013",
+   "documentos_esperados": [
+    "Reglamento Maritimo Colombiano REMAC 5-DIMAR (202103)"
+   ],
+   "top_prod": [
+    "CE 2da NYR 1999 503 Inversiones Mercedes VS Dimar Concesiones Uso Playa",
+    "CE 2da NYR 1999 503 Inversiones Mercedes VS Dimar Concesiones Uso Playa",
+    "Por medio del cual se expide el Decreto Único Reglamentario del Sector Transporte",
+    "AP Rodrigo Martínez Silva VS Minambiente y otros"
+   ],
+   "rank": null,
+   "hit4": 0,
+   "rr": 0.0,
+   "doc_recall_at_4": 0.0,
+   "segundos": 0.78
+  },
+  {
+   "case_id": "registro-014",
+   "documentos_esperados": [
+    "Reglamento Maritimo Colombiano REMAC 5-DIMAR (202103)"
+   ],
+   "top_prod": [
+    "AP Rodrigo Martínez Silva VS Minambiente y otros",
+    "CE Consulta 1990 Horacio Serpa Uso Publico Playa",
+    "CE Consulta 1990 Horacio Serpa Uso Publico Playa",
+    "Por medio del cual se expide el Decreto Único Reglamentario del Sector Transporte"
+   ],
+   "rank": null,
+   "hit4": 0,
+   "rr": 0.0,
+   "doc_recall_at_4": 0.0,
+   "segundos": 0.94
+  },
+  {
+   "case_id": "registro-015",
+   "documentos_esperados": [
+    "Reglamento Maritimo Colombiano REMAC 5-DIMAR (202103)"
+   ],
+   "top_prod": [
+    "Por el cual se dictan normas para simplificar, suprimir y reformar trámites, procesos y procedimientos innecesarios exis",
+    "CE 2da NYR 1999 503 Inversiones Mercedes VS Dimar Concesiones Uso Playa",
+    "AP PROCURADURÍA GENERAL DE LA ANCIÓN VS COORPAMAG Y OTROS",
+    "Por medio del cual se expide el Decreto Único Reglamentario del Sector Transporte"
+   ],
+   "rank": null,
+   "hit4": 0,
+   "rr": 0.0,
+   "doc_recall_at_4": 0.0,
+   "segundos": 0.81
+  },
+  {
+   "case_id": "registro-016",
+   "documentos_esperados": [
+    "Reglamento Maritimo Colombiano REMAC 5-DIMAR (202103)"
+   ],
+   "top_prod": [
+    "Por medio del cual se expide el Decreto Único Reglamentario del Sector Transporte",
+    "Por medio del cual se expide el Decreto Único Reglamentario del Sector Transporte",
+    "Por medio del cual se expide el Decreto Único Reglamentario del Sector Vivienda, Ciudad y Territorio",
+    "Por medio del cual se expide el Decreto Único Reglamentario del Sector Transporte"
+   ],
+   "rank": null,
+   "hit4": 0,
+   "rr": 0.0,
+   "doc_recall_at_4": 0.0,
+   "segundos": 0.87
+  },
+  {
+   "case_id": "registro-017",
+   "documentos_esperados": [
+    "decreto-2324-de-1984"
+   ],
+   "top_prod": [
+    "AP Rodrigo Martínez Silva VS Minambiente y otros",
+    "CE 2da NYR 1999 503 Inversiones Mercedes VS Dimar Concesiones Uso Playa",
+    "CE 2da NYR 1999 503 Inversiones Mercedes VS Dimar Concesiones Uso Playa",
+    "AP Rodrigo Martínez Silva VS Minambiente y otros"
+   ],
+   "rank": null,
+   "hit4": 0,
+   "rr": 0.0,
+   "doc_recall_at_4": 0.0,
+   "segundos": 0.35
+  },
+  {
+   "case_id": "registro-018",
+   "documentos_esperados": [
+    "decreto-2324-de-1984"
+   ],
+   "top_prod": [
+    "CE 2da NYR 1999 503 Inversiones Mercedes VS Dimar Concesiones Uso Playa",
+    "CE 2da NYR 1999 503 Inversiones Mercedes VS Dimar Concesiones Uso Playa",
+    "CE 2da NYR 1999 503 Inversiones Mercedes VS Dimar Concesiones Uso Playa",
+    "CE 2da NYR 1999 503 Inversiones Mercedes VS Dimar Concesiones Uso Playa"
+   ],
+   "rank": null,
+   "hit4": 0,
+   "rr": 0.0,
+   "doc_recall_at_4": 0.0,
+   "segundos": 0.82
+  },
+  {
+   "case_id": "registro-019",
+   "documentos_esperados": [
+    "decreto-2324-de-1984"
+   ],
+   "top_prod": [
+    "AP Rodrigo Martínez Silva VS Minambiente y otros",
+    "AP Rodrigo Martínez Silva VS Minambiente y otros",
+    "AP PROCURADURÍA GENERAL DE LA ANCIÓN VS COORPAMAG Y OTROS",
+    "AP Rodrigo Martínez Silva VS Minambiente y otros"
+   ],
+   "rank": null,
+   "hit4": 0,
+   "rr": 0.0,
+   "doc_recall_at_4": 0.0,
+   "segundos": 0.93
+  },
+  {
+   "case_id": "registro-031",
+   "documentos_esperados": [
+    "AP Gerardo Antenor Lemus Orozco VS Distrito de Santa Mata y otros"
+   ],
+   "top_prod": [
+    "AP Rodrigo Martínez Silva VS Minambiente y otros",
+    "CE 2da NYR 1999 503 Inversiones Mercedes VS Dimar Concesiones Uso Playa",
+    "CE 2da NYR 1999 503 Inversiones Mercedes VS Dimar Concesiones Uso Playa",
+    "CE Consulta 1990 Horacio Serpa Uso Publico Playa"
+   ],
+   "rank": null,
+   "hit4": 0,
+   "rr": 0.0,
+   "doc_recall_at_4": 0.0,
+   "segundos": 0.72
+  },
+  {
+   "case_id": "registro-032",
+   "documentos_esperados": [
+    "AP Inversiones E y D S.A.S VS DIMAR y otros"
+   ],
+   "top_prod": [
+    "AP Rodrigo Martínez Silva VS Minambiente y otros",
+    "AP Rodrigo Martínez Silva VS Minambiente y otros",
+    "CE 2da NYR 1999 503 Inversiones Mercedes VS Dimar Concesiones Uso Playa",
+    "Por medio del cual se expide el Decreto Único Reglamentario del Sector Vivienda, Ciudad y Territorio"
+   ],
+   "rank": null,
+   "hit4": 0,
+   "rr": 0.0,
+   "doc_recall_at_4": 0.0,
+   "segundos": 0.69
+  },
+  {
+   "case_id": "registro-033",
+   "documentos_esperados": [
+    "AP Gerardo Antenor Lemus Orozco VS Distrito de Santa Mata y otros"
+   ],
+   "top_prod": [
+    "AP Rodrigo Martínez Silva VS Minambiente y otros",
+    "AP Rodrigo Martínez Silva VS Minambiente y otros",
+    "CE 2da NYR 1999 503 Inversiones Mercedes VS Dimar Concesiones Uso Playa",
+    "Por medio del cual se expide el Decreto Único Reglamentario del Sector Vivienda, Ciudad y Territorio"
+   ],
+   "rank": null,
+   "hit4": 0,
+   "rr": 0.0,
+   "doc_recall_at_4": 0.0,
+   "segundos": 0.66
+  },
+  {
+   "case_id": "registro-034",
+   "documentos_esperados": [
+    "AP Felipe José Campo Fernández VS Corpamag y otros",
+    "AP PROCURADURÍA GENERAL DE LA ANCIÓN VS COORPAMAG Y OTROS"
+   ],
+   "top_prod": [
+    "AP Rodrigo Martínez Silva VS Minambiente y otros",
+    "AP Rodrigo Martínez Silva VS Minambiente y otros",
+    "AP Rodrigo Martínez Silva VS Minambiente y otros",
+    "AP Carlos Alberto Zúñiga Mejía y otros VS DIMAR y otros"
+   ],
+   "rank": 14,
+   "hit4": 0,
+   "rr": 0.07142857142857142,
+   "doc_recall_at_4": 0.0,
+   "segundos": 1.41
+  },
+  {
+   "case_id": "registro-035",
+   "documentos_esperados": [
+    "AP Inversiones E y D S.A.S VS DIMAR y otros",
+    "AP Felipe José Campo Fernández VS Corpamag y otros"
+   ],
+   "top_prod": [
+    "CE 2da NYR 1999 503 Inversiones Mercedes VS Dimar Concesiones Uso Playa",
+    "CE 2da NYR 1999 503 Inversiones Mercedes VS Dimar Concesiones Uso Playa",
+    "CE 2da NYR 1999 503 Inversiones Mercedes VS Dimar Concesiones Uso Playa",
+    "CE 2da NYR 1999 503 Inversiones Mercedes VS Dimar Concesiones Uso Playa"
+   ],
+   "rank": null,
+   "hit4": 0,
+   "rr": 0.0,
+   "doc_recall_at_4": 0.0,
+   "segundos": 0.87
+  },
+  {
+   "case_id": "registro-036",
+   "documentos_esperados": [
+    "AP Gerardo Antenor Lemus Orozco VS Distrito de Santa Mata y otros"
+   ],
+   "top_prod": [
+    "CE 2da NYR 1999 503 Inversiones Mercedes VS Dimar Concesiones Uso Playa",
+    "CE 2da NYR 1999 503 Inversiones Mercedes VS Dimar Concesiones Uso Playa",
+    "CE 2da NYR 1999 503 Inversiones Mercedes VS Dimar Concesiones Uso Playa",
+    "CE 2da NYR 1999 503 Inversiones Mercedes VS Dimar Concesiones Uso Playa"
+   ],
+   "rank": null,
+   "hit4": 0,
+   "rr": 0.0,
+   "doc_recall_at_4": 0.0,
+   "segundos": 0.66
+  },
+  {
+   "case_id": "registro-037",
+   "documentos_esperados": [
+    "AP Felipe José Campo Fernández VS Corpamag y otros"
+   ],
+   "top_prod": [
+    "AP Rodrigo Martínez Silva VS Minambiente y otros",
+    "AP PROCURADURÍA GENERAL DE LA ANCIÓN VS COORPAMAG Y OTROS",
+    "AP Rodrigo Martínez Silva VS Minambiente y otros",
+    "AP Rodrigo Martínez Silva VS Minambiente y otros"
+   ],
+   "rank": null,
+   "hit4": 0,
+   "rr": 0.0,
+   "doc_recall_at_4": 0.0,
+   "segundos": 0.86
+  },
+  {
+   "case_id": "registro-038",
+   "documentos_esperados": [
+    "AP PROCURADURÍA GENERAL DE LA ANCIÓN VS COORPAMAG Y OTROS",
+    "AP Felipe José Campo Fernández VS Corpamag y otros"
+   ],
+   "top_prod": [
+    "AP PROCURADURÍA GENERAL DE LA ANCIÓN VS COORPAMAG Y OTROS",
+    "AP Rodrigo Martínez Silva VS Minambiente y otros",
+    "AP Rodrigo Martínez Silva VS Minambiente y otros",
+    "AP PROCURADURÍA GENERAL DE LA ANCIÓN VS COORPAMAG Y OTROS"
+   ],
+   "rank": 1,
+   "hit4": 1,
+   "rr": 1.0,
+   "doc_recall_at_4": 0.5,
+   "segundos": 2.61
+  },
+  {
+   "case_id": "registro-040",
+   "documentos_esperados": [
+    "AP Felipe José Campo Fernández VS Corpamag y otros"
+   ],
+   "top_prod": [
+    "AP Rodrigo Martínez Silva VS Minambiente y otros",
+    "AP Rodrigo Martínez Silva VS Minambiente y otros",
+    "CE 2da NYR 1999 503 Inversiones Mercedes VS Dimar Concesiones Uso Playa",
+    "AP Rodrigo Martínez Silva VS Minambiente y otros"
+   ],
+   "rank": null,
+   "hit4": 0,
+   "rr": 0.0,
+   "doc_recall_at_4": 0.0,
+   "segundos": 0.66
+  },
+  {
+   "case_id": "registro-041",
+   "documentos_esperados": [
+    "AP PROCURADURÍA GENERAL DE LA ANCIÓN VS COORPAMAG Y OTROS"
+   ],
+   "top_prod": [
+    "AP PROCURADURÍA GENERAL DE LA ANCIÓN VS COORPAMAG Y OTROS",
+    "AP PROCURADURÍA GENERAL DE LA ANCIÓN VS COORPAMAG Y OTROS",
+    "AP PROCURADURÍA GENERAL DE LA ANCIÓN VS COORPAMAG Y OTROS",
+    "AP PROCURADURÍA GENERAL DE LA ANCIÓN VS COORPAMAG Y OTROS"
+   ],
+   "rank": 1,
+   "hit4": 1,
+   "rr": 1.0,
+   "doc_recall_at_4": 1.0,
+   "segundos": 1.26
+  },
+  {
+   "case_id": "registro-042",
+   "documentos_esperados": [
+    "AP Felipe José Campo Fernández VS Corpamag y otros"
+   ],
+   "top_prod": [
+    "AP Rodrigo Martínez Silva VS Minambiente y otros",
+    "AP Rodrigo Martínez Silva VS Minambiente y otros",
+    "AP Rodrigo Martínez Silva VS Minambiente y otros",
+    "AP Rodrigo Martínez Silva VS Minambiente y otros"
+   ],
+   "rank": null,
+   "hit4": 0,
+   "rr": 0.0,
+   "doc_recall_at_4": 0.0,
+   "segundos": 0.81
+  },
+  {
+   "case_id": "registro-043",
+   "documentos_esperados": [
+    "AP Felipe José Campo Fernández VS Corpamag y otros"
+   ],
+   "top_prod": [
+    "AP Rodrigo Martínez Silva VS Minambiente y otros",
+    "AP Rodrigo Martínez Silva VS Minambiente y otros",
+    "CE 2da NYR 1999 503 Inversiones Mercedes VS Dimar Concesiones Uso Playa",
+    "AP Rodrigo Martínez Silva VS Minambiente y otros"
+   ],
+   "rank": null,
+   "hit4": 0,
+   "rr": 0.0,
+   "doc_recall_at_4": 0.0,
+   "segundos": 0.86
+  },
+  {
+   "case_id": "registro-044",
+   "documentos_esperados": [
+    "AP Felipe José Campo Fernández VS Corpamag y otros"
+   ],
+   "top_prod": [
+    "AP Rodrigo Martínez Silva VS Minambiente y otros",
+    "AP Rodrigo Martínez Silva VS Minambiente y otros",
+    "AP Rodrigo Martínez Silva VS Minambiente y otros",
+    "AP Rodrigo Martínez Silva VS Minambiente y otros"
+   ],
+   "rank": null,
+   "hit4": 0,
+   "rr": 0.0,
+   "doc_recall_at_4": 0.0,
+   "segundos": 0.77
+  },
+  {
+   "case_id": "registro-045",
+   "documentos_esperados": [
+    "AP Gerardo Antenor Lemus Orozco VS Distrito de Santa Mata y otros"
+   ],
+   "top_prod": [
+    "CE 2da NYR 1999 503 Inversiones Mercedes VS Dimar Concesiones Uso Playa",
+    "CE 2da NYR 1999 503 Inversiones Mercedes VS Dimar Concesiones Uso Playa",
+    "Por medio del cual se expide el Decreto Único Reglamentario del Sector Vivienda, Ciudad y Territorio",
+    "AP Rodrigo Martínez Silva VS Minambiente y otros"
+   ],
+   "rank": null,
+   "hit4": 0,
+   "rr": 0.0,
+   "doc_recall_at_4": 0.0,
+   "segundos": 0.82
+  },
+  {
+   "case_id": "registro-046",
+   "documentos_esperados": [
+    "AP Gerardo Antenor Lemus Orozco VS Distrito de Santa Mata y otros"
+   ],
+   "top_prod": [
+    "Por el cual se reglamentan las disposiciones sobre licencias urbanísticas, reconocimiento de edificaciones y legalizació",
+    "AP Rodrigo Martínez Silva VS Minambiente y otros",
+    "AP Rodrigo Martínez Silva VS Minambiente y otros",
+    "AP Rodrigo Martínez Silva VS Minambiente y otros"
+   ],
+   "rank": null,
+   "hit4": 0,
+   "rr": 0.0,
+   "doc_recall_at_4": 0.0,
+   "segundos": 0.73
+  },
+  {
+   "case_id": "registro-047",
+   "documentos_esperados": [
+    "AP Felipe José Campo Fernández VS Corpamag y otros"
+   ],
+   "top_prod": [
+    "AP Rodrigo Martínez Silva VS Minambiente y otros",
+    "AP Rodrigo Martínez Silva VS Minambiente y otros",
+    "AP Rodrigo Martínez Silva VS Minambiente y otros",
+    "AP Rodrigo Martínez Silva VS Minambiente y otros"
+   ],
+   "rank": null,
+   "hit4": 0,
+   "rr": 0.0,
+   "doc_recall_at_4": 0.0,
+   "segundos": 3.16
+  },
+  {
+   "case_id": "registro-048",
+   "documentos_esperados": [
+    "AP PROCURADURÍA GENERAL DE LA ANCIÓN VS COORPAMAG Y OTROS"
+   ],
+   "top_prod": [
+    "AP PROCURADURÍA GENERAL DE LA ANCIÓN VS COORPAMAG Y OTROS",
+    "AP PROCURADURÍA GENERAL DE LA ANCIÓN VS COORPAMAG Y OTROS",
+    "AP PROCURADURÍA GENERAL DE LA ANCIÓN VS COORPAMAG Y OTROS",
+    "AP PROCURADURÍA GENERAL DE LA ANCIÓN VS COORPAMAG Y OTROS"
+   ],
+   "rank": 1,
+   "hit4": 1,
+   "rr": 1.0,
+   "doc_recall_at_4": 1.0,
+   "segundos": 1.02
+  },
+  {
+   "case_id": "registro-049",
+   "documentos_esperados": [
+    "AP Inversiones E y D S.A.S VS DIMAR y otros"
+   ],
+   "top_prod": [
+    "AP Rodrigo Martínez Silva VS Minambiente y otros",
+    "AP Rodrigo Martínez Silva VS Minambiente y otros",
+    "AP Rodrigo Martínez Silva VS Minambiente y otros",
+    "AP PROCURADURÍA GENERAL DE LA ANCIÓN VS COORPAMAG Y OTROS"
+   ],
+   "rank": null,
+   "hit4": 0,
+   "rr": 0.0,
+   "doc_recall_at_4": 0.0,
+   "segundos": 1.53
+  },
+  {
+   "case_id": "registro-050",
+   "documentos_esperados": [
+    "AP Rodrigo Martínez Silva VS Minambiente y otros"
+   ],
+   "top_prod": [
+    "AP Rodrigo Martínez Silva VS Minambiente y otros",
+    "AP Rodrigo Martínez Silva VS Minambiente y otros",
+    "AP Rodrigo Martínez Silva VS Minambiente y otros",
+    "AP Rodrigo Martínez Silva VS Minambiente y otros"
+   ],
+   "rank": 1,
+   "hit4": 1,
+   "rr": 1.0,
+   "doc_recall_at_4": 1.0,
+   "segundos": 1.41
+  },
+  {
+   "case_id": "registro-051",
+   "documentos_esperados": [
+    "AP Rodrigo Martínez Silva VS Minambiente y otros"
+   ],
+   "top_prod": [
+    "AP Rodrigo Martínez Silva VS Minambiente y otros",
+    "AP Rodrigo Martínez Silva VS Minambiente y otros",
+    "AP Rodrigo Martínez Silva VS Minambiente y otros",
+    "AP Rodrigo Martínez Silva VS Minambiente y otros"
+   ],
+   "rank": 1,
+   "hit4": 1,
+   "rr": 1.0,
+   "doc_recall_at_4": 1.0,
+   "segundos": 1.38
+  },
+  {
+   "case_id": "registro-052",
+   "documentos_esperados": [
+    "AP Gerardo Antenor Lemus Orozco VS Distrito de Santa Mata y otros"
+   ],
+   "top_prod": [
+    "CE 2da NYR 1999 503 Inversiones Mercedes VS Dimar Concesiones Uso Playa",
+    "CE 2da NYR 1999 503 Inversiones Mercedes VS Dimar Concesiones Uso Playa",
+    "Por medio del cual se expide el Decreto Único Reglamentario del Sector Vivienda, Ciudad y Territorio",
+    "AP Rodrigo Martínez Silva VS Minambiente y otros"
+   ],
+   "rank": null,
+   "hit4": 0,
+   "rr": 0.0,
+   "doc_recall_at_4": 0.0,
+   "segundos": 0.68
+  },
+  {
+   "case_id": "registro-053",
+   "documentos_esperados": [
+    "AP  Carlos Alberto Zúñiga Mejía y otros VS DIMAR y otros"
+   ],
+   "top_prod": [
+    "AP Carlos Alberto Zúñiga Mejía y otros VS DIMAR y otros",
+    "AP Carlos Alberto Zúñiga Mejía y otros VS DIMAR y otros",
+    "AP Carlos Alberto Zúñiga Mejía y otros VS DIMAR y otros",
+    "AP Carlos Alberto Zúñiga Mejía y otros VS DIMAR y otros"
+   ],
+   "rank": null,
+   "hit4": 0,
+   "rr": 0.0,
+   "doc_recall_at_4": 0.0,
+   "segundos": 0.68
+  },
+  {
+   "case_id": "registro-054",
+   "documentos_esperados": [
+    "AP  Carlos Alberto Zúñiga Mejía y otros VS DIMAR y otros"
+   ],
+   "top_prod": [
+    "AP Rodrigo Martínez Silva VS Minambiente y otros",
+    "AP PROCURADURÍA GENERAL DE LA ANCIÓN VS COORPAMAG Y OTROS",
+    "AP PROCURADURÍA GENERAL DE LA ANCIÓN VS COORPAMAG Y OTROS",
+    "AP PROCURADURÍA GENERAL DE LA ANCIÓN VS COORPAMAG Y OTROS"
+   ],
+   "rank": null,
+   "hit4": 0,
+   "rr": 0.0,
+   "doc_recall_at_4": 0.0,
+   "segundos": 0.56
+  },
+  {
+   "case_id": "registro-055",
+   "documentos_esperados": [
+    "AP  Carlos Alberto Zúñiga Mejía y otros VS DIMAR y otros"
+   ],
+   "top_prod": [
+    "AP Rodrigo Martínez Silva VS Minambiente y otros",
+    "AP Rodrigo Martínez Silva VS Minambiente y otros",
+    "AP Rodrigo Martínez Silva VS Minambiente y otros",
+    "CE 2da NYR 1999 503 Inversiones Mercedes VS Dimar Concesiones Uso Playa"
+   ],
+   "rank": null,
+   "hit4": 0,
+   "rr": 0.0,
+   "doc_recall_at_4": 0.0,
+   "segundos": 0.69
+  },
+  {
+   "case_id": "registro-056",
+   "documentos_esperados": [
+    "AP Gerardo Antenor Lemus Orozco VS Distrito de Santa Mata y otros"
+   ],
+   "top_prod": [
+    "AP Carlos Alberto Zúñiga Mejía y otros VS DIMAR y otros",
+    "AP Rodrigo Martínez Silva VS Minambiente y otros",
+    "AP PROCURADURÍA GENERAL DE LA ANCIÓN VS COORPAMAG Y OTROS",
+    "AP PROCURADURÍA GENERAL DE LA ANCIÓN VS COORPAMAG Y OTROS"
+   ],
+   "rank": null,
+   "hit4": 0,
+   "rr": 0.0,
+   "doc_recall_at_4": 0.0,
+   "segundos": 0.65
+  },
+  {
+   "case_id": "registro-057",
+   "documentos_esperados": [
+    "AP  Carlos Alberto Zúñiga Mejía y otros VS DIMAR y otros",
+    "AP Gerardo Antenor Lemus Orozco VS Distrito de Santa Mata y otros"
+   ],
+   "top_prod": [
+    "AP Rodrigo Martínez Silva VS Minambiente y otros",
+    "AP Rodrigo Martínez Silva VS Minambiente y otros",
+    "AP Rodrigo Martínez Silva VS Minambiente y otros",
+    "AP Rodrigo Martínez Silva VS Minambiente y otros"
+   ],
+   "rank": null,
+   "hit4": 0,
+   "rr": 0.0,
+   "doc_recall_at_4": 0.0,
+   "segundos": 0.74
+  },
+  {
+   "case_id": "registro-058",
+   "documentos_esperados": [
+    "AP Gerardo Antenor Lemus Orozco VS Distrito de Santa Mata y otros",
+    "AP  Carlos Alberto Zúñiga Mejía y otros VS DIMAR y otros"
+   ],
+   "top_prod": [
+    "AP Rodrigo Martínez Silva VS Minambiente y otros",
+    "AP Carlos Alberto Zúñiga Mejía y otros VS DIMAR y otros",
+    "AP PROCURADURÍA GENERAL DE LA ANCIÓN VS COORPAMAG Y OTROS",
+    "AP PROCURADURÍA GENERAL DE LA ANCIÓN VS COORPAMAG Y OTROS"
+   ],
+   "rank": null,
+   "hit4": 0,
+   "rr": 0.0,
+   "doc_recall_at_4": 0.0,
+   "segundos": 0.68
+  },
+  {
+   "case_id": "registro-059",
+   "documentos_esperados": [
+    "AP Gerardo Antenor Lemus Orozco VS Distrito de Santa Mata y otros",
+    "AP  Carlos Alberto Zúñiga Mejía y otros VS DIMAR y otros"
+   ],
+   "top_prod": [
+    "CE 2da NYR 1999 503 Inversiones Mercedes VS Dimar Concesiones Uso Playa",
+    "AP Rodrigo Martínez Silva VS Minambiente y otros",
+    "CE 2da NYR 1999 503 Inversiones Mercedes VS Dimar Concesiones Uso Playa",
+    "AP Rodrigo Martínez Silva VS Minambiente y otros"
+   ],
+   "rank": null,
+   "hit4": 0,
+   "rr": 0.0,
+   "doc_recall_at_4": 0.0,
+   "segundos": 0.85
+  },
+  {
+   "case_id": "registro-060",
+   "documentos_esperados": [
+    "AP  Carlos Alberto Zúñiga Mejía y otros VS DIMAR y otros"
+   ],
+   "top_prod": [
+    "AP Rodrigo Martínez Silva VS Minambiente y otros",
+    "AP Carlos Alberto Zúñiga Mejía y otros VS DIMAR y otros",
+    "AP Carlos Alberto Zúñiga Mejía y otros VS DIMAR y otros",
+    "AP Carlos Alberto Zúñiga Mejía y otros VS DIMAR y otros"
+   ],
+   "rank": null,
+   "hit4": 0,
+   "rr": 0.0,
+   "doc_recall_at_4": 0.0,
+   "segundos": 0.64
+  },
+  {
+   "case_id": "registro-061",
+   "documentos_esperados": [
+    "AP Gerardo Antenor Lemus Orozco VS Distrito de Santa Mata y otros"
+   ],
+   "top_prod": [
+    "AP Rodrigo Martínez Silva VS Minambiente y otros",
+    "AP Rodrigo Martínez Silva VS Minambiente y otros",
+    "AP Rodrigo Martínez Silva VS Minambiente y otros",
+    "AP Rodrigo Martínez Silva VS Minambiente y otros"
+   ],
+   "rank": null,
+   "hit4": 0,
+   "rr": 0.0,
+   "doc_recall_at_4": 0.0,
+   "segundos": 0.92
+  },
+  {
+   "case_id": "registro-062",
+   "documentos_esperados": [
+    "AP Gerardo Antenor Lemus Orozco VS Distrito de Santa Mata y otros"
+   ],
+   "top_prod": [
+    "AP Rodrigo Martínez Silva VS Minambiente y otros",
+    "AP Rodrigo Martínez Silva VS Minambiente y otros",
+    "AP Rodrigo Martínez Silva VS Minambiente y otros",
+    "AP PROCURADURÍA GENERAL DE LA ANCIÓN VS COORPAMAG Y OTROS"
+   ],
+   "rank": null,
+   "hit4": 0,
+   "rr": 0.0,
+   "doc_recall_at_4": 0.0,
+   "segundos": 0.46
+  },
+  {
+   "case_id": "registro-063",
+   "documentos_esperados": [
+    "AP Gerardo Antenor Lemus Orozco VS Distrito de Santa Mata y otros"
+   ],
+   "top_prod": [
+    "AP Rodrigo Martínez Silva VS Minambiente y otros",
+    "AP Rodrigo Martínez Silva VS Minambiente y otros",
+    "AP PROCURADURÍA GENERAL DE LA ANCIÓN VS COORPAMAG Y OTROS",
+    "AP PROCURADURÍA GENERAL DE LA ANCIÓN VS COORPAMAG Y OTROS"
+   ],
+   "rank": null,
+   "hit4": 0,
+   "rr": 0.0,
+   "doc_recall_at_4": 0.0,
+   "segundos": 0.7
+  },
+  {
+   "case_id": "registro-064",
+   "documentos_esperados": [
+    "AP Gieseken Cuello & Cía. S. en C. VS DIMAR y otros",
+    "AP Gerardo Antenor Lemus Orozco VS Distrito de Santa Mata y otros"
+   ],
+   "top_prod": [
+    "AP Rodrigo Martínez Silva VS Minambiente y otros",
+    "CE 2da NYR 1999 503 Inversiones Mercedes VS Dimar Concesiones Uso Playa",
+    "Por medio del cual se expide el Decreto Único Reglamentario del Sector Vivienda, Ciudad y Territorio",
+    "AP Rodrigo Martínez Silva VS Minambiente y otros"
+   ],
+   "rank": null,
+   "hit4": 0,
+   "rr": 0.0,
+   "doc_recall_at_4": 0.0,
+   "segundos": 0.74
+  },
+  {
+   "case_id": "registro-065",
+   "documentos_esperados": [
+    "AP Gieseken Cuello & Cía. S. en C. VS DIMAR y otros",
+    "AP Gerardo Antenor Lemus Orozco VS Distrito de Santa Mata y otros"
+   ],
+   "top_prod": [
+    "AP Rodrigo Martínez Silva VS Minambiente y otros",
+    "AP Rodrigo Martínez Silva VS Minambiente y otros",
+    "CE 2da NYR 1999 503 Inversiones Mercedes VS Dimar Concesiones Uso Playa",
+    "AP Rodrigo Martínez Silva VS Minambiente y otros"
+   ],
+   "rank": null,
+   "hit4": 0,
+   "rr": 0.0,
+   "doc_recall_at_4": 0.0,
+   "segundos": 0.9
+  },
+  {
+   "case_id": "registro-066",
+   "documentos_esperados": [
+    "AP Gerardo Antenor Lemus Orozco VS Distrito de Santa Mata y otros",
+    "AP Gieseken Cuello & Cía. S. en C. VS DIMAR y otros"
+   ],
+   "top_prod": [
+    "AP Rodrigo Martínez Silva VS Minambiente y otros",
+    "CE 2da NYR 1999 503 Inversiones Mercedes VS Dimar Concesiones Uso Playa",
+    "AP Rodrigo Martínez Silva VS Minambiente y otros",
+    "AP Rodrigo Martínez Silva VS Minambiente y otros"
+   ],
+   "rank": null,
+   "hit4": 0,
+   "rr": 0.0,
+   "doc_recall_at_4": 0.0,
+   "segundos": 0.99
+  },
+  {
+   "case_id": "registro-067",
+   "documentos_esperados": [
+    "AP Gerardo Antenor Lemus Orozco VS Distrito de Santa Mata y otros",
+    "AP Gieseken Cuello & Cía. S. en C. VS DIMAR y otros"
+   ],
+   "top_prod": [
+    "AP PROCURADURÍA GENERAL DE LA ANCIÓN VS COORPAMAG Y OTROS",
+    "AP Rodrigo Martínez Silva VS Minambiente y otros",
+    "AP Rodrigo Martínez Silva VS Minambiente y otros",
+    "AP Rodrigo Martínez Silva VS Minambiente y otros"
+   ],
+   "rank": null,
+   "hit4": 0,
+   "rr": 0.0,
+   "doc_recall_at_4": 0.0,
+   "segundos": 0.76
+  },
+  {
+   "case_id": "registro-068",
+   "documentos_esperados": [
+    "AP Gerardo Antenor Lemus Orozco VS Distrito de Santa Mata y otros"
+   ],
+   "top_prod": [
+    "AP Rodrigo Martínez Silva VS Minambiente y otros",
+    "AP Rodrigo Martínez Silva VS Minambiente y otros",
+    "CE 2da NYR 1999 503 Inversiones Mercedes VS Dimar Concesiones Uso Playa",
+    "AP Rodrigo Martínez Silva VS Minambiente y otros"
+   ],
+   "rank": null,
+   "hit4": 0,
+   "rr": 0.0,
+   "doc_recall_at_4": 0.0,
+   "segundos": 0.81
+  },
+  {
+   "case_id": "registro-069",
+   "documentos_esperados": [
+    "AP Gieseken Cuello & Cía. S. en C. VS DIMAR y otros"
+   ],
+   "top_prod": [
+    "AP Rodrigo Martínez Silva VS Minambiente y otros",
+    "CE 2da NYR 1999 503 Inversiones Mercedes VS Dimar Concesiones Uso Playa",
+    "CE 2da NYR 1999 503 Inversiones Mercedes VS Dimar Concesiones Uso Playa",
+    "CE 2da NYR 1999 503 Inversiones Mercedes VS Dimar Concesiones Uso Playa"
+   ],
+   "rank": null,
+   "hit4": 0,
+   "rr": 0.0,
+   "doc_recall_at_4": 0.0,
+   "segundos": 0.87
+  },
+  {
+   "case_id": "registro-070",
+   "documentos_esperados": [
+    "AP Gieseken Cuello & Cía. S. en C. VS DIMAR y otros"
+   ],
+   "top_prod": [
+    "AP Rodrigo Martínez Silva VS Minambiente y otros",
+    "AP Rodrigo Martínez Silva VS Minambiente y otros",
+    "AP Rodrigo Martínez Silva VS Minambiente y otros",
+    "AP Rodrigo Martínez Silva VS Minambiente y otros"
+   ],
+   "rank": null,
+   "hit4": 0,
+   "rr": 0.0,
+   "doc_recall_at_4": 0.0,
+   "segundos": 0.53
+  },
+  {
+   "case_id": "registro-071",
+   "documentos_esperados": [
+    "AP Gieseken Cuello & Cía. S. en C. VS DIMAR y otros"
+   ],
+   "top_prod": [
+    "CE 2da NYR 1999 503 Inversiones Mercedes VS Dimar Concesiones Uso Playa",
+    "CE 2da NYR 1999 503 Inversiones Mercedes VS Dimar Concesiones Uso Playa",
+    "CE 2da NYR 1999 503 Inversiones Mercedes VS Dimar Concesiones Uso Playa",
+    "CE 2da NYR 1999 503 Inversiones Mercedes VS Dimar Concesiones Uso Playa"
+   ],
+   "rank": null,
+   "hit4": 0,
+   "rr": 0.0,
+   "doc_recall_at_4": 0.0,
+   "segundos": 0.63
+  }
+ ],
+ "resumen": {
+  "todos": {
+   "n": 58,
+   "hit_at_4": 0.08620689655172414,
+   "hit_at_20": 0.10344827586206896,
+   "mrr": 0.08743842364532019,
+   "doc_recall_at_4": 0.07758620689655173
+  }
+ }
+}

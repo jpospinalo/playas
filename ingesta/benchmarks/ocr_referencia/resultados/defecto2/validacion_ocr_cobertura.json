@@ -1,0 +1,44 @@
+{
+  "base": {
+    "esperadas": 188,
+    "presentes": 188,
+    "faltantes": 0,
+    "cobertura": 1.0,
+    "paginas_faltantes": []
+  },
+  "best_todas": {
+    "esperadas": 188,
+    "presentes": 188,
+    "faltantes": 0,
+    "cobertura": 1.0,
+    "paginas_faltantes": []
+  },
+  "best_bajas": {
+    "esperadas": 188,
+    "presentes": 188,
+    "faltantes": 0,
+    "cobertura": 1.0,
+    "paginas_faltantes": []
+  },
+  "best_z3_bajas": {
+    "esperadas": 188,
+    "presentes": 188,
+    "faltantes": 0,
+    "cobertura": 1.0,
+    "paginas_faltantes": []
+  },
+  "z3_bajas": {
+    "esperadas": 188,
+    "presentes": 188,
+    "faltantes": 0,
+    "cobertura": 1.0,
+    "paginas_faltantes": []
+  },
+  "otsu_bajas": {
+    "esperadas": 188,
+    "presentes": 188,
+    "faltantes": 0,
+    "cobertura": 1.0,
+    "paginas_faltantes": []
+  }
+}
