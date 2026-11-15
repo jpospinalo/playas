@@ -48,6 +48,12 @@ sin caché): una norma digital de 17 fragmentos tarda ~21 s; una sentencia escan
 33 páginas y 110 fragmentos, ~3,5 min; los embeddings rinden 0,8–1,0 por segundo. Por
 eso el demo en vivo usa un decreto escaneado de 3 páginas (~16 fragmentos).
 
+Último ensayo completo (`ensayo_4.log`, en frío, tras los arreglos de revisión): arranque
+23 s; decreto publicado con 16 fragmentos en 28,1 s de procesamiento (bronce/OCR 8,3 s,
+embeddings 16,0 s), 45 s contando el sondeo de S3; escaneo degradado a revisión humana en
+6,3 s (página OCR con confianza 51,9 < 70); reset de vuelta a 943 fragmentos en 18 s.
+Guion completo, de `start_demo.sh` al reset: ~2 min 45 s.
+
 **Caché:** `reset_demo.sh` sin opciones conserva las cachés de OCR y embeddings: volver
 a subir el mismo PDF tarda segundos y NO es tiempo real. Para que el paso 4 sea en frío,
 reiniciar con `./reset_demo.sh --frio` antes de empezar. La base de la colección se

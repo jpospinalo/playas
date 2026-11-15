@@ -479,8 +479,16 @@ laboratorio y no se pueden crear roles ni políticas IAM.
   terminate). La IP pública del worker cambia al encender; los scripts la consultan.
 - **Instalar en otra instancia:** copiar el repositorio a `/opt/atlas/playas` y ejecutar
   `sudo ingesta/demo/worker/instalar_worker.sh <bucket> http://<ip-privada-ollama>:11434`.
-- **Bucket:** `ingesta/infrastructure/intake/crear_bucket.sh` (idempotente);
-  `destruir_bucket.sh <bucket> --confirmo-borrado` lo borra con su contenido.
+- **Bucket:** `ingesta/infrastructure/intake/crear_bucket.sh` (idempotente; solo
+  reconfigura buckets `atlas-demo-intake-*` con las etiquetas del demo y sin política).
+  Versionado activo con expiración de versiones no actuales a 7 días: el worker borra el
+  original del buzón por `VersionId`, así una subida posterior con el mismo nombre no se
+  pierde. `destruir_bucket.sh <bucket> --confirmo-borrado` elimina todas las versiones y
+  marcadores y después el bucket.
+- **Exclusión entre operaciones:** `reset_demo.sh` y `construir_base.sh` toman el mismo
+  `flock` (`/var/lib/atlas/locks/operacion.lock`) antes de parar el servicio y lo rearrancan
+  al salir aunque fallen. El reset valida el destino y la colección registrada antes de
+  tocar Chroma.
 
 Costos aproximados (precios de lista públicos de us-east-1, no verificados en vivo):
 worker t3.medium ~0,042 USD/h encendido; Ollama t3.large ~0,083 USD/h; discos gp3 0,08
