@@ -412,6 +412,30 @@ raise SystemExit(int(os.environ.get('CORPUS_TEST_PYTHON_RC', '0')))
             "value = var.ollama_embedding_model", (ROOT / "rag/infrastructure/ecs.tf").read_text()
         )
 
+    def test_ecs_documentary_resolution_is_opt_in_and_uses_the_versioned_manifest(self):
+        infra = ROOT / "rag/infrastructure"
+        variables = (infra / "variables.tf").read_text()
+        opt_in = re.search(r'variable "legal_resolution_enabled"\s*\{([^}]+)\}', variables)
+        self.assertIsNotNone(opt_in)
+        self.assertRegex(opt_in.group(1), r"type\s*=\s*bool")
+        self.assertRegex(opt_in.group(1), r"default\s*=\s*false")
+
+        ecs = (infra / "ecs.tf").read_text()
+        environment = re.search(
+            r"legal_resolution_environment = var\.legal_resolution_enabled \? \[(.*?)\] : \[\]",
+            ecs,
+            re.S,
+        )
+        self.assertIsNotNone(environment)
+        names = re.findall(r'name\s*=\s*"(LEGAL_RESOLUTION_[^"]+)"', environment.group(1))
+        self.assertEqual(
+            names, ["LEGAL_RESOLUTION_PROVENANCE_PATH", "LEGAL_RESOLUTION_PROVENANCE_SHA256"]
+        )
+        self.assertIn("/app/rag/PROCEDENCIA_GOLD_A.json", environment.group(1))
+        self.assertIn(f"data/chroma-releases/{PACKAGE}/manifest.json", environment.group(1))
+        self.assertIn('.files["PROCEDENCIA_GOLD_A.json"].sha256', environment.group(1))
+        self.assertEqual(ecs.count("], local.legal_resolution_environment)"), 1)
+
     def test_templates_and_user_data_preserve_the_pinned_profile(self):
         env = (ROOT / "rag/.env.example").read_text()
         self.assertIn("CHROMA_COLLECTION=" + COLLECTION, env)

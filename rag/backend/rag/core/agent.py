@@ -418,6 +418,7 @@ def build_graph() -> Any:
             index = ResolutionIndex(bm25_documents(), provenance)
             if index.snapshot_verified:
                 resolution_index = index
+                logger.info("legal_resolution_snapshot_verified records=%d", len(provenance))
             else:
                 logger.warning("legal_resolution_snapshot_unverified")
         except (OSError, ValueError) as exc:
