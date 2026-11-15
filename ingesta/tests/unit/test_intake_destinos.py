@@ -20,9 +20,9 @@ def test_una_coleccion_viva_no_puede_llevar_el_sufijo_de_preparacion():
             validar_destino(nombre, "127.0.0.1", destinos)
 
 
-@pytest.fixture
-def e2e():
-    spec = importlib.util.spec_from_file_location("e2e_local", E2E)
+@pytest.fixture(params=[E2E, E2E.parents[1] / "demo_aws/e2e_aws.py"])
+def e2e(request):
+    spec = importlib.util.spec_from_file_location("arnes_e2e", request.param)
     modulo = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(modulo)
     return modulo
@@ -60,3 +60,11 @@ def test_nombre_visible_saneado_para_metadatos():
     assert not raro.startswith(".") and len(raro) <= 124
     assert nombre_visible("../../etc/passwd", h) == "passwd.pdf"
     assert nombre_visible("...", h) == "aaaaaaaaaaaa.pdf"
+
+
+def test_nombre_visible_limita_bytes_utf8_sin_cortar_caracteres():
+    from ingest.offline.intake_safety import nombre_visible
+
+    nombre = nombre_visible("漢" * 120 + ".pdf", "a" * 64)
+    assert len(nombre.encode("utf-8")) <= 180
+    assert nombre == "漢" * 58 + ".pdf"

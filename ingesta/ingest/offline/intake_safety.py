@@ -287,7 +287,7 @@ def nombre_visible(nombre, doc_id):
     base = "".join(c for c in base if not unicodedata.category(c).startswith("C"))
     base = re.sub(r'[\/:*?"<>|]', " ", base)
     base = re.sub(r"\.pdf$", "", re.sub(r"\s+", " ", base).strip(), flags=re.I)
-    base = base.strip(" .")[:120].strip(" .")
+    base = base.strip(" .")[:120].encode("utf-8")[:176].decode("utf-8", errors="ignore").strip(" .")
     return (base or doc_id[:12]) + ".pdf"
 
 

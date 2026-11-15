@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import copy
+import errno
 import hashlib
 import json
 import re
@@ -43,7 +44,9 @@ def codigo_error(exc):
 
 def transitorio(exc):
     return (
-        isinstance(exc, (ConnectionError, TimeoutError, OSError))
+        isinstance(exc, (ConnectionError, TimeoutError))
+        or isinstance(exc, OSError)
+        and exc.errno in {errno.EAGAIN, errno.EINTR, errno.ETIMEDOUT, errno.ECONNRESET}
         or type(exc).__name__
         in {
             "EndpointConnectionError",
@@ -188,9 +191,10 @@ class S3Inbox:
         temporal = ruta.with_suffix(".part")
         temporal.unlink(missing_ok=True)
         try:
-            respuesta = self.cliente.get_object(
-                Bucket=self.bucket, Key=clave, IfMatch=cabecera["ETag"]
-            )
+            opciones = {"Bucket": self.bucket, "Key": clave, "IfMatch": cabecera["ETag"]}
+            if "VersionId" in cabecera:
+                opciones["VersionId"] = cabecera["VersionId"]
+            respuesta = self.cliente.get_object(**opciones)
             with closing(respuesta["Body"]) as entrada, temporal.open("xb") as salida:
                 leidos = 0
                 while bloque := entrada.read(min(1024 * 1024, maximo + 1 - leidos)):
@@ -238,6 +242,8 @@ class S3Inbox:
             "CopySource": {"Bucket": self.bucket, "Key": clave},
             "CopySourceIfMatch": cabecera["ETag"],
         }
+        if "VersionId" in cabecera:
+            origen["CopySource"]["VersionId"] = cabecera["VersionId"]
         tamano = cabecera["ContentLength"]
         if tamano <= 5_000_000_000:
             return self.cliente.copy_object(**salida, **origen, MetadataDirective="REPLACE")[
@@ -293,11 +299,22 @@ class S3Inbox:
         recibo["etag_destino"] = copia["ETag"]
         atomic_bytes(registro, canonical(recibo))
         # No asumir que el productor dejó el objeto intacto durante la publicación.
-        actual = self._head(clave)
-        if actual and huella_origen(actual) != huella_origen(cabecera):
-            raise RuntimeError("El original S3 cambió; se conserva para otra corrida")
-        if actual:
-            self.cliente.delete_object(Bucket=self.bucket, Key=clave)
+        if "VersionId" in cabecera:
+            self.cliente.delete_object(
+                Bucket=self.bucket, Key=clave, VersionId=cabecera["VersionId"]
+            )
+        else:
+            actual = self._head(clave)
+            if actual and any(actual[k] != cabecera[k] for k in ("ETag", "ContentLength")):
+                self._evento(
+                    intake,
+                    "s3_original_conservado",
+                    intake.inbox.name,
+                    motivo="El original S3 cambió antes del borrado",
+                )
+                raise RuntimeError("El original S3 cambió; se conserva para otra corrida")
+            if actual:
+                self.cliente.delete_object(Bucket=self.bucket, Key=clave)
         self._evento(
             intake,
             "s3_movido",
@@ -322,7 +339,6 @@ class S3Inbox:
         cabecera = self._head(clave)
         if cabecera is None:
             return 0
-        intake.inbox.mkdir(parents=True, exist_ok=True)
         registro = estado / "s3_transferencias" / (identidad_clave + ".json")
         if not self.args.dry_run and registro.exists():
             recibo = json.loads(registro.read_text(encoding="utf-8"))
@@ -336,9 +352,13 @@ class S3Inbox:
                 destino = destino_ficha(ficha, recibo["identidad"])
                 if self._destino_valido(destino, cabecera, recibo["identidad"], recibo):
                     ficha["resultado"] = "sin cambios"
-                    self._mover(
-                        intake, clave, cabecera, ficha, recibo["identidad"], recibo, registro
-                    )
+                    with writer_lock(intake.state, intake.capas, intake.cache):
+                        comprobar_worker(intake.state)
+                        intake.preparar_estado()
+                        intake._informes([ficha])
+                        self._mover(
+                            intake, clave, cabecera, ficha, recibo["identidad"], recibo, registro
+                        )
                     return 0
         maximo = intake.destinos["tamano_maximo_bytes"]
 
@@ -351,26 +371,23 @@ class S3Inbox:
             if ficha["estado"] not in DESTINOS:
                 self._evento(intake, "s3_pendiente", identidad_clave, motivo=ficha["estado"])
                 return
-            identidad = ficha.get("hash") or ficha["doc_id"].removeprefix("desmesurado-")
+            identidad = ficha.get("hash") or ficha["doc_id"].removeprefix(
+                "desmesurado-"
+            ).removeprefix("error-entrada-")
             recibo = {"origen": huella_origen(cabecera), "ficha": ficha, "identidad": identidad}
             atomic_bytes(registro, canonical(recibo))
             self._mover(intake, clave, cabecera, ficha, identidad, recibo, registro)
 
-        if cabecera["ContentLength"] > maximo:
-            identidad = hashlib.sha256(
-                canonical([self.bucket, clave, huella_origen(cabecera)])
-            ).hexdigest()
+        def rechazar(identidad, prefijo, motivo):
             ficha = {
-                "doc_id": "desmesurado-" + identidad,
+                "doc_id": prefijo + identidad,
                 "hash": None,
                 "coleccion": self.args.collection,
                 "config_hash": intake.hash,
                 "configuracion": intake.config,
                 "estado": "rechazado",
                 "decision": "rechazado",
-                "motivos": [
-                    f"Objeto desmesurado: {cabecera['ContentLength']} bytes supera el tamaño máximo"
-                ],
+                "motivos": [motivo],
                 "avisos": [
                     "Identidad de metadatos; SHA-256 del contenido no calculado sin descargar"
                 ],
@@ -388,9 +405,36 @@ class S3Inbox:
                     intake._informes([ficha])
             print(json.dumps(ficha, ensure_ascii=False))
             return 0
+
+        if cabecera["ContentLength"] > maximo:
+            identidad = hashlib.sha256(
+                canonical([self.bucket, clave, huella_origen(cabecera)])
+            ).hexdigest()
+            return rechazar(
+                identidad,
+                "desmesurado-",
+                f"Objeto desmesurado: {cabecera['ContentLength']} bytes supera el tamaño máximo",
+            )
         # El nombre del objeto S3 (saneado) da el title de los chunks.
-        ruta = intake.inbox / nombre_visible(clave, "entrada" + "0" * 58)
-        self._descargar(clave, cabecera, ruta, maximo)
+        try:
+            intake.inbox.mkdir(parents=True, exist_ok=True)
+            ruta = intake.inbox / nombre_visible(clave, "entrada" + "0" * 58)
+        except Exception as exc:
+            return rechazar(
+                identidad_clave,
+                "error-entrada-",
+                "Error al preparar la descarga: " + codigo_error(exc),
+            )
+        try:
+            self._descargar(clave, cabecera, ruta, maximo)
+        except Exception as exc:
+            if transitorio(exc) or codigo_error(exc) in AUTORIZACION:
+                raise
+            return rechazar(
+                identidad_clave,
+                "error-entrada-",
+                "Error permanente de descarga: " + codigo_error(exc),
+            )
         try:
             return intake.run(al_resultado=finalizar)
         finally:

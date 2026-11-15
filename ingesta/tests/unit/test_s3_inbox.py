@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import errno
 import hashlib
 import io
 import json
@@ -475,3 +476,127 @@ def test_importar_nucleo_no_carga_boto3():
         [sys.executable, "-c", script], cwd=Path(__file__).resolve().parents[2], capture_output=True
     )
     assert resultado.returncode == 0, resultado.stderr.decode(errors="replace")
+
+
+def test_boto3_sigue_en_dependencias_normales_y_extra_aws():
+    import tomllib
+
+    proyecto = tomllib.loads(
+        (Path(__file__).resolve().parents[2] / "pyproject.toml").read_text(encoding="utf-8")
+    )["project"]
+    assert "boto3>=1.34" in proyecto["dependencies"]
+    assert "boto3>=1.34" in proyecto["optional-dependencies"]["aws"]
+
+
+def test_sustitucion_tras_verificar_copia_sin_versionado_conserva_original(
+    buzon, sistema, monkeypatch
+):
+    adaptador, s3, _ = buzon
+    clave = "inbox/cambiante.txt"
+    s3.sembrar(clave, b"primera")
+    verificar = adaptador._destino_valido
+
+    def sustituir(*args):
+        copia = verificar(*args)
+        if copia:
+            s3.sembrar(clave, b"segunda")
+        return copia
+
+    monkeypatch.setattr(adaptador, "_destino_valido", sustituir)
+    with pytest.raises(RuntimeError, match="original S3 cambió"):
+        adaptador.run()
+    assert s3.objetos[clave]["Body"] == b"segunda"
+    assert not any(n == "borrar" for n, _ in s3.llamadas)
+    assert any(e["estado"] == "s3_original_conservado" for e in eventos(sistema))
+
+
+def test_sustitucion_justo_antes_de_borrar_elimina_solo_version_copiada(buzon, monkeypatch):
+    adaptador, s3, _ = buzon
+    clave = "inbox/versionada.txt"
+    s3.sembrar(clave, b"primera")
+    s3.objetos[clave]["VersionId"] = "v1"
+    copiar = s3.copy_object
+
+    def copia_version(**opciones):
+        assert opciones["CopySource"]["VersionId"] == "v1"
+        return copiar(**opciones)
+
+    def borrar_version(**opciones):
+        s3._llamada("borrar", opciones)
+        # La subida nueva ocurre después de la última verificación.
+        s3.sembrar(clave, b"segunda")
+        s3.objetos[clave]["VersionId"] = "v2"
+        assert opciones["VersionId"] == "v1"
+
+    monkeypatch.setattr(s3, "copy_object", copia_version)
+    monkeypatch.setattr(s3, "delete_object", borrar_version)
+    assert adaptador.run() == 0
+    assert s3.objetos[clave]["VersionId"] == "v2"
+    assert s3.objetos[clave]["Body"] == b"segunda"
+    assert any(n == "descargar" and o["VersionId"] == "v1" for n, o in s3.llamadas)
+
+
+def test_reanudacion_regenera_informes_y_cola_de_revision(buzon, sistema):
+    adaptador, s3, _ = buzon
+    s3.sembrar("inbox/revision.pdf", pdf(sistema, "Documento sin encabezado. " * 20))
+    s3.fallo_borrado = True
+    with pytest.raises(ConnectionError):
+        adaptador.run()
+    ficha = ficha_remota(s3, "review/")
+    for nombre in ("review_queue.csv", "intake_report.md"):
+        (sistema[0].state / nombre).unlink(missing_ok=True)
+    assert adaptador.run() == 0
+    for nombre in ("review_queue.csv", "intake_report.md"):
+        assert ficha["doc_id"] in (sistema[0].state / nombre).read_text(encoding="utf-8")
+
+
+@pytest.mark.parametrize("fase", ["preparacion", "directorio", "descarga"])
+def test_error_permanente_aislado_rechaza_y_sigue_con_la_cola(buzon, monkeypatch, fase):
+    import ingest.offline.s3_inbox as modulo
+
+    adaptador, s3, _ = buzon
+    clave = "inbox/a-error.pdf"
+    s3.sembrar(clave, b"primero")
+    s3.sembrar("inbox/b-valido.txt", b"segundo")
+    if fase == "preparacion":
+        nombre = modulo.nombre_visible
+
+        def preparar(valor, identidad):
+            if valor == clave:
+                raise ValueError("Preparación imposible")
+            return nombre(valor, identidad)
+
+        monkeypatch.setattr(modulo, "nombre_visible", preparar)
+    elif fase == "directorio":
+        crear = Path.mkdir
+        identidad = hashlib.sha256(clave.encode("utf-8")).hexdigest()
+
+        def crear_directorio(self, *args, **opciones):
+            if self.name == identidad:
+                raise OSError(errno.ENAMETOOLONG, "Directorio imposible")
+            return crear(self, *args, **opciones)
+
+        monkeypatch.setattr(Path, "mkdir", crear_directorio)
+    else:
+        descargar = adaptador._descargar
+
+        def descarga(valor, *args):
+            if valor == clave:
+                raise OSError(errno.ENAMETOOLONG, "Nombre demasiado largo")
+            return descargar(valor, *args)
+
+        monkeypatch.setattr(adaptador, "_descargar", descarga)
+    assert adaptador.run() == 0
+    identidad = hashlib.sha256(clave.encode("utf-8")).hexdigest()
+    ficha = json.loads(s3.objetos[f"rejected/{identidad}/ficha.json"]["Body"])
+    assert ficha["estado"] == "rechazado"
+    assert "descarga" in ficha["motivos"][0]
+    assert not any(k.startswith("inbox/") for k in s3.objetos)
+    assert sum(k.endswith("/original.pdf") for k in s3.objetos) == 2
+
+
+def test_nombre_s3_de_120_ideogramas_no_bloquea_descarga(buzon):
+    adaptador, s3, _ = buzon
+    s3.sembrar("inbox/" + "漢" * 120 + ".pdf", b"no pdf")
+    assert adaptador.run() == 0
+    assert ficha_remota(s3, "rejected/")["estado"] == "rechazado"
