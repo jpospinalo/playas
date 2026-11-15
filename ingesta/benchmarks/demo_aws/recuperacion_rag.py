@@ -80,8 +80,23 @@ def medir(ground_truth):
 
 def comparar(antes, despues, nuevos, repeticiones=10000, semilla=20261110):
     nuevos = {nfc(n) for n in nuevos}
-    a = {f["case_id"]: f for f in antes["casos"]}
-    d = {f["case_id"]: f for f in despues["casos"]}
+
+    def cargar_filas(datos):
+        filas = {}
+        for fila in datos["casos"]:
+            fila = {**fila, "documentos_esperados": [nfc(d) for d in fila["documentos_esperados"]]}
+            if "hit4_produccion" not in fila:
+                fila["hit4_produccion"] = int(
+                    bool(
+                        {nfc(t) for t in fila["top_prod"][: julian.PROD_K]}
+                        & set(fila["documentos_esperados"])
+                    )
+                )
+            filas[fila["case_id"]] = fila
+        return filas
+
+    a = cargar_filas(antes)
+    d = cargar_filas(despues)
     grupos = {
         "nuevos": [i for i in d if set(d[i]["documentos_esperados"]) & nuevos],
         "resto": [i for i in d if not set(d[i]["documentos_esperados"]) & nuevos],
