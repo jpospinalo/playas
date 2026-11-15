@@ -23,6 +23,9 @@ sleep 10
 # Crear volumen persistente
 docker volume create ollama
 
+# Imagen de Ollama 0.40.13 validada con la entrega Gold A.
+OLLAMA_IMAGE='ollama/ollama@sha256:b2f0122c476bc9fe7ce679d8bb4bd555351e25e2554eefb156f61cb0a89cf429'
+
 # Ejecutar contenedor
 docker run -d \
   --name ollama \
@@ -31,7 +34,7 @@ docker run -d \
   -v ollama:/root/.ollama \
   -e OLLAMA_NUM_PARALLEL=1 \
   -e OLLAMA_CONTEXT_LENGTH=2048 \
-  ollama/ollama
+  "${OLLAMA_IMAGE}"
 
 echo "Esperando a que Ollama levante..."
 sleep 15

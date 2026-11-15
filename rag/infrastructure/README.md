@@ -182,6 +182,9 @@ Desde la raíz del repositorio:
 KEY_FILE=/ruta/a/vockey.pem ./scripts/deploy_bastion_ec2.sh
 ```
 
+El script confirma que el backend (`/api/ready`) y el frontend (`/`)
+responden por el balanceador antes de mostrar la URL de Atlas.
+
 La opción `BOOTSTRAP_ONLY=1` instala las herramientas en el bastion y
 termina antes de los despliegues de Terraform. Para reutilizar una instancia,
 resguardar sus estados y configuraciones y preparar un directorio de trabajo

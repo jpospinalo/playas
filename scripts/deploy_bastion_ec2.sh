@@ -288,9 +288,23 @@ step "Desplegando aplicación RAG en ECS Fargate - README paso 2"
 cd ~/playas
 sg docker -c "./rag/infrastructure/scripts/deploy.sh --auto-approve"
 
-step "Despliegue completado"
+step "Verificando Atlas por el balanceador"
 cd ~/playas/rag/infrastructure
-ALB_URL=$(terraform output -raw alb_url 2>/dev/null || echo "(ejecuta 'terraform output alb_url' manualmente)")
+ALB_URL=$(terraform output -raw alb_url)
+deadline=$((SECONDS + 600))
+ready=0
+while (( SECONDS < deadline )); do
+  if [[ "$(curl -q -fsS -o /dev/null -w '%{http_code}' --max-time 5 "${ALB_URL%/}/api/ready")" == 200 &&
+        "$(curl -q -fsS -o /dev/null -w '%{http_code}' --max-time 5 "${ALB_URL%/}/")" == 200 ]]; then
+    ready=1
+    break
+  fi
+  sleep 10
+done
+if [[ "${ready}" != "1" ]]; then
+  echo "Atlas no quedó disponible por el balanceador en 600 segundos: ${ALB_URL}" >&2
+  exit 1
+fi
 ok "URL de la aplicación: ${ALB_URL}"
 REMOTE_SCRIPT
 

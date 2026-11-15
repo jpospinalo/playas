@@ -4,7 +4,7 @@
 # Verifica y restaura la entrega Gold fijada antes de publicar su configuración.
 #
 # Uso:
-#   ./scripts/deploy.sh [--auto-approve]
+#   ./scripts/deploy.sh [--auto-approve | --reuse-existing]
 #
 # Archivos que actualiza:
 #   rag/.env                             — CHROMA_HOST y OLLAMA_BASE_URL
@@ -37,17 +37,25 @@ warn() { echo -e "${yellow}⚠ $*${reset}"; }
 corpus_release_check_local "${REPO_DIR}"
 
 # ── 1. Terraform init + apply ─────────────────────────────────────────────────
-log "Inicializando Terraform en vector-infraestructura..."
-terraform -chdir="${VECTOR_INFRA_DIR}" init -upgrade
-
-log "Ejecutando terraform apply en vector-infraestructura..."
-
-APPLY_ARGS=()
-if [[ "${1:-}" == "--auto-approve" ]]; then
-  APPLY_ARGS+=("-auto-approve")
-fi
-
-terraform -chdir="${VECTOR_INFRA_DIR}" apply "${APPLY_ARGS[@]}"
+case "${1:-}" in
+  --reuse-existing)
+    log "Reutilizando los outputs de Terraform sin aplicar cambios a la infraestructura vectorial."
+    ;;
+  ''|--auto-approve)
+    log "Inicializando Terraform en vector-infraestructura..."
+    terraform -chdir="${VECTOR_INFRA_DIR}" init -upgrade
+    log "Ejecutando terraform apply en vector-infraestructura..."
+    APPLY_ARGS=()
+    if [[ "${1:-}" == "--auto-approve" ]]; then
+      APPLY_ARGS+=("-auto-approve")
+    fi
+    terraform -chdir="${VECTOR_INFRA_DIR}" apply "${APPLY_ARGS[@]}"
+    ;;
+  *)
+    echo "Uso: $0 [--auto-approve | --reuse-existing]" >&2
+    exit 2
+    ;;
+esac
 
 # ── 2. Leer IPs estáticas del output ─────────────────────────────────────────
 log "Leyendo IPs estáticas desde Terraform outputs..."
