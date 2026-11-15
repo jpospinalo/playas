@@ -406,12 +406,12 @@ class S3Inbox:
             print(json.dumps(ficha, ensure_ascii=False))
             return 0
 
+        identidad_origen = hashlib.sha256(
+            canonical([self.bucket, clave, huella_origen(cabecera)])
+        ).hexdigest()
         if cabecera["ContentLength"] > maximo:
-            identidad = hashlib.sha256(
-                canonical([self.bucket, clave, huella_origen(cabecera)])
-            ).hexdigest()
             return rechazar(
-                identidad,
+                identidad_origen,
                 "desmesurado-",
                 f"Objeto desmesurado: {cabecera['ContentLength']} bytes supera el tamaño máximo",
             )
@@ -421,7 +421,7 @@ class S3Inbox:
             ruta = intake.inbox / nombre_visible(clave, "entrada" + "0" * 58)
         except Exception as exc:
             return rechazar(
-                identidad_clave,
+                identidad_origen,
                 "error-entrada-",
                 "Error al preparar la descarga: " + codigo_error(exc),
             )
@@ -431,7 +431,7 @@ class S3Inbox:
             if transitorio(exc) or codigo_error(exc) in AUTORIZACION:
                 raise
             return rechazar(
-                identidad_clave,
+                identidad_origen,
                 "error-entrada-",
                 "Error permanente de descarga: " + codigo_error(exc),
             )

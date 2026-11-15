@@ -17,7 +17,8 @@ from test_intake import sistema as sistema
 from ingest.offline.__main__ import main
 from ingest.offline.intake import Intake
 from ingest.offline.intake_safety import ConfiguracionInvalida
-from ingest.offline.s3_inbox import S3Inbox, analizar_uri, ejecutar
+from ingest.offline.layers import canonical
+from ingest.offline.s3_inbox import S3Inbox, analizar_uri, ejecutar, huella_origen
 
 
 class ErrorS3(Exception):
@@ -558,6 +559,9 @@ def test_error_permanente_aislado_rechaza_y_sigue_con_la_cola(buzon, monkeypatch
     clave = "inbox/a-error.pdf"
     s3.sembrar(clave, b"primero")
     s3.sembrar("inbox/b-valido.txt", b"segundo")
+    identidad_origen = hashlib.sha256(
+        canonical([adaptador.bucket, clave, huella_origen(s3.objetos[clave])])
+    ).hexdigest()
     if fase == "preparacion":
         nombre = modulo.nombre_visible
 
@@ -587,12 +591,49 @@ def test_error_permanente_aislado_rechaza_y_sigue_con_la_cola(buzon, monkeypatch
 
         monkeypatch.setattr(adaptador, "_descargar", descarga)
     assert adaptador.run() == 0
-    identidad = hashlib.sha256(clave.encode("utf-8")).hexdigest()
-    ficha = json.loads(s3.objetos[f"rejected/{identidad}/ficha.json"]["Body"])
+    ficha = json.loads(s3.objetos[f"rejected/{identidad_origen}/ficha.json"]["Body"])
     assert ficha["estado"] == "rechazado"
     assert "descarga" in ficha["motivos"][0]
     assert not any(k.startswith("inbox/") for k in s3.objetos)
     assert sum(k.endswith("/original.pdf") for k in s3.objetos) == 2
+
+
+@pytest.mark.parametrize("fase", ["preparacion", "descarga"])
+def test_rechazos_misma_clave_y_tamano_copian_cada_contenido(buzon, monkeypatch, fase):
+    import ingest.offline.s3_inbox as modulo
+
+    adaptador, s3, _ = buzon
+    clave = "inbox/error.pdf"
+
+    def fallar(*args):
+        raise OSError(errno.ENAMETOOLONG, "Error permanente")
+
+    if fase == "preparacion":
+        monkeypatch.setattr(modulo, "nombre_visible", fallar)
+    else:
+        monkeypatch.setattr(adaptador, "_descargar", fallar)
+
+    borrar = s3.delete_object
+
+    def borrar_con_copia(**opciones):
+        cuerpo = s3.objetos[opciones["Key"]]["Body"]
+        assert any(
+            k.startswith("rejected/") and k.endswith("/original.pdf") and v["Body"] == cuerpo
+            for k, v in s3.objetos.items()
+        )
+        borrar(**opciones)
+
+    monkeypatch.setattr(s3, "delete_object", borrar_con_copia)
+    cuerpos = (b"primero", b"segundo")
+    assert len(cuerpos[0]) == len(cuerpos[1])
+    for cuerpo in cuerpos:
+        s3.sembrar(clave, cuerpo)
+        assert adaptador.run() == 0
+        assert clave not in s3.objetos
+    copias = [o["Key"] for n, o in s3.llamadas if n == "copiar"]
+    assert len(copias) == len(set(copias)) == 2
+    assert {s3.objetos[k]["Body"] for k in copias} == set(cuerpos)
+    assert sum(n == "borrar" for n, _ in s3.llamadas) == 2
 
 
 def test_nombre_s3_de_120_ideogramas_no_bloquea_descarga(buzon):
