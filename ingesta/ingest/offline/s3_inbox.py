@@ -16,7 +16,7 @@ from pathlib import Path
 from urllib.parse import urlsplit
 
 from .intake import Intake
-from .intake_safety import ConfiguracionInvalida, comprobar_worker
+from .intake_safety import ConfiguracionInvalida, comprobar_worker, nombre_visible
 from .layers import canonical
 from .storage import atomic_bytes, guard_output, writer_lock
 
@@ -388,7 +388,8 @@ class S3Inbox:
                     intake._informes([ficha])
             print(json.dumps(ficha, ensure_ascii=False))
             return 0
-        ruta = intake.inbox / "entrada.pdf"
+        # El nombre del objeto S3 (saneado) da el title de los chunks.
+        ruta = intake.inbox / nombre_visible(clave, "entrada" + "0" * 58)
         self._descargar(clave, cabecera, ruta, maximo)
         try:
             return intake.run(al_resultado=finalizar)

@@ -1095,3 +1095,15 @@ def test_archivo_desmesurado_se_rechaza_sin_leerse_entero(sistema, monkeypatch):
     assert ficha["estado"] == "rechazado"
     assert "supera el tamaño máximo" in ficha["motivos"][0]
     assert ficha["doc_id"].startswith("desmesurado-")
+
+
+def test_title_de_los_chunks_es_el_nombre_original_no_el_hash(sistema):
+    # E2E real: el title era <sha256>, y la aplicación citaba un hash.
+    args, cliente, _ = sistema
+    crear_pdf(args.inbox / "Sentencia de prueba sobre playas.pdf")
+    assert ejecutar(sistema) == 0
+    datos = cliente.get_collection(args.collection).get(include=["metadatas"])
+    titulos = {m["title"] for m in datos["metadatas"]}
+    assert titulos == {"Sentencia de prueba sobre playas"}
+    copias = [p.name for p in args.raw_root.rglob("*.pdf")]
+    assert copias and all(len(n) == 68 for n in copias)  # la copia en raw sigue siendo <sha256>.pdf

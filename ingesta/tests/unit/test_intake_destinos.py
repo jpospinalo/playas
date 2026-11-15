@@ -45,3 +45,18 @@ def test_trabajo_e2e_ajeno_y_no_vacio_no_se_borra(e2e, tmp_path):
     (ajeno / e2e.MARCADOR).write_text("", encoding="utf-8")
     e2e.validar_trabajo(ajeno, [tmp_path / "raw"])
     e2e.validar_trabajo(tmp_path / "nuevo", [tmp_path / "raw"])
+
+
+def test_nombre_visible_saneado_para_metadatos():
+    from ingest.offline.intake_safety import nombre_visible
+
+    h = "a" * 64
+    assert nombre_visible("AP Gieseken Cuello & Cía. S. en C. VS DIMAR y otros.pdf", h) == (
+        "AP Gieseken Cuello & Cía. S. en C. VS DIMAR y otros.pdf"
+    )
+    assert nombre_visible("inbox/sub/Decreto 1766.PDF", h) == "Decreto 1766.pdf"
+    raro = nombre_visible("..\u202efdp.exe\tnombre\x01 " + "x" * 300 + ".pdf", h)
+    assert "\u202e" not in raro and "\t" not in raro and "\x01" not in raro
+    assert not raro.startswith(".") and len(raro) <= 124
+    assert nombre_visible("../../etc/passwd", h) == "passwd.pdf"
+    assert nombre_visible("...", h) == "aaaaaaaaaaaa.pdf"

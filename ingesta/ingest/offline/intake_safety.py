@@ -11,6 +11,7 @@ import signal
 import subprocess
 import sys
 import tempfile
+import unicodedata
 from collections import Counter
 from contextlib import contextmanager
 from pathlib import Path
@@ -273,6 +274,21 @@ def validar_destino(coleccion, host, destinos, *, ficticios=False, port=8000):
         raise ConfiguracionInvalida("--fake-embeddings requiere una colección bench_")
     if not 1 <= port <= 65535:
         raise ConfiguracionInvalida("Puerto Chroma inválido")
+
+
+def nombre_visible(nombre, doc_id):
+    """Nombre legible para los metadatos title/source; NUNCA para rutas de salida.
+
+    Sin separadores, sin caracteres de control ni de formato (p. ej. RTL), sin
+    puntos iniciales y con longitud acotada. Si no queda nada, usa el hash corto.
+    El nombre solo se usa dentro de un directorio temporal privado del análisis.
+    """
+    base = unicodedata.normalize("NFC", str(nombre).replace("\\", "/").rsplit("/", 1)[-1])
+    base = "".join(c for c in base if not unicodedata.category(c).startswith("C"))
+    base = re.sub(r'[\/:*?"<>|]', " ", base)
+    base = re.sub(r"\.pdf$", "", re.sub(r"\s+", " ", base).strip(), flags=re.I)
+    base = base.strip(" .")[:120].strip(" .")
+    return (base or doc_id[:12]) + ".pdf"
 
 
 def nombre_seguro(doc_id):

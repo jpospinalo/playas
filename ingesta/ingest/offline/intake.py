@@ -32,6 +32,7 @@ from .intake_safety import (
     comprobar_worker,
     copiar_raw,
     nombre_seguro,
+    nombre_visible,
     validar_destino,
     validar_raw,
     worker_vinculado,
@@ -337,7 +338,9 @@ class Intake:
         # Una instantánea por hash evita TOCTOU y hace PDF la extensión interna.
         with tempfile.TemporaryDirectory(prefix="intake-", dir=self.cache) as temporal:
             temporal = Path(temporal)
-            pdf = temporal / nombre_seguro(doc_id)
+            # El nombre visible (title/source de los chunks) sale del original
+            # saneado; la identidad y la copia en raw siguen siendo el hash.
+            pdf = temporal / nombre_visible(archivo.name, doc_id)
             shutil.copyfile(archivo, pdf)
             if sha256_file(pdf) != doc_id:
                 raise ValueError("La entrada cambió durante el procesamiento")
