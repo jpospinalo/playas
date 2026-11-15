@@ -27,6 +27,7 @@ INGESTA = AQUI.parents[1]
 REPO = INGESTA.parent
 RAW = REPO / "data" / "documents" / "raw"
 COLECCION = "atlas_demo_e2e"  # se puede cambiar con --coleccion
+MARCADOR = ".e2e_intake"
 # Base reducida (presupuesto de embeddings en CPU): documentos con preguntas del
 # ground truth y normas/sentencias cortas, más tres que la política envía a revisión.
 BASE = [
@@ -65,6 +66,37 @@ ESPERADO = {
 
 def sh256(p):
     return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+
+
+def validar_trabajo(trabajo, protegidas):
+    """Mismas barreras que el arnés local antes de borrar una carpeta de trabajo."""
+    trabajo = Path(trabajo).resolve()
+    for ruta in protegidas:
+        ruta = Path(ruta).resolve()
+        if trabajo == ruta or trabajo.is_relative_to(ruta) or ruta.is_relative_to(trabajo):
+            raise SystemExit(f"--trabajo {trabajo} se solapa con {ruta}; elige otra carpeta")
+    if trabajo.exists() and any(trabajo.iterdir()) and not (trabajo / MARCADOR).exists():
+        raise SystemExit(f"--trabajo {trabajo} no está vacío ni lo creó este arnés; no se borra")
+
+
+def preparar_coleccion(cliente, nombre, recrear=False):
+    """La corrida exige una colección vacía; borrar requiere un nombre del arnés."""
+    from chromadb.errors import NotFoundError
+
+    if recrear and not nombre.startswith("atlas_demo_e2e"):
+        raise SystemExit("--recrear-coleccion solo permite colecciones atlas_demo_e2e*")
+    for candidata in (nombre, nombre + "__staging"):
+        try:
+            coleccion = cliente.get_collection(candidata)
+        except NotFoundError:
+            continue
+        if recrear:
+            cliente.delete_collection(candidata)
+        elif coleccion.count():
+            raise SystemExit(
+                f"La colección {candidata} contiene datos; usa otra o --recrear-coleccion "
+                "(solo atlas_demo_e2e*)"
+            )
 
 
 class E2E:
@@ -190,9 +222,18 @@ class E2E:
         return salida
 
     def correr(self):
+        import chromadb
+
+        validar_trabajo(self.t, [REPO, REPO / "data/documents", Path("/var/lib/atlas")])
+        preparar_coleccion(
+            chromadb.HttpClient(host="127.0.0.1", port=self.a.puerto),
+            COLECCION,
+            self.a.recrear_coleccion,
+        )
         if self.t.exists():
             shutil.rmtree(self.t)
         (self.t / "raw").mkdir(parents=True)
+        (self.t / MARCADOR).write_text("Carpeta desechable de e2e_aws.py\n", encoding="utf-8")
         if self.a.cache_embeddings:
             # Caché caliente declarada: los tiempos de esta corrida NO son en frío.
             (self.t / "cache").mkdir(parents=True)
@@ -518,6 +559,7 @@ def main():
     parser.add_argument("--rag", type=Path, required=True)
     parser.add_argument("--salida", type=Path, required=True)
     parser.add_argument("--coleccion", default=COLECCION)
+    parser.add_argument("--recrear-coleccion", action="store_true")
     parser.add_argument("--cache-embeddings", type=Path, help="caché caliente (declararla)")
     args = parser.parse_args()
     globals()["COLECCION"] = args.coleccion

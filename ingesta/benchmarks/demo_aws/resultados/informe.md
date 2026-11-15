@@ -68,3 +68,7 @@ Carga del worker durante la corrida 1 (vmstat cada 30 s): CPU media 14 %, máxim
 de caché del sistema siempre disponibles en 3,8 GB de RAM: t3.medium es suficiente.
 
 Fidelidad frente a otro OCR y recuperación frente a un ground truth no validado por abogados.
+
+Nota (revisión de código): la tabla usa la definición de hit@4 de Julián (rango en la pasada
+profunda). Recalculado con el top-4 efectivo de producción (`top_prod`): nuevos 0,000 → 0,900
+(IC95 [0,70, 1,00]); resto 0,104 → 0,104. Mismas cifras con ambas definiciones en esta corrida.

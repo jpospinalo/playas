@@ -59,7 +59,15 @@ def medir(ground_truth):
                 "documentos_esperados": [nfc(d) for d in caso["documentos_esperados"]],
                 "top_prod": top_prod,
                 "rank": rango,
+                # hit4: definición de Julián (rango de la pasada profunda k=20).
                 "hit4": int(rango is not None and rango <= julian.PROD_K),
+                # hit4_produccion: el top-4 efectivo que llega al modelo (k=4, 8 candidatos).
+                "hit4_produccion": int(
+                    bool(
+                        {nfc(t) for t in top_prod[: julian.PROD_K]}
+                        & {nfc(d) for d in caso["documentos_esperados"]}
+                    )
+                ),
                 "rr": 1 / rango if rango else 0.0,
                 "doc_recall_at_4": julian.doc_recall_at_k(
                     top_prod, caso["documentos_esperados"], julian.PROD_K
@@ -82,7 +90,7 @@ def comparar(antes, despues, nuevos, repeticiones=10000, semilla=20261110):
     for nombre, ids in grupos.items():
         ids = [i for i in ids if i in a]
         rnd = random.Random(semilla)
-        difs = {"hit4": [], "rr": []}
+        difs = {"hit4": [], "hit4_produccion": [], "rr": []}
         for _ in range(repeticiones if ids else 0):
             muestra = [rnd.choice(ids) for _ in ids]
             for k in difs:
@@ -97,6 +105,9 @@ def comparar(antes, despues, nuevos, repeticiones=10000, semilla=20261110):
 
         salida[nombre] = {
             "n": len(ids),
+            "hit4_produccion_antes": media([a[i] for i in ids], "hit4_produccion"),
+            "hit4_produccion_despues": media([d[i] for i in ids], "hit4_produccion"),
+            "ic95_delta_hit4_produccion": ic(difs["hit4_produccion"]),
             "hit4_antes": media([a[i] for i in ids], "hit4"),
             "hit4_despues": media([d[i] for i in ids], "hit4"),
             "mrr_antes": media([a[i] for i in ids], "rr"),
