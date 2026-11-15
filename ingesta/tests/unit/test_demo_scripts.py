@@ -31,8 +31,8 @@ def valor(opcion, defecto=None):
 ruta = pathlib.Path(os.environ["VERSIONES_PRUEBA"])
 objetos = json.loads(ruta.read_text(encoding="utf-8"))
 if op == "delete-objects":
-    # Git Bash presenta TMPDIR como /tmp; el Python nativo usa la ruta Windows.
-    ruta_lote = pathlib.Path(os.environ["TMPDIR"]) / valor("--delete").rsplit("/", 1)[-1]
+    # Abrir exactamente la ruta recibida (como la AWS CLI nativa), sin reconstruirla.
+    ruta_lote = pathlib.Path(valor("--delete").removeprefix("file://"))
     lote = json.loads(ruta_lote.read_text(encoding="utf-8"))["Objects"]
     assert 0 < len(lote) <= 1000
     assert all(set(o) == {"Key", "VersionId"} for o in lote)

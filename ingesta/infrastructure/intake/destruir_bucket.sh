@@ -21,6 +21,9 @@ fi
 # La CLI construye el JSON para conservar claves con espacios, comillas, etc.
 LOTE="$(mktemp)"
 trap 'rm -f -- "$LOTE"' EXIT
+# La AWS CLI nativa de Windows no entiende rutas MSYS (/tmp/...) dentro de file://.
+LOTE_CLI="$LOTE"
+if command -v cygpath >/dev/null 2>&1; then LOTE_CLI="$(cygpath -m "$LOTE")"; fi
 PAGINA=(--bucket "$BUCKET" --no-paginate --max-keys 1000)
 while true; do
   RESUMEN="$(aws s3api list-object-versions "${PAGINA[@]}" \
@@ -43,7 +46,7 @@ while true; do
   fi
   aws s3api list-object-versions "${PAGINA[@]}" \
     --query '{Objects: [Versions, DeleteMarkers][].{Key: Key, VersionId: VersionId}, Quiet: `true`}' --output json > "$LOTE"
-  ERRORES="$(aws s3api delete-objects --bucket "$BUCKET" --delete "file://$LOTE" \
+  ERRORES="$(aws s3api delete-objects --bucket "$BUCKET" --delete "file://$LOTE_CLI" \
     --query 'length(Errors || `[]`)' --output text)"
   if [[ "$ERRORES" != 0 ]]; then
     echo "No se pudieron borrar todas las versiones; se conserva el bucket." >&2
