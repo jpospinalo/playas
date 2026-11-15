@@ -1,0 +1,176 @@
+Ensayo 3 del demo — 2026-11-15 01:28 UTC
+
+=== Paso 0: Arranque (start_demo.sh)  [01:28:53]
+Iniciando el demo de ATLAS...
+  [32m✔[0m Cuenta AWS 679786170402
+  Esperando a que las instancias estén encendidas (1-2 min)...
+  [32m✔[0m Instancias encendidas
+  [32m✔[0m Ollama responde (3.217.204.19)
+  [32m✔[0m Worker y Chroma activos (3.93.193.36)
+  [32m✔[0m Cuenta AWS 679786170402
+  Ollama: running
+  Worker: running
+  Servicios (chroma, intake): active active
+  Colección atlas_demo_base = 943 fragmentos
+  Colección atlas_demo_e2e2 = 1339 fragmentos
+  Colección atlas_demo_e2e = 1339 fragmentos
+  log: atlas-intake.service: Consumed 3.709s CPU time.
+  log: Starting atlas-intake.service - Worker del intake ATLAS (buzón S3 → bronze/silver/gold → Chroma local)...
+  log: Started atlas-intake.service - Worker del intake ATLAS (buzón S3 → bronze/silver/gold → Chroma local).
+  S3 inbox/: 0 objetos
+  S3 processed/: 0 objetos
+  S3 review/: 0 objetos
+  S3 rejected/: 0 objetos
+
+Listo. Sube un PDF con:  ./upload.sh <archivo.pdf>
+--- duración: 24 s
+
+=== Paso 0b: Línea base en frío (reset_demo.sh --frio)  [01:29:17]
+  [32m✔[0m Cuenta AWS 679786170402
+Línea base restaurada: 0 documentos de demo limpiados (0 retirados de Chroma), 0 objetos S3 archivados en archive/20261115T012922Z/, cachés vaciadas.
+  [32m✔[0m Cuenta AWS 679786170402
+  Ollama: running
+  Worker: running
+  Servicios (chroma, intake): active active
+  Colección atlas_demo_base = 943 fragmentos
+  Colección atlas_demo_e2e2 = 1339 fragmentos
+  Colección atlas_demo_e2e = 1339 fragmentos
+  log: atlas-intake.service: Consumed 1.126s CPU time.
+  log: Starting atlas-intake.service - Worker del intake ATLAS (buzón S3 → bronze/silver/gold → Chroma local)...
+  log: Started atlas-intake.service - Worker del intake ATLAS (buzón S3 → bronze/silver/gold → Chroma local).
+  S3 inbox/: 0 objetos
+  S3 processed/: 0 objetos
+  S3 review/: 0 objetos
+  S3 rejected/: 0 objetos
+--- duración: 18 s
+
+=== Paso 1: Estado inicial  [01:29:35]
+  [32m✔[0m Cuenta AWS 679786170402
+  Ollama: running
+  Worker: running
+  Servicios (chroma, intake): active active
+  Colección atlas_demo_base = 943 fragmentos
+  Colección atlas_demo_e2e2 = 1339 fragmentos
+  Colección atlas_demo_e2e = 1339 fragmentos
+  log: atlas-intake.service: Consumed 1.126s CPU time.
+  log: Starting atlas-intake.service - Worker del intake ATLAS (buzón S3 → bronze/silver/gold → Chroma local)...
+  log: Started atlas-intake.service - Worker del intake ATLAS (buzón S3 → bronze/silver/gold → Chroma local).
+  S3 inbox/: 0 objetos
+  S3 processed/: 0 objetos
+  S3 review/: 0 objetos
+  S3 rejected/: 0 objetos
+--- duración: 12 s
+
+=== Paso 2: Pregunta ANTES de subir el documento nuevo  [01:29:47]
+Pregunta: ¿Qué trámite deben seguir las solicitudes de concesión portuaria según el Decreto 474 de 2015?
+
+1. Por medio del cual se expide el Decreto Único Reglamentario del Sector Transporte  (páginas [1], sección Texto íntegro)
+   chunk_id=12ce381cf83ac6a742c8d0590ba83648ed184582e26fc28d9ff2da0e210c2109
+   Decreto 1079/2015 — sin identificar — M.P. sin identificar — Texto íntegro  Otorgamiento de la concesión ARTÍCULO 2.2.3.3.3.1. Otorgamiento formal de la concesión a petición de parte o por oferta oficiosa. La concesión p…
+
+2. Por medio del cual se expide el Decreto Único Reglamentario del Sector Transporte  (páginas [2], sección Texto íntegro)
+   chunk_id=3bcc9b576b0d12ef38352b047a198087f005061ced31c4a267800778e847365c
+   Decreto 1079/2015 — sin identificar — M.P. sin identificar — Texto íntegro  otorgue. 11. La obligación del concesionario de cumplir con los requerimientos que establezcan las autoridades para el inicio de la operación de…
+
+3. Por medio del cual se expide el Decreto Único Reglamentario del Sector Transporte  (páginas [6], sección Texto íntegro)
+   chunk_id=678d56c711a74ae6f300ba599265b27201ea60fa61344ee7f395fda86a04813d
+   Decreto 1079/2015 — sin identificar — M.P. sin identificar — Texto íntegro  (Decreto 474 de 2015, artículo 35). ARTÍCULO 2.2.3.3.6.4. Reversiones. Todas las construcciones e inmuebles por destinación que se encuentren ha…
+
+4. Por medio del cual se expide el Decreto Único Reglamentario del Sector Transporte  (páginas [4], sección Texto íntegro)
+   chunk_id=3c13e7a7566dc2fe2c459c98a8b8f7f815b47dcca540c608003ec75afcbbb955
+   Decreto 1079/2015 — sin identificar — M.P. sin identificar — Texto íntegro  (Decreto 474 de 2015, artículo 25). SECCIÓN 5 Autorizaciones temporales ARTÍCULO 2.2.3.3.5.1. Otorgamiento de autorizaciones temporales. Sólo se…
+
+Cabeceras de cita que recibiría el modelo:
+   [doc1 | source=Por medio del cual se expide el Decreto Único Reglamentario del Sector Transporte.pdf | chunk_id=12ce381cf83ac6a742c8d0590ba83648ed184582e26fc28d9ff2da0e210c2109]
+   [doc2 | source=Por medio del cual se expide el Decreto Único Reglamentario del Sector Transporte.pdf | chunk_id=3bcc9b576b0d12ef38352b047a198087f005061ced31c4a267800778e847365c]
+   [doc3 | source=Por medio del cual se expide el Decreto Único Reglamentario del Sector Transporte.pdf | chunk_id=678d56c711a74ae6f300ba599265b27201ea60fa61344ee7f395fda86a04813d]
+   [doc4 | source=Por medio del cual se expide el Decreto Único Reglamentario del Sector Transporte.pdf | chunk_id=3c13e7a7566dc2fe2c459c98a8b8f7f815b47dcca540c608003ec75afcbbb955]
+--- duración: 6 s
+
+=== Paso 3: Subir el escaneado nuevo  [01:29:53]
+  [32m✔[0m Cuenta AWS 679786170402
+  [32m✔[0m Subido a s3://atlas-demo-intake-679786170402/inbox/Decreto 474 de 2015 - concesiones portuarias.pdf
+  Seguir el procesamiento en vivo:  ./seguir.sh
+--- duración: 3 s
+
+=== Paso 4: Procesamiento en vivo (fases y decisión)  [01:29:56]
+  Documento: Decreto 474 de 2015 - concesiones portuarias.pdf
+  Resultado: PUBLICADO | fragmentos: 16
+  Fases: validación 0.2s -> bronce (texto/OCR) 8.2s -> silver (limpieza) 0.0s -> gold (fragmentos) 1.4s -> política 0.0s -> embeddings 15.6s -> preparación 0.1s -> publicación 0.1s | total 27.3s
+  Aviso: identidad sin entidad_emisora, fecha_iso
+--- duración: 46 s
+
+=== Paso 5: Pregunta DESPUÉS: aparece el decreto con su cita  [01:30:42]
+Pregunta: ¿Qué trámite deben seguir las solicitudes de concesión portuaria según el Decreto 474 de 2015?
+
+1. Decreto 474 de 2015 - concesiones portuarias  (páginas [1], sección Texto íntegro)
+   chunk_id=afde195ebe5338199a9d8313bb6fd1c9374807d8400102ab9a1ae93f37c33509
+   Decreto 474/2015 — sin identificar — M.P. sin identificar — Texto íntegro  CAPÍTULO V Trámite de las concesiones para embarcaderos y/o construcciones destinadas a la pesca industrial Artículo 22. Solicitud de trámite par…
+
+2. Por medio del cual se expide el Decreto Único Reglamentario del Sector Transporte  (páginas [1], sección Texto íntegro)
+   chunk_id=12ce381cf83ac6a742c8d0590ba83648ed184582e26fc28d9ff2da0e210c2109
+   Decreto 1079/2015 — sin identificar — M.P. sin identificar — Texto íntegro  Otorgamiento de la concesión ARTÍCULO 2.2.3.3.3.1. Otorgamiento formal de la concesión a petición de parte o por oferta oficiosa. La concesión p…
+
+3. Decreto 474 de 2015 - concesiones portuarias  (páginas [3], sección Texto íntegro)
+   chunk_id=152f710078036859560c3a56e95346e9684e61e8420c55dbde71ffbff7302085
+   Decreto 474/2015 — sin identificar — M.P. sin identificar — Texto íntegro  31.1. Número de radicado de la solicitud de concesión portuaria. 31.2. Número y fecha del acto administrativo mediante el cual se le otorgó el de…
+
+4. Decreto 474 de 2015 - concesiones portuarias  (páginas [1], sección Texto íntegro)
+   chunk_id=9d1f7bf9e75e66571f4233192e863448c405583f72bc35c566dd45e3f1d91076
+   Decreto 474/2015 — sin identificar — M.P. sin identificar — Texto íntegro  portuarias, siempre y cuando hayan radicado previamente ante la entidad competente solicitud formal de concesión portuaria en los términos de los…
+
+Cabeceras de cita que recibiría el modelo:
+   [doc1 | source=Decreto 474 de 2015 - concesiones portuarias.pdf | chunk_id=afde195ebe5338199a9d8313bb6fd1c9374807d8400102ab9a1ae93f37c33509]
+   [doc2 | source=Por medio del cual se expide el Decreto Único Reglamentario del Sector Transporte.pdf | chunk_id=12ce381cf83ac6a742c8d0590ba83648ed184582e26fc28d9ff2da0e210c2109]
+   [doc3 | source=Decreto 474 de 2015 - concesiones portuarias.pdf | chunk_id=152f710078036859560c3a56e95346e9684e61e8420c55dbde71ffbff7302085]
+   [doc4 | source=Decreto 474 de 2015 - concesiones portuarias.pdf | chunk_id=9d1f7bf9e75e66571f4233192e863448c405583f72bc35c566dd45e3f1d91076]
+--- duración: 5 s
+
+=== Paso 6: Documento defectuoso (escaneo degradado)  [01:30:47]
+  [32m✔[0m Cuenta AWS 679786170402
+  [32m✔[0m Subido a s3://atlas-demo-intake-679786170402/inbox/Escaneo degradado.pdf
+  Seguir el procesamiento en vivo:  ./seguir.sh
+  Documento: Escaneo degradado.pdf
+  Resultado: A REVISIÓN HUMANA (no entra) | fragmentos: 1
+  Fases: validación 0.0s -> bronce (texto/OCR) 4.3s -> silver (limpieza) 0.0s -> gold (fragmentos) 1.5s -> política 0.0s | total 6.3s
+  Motivo: 2 página(s) OCR sin confianza
+  Motivo: página OCR con confianza 51.9 < 70
+  Motivo: identidad incompleta: faltan corporacion
+  Motivo: categoría dudosa
+  [32m✔[0m Cuenta AWS 679786170402
+  Ollama: running
+  Worker: running
+  Servicios (chroma, intake): active active
+  Colección atlas_demo_base = 959 fragmentos
+  Colección atlas_demo_e2e2 = 1339 fragmentos
+  Colección atlas_demo_e2e = 1339 fragmentos
+  log: atlas-intake.service: Consumed 1.126s CPU time.
+  log: Starting atlas-intake.service - Worker del intake ATLAS (buzón S3 → bronze/silver/gold → Chroma local)...
+  log: Started atlas-intake.service - Worker del intake ATLAS (buzón S3 → bronze/silver/gold → Chroma local).
+  S3 inbox/: 0 objetos
+  S3 processed/: 3 objetos
+  S3 review/: 3 objetos
+  S3 rejected/: 0 objetos
+--- duración: 31 s
+
+=== Paso 7: Volver al estado inicial (reset_demo.sh)  [01:31:19]
+  [32m✔[0m Cuenta AWS 679786170402
+retirado d4ee8f2c8fbb
+Línea base restaurada: 2 documentos de demo limpiados (1 retirados de Chroma), 6 objetos S3 archivados en archive/20261115T013125Z/, cachés conservadas.
+  [32m✔[0m Cuenta AWS 679786170402
+  Ollama: running
+  Worker: running
+  Servicios (chroma, intake): active active
+  Colección atlas_demo_base = 943 fragmentos
+  Colección atlas_demo_e2e2 = 1339 fragmentos
+  Colección atlas_demo_e2e = 1339 fragmentos
+  log: atlas-intake.service: Consumed 19.579s CPU time.
+  log: Starting atlas-intake.service - Worker del intake ATLAS (buzón S3 → bronze/silver/gold → Chroma local)...
+  log: Started atlas-intake.service - Worker del intake ATLAS (buzón S3 → bronze/silver/gold → Chroma local).
+  S3 inbox/: 0 objetos
+  S3 processed/: 0 objetos
+  S3 review/: 0 objetos
+  S3 rejected/: 0 objetos
+--- duración: 20 s
+
+Ensayo 3 terminado [01:31:39]. Registro: /c/Users/Migue/Desktop/playas/ingesta/demo/ensayo_3.log

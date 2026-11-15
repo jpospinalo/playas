@@ -35,6 +35,7 @@ def main():
         for p in (ESTADO / "intake").glob("*.json")
     }
     demo = sorted(d for d in fichas if d not in base)
+    retirados = 0
     for doc_id in demo:
         if fichas[doc_id].get("estado") == "publicado":
             r = subprocess.run(
@@ -66,6 +67,7 @@ def main():
             if r.returncode:
                 sys.exit(f"retire falló para {doc_id}: {r.stderr[-400:]}")
             print("retirado", doc_id[:12])
+            retirados += 1
         (ESTADO / "intake" / f"{doc_id}.json").unlink(missing_ok=True)
         (ESTADO / "intake" / "instantaneas" / f"{doc_id}.jsonl.gz").unlink(missing_ok=True)
     cola = ESTADO / "review_queue.csv"
@@ -99,8 +101,21 @@ def main():
     if frio:
         for hijo in (DATOS / "cache").iterdir():
             shutil.rmtree(hijo) if hijo.is_dir() else hijo.unlink()
+        # Las capas bronze/silver/gold también evitan rehacer el OCR: en frío se
+        # borran las de los documentos del demo (las de la base se conservan).
+        import sqlite3
+
+        # Cualquier doc_id ajeno a la base (aunque un reinicio previo borrara su ficha).
+        with sqlite3.connect(ESTADO / "intake_layers.sqlite") as db:
+            ajenos = {d for (d,) in db.execute("SELECT DISTINCT doc_id FROM layers")} - base
+            for doc_id in ajenos:
+                db.execute("DELETE FROM layers WHERE doc_id=?", (doc_id,))
+        ajenos |= {p.name.split(".", 1)[0] for p in (DATOS / "capas").glob("*/*.*")} - base
+        for doc_id in ajenos:
+            for archivo in (DATOS / "capas").glob(f"*/{doc_id}.*"):
+                archivo.unlink()
     print(
-        f"Línea base restaurada: {len(demo)} documentos de demo retirados, "
+        f"Línea base restaurada: {len(demo)} documentos de demo limpiados ({retirados} retirados de Chroma), "
         f"{movidos} objetos S3 archivados en archive/{marca}/, cachés {'vaciadas' if frio else 'conservadas'}."
     )
 
