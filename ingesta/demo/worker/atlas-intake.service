@@ -1,0 +1,29 @@
+[Unit]
+Description=Worker del intake ATLAS (buzón S3 → bronze/silver/gold → Chroma local)
+After=network-online.target atlas-chroma.service
+Wants=network-online.target
+Requires=atlas-chroma.service
+
+[Service]
+User=atlas
+Group=atlas
+EnvironmentFile=/etc/atlas-intake.env
+WorkingDirectory=/opt/atlas/playas/ingesta
+# Espera a que Chroma responda antes de empezar (arranque en frío de la EC2).
+ExecStartPre=/bin/sh -c 'for i in $(seq 1 60); do curl -sf http://127.0.0.1:8000/api/v2/heartbeat >/dev/null && exit 0; sleep 2; done; exit 1'
+# Sin claves en disco: boto3 usa el perfil de instancia (LabInstanceProfile).
+ExecStart=/opt/atlas/playas/ingesta/.venv/bin/python -X utf8 -m ingest.offline intake \
+  --inbox s3://${ATLAS_BUCKET}/inbox/ --watch --intervalo ${ATLAS_INTERVALO} \
+  --collection ${ATLAS_COLECCION} --port 8000 \
+  --state /var/lib/atlas/estado --layers-root /var/lib/atlas/capas \
+  --cache /var/lib/atlas/cache --raw-root /var/lib/atlas/raw \
+  --ollama ${ATLAS_OLLAMA} --allow-remote-ollama
+# Reanudable: tras un corte, systemd lo relanza y el intake retoma por hash sin duplicar.
+Restart=always
+RestartSec=20
+# Al detener: el worker de análisis muere con el padre (PR_SET_PDEATHSIG).
+KillMode=control-group
+TimeoutStopSec=60
+
+[Install]
+WantedBy=multi-user.target

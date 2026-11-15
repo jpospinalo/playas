@@ -1,0 +1,16 @@
+[Unit]
+Description=Chroma local del intake ATLAS (solo localhost, datos en EBS)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=atlas
+Group=atlas
+# Solo 127.0.0.1: el intake publica en localhost; no se abre ningún puerto hacia fuera.
+ExecStart=/opt/atlas/playas/ingesta/.venv/bin/chroma run --path /var/lib/atlas/chroma --host 127.0.0.1 --port 8000
+Environment=ANONYMIZED_TELEMETRY=False
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

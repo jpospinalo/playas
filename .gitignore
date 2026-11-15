@@ -127,3 +127,5 @@ ingesta/benchmarks/intake/trabajo/
 ingesta/benchmarks/demo_aws/trabajo/
 ingesta/infrastructure/intake/.terraform/
 ingesta/infrastructure/intake/*.tfstate*
+ingesta/demo/archivos/
+ingesta/demo/demo.env
