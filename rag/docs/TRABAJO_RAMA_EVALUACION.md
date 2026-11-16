@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | **Autor** | Julian Esteban Rincón Rodríguez |
-| **Periodo** | 2026-10-08 → 2026-11-12 |
+| **Periodo** | 2026-10-08 → 2026-11-16 |
 | **Rama** | `julian-rincon/evaluacion-ragas-linea-base` |
 | **Punto de partida** | `main` @ `f16586f` (sistema desplegado en AWS el 2026-10-08) |
 | **Revisores** | Juan Pablo Ospina López, Camilo |
@@ -45,6 +45,7 @@ La rama empezó como la **línea base de calidad** de ATLAS frente al ground tru
 | 2026-11-05 → 11-06 | **Mejoras de recuperación y respuesta** | Tokenizador español, fusión ajustada, varias consultas, prioridad territorial, jerarquía normativa, prompt sin normas ausentes, saludo guiado |
 | 2026-11-11 | **Gold A corregido + QA completa** | Fusión de `corpus`; ~6.000 peticiones de carga sin errores 5xx; arreglo del agotamiento del pool de conexiones |
 | 2026-11-12 | **`main` al día** | Fusión del registro con tipo de usuario; arreglo de la columna `user_type` en bases existentes; comparación de modelos locales |
+| 2026-11-16 | **Resolución documental de `corpus`** | Fusión de los 7 commits de `corpus` del 2026-11-15; convivencia con la multiconsulta; compatibilidad comprobada con la rama de ingesta y su evaluación de nivel 0 |
 
 ## 3. Cambios por componente
 
@@ -68,6 +69,8 @@ La rama empezó como la **línea base de calidad** de ATLAS frente al ground tru
 | `retriever.py` | Máximo un fragmento por sentencia | Una sentencia larga ocupaba los 4 lugares y dejaba fuera la norma |
 | `territorio.py` (nuevo) | Prioridad territorial | Evita traer normas locales de otra ciudad |
 | `retriever.py` | Jerarquía normativa (`CUPOS_NORMATIVA=1`) | Reserva un lugar para la norma (REMAC 5, Decreto 2324) antes que la jurisprudencia |
+| `agent.py` (fusión con `corpus`) | Con radicado verificado se usa la consulta compuesta y la selección verificada de `corpus`; el resto, `afuse_queries` | La resolución documental elige los fragmentos de una sola sentencia; las demás preguntas conservan la recuperación multiconsulta |
+| `tools.py` (fusión con `corpus`) | Con identidad verificada se omite también la línea «Radicado» de la metadata | Mismo objetivo que `corpus`: no reintroducir radicados históricos en el contexto |
 
 ### Respuesta (`agent.py`, `prompts.py`, `domain_scope.py`)
 
@@ -96,10 +99,14 @@ La rama empezó como la **línea base de calidad** de ATLAS frente al ground tru
 | La demo local sigue con gemma4:e4b | Qwen 3.5 deja más respuestas sin evidencia; no afecta la línea base, que usa gpt-5-nano |
 | No se cambió nada de infraestructura ni de AWS | Fuera del alcance de la rama; la recomendación de backpressure queda documentada para quien despliega |
 | Cambios en código de `main` (auth, base de datos) solo con prueba que falla antes y pasa después | Son arreglos de fallos reales encontrados en la QA, no cambios de diseño |
+| La resolución documental queda como la deja `corpus` (apagada por defecto) | Su activación en despliegue la decide el equipo; aquí solo se verificó que convive con la recuperación de la rama |
+| Se protege con una prueba de contrato lo que la ingesta y el nivel 0 usan del RAG | Otros módulos del repositorio importan el retriever directamente; un cambio de firma los rompería sin aviso |
 
 ## 6. Verificación
 
-- Suite: **1066 pruebas de backend** y **245 de frontend**; ruff, formato y mypy sin errores.
+- Suite: **1274 pruebas de backend** y **245 de frontend**; ruff, formato y mypy sin errores.
+- Fusión con `corpus` (2026-11-16): recuperación idéntica a la de la rama (0,741, fuga 0); API de punta a punta 15/15 con la resolución encendida; infraestructura validada en un emulador local de AWS (con la opción apagada, la tarea lleva `REGISTER_ENABLED`; encendida, además las dos variables de procedencia). Preguntas de radicado reales: 6 de 8 resueltas con cita textual y 2 controles rechazados.
+- Compatibilidad con la rama de ingesta (fusión de prueba, no versionada): las funciones del RAG que usa siguen intactas y su nivel 0 mejora con el retriever de esta rama (`document_hit@4` 0,725 → 0,975).
 - Carga sin LLM: ~6.000 peticiones, hasta 200 simultáneas, **0 errores 5xx**; memoria estable.
 - QA con LLM: validación (11/11), entradas hostiles e inyección de prompt (9/9 sin 500 ni fuga del prompt), streaming, concurrencia 4 y 8 sin errores; con 25 simultáneas, 0 errores 500 y 504 limpio al tiempo máximo.
 - Sistema completo tras fusionar `main`: base existente migrada sin perder datos; registro, correo duplicado (409), login, `/auth/me` y usuarios antiguos correctos.
@@ -111,7 +118,8 @@ La rama empezó como la **línea base de calidad** de ATLAS frente al ground tru
 3. **Falso fuera de alcance:** el caso 046 se clasifica como `out_of_scope`.
 4. **Normativa:** llega en 8 de 18 casos; REMAC 5 todavía queda fuera en parte de las preguntas.
 5. **Territorio:** «Playa Blanca» se asigna solo a Cartagena (también existe en Santa Marta).
-6. **Carga en despliegue:** con `RAG_BACKPRESSURE_MODE=off`, las consultas que exceden la capacidad esperan hasta 280 s; activar `enforce` responde 503 de inmediato.
+6. **Resolución documental:** solo se activa con la forma «¿qué ordenó/resolvió/decidió en … instancia … en el radicado …?»; 2 de 8 preguntas reales no se resuelven aunque el radicado se encuentra.
+7. **Carga en despliegue:** con `RAG_BACKPRESSURE_MODE=off`, las consultas que exceden la capacidad esperan hasta 280 s; activar `enforce` responde 503 de inmediato.
 
 ## 8. Informes elaborados
 

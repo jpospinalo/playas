@@ -69,6 +69,17 @@ START → enrich_query → route_after_analysis → {retrieve_forced → generat
   diferencia de un agente ReAct que podría invocar una herramienta cero, una
   o varias veces. Llena `sources` y, vía `tools.build_context_block`, el
   contexto formateado que ve el LLM.
+- **Resolución documental (opcional, `legal_resolution.py`)**: se activa con
+  `LEGAL_RESOLUTION_PROVENANCE_PATH` y `LEGAL_RESOLUTION_PROVENANCE_SHA256`
+  (en ECS, `legal_resolution_enabled`; apagada por defecto). Al arrancar
+  verifica que el índice BM25 coincide fragmento a fragmento con la
+  procedencia de Gold A. Ante «¿qué ordenó/resolvió/decidió en … instancia …
+  en el radicado …?», `retrieve_forced` recupera con una consulta compuesta y
+  se queda solo con los fragmentos verificados de esa sentencia; si la ruta
+  era `out_of_scope` o `needs_clarification`, `respond_without_retrieval`
+  intenta primero la respuesta documental, que cita textualmente la parte
+  resolutiva. Con identidad verificada, `build_context_block` omite los
+  nombres de archivo y radicados históricos del contexto.
 - **`generate`** construye la respuesta a partir de `sources`, valida sus
   citas (`_validate_citations`) y, si la validación falla o no hay
   evidencia, cae a una respuesta fija de "sin evidencia/citas inválidas".

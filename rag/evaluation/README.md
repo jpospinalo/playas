@@ -229,6 +229,7 @@ Medido en local con las métricas fijas sin LLM; las notas del juez RAGAS de la 
 - **QA de la API:** carga sin LLM (~6.000 peticiones, hasta 200 concurrentes) sin errores 5xx; validación, inyección de prompt, entradas hostiles y streaming correctos. Se corrigió un agotamiento del pool de conexiones: `get_current_user` retenía una conexión durante toda la consulta y, con más de 15 consultas simultáneas, las siguientes fallaban con 500 a los 30 s. En despliegue conviene activar `RAG_BACKPRESSURE_MODE=enforce` para responder 503 de inmediato en lugar de esperar al tiempo máximo (280 s).
 - **QA tras fusionar `main` (2026-11-12):** se trajo el registro con tipo de usuario. Al probarlo contra una base existente, la columna nueva `users.user_type` no existía (`create_all` no altera tablas) y el login y todos los endpoints autenticados daban 500; `init_db` ahora agrega las columnas opcionales que falten (prueba `test_init_db_adds_missing_columns.py`). Verificado en la base real de la demo: columna creada sin perder datos; registro, correo duplicado (409), login, `/auth/me` y usuarios antiguos correctos. QA con LLM: 11/11 validaciones, 9/9 entradas hostiles sin 500 ni fuga del prompt, streaming correcto, concurrencia 4 y 8 todo 200; con 25 simultáneas, 0 errores 500 y 504 limpio a los 280 s (en local hay una sola GPU; en AWS el LLM es por API). Suite: 1066 pruebas backend y 245 frontend.
 - **Modelo local para la demo:** se probó Qwen 3.5 9B (razonamiento apagado) frente a gemma4:e4b con el mismo código y el Gold corregido. Cita más normas esperadas (12,9 % frente a 4,6 %), pero responde «evidencia insuficiente» en 30 casos frente a 13 y deja 2 respuestas sin citas válidas, así que la demo local sigue con gemma4:e4b. No afecta la línea base, que usa gpt-5-nano.
+- **Resolución documental de `corpus` (2026-11-16):** ningún caso del ground truth v0.2 tiene la forma que la activa (0 de 66), así que estas métricas no cambian con ella encendida o apagada; tras la fusión, la recuperación es idéntica a la de la rama (0,741, fuga 0). Se midió aparte con 10 preguntas sobre radicados reales del Gold A (gemma4:e4b local, procedencia `gold-a-cc7bf44b54a9` verificada, 5.862/5.862 fragmentos): apagada, las 10 terminan en «fuera del ámbito»; encendida, 6 de 8 válidas reciben la decisión citada textualmente y los 2 controles (radicado inexistente e instancia equivocada) se rechazan. Las 2 que fallan no se resuelven ni llamando al resolutor directamente (radicado 88001233300020210004102 y T-9.370.946): el radicado se encuentra pero el tema de la pregunta no se empareja con el texto.
 - **Sigue débil:** multas y sanciones responden «evidencia insuficiente» (falta de cobertura en el corpus).
 
 ### Qué hay que trabajar
@@ -238,6 +239,20 @@ Medido en local con las métricas fijas sin LLM; las notas del juez RAGAS de la 
 3. **Falso fuera de alcance:** el caso 046 sigue sin responderse porque el grafo lo clasifica como `out_of_scope`.
 4. **Texto de plantilla:** 4 respuestas filtran instrucciones internas ("oraciones con [doc"), igual que en la corrida anterior.
 5. **Citas:** ninguna respuesta trae referencias sin respaldo (antes 3) y todas las citas son válidas, pero las referencias esperadas casi no aparecen (0,079).
+
+### Relación con `evaluation/ragas/` (nivel 0, rama de ingesta)
+
+La rama `feat/ingesta-medallion-escalabilidad` trae su propia evaluación sin LLM en `evaluation/ragas/` (raíz del repositorio). No compite con esta:
+
+| | `evaluation/ragas/` (nivel 0) | `rag/evaluation/` (esta carpeta) |
+|---|---|---|
+| Qué evalúa | Fidelidad de la ingesta y recuperación con una sola consulta (`retriever.invoke`) | El grafo de producción (multiconsulta, territorio, jerarquía normativa) |
+| Casos | `dataset_v1.jsonl` (40) | Ground truth v0.2 del equipo jurídico (66) |
+| Dependencias | `ragas==0.4.3`, `rapidfuzz`, Ollama con `embeddinggemma` | Las del proyecto `rag/` |
+
+- Su `run_level0.py` incluye el sha256 de `rag/backend/rag/core/retriever.py` en el hash de configuración: cualquier cambio del retriever invalida sus resultados guardados y hay que recalcularlos (no se rompe nada).
+- Corrida de referencia (2026-11-16, colección Gold A corregida, sin LLM): con el retriever de esta rama, `document_hit@4` 0,725 → **0,975**, `document_mrr@4` 0,671 → **0,848** y `document_recall@4` 0,688 → **0,912** frente al de `f16586f`. Las métricas de pasaje salen casi nulas en ambos casos, probablemente porque `dataset_v1` se escribió para el chunking de `atlas_v1` y no para Gold A; no sirven para comparar. Las `nonllm_*` usaron un sustituto local de `rapidfuzz` (no instalado en el entorno), igual en ambas corridas.
+- `tests/unit/test_contrato_consumidores_retriever.py` fija las funciones que usan la ingesta y el nivel 0 (`init_retrievers`, `get_ensemble_retriever(k, k_candidates)`, `close_retrievers`, `build_context_block(docs)`, `OllamaEmbeddingClient`).
 
 ### Condiciones de la corrida
 
