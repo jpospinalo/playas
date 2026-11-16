@@ -15,6 +15,7 @@ from pathlib import Path
 from langchain_core.documents import Document
 
 from .domain_scope import _is_deterministic_terminal
+from .tools import sanitize_replacement_chars
 
 _DOCKET = re.compile(
     r"(?<![\w-])(?P<number>t-(?:\d(?:\.\d{3}){2}|\d{7})|"
@@ -306,6 +307,10 @@ class Resolution:
         ]
 
 
+def _cited_excerpts(excerpts: Sequence[str]) -> str:
+    return "\n".join(f"- «{text}» [doc{i}]" for i, text in enumerate(excerpts, 1))
+
+
 @dataclass(frozen=True, slots=True)
 class DocketEvidence:
     docket: str
@@ -332,15 +337,15 @@ class DocketEvidence:
 
     def select_for_question(
         self, question: str, documents: Sequence[Document], limit: int
-    ) -> list[Document]:
-        """Complete an explicit order only when ranked evidence anchors both ends."""
+    ) -> tuple[list[Document], str | None]:
+        """Return sources and the literal answer for a reconstructed order, if any."""
         intent = _resolution_intent(question)
         if (
             not self.decisions
             or intent is None
             or not intent[0].lstrip("¿").startswith("que ordeno ")
         ):
-            return self.select(documents, limit)
+            return self.select(documents, limit), None
 
         ranked = self.select(documents, len(documents))
         by_line = {self.fragments[doc.metadata["chunk_id"]].line: doc for doc in ranked}
@@ -350,25 +355,29 @@ class DocketEvidence:
             if len(lines) > 1 and lines[0] in by_line and lines[-1] in by_line:
                 anchored.append((unit, lines))
         if not anchored:
-            return ranked[:limit]
+            return ranked[:limit], None
         if len(anchored) != 1:
-            return []
+            return [], None
         unit, lines = anchored[0]
         if len(lines) > limit or any(b != a + 1 for a, b in pairwise(lines)):
-            return []
+            return [], None
 
         verified = []
         for (original_id, span), line in zip(unit, lines, strict=True):
             original = span.document
             doc = by_line.get(line, original)
             if not _verified(original, original_id, self.fragments[original_id]):
-                return []
+                return [], None
             if doc is not original and not _verified(
                 doc, doc.metadata["chunk_id"], self.fragments[doc.metadata["chunk_id"]]
             ):
-                return []
+                return [], None
             verified.append(Passage(doc, span.start, span.end))
-        return _visible_order_sources(verified, intent[3])
+        excerpts = _visible_order_sources(verified, intent[3])
+        if not excerpts:
+            return [], None
+        citations = _cited_excerpts([doc.page_content for doc in excerpts])
+        return excerpts, f"{self.instance.capitalize()}. Radicado {self.docket}.\n\n{citations}"
 
 
 def _resolution_intent(question: str) -> re.Match[str] | None:
@@ -707,7 +716,7 @@ def _ordered_words(subject: str, candidate: str) -> bool:
 def _visible_order_sources(spans: Sequence[Passage], subject: str) -> list[Document]:
     """Use the same bounded, literal excerpts for generation and public citations."""
     inner_limit = 490  # Leave space for omission marks within the API's 500 characters.
-    bodies = [" ".join(span.text.split()) for span in spans]
+    bodies = [" ".join(sanitize_replacement_chars(span.text).split()) for span in spans]
     seen = set(_topic_words(_flat(" ".join(body[:inner_limit] for body in bodies))))
     requested = set(_topic_words(subject))
     missing = requested - seen
@@ -1645,7 +1654,6 @@ class ResolutionIndex:
         sources: list[Document] = []
         passages: list[Passage] = []
         excerpts: list[str] = []
-        lines: list[str] = []
         for ident in sorted(by_document, key=lambda ident: case.verified_documents[ident][1].line):
             merged: list[Passage] = []
             for span in sorted(by_document[ident], key=lambda p: (p.start, p.end)):
@@ -1669,5 +1677,6 @@ class ResolutionIndex:
             sources.append(document)
             passages.extend(merged)
             excerpts.append(excerpt)
-            lines.append(f"- «{excerpt}» [doc{len(sources)}]")
-        return Resolution("\n".join(lines), tuple(sources), tuple(passages), tuple(excerpts))
+        return Resolution(
+            _cited_excerpts(excerpts), tuple(sources), tuple(passages), tuple(excerpts)
+        )

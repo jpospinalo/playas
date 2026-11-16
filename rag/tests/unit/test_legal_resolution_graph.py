@@ -307,6 +307,7 @@ async def test_in_scope_checks_equivalence_and_answer_attribution(
 async def test_verified_generation_keeps_historical_ids_out_of_the_prompt(monkeypatch, tmp_path):
     historical_docket = "47001-2332-000-2011-08425-02"
     docs = _source(historical_docket)
+    docs[1].metadata["summary"] = "Resumen ordinario disponible en el contexto."
     _configured(monkeypatch, tmp_path, docs)
     _enrichment(monkeypatch, "in_scope")
 
@@ -321,6 +322,7 @@ async def test_verified_generation_keeps_historical_ids_out_of_the_prompt(monkey
         assert historical_docket not in text
         assert f"radicado {DOCKET}, segunda instancia" in text
         assert "[doc1]" in text.splitlines() and DECISION in text
+        assert docs[1].metadata["summary"] in text
         return answer
 
     monkeypatch.setattr(agent, "get_ensemble_retriever", lambda **_: Retriever())
@@ -422,16 +424,22 @@ async def test_verified_order_completes_only_its_anchored_ordinal(
     monkeypatch, tmp_path, k, unsupported_topic
 ):
     docs = _source("providencia")
+    summary = "El Plan Maestro es un instrumento de planificación."
     docs[1].page_content = "El fallo de primera instancia exigía cronogramas estrictos."
     docs[1].metadata["section_name"] = "Desarrollo procesal"
     parts = [
         "PRIMERO: Ordenar conformar una mesa de trabajo para adoptar el Plan Maestro de",
         "Erosión Costera y establecer los compromisos de las entidades según sus competencias.",
-        "El plan se adoptará desde la ejecutoria. SEGUNDO: Ordenar presentar otro informe.",
+        "El plan se adoptará desde la ejecutoria.\ufffd SEGUNDO: Ordenar presentar otro informe.",
     ]
     for number, text in enumerate(parts, 1):
         ident = f"orden-{number}"
-        metadata = {**docs[1].metadata, "chunk_id": ident, "section_name": "Decisión"}
+        metadata = {
+            **docs[1].metadata,
+            "chunk_id": ident,
+            "section_name": "Decisión",
+            "summary": summary,
+        }
         docs.append(Document(id=ident, page_content=text, metadata=metadata))
     copies = [
         Document(
@@ -443,17 +451,20 @@ async def test_verified_order_completes_only_its_anchored_ordinal(
     ]
     _configured(monkeypatch, tmp_path, docs + copies)
     _enrichment(monkeypatch, "in_scope")
+    retrievals = []
 
     class Retriever:
         async def ainvoke(self, query):
+            retrievals.append(query)
+            if query == GENERATION_QUESTION:
+                return [docs[2]]
             return [docs[1], docs[4], docs[2]]
 
     def generate(prompt):
-        assert k == 3 and not unsupported_topic
         body = str(prompt.to_messages()[-1].content)
-        assert all(text.split(" SEGUNDO:")[0] in body for text in parts)
-        assert "cronogramas estrictos" not in body and "otro informe" not in body
-        return "En segunda instancia se ordenó una mesa de trabajo [doc1][doc2][doc3]."
+        assert GENERATION_QUESTION in body, "El ordinal documentado no llama al generador."
+        assert summary in body
+        return "La sentencia apelada figura en el expediente [doc1]."
 
     monkeypatch.setattr(agent, "get_ensemble_retriever", lambda **_: Retriever())
     monkeypatch.setattr(
@@ -467,6 +478,7 @@ async def test_verified_order_completes_only_its_anchored_ordinal(
         subject += " y la nómina bancaria del comité"
     question = f"¿Qué ordenó en segunda instancia sobre {subject} en el radicado {DOCKET}?"
     result = await _public_query(monkeypatch, QueryRequest(question=question, k=k))
+    assert retrievals == [question, question]
     if k == 2 or unsupported_topic:
         assert result.sources == [] and "evidencia insuficiente" in result.answer
     else:
@@ -474,6 +486,29 @@ async def test_verified_order_completes_only_its_anchored_ordinal(
         assert [f.metadata["chunk_id"] for f in fragments] == ["orden-1", "orden-2", "orden-3"]
         assert fragments[1].content == parts[1]
         assert fragments[2].content == "El plan se adoptará desde la ejecutoria. […]"
+        assert [f.metadata["summary"] for f in fragments] == [summary] * 3
+        assert all(d.metadata["summary"] == summary for d in docs[2:])
+        assert result.answer.splitlines() == [
+            f"Segunda instancia. Radicado {DOCKET}.",
+            "",
+            *(f"- «{f.content}» [doc{f.index}]" for f in fragments),
+        ]
+
+        graph = agent.build_graph()
+        first_turn = await _invoke(graph, question=question, k=k)
+        unsupported_deadline = (
+            "¿Qué ordenó en segunda instancia sobre ejecutar las obras en dos meses "
+            f"en el radicado {DOCKET}?"
+        )
+        early_stop = await _invoke(graph, question=unsupported_deadline, k=k)
+        next_turn = await _invoke(graph, question=GENERATION_QUESTION, k=k)
+        assert first_turn["documentary_answer"] == result.answer
+        assert early_stop["sources"] == [] and early_stop["documentary_answer"] is None
+        assert next_turn["documentary_answer"] is None
+        assert (
+            next_turn["messages"][-1].content
+            == "La sentencia apelada figura en el expediente [doc1]."
+        )
 
 
 @pytest.mark.anyio
