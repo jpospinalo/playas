@@ -27,6 +27,16 @@ _QUESTION = re.compile(
     r"unica instancia|sede de revision)(?: (?:a|al) (.+?))? (?:sobre|acerca de) (.+?)"
     rf",? en (?:el radicado )?(?P<docket>{_DOCKET.pattern})\?"
 )
+_PARTIAL_DOCKET = re.compile(
+    r"\b(?:solo (?:tengo|conozco) (?:el )?(?:radicado|expediente|numero)|"
+    r"(?:radicado|expediente|numero) (?:parcial|incompleto))"
+    r"(?: *: *| )\d{5}(?![\w/-]|[.,]\d| \d)"
+)
+_UNKNOWN_INSTANCE = re.compile(
+    r"\b(?:desconozco|no (?:se|conozco)) (?:la|en que|de que) instancia\b"
+)
+_OPERATIVE_REQUEST = re.compile(r"\b(?:plazo|termino|orden(?:es)?|ordeno|resolvio|decidio)\b")
+_JUDICIAL_REFERENCE = re.compile(r"\b(?:fallo|sentencia|providencia|tribunal|juzgado)\b")
 _RESPONSIBILITY_QUESTION = re.compile(
     r"¿?que (?:ordeno|resolvio|decidio) en (?:primera instancia|segunda instancia|"
     r"unica instancia|sede de revision) (?:a|al) .+? como "
@@ -390,6 +400,18 @@ def has_docket_intent(question: str) -> bool:
     return _resolution_intent(question) is not None
 
 
+def needs_providencia_clarification(question: str) -> bool:
+    """Detecta una orden o un plazo pedido con referencia explícitamente incompleta."""
+    text = _flat(question)
+    return bool(
+        _PARTIAL_DOCKET.search(text)
+        and _JUDICIAL_REFERENCE.search(text)
+        and _UNKNOWN_INSTANCE.search(text)
+        and _OPERATIVE_REQUEST.search(text)
+        and not any(len(match["number"]) > 4 for match in _DOCKET.finditer(text))
+    )
+
+
 def requires_operative_proof(question: str) -> bool:
     """A claimed addressee, deadline or trigger needs direct operative support."""
     intent = _resolution_intent(question)
@@ -711,6 +733,15 @@ def _ordered_words(subject: str, candidate: str) -> bool:
     wanted = _topic_words(subject)
     available = iter(_topic_words(candidate))
     return bool(wanted) and all(word in available for word in wanted)
+
+
+def _operative_topic_matches(topic: str, text: str) -> bool:
+    # The affirmative purpose can be stated with an infinitive or a subordinate clause.
+    return _ordered_words(topic, text) or (
+        re.search(r"\bpara recuperar\b", topic) is not None
+        and not re.search(r"\b(?:no|ni|nunca)\b", text)
+        and _ordered_words(topic, re.sub(r"\bpara que se recupere\b", "para recuperar", text))
+    )
 
 
 def _visible_order_sources(spans: Sequence[Passage], subject: str) -> list[Document]:
@@ -1275,7 +1306,7 @@ def _act_evidence(
                 scopes = [
                     scope
                     for scope in _TIMED_ACTION_BREAK.split(timing_text)
-                    if _ordered_words(topic, scope)
+                    if _operative_topic_matches(topic, scope)
                 ]
                 if len(scopes) != 1:
                     continue
@@ -1340,7 +1371,7 @@ def _act_evidence(
         if index and not constraint and _analysis_context(topic, clause, clauses[index - 1]):
             matches.append((*inherited, clauses[index - 1], clause))
             continue
-        if _ordered_words(topic, _operative_scope(text)):
+        if _operative_topic_matches(topic, _operative_scope(text)):
             if trigger_only:
                 examples = re.search(
                     r",\s+entre\s+las\s+que\s+se\s+encuentran\b",
