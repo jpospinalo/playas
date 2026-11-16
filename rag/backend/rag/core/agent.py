@@ -48,7 +48,7 @@ from .observability import (
 )
 from .prompts import AGENT_FALLBACK_HUMAN_TEMPLATE, AGENT_SYSTEM
 from .query_enricher import EnrichedQuery, QueryRoute, enrich_query_async
-from .retriever import bm25_documents, get_ensemble_retriever
+from .retriever import HybridEnsembleRetriever, bm25_documents, get_ensemble_retriever
 from .tools import build_context_block
 
 
@@ -422,6 +422,10 @@ async def retrieve_forced_node(
         if evidence:
             # Radicado verificado: una consulta compuesta basta para traer los
             # fragmentos de esa sentencia; evidence filtra los verificados.
+            # Aquí se buscan VARIOS fragmentos de una misma sentencia, así que
+            # se quita el tope de un fragmento por sentencia (sobre una copia).
+            if isinstance(retriever, HybridEnsembleRetriever):
+                retriever = retriever.model_copy(update={"fragmentos_por_sentencia": None})
             docs = await retriever.ainvoke("\n".join(queries))
             selected, documentary_answer = evidence.select_for_question(state["question"], docs, k)
         else:
