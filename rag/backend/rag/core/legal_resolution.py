@@ -735,6 +735,15 @@ def _ordered_words(subject: str, candidate: str) -> bool:
     return bool(wanted) and all(word in available for word in wanted)
 
 
+def _operative_topic_matches(topic: str, text: str) -> bool:
+    # The affirmative purpose can be stated with an infinitive or a subordinate clause.
+    return _ordered_words(topic, text) or (
+        re.search(r"\bpara recuperar\b", topic) is not None
+        and not re.search(r"\b(?:no|ni|nunca)\b", text)
+        and _ordered_words(topic, re.sub(r"\bpara que se recupere\b", "para recuperar", text))
+    )
+
+
 def _visible_order_sources(spans: Sequence[Passage], subject: str) -> list[Document]:
     """Use the same bounded, literal excerpts for generation and public citations."""
     inner_limit = 490  # Leave space for omission marks within the API's 500 characters.
@@ -1297,7 +1306,7 @@ def _act_evidence(
                 scopes = [
                     scope
                     for scope in _TIMED_ACTION_BREAK.split(timing_text)
-                    if _ordered_words(topic, scope)
+                    if _operative_topic_matches(topic, scope)
                 ]
                 if len(scopes) != 1:
                     continue
@@ -1362,7 +1371,7 @@ def _act_evidence(
         if index and not constraint and _analysis_context(topic, clause, clauses[index - 1]):
             matches.append((*inherited, clauses[index - 1], clause))
             continue
-        if _ordered_words(topic, _operative_scope(text)):
+        if _operative_topic_matches(topic, _operative_scope(text)):
             if trigger_only:
                 examples = re.search(
                     r",\s+entre\s+las\s+que\s+se\s+encuentran\b",

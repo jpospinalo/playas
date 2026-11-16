@@ -723,6 +723,56 @@ async def test_in_scope_checks_number_and_act_of_a_legal_term(
 
 
 @pytest.mark.anyio
+@pytest.mark.parametrize(
+    ("subject", "purpose", "supported"),
+    [
+        ("para recuperar el predio", "para que se recupere", True),
+        ("para que se recupere el predio", "para que se recupere", True),
+        ("para recuperar el predio en un plazo de seis meses", "para que se recupere", True),
+        ("para recuperar el predio en un plazo de dos meses", "para que se recupere", False),
+        (
+            "para recuperar el predio en seis meses desde la ejecutoria",
+            "para que se recupere",
+            False,
+        ),
+        ("para recuperar el predio en un plazo de seis meses", "para que no se recupere", False),
+        ("para recuperar el predio en un plazo de seis meses", "no para que se recupere", False),
+    ],
+)
+async def test_recovery_purpose_keeps_the_term_with_its_own_order(
+    monkeypatch, tmp_path, subject, purpose, supported
+):
+    docs = _source("providencia")
+    order = (
+        "- d) Ordenar al Municipio y a la DIMAR que a más tardar en el término de seis (6) meses, "
+        f"realice los trámites {purpose} el predio."
+    )
+    docs[1].page_content = (
+        "SEGUNDO: Modificar la sentencia apelada.\n"
+        "- c) Ordenar al Municipio que en dos (2) meses radique el informe.\n"
+        f"{order}"
+    )
+    _configured(monkeypatch, tmp_path, docs)
+    _enrichment(monkeypatch, "in_scope")
+    _no_calls(monkeypatch)
+    question = (
+        f"¿Qué ordenó en segunda instancia sobre los trámites {subject} en el radicado {DOCKET}?"
+    )
+
+    response = await _public_query(monkeypatch, QueryRequest(question=question))
+
+    assert response.query_route == "in_scope"
+    if supported:
+        assert response.answer == f"- «[…] {order}» [doc1]"
+        fragment = response.sources[0].fragments[0]
+        assert fragment.content == f"[…] {order}"
+        assert fragment.metadata["chunk_id"] == docs[1].id
+    else:
+        assert response.sources == []
+        assert "evidencia insuficiente" in response.answer
+
+
+@pytest.mark.anyio
 @pytest.mark.parametrize("variant", ["wrong_instance", "unidentified", "different", "incomplete"])
 async def test_in_scope_without_documentary_identity_stops_before_generation(
     monkeypatch, tmp_path, variant
