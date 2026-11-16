@@ -356,12 +356,12 @@ async def generate_node(state: AgentState) -> dict:
         return {"messages": [AIMessage(content=_NO_EVIDENCE_RESPONSE)]}
 
     with stage_timer("generate", doc_count=len(docs)):
-        context = build_context_block(docs)
+        docket, instance = state.get("verified_docket"), state.get("verified_instance")
+        context = build_context_block(docs, include_source_identifiers=not (docket and instance))
         prompt = _get_fallback_prompt()
         llm = get_generation_llm()
         chain = llm | StrOutputParser()
         question = _compose_generation_question(state)
-        docket, instance = state.get("verified_docket"), state.get("verified_instance")
         if docket and instance:
             question += (
                 f"\nAtribución documental verificada: radicado {docket}, {instance}. "

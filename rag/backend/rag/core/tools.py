@@ -48,20 +48,23 @@ def sanitize_replacement_chars(value):
 # ---------------------------------------------------------------------------
 
 
-def build_context_block(docs: list[Document]) -> str:
+def build_context_block(docs: list[Document], *, include_source_identifiers: bool = True) -> str:
     """Convierte una lista de documentos en un bloque de contexto legible.
 
     Incluye metadatos de atribución (corporación, magistrado, tema, sección
     y resumen) para que el LLM pueda citar correctamente las fuentes.
+    Con identidad ya verificada, omite los nombres históricos de la cabecera.
     """
     bloques: list[str] = []
     for i, d in enumerate(docs, start=1):
         meta = d.metadata or {}
-        source = sanitize_replacement_chars(meta.get("source", "desconocido"))
-        chunk_id = sanitize_replacement_chars(meta.get("chunk_id", meta.get("id", f"doc_{i}")))
         summary = sanitize_replacement_chars(meta.get("summary", ""))
 
-        header = f"[doc{i} | source={source} | chunk_id={chunk_id}]"
+        header = f"[doc{i}]"
+        if include_source_identifiers:
+            source = sanitize_replacement_chars(meta.get("source", "desconocido"))
+            chunk_id = sanitize_replacement_chars(meta.get("chunk_id", meta.get("id", f"doc_{i}")))
+            header = f"[doc{i} | source={source} | chunk_id={chunk_id}]"
         doc_type = meta.get("doc_type", "")
 
         if doc_type == "normativa":

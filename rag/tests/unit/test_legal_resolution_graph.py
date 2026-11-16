@@ -13,6 +13,7 @@ import pytest
 from langchain_core.documents import Document
 from langchain_core.language_models.fake_chat_models import FakeListChatModel
 from langchain_core.messages import HumanMessage
+from langchain_core.runnables import RunnableLambda
 from langgraph.errors import NodeCancelledError
 
 from rag.api.query_support import _build_graph_input
@@ -300,6 +301,40 @@ async def test_in_scope_checks_equivalence_and_answer_attribution(
     else:
         assert response.sources == []
         assert "respuesta verificable" in response.answer
+
+
+@pytest.mark.anyio
+async def test_verified_generation_keeps_historical_ids_out_of_the_prompt(monkeypatch, tmp_path):
+    historical_docket = "47001-2332-000-2011-08425-02"
+    docs = _source(historical_docket)
+    _configured(monkeypatch, tmp_path, docs)
+    _enrichment(monkeypatch, "in_scope")
+
+    class Retriever:
+        async def ainvoke(self, query):
+            return [docs[1]]
+
+    answer = f"En segunda instancia, en el radicado {DOCKET}, se confirmó la sentencia [doc1]."
+
+    def generate(prompt):
+        text = "\n".join(message.content for message in prompt.to_messages())
+        assert historical_docket not in text
+        assert f"radicado {DOCKET}, segunda instancia" in text
+        assert "[doc1]" in text.splitlines() and DECISION in text
+        return answer
+
+    monkeypatch.setattr(agent, "get_ensemble_retriever", lambda **_: Retriever())
+    monkeypatch.setattr(
+        agent, "get_active_provider", lambda: SimpleNamespace(supports_system_role=True)
+    )
+    monkeypatch.setattr(agent, "get_generation_llm", lambda: RunnableLambda(generate))
+
+    response = await _public_query(monkeypatch, QueryRequest(question=GENERATION_QUESTION))
+    assert response.answer == answer
+    fragment = response.sources[0].fragments[0]
+    assert fragment.index == 1
+    assert fragment.metadata["chunk_id"] == docs[1].metadata["chunk_id"]
+    assert response.sources[0].source == docs[1].metadata["source"]
 
 
 @pytest.mark.anyio
