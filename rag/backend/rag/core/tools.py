@@ -55,7 +55,8 @@ def build_context_block(docs: list[Document], *, include_source_identifiers: boo
 
     Incluye metadatos de atribución (corporación, radicado, magistrado, tema, sección
     y resumen) para que el LLM pueda citar correctamente las fuentes.
-    Con identidad ya verificada, omite los nombres históricos de la cabecera.
+    Con identidad ya verificada (``include_source_identifiers=False``) omite
+    los nombres históricos de la cabecera y la línea «Radicado» de la metadata.
     """
     bloques: list[str] = []
     for i, d in enumerate(docs, start=1):

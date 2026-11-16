@@ -1,7 +1,7 @@
 """Contrato público del RAG que usan otros módulos del repositorio.
 
-La ingesta (benchmarks del demo AWS) y la evaluación de nivel 0 importan estas
-funciones directamente. Si una cambia de nombre o de firma, esta prueba falla
+La evaluación de nivel 0 (``evaluation/ragas/run_level0.py``) y los benchmarks
+de la rama de ingesta importan estas funciones directamente. Si una cambia de nombre o de firma, esta prueba falla
 antes de que se rompa su código.
 """
 
@@ -37,3 +37,5 @@ def test_build_context_block_se_llama_solo_con_los_documentos():
 
 def test_cliente_de_embeddings_de_ollama_existe():
     assert inspect.isclass(embeddings.OllamaEmbeddingClient)
+    # run_level0.py reemplaza embed_one para cachear los vectores de consulta.
+    assert callable(getattr(embeddings.OllamaEmbeddingClient, "embed_one", None))

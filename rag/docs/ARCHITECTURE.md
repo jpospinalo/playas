@@ -74,11 +74,11 @@ START → enrich_query → route_after_analysis → {retrieve_forced → generat
   (en ECS, `legal_resolution_enabled`; apagada por defecto). Al arrancar
   verifica que el índice BM25 coincide fragmento a fragmento con la
   procedencia de Gold A. Ante «¿qué ordenó/resolvió/decidió en … instancia …
-  en el radicado …?», `retrieve_forced` recupera con una consulta compuesta y
-  se queda solo con los fragmentos verificados de esa sentencia; si la ruta
-  era `out_of_scope` o `needs_clarification`, `respond_without_retrieval`
-  intenta primero la respuesta documental, que cita textualmente la parte
-  resolutiva. Con identidad verificada, `build_context_block` omite los
+  en el radicado …?», tanto `retrieve_forced` como `respond_without_retrieval`
+  (si la ruta era `out_of_scope` o `needs_clarification`) intentan primero la
+  respuesta documental, que cita textualmente la parte resolutiva. Si no la
+  hay, `retrieve_forced` recupera con una consulta compuesta, sin el tope de un
+  fragmento por sentencia, y se queda solo con los fragmentos verificados. Con identidad verificada, `build_context_block` omite los
   nombres de archivo y radicados históricos del contexto.
 - **`generate`** construye la respuesta a partir de `sources`, valida sus
   citas (`_validate_citations`) y, si la validación falla o no hay
