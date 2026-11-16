@@ -29,6 +29,16 @@ resource "aws_cloudwatch_log_group" "frontend" {
 # ── Task Definition: App (backend + postgres sidecar) ────────────────────────
 # Postgres corre como sidecar en la misma tarea; se comunican por localhost.
 
+locals {
+  legal_resolution_environment = var.legal_resolution_enabled ? [
+    { name = "LEGAL_RESOLUTION_PROVENANCE_PATH", value = "/app/rag/PROCEDENCIA_GOLD_A.json" },
+    {
+      name  = "LEGAL_RESOLUTION_PROVENANCE_SHA256"
+      value = jsondecode(file("${path.module}/../../data/chroma-releases/gold-a-cc7bf44b54a9/manifest.json")).files["PROCEDENCIA_GOLD_A.json"].sha256
+    }
+  ] : []
+}
+
 resource "aws_ecs_task_definition" "app" {
   family                   = "${local.name_prefix}-app"
   requires_compatibilities = ["FARGATE"]
@@ -105,7 +115,7 @@ resource "aws_ecs_task_definition" "app" {
         protocol      = "tcp"
       }]
 
-      environment = [
+      environment = concat([
         # Postgres corre en localhost dentro de la misma tarea
         { name = "DATABASE_URL",             value = "postgresql+asyncpg://atlas:${var.postgres_password}@localhost:5432/atlas" },
         { name = "JWT_SECRET_KEY",           value = var.jwt_secret_key },
@@ -126,7 +136,7 @@ resource "aws_ecs_task_definition" "app" {
         { name = "QUERY_ENRICHMENT_ENABLED", value = tostring(var.query_enrichment_enabled) },
         { name = "S3_BUCKET_NAME",           value = var.s3_bucket_name },
         { name = "REGISTER_ENABLED",         value = tostring(var.register_enabled) }
-      ]
+      ], local.legal_resolution_environment)
 
       dependsOn = [{
         containerName = "postgres"

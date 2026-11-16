@@ -4,28 +4,43 @@
 # Ejemplo: ./scripts/push_images.sh v1.2.0
 set -euo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+REPO_DIR="$(cd "${SCRIPT_DIR}/../../.." && pwd)"
+RAG_DIR="${REPO_DIR}/rag"
+# shellcheck source=../../../scripts/corpus_release.sh
+source "${REPO_DIR}/scripts/corpus_release.sh"
+
+# El Dockerfile también se usa en Compose. Preparar solo sus insumos para ECS
+# mantiene la procedencia fuera del checkout y del contexto del frontend.
+BACKEND_CONTEXT="$(mktemp -d)"
+trap 'rm -rf -- "${BACKEND_CONTEXT}"' EXIT
+mkdir -p "${BACKEND_CONTEXT}/backend"
+cp "${RAG_DIR}/.dockerignore" "${RAG_DIR}/pyproject.toml" "${RAG_DIR}/uv.lock" "${BACKEND_CONTEXT}/"
+cp "${RAG_DIR}/docker/Dockerfile.backend" "${BACKEND_CONTEXT}/Dockerfile"
+cp "${RAG_DIR}/backend/pyproject.toml" "${BACKEND_CONTEXT}/backend/"
+cp -R "${RAG_DIR}/backend/rag" "${BACKEND_CONTEXT}/backend/"
+install -m 0444 \
+  "${REPO_DIR}/data/chroma-releases/${CORPUS_RELEASE_PACKAGE}/PROCEDENCIA_GOLD_A.json" \
+  "${BACKEND_CONTEXT}/backend/rag/PROCEDENCIA_GOLD_A.json"
+
 TAG="${1:-latest}"
 REGION="${AWS_DEFAULT_REGION:-us-east-1}"
 ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
 ECR_BASE="${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com"
 
 # Obtener URLs de ECR y la URL pública del ALB desde los outputs de Terraform
-BACKEND_REPO=$(terraform -chdir="$(dirname "$0")/.." output -raw ecr_backend_url)
-FRONTEND_REPO=$(terraform -chdir="$(dirname "$0")/.." output -raw ecr_frontend_url)
-ALB_URL=$(terraform -chdir="$(dirname "$0")/.." output -raw alb_url)
+BACKEND_REPO=$(terraform -chdir="${SCRIPT_DIR}/.." output -raw ecr_backend_url)
+FRONTEND_REPO=$(terraform -chdir="${SCRIPT_DIR}/.." output -raw ecr_frontend_url)
+ALB_URL=$(terraform -chdir="${SCRIPT_DIR}/.." output -raw alb_url)
 
 echo "▶ Login en ECR..."
 aws ecr get-login-password --region "$REGION" \
   | docker login --username AWS --password-stdin "${ECR_BASE}"
 
-# Directorio raíz del proyecto rag/
-RAG_DIR="$(dirname "$0")/../.."
-
 echo "▶ Construyendo backend → ${BACKEND_REPO}:${TAG}"
 docker build \
-  -f "${RAG_DIR}/docker/Dockerfile.backend" \
   -t "${BACKEND_REPO}:${TAG}" \
-  "${RAG_DIR}"
+  "${BACKEND_CONTEXT}"
 
 echo "▶ Construyendo frontend → ${FRONTEND_REPO}:${TAG}"
 # NEXT_PUBLIC_API_URL se inyecta en build-time (Next.js la inlinea en el bundle

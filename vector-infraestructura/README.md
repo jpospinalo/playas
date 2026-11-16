@@ -39,9 +39,17 @@ export AWS_PROFILE=rag-playas
 
 El script `scripts/deploy.sh` automatiza todo el proceso en un solo comando.
 
+En una instancia nueva, el arranque usa la imagen de Ollama `0.40.13`
+fijada por digest y un disco raíz de 30 GiB para alojar la imagen y el
+modelo. Antes de restaurar Gold A, el restaurador comprueba la versión,
+el digest de `embeddinggemma:latest` y su perfil. Si el alias del modelo
+cambia en el registro, la restauración se detiene antes de escribir en
+Chroma.
+
 ### Ejecución
 
-Desde la raíz del repositorio (`playas/`):
+Ejecuta el script desde la raíz del repositorio (`playas/`) en el bastion
+Ubuntu.
 
 ```bash
 ./vector-infraestructura/scripts/deploy.sh
@@ -53,10 +61,28 @@ Con aprobación automática (sin confirmación interactiva de Terraform):
 ./vector-infraestructura/scripts/deploy.sh --auto-approve
 ```
 
+Usa `--reuse-existing` para retomar el despliegue vectorial desde el mismo
+checkout del bastion, con Terraform ya inicializado y el estado del despliegue
+previo disponible.
+
+```bash
+./vector-infraestructura/scripts/deploy.sh --reuse-existing
+```
+
+Este modo omite `terraform init` y `terraform apply`. Lee las direcciones de
+ChromaDB y Ollama del estado existente y espera a que ambos servicios estén
+disponibles. Si la colección fijada de Gold A ya existe, comprueba que coincida.
+Si falta, crea la colección y carga los vectores del paquete verificado.
+
+El script guarda un recibo de la operación. Si la verificación termina bien,
+actualiza `rag/.env` cuando existe y prepara
+`rag/infrastructure/terraform.tfvars`. El despliegue de ECS se ejecuta después.
+
 ### Qué hace el script
 
 1. Comprueba localmente la entrega Gold A fijada, antes de Terraform.
-2. Crea o actualiza las EC2 y obtiene sus direcciones.
+2. En el modo normal, crea o actualiza las EC2. En ambos modos, lee sus
+   direcciones del estado de Terraform.
 3. Espera a ChromaDB y al modelo de embeddings, sin generarlos desde el restaurador.
 4. Verifica el perfil de consulta y restaura `gold-a-cc7bf44b54a9` en
    `rag_playas_gold_a_cc7bf44b54a9`, con los vectores existentes.

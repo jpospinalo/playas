@@ -371,6 +371,68 @@ raise SystemExit(int(os.environ.get('CORPUS_TEST_PYTHON_RC', '0')))
         self.assertNotIn("LATEST_EXPORT", source)
         self.assertNotIn("import_to_chromadb.py", source)
 
+    def test_bastion_alb_check_survives_an_ecs_stdin_consumer(self):
+        source = (ROOT / "scripts/deploy_bastion_ec2.sh").read_text()
+        remote = source.split("<<'REMOTE_SCRIPT'\n", 1)[1].split("\nREMOTE_SCRIPT", 1)[0]
+        tail = "sg docker -c " + remote.split("\nsg docker -c ", 1)[1]
+        tail = tail.replace("cd ~/playas/rag/infrastructure\n", "", 1)
+        mocks = r"""
+set -euo pipefail
+sg() { /bin/cat >/dev/null; return "$DEPLOY_STATUS"; }
+step() { printf '%s\n' "$*"; }
+ok() { printf '%s\n' "$*"; }
+terraform() {
+    [[ "$*" == 'output -raw alb_url' ]] || return 97
+    printf '%s\n' 'http://atlas.invalid/'
+}
+curl() {
+    local url status result
+    for url; do :; done
+    printf 'PROBE %s\n' "$url" >&2
+    case "$url" in
+        http://atlas.invalid/api/ready) status="$BACKEND_STATUS"; result="$BACKEND_EXIT" ;;
+        http://atlas.invalid/) status="$FRONTEND_STATUS"; result="$FRONTEND_EXIT" ;;
+        *) return 97 ;;
+    esac
+    printf '%s' "$status"
+    return "$result"
+}
+sleep() { SECONDS=$((SECONDS + 600)); }
+"""
+        for deploy, backend, frontend, expected, paths in (
+            (0, (200, 0), (200, 0), 0, ["/api/ready", "/"]),
+            (0, (503, 22), (200, 0), 1, ["/api/ready"]),
+            (0, (200, 0), (503, 22), 1, ["/api/ready", "/"]),
+            (0, (200, 28), (200, 0), 1, ["/api/ready"]),
+            (0, (200, 0), (200, 28), 1, ["/api/ready", "/"]),
+            (42, (200, 0), (200, 0), 42, []),
+        ):
+            with self.subTest(deploy=deploy, backend=backend, frontend=frontend):
+                result = subprocess.run(
+                    ["/bin/bash", "--noprofile", "--norc", "-s"],
+                    input=mocks + tail + "\n",
+                    env={
+                        **self.env,
+                        "DEPLOY_STATUS": str(deploy),
+                        "BACKEND_STATUS": str(backend[0]),
+                        "BACKEND_EXIT": str(backend[1]),
+                        "FRONTEND_STATUS": str(frontend[0]),
+                        "FRONTEND_EXIT": str(frontend[1]),
+                    },
+                    cwd=self.work,
+                    capture_output=True,
+                    text=True,
+                    timeout=10,
+                    check=False,
+                )
+                self.assertEqual(result.returncode, expected, result.stderr)
+                self.assertEqual(
+                    [line for line in result.stderr.splitlines() if line.startswith("PROBE ")],
+                    [f"PROBE http://atlas.invalid{path}" for path in paths],
+                )
+                self.assertEqual("URL de la aplicación:" in result.stdout, expected == 0)
+                self.assertEqual("en 600 segundos" in result.stderr, expected == 1)
+
     def test_vector_publishes_collection_and_model_only_after_restore(self):
         source = (ROOT / "vector-infraestructura/scripts/deploy.sh").read_text()
         restore = source.index('corpus_release_restore "${REPO_DIR}"')
@@ -411,6 +473,30 @@ raise SystemExit(int(os.environ.get('CORPUS_TEST_PYTHON_RC', '0')))
         self.assertIn(
             "value = var.ollama_embedding_model", (ROOT / "rag/infrastructure/ecs.tf").read_text()
         )
+
+    def test_ecs_documentary_resolution_is_opt_in_and_uses_the_versioned_manifest(self):
+        infra = ROOT / "rag/infrastructure"
+        variables = (infra / "variables.tf").read_text()
+        opt_in = re.search(r'variable "legal_resolution_enabled"\s*\{([^}]+)\}', variables)
+        self.assertIsNotNone(opt_in)
+        self.assertRegex(opt_in.group(1), r"type\s*=\s*bool")
+        self.assertRegex(opt_in.group(1), r"default\s*=\s*false")
+
+        ecs = (infra / "ecs.tf").read_text()
+        environment = re.search(
+            r"legal_resolution_environment = var\.legal_resolution_enabled \? \[(.*?)\] : \[\]",
+            ecs,
+            re.S,
+        )
+        self.assertIsNotNone(environment)
+        names = re.findall(r'name\s*=\s*"(LEGAL_RESOLUTION_[^"]+)"', environment.group(1))
+        self.assertEqual(
+            names, ["LEGAL_RESOLUTION_PROVENANCE_PATH", "LEGAL_RESOLUTION_PROVENANCE_SHA256"]
+        )
+        self.assertIn("/app/rag/PROCEDENCIA_GOLD_A.json", environment.group(1))
+        self.assertIn(f"data/chroma-releases/{PACKAGE}/manifest.json", environment.group(1))
+        self.assertIn('.files["PROCEDENCIA_GOLD_A.json"].sha256', environment.group(1))
+        self.assertEqual(ecs.count("], local.legal_resolution_environment)"), 1)
 
     def test_templates_and_user_data_preserve_the_pinned_profile(self):
         env = (ROOT / "rag/.env.example").read_text()

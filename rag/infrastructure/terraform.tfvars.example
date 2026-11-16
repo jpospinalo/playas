@@ -17,3 +17,5 @@ google_api_key = ""
 # backend_image_tag  = "v1.0.0"
 # frontend_image_tag = "v1.0.0"
 # register_enabled = false  # deshabilita /api/auth/register (por defecto: true)
+# Activar después de verificar que ECS usa la imagen con la procedencia Gold A.
+# legal_resolution_enabled = true

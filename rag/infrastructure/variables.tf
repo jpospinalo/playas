@@ -155,6 +155,12 @@ variable "register_enabled" {
   default     = true
 }
 
+variable "legal_resolution_enabled" {
+  description = "Habilitar la resolución documental con la procedencia de Gold A"
+  type        = bool
+  default     = false
+}
+
 # ── S3 ────────────────────────────────────────────────────────────────────────
 
 variable "s3_bucket_name" {
