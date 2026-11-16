@@ -905,6 +905,110 @@ async def test_recovery_purpose_keeps_the_term_with_its_own_order(
 
 
 @pytest.mark.anyio
+@pytest.mark.parametrize(
+    ("variant", "route"),
+    [
+        ("complete", "out_of_scope"),
+        ("complete", "in_scope"),
+        ("missing_admin_order", "in_scope"),
+        ("unrelated_registry_order", "in_scope"),
+        ("different_district", "in_scope"),
+        ("multiple_recovery_orders", "in_scope"),
+        ("multiple_orders_in_one_ordinal", "out_of_scope"),
+        ("multiple_orders_in_one_ordinal", "in_scope"),
+        ("wrong_instance", "in_scope"),
+        ("unsupported_trigger", "in_scope"),
+        ("one_source", "in_scope"),
+    ],
+)
+async def test_explains_recovery_deadline_with_all_three_orders_in_json_and_sse(
+    monkeypatch, tmp_path, variant, route
+):
+    docs = _source("providencia")
+    admin = (
+        "- b) Ordenar al alcalde del Distrito de Puerto Norte que, a la mayor brevedad, sin exceder "
+        "el término máximo de dos (2) meses, se sirva proferir los actos administrativos que sean "
+        "necesarios para darle cumplimiento a la presente sentencia."
+    )
+    registry = (
+        "- c) Ordenar al Distrito de Puerto Norte que en el término de dos (2) meses realice todas "
+        "las gestiones administrativas y demás diligencias en la Oficina de Registro de Instrumentos "
+        "Públicos de Puerto Norte para la cancelación de las anotaciones realizadas en el folio de "
+        "matrícula inmobiliaria No. 099-123456."
+    )
+    recovery = (
+        "- d) Ordenar al Distrito de Puerto Norte y a la DIMAR que a más tardar en el término "
+        "de seis (6) meses, realice los trámites que sean necesarios para que se recupere el predio "
+        "a que hace mención la presente providencia."
+    )
+    if variant == "missing_admin_order":
+        admin = ""
+    if variant == "unrelated_registry_order":
+        registry = registry.replace(
+            "la cancelación de las anotaciones", "la certificación de las anotaciones"
+        )
+    if variant == "different_district":
+        registry = registry.replace(
+            "Ordenar al Distrito de Puerto Norte", "Ordenar al Distrito de Puerto Sur"
+        )
+    docs[1].page_content = f"SEGUNDO: Modificar la sentencia apelada.\n{admin}\n{registry}"
+    recovery_text = recovery + "\n- e) Ordenar las restituciones mutuas."
+    if variant == "multiple_recovery_orders":
+        recovery_text += "\nTERCERO: Ordenar las medidas restantes.\n" + recovery.replace(
+            "seis (6)", "tres (3)"
+        )
+    if variant == "multiple_orders_in_one_ordinal":
+        alternative = recovery.replace("seis (6)", "dos (2)")
+        recovery_text += "\n".join(
+            (
+                "\nTERCERO: Ordenar las medidas restantes.",
+                alternative.replace("- d)", "- f)"),
+                alternative.replace("- d)", "- g)").replace("Puerto Norte", "Puerto Sur"),
+            )
+        )
+    docs.append(
+        docs[1].model_copy(
+            update={
+                "id": "providencia-3",
+                "page_content": recovery_text,
+                "metadata": {**docs[1].metadata, "chunk_id": "providencia-3"},
+            }
+        )
+    )
+    _configured(monkeypatch, tmp_path, docs)
+    _enrichment(monkeypatch, route)
+    _no_calls(monkeypatch)
+
+    instance = "primera" if variant == "wrong_instance" else "segunda"
+    trigger = " desde la ejecutoria" if variant == "unsupported_trigger" else ""
+    question = (
+        f"¿Qué ordenó en {instance} instancia sobre los trámites para recuperar el predio "
+        f"en un plazo de dos meses{trigger} en el radicado {DOCKET}?"
+    )
+    response = await _public_query(
+        monkeypatch, QueryRequest(question=question, k=1 if variant == "one_source" else 4)
+    )
+    if variant != "complete":
+        assert response.sources == [] and "[doc" not in response.answer
+        expected = "fuera del ámbito" if route == "out_of_scope" else "evidencia insuficiente"
+        assert expected in response.answer
+        return
+
+    assert response.query_route == "in_scope"
+    assert "cancelar las anotaciones (literales b y c) [doc1]" in response.answer
+    assert "máximo de seis meses" in response.answer and response.answer.endswith("[doc2].")
+    (group,) = response.sources
+    assert group.metadata["Radicado"] == DOCKET
+    prior, current = group.fragments
+    assert (prior.index, current.index) == (1, 2)
+    assert (prior.metadata["chunk_id"], current.metadata["chunk_id"]) == (docs[1].id, docs[2].id)
+    admin_excerpt = admin.split(" que sean necesarios")[0]
+    registry_excerpt = registry.split(" realizadas en el folio")[0]
+    assert prior.content == f"[…] {admin_excerpt} […] {registry_excerpt} […]"
+    assert current.content == f"{recovery} […]"
+
+
+@pytest.mark.anyio
 @pytest.mark.parametrize("variant", ["wrong_instance", "unidentified", "different", "incomplete"])
 async def test_in_scope_without_documentary_identity_stops_before_generation(
     monkeypatch, tmp_path, variant

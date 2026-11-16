@@ -162,6 +162,32 @@ _REQUEST_TERM = re.compile(
     r"\s+(en(?: (?:un|el) plazo de)?|dentro de|cada) "
     rf"(\S+(?:\s*\(\d+\))? (?:{_TERM_UNIT}))(?: desde (.+))?$"
 )
+_DISTRICT = r"distrito de [a-z]+(?: [a-z]+)*"
+_RECOVERY_ADMIN_ORDER = re.compile(
+    rf"- b\) ordenar al alcalde del (?P<district>{_DISTRICT}) que, a la mayor brevedad, "
+    r"sin exceder el termino maximo de dos \(2\) meses, se sirva proferir los actos "
+    r"administrativos que sean necesarios para darle cumplimiento a la presente sentencia\."
+)
+_RECOVERY_REGISTRY_ORDER = re.compile(
+    rf"- c\) ordenar al (?P<district>{_DISTRICT}) que en el termino de dos \(2\) meses "
+    r"realice todas las gestiones administrativas y demas diligencias en la oficina de registro "
+    r"de instrumentos publicos de [a-z ]+ para la cancelacion de las anotaciones"
+    r"(?: realizadas en el folio de matricula inmobiliaria no\. [\d-]+"
+    r"(?:, relacionadas con el contrato de compraventa contenido en la escritura publica no\. "
+    r"\d+ del \d{1,2} de [a-z]+ de \d{4} de la notaria [a-z ]+ del circulo de [a-z ]+)?)?\."
+)
+_RECOVERY_PROPERTY_ORDER = re.compile(
+    rf"- d\) ordenar al (?P<district>{_DISTRICT}) y a la dimar que a mas tardar en el termino "
+    r"de seis \(6\) meses, realice los tramites que sean necesarios para que se recupere el predio "
+    r"a que hace mencion la presente providencia"
+    r"(?:, por tratarse de un bien de uso publico de titularidad de la nacion)?\."
+)
+_RECOVERY_DEADLINE_ANSWER = (
+    "Los dos meses corresponden a los actos administrativos a cargo del alcalde y a las gestiones "
+    "del Distrito ante la Oficina de Registro para cancelar las anotaciones (literales b y c) [doc1]. "
+    "El literal d fija un máximo de seis meses para que el Distrito y la DIMAR adelanten "
+    "los trámites de recuperación del predio [doc2]."
+)
 _REQUEST_TRIGGER = re.compile(r"\s+(una vez|desde) (.+)$")
 _IMMEDIATE_TRIGGER = re.compile(
     r"\s+(?:que debe (?:comenzar|iniciarse) )?inmediatamente despues de (.+)$"
@@ -1285,7 +1311,7 @@ def _matches_immediate_act(topic: str, event: str, text: str, actor: str | None)
 
 def _act_evidence(
     subject: str, actor: str | None, unit: tuple[Passage, ...], linked: bool
-) -> tuple[Passage, ...]:
+) -> tuple[Passage, ...] | None:
     clauses = _clauses(unit)
     if not clauses:
         return ()
@@ -1453,7 +1479,9 @@ def _act_evidence(
                     *_exception_evidence(_operative_excerpt(clause, topic), topic),
                 )
             )
-    return matches[0] if len(matches) == 1 else ()
+    if len(matches) > 1:
+        return None  # Distinguish competing clauses from an unmatched unit.
+    return matches[0] if matches else ()
 
 
 def _unique_decision(spans: Sequence[Passage], case: _Case) -> Passage | None:
@@ -1476,6 +1504,61 @@ def _copy_and_return_evidence(case: _Case) -> tuple[Passage, ...]:
     returns = [clause for clause in clauses if _RETURN_ORDER.fullmatch(_flat(clause.text))]
     if len(copies) == len(returns) == 1:
         return copies[0], returns[0]
+    return ()
+
+
+def _recovery_deadline_evidence(case: _Case, subject: str) -> tuple[Passage, ...]:
+    timing = _REQUEST_TERM.search(subject)
+    if (
+        not timing
+        or timing[1] == "cada"
+        or timing[3]
+        or not _TERM.fullmatch(timing[2])
+        or _terms(timing[2]) != {(2, "mes")}
+    ):
+        return ()
+    topic = subject[: timing.start()]
+    if topic != "los tramites para recuperar el predio":
+        return ()
+
+    # A correction needs a unique operative match even without the stated term.
+    recovery = []
+    for unit in case.decisions:
+        evidence = _act_evidence(topic, None, unit, False)
+        if evidence is None:
+            return ()
+        if evidence:
+            recovery.append(evidence)
+    if len(recovery) != 1 or len(recovery[0]) != 1:
+        return ()
+    target = recovery[0][0]
+    for unit in case.decisions:
+        clauses = _clauses(unit)
+        for admin, registry, order in zip(clauses, clauses[1:], clauses[2:], strict=False):
+            if order != target or admin.document is not registry.document:
+                continue
+            if not (
+                (b := _RECOVERY_ADMIN_ORDER.fullmatch(_flat(admin.text)))
+                and (c := _RECOVERY_REGISTRY_ORDER.fullmatch(_flat(registry.text)))
+                and (d := _RECOVERY_PROPERTY_ORDER.fullmatch(_flat(order.text)))
+                and b["district"] == c["district"] == d["district"]
+            ):
+                continue
+            prior_line = case.verified_documents[registry.document.metadata["chunk_id"]][1].line
+            order_line = case.verified_documents[order.document.metadata["chunk_id"]][1].line
+            if order_line != prior_line + 1:
+                continue
+            # Retain the acts, parties and terms in the public citation budget.
+            acts = re.search(r"actos\s+administrativos", admin.text, re.IGNORECASE)
+            cancellation = re.search(
+                r"cancelaci[oó]n\s+de\s+las\s+anotaciones", registry.text, re.IGNORECASE
+            )
+            if acts and cancellation:
+                return (
+                    _subspan(admin, 0, acts.end()),
+                    _subspan(registry, 0, cancellation.end()),
+                    order,
+                )
     return ()
 
 
@@ -1734,6 +1817,7 @@ class ResolutionIndex:
         joint_request = _MEETINGS_WITH_PRIOR_REPORTS_QUERY.fullmatch(subject) is not None
         subjects = [subject] if joint_request or copy_and_return else _COMPOUND.split(subject)
         selected: dict[int, list[Passage]] = defaultdict(list)
+        correction = False
         for part in subjects:
             dedicated = None
             if copy_and_return:
@@ -1770,7 +1854,14 @@ class ResolutionIndex:
                 if evidence:
                     supported.append((index, evidence))
             if len(supported) != 1:
-                return None
+                if supported or len(subjects) != 1 or actor is not None:
+                    return None
+                evidence = _recovery_deadline_evidence(case, part)
+                if not evidence:
+                    return None
+                selected[-1].extend(evidence)
+                correction = True
+                continue
             index, evidence = supported[0]
             selected[index].extend(evidence)
         by_document: dict[str, list[Passage]] = defaultdict(list)
@@ -1806,5 +1897,8 @@ class ResolutionIndex:
             passages.extend(merged)
             excerpts.append(excerpt)
         return Resolution(
-            _cited_excerpts(excerpts), tuple(sources), tuple(passages), tuple(excerpts)
+            _RECOVERY_DEADLINE_ANSWER if correction else _cited_excerpts(excerpts),
+            tuple(sources),
+            tuple(passages),
+            tuple(excerpts),
         )
