@@ -278,6 +278,71 @@ async def test_meeting_and_prior_report_require_one_joint_order_in_json_and_sse(
 
 @pytest.mark.anyio
 @pytest.mark.parametrize(
+    ("variant", "route"),
+    [
+        ("complete", "out_of_scope"),
+        ("complete", "in_scope"),
+        ("copy_only", "in_scope"),
+        ("return_only", "in_scope"),
+        ("wrong_trigger_in_order", "in_scope"),
+        ("wrong_trigger_in_question", "in_scope"),
+        ("wrong_instance", "in_scope"),
+        ("wrong_docket", "in_scope"),
+        ("different_recipients", "in_scope"),
+    ],
+)
+async def test_copy_and_return_require_both_orders_in_json_and_sse(
+    monkeypatch, tmp_path, variant, route
+):
+    docs = _source("providencia")
+    copy = (
+        "SEGUNDO: En cumplimiento de lo dispuesto en la ley, REMÍTASE copia auténtica de "
+        "ésta decisión a la Defensoría del Pueblo."
+    )
+    returned = (
+        "TERCERO: Ejecutoriado este proveído, DEVUÉLVASE el expediente al Tribunal de origen."
+    )
+    orders = [copy, returned]
+    if variant == "copy_only":
+        orders = [copy]
+    if variant == "return_only":
+        orders = [returned]
+    if variant == "wrong_trigger_in_order":
+        orders[1] = returned.replace("Ejecutoriado", "Notificado")
+    if variant == "different_recipients":
+        orders.append(copy.replace("SEGUNDO", "CUARTO").replace("Defensoría", "Procuraduría"))
+    docs[1].page_content = "\n\n".join([DECISION, *orders, "CÓPIESE, NOTIFÍQUESE."])
+    _configured(monkeypatch, tmp_path, docs)
+    _enrichment(monkeypatch, route)
+    _no_calls(monkeypatch)
+
+    instance = "primera" if variant == "wrong_instance" else "segunda"
+    docket = "88001233100020100000001" if variant == "wrong_docket" else DOCKET
+    trigger = "notificada" if variant == "wrong_trigger_in_question" else "ejecutoriada"
+    request = QueryRequest(
+        question=(
+            f"En la {instance} instancia del radicado {docket}, ¿a quién se ordenó remitir "
+            f"copia auténtica del fallo y qué debía hacerse con el expediente una vez {trigger} "
+            "la providencia?"
+        )
+    )
+    response = await _public_query(monkeypatch, request)
+    if variant != "complete":
+        assert response.sources == [] and "evidencia insuficiente" in response.answer
+        return
+
+    excerpt = f"[…] {copy}\n\n{returned} […]"
+    assert response.query_route == "in_scope"
+    assert response.answer == f"- «{excerpt}» [doc1]"
+    (source,) = response.sources
+    (fragment,) = source.fragments
+    assert source.metadata["Radicado"] == DOCKET
+    assert fragment.metadata["chunk_id"] == docs[1].id
+    assert fragment.content == f"[…] {copy}  {returned} […]"
+
+
+@pytest.mark.anyio
+@pytest.mark.parametrize(
     "question",
     [
         PARTIAL_CARRERO_QUESTION,

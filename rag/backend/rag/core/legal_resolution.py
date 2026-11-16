@@ -22,10 +22,20 @@ _DOCKET = re.compile(
     r"(?:\d{5}-\d{2}-\d{2}-\d{3}|\d{2}-\d{3}-\d{4}-\d{3}|\d{12})[ -]?\d{4}[ -]?\d{4,5}[ -]?\d{2}|\d{4})"
     r"(?:\s*\((?P<reference>[\d.]+)\))?(?![\w-])"
 )
+_QUESTION_INSTANCE = r"(?:primera|segunda|unica) instancia|sede de revision"
 _QUESTION = re.compile(
-    r"¿?que (?:ordeno|resolvio|decidio) en (primera instancia|segunda instancia|"
-    r"unica instancia|sede de revision)(?: (?:a|al) (.+?))? (?:sobre|acerca de) (.+?)"
+    rf"¿?que (?:ordeno|resolvio|decidio) en (?P<instance>{_QUESTION_INSTANCE})"
+    r"(?: (?:a|al) (?P<actor>.+?))? (?:sobre|acerca de) (?P<subject>.+?)"
     rf",? en (?:el radicado )?(?P<docket>{_DOCKET.pattern})\?"
+)
+_COPY_AND_RETURN_QUESTION = re.compile(
+    rf"¿?en (?:la )?(?P<instance>{_QUESTION_INSTANCE}) del radicado "
+    rf"(?P<docket>{_DOCKET.pattern}), ¿?a quien se ordeno remitir (?:una )?copia autentica "
+    r"(?:del fallo|de la (?:decision|providencia|sentencia)) y que debia hacerse con el expediente"
+    r"(?: (?P<subject>[^?]+))?\?"
+)
+_AFTER_FINALITY_QUESTION = re.compile(
+    r"una vez (?:ejecutoriada la (?:decision|providencia|sentencia)|ejecutoriado el (?:fallo|proveido))"
 )
 _PARTIAL_DOCKET = re.compile(
     r"\b(?:solo (?:tengo|conozco) (?:el )?(?:radicado|expediente|numero)|"
@@ -103,6 +113,15 @@ _ORDINAL = (
     r"(?:primero|segundo|tercero|cuarto|quinto|sexto|s[eé]ptimo|octavo|noveno|"
     r"d[eé]cimo(?:\s+(?:primero|segundo|tercero|cuarto|quinto|sexto|s[eé]ptimo|octavo|noveno))?|"
     r"und[eé]cimo|duod[eé]cimo|\d+[º°]\)?)\s*[:.]?"
+)
+_COPY_ORDER = re.compile(
+    rf"{_ORDINAL}\s+(?:en cumplimiento de [^,.;]+, )?remitase (?:una )?copia autentica "
+    r"(?:del (?:presente )?(?:fallo|proveido)|de (?:esta|la|la presente) "
+    r"(?:decision|providencia|sentencia)) (?:a la|al|a las|a los) [^,.;!?]+\."
+)
+_RETURN_ORDER = re.compile(
+    rf"{_ORDINAL}\s+ejecutoriado (?:este|el) (?:proveido|fallo), "
+    r"devuelvase el expediente al (?:tribunal|juzgado|despacho) de origen\."
 )
 _BOUNDARY = re.compile(
     rf"(?<!\w)(?P<ordinal>{_ORDINAL})(?=\s+(?:[-–]\s+)?(?:ordenar|modificar|modif[ií]case|"
@@ -398,7 +417,7 @@ class DocketEvidence:
             ):
                 return [], None
             verified.append(Passage(doc, span.start, span.end))
-        excerpts = _visible_order_sources(verified, intent[3])
+        excerpts = _visible_order_sources(verified, intent["subject"])
         if not excerpts:
             return [], None
         citations = _cited_excerpts([doc.page_content for doc in excerpts])
@@ -408,7 +427,8 @@ class DocketEvidence:
 def _resolution_intent(question: str) -> re.Match[str] | None:
     if _is_deterministic_terminal(question):
         return None
-    return _QUESTION.fullmatch(_flat(question))
+    normalized = _flat(question)
+    return _QUESTION.fullmatch(normalized) or _COPY_AND_RETURN_QUESTION.fullmatch(normalized)
 
 
 def has_docket_intent(question: str) -> bool:
@@ -431,7 +451,9 @@ def requires_operative_proof(question: str) -> bool:
     """Explicit terms and linked duties need direct operative support."""
     intent = _resolution_intent(question)
     if intent is not None:
-        actor, subject = intent.group(2, 3)
+        if intent.re is _COPY_AND_RETURN_QUESTION:
+            return True
+        actor, subject = intent.group("actor", "subject")
         return (
             bool(actor)
             or _MEETINGS_WITH_PRIOR_REPORTS_QUERY.fullmatch(subject) is not None
@@ -1448,6 +1470,15 @@ def _unique_decision(spans: Sequence[Passage], case: _Case) -> Passage | None:
     return first
 
 
+def _copy_and_return_evidence(case: _Case) -> tuple[Passage, ...]:
+    clauses = [clause for unit in case.decisions for clause in _clauses(unit)]
+    copies = [clause for clause in clauses if _COPY_ORDER.fullmatch(_flat(clause.text))]
+    returns = [clause for clause in clauses if _RETURN_ORDER.fullmatch(_flat(clause.text))]
+    if len(copies) == len(returns) == 1:
+        return copies[0], returns[0]
+    return ()
+
+
 def _appeal_anchors(case: _Case, date: str, issuer: str) -> list[Passage]:
     anchors = []
     for span in case.opening:
@@ -1657,7 +1688,7 @@ class ResolutionIndex:
 
     def docket_evidence(self, question: str) -> DocketEvidence | None:
         intent = _resolution_intent(question)
-        if intent is None or _DOCKET.search(re.sub(r"\b\d{4}\b", "", intent[3])):
+        if intent is None or _DOCKET.search(re.sub(r"\b\d{4}\b", "", intent["subject"] or "")):
             return None
         identity = _docket(intent["docket"])
         if identity is None:
@@ -1666,7 +1697,7 @@ class ResolutionIndex:
         evidence = self._dockets.get(docket)
         if (
             evidence is None
-            or intent[1] != evidence.instance
+            or intent["instance"] != evidence.instance
             or (reference is not None and reference != evidence.reference)
         ):
             return None
@@ -1677,7 +1708,9 @@ class ResolutionIndex:
         intent = _resolution_intent(question)
         if intent is None:
             return None
-        instance, actor, subject = intent.group(1, 2, 3)
+        copy_and_return = intent.re is _COPY_AND_RETURN_QUESTION
+        instance, subject = intent["instance"], intent["subject"] or ""
+        actor = None if copy_and_return else intent["actor"]
         identity = _docket(intent["docket"])
         if identity is None or _DOCKET.search(re.sub(r"\b\d{4}\b", "", subject)):
             return None
@@ -1699,11 +1732,15 @@ class ResolutionIndex:
         # Independent clauses can require distinct orders. Shared nouns alone
         # cannot support an added action.
         joint_request = _MEETINGS_WITH_PRIOR_REPORTS_QUERY.fullmatch(subject) is not None
-        subjects = [subject] if joint_request else _COMPOUND.split(subject)
+        subjects = [subject] if joint_request or copy_and_return else _COMPOUND.split(subject)
         selected: dict[int, list[Passage]] = defaultdict(list)
         for part in subjects:
             dedicated = None
-            if joint_request:
+            if copy_and_return:
+                if not _AFTER_FINALITY_QUESTION.fullmatch(part):
+                    return None
+                dedicated = _copy_and_return_evidence(case)
+            elif joint_request:
                 # Keep the convocation and its preceding report in one literal passage.
                 dedicated = tuple(
                     clause
