@@ -37,6 +37,41 @@ def test_scope_fallback_accepts_domain_questions(question: str) -> None:
 @pytest.mark.parametrize(
     "question",
     [
+        "Según el REMAC 5, ¿quién aprueba los sistemas de gestión del agua de lastre "
+        "y qué debe verificarse con esa aprobación?",
+        "Conforme al REMAC 5, ¿qué requisitos se aplican a la gestión del agua de lastre?",
+    ],
+)
+def test_remac_5_reference_admits_regulatory_questions(question: str) -> None:
+    rejected = EnrichedQuery(
+        route="out_of_scope", standalone_question=question, expanded_query=question
+    )
+    result = _fallback(question)
+    assert result.route == "in_scope"
+    assert result.doc_types == ["normativa"]
+    assert _apply_domain_guard(rejected, question, "") == result
+
+
+@pytest.mark.parametrize(
+    "question",
+    [
+        "Según el REMAC 5, escribe un poema sobre los permisos para la gestión del agua de lastre.",
+        "Según el REMAC 5, ¿dónde puedo comprar un equipo de gestión del agua de lastre?",
+        "¿Quién aprueba las letras del grupo REMAC 5?",
+        "Según el REMAC 5, ¿quién aprueba el equipo de una piscina?",
+    ],
+)
+def test_remac_5_reference_keeps_scope_limits(question: str) -> None:
+    rejected = EnrichedQuery(
+        route="out_of_scope", standalone_question=question, expanded_query=question
+    )
+    assert _fallback(question).route != "in_scope"
+    assert _apply_domain_guard(rejected, question, "") == rejected
+
+
+@pytest.mark.parametrize(
+    "question",
+    [
         "¿Cuál es la capital de Francia?",
         "Dame una receta para cocinar pescado.",
         "Explícame cómo programar una API en Python.",

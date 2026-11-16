@@ -322,6 +322,13 @@ _NORMATIVE_REFERENCE_RE = re.compile(
     re.IGNORECASE,
 )
 
+_REMAC_5_REFERENCE_RE = re.compile(
+    r"\b(?:seg[uú]n\s+(?:el\s+)?|conforme\s+(?:al|a)\s+|"
+    r"de\s+acuerdo\s+con\s+(?:el\s+)?)remac\s+5\b",
+    re.IGNORECASE,
+)
+_APPROVAL_AUTHORITY_RE = re.compile(r"\bqui[eé]n\s+aprueba\b", re.IGNORECASE)
+
 _LEGAL_INTENT_PATTERNS: tuple[re.Pattern[str], ...] = (
     _PERMISSION_INTENT_RE,
     _PROCEDURE_TIMELINE_INTENT_RE,
@@ -547,12 +554,13 @@ def _fallback(question: str, history_context: str = "") -> EnrichedQuery:
     1. solicitud inequívocamente ajena (familia #5) -> ``out_of_scope``
        SIEMPRE, sin excepción por combinación costera+jurídica.
     2. saludo/meta-pregunta completa (familia #6) -> ``conversation``.
-    3. seguimiento que hereda contexto del historial (familia #7).
-    4. contexto costero (familias #1-#3) + intención jurídica/regulatoria
+    3. consulta regulatoria referida al REMAC 5 -> ``in_scope``, con normativa.
+    4. seguimiento que hereda contexto del historial (familia #7).
+    5. contexto costero (familias #1-#3) + intención jurídica/regulatoria
        (familia #4) -> ``in_scope``.
-    5. una sola señal (costera o jurídica, sin la otra) ->
+    6. una sola señal (costera o jurídica, sin la otra) ->
        ``needs_clarification``.
-    6. ausencia de cualquier señal pertinente -> ``out_of_scope``.
+    7. ausencia de cualquier señal pertinente -> ``out_of_scope``.
     """
     clean_question = question.strip()
 
@@ -570,6 +578,18 @@ def _fallback(question: str, history_context: str = "") -> EnrichedQuery:
             standalone_question=clean_question,
             expanded_query=clean_question,
             doc_types=[],
+        )
+
+    if (
+        _REMAC_5_REFERENCE_RE.search(clean_question)
+        and not _has_inland_or_unrelated_context(clean_question)
+        and (_has_legal_intent(clean_question) or _APPROVAL_AUTHORITY_RE.search(clean_question))
+    ):
+        return EnrichedQuery(
+            route="in_scope",
+            standalone_question=clean_question,
+            expanded_query=clean_question,
+            doc_types=["normativa"],
         )
 
     coastal = _has_coastal_signal(clean_question)

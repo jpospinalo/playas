@@ -37,6 +37,7 @@ from .legal_resolution import (
     has_docket_intent,
     load_provenance,
     matches_answer_attribution,
+    needs_providencia_clarification,
     requires_operative_proof,
 )
 from .llm_factory import get_active_provider, get_generation_llm
@@ -61,6 +62,7 @@ class AgentState(TypedDict):
     sources: list[Document]
     doc_types: NotRequired[list[str] | None]
     requested_doc_types: NotRequired[list[str] | None]
+    clarify_providencia: NotRequired[bool]
     verified_docket: NotRequired[str | None]
     verified_instance: NotRequired[str | None]
     documentary_answer: NotRequired[str | None]
@@ -96,6 +98,10 @@ _CLARIFICATION_RESPONSE = (
     "La consulta podría estar dentro del ámbito, pero necesito que indiques su "
     "conexión con playas, zonas costeras, aguas marítimas o bienes de uso público. Por ejemplo, "
     "puedes precisar el lugar, la actividad, el permiso, la autoridad o el derecho que deseas revisar."
+)
+_PROVIDENCIA_CLARIFICATION_RESPONSE = (
+    "¿Puedes indicar el radicado completo, la instancia o la providencia concreta? "
+    "Con el número parcial necesito ese dato para identificar la decisión."
 )
 _NO_EVIDENCE_RESPONSE = (
     "**Situación:** evidencia insuficiente.\n\n"
@@ -213,20 +219,27 @@ def _validate_citations(answer: str, doc_count: int) -> bool:
 
 async def enrich_query_node(state: AgentState, *, capture_filter: bool = False) -> dict:
     _emit_status("enriching", "Analizando el alcance y contexto de tu pregunta…")
+    requested_doc_types = state.get("doc_types")
     with stage_timer("enrich_query") as fields:
         history_context = _history_for_analysis(state["messages"], state["question"])
         analysis: EnrichedQuery = await enrich_query_async(state["question"], history_context)
+        clarify_providencia = (
+            capture_filter
+            and analysis.route in {"in_scope", "needs_clarification"}
+            and _permits_jurisprudence(requested_doc_types)
+            and needs_providencia_clarification(state["question"])
+        )
+        route: QueryRoute = "needs_clarification" if clarify_providencia else analysis.route
         # `route` es un enum cerrado (QueryRoute), no texto libre de la
         # pregunta — seguro de loguear.
-        fields["route"] = analysis.route
+        fields["route"] = route
 
-    requested_doc_types = state.get("doc_types")
     effective_doc_types = requested_doc_types or analysis.doc_types
-    if analysis.route != "in_scope":
+    if route != "in_scope":
         effective_doc_types = []
 
     update: dict[str, Any] = {
-        "query_route": analysis.route,
+        "query_route": route,
         "standalone_question": analysis.standalone_question,
         "enriched_query": analysis.expanded_query,
         "doc_types": effective_doc_types,
@@ -235,6 +248,7 @@ async def enrich_query_node(state: AgentState, *, capture_filter: bool = False) 
     if capture_filter:
         update.update(
             requested_doc_types=requested_doc_types,
+            clarify_providencia=clarify_providencia,
             verified_docket=None,
             verified_instance=None,
             documentary_answer=None,
@@ -246,8 +260,7 @@ def route_after_analysis(state: AgentState) -> str:
     return "retrieve" if state.get("query_route") == "in_scope" else "respond"
 
 
-def _permits_jurisprudence(state: AgentState) -> bool:
-    requested = state.get("requested_doc_types")
+def _permits_jurisprudence(requested: list[str] | None) -> bool:
     return requested is None or "jurisprudencia" in requested
 
 
@@ -271,10 +284,12 @@ async def respond_without_retrieval_node(
     state: AgentState, *, resolution_index: ResolutionIndex | None = None
 ) -> dict:
     route = state.get("query_route")
+    if route == "needs_clarification" and state.get("clarify_providencia"):
+        return {"messages": [AIMessage(content=_PROVIDENCIA_CLARIFICATION_RESPONSE)], "sources": []}
     if (
         route in {"out_of_scope", "needs_clarification"}
         and resolution_index is not None
-        and _permits_jurisprudence(state)
+        and _permits_jurisprudence(state.get("requested_doc_types"))
         and has_docket_intent(state["question"])
     ):
         resolution = await _resolve_documentary(state, resolution_index)
@@ -302,7 +317,7 @@ async def retrieve_forced_node(
     resolution_index: ResolutionIndex | None = None,
 ) -> dict:
     evidence: DocketEvidence | None = None
-    if verify_docket and _permits_jurisprudence(state):
+    if verify_docket and _permits_jurisprudence(state.get("requested_doc_types")):
         question = state["question"]
         if has_docket_intent(question):
             if resolution_index is None:

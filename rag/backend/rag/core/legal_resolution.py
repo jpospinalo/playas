@@ -27,6 +27,16 @@ _QUESTION = re.compile(
     r"unica instancia|sede de revision)(?: (?:a|al) (.+?))? (?:sobre|acerca de) (.+?)"
     rf",? en (?:el radicado )?(?P<docket>{_DOCKET.pattern})\?"
 )
+_PARTIAL_DOCKET = re.compile(
+    r"\b(?:solo (?:tengo|conozco) (?:el )?(?:radicado|expediente|numero)|"
+    r"(?:radicado|expediente|numero) (?:parcial|incompleto))"
+    r"(?: *: *| )\d{5}(?![\w/-]|[.,]\d| \d)"
+)
+_UNKNOWN_INSTANCE = re.compile(
+    r"\b(?:desconozco|no (?:se|conozco)) (?:la|en que|de que) instancia\b"
+)
+_OPERATIVE_REQUEST = re.compile(r"\b(?:plazo|termino|orden(?:es)?|ordeno|resolvio|decidio)\b")
+_JUDICIAL_REFERENCE = re.compile(r"\b(?:fallo|sentencia|providencia|tribunal|juzgado)\b")
 _RESPONSIBILITY_QUESTION = re.compile(
     r"¿?que (?:ordeno|resolvio|decidio) en (?:primera instancia|segunda instancia|"
     r"unica instancia|sede de revision) (?:a|al) .+? como "
@@ -388,6 +398,18 @@ def _resolution_intent(question: str) -> re.Match[str] | None:
 
 def has_docket_intent(question: str) -> bool:
     return _resolution_intent(question) is not None
+
+
+def needs_providencia_clarification(question: str) -> bool:
+    """Detecta una orden o un plazo pedido con referencia explícitamente incompleta."""
+    text = _flat(question)
+    return bool(
+        _PARTIAL_DOCKET.search(text)
+        and _JUDICIAL_REFERENCE.search(text)
+        and _UNKNOWN_INSTANCE.search(text)
+        and _OPERATIVE_REQUEST.search(text)
+        and not any(len(match["number"]) > 4 for match in _DOCKET.finditer(text))
+    )
 
 
 def requires_operative_proof(question: str) -> bool:
