@@ -211,6 +211,73 @@ async def _public_query(monkeypatch, request: QueryRequest):
 
 @pytest.mark.anyio
 @pytest.mark.parametrize(
+    ("variant", "route"),
+    [
+        ("complete", "out_of_scope"),
+        ("complete", "in_scope"),
+        ("wrong_instance", "in_scope"),
+        ("independent_report_only", "in_scope"),
+        ("post_meeting_report", "in_scope"),
+        ("missing_frequency", "in_scope"),
+        ("notification_trigger", "in_scope"),
+        ("ambiguous_orders", "in_scope"),
+    ],
+)
+async def test_meeting_and_prior_report_require_one_joint_order_in_json_and_sse(
+    monkeypatch, tmp_path, variant, route
+):
+    docs = _source("providencia")
+    docs[0].page_content = f"Sentencia de primera instancia\nRadicado: {DOCKET}"
+    meeting = (
+        "La Magistrada Ponente convocará a reuniones bimestrales a partir de la ejecutoria "
+        "del presente fallo, para su verificación y cumplimiento."
+    )
+    report = (
+        "Previo a la realización de las reuniones, las autoridades deberán presentar "
+        "informe escrito de sus gestiones y actuaciones."
+    )
+    combined = f"{meeting} {report}"
+    passage = combined
+    if variant == "independent_report_only":
+        passage = meeting
+    if variant == "post_meeting_report":
+        passage = combined.replace("Previo a la realización de", "Después de")
+    if variant == "missing_frequency":
+        passage = combined.replace(" bimestrales", "")
+    if variant == "notification_trigger":
+        passage = combined.replace("ejecutoria", "notificación")
+    if variant == "ambiguous_orders":
+        passage += "\n\n" + combined.replace("bimestrales", "mensuales")
+    docs[1].page_content = (
+        f"SEXTO: Ordenar la integración de un comité.\n\n{passage}\n\n"
+        "6.1.º Deberán presentar informes cada dos meses independientemente de las reuniones."
+    )
+    _configured(monkeypatch, tmp_path, docs)
+    _enrichment(monkeypatch, route)
+    _no_calls(monkeypatch)
+    instance = "segunda" if variant == "wrong_instance" else "primera"
+    response = await _public_query(
+        monkeypatch,
+        QueryRequest(
+            question=(
+                f"¿Qué ordenó en {instance} instancia sobre la frecuencia de reuniones de verificación "
+                f"y los informes previos en el radicado {DOCKET}?"
+            )
+        ),
+    )
+    if variant == "complete":
+        assert response.query_route == "in_scope"
+        assert response.answer == f"- «[…] {combined} […]» [doc1]"
+        (group,) = response.sources
+        (fragment,) = group.fragments
+        assert fragment.content == f"[…] {combined} […]"
+        assert fragment.metadata["chunk_id"] == docs[1].id
+    else:
+        assert response.sources == [] and "evidencia insuficiente" in response.answer
+
+
+@pytest.mark.anyio
+@pytest.mark.parametrize(
     "question",
     [
         PARTIAL_CARRERO_QUESTION,

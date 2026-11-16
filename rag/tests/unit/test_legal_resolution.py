@@ -193,6 +193,61 @@ def test_ocr_header_binds_instance_to_its_own_docket(documents: list[Document]) 
     assert ResolutionIndex(documents, _provenance(documents)).resolve(query) is None
 
 
+def _linked_parties_cover(docket: str) -> str:
+    return (
+        "Radicación número:\nActor:\nVinculados:\nMedio de control:\nInstancia:\nTema:\n"
+        f"{docket}\nParte demandante\nEntidad vinculada\nOtra entidad vinculada\n"
+        "Protección de los derechos e intereses colectivos\nPrimera\nAsunto costero"
+    )
+
+
+@pytest.mark.parametrize(
+    ("variant", "supported"),
+    [
+        ("running_header", True),
+        ("preceding_docket", False),
+        ("different_suffix", False),
+        ("different_cover", False),
+        ("independent_source", False),
+        ("foreign_legacy_cover", False),
+        ("opposing_instance", False),
+    ],
+)
+def test_linked_parties_cover_keeps_the_full_docket_and_instance(documents, variant, supported):
+    short = DOCKET.replace("01038", "1038")
+    cover = _linked_parties_cover(DOCKET)
+    running = f"Radicación número: {short} Actor: Parte demandante"
+    if variant == "preceding_docket":
+        documents[0].page_content = f"{running}\n\n{cover}"
+    else:
+        documents[0].page_content = f"{cover}\n\n{running}"
+    if variant == "different_suffix":
+        documents[0].page_content = documents[0].page_content.replace(short, short[:-2] + "00")
+    if variant == "different_cover":
+        documents[0].page_content = (
+            _linked_parties_cover(short) + "\n\n" + documents[0].page_content
+        )
+    if variant == "foreign_legacy_cover":
+        documents[0].page_content += (
+            "\n\nRadicación número:\nActor:\nMedio de control:\nInstancia:\nTema:\n"
+            "13001-23-33-000-2017-09999-01 Parte demandante\nParte demandada\n"
+            "Protección de derechos colectivos\nPrimera"
+        )
+    if variant == "opposing_instance":
+        documents[0].page_content += "\n\nSentencia de segunda instancia"
+    proof = _provenance(documents)
+    if variant == "independent_source":
+        other = _document("otra", f"Radicación número: {short}", "Contexto del caso", short)
+        other.metadata["source"] = "otra.pdf"
+        proof["otra"] = replace(_provenance([other])["otra"], path="otra.jsonl")
+        documents = [*documents, other]
+    index = ResolutionIndex(documents, proof)
+    first = QUERY.replace("segunda", "primera")
+    assert (index.resolve(first) is not None) == supported
+    assert index.resolve(QUERY) is None
+    assert index.resolve(first.replace(DOCKET, short)) is None
+
+
 @pytest.mark.parametrize("radicado", ["5037", "13001-23-31-000-1994-9935-01(3100)"])
 def test_short_and_historical_dockets_require_printed_identity(
     documents: list[Document], radicado: str

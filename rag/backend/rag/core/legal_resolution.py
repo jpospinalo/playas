@@ -6,7 +6,7 @@ import json
 import re
 import unicodedata
 from collections import defaultdict
-from collections.abc import Mapping, Sequence
+from collections.abc import Collection, Mapping, Sequence
 from dataclasses import dataclass
 from hashlib import sha256
 from itertools import pairwise
@@ -92,6 +92,12 @@ _TABLE_DIVIDER = re.compile(r":?-{3,}:?")
 _SERIALIZED_HEADER = re.compile(
     r"(?:^|\n)radicacion numero:\nactor:\nmedio de control:\ninstancia:\ntema:\n"
     r"(?P<number>[^\n ]+) [^\n]+\n[^\n]+\n[^\n]+\n(?P<instance>primera|segunda|unica)(?=\n|$)"
+)
+_LINKED_PARTIES_HEADER = re.compile(
+    r"(?:^|\n)radicacion numero:\nactor:\n(?:demandados:\n)?vinculados:\n"
+    r"medio de control:\ninstancia:\ntema:\n(?P<number>[^\n ]+)\n"
+    r"[^\n:]+\n(?:[^\n:]+\n){1,6}proteccion de los derechos e intereses colectivos\n"
+    r"(?P<instance>primera|segunda|unica)(?=\n|$)"
 )
 _ORDINAL = (
     r"(?:primero|segundo|tercero|cuarto|quinto|sexto|s[eé]ptimo|octavo|noveno|"
@@ -204,6 +210,15 @@ _EVALUATION_TOPIC = re.compile(rf"^(?:la )?evaluacion ({_CADENCE})$")
 _COMMITTEE = re.compile(r"\bcomit[eé]\s+de\s+verificaci[oó]n\b", re.IGNORECASE)
 _COMMITTEE_REPORT_QUERY = re.compile(
     r"(?:la )?(?:integracion|conformacion) (?:del|de un) comite de verificacion y (?:sus|los) informes"
+)
+_MEETINGS_WITH_PRIOR_REPORTS_QUERY = re.compile(
+    r"(?:la )?frecuencia de (?:las )?reuniones de verificacion y (?:los )?informes previos"
+)
+_MEETINGS_WITH_PRIOR_REPORTS_ORDER = re.compile(
+    rf"(?:la magistrada|el magistrado) ponente convocara a reuniones {_CADENCE}es "
+    r"a partir de la ejecutoria del presente fallo, para su verificacion y cumplimiento\. "
+    r"previo a la realizacion de las reuniones, las autoridades deberan presentar (?:un )?"
+    r"informe escrito de (?:las|sus) gestiones y actuaciones(?: que han realizado hasta ese momento)?\."
 )
 _COMPOSITION = re.compile(r"\bintegrado\s+por\s*:", re.IGNORECASE)
 _ACTOR_APPOSITION = re.compile(
@@ -413,16 +428,20 @@ def needs_providencia_clarification(question: str) -> bool:
 
 
 def requires_operative_proof(question: str) -> bool:
-    """A claimed addressee, deadline or trigger needs direct operative support."""
+    """Explicit terms and linked duties need direct operative support."""
     intent = _resolution_intent(question)
     if intent is not None:
         actor, subject = intent.group(2, 3)
-        return bool(actor) or any(
-            _REQUEST_TERM.search(part)
-            or _REQUEST_TRIGGER.search(part)
-            or _IMMEDIATE_TRIGGER.search(part)
-            or part.startswith("sobre ")
-            for part in _COMPOUND.split(subject)
+        return (
+            bool(actor)
+            or _MEETINGS_WITH_PRIOR_REPORTS_QUERY.fullmatch(subject) is not None
+            or any(
+                _REQUEST_TERM.search(part)
+                or _REQUEST_TRIGGER.search(part)
+                or _IMMEDIATE_TRIGGER.search(part)
+                or part.startswith("sobre ")
+                for part in _COMPOUND.split(subject)
+            )
         )
     return bool(
         not _is_deterministic_terminal(question)
@@ -601,13 +620,42 @@ def _printed_dockets(lines: Sequence[str]) -> set[tuple[str, str | None]]:
 
 
 def _instance(
-    lines: Sequence[str], jurisdiction: str, docket: str, reference: str | None
+    lines: Sequence[str],
+    jurisdiction: str,
+    docket: str,
+    reference: str | None,
+    *,
+    registered_dockets: Collection[str] = (),
 ) -> str | None:
     lines = _header_lines(lines)
+    printed_dockets = _printed_dockets(lines)
+    cover_dockets = set()
+    found = set()
+    opening = "\n".join(lines)
+    for header in _LINKED_PARTIES_HEADER.finditer(opening):
+        identity = _docket(header["number"])
+        if identity is None:
+            continue
+        cover_dockets.add(identity)
+        if identity == (docket, reference):
+            found.add(header["instance"])
+            # A running header can omit the first zero of the five-digit serial.
+            if len(docket) == 23 and docket[16] == "0" and reference is None:
+                short = docket[:16] + docket[17:]
+                if short not in registered_dockets and (short, None) not in _printed_dockets(
+                    opening[: header.end()].splitlines()
+                ):
+                    printed_dockets.discard((short, None))
+    serialized = [
+        (_docket(header["number"]), header["instance"])
+        for header in _SERIALIZED_HEADER.finditer(opening)
+    ]
+    if cover_dockets:
+        cover_dockets.update(identity for identity, _ in serialized if identity is not None)
     if any(
         printed != docket
         or (auxiliary is not None and reference is not None and auxiliary != reference)
-        for printed, auxiliary in _printed_dockets(lines)
+        for printed, auxiliary in printed_dockets | cover_dockets
     ):
         return None
     if docket.startswith("t-"):
@@ -624,7 +672,6 @@ def _instance(
             return "sede de revision"
         return None
 
-    found = set()
     for line in lines:
         if match := _INSTANCE_HEADING.fullmatch(line):
             found.add(match[1] or match[2])
@@ -640,9 +687,7 @@ def _instance(
             for match in _DOCKET.finditer(line)
         ):
             found.add("segunda")
-    for header in _SERIALIZED_HEADER.finditer("\n".join(lines)):
-        if _docket(header["number"]) == (docket, None):
-            found.add(header["instance"])
+    found.update(instance for identity, instance in serialized if identity == (docket, None))
     return f"{found.pop()} instancia" if len(found) == 1 else None
 
 
@@ -1563,7 +1608,11 @@ class ResolutionIndex:
                     break
                 opening = _opening_passages(ordered, jurisdiction, docket)
                 instance = _instance(
-                    [_flat(p.text).lstrip("# ") for p in opening], jurisdiction, docket, reference
+                    [_flat(p.text).lstrip("# ") for p in opening],
+                    jurisdiction,
+                    docket,
+                    reference,
+                    registered_dockets=candidates,
                 )
                 if instance is None:
                     break
@@ -1649,11 +1698,22 @@ class ResolutionIndex:
             return None
         # Independent clauses can require distinct orders. Shared nouns alone
         # cannot support an added action.
-        subjects = _COMPOUND.split(subject)
+        joint_request = _MEETINGS_WITH_PRIOR_REPORTS_QUERY.fullmatch(subject) is not None
+        subjects = [subject] if joint_request else _COMPOUND.split(subject)
         selected: dict[int, list[Passage]] = defaultdict(list)
         for part in subjects:
             dedicated = None
-            if _SENTENCE_TOPIC.match(part):
+            if joint_request:
+                # Keep the convocation and its preceding report in one literal passage.
+                dedicated = tuple(
+                    clause
+                    for unit in case.decisions
+                    for clause in _clauses(unit)
+                    if _MEETINGS_WITH_PRIOR_REPORTS_ORDER.fullmatch(_flat(clause.text))
+                )
+                if actor is not None or len(dedicated) != 1:
+                    return None
+            elif _SENTENCE_TOPIC.match(part):
                 dedicated = _sentence_evidence(case, part) if actor is None else ()
             elif _NULLITY_TOPIC.fullmatch(part):
                 dedicated = _nullity_evidence(case) if actor is None else ()
