@@ -335,7 +335,9 @@ async def retrieve_forced_node(
         # ThreadPoolExecutor anidado). No se envuelve aquí en
         # asyncio.to_thread(retriever.invoke, ...).
         docs = await retriever.ainvoke(query)
-        selected = evidence.select(docs, k) if evidence else docs[:k]
+        selected = (
+            evidence.select_for_question(state["question"], docs, k) if evidence else docs[:k]
+        )
         # Conteo, no contenido: cuántos documentos, no cuáles ni su texto.
         fields["doc_count"] = len(selected)
     if verify_docket:

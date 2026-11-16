@@ -417,6 +417,157 @@ async def test_in_scope_requires_evidence_for_an_explicit_operative_premise(
 
 
 @pytest.mark.anyio
+@pytest.mark.parametrize(("k", "unsupported_topic"), [(2, False), (3, False), (4, True)])
+async def test_verified_order_completes_only_its_anchored_ordinal(
+    monkeypatch, tmp_path, k, unsupported_topic
+):
+    docs = _source("providencia")
+    docs[1].page_content = "El fallo de primera instancia exigía cronogramas estrictos."
+    docs[1].metadata["section_name"] = "Desarrollo procesal"
+    parts = [
+        "PRIMERO: Ordenar conformar una mesa de trabajo para adoptar el Plan Maestro de",
+        "Erosión Costera y establecer los compromisos de las entidades según sus competencias.",
+        "El plan se adoptará desde la ejecutoria. SEGUNDO: Ordenar presentar otro informe.",
+    ]
+    for number, text in enumerate(parts, 1):
+        ident = f"orden-{number}"
+        metadata = {**docs[1].metadata, "chunk_id": ident, "section_name": "Decisión"}
+        docs.append(Document(id=ident, page_content=text, metadata=metadata))
+    copies = [
+        Document(
+            id=f"copia-{doc.id}",
+            page_content=doc.page_content,
+            metadata={**doc.metadata, "chunk_id": f"copia-{doc.id}", "source": "copia.pdf"},
+        )
+        for doc in docs
+    ]
+    _configured(monkeypatch, tmp_path, docs + copies)
+    _enrichment(monkeypatch, "in_scope")
+
+    class Retriever:
+        async def ainvoke(self, query):
+            return [docs[1], docs[4], docs[2]]
+
+    def generate(prompt):
+        assert k == 3 and not unsupported_topic
+        body = str(prompt.to_messages()[-1].content)
+        assert all(text.split(" SEGUNDO:")[0] in body for text in parts)
+        assert "cronogramas estrictos" not in body and "otro informe" not in body
+        return "En segunda instancia se ordenó una mesa de trabajo [doc1][doc2][doc3]."
+
+    monkeypatch.setattr(agent, "get_ensemble_retriever", lambda **_: Retriever())
+    monkeypatch.setattr(
+        agent, "get_active_provider", lambda: SimpleNamespace(supports_system_role=True)
+    )
+    monkeypatch.setattr(agent, "get_generation_llm", lambda: RunnableLambda(generate))
+    subject = (
+        "la mesa de trabajo, el Plan Maestro de Erosión Costera y los compromisos de las entidades"
+    )
+    if unsupported_topic:
+        subject += " y la nómina bancaria del comité"
+    question = f"¿Qué ordenó en segunda instancia sobre {subject} en el radicado {DOCKET}?"
+    result = await _public_query(monkeypatch, QueryRequest(question=question, k=k))
+    if k == 2 or unsupported_topic:
+        assert result.sources == [] and "evidencia insuficiente" in result.answer
+    else:
+        fragments = result.sources[0].fragments
+        assert [f.metadata["chunk_id"] for f in fragments] == ["orden-1", "orden-2", "orden-3"]
+        assert fragments[1].content == parts[1]
+        assert fragments[2].content == "El plan se adoptará desde la ejecutoria. […]"
+
+
+@pytest.mark.anyio
+@pytest.mark.parametrize(
+    ("order", "supported"),
+    [
+        (
+            "ejecutar la evaluación semestral inmediatamente después de la aprobación del plan.",
+            True,
+        ),
+        (
+            "al Municipio que ejecute la evaluación semestral inmediatamente después "
+            "de la aprobación del plan.",
+            True,
+        ),
+        ("ejecutar la evaluación semestral después de la aprobación del plan.", False),
+        ("ejecutar la evaluación semestral inmediatamente después de la ejecutoria.", False),
+        (
+            "ejecutar la evaluación semestral y remitir el informe inmediatamente "
+            "después de la aprobación del plan.",
+            False,
+        ),
+        (
+            "ejecutar la evaluación semestral no inmediatamente después de la aprobación del plan.",
+            False,
+        ),
+        (
+            "ejecutar la evaluación semestral. SEGUNDO: Ordenar remitir el informe "
+            "inmediatamente después de la aprobación del plan.",
+            False,
+        ),
+        (
+            "ejecutar la evaluación semestral. El cronograma se publica "
+            "inmediatamente después de la aprobación del plan.",
+            False,
+        ),
+        (
+            "ejecutar la evaluación semestral y la Secretaría deberá remitir el informe "
+            "inmediatamente después de la aprobación del plan.",
+            False,
+        ),
+        (
+            "remitir un informe de la evaluación semestral inmediatamente después "
+            "de la aprobación del plan.",
+            False,
+        ),
+        (
+            "abstenerse de ejecutar la evaluación semestral inmediatamente después "
+            "de la aprobación del plan.",
+            False,
+        ),
+        (
+            "evaluar si corresponde ejecutar la evaluación semestral inmediatamente "
+            "después de la aprobación del plan.",
+            False,
+        ),
+        (
+            "al Municipio que evalúe si corresponde que ejecute la evaluación semestral "
+            "inmediatamente después de la aprobación del plan.",
+            False,
+        ),
+        (
+            "dejar sin efectos la obligación de ejecutar la evaluación semestral "
+            "inmediatamente después de la aprobación del plan.",
+            False,
+        ),
+        (
+            "al Municipio que publique el informe y la Secretaría deberá ejecutar la evaluación semestral "
+            "inmediatamente después de la aprobación del plan.",
+            False,
+        ),
+    ],
+)
+async def test_immediate_trigger_requires_the_same_act_and_event_in_json_and_sse(
+    monkeypatch, tmp_path, order, supported
+):
+    docs = _source("providencia")
+    docs[1].page_content = f"PRIMERO: Ordenar {order}"
+    _configured(monkeypatch, tmp_path, docs)
+    _enrichment(monkeypatch, "in_scope")
+    _no_calls(monkeypatch)
+    question = (
+        "¿Qué ordenó en segunda instancia sobre la evaluación semestral que debe comenzar "
+        f"inmediatamente después de la aprobación del plan en el radicado {DOCKET}?"
+    )
+    response = await _public_query(monkeypatch, QueryRequest(question=question))
+    if supported:
+        assert response.sources[0].fragments[0].content == docs[1].page_content
+        assert "[doc1]" in response.answer
+    else:
+        assert response.sources == [] and "evidencia insuficiente" in response.answer
+
+
+@pytest.mark.anyio
 @pytest.mark.parametrize(
     ("requested", "scope", "supported"),
     [

@@ -9,6 +9,7 @@ from collections import defaultdict
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from hashlib import sha256
+from itertools import pairwise
 from pathlib import Path
 
 from langchain_core.documents import Document
@@ -126,6 +127,9 @@ _REQUEST_TERM = re.compile(
     rf"(\S+(?:\s*\(\d+\))? (?:{_TERM_UNIT}))(?: desde (.+))?$"
 )
 _REQUEST_TRIGGER = re.compile(r"\s+(una vez|desde) (.+)$")
+_IMMEDIATE_TRIGGER = re.compile(
+    r"\s+(?:que debe (?:comenzar|iniciarse) )?inmediatamente despues de (.+)$"
+)
 _AFTER_TERM = re.compile(
     r"^\s+(?:siguientes? al?|posteriores? al?|desde|contados? a partir de)\s+([^.,:;]+)"
 )
@@ -308,6 +312,7 @@ class DocketEvidence:
     reference: str | None
     instance: str
     fragments: Mapping[str, FragmentProvenance]
+    decisions: tuple[tuple[tuple[str, Passage], ...], ...]
 
     def select(self, documents: Sequence[Document], limit: int) -> list[Document]:
         selected: list[Document] = []
@@ -324,6 +329,46 @@ class DocketEvidence:
             if len(selected) == limit:
                 break
         return selected
+
+    def select_for_question(
+        self, question: str, documents: Sequence[Document], limit: int
+    ) -> list[Document]:
+        """Complete an explicit order only when ranked evidence anchors both ends."""
+        intent = _resolution_intent(question)
+        if (
+            not self.decisions
+            or intent is None
+            or not intent[0].lstrip("¿").startswith("que ordeno ")
+        ):
+            return self.select(documents, limit)
+
+        ranked = self.select(documents, len(documents))
+        by_line = {self.fragments[doc.metadata["chunk_id"]].line: doc for doc in ranked}
+        anchored = []
+        for unit in self.decisions:
+            lines = [self.fragments[ident].line for ident, _ in unit]
+            if len(lines) > 1 and lines[0] in by_line and lines[-1] in by_line:
+                anchored.append((unit, lines))
+        if not anchored:
+            return ranked[:limit]
+        if len(anchored) != 1:
+            return []
+        unit, lines = anchored[0]
+        if len(lines) > limit or any(b != a + 1 for a, b in pairwise(lines)):
+            return []
+
+        verified = []
+        for (original_id, span), line in zip(unit, lines, strict=True):
+            original = span.document
+            doc = by_line.get(line, original)
+            if not _verified(original, original_id, self.fragments[original_id]):
+                return []
+            if doc is not original and not _verified(
+                doc, doc.metadata["chunk_id"], self.fragments[doc.metadata["chunk_id"]]
+            ):
+                return []
+            verified.append(Passage(doc, span.start, span.end))
+        return _visible_order_sources(verified, intent[3])
 
 
 def _resolution_intent(question: str) -> re.Match[str] | None:
@@ -342,7 +387,10 @@ def requires_operative_proof(question: str) -> bool:
     if intent is not None:
         actor, subject = intent.group(2, 3)
         return bool(actor) or any(
-            _REQUEST_TERM.search(part) or _REQUEST_TRIGGER.search(part)
+            _REQUEST_TERM.search(part)
+            or _REQUEST_TRIGGER.search(part)
+            or _IMMEDIATE_TRIGGER.search(part)
+            or part.startswith("sobre ")
             for part in _COMPOUND.split(subject)
         )
     return bool(
@@ -654,6 +702,46 @@ def _ordered_words(subject: str, candidate: str) -> bool:
     wanted = _topic_words(subject)
     available = iter(_topic_words(candidate))
     return bool(wanted) and all(word in available for word in wanted)
+
+
+def _visible_order_sources(spans: Sequence[Passage], subject: str) -> list[Document]:
+    """Use the same bounded, literal excerpts for generation and public citations."""
+    inner_limit = 490  # Leave space for omission marks within the API's 500 characters.
+    bodies = [" ".join(span.text.split()) for span in spans]
+    seen = set(_topic_words(_flat(" ".join(body[:inner_limit] for body in bodies))))
+    requested = set(_topic_words(subject))
+    missing = requested - seen
+    docs = []
+    for span, body in zip(spans, bodies, strict=True):
+        if len(body) > inner_limit:
+            boundaries = [0, *(m.end() for m in _ANSWER_CLAUSE_BREAK.finditer(body)), len(body)]
+            windows = [
+                (start, body[start:end].strip())
+                for index, start in enumerate(boundaries)
+                for end in boundaries[index + 1 :]
+                if 0 < end - start <= inner_limit
+            ]
+            if not windows:
+                return []
+            start, best = max(
+                windows,
+                key=lambda w: (len(set(_topic_words(_flat(w[1]))) & missing), w[0] == 0, len(w[1])),
+            )
+            if start and not set(_topic_words(_flat(best))) & missing:
+                return []
+            body = ("[…] " if start or span.start else "") + best + " […]"
+        else:
+            if span.document.page_content[: span.start].strip():
+                body = "[…] " + body
+            if span.document.page_content[span.end :].strip():
+                body += " […]"
+        docs.append(
+            span.document.model_copy(
+                update={"page_content": body, "metadata": dict(span.document.metadata)}
+            )
+        )
+    visible = set(_topic_words(_flat(" ".join(doc.page_content for doc in docs))))
+    return docs if requested <= visible else []
 
 
 def _subspan(passage: Passage, start: int, end: int) -> Passage:
@@ -1058,6 +1146,36 @@ def _operative_excerpt(clause: Passage, topic: str) -> Passage:
     return clause
 
 
+def _matches_immediate_act(topic: str, event: str, text: str, actor: str | None) -> bool:
+    predicate = re.escape(topic)
+    if re.match(r"(?:la|el|las|los)\s", topic):
+        predicate = (
+            r"(?:comenzar|iniciar|ejecutar|realizar|efectuar|"
+            r"comience|inicie|ejecute|realice|efectue) " + predicate
+        )
+    mandate = re.compile(
+        rf"(?i:(?:{_ORDINAL} )?(?:ordenar|ordenase|se ordena))"
+        rf"(?: (?i:al|a la|a los|a las|a) (?P<recipient>.+?) (?i:que))? "
+    )
+    for sentence in _ANSWER_CLAUSE_BREAK.split(_flat(text, lowercase=False)):
+        condition = _IMMEDIATE_TRIGGER.search(sentence.lower().rstrip(".;,: "))
+        if condition is None or condition[1] != event:
+            continue
+        found = mandate.match(sentence)
+        if not found:
+            continue
+        # Match the action after the first explicit delimiter. A mandate to
+        # consider another act does not impose the act itself.
+        recipient = found["recipient"]
+        if recipient and not re.fullmatch(_PROPER_NAME, recipient):
+            continue
+        if re.fullmatch(predicate, sentence[found.end() : condition.start()], re.IGNORECASE) and (
+            actor is None or (recipient and _flat(recipient) == actor)
+        ):
+            return True
+    return False
+
+
 def _act_evidence(
     subject: str, actor: str | None, unit: tuple[Passage, ...], linked: bool
 ) -> tuple[Passage, ...]:
@@ -1070,7 +1188,8 @@ def _act_evidence(
     if timing and not requested:
         return ()
     trigger_only = _REQUEST_TRIGGER.search(subject) if timing is None else None
-    constraint = timing or trigger_only
+    immediate = _IMMEDIATE_TRIGGER.search(subject) if not (timing or trigger_only) else None
+    constraint = timing or trigger_only or immediate
     topic = subject[: constraint.start()].rstrip() if constraint else subject
     topic = re.sub(r"^sobre |^del |^quien vigila\s+|^como se integra\s+", "", topic)
     topic = re.sub(r"^(?:la )?formulacion (?:del|de un) (?=plan\b)", "formule el ", topic)
@@ -1082,7 +1201,7 @@ def _act_evidence(
         "el comite de seguimiento",
     )
     composition = subject.startswith("como se integra ")
-    evaluation = _EVALUATION_TOPIC.fullmatch(topic)
+    evaluation = _EVALUATION_TOPIC.fullmatch(topic) if immediate is None else None
     costs = topic in ("las costas del proceso", "costas del proceso")
     exhortation = topic.startswith("el exhorto sobre ")
     if exhortation:
@@ -1174,6 +1293,8 @@ def _act_evidence(
             opening = re.match(r"^[-–]? ?[a-z]?(vencido el termino anterior),", text)
             if trigger_only[1] != "una vez" or not opening or opening[1] != trigger_only[2]:
                 continue
+        if immediate and not _matches_immediate_act(topic, immediate[1], clause.text, actor):
+            continue
         if not _actor_matches(actor, addressee):
             continue
         if linked_budget:
@@ -1393,6 +1514,7 @@ class ResolutionIndex:
         for docket, matches in candidates.items():
             signature = None
             fragments: dict[str, FragmentProvenance] = {}
+            decisions: tuple[tuple[Passage, ...], ...] = ()
             for reference, jurisdiction, ordered in matches:
                 path = ordered[0][0].path
                 # A partial source can establish a collision. Only a complete
@@ -1416,20 +1538,32 @@ class ResolutionIndex:
                 )
                 if signature is not None and source_signature != signature:
                     break
+                if signature is None:
+                    decisions = _decision_units(ordered)
                 signature = source_signature
                 fragments.update({doc.metadata["chunk_id"]: proof for proof, doc in ordered})
                 if len(matches) == 1:
                     self._cases[docket] = _Case(
                         instance,
                         reference,
-                        _decision_units(ordered),
+                        decisions,
                         tuple(opening),
                         {doc.metadata["chunk_id"]: (doc, proof) for proof, doc in ordered},
                     )
             else:
                 assert signature is not None
+                # Only equivalent copies need this bridge. A unique source is
+                # already handled by the documentary resolver.
+                anchored = (
+                    tuple(
+                        tuple((p.document.metadata["chunk_id"], p) for p in unit)
+                        for unit in decisions
+                    )
+                    if len(matches) > 1
+                    else ()
+                )
                 self._dockets[docket] = DocketEvidence(
-                    docket, signature[0], signature[2], fragments
+                    docket, signature[0], signature[2], fragments, anchored
                 )
 
     def docket_evidence(self, question: str) -> DocketEvidence | None:
