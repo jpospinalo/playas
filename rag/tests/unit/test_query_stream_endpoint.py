@@ -38,6 +38,7 @@ from types import SimpleNamespace
 import pytest
 from langchain_core.documents import Document
 from langchain_core.language_models.fake_chat_models import FakeListChatModel
+from langchain_core.messages import AIMessage
 from starlette.requests import ClientDisconnect
 
 import rag.core.agent as agent_module
@@ -385,6 +386,53 @@ async def test_normal_completion_preserves_event_shape(
 
     tokens = "".join(e["content"] for e in events if e["type"] == "token")
     assert tokens == "Respuesta completa [doc1]."
+
+
+@pytest.mark.anyio
+@pytest.mark.parametrize(
+    ("raw_answer", "expected"),
+    [
+        ("Respuesta (fuente: [doc1])", "Respuesta (fuente: [doc1])"),
+        ("Respuesta [doc1] (chunk interno)", "Respuesta [doc1]"),
+        (
+            "(fuente: referencia interna)",
+            "No se encontraron fragmentos relevantes en la base de conocimiento.",
+        ),
+    ],
+)
+async def test_answer_cleanup_matches_json_and_sse(monkeypatch, raw_answer, expected):
+    import rag.api.main as main_module
+
+    state = {
+        "messages": [AIMessage(content=raw_answer)],
+        "sources": [Document(page_content="Pasaje citado", metadata={"chunk_id": "1"})],
+        "query_route": "in_scope",
+    }
+
+    class Graph:
+        checkpointer = None
+
+        async def ainvoke(self, *args, **kwargs):
+            return state
+
+        async def astream(self, *args, **kwargs):
+            yield "values", state
+
+    monkeypatch.setattr(main_module, "_graph", Graph())
+    request = _make_request(_QUESTION_A, "citation-parity")
+    user = {"sub": "test-user"}
+    json_response = await main_module.query(request, user)
+    events = await _consume(await main_module.query_stream(request, user))
+
+    assert json_response.answer == expected
+    assert "".join(e["content"] for e in events if e["type"] == "token") == expected
+    (sources,) = [e["sources"] for e in events if e["type"] == "sources"]
+    assert sources == [source.model_dump() for source in json_response.sources]
+    assert sources[0]["fragments"][0] == {
+        "index": 1,
+        "content": "Pasaje citado",
+        "metadata": {"chunk_id": "1"},
+    }
 
 
 @pytest.mark.anyio

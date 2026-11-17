@@ -369,16 +369,12 @@ async def query(
                     await _cleanup_ephemeral_checkpoint(graph, request, thread_id)
                     log_retained_conversations(graph.checkpointer)
 
-    answer_raw = _extract_answer_from_state(final_state)
-    if not answer_raw:
-        answer_raw = "No se encontraron fragmentos relevantes en la base de conocimiento."
-
     sources = final_state.get("sources") or []
     enriched_query = final_state.get("enriched_query")
     context_tokens = _estimate_context_tokens(final_state.get("messages", []))
 
     return QueryResponse(
-        answer=_clean_answer(answer_raw),
+        answer=_clean_answer(_extract_answer_from_state(final_state)),
         sources=_docs_to_source_groups(sources),
         enriched_query=enriched_query,
         query_route=final_state.get("query_route"),
@@ -528,8 +524,6 @@ async def query_stream(
                         values = payload
 
                 answer = _clean_answer(_extract_answer_from_state(values))
-                if not answer:
-                    answer = "No se encontraron fragmentos relevantes en la base de conocimiento."
                 for start in range(0, len(answer), 120):
                     event = json.dumps({"type": "token", "content": answer[start : start + 120]})
                     yield f"data: {event}\n\n"

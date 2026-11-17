@@ -20,7 +20,14 @@ from langchain_core.documents import Document
 from langchain_core.language_models.fake_chat_models import FakeListChatModel
 
 import rag.core.agent as agent_module
+from rag.core import generator, retriever
 from rag.core.query_enricher import EnrichedQuery
+
+
+@pytest.fixture(autouse=True)
+def _isolate_documentary_provenance(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(generator, "LEGAL_RESOLUTION_PROVENANCE_PATH", None)
+    monkeypatch.setattr(agent_module, "LEGAL_RESOLUTION_PROVENANCE_PATH", None)
 
 
 def _mock_in_scope_pipeline(
@@ -118,3 +125,20 @@ def test_generate_answer_uses_an_independent_ephemeral_thread_id_per_call(
     assert len(docs2) == 1
     assert docs2[0].page_content == "Fragmento B"
     assert answer2 == "Otra respuesta [doc1]."
+
+
+def test_documentary_evaluation_loads_bm25_before_building_graph(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _mock_in_scope_pipeline(monkeypatch)
+    snapshot = [Document(page_content="Documento de prueba")]
+    monkeypatch.setattr(generator, "LEGAL_RESOLUTION_PROVENANCE_PATH", "procedencia.json")
+    monkeypatch.setattr(retriever, "_bm25_base", None)
+    monkeypatch.setattr(retriever, "load_all_docs_from_chroma", lambda: snapshot)
+
+    def build_graph():
+        assert retriever.bm25_documents() == snapshot
+        return agent_module.build_graph()
+
+    monkeypatch.setattr(generator, "build_graph", build_graph)
+    assert generator.generate_answer("Primera pregunta de evaluación")[0] == "Respuesta [doc1]."

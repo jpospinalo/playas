@@ -23,14 +23,16 @@ from rag.core.tools import sanitize_replacement_chars
 
 
 def _clean_answer(answer: str) -> str:
-    """Elimina sufijos de citación que algunos LLMs añaden al final."""
+    """Limpia sufijos sin referencias y aplica el respaldo común de JSON y SSE."""
     patterns = [
         r"\s*\(fuente:[^)]+\)\s*$",
         r"\s*\((?:doc|chunk)[^)]*\)\s*$",
     ]
-    for p in patterns:
-        answer = re.sub(p, "", answer)
-    return answer.strip()
+    for pattern in patterns:
+        suffix = re.search(pattern, answer)
+        if suffix and not re.search(r"\[doc\d+\]", suffix[0], re.IGNORECASE):
+            answer = answer[: suffix.start()]
+    return answer.strip() or "No se encontraron fragmentos relevantes en la base de conocimiento."
 
 
 # Campos de metadata que pertenecen al documento (no al fragmento). El resto
