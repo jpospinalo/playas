@@ -211,6 +211,138 @@ async def _public_query(monkeypatch, request: QueryRequest):
 
 @pytest.mark.anyio
 @pytest.mark.parametrize(
+    ("variant", "route"),
+    [
+        ("complete", "out_of_scope"),
+        ("complete", "in_scope"),
+        ("wrong_instance", "in_scope"),
+        ("independent_report_only", "in_scope"),
+        ("post_meeting_report", "in_scope"),
+        ("missing_frequency", "in_scope"),
+        ("notification_trigger", "in_scope"),
+        ("ambiguous_orders", "in_scope"),
+    ],
+)
+async def test_meeting_and_prior_report_require_one_joint_order_in_json_and_sse(
+    monkeypatch, tmp_path, variant, route
+):
+    docs = _source("providencia")
+    docs[0].page_content = f"Sentencia de primera instancia\nRadicado: {DOCKET}"
+    meeting = (
+        "La Magistrada Ponente convocará a reuniones bimestrales a partir de la ejecutoria "
+        "del presente fallo, para su verificación y cumplimiento."
+    )
+    report = (
+        "Previo a la realización de las reuniones, las autoridades deberán presentar "
+        "informe escrito de sus gestiones y actuaciones."
+    )
+    combined = f"{meeting} {report}"
+    passage = combined
+    if variant == "independent_report_only":
+        passage = meeting
+    if variant == "post_meeting_report":
+        passage = combined.replace("Previo a la realización de", "Después de")
+    if variant == "missing_frequency":
+        passage = combined.replace(" bimestrales", "")
+    if variant == "notification_trigger":
+        passage = combined.replace("ejecutoria", "notificación")
+    if variant == "ambiguous_orders":
+        passage += "\n\n" + combined.replace("bimestrales", "mensuales")
+    docs[1].page_content = (
+        f"SEXTO: Ordenar la integración de un comité.\n\n{passage}\n\n"
+        "6.1.º Deberán presentar informes cada dos meses independientemente de las reuniones."
+    )
+    _configured(monkeypatch, tmp_path, docs)
+    _enrichment(monkeypatch, route)
+    _no_calls(monkeypatch)
+    instance = "segunda" if variant == "wrong_instance" else "primera"
+    response = await _public_query(
+        monkeypatch,
+        QueryRequest(
+            question=(
+                f"¿Qué ordenó en {instance} instancia sobre la frecuencia de reuniones de verificación "
+                f"y los informes previos en el radicado {DOCKET}?"
+            )
+        ),
+    )
+    if variant == "complete":
+        assert response.query_route == "in_scope"
+        assert response.answer == f"- «[…] {combined} […]» [doc1]"
+        (group,) = response.sources
+        (fragment,) = group.fragments
+        assert fragment.content == f"[…] {combined} […]"
+        assert fragment.metadata["chunk_id"] == docs[1].id
+    else:
+        assert response.sources == [] and "evidencia insuficiente" in response.answer
+
+
+@pytest.mark.anyio
+@pytest.mark.parametrize(
+    ("variant", "route"),
+    [
+        ("complete", "out_of_scope"),
+        ("complete", "in_scope"),
+        ("copy_only", "in_scope"),
+        ("return_only", "in_scope"),
+        ("wrong_trigger_in_order", "in_scope"),
+        ("wrong_trigger_in_question", "in_scope"),
+        ("wrong_instance", "in_scope"),
+        ("wrong_docket", "in_scope"),
+        ("different_recipients", "in_scope"),
+    ],
+)
+async def test_copy_and_return_require_both_orders_in_json_and_sse(
+    monkeypatch, tmp_path, variant, route
+):
+    docs = _source("providencia")
+    copy = (
+        "SEGUNDO: En cumplimiento de lo dispuesto en la ley, REMÍTASE copia auténtica de "
+        "ésta decisión a la Defensoría del Pueblo."
+    )
+    returned = (
+        "TERCERO: Ejecutoriado este proveído, DEVUÉLVASE el expediente al Tribunal de origen."
+    )
+    orders = [copy, returned]
+    if variant == "copy_only":
+        orders = [copy]
+    if variant == "return_only":
+        orders = [returned]
+    if variant == "wrong_trigger_in_order":
+        orders[1] = returned.replace("Ejecutoriado", "Notificado")
+    if variant == "different_recipients":
+        orders.append(copy.replace("SEGUNDO", "CUARTO").replace("Defensoría", "Procuraduría"))
+    docs[1].page_content = "\n\n".join([DECISION, *orders, "CÓPIESE, NOTIFÍQUESE."])
+    _configured(monkeypatch, tmp_path, docs)
+    _enrichment(monkeypatch, route)
+    _no_calls(monkeypatch)
+
+    instance = "primera" if variant == "wrong_instance" else "segunda"
+    docket = "88001233100020100000001" if variant == "wrong_docket" else DOCKET
+    trigger = "notificada" if variant == "wrong_trigger_in_question" else "ejecutoriada"
+    request = QueryRequest(
+        question=(
+            f"En la {instance} instancia del radicado {docket}, ¿a quién se ordenó remitir "
+            f"copia auténtica del fallo y qué debía hacerse con el expediente una vez {trigger} "
+            "la providencia?"
+        )
+    )
+    response = await _public_query(monkeypatch, request)
+    if variant != "complete":
+        assert response.sources == [] and "evidencia insuficiente" in response.answer
+        return
+
+    excerpt = f"[…] {copy}\n\n{returned} […]"
+    assert response.query_route == "in_scope"
+    assert response.answer == f"- «{excerpt}» [doc1]"
+    (source,) = response.sources
+    (fragment,) = source.fragments
+    assert source.metadata["Radicado"] == DOCKET
+    assert fragment.metadata["chunk_id"] == docs[1].id
+    assert fragment.content == f"[…] {copy}  {returned} […]"
+
+
+@pytest.mark.anyio
+@pytest.mark.parametrize(
     "question",
     [
         PARTIAL_CARRERO_QUESTION,
@@ -770,6 +902,110 @@ async def test_recovery_purpose_keeps_the_term_with_its_own_order(
     else:
         assert response.sources == []
         assert "evidencia insuficiente" in response.answer
+
+
+@pytest.mark.anyio
+@pytest.mark.parametrize(
+    ("variant", "route"),
+    [
+        ("complete", "out_of_scope"),
+        ("complete", "in_scope"),
+        ("missing_admin_order", "in_scope"),
+        ("unrelated_registry_order", "in_scope"),
+        ("different_district", "in_scope"),
+        ("multiple_recovery_orders", "in_scope"),
+        ("multiple_orders_in_one_ordinal", "out_of_scope"),
+        ("multiple_orders_in_one_ordinal", "in_scope"),
+        ("wrong_instance", "in_scope"),
+        ("unsupported_trigger", "in_scope"),
+        ("one_source", "in_scope"),
+    ],
+)
+async def test_explains_recovery_deadline_with_all_three_orders_in_json_and_sse(
+    monkeypatch, tmp_path, variant, route
+):
+    docs = _source("providencia")
+    admin = (
+        "- b) Ordenar al alcalde del Distrito de Puerto Norte que, a la mayor brevedad, sin exceder "
+        "el término máximo de dos (2) meses, se sirva proferir los actos administrativos que sean "
+        "necesarios para darle cumplimiento a la presente sentencia."
+    )
+    registry = (
+        "- c) Ordenar al Distrito de Puerto Norte que en el término de dos (2) meses realice todas "
+        "las gestiones administrativas y demás diligencias en la Oficina de Registro de Instrumentos "
+        "Públicos de Puerto Norte para la cancelación de las anotaciones realizadas en el folio de "
+        "matrícula inmobiliaria No. 099-123456."
+    )
+    recovery = (
+        "- d) Ordenar al Distrito de Puerto Norte y a la DIMAR que a más tardar en el término "
+        "de seis (6) meses, realice los trámites que sean necesarios para que se recupere el predio "
+        "a que hace mención la presente providencia."
+    )
+    if variant == "missing_admin_order":
+        admin = ""
+    if variant == "unrelated_registry_order":
+        registry = registry.replace(
+            "la cancelación de las anotaciones", "la certificación de las anotaciones"
+        )
+    if variant == "different_district":
+        registry = registry.replace(
+            "Ordenar al Distrito de Puerto Norte", "Ordenar al Distrito de Puerto Sur"
+        )
+    docs[1].page_content = f"SEGUNDO: Modificar la sentencia apelada.\n{admin}\n{registry}"
+    recovery_text = recovery + "\n- e) Ordenar las restituciones mutuas."
+    if variant == "multiple_recovery_orders":
+        recovery_text += "\nTERCERO: Ordenar las medidas restantes.\n" + recovery.replace(
+            "seis (6)", "tres (3)"
+        )
+    if variant == "multiple_orders_in_one_ordinal":
+        alternative = recovery.replace("seis (6)", "dos (2)")
+        recovery_text += "\n".join(
+            (
+                "\nTERCERO: Ordenar las medidas restantes.",
+                alternative.replace("- d)", "- f)"),
+                alternative.replace("- d)", "- g)").replace("Puerto Norte", "Puerto Sur"),
+            )
+        )
+    docs.append(
+        docs[1].model_copy(
+            update={
+                "id": "providencia-3",
+                "page_content": recovery_text,
+                "metadata": {**docs[1].metadata, "chunk_id": "providencia-3"},
+            }
+        )
+    )
+    _configured(monkeypatch, tmp_path, docs)
+    _enrichment(monkeypatch, route)
+    _no_calls(monkeypatch)
+
+    instance = "primera" if variant == "wrong_instance" else "segunda"
+    trigger = " desde la ejecutoria" if variant == "unsupported_trigger" else ""
+    question = (
+        f"¿Qué ordenó en {instance} instancia sobre los trámites para recuperar el predio "
+        f"en un plazo de dos meses{trigger} en el radicado {DOCKET}?"
+    )
+    response = await _public_query(
+        monkeypatch, QueryRequest(question=question, k=1 if variant == "one_source" else 4)
+    )
+    if variant != "complete":
+        assert response.sources == [] and "[doc" not in response.answer
+        expected = "fuera del ámbito" if route == "out_of_scope" else "evidencia insuficiente"
+        assert expected in response.answer
+        return
+
+    assert response.query_route == "in_scope"
+    assert "cancelar las anotaciones (literales b y c) [doc1]" in response.answer
+    assert "máximo de seis meses" in response.answer and response.answer.endswith("[doc2].")
+    (group,) = response.sources
+    assert group.metadata["Radicado"] == DOCKET
+    prior, current = group.fragments
+    assert (prior.index, current.index) == (1, 2)
+    assert (prior.metadata["chunk_id"], current.metadata["chunk_id"]) == (docs[1].id, docs[2].id)
+    admin_excerpt = admin.split(" que sean necesarios")[0]
+    registry_excerpt = registry.split(" realizadas en el folio")[0]
+    assert prior.content == f"[…] {admin_excerpt} […] {registry_excerpt} […]"
+    assert current.content == f"{recovery} […]"
 
 
 @pytest.mark.anyio

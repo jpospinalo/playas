@@ -6,7 +6,7 @@ import json
 import re
 import unicodedata
 from collections import defaultdict
-from collections.abc import Mapping, Sequence
+from collections.abc import Collection, Mapping, Sequence
 from dataclasses import dataclass
 from hashlib import sha256
 from itertools import pairwise
@@ -22,10 +22,20 @@ _DOCKET = re.compile(
     r"(?:\d{5}-\d{2}-\d{2}-\d{3}|\d{2}-\d{3}-\d{4}-\d{3}|\d{12})[ -]?\d{4}[ -]?\d{4,5}[ -]?\d{2}|\d{4})"
     r"(?:\s*\((?P<reference>[\d.]+)\))?(?![\w-])"
 )
+_QUESTION_INSTANCE = r"(?:primera|segunda|unica) instancia|sede de revision"
 _QUESTION = re.compile(
-    r"¿?que (?:ordeno|resolvio|decidio) en (primera instancia|segunda instancia|"
-    r"unica instancia|sede de revision)(?: (?:a|al) (.+?))? (?:sobre|acerca de) (.+?)"
+    rf"¿?que (?:ordeno|resolvio|decidio) en (?P<instance>{_QUESTION_INSTANCE})"
+    r"(?: (?:a|al) (?P<actor>.+?))? (?:sobre|acerca de) (?P<subject>.+?)"
     rf",? en (?:el radicado )?(?P<docket>{_DOCKET.pattern})\?"
+)
+_COPY_AND_RETURN_QUESTION = re.compile(
+    rf"¿?en (?:la )?(?P<instance>{_QUESTION_INSTANCE}) del radicado "
+    rf"(?P<docket>{_DOCKET.pattern}), ¿?a quien se ordeno remitir (?:una )?copia autentica "
+    r"(?:del fallo|de la (?:decision|providencia|sentencia)) y que debia hacerse con el expediente"
+    r"(?: (?P<subject>[^?]+))?\?"
+)
+_AFTER_FINALITY_QUESTION = re.compile(
+    r"una vez (?:ejecutoriada la (?:decision|providencia|sentencia)|ejecutoriado el (?:fallo|proveido))"
 )
 _PARTIAL_DOCKET = re.compile(
     r"\b(?:solo (?:tengo|conozco) (?:el )?(?:radicado|expediente|numero)|"
@@ -93,10 +103,25 @@ _SERIALIZED_HEADER = re.compile(
     r"(?:^|\n)radicacion numero:\nactor:\nmedio de control:\ninstancia:\ntema:\n"
     r"(?P<number>[^\n ]+) [^\n]+\n[^\n]+\n[^\n]+\n(?P<instance>primera|segunda|unica)(?=\n|$)"
 )
+_LINKED_PARTIES_HEADER = re.compile(
+    r"(?:^|\n)radicacion numero:\nactor:\n(?:demandados:\n)?vinculados:\n"
+    r"medio de control:\ninstancia:\ntema:\n(?P<number>[^\n ]+)\n"
+    r"[^\n:]+\n(?:[^\n:]+\n){1,6}proteccion de los derechos e intereses colectivos\n"
+    r"(?P<instance>primera|segunda|unica)(?=\n|$)"
+)
 _ORDINAL = (
     r"(?:primero|segundo|tercero|cuarto|quinto|sexto|s[eé]ptimo|octavo|noveno|"
     r"d[eé]cimo(?:\s+(?:primero|segundo|tercero|cuarto|quinto|sexto|s[eé]ptimo|octavo|noveno))?|"
     r"und[eé]cimo|duod[eé]cimo|\d+[º°]\)?)\s*[:.]?"
+)
+_COPY_ORDER = re.compile(
+    rf"{_ORDINAL}\s+(?:en cumplimiento de [^,.;]+, )?remitase (?:una )?copia autentica "
+    r"(?:del (?:presente )?(?:fallo|proveido)|de (?:esta|la|la presente) "
+    r"(?:decision|providencia|sentencia)) (?:a la|al|a las|a los) [^,.;!?]+\."
+)
+_RETURN_ORDER = re.compile(
+    rf"{_ORDINAL}\s+ejecutoriado (?:este|el) (?:proveido|fallo), "
+    r"devuelvase el expediente al (?:tribunal|juzgado|despacho) de origen\."
 )
 _BOUNDARY = re.compile(
     rf"(?<!\w)(?P<ordinal>{_ORDINAL})(?=\s+(?:[-–]\s+)?(?:ordenar|modificar|modif[ií]case|"
@@ -136,6 +161,32 @@ _TERM = re.compile(rf"\b({_TERM_NUMBER})(?:\s*\((\d+)\))?\s+({_TERM_UNIT})\b")
 _REQUEST_TERM = re.compile(
     r"\s+(en(?: (?:un|el) plazo de)?|dentro de|cada) "
     rf"(\S+(?:\s*\(\d+\))? (?:{_TERM_UNIT}))(?: desde (.+))?$"
+)
+_DISTRICT = r"distrito de [a-z]+(?: [a-z]+)*"
+_RECOVERY_ADMIN_ORDER = re.compile(
+    rf"- b\) ordenar al alcalde del (?P<district>{_DISTRICT}) que, a la mayor brevedad, "
+    r"sin exceder el termino maximo de dos \(2\) meses, se sirva proferir los actos "
+    r"administrativos que sean necesarios para darle cumplimiento a la presente sentencia\."
+)
+_RECOVERY_REGISTRY_ORDER = re.compile(
+    rf"- c\) ordenar al (?P<district>{_DISTRICT}) que en el termino de dos \(2\) meses "
+    r"realice todas las gestiones administrativas y demas diligencias en la oficina de registro "
+    r"de instrumentos publicos de [a-z ]+ para la cancelacion de las anotaciones"
+    r"(?: realizadas en el folio de matricula inmobiliaria no\. [\d-]+"
+    r"(?:, relacionadas con el contrato de compraventa contenido en la escritura publica no\. "
+    r"\d+ del \d{1,2} de [a-z]+ de \d{4} de la notaria [a-z ]+ del circulo de [a-z ]+)?)?\."
+)
+_RECOVERY_PROPERTY_ORDER = re.compile(
+    rf"- d\) ordenar al (?P<district>{_DISTRICT}) y a la dimar que a mas tardar en el termino "
+    r"de seis \(6\) meses, realice los tramites que sean necesarios para que se recupere el predio "
+    r"a que hace mencion la presente providencia"
+    r"(?:, por tratarse de un bien de uso publico de titularidad de la nacion)?\."
+)
+_RECOVERY_DEADLINE_ANSWER = (
+    "Los dos meses corresponden a los actos administrativos a cargo del alcalde y a las gestiones "
+    "del Distrito ante la Oficina de Registro para cancelar las anotaciones (literales b y c) [doc1]. "
+    "El literal d fija un máximo de seis meses para que el Distrito y la DIMAR adelanten "
+    "los trámites de recuperación del predio [doc2]."
 )
 _REQUEST_TRIGGER = re.compile(r"\s+(una vez|desde) (.+)$")
 _IMMEDIATE_TRIGGER = re.compile(
@@ -204,6 +255,15 @@ _EVALUATION_TOPIC = re.compile(rf"^(?:la )?evaluacion ({_CADENCE})$")
 _COMMITTEE = re.compile(r"\bcomit[eé]\s+de\s+verificaci[oó]n\b", re.IGNORECASE)
 _COMMITTEE_REPORT_QUERY = re.compile(
     r"(?:la )?(?:integracion|conformacion) (?:del|de un) comite de verificacion y (?:sus|los) informes"
+)
+_MEETINGS_WITH_PRIOR_REPORTS_QUERY = re.compile(
+    r"(?:la )?frecuencia de (?:las )?reuniones de verificacion y (?:los )?informes previos"
+)
+_MEETINGS_WITH_PRIOR_REPORTS_ORDER = re.compile(
+    rf"(?:la magistrada|el magistrado) ponente convocara a reuniones {_CADENCE}es "
+    r"a partir de la ejecutoria del presente fallo, para su verificacion y cumplimiento\. "
+    r"previo a la realizacion de las reuniones, las autoridades deberan presentar (?:un )?"
+    r"informe escrito de (?:las|sus) gestiones y actuaciones(?: que han realizado hasta ese momento)?\."
 )
 _COMPOSITION = re.compile(r"\bintegrado\s+por\s*:", re.IGNORECASE)
 _ACTOR_APPOSITION = re.compile(
@@ -383,7 +443,7 @@ class DocketEvidence:
             ):
                 return [], None
             verified.append(Passage(doc, span.start, span.end))
-        excerpts = _visible_order_sources(verified, intent[3])
+        excerpts = _visible_order_sources(verified, intent["subject"])
         if not excerpts:
             return [], None
         citations = _cited_excerpts([doc.page_content for doc in excerpts])
@@ -393,7 +453,8 @@ class DocketEvidence:
 def _resolution_intent(question: str) -> re.Match[str] | None:
     if _is_deterministic_terminal(question):
         return None
-    return _QUESTION.fullmatch(_flat(question))
+    normalized = _flat(question)
+    return _QUESTION.fullmatch(normalized) or _COPY_AND_RETURN_QUESTION.fullmatch(normalized)
 
 
 def has_docket_intent(question: str) -> bool:
@@ -413,16 +474,22 @@ def needs_providencia_clarification(question: str) -> bool:
 
 
 def requires_operative_proof(question: str) -> bool:
-    """A claimed addressee, deadline or trigger needs direct operative support."""
+    """Explicit terms and linked duties need direct operative support."""
     intent = _resolution_intent(question)
     if intent is not None:
-        actor, subject = intent.group(2, 3)
-        return bool(actor) or any(
-            _REQUEST_TERM.search(part)
-            or _REQUEST_TRIGGER.search(part)
-            or _IMMEDIATE_TRIGGER.search(part)
-            or part.startswith("sobre ")
-            for part in _COMPOUND.split(subject)
+        if intent.re is _COPY_AND_RETURN_QUESTION:
+            return True
+        actor, subject = intent.group("actor", "subject")
+        return (
+            bool(actor)
+            or _MEETINGS_WITH_PRIOR_REPORTS_QUERY.fullmatch(subject) is not None
+            or any(
+                _REQUEST_TERM.search(part)
+                or _REQUEST_TRIGGER.search(part)
+                or _IMMEDIATE_TRIGGER.search(part)
+                or part.startswith("sobre ")
+                for part in _COMPOUND.split(subject)
+            )
         )
     return bool(
         not _is_deterministic_terminal(question)
@@ -601,13 +668,42 @@ def _printed_dockets(lines: Sequence[str]) -> set[tuple[str, str | None]]:
 
 
 def _instance(
-    lines: Sequence[str], jurisdiction: str, docket: str, reference: str | None
+    lines: Sequence[str],
+    jurisdiction: str,
+    docket: str,
+    reference: str | None,
+    *,
+    registered_dockets: Collection[str] = (),
 ) -> str | None:
     lines = _header_lines(lines)
+    printed_dockets = _printed_dockets(lines)
+    cover_dockets = set()
+    found = set()
+    opening = "\n".join(lines)
+    for header in _LINKED_PARTIES_HEADER.finditer(opening):
+        identity = _docket(header["number"])
+        if identity is None:
+            continue
+        cover_dockets.add(identity)
+        if identity == (docket, reference):
+            found.add(header["instance"])
+            # A running header can omit the first zero of the five-digit serial.
+            if len(docket) == 23 and docket[16] == "0" and reference is None:
+                short = docket[:16] + docket[17:]
+                if short not in registered_dockets and (short, None) not in _printed_dockets(
+                    opening[: header.end()].splitlines()
+                ):
+                    printed_dockets.discard((short, None))
+    serialized = [
+        (_docket(header["number"]), header["instance"])
+        for header in _SERIALIZED_HEADER.finditer(opening)
+    ]
+    if cover_dockets:
+        cover_dockets.update(identity for identity, _ in serialized if identity is not None)
     if any(
         printed != docket
         or (auxiliary is not None and reference is not None and auxiliary != reference)
-        for printed, auxiliary in _printed_dockets(lines)
+        for printed, auxiliary in printed_dockets | cover_dockets
     ):
         return None
     if docket.startswith("t-"):
@@ -624,7 +720,6 @@ def _instance(
             return "sede de revision"
         return None
 
-    found = set()
     for line in lines:
         if match := _INSTANCE_HEADING.fullmatch(line):
             found.add(match[1] or match[2])
@@ -640,9 +735,7 @@ def _instance(
             for match in _DOCKET.finditer(line)
         ):
             found.add("segunda")
-    for header in _SERIALIZED_HEADER.finditer("\n".join(lines)):
-        if _docket(header["number"]) == (docket, None):
-            found.add(header["instance"])
+    found.update(instance for identity, instance in serialized if identity == (docket, None))
     return f"{found.pop()} instancia" if len(found) == 1 else None
 
 
@@ -1218,7 +1311,7 @@ def _matches_immediate_act(topic: str, event: str, text: str, actor: str | None)
 
 def _act_evidence(
     subject: str, actor: str | None, unit: tuple[Passage, ...], linked: bool
-) -> tuple[Passage, ...]:
+) -> tuple[Passage, ...] | None:
     clauses = _clauses(unit)
     if not clauses:
         return ()
@@ -1386,7 +1479,9 @@ def _act_evidence(
                     *_exception_evidence(_operative_excerpt(clause, topic), topic),
                 )
             )
-    return matches[0] if len(matches) == 1 else ()
+    if len(matches) > 1:
+        return None  # Distinguish competing clauses from an unmatched unit.
+    return matches[0] if matches else ()
 
 
 def _unique_decision(spans: Sequence[Passage], case: _Case) -> Passage | None:
@@ -1401,6 +1496,70 @@ def _unique_decision(spans: Sequence[Passage], case: _Case) -> Passage | None:
             return None
         previous = span
     return first
+
+
+def _copy_and_return_evidence(case: _Case) -> tuple[Passage, ...]:
+    clauses = [clause for unit in case.decisions for clause in _clauses(unit)]
+    copies = [clause for clause in clauses if _COPY_ORDER.fullmatch(_flat(clause.text))]
+    returns = [clause for clause in clauses if _RETURN_ORDER.fullmatch(_flat(clause.text))]
+    if len(copies) == len(returns) == 1:
+        return copies[0], returns[0]
+    return ()
+
+
+def _recovery_deadline_evidence(case: _Case, subject: str) -> tuple[Passage, ...]:
+    timing = _REQUEST_TERM.search(subject)
+    if (
+        not timing
+        or timing[1] == "cada"
+        or timing[3]
+        or not _TERM.fullmatch(timing[2])
+        or _terms(timing[2]) != {(2, "mes")}
+    ):
+        return ()
+    topic = subject[: timing.start()]
+    if topic != "los tramites para recuperar el predio":
+        return ()
+
+    # A correction needs a unique operative match even without the stated term.
+    recovery = []
+    for unit in case.decisions:
+        evidence = _act_evidence(topic, None, unit, False)
+        if evidence is None:
+            return ()
+        if evidence:
+            recovery.append(evidence)
+    if len(recovery) != 1 or len(recovery[0]) != 1:
+        return ()
+    target = recovery[0][0]
+    for unit in case.decisions:
+        clauses = _clauses(unit)
+        for admin, registry, order in zip(clauses, clauses[1:], clauses[2:], strict=False):
+            if order != target or admin.document is not registry.document:
+                continue
+            if not (
+                (b := _RECOVERY_ADMIN_ORDER.fullmatch(_flat(admin.text)))
+                and (c := _RECOVERY_REGISTRY_ORDER.fullmatch(_flat(registry.text)))
+                and (d := _RECOVERY_PROPERTY_ORDER.fullmatch(_flat(order.text)))
+                and b["district"] == c["district"] == d["district"]
+            ):
+                continue
+            prior_line = case.verified_documents[registry.document.metadata["chunk_id"]][1].line
+            order_line = case.verified_documents[order.document.metadata["chunk_id"]][1].line
+            if order_line != prior_line + 1:
+                continue
+            # Retain the acts, parties and terms in the public citation budget.
+            acts = re.search(r"actos\s+administrativos", admin.text, re.IGNORECASE)
+            cancellation = re.search(
+                r"cancelaci[oó]n\s+de\s+las\s+anotaciones", registry.text, re.IGNORECASE
+            )
+            if acts and cancellation:
+                return (
+                    _subspan(admin, 0, acts.end()),
+                    _subspan(registry, 0, cancellation.end()),
+                    order,
+                )
+    return ()
 
 
 def _appeal_anchors(case: _Case, date: str, issuer: str) -> list[Passage]:
@@ -1563,7 +1722,11 @@ class ResolutionIndex:
                     break
                 opening = _opening_passages(ordered, jurisdiction, docket)
                 instance = _instance(
-                    [_flat(p.text).lstrip("# ") for p in opening], jurisdiction, docket, reference
+                    [_flat(p.text).lstrip("# ") for p in opening],
+                    jurisdiction,
+                    docket,
+                    reference,
+                    registered_dockets=candidates,
                 )
                 if instance is None:
                     break
@@ -1608,7 +1771,7 @@ class ResolutionIndex:
 
     def docket_evidence(self, question: str) -> DocketEvidence | None:
         intent = _resolution_intent(question)
-        if intent is None or _DOCKET.search(re.sub(r"\b\d{4}\b", "", intent[3])):
+        if intent is None or _DOCKET.search(re.sub(r"\b\d{4}\b", "", intent["subject"] or "")):
             return None
         identity = _docket(intent["docket"])
         if identity is None:
@@ -1617,7 +1780,7 @@ class ResolutionIndex:
         evidence = self._dockets.get(docket)
         if (
             evidence is None
-            or intent[1] != evidence.instance
+            or intent["instance"] != evidence.instance
             or (reference is not None and reference != evidence.reference)
         ):
             return None
@@ -1628,7 +1791,9 @@ class ResolutionIndex:
         intent = _resolution_intent(question)
         if intent is None:
             return None
-        instance, actor, subject = intent.group(1, 2, 3)
+        copy_and_return = intent.re is _COPY_AND_RETURN_QUESTION
+        instance, subject = intent["instance"], intent["subject"] or ""
+        actor = None if copy_and_return else intent["actor"]
         identity = _docket(intent["docket"])
         if identity is None or _DOCKET.search(re.sub(r"\b\d{4}\b", "", subject)):
             return None
@@ -1649,11 +1814,27 @@ class ResolutionIndex:
             return None
         # Independent clauses can require distinct orders. Shared nouns alone
         # cannot support an added action.
-        subjects = _COMPOUND.split(subject)
+        joint_request = _MEETINGS_WITH_PRIOR_REPORTS_QUERY.fullmatch(subject) is not None
+        subjects = [subject] if joint_request or copy_and_return else _COMPOUND.split(subject)
         selected: dict[int, list[Passage]] = defaultdict(list)
+        correction = False
         for part in subjects:
             dedicated = None
-            if _SENTENCE_TOPIC.match(part):
+            if copy_and_return:
+                if not _AFTER_FINALITY_QUESTION.fullmatch(part):
+                    return None
+                dedicated = _copy_and_return_evidence(case)
+            elif joint_request:
+                # Keep the convocation and its preceding report in one literal passage.
+                dedicated = tuple(
+                    clause
+                    for unit in case.decisions
+                    for clause in _clauses(unit)
+                    if _MEETINGS_WITH_PRIOR_REPORTS_ORDER.fullmatch(_flat(clause.text))
+                )
+                if actor is not None or len(dedicated) != 1:
+                    return None
+            elif _SENTENCE_TOPIC.match(part):
                 dedicated = _sentence_evidence(case, part) if actor is None else ()
             elif _NULLITY_TOPIC.fullmatch(part):
                 dedicated = _nullity_evidence(case) if actor is None else ()
@@ -1673,7 +1854,14 @@ class ResolutionIndex:
                 if evidence:
                     supported.append((index, evidence))
             if len(supported) != 1:
-                return None
+                if supported or len(subjects) != 1 or actor is not None:
+                    return None
+                evidence = _recovery_deadline_evidence(case, part)
+                if not evidence:
+                    return None
+                selected[-1].extend(evidence)
+                correction = True
+                continue
             index, evidence = supported[0]
             selected[index].extend(evidence)
         by_document: dict[str, list[Passage]] = defaultdict(list)
@@ -1709,5 +1897,8 @@ class ResolutionIndex:
             passages.extend(merged)
             excerpts.append(excerpt)
         return Resolution(
-            _cited_excerpts(excerpts), tuple(sources), tuple(passages), tuple(excerpts)
+            _RECOVERY_DEADLINE_ANSWER if correction else _cited_excerpts(excerpts),
+            tuple(sources),
+            tuple(passages),
+            tuple(excerpts),
         )
