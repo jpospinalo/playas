@@ -198,8 +198,8 @@ async def _get_initial_messages(
     """Devuelve los mensajes iniciales para invocar el agente.
 
     - Si MemorySaver tiene estado: solo añade la nueva pregunta (continuación normal).
-    - Si no hay estado y hay conversation_id: carga el historial desde la base de datos
-      e inyecta el contexto completo (útil tras reinicio del servidor).
+    - Si no hay estado y hay conversation_id: carga el historial persistido.
+      Con current_message_id, carga solo el prefijo anterior al mensaje actual.
     - Si no hay estado ni conversation_id: comienza conversación nueva.
     """
     if not conversation_id:
@@ -210,7 +210,7 @@ async def _get_initial_messages(
             )
         return [HumanMessage(content=question)]
 
-    from sqlalchemy import select
+    from sqlalchemy import and_, or_, select
 
     from rag.api.database import async_session_factory
     from rag.api.models import Conversation, Message
@@ -220,6 +220,7 @@ async def _get_initial_messages(
         if conversation is None or conversation.user_id != user_id:
             raise HTTPException(status_code=404, detail="Conversación no encontrada.")
 
+        current_message = None
         if current_message_id:
             current_message = await session.get(Message, current_message_id)
             if (
@@ -238,17 +239,26 @@ async def _get_initial_messages(
         if has_checkpoint:
             return [HumanMessage(content=question)]
 
-        result = await session.execute(
+        history_query = (
             select(Message)
             .where(Message.conversation_id == conversation_id)
             .order_by(Message.created_at)
         )
+        if current_message is not None:
+            history_query = history_query.where(
+                or_(
+                    Message.created_at < current_message.created_at,
+                    and_(
+                        Message.created_at == current_message.created_at,
+                        Message.id < current_message.id,
+                    ),
+                )
+            ).order_by(Message.id)
+        result = await session.execute(history_query)
         msgs = result.scalars().all()
 
     history: list = []
     for msg in msgs:
-        if msg.id == current_message_id:
-            continue
         if msg.role == "user":
             history.append(HumanMessage(content=msg.text))
         else:
