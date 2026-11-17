@@ -19,6 +19,7 @@ from collections.abc import AsyncGenerator
 from contextlib import AsyncExitStack, asynccontextmanager
 from typing import Any
 
+from anyio import CancelScope
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, StreamingResponse
@@ -45,8 +46,14 @@ from rag.config import (
     QUERY_TOTAL_TIMEOUT_SECONDS,
 )
 from rag.core.agent import extract_answer_from_state as _extract_answer_from_state
+from rag.core.chroma_query import ChromaQueryTimeout
 from rag.core.observability import ActiveQueryTracker, log_retained_conversations
-from rag.core.retriever import bm25_index_is_empty, close_retrievers, init_retrievers
+from rag.core.retriever import (
+    bm25_index_is_empty,
+    close_retrievers,
+    init_retrievers,
+    open_chroma_query,
+)
 
 # Timeout corto por defecto para el chequeo de base de datos en /api/ready
 # — una base de datos colgada no debe bloquear el readiness probe
@@ -147,25 +154,9 @@ async def lifespan(app: FastAPI):
     - Vectorstore LangChain-Chroma (singleton)
     - Grafo LangGraph compilado (singleton con MemorySaver)
 
-    C3 — el ``try`` cubre TODO el arranque (``init_db``, ``init_retrievers``,
-    ``build_graph``), no solo el bloque ``yield``: un fallo en cualquiera de
-    los tres pasos de arranque llega igual al ``finally`` de abajo y libera
-    lo que ya alcanzó a abrirse, en vez de dejarlo huérfano. ``_graph`` (el
-    singleton de módulo, leído por ``get_graph()``) y ``app.state.graph``
-    (leído por rutas que reciben ``Request``, p. ej. la limpieza de
-    checkpoint en ``routes/conversations.py`` — C4) se asignan juntos al
-    mismo objeto compilado y se resetean juntos a ``None`` al salir, en
-    cualquier camino (apagado limpio, fallo de arranque, o excepción durante
-    el cuerpo del servidor) — nunca queda uno de los dos apuntando a un
-    grafo ya cerrado mientras el otro es ``None``.
-
-    Al salir, libera lo que este lifespan dejó abierto: la sesión HTTP del
-    cliente de embeddings y los singletons de retriever
-    (``close_retrievers()``), y el engine SQLAlchemy (``engine.dispose()``,
-    que cierra el pool de conexiones a la base de datos). Estas dos
-    liberaciones están en su propio ``try/finally`` anidado para que un
-    fallo de ``close_retrievers()`` nunca impida que ``engine.dispose()``
-    se ejecute.
+    El cliente REST de búsqueda pertenece a este ciclo de vida. Las dos
+    referencias al grafo se liberan juntas al salir. El cliente REST,
+    los recuperadores y SQLAlchemy se cierran incluso si falla el arranque.
     """
     import asyncio
 
@@ -173,19 +164,24 @@ async def lifespan(app: FastAPI):
     from rag.core.agent import build_graph
 
     global _graph
+    resources = AsyncExitStack()
     try:
         await init_db()
         await asyncio.to_thread(init_retrievers)
-        _graph = build_graph()
+        chroma_query = await resources.enter_async_context(open_chroma_query())
+        _graph = build_graph(chroma_query=chroma_query)
         app.state.graph = _graph
         yield
     finally:
         _graph = None
         app.state.graph = None
         try:
-            close_retrievers()
+            await resources.aclose()
         finally:
-            await engine.dispose()
+            try:
+                close_retrievers()
+            finally:
+                await engine.dispose()
 
 
 # ── App ────────────────────────────────────────────────────────────────────
@@ -347,10 +343,13 @@ async def query(
                     # delante de este servicio corten la conexión por
                     # inactividad a los 300s (A3.3) — sin este timeout, el
                     # cliente vería la conexión morir sin ninguna respuesta.
-                    logger.warning(
-                        "query_total_timeout timeout_seconds=%.1f",
-                        QUERY_TOTAL_TIMEOUT_SECONDS,
-                    )
+                    if isinstance(exc, ChromaQueryTimeout):
+                        logger.warning("chroma_query_timeout")
+                    else:
+                        logger.warning(
+                            "query_total_timeout timeout_seconds=%.1f",
+                            QUERY_TOTAL_TIMEOUT_SECONDS,
+                        )
                     raise HTTPException(
                         status_code=504,
                         detail="La consulta superó el tiempo máximo permitido.",
@@ -384,20 +383,13 @@ async def query(
 
 
 class _ResourceManagedStreamingResponse(StreamingResponse):
-    """`StreamingResponse` que garantiza el cierre de `resource_stack` sin
-    importar en qué punto del ciclo ASGI falle el envío.
+    """Cierra el cuerpo SSE y los recursos ante fallos de envío ASGI.
 
-    `AsyncExitStack.aclose()` YA se llama en el `finally` de
-    `event_generator()` (§ abajo) — eso cubre toda salida que llegue a
-    ejecutar el cuerpo del generador (éxito, excepción, cancelación tras el
-    primer `__anext__`). El caso que ese `finally` no cubre es que el propio
-    envío ASGI del `http.response.start` falle (p. ej. cliente ya
-    desconectado): Starlette lanza esa excepción ANTES de iterar
-    `body_iterator` por primera vez, así que el generador nunca llega a
-    ejecutarse y su `finally` nunca se alcanza. Esta subclase cierra el
-    mismo `resource_stack` también en ese caso — `aclose()` de
-    `AsyncExitStack` es seguro de llamar más de una vez (la segunda vez es
-    no-op), así que no hay doble liberación."""
+    Si el envío se interrumpe después de un evento, el generador puede
+    estar suspendido y todavía tener trabajo activo en el grafo. Si falla
+    antes del primer evento, el generador puede no haber empezado y el
+    stack sigue siendo responsable de liberar el lock y la plaza.
+    """
 
     def __init__(self, *args: Any, resource_stack: AsyncExitStack, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
@@ -407,7 +399,13 @@ class _ResourceManagedStreamingResponse(StreamingResponse):
         try:
             await super().__call__(scope, receive, send)
         finally:
-            await self._resource_stack.aclose()
+            with CancelScope(shield=True):
+                try:
+                    close_body = getattr(self.body_iterator, "aclose", None)
+                    if close_body is not None:
+                        await close_body()
+                finally:
+                    await self._resource_stack.aclose()
 
 
 @app.post(
@@ -491,6 +489,7 @@ async def query_stream(
 
     async def event_generator() -> AsyncGenerator[str, None]:
         with ACTIVE_QUERIES.track():
+            stream_iterator = None
             try:
                 # La generación se valida dentro del grafo antes de exponerla. Por eso
                 # conservamos el último snapshot de este stream y emitimos su texto validado.
@@ -508,13 +507,20 @@ async def query_stream(
                     stream_mode=["values", "custom"],
                 ).__aiter__()
                 while True:
+                    # Completa el cierre del grafo aun si ASGI cancela el stream.
+                    next_event = asyncio.ensure_future(anext(stream_iterator))
                     try:
                         mode, payload = await asyncio.wait_for(
-                            stream_iterator.__anext__(),
+                            asyncio.shield(next_event),
                             timeout=QUERY_STREAM_STAGE_TIMEOUT_SECONDS,
                         )
                     except StopAsyncIteration:
                         break
+                    finally:
+                        if not next_event.done():
+                            next_event.cancel()
+                            with CancelScope(shield=True):
+                                await asyncio.gather(next_event, return_exceptions=True)
                     if mode == "custom":
                         # Eventos de estado emitidos por los nodos
                         if isinstance(payload, dict) and payload.get("type") == "status":
@@ -546,15 +552,18 @@ async def query_stream(
                 yield f"data: {event}\n\n"
                 yield "data: [DONE]\n\n"
 
-            except TimeoutError:
+            except TimeoutError as exc:
                 # Corte CONTROLADO antes de que el ALB/Nginx delante de este
                 # servicio corten la conexión por inactividad a los 300s
                 # (A3.3) — la etapa actual del grafo no produjo ningún
                 # evento nuevo dentro del timeout configurado.
-                logger.warning(
-                    "query_stream_stage_timeout timeout_seconds=%.1f",
-                    QUERY_STREAM_STAGE_TIMEOUT_SECONDS,
-                )
+                if isinstance(exc, ChromaQueryTimeout):
+                    logger.warning("chroma_query_timeout")
+                else:
+                    logger.warning(
+                        "query_stream_stage_timeout timeout_seconds=%.1f",
+                        QUERY_STREAM_STAGE_TIMEOUT_SECONDS,
+                    )
                 event = json.dumps(
                     {
                         "type": "error",
@@ -569,23 +578,19 @@ async def query_stream(
                 )
                 yield f"data: {event}\n\n"
             finally:
-                # C2 — try/finally anidado: resource_stack.aclose() (libera
-                # el lock de conversación y el slot de backpressure) debe
-                # ejecutarse pase lo que pase en el bloque interior, incluso
-                # si log_retained_conversations() llegara a lanzar (la
-                # limpieza del checkpoint ya no puede — ver
-                # _cleanup_ephemeral_checkpoint, que captura Exception
-                # internamente). Con el finally plano anterior, una
-                # excepción en cualquiera de las dos líneas de arriba habría
-                # impedido que esta última corriera, dejando el lock/slot
-                # sin liberar.
-                try:
-                    # Limpieza ANTES del log de retención, misma razón que en
-                    # /api/query — ver _cleanup_ephemeral_checkpoint (A3.1).
-                    await _cleanup_ephemeral_checkpoint(graph, request, thread_id)
-                    log_retained_conversations(graph.checkpointer)
-                finally:
-                    await resource_stack.aclose()
+                # Una desconexión cancela el scope ASGI. El cierre del grafo,
+                # checkpoint y controles de concurrencia depende de este bloque.
+                with CancelScope(shield=True):
+                    try:
+                        close_stream = getattr(stream_iterator, "aclose", None)
+                        if close_stream is not None:
+                            await close_stream()
+                    finally:
+                        try:
+                            await _cleanup_ephemeral_checkpoint(graph, request, thread_id)
+                            log_retained_conversations(graph.checkpointer)
+                        finally:
+                            await resource_stack.aclose()
 
     return _ResourceManagedStreamingResponse(
         event_generator(),

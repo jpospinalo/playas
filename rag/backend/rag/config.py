@@ -139,6 +139,7 @@ CHROMA_PORT: int = int(cast(str, _env("CHROMA_PORT", default="8000")))
 CHROMA_COLLECTION: str = cast(
     str, _env("CHROMA_COLLECTION", "CHROMA_COLLECTION_NAME", default="rag_playas")
 )
+CHROMA_QUERY_TIMEOUT_SECONDS: float = float(os.getenv("RAG_CHROMA_QUERY_TIMEOUT_SECONDS", "30"))
 
 # Activación optativa con un sidecar local autenticado.
 LEGAL_RESOLUTION_PROVENANCE_PATH: str | None = _env("LEGAL_RESOLUTION_PROVENANCE_PATH")

@@ -4,9 +4,7 @@
 Combina búsqueda léxica (BM25 sobre texto aumentado con keywords y resumen)
 con búsqueda semántica (embeddings de Ollama vía ChromaDB) usando Weighted
 Reciprocal Rank Fusion (RRF, c=160). Los sub-retrievers se ejecutan en
-paralelo desde una única capa de concurrencia async (``asyncio.gather`` +
-``asyncio.to_thread`` por sub-retriever, sin ningún ``ThreadPoolExecutor``
-propio) cuando se invoca vía ``ainvoke()``; ``invoke()`` (síncrono)
+paralelo con ``ainvoke()``; ``invoke()`` (síncrono)
 sigue disponible y produce el mismo resultado, ejecutando los sub-retrievers
 secuencialmente.
 
@@ -27,12 +25,21 @@ se protege mediante ``tests/unit/test_retriever_no_dead_code.py``.
 from __future__ import annotations
 
 import asyncio
+import logging
 import re
-from typing import Any
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
+from math import isfinite
+from typing import Any, cast
+from urllib.parse import quote
+from uuid import UUID
 
 import chromadb
+import httpx
 import numpy as np
 import requests
+from chromadb.api.base_http_client import BaseHTTPClient
+from chromadb.types import Where
 from langchain_chroma import Chroma
 from langchain_core.callbacks import CallbackManagerForRetrieverRun
 from langchain_core.documents import Document
@@ -43,10 +50,12 @@ from rag.config import CHROMA_COLLECTION as CHROMA_COLLECTION_NAME
 from rag.config import (
     CHROMA_HOST,
     CHROMA_PORT,
+    CHROMA_QUERY_TIMEOUT_SECONDS,
     OLLAMA_RERANK_BASE_URL,
     OLLAMA_RERANK_MODEL,
 )
 
+from .chroma_query import ChromaQuery
 from .embeddings import OllamaEmbeddings
 
 # ---------------------------------------------------------------------
@@ -59,6 +68,7 @@ from .embeddings import OllamaEmbeddings
 # de alias — ver rag/config.py.
 
 EMBEDDINGS = OllamaEmbeddings()
+logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------
 # Singletons de módulo — reutilizados entre requests
@@ -224,6 +234,51 @@ def init_retrievers() -> None:
     _get_bm25_base()
 
 
+@asynccontextmanager
+async def open_chroma_query() -> AsyncIterator[ChromaQuery | None]:
+    """Abre el cliente de búsqueda de la API en el loop del lifespan."""
+    sdk = _get_chroma_client()
+    settings = sdk.get_settings()
+    if settings.chroma_client_auth_provider:
+        logger.warning("chroma_async_query_unavailable reason=sdk_auth_provider")
+        yield None
+        return
+
+    timeout = CHROMA_QUERY_TIMEOUT_SECONDS
+    if not isfinite(timeout) or timeout <= 0:
+        raise ValueError("RAG_CHROMA_QUERY_TIMEOUT_SECONDS debe ser finito y mayor que cero")
+    base_url = BaseHTTPClient.resolve_url(
+        chroma_server_host=CHROMA_HOST,
+        chroma_server_http_port=CHROMA_PORT,
+        chroma_server_ssl_enabled=settings.chroma_server_ssl_enabled,
+        default_api_path=settings.chroma_server_api_default_path,
+    )
+    tenant = quote(sdk.tenant, safe="")
+    database = quote(sdk.database, safe="")
+    collections = f"tenants/{tenant}/databases/{database}/collections"
+    verify = settings.chroma_server_ssl_verify
+    async with httpx.AsyncClient(
+        base_url=base_url,
+        headers=settings.chroma_server_headers,
+        verify=True if verify is None else verify,
+        limits=httpx.Limits(
+            max_connections=settings.chroma_http_max_connections,
+            max_keepalive_connections=settings.chroma_http_max_keepalive_connections,
+            keepalive_expiry=(
+                settings.chroma_http_keepalive_secs
+                if settings.chroma_http_keepalive_secs is not None
+                else BaseHTTPClient.DEFAULT_KEEPALIVE_SECS
+            ),
+        ),
+        timeout=timeout,
+    ) as client:
+        async with asyncio.timeout(timeout):
+            response = await client.get(f"{collections}/{quote(CHROMA_COLLECTION_NAME, safe='')}")
+            response.raise_for_status()
+            collection_id = UUID(response.json()["id"])
+        yield ChromaQuery(client, f"{collections}/{collection_id}/query", timeout)
+
+
 def close_retrievers() -> None:
     """Libera los singletons del retriever al apagar la aplicación.
 
@@ -304,7 +359,29 @@ def _build_doc_type_filter(doc_types: list[str]) -> dict[str, Any]:
     return {"doc_type": {"$in": list(doc_types)}}
 
 
-def get_vector_retriever(k: int = 3, doc_types: list[str] | None = None):
+class _AsyncChromaRetriever(BaseRetriever):
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+
+    sync_retriever: BaseRetriever
+    chroma_query: ChromaQuery
+    k: int
+    where: dict[str, Any] | None
+
+    def _get_relevant_documents(
+        self, query: str, *, run_manager: CallbackManagerForRetrieverRun
+    ) -> list[Document]:
+        return self.sync_retriever.invoke(query)
+
+    async def _aget_relevant_documents(self, query: str, *, run_manager: Any) -> list[Document]:
+        embedding = await EMBEDDINGS.aembed_query(query)
+        return await self.chroma_query.search(
+            embedding, k=self.k, where=cast(Where | None, self.where)
+        )
+
+
+def get_vector_retriever(
+    k: int = 3, doc_types: list[str] | None = None, *, chroma_query: ChromaQuery | None = None
+) -> BaseRetriever:
     """
     Retriever semántico (denso) usando el vectorstore Chroma singleton.
 
@@ -313,10 +390,16 @@ def get_vector_retriever(k: int = 3, doc_types: list[str] | None = None):
     Chroma sobre el campo ``doc_type``. Si es None, no se añade filtro y el
     comportamiento es idéntico al original.
     """
+    where = _build_doc_type_filter(doc_types) if doc_types else None
     search_kwargs: dict[str, Any] = {"k": k}
-    if doc_types:
-        search_kwargs["filter"] = _build_doc_type_filter(doc_types)
-    return _get_chroma_vectorstore().as_retriever(search_kwargs=search_kwargs)
+    if where is not None:
+        search_kwargs["filter"] = where
+    sync_retriever = _get_chroma_vectorstore().as_retriever(search_kwargs=search_kwargs)
+    if chroma_query is None:
+        return sync_retriever
+    return _AsyncChromaRetriever(
+        sync_retriever=sync_retriever, chroma_query=chroma_query, k=k, where=where
+    )
 
 
 def get_bm25_retriever(k: int = 3) -> BM25Retriever:
@@ -373,15 +456,9 @@ class HybridEnsembleRetriever(BaseRetriever):
     Retriever híbrido que combina varios sub-retrievers usando
     Weighted Reciprocal Rank Fusion (RRF).
 
-    Concurrencia: una sola capa. ``ainvoke()`` (usado por el grafo en
-    producción, ver ``agent.retrieve_forced_node``) despacha todos los
-    sub-retrievers con ``asyncio.gather`` + ``asyncio.to_thread`` — cada
-    sub-retriever corre en el executor por defecto de asyncio, sin crear
-    ningún ``ThreadPoolExecutor`` propio anidado dentro de otra capa de
-    concurrencia. ``invoke()`` (síncrono, para scripts/demo) ejecuta los
-    mismos sub-retrievers de forma secuencial y produce exactamente el mismo
-    resultado fusionado — la fusión RRF no depende del orden de ejecución,
-    solo del orden de ``self.retrievers``.
+    ``ainvoke()`` ejecuta los carriles en paralelo y cancela el trabajo
+    pendiente si falla alguno. ``invoke()`` los ejecuta secuencialmente.
+    La fusión usa el orden de ``self.retrievers``.
     """
 
     retrievers: list[BaseRetriever]
@@ -467,11 +544,15 @@ class HybridEnsembleRetriever(BaseRetriever):
         run_manager: Any,
     ) -> list[Document]:
         del run_manager
-        # Única capa de concurrencia: un asyncio.to_thread por sub-retriever,
-        # despachados juntos con gather. Sin ThreadPoolExecutor propio.
-        all_results: list[list[Document]] = await asyncio.gather(
-            *(asyncio.to_thread(r.invoke, query) for r in self.retrievers)
-        )
+        tasks = [asyncio.create_task(r.ainvoke(query)) for r in self.retrievers]
+        try:
+            all_results = await asyncio.gather(*tasks)
+        except BaseException:
+            for task in tasks:
+                if not task.done():
+                    task.cancel()
+            await asyncio.gather(*tasks, return_exceptions=True)
+            raise
         return self._fuse(all_results)
 
 
@@ -481,6 +562,8 @@ def get_ensemble_retriever(
     bm25_weight: float = 0.3,
     vector_weight: float = 0.7,
     doc_types: list[str] | None = None,
+    *,
+    chroma_query: ChromaQuery | None = None,
 ) -> HybridEnsembleRetriever:
     """
     Construye el retriever híbrido BM25 + vectorial usando componentes cacheados.
@@ -495,7 +578,12 @@ def get_ensemble_retriever(
     """
     final_k = max(1, k)
     candidate_k = max(final_k, k_candidates or final_k)
-    vector_retriever = get_vector_retriever(k=candidate_k, doc_types=doc_types)
+    if chroma_query is not None:
+        vector_retriever = get_vector_retriever(
+            k=candidate_k, doc_types=doc_types, chroma_query=chroma_query
+        )
+    else:
+        vector_retriever = get_vector_retriever(k=candidate_k, doc_types=doc_types)
 
     if doc_types:
         # BM25 filtra por metadata después de recuperar. Se amplía su conjunto
