@@ -45,7 +45,7 @@ La rama empezó como la **línea base de calidad** de ATLAS frente al ground tru
 | 2026-11-05 → 11-06 | **Mejoras de recuperación y respuesta** | Tokenizador español, fusión ajustada, varias consultas, prioridad territorial, jerarquía normativa, prompt sin normas ausentes, saludo guiado |
 | 2026-11-11 | **Gold A corregido + QA completa** | Fusión de `corpus`; ~6.000 peticiones de carga sin errores 5xx; arreglo del agotamiento del pool de conexiones |
 | 2026-11-12 | **`main` al día** | Fusión del registro con tipo de usuario; arreglo de la columna `user_type` en bases existentes; comparación de modelos locales |
-| 2026-11-16 | **Resolución documental de `corpus`** | Fusión de los commits de `corpus` del 2026-11-15 y 16 (hasta 5ca39af: REMAC 5 en alcance, radicados parciales, orden de recuperación del predio); convivencia con la multiconsulta; compatibilidad comprobada con la rama de ingesta y su evaluación de nivel 0 |
+| 2026-11-16 | **Resolución documental de `corpus`** | Fusión de los commits de `corpus` del 2026-11-15 y 16 (hasta 3260bba: REMAC 5 en alcance, radicados parciales, orden de recuperación del predio, instancia verificada, plazos y remisiones citados, citas JSON/SSE, hidratación en frío); convivencia con la multiconsulta; compatibilidad comprobada con la rama de ingesta y su evaluación de nivel 0 |
 
 ## 3. Cambios por componente
 
@@ -104,7 +104,7 @@ La rama empezó como la **línea base de calidad** de ATLAS frente al ground tru
 
 ## 6. Verificación
 
-- Suite: **1297 pruebas de backend** y **245 de frontend**; ruff, formato y mypy sin errores.
+- Suite: **1338 pruebas de backend** y **245 de frontend**; ruff, formato y mypy sin errores.
 - Fusión con `corpus` (2026-11-16): recuperación idéntica a la de la rama (0,741, fuga 0); API de punta a punta 15/15 con la resolución encendida; infraestructura validada en un emulador local de AWS (con la opción apagada, la tarea lleva `REGISTER_ENABLED`; encendida, además las dos variables de procedencia). Preguntas de radicado reales: 6 de 8 resueltas con cita textual y 2 controles rechazados.
 - Compatibilidad con la rama de ingesta (fusión de prueba, no versionada): las funciones del RAG que usa siguen intactas y su nivel 0 mejora con el retriever de esta rama (`document_hit@4` 0,725 → 0,975).
 - Carga sin LLM: ~6.000 peticiones, hasta 200 simultáneas, **0 errores 5xx**; memoria estable.
