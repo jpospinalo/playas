@@ -171,10 +171,12 @@ async def lifespan(app: FastAPI):
         chroma_query = await resources.enter_async_context(open_chroma_query())
         _graph = build_graph(chroma_query=chroma_query)
         app.state.graph = _graph
+        app.state.conversation_locks = CONVERSATION_LOCKS
         yield
     finally:
         _graph = None
         app.state.graph = None
+        app.state.conversation_locks = None
         try:
             await resources.aclose()
         finally:

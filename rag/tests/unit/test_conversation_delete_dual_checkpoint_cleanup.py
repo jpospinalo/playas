@@ -35,6 +35,7 @@ from types import SimpleNamespace
 import pytest
 from sqlalchemy.ext.asyncio import AsyncEngine, async_sessionmaker, create_async_engine
 
+from rag.api.conversation_lock import ConversationLockRegistry
 from rag.api.models import Base, Conversation, User
 from rag.api.query_support import _conversation_thread_id
 from rag.api.routes import conversations as conversations_module
@@ -108,9 +109,9 @@ class _FakeCheckpointer:
 
 
 def _fake_request(graph: object | None) -> SimpleNamespace:
-    """Sustituto mínimo de ``Request`` — lo único que ``delete_conversation``
-    lee de él es ``request.app.state.graph`` (vía ``getattr`` con default)."""
-    return SimpleNamespace(app=SimpleNamespace(state=SimpleNamespace(graph=graph)))
+    """Publica los recursos que el lifespan comparte con el router."""
+    state = SimpleNamespace(graph=graph, conversation_locks=ConversationLockRegistry())
+    return SimpleNamespace(app=SimpleNamespace(state=state))
 
 
 # ---------------------------------------------------------------------------

@@ -80,8 +80,10 @@ def _reset_app_state_graph():
     por ``lifespan()``, ver C3) es estado mutable de ese singleton, con el
     mismo riesgo de fuga entre pruebas que ``_graph`` de arriba."""
     original = getattr(main_module.app.state, "graph", None)
+    original_locks = getattr(main_module.app.state, "conversation_locks", None)
     yield
     main_module.app.state.graph = original
+    main_module.app.state.conversation_locks = original_locks
 
 
 @pytest.fixture(autouse=True)
@@ -458,6 +460,7 @@ async def test_lifespan_sets_app_state_graph_to_the_same_object_as_module_graph(
     async with main_module.lifespan(main_module.app):
         assert main_module._graph is not None
         assert main_module.app.state.graph is main_module._graph
+        assert main_module.app.state.conversation_locks is main_module.CONVERSATION_LOCKS
 
 
 @pytest.mark.anyio
@@ -472,6 +475,7 @@ async def test_lifespan_resets_both_graph_references_to_none_after_normal_shutdo
 
     assert main_module._graph is None
     assert main_module.app.state.graph is None
+    assert main_module.app.state.conversation_locks is None
 
 
 @pytest.mark.anyio
@@ -487,6 +491,7 @@ async def test_lifespan_resets_both_graph_references_to_none_when_server_body_ra
 
     assert main_module._graph is None
     assert main_module.app.state.graph is None
+    assert main_module.app.state.conversation_locks is None
 
 
 @pytest.mark.anyio
