@@ -92,7 +92,13 @@ def _mock_chroma_query_lifespan(monkeypatch: pytest.MonkeyPatch) -> None:
     async def open_query():
         yield None
 
+    @asynccontextmanager
+    async def open_embeddings():
+        # El cliente Ollama real tiene sus propios controles de lifecycle.
+        yield AsyncMock()
+
     monkeypatch.setattr(main_module, "open_chroma_query", open_query)
+    monkeypatch.setattr(main_module, "open_query_embeddings", open_embeddings)
 
 
 @pytest.fixture

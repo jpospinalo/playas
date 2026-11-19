@@ -31,6 +31,7 @@ from ..config import (
     LEGAL_RESOLUTION_PROVENANCE_SHA256,
 )
 from .chroma_query import ChromaQuery
+from .embeddings import QueryEmbedder
 from .legal_resolution import (
     DocketEvidence,
     Resolution,
@@ -317,6 +318,7 @@ async def retrieve_forced_node(
     verify_docket: bool = False,
     resolution_index: ResolutionIndex | None = None,
     chroma_query: ChromaQuery | None = None,
+    query_embedder: QueryEmbedder | None = None,
 ) -> dict:
     evidence: DocketEvidence | None = None
     if verify_docket and _permits_jurisprudence(state.get("requested_doc_types")):
@@ -347,6 +349,8 @@ async def retrieve_forced_node(
             if chroma_query is not None
             else get_ensemble_retriever
         )
+        if query_embedder is not None:
+            factory = partial(factory, query_embedder=query_embedder)
         retriever = factory(
             k=k_candidates if evidence else k,
             k_candidates=k_candidates,
@@ -432,7 +436,9 @@ async def generate_node(state: AgentState) -> dict:
     return {"messages": [AIMessage(content=answer)]}
 
 
-def build_graph(*, chroma_query: ChromaQuery | None = None) -> Any:
+def build_graph(
+    *, chroma_query: ChromaQuery | None = None, query_embedder: QueryEmbedder | None = None
+) -> Any:
     """Compila un único grafo determinista para todos los proveedores."""
     checkpointer = MemorySaver()
     verify_docket = LEGAL_RESOLUTION_PROVENANCE_PATH is not None
@@ -466,6 +472,7 @@ def build_graph(*, chroma_query: ChromaQuery | None = None) -> Any:
                 verify_docket=verify_docket,
                 resolution_index=resolution_index,
                 chroma_query=chroma_query,
+                query_embedder=query_embedder,
             ),
         )
         .add_node("generate", generate_node)

@@ -143,7 +143,10 @@ async def test_lexical_failure_cancels_the_running_vector_query() -> None:
 
 
 @pytest.mark.anyio
-async def test_vector_query_uses_rest_only_when_invoked_asynchronously(monkeypatch) -> None:
+@pytest.mark.parametrize("injected", [False, True])
+async def test_vector_query_uses_rest_only_when_invoked_asynchronously(
+    monkeypatch, injected
+) -> None:
     legacy = _StaticRetriever(docs=[_doc("legacy")])
     store = SimpleNamespace(as_retriever=lambda **kwargs: legacy)
     monkeypatch.setattr(retriever_module, "_get_chroma_vectorstore", lambda: store)
@@ -151,7 +154,12 @@ async def test_vector_query_uses_rest_only_when_invoked_asynchronously(monkeypat
         retriever_module, "get_bm25_retriever", lambda **kwargs: _StaticRetriever(docs=[])
     )
     embed = AsyncMock(return_value=[0.25])
-    monkeypatch.setattr(retriever_module.EMBEDDINGS, "aembed_query", embed)
+    legacy_embed = (
+        AsyncMock(side_effect=AssertionError("Injected path must not use a worker"))
+        if injected
+        else embed
+    )
+    monkeypatch.setattr(retriever_module.EMBEDDINGS, "aembed_query", legacy_embed)
 
     def respond(request):
         payload = json.loads(request.content)
@@ -169,15 +177,19 @@ async def test_vector_query_uses_rest_only_when_invoked_asynchronously(monkeypat
         )
 
     async with httpx.AsyncClient(transport=httpx.MockTransport(respond)) as client:
+        options = {"query_embedder": embed} if injected else {}
         retriever = retriever_module.get_ensemble_retriever(
             k=4,
             k_candidates=8,
             doc_types=["normativa"],
             chroma_query=ChromaQuery(client, "http://chroma.invalid/query", 1),
+            **options,
         )
         assert [doc.id for doc in await retriever.ainvoke("consulta")] == ["rest"]
         assert retriever.invoke("consulta") == legacy.docs
     embed.assert_awaited_once_with("consulta")
+    if injected:
+        legacy_embed.assert_not_awaited()
 
 
 @pytest.mark.anyio

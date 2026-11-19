@@ -56,7 +56,7 @@ from rag.config import (
 )
 
 from .chroma_query import ChromaQuery
-from .embeddings import OllamaEmbeddings
+from .embeddings import OllamaEmbeddings, QueryEmbedder
 
 # ---------------------------------------------------------------------
 # Configuración
@@ -367,6 +367,7 @@ class _AsyncChromaRetriever(BaseRetriever):
     chroma_query: ChromaQuery
     k: int
     where: dict[str, Any] | None
+    query_embedder: QueryEmbedder | None = None
 
     def _get_relevant_documents(
         self, query: str, *, run_manager: CallbackManagerForRetrieverRun
@@ -374,14 +375,19 @@ class _AsyncChromaRetriever(BaseRetriever):
         return self.sync_retriever.invoke(query)
 
     async def _aget_relevant_documents(self, query: str, *, run_manager: Any) -> list[Document]:
-        embedding = await EMBEDDINGS.aembed_query(query)
+        embed = self.query_embedder if self.query_embedder is not None else EMBEDDINGS.aembed_query
+        embedding = await embed(query)
         return await self.chroma_query.search(
             embedding, k=self.k, where=cast(Where | None, self.where)
         )
 
 
 def get_vector_retriever(
-    k: int = 3, doc_types: list[str] | None = None, *, chroma_query: ChromaQuery | None = None
+    k: int = 3,
+    doc_types: list[str] | None = None,
+    *,
+    chroma_query: ChromaQuery | None = None,
+    query_embedder: QueryEmbedder | None = None,
 ) -> BaseRetriever:
     """
     Retriever semántico (denso) usando el vectorstore Chroma singleton.
@@ -390,6 +396,9 @@ def get_vector_retriever(
     ["jurisprudencia", "normativa"]), se aplica un filtro de metadata nativo de
     Chroma sobre el campo ``doc_type``. Si es None, no se añade filtro y el
     comportamiento es idéntico al original.
+
+    La ruta REST asíncrona admite un embedder propio del lifespan. Sin él
+    conserva el embedding heredado; la invocación síncrona no lo utiliza.
     """
     where = _build_doc_type_filter(doc_types) if doc_types else None
     search_kwargs: dict[str, Any] = {"k": k}
@@ -399,7 +408,11 @@ def get_vector_retriever(
     if chroma_query is None:
         return sync_retriever
     return _AsyncChromaRetriever(
-        sync_retriever=sync_retriever, chroma_query=chroma_query, k=k, where=where
+        sync_retriever=sync_retriever,
+        chroma_query=chroma_query,
+        k=k,
+        where=where,
+        query_embedder=query_embedder,
     )
 
 
@@ -565,6 +578,7 @@ def get_ensemble_retriever(
     doc_types: list[str] | None = None,
     *,
     chroma_query: ChromaQuery | None = None,
+    query_embedder: QueryEmbedder | None = None,
 ) -> HybridEnsembleRetriever:
     """
     Construye el retriever híbrido BM25 + vectorial usando componentes cacheados.
@@ -580,8 +594,11 @@ def get_ensemble_retriever(
     final_k = max(1, k)
     candidate_k = max(final_k, k_candidates or final_k)
     if chroma_query is not None:
+        vector_options: dict[str, Any] = {"chroma_query": chroma_query}
+        if query_embedder is not None:
+            vector_options["query_embedder"] = query_embedder
         vector_retriever = get_vector_retriever(
-            k=candidate_k, doc_types=doc_types, chroma_query=chroma_query
+            k=candidate_k, doc_types=doc_types, **vector_options
         )
     else:
         vector_retriever = get_vector_retriever(k=candidate_k, doc_types=doc_types)

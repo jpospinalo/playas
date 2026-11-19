@@ -47,6 +47,7 @@ from rag.config import (
 )
 from rag.core.agent import extract_answer_from_state as _extract_answer_from_state
 from rag.core.chroma_query import ChromaQueryTimeout
+from rag.core.embeddings import open_query_embeddings
 from rag.core.observability import ActiveQueryTracker, log_retained_conversations
 from rag.core.retriever import (
     bm25_index_is_empty,
@@ -154,9 +155,9 @@ async def lifespan(app: FastAPI):
     - Vectorstore LangChain-Chroma (singleton)
     - Grafo LangGraph compilado (singleton con MemorySaver)
 
-    El cliente REST de búsqueda pertenece a este ciclo de vida. Las dos
-    referencias al grafo se liberan juntas al salir. El cliente REST,
-    los recuperadores y SQLAlchemy se cierran incluso si falla el arranque.
+    Los clientes REST de búsqueda y embeddings pertenecen a este ciclo de
+    vida. Las dos referencias al grafo se liberan juntas al salir. Los
+    clientes, recuperadores y SQLAlchemy se cierran incluso si falla el arranque.
     """
     import asyncio
 
@@ -169,7 +170,11 @@ async def lifespan(app: FastAPI):
         await init_db()
         await asyncio.to_thread(init_retrievers)
         chroma_query = await resources.enter_async_context(open_chroma_query())
-        _graph = build_graph(chroma_query=chroma_query)
+        if chroma_query is None:
+            _graph = build_graph(chroma_query=None)
+        else:
+            query_embedder = await resources.enter_async_context(open_query_embeddings())
+            _graph = build_graph(chroma_query=chroma_query, query_embedder=query_embedder)
         app.state.graph = _graph
         app.state.conversation_locks = CONVERSATION_LOCKS
         yield
