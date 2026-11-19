@@ -161,6 +161,7 @@ def _get_chroma_vectorstore() -> Chroma:
             client=_get_chroma_client(),
             collection_name=CHROMA_COLLECTION_NAME,
             embedding_function=EMBEDDINGS,
+            create_collection_if_not_exists=False,
         )
     return _chroma_vectorstore
 
