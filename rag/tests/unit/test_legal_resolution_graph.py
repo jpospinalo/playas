@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+import logging
 from collections import Counter
 from hashlib import sha256
 from pathlib import Path
@@ -115,6 +116,172 @@ def _no_calls(monkeypatch) -> None:
         agent, "get_ensemble_retriever", lambda **_: pytest.fail("recuperación inesperada")
     )
     monkeypatch.setattr(agent, "get_generation_llm", lambda: pytest.fail("LLM inesperado"))
+
+
+@pytest.fixture
+def build_logs(monkeypatch, caplog):
+    caplog.set_level(logging.INFO, logger=agent.logger.name)
+    monkeypatch.setattr(agent.logger, "handlers", [caplog.handler])
+    monkeypatch.setattr(agent.logger, "propagate", False)
+    return caplog
+
+
+def _resolution_state_logs(build_logs) -> list[logging.LogRecord]:
+    return [
+        record
+        for record in build_logs.records
+        if record.name == agent.logger.name
+        and record.getMessage().startswith("legal_resolution_state=")
+    ]
+
+
+def _assert_build_log_privacy(build_logs, private_values) -> None:
+    for record in build_logs.records:
+        if record.name != agent.logger.name:
+            continue
+        assert record.exc_info is None
+        rendered = record.getMessage() + repr(record.msg) + repr(record.args)
+        for value in private_values:
+            if value:
+                assert value not in rendered
+
+
+@pytest.mark.parametrize(
+    ("mode", "expected_state", "expected_reads"),
+    [
+        pytest.param("disabled", "not_configured", (0, 0), id="disabled"),
+        pytest.param("verified", "snapshot_verified", (1, 1), id="verified"),
+        pytest.param("absent", "unavailable", (1, 0), id="absent"),
+        pytest.param("missing_sha", "unavailable", (1, 0), id="missing_sha"),
+        pytest.param("wrong_sha", "unavailable", (1, 0), id="wrong_sha"),
+        pytest.param("invalid_json", "unavailable", (1, 0), id="invalid_json"),
+        pytest.param("empty_manifest", "unavailable", (1, 1), id="empty_manifest"),
+        pytest.param("mismatch", "unavailable", (1, 1), id="mismatch"),
+    ],
+)
+def test_build_logs_resolution_state_after_compile_without_extra_reads(
+    monkeypatch, tmp_path, build_logs, mode, expected_state, expected_reads
+):
+    canary = "PRIVATE_BUILD_CANARY"
+    private_dir = tmp_path / canary
+    private_dir.mkdir()
+    docs = _source(canary, suffix=f" {canary}")
+    path = _configured(monkeypatch, private_dir, docs)
+    original_sha = agent.LEGAL_RESOLUTION_PROVENANCE_SHA256
+    if mode == "disabled":
+        monkeypatch.setattr(agent, "LEGAL_RESOLUTION_PROVENANCE_PATH", None)
+    elif mode == "absent":
+        path.unlink()
+    elif mode == "missing_sha":
+        monkeypatch.setattr(agent, "LEGAL_RESOLUTION_PROVENANCE_SHA256", None)
+    elif mode == "wrong_sha":
+        monkeypatch.setattr(agent, "LEGAL_RESOLUTION_PROVENANCE_SHA256", "0" * 64)
+    elif mode in {"invalid_json", "empty_manifest"}:
+        data = b'{"vector_records": [' if mode == "invalid_json" else b'{"vector_records": []}'
+        path.write_bytes(data)
+        monkeypatch.setattr(agent, "LEGAL_RESOLUTION_PROVENANCE_SHA256", sha256(data).hexdigest())
+    elif mode == "mismatch":
+        docs[1].metadata["Radicado"] = "13001233300020170103801"
+
+    reads: Counter[str] = Counter()
+    load_provenance = agent.load_provenance
+    bm25_documents = agent.bm25_documents
+
+    def counted_provenance(*args, **kwargs):
+        reads["provenance"] += 1
+        return load_provenance(*args, **kwargs)
+
+    def counted_snapshot():
+        reads["snapshot"] += 1
+        return bm25_documents()
+
+    monkeypatch.setattr(agent, "load_provenance", counted_provenance)
+    monkeypatch.setattr(agent, "bm25_documents", counted_snapshot)
+    _no_calls(monkeypatch)
+    compile_graph = agent.StateGraph.compile
+    compiled_graphs = []
+
+    def compile_without_state_event(builder, *args, **kwargs):
+        assert _resolution_state_logs(build_logs) == []
+        compiled = compile_graph(builder, *args, **kwargs)
+        compiled_graphs.append(compiled)
+        return compiled
+
+    monkeypatch.setattr(agent.StateGraph, "compile", compile_without_state_event)
+    graph = agent.build_graph()
+
+    assert len(compiled_graphs) == 1 and graph is compiled_graphs[0]
+    assert (reads["provenance"], reads["snapshot"]) == expected_reads
+    events = _resolution_state_logs(build_logs)
+    assert len(events) == 1
+    event = events[0]
+    assert event.levelno == logging.INFO
+    assert event.msg == "legal_resolution_state=%s"
+    assert event.args == (expected_state,)
+    assert event.getMessage() == f"legal_resolution_state={expected_state}"
+    _assert_build_log_privacy(
+        build_logs,
+        (
+            canary,
+            DOCKET,
+            "13001233300020170103801",
+            str(path),
+            original_sha,
+            agent.LEGAL_RESOLUTION_PROVENANCE_SHA256,
+            *(doc.page_content for doc in docs),
+        ),
+    )
+
+
+@pytest.mark.parametrize("failing_step", ["compile", "load"])
+def test_build_failure_propagates_without_resolution_state(
+    monkeypatch, tmp_path, build_logs, failing_step
+):
+    path = _configured(monkeypatch, tmp_path, _source("PRIVATE_FAILURE_CANARY"))
+    _no_calls(monkeypatch)
+    error = RuntimeError("PRIVATE_FAILURE_CANARY")
+
+    def fail(*args, **kwargs):
+        raise error
+
+    if failing_step == "compile":
+        monkeypatch.setattr(agent.StateGraph, "compile", fail)
+    else:
+        monkeypatch.setattr(agent, "load_provenance", fail)
+
+    with pytest.raises(RuntimeError) as raised:
+        agent.build_graph()
+
+    assert raised.value is error
+    assert _resolution_state_logs(build_logs) == []
+    _assert_build_log_privacy(
+        build_logs,
+        (str(error), str(path), DOCKET, agent.LEGAL_RESOLUTION_PROVENANCE_SHA256),
+    )
+
+
+def test_resolution_state_does_not_leak_between_builds(monkeypatch, tmp_path, build_logs):
+    path = _configured(monkeypatch, tmp_path, _source("PRIVATE_TRANSITION_CANARY"))
+    _no_calls(monkeypatch)
+    agent.build_graph()
+    monkeypatch.setattr(agent, "LEGAL_RESOLUTION_PROVENANCE_PATH", None)
+    monkeypatch.setattr(
+        agent, "load_provenance", lambda *args, **kwargs: pytest.fail("lectura inesperada")
+    )
+    monkeypatch.setattr(agent, "bm25_documents", lambda: pytest.fail("lectura inesperada"))
+    agent.build_graph()
+
+    events = _resolution_state_logs(build_logs)
+    assert [event.getMessage() for event in events] == [
+        "legal_resolution_state=snapshot_verified",
+        "legal_resolution_state=not_configured",
+    ]
+    assert all(event.msg == "legal_resolution_state=%s" for event in events)
+    assert [event.args for event in events] == [("snapshot_verified",), ("not_configured",)]
+    _assert_build_log_privacy(
+        build_logs,
+        ("PRIVATE_TRANSITION_CANARY", str(path), DOCKET, agent.LEGAL_RESOLUTION_PROVENANCE_SHA256),
+    )
 
 
 @pytest.mark.anyio

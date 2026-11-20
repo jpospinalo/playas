@@ -443,7 +443,9 @@ def build_graph(
     checkpointer = MemorySaver()
     verify_docket = LEGAL_RESOLUTION_PROVENANCE_PATH is not None
     resolution_index = None
+    legal_resolution_state = "not_configured"
     if LEGAL_RESOLUTION_PROVENANCE_PATH:
+        legal_resolution_state = "unavailable"
         try:
             provenance = load_provenance(
                 Path(LEGAL_RESOLUTION_PROVENANCE_PATH), LEGAL_RESOLUTION_PROVENANCE_SHA256
@@ -451,6 +453,7 @@ def build_graph(
             index = ResolutionIndex(bm25_documents(), provenance)
             if index.snapshot_verified:
                 resolution_index = index
+                legal_resolution_state = "snapshot_verified"
                 logger.info("legal_resolution_snapshot_verified records=%d", len(provenance))
             else:
                 logger.warning("legal_resolution_snapshot_unverified")
@@ -458,7 +461,7 @@ def build_graph(
             logger.warning(
                 "legal_resolution_provenance_unavailable error_type=%s", type(exc).__name__
             )
-    return (
+    graph = (
         StateGraph(AgentState)
         .add_node("enrich_query", partial(enrich_query_node, capture_filter=verify_docket))
         .add_node(
@@ -487,3 +490,5 @@ def build_graph(
         .add_edge("generate", END)
         .compile(checkpointer=checkpointer)
     )
+    logger.info("legal_resolution_state=%s", legal_resolution_state)
+    return graph

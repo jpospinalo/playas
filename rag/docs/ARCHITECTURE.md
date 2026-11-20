@@ -80,6 +80,14 @@ START → enrich_query → route_after_analysis → {retrieve_forced → generat
   resolver preguntas explícitas por radicado con el índice documental
   verificado, sin llamar al híbrido ni al LLM de generación.
 
+Cada compilación exitosa registra `legal_resolution_state`:
+`not_configured` si la capacidad optativa no se solicitó,
+`snapshot_verified` si se habilitó el índice con una instantánea verificada,
+o `unavailable` si la procedencia configurada no permitió habilitarlo.
+Describe el arranque, no la suficiencia jurídica para cada pregunta ni la
+salud permanente. Conserva los diagnósticos existentes y no cambia
+`/api/ready`, que comprueba grafo, BM25 y SQL.
+
 ## 3. Retrieval híbrido
 
 `core/retriever.py` combina BM25 (léxico) y búsqueda vectorial (ChromaDB,
