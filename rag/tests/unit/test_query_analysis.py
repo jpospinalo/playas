@@ -2,9 +2,12 @@
 
 from __future__ import annotations
 
+import asyncio
 from types import SimpleNamespace
 
 import pytest
+from langchain_core.prompt_values import ChatPromptValue
+from langchain_core.runnables import RunnableLambda
 
 import rag.core.query_enricher as query_enricher
 from evaluation.ground_truth import load_ground_truth_cases
@@ -199,6 +202,91 @@ def test_analysis_prompt_injects_question_and_history(monkeypatch: pytest.Monkey
     assert "¿Y cuál es el plazo?" in rendered
     assert "{history}" not in rendered
     assert "{question}" not in rendered
+
+
+@pytest.mark.parametrize(
+    ("async_call", "structured"),
+    [
+        pytest.param(False, True, id="sync-system-structured"),
+        pytest.param(True, True, id="async-system-structured"),
+        pytest.param(False, False, id="sync-human-json"),
+        pytest.param(True, False, id="async-human-json"),
+    ],
+)
+def test_enrichment_instructions_reach_provider_across_supported_paths(
+    monkeypatch: pytest.MonkeyPatch, async_call: bool, structured: bool
+) -> None:
+    """Comprueba conexión y contratos con una salida fija, no obediencia del modelo."""
+    question = "¿Y quién debe aprobar ese plan?"
+    history = "Usuario: ¿Qué autoridad marítima aprueba la Zona de Manejo Costero (ZMC)?"
+    expected = EnrichedQuery(
+        route="in_scope",
+        standalone_question="¿Quién debe aprobar la Zona de Manejo Costero (ZMC)?",
+        expanded_query="aprobación autoridad marítima Zona de Manejo Costero ZMC",
+        doc_types=["normativa"],
+    )
+    captured: list[ChatPromptValue] = []
+    calls = {"factory": 0, "structured": 0, "sync": 0, "async": 0}
+
+    def invoke(value: ChatPromptValue) -> EnrichedQuery | str:
+        captured.append(value)
+        calls["sync"] += 1
+        return expected if structured else expected.model_dump_json()
+
+    async def ainvoke(value: ChatPromptValue) -> EnrichedQuery | str:
+        captured.append(value)
+        calls["async"] += 1
+        return expected if structured else expected.model_dump_json()
+
+    runnable = RunnableLambda(invoke, afunc=ainvoke)
+
+    def with_structured_output(schema: type[EnrichedQuery]):
+        assert schema is EnrichedQuery
+        calls["structured"] += 1
+        return runnable
+
+    def get_llm():
+        calls["factory"] += 1
+        return (
+            SimpleNamespace(with_structured_output=with_structured_output)
+            if structured
+            else runnable
+        )
+
+    monkeypatch.setattr(query_enricher, "ENRICHMENT_ENABLED", True)
+    monkeypatch.setattr(
+        query_enricher,
+        "get_active_provider",
+        lambda: SimpleNamespace(
+            supports_system_role=structured, supports_structured_output=structured
+        ),
+    )
+    monkeypatch.setattr(query_enricher, "get_enrichment_llm", get_llm)
+
+    result = (
+        asyncio.run(query_enricher.enrich_query_async(question, history))
+        if async_call
+        else query_enricher.enrich_query(question, history)
+    )
+
+    assert result == expected  # El fallback no contiene esta reformulación ni estos tipos.
+    assert calls == {
+        "factory": 1,
+        "structured": int(structured),
+        "sync": int(not async_call),
+        "async": int(async_call),
+    }
+    assert len(captured) == 1
+    messages = captured[0].to_messages()
+    assert [message.type for message in messages] == (
+        ["system", "human"] if structured else ["human"]
+    )
+    rendered = "\n".join(str(message.content) for message in messages)
+    assert rendered.count(ENRICHER_SYSTEM) == 1
+    assert ENRICHER_SYSTEM in str(messages[0].content)
+    human_body = str(messages[-1].content)
+    assert f"<conversation_history>\n{history}\n</conversation_history>" in human_body
+    assert f"<question>\n{question}\n</question>" in human_body
 
 
 def test_prompts_do_not_assign_an_atlas_identity() -> None:
