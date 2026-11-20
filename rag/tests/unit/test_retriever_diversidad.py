@@ -1,10 +1,11 @@
-"""La fusión limita a un fragmento por sentencia antes de recortar.
+"""La fusión limita a un fragmento por sentencia y por norma antes de recortar.
 
 Sin tope, el top-4 se llenaba con cuatro fragmentos de la misma sentencia y
 no dejaba sitio a la norma aplicable ni a otras sentencias. Los fragmentos
 extra no se borran: pasan al final y solo vuelven si faltan candidatos. Las
-normas no tienen tope: varios artículos de una misma norma son evidencia
-distinta.
+normas también tienen tope (``fragmentos_por_norma``, 1 por defecto): una norma
+local larga no debe llenar el top-4 y dejar fuera a otras normas aplicables;
+con ``fragmentos_por_norma=None`` conservan todos sus artículos.
 """
 
 from __future__ import annotations
@@ -58,14 +59,43 @@ def test_un_fragmento_por_sentencia_en_el_recorte() -> None:
     assert _ids(_ret(docs).invoke("q")) == ["s1a", "n1", "s2a"]
 
 
-def test_normas_sin_tope() -> None:
+def test_normas_sin_tope_si_se_desactiva() -> None:
     docs = [
         _doc("n1", doc_type="normativa", source="REMAC 5"),
         _doc("n2", doc_type="normativa", source="REMAC 5"),
         _doc("s1a", doc_type="jurisprudencia", source="AP X VS DIMAR"),
     ]
 
-    assert _ids(_ret(docs).invoke("q")) == ["n1", "n2", "s1a"]
+    assert _ids(_ret(docs, fragmentos_por_norma=None).invoke("q")) == ["n1", "n2", "s1a"]
+
+
+def test_un_fragmento_por_norma_deja_sitio_a_otra_norma() -> None:
+    docs = [
+        _doc("loc1", doc_type="normativa", source="Reglamento de playas de Cartagena"),
+        _doc("loc2", doc_type="normativa", source="Reglamento de playas de Cartagena"),
+        _doc("loc3", doc_type="normativa", source="Reglamento de playas de Cartagena"),
+        _doc("remac", doc_type="normativa", source="REMAC 5"),
+        _doc("s1a", doc_type="jurisprudencia", source="AP X VS DIMAR"),
+    ]
+
+    assert _ids(_ret(docs).invoke("boda en una playa de Cartagena")) == ["loc1", "remac", "s1a"]
+
+
+def test_tope_de_normas_no_toca_a_la_jurisprudencia_ni_descarta() -> None:
+    docs = [
+        _doc("n1", doc_type="normativa", source="REMAC 5"),
+        _doc("n2", doc_type="normativa", source="REMAC 5"),
+    ]
+
+    # Sin otros candidatos, el fragmento extra vuelve al final del recorte.
+    assert _ids(_ret(docs).invoke("q")) == ["n1", "n2"]
+
+
+def test_valor_por_defecto_del_tope_de_normas() -> None:
+    from rag.core.retriever import FRAGMENTOS_POR_NORMA
+
+    assert FRAGMENTOS_POR_NORMA == 1
+    assert _ret([]).fragmentos_por_norma == FRAGMENTOS_POR_NORMA
 
 
 def test_fragmentos_extra_rellenan_si_faltan_candidatos() -> None:

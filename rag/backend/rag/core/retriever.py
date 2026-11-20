@@ -98,6 +98,16 @@ VECTOR_WEIGHT = 0.2
 # jurisprudencia (0.875); 2 cupos no añaden nada, así que se queda en 1.
 CUPOS_NORMATIVA = 1
 
+# Tope de fragmentos por norma antes del recorte (misma idea que
+# ``fragmentos_por_sentencia``). Sin él, una norma local larga (el reglamento de
+# Cartagena) ocupaba tres de los cuatro puestos y dejaba fuera al REMAC o al
+# Decreto 2324, que estaban en el top-10. Medido sobre el ground truth v0.2 por
+# la ruta de producción (multiconsulta): normativa 7→8/18, global 0.741→0.759,
+# jurisprudencia 0.900 sin cambio, fuga territorial 0; cuesta artículos
+# 0.130→0.126. Sobre otras tres cachés de consultas enriquecidas es neutro o
+# mejora un caso (nunca empeora el acierto).
+FRAGMENTOS_POR_NORMA = 1
+
 # Palabras vacías del español que no aportan señal léxica al BM25.
 _STOPWORDS_ES: frozenset[str] = frozenset(
     """
@@ -534,21 +544,26 @@ def _has_retrievable_content(text: str) -> bool:
 # ---------------------------------------------------------------------
 
 
-def _diversificar_sentencias(docs: list[Document], tope: int) -> list[Document]:
+def _diversificar_sentencias(
+    docs: list[Document], tope: int, tope_normas: int | None = None
+) -> list[Document]:
     """Partición estable: a partir del fragmento ``tope + 1`` de una misma
-    sentencia, los siguientes pasan al final (no se descartan). Solo aplica a
-    ``jurisprudencia``; las normas conservan todos sus artículos."""
+    sentencia (o ``tope_normas + 1`` de una misma norma), los siguientes pasan
+    al final (no se descartan). ``tope_normas=None`` deja sin tope a las
+    normas, que conservan todos sus artículos."""
     vistos: dict[str, int] = {}
     primeros: list[Document] = []
     extra: list[Document] = []
     for doc in docs:
         meta = doc.metadata or {}
-        if meta.get("doc_type") != "jurisprudencia":
+        tipo = meta.get("doc_type")
+        limite = tope if tipo == "jurisprudencia" else tope_normas if tipo == "normativa" else None
+        if limite is None:
             primeros.append(doc)
             continue
         clave = str(meta.get("source") or meta.get("title") or doc.page_content)
         vistos[clave] = vistos.get(clave, 0) + 1
-        (primeros if vistos[clave] <= tope else extra).append(doc)
+        (primeros if vistos[clave] <= limite else extra).append(doc)
     return [*primeros, *extra]
 
 
@@ -638,8 +653,10 @@ class HybridEnsembleRetriever(BaseRetriever):
     # Sin él, el top-4 se llenaba con cuatro fragmentos de una misma
     # sentencia. Medido sobre el ground truth v0.2: hit@4 de producción
     # 0.724→0.759, documento en top-20 0.793→0.828, normativa 7→8/18; cuesta
-    # artículos 0.201→0.175 (un caso). Las normas no tienen tope.
+    # artículos 0.201→0.175 (un caso). Las normas tienen su propio tope
+    # (``fragmentos_por_norma``).
     fragmentos_por_sentencia: int | None = 1
+    fragmentos_por_norma: int | None = FRAGMENTOS_POR_NORMA
     # Jerarquía normativa (pedida por el equipo jurídico): la norma aplicable
     # va antes que la jurisprudencia en el contexto, y se le reservan
     # ``cupos_normativa`` puestos si hay normas entre los candidatos. Ver
@@ -717,7 +734,9 @@ class HybridEnsembleRetriever(BaseRetriever):
         sorted_ids = sorted(scores, key=lambda identifier: scores[identifier], reverse=True)
         ordered_docs = [doc_by_id[doc_id] for doc_id in sorted_ids]
         if self.fragmentos_por_sentencia:
-            ordered_docs = _diversificar_sentencias(ordered_docs, self.fragmentos_por_sentencia)
+            ordered_docs = _diversificar_sentencias(
+                ordered_docs, self.fragmentos_por_sentencia, self.fragmentos_por_norma
+            )
         if self.priorizar_territorio and queries:
             ordered_docs = _priorizar_territorio(ordered_docs, queries)
 
