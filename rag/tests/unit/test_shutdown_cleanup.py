@@ -24,8 +24,12 @@ embeddings se reemplaza por un ``MagicMock`` antes de cualquier cierre.
 
 from __future__ import annotations
 
+import asyncio
+from contextlib import asynccontextmanager
+from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock
 
+import httpx
 import pytest
 
 import rag.api.main as main_module
@@ -76,8 +80,69 @@ def _reset_app_state_graph():
     por ``lifespan()``, ver C3) es estado mutable de ese singleton, con el
     mismo riesgo de fuga entre pruebas que ``_graph`` de arriba."""
     original = getattr(main_module.app.state, "graph", None)
+    original_locks = getattr(main_module.app.state, "conversation_locks", None)
     yield
     main_module.app.state.graph = original
+    main_module.app.state.conversation_locks = original_locks
+
+
+@pytest.fixture(autouse=True)
+def _mock_chroma_query_lifespan(monkeypatch: pytest.MonkeyPatch) -> None:
+    @asynccontextmanager
+    async def open_query():
+        yield None
+
+    @asynccontextmanager
+    async def open_embeddings():
+        # El cliente Ollama real tiene sus propios controles de lifecycle.
+        yield AsyncMock()
+
+    monkeypatch.setattr(main_module, "open_chroma_query", open_query)
+    monkeypatch.setattr(main_module, "open_query_embeddings", open_embeddings)
+
+
+@pytest.fixture
+def _chroma_http(monkeypatch: pytest.MonkeyPatch):
+    """Ejercita el contexto HTTPX real con el catálogo de Chroma en memoria."""
+    settings = SimpleNamespace(
+        chroma_client_auth_provider=None,
+        chroma_server_host="chroma.invalid",
+        chroma_server_http_port=8000,
+        chroma_server_ssl_enabled=False,
+        chroma_server_ssl_verify=None,
+        chroma_server_headers=None,
+        chroma_server_api_default_path="/api/v2",
+        chroma_http_max_connections=None,
+        chroma_http_max_keepalive_connections=None,
+        chroma_http_keepalive_secs=40.0,
+    )
+    sdk = SimpleNamespace(
+        tenant="tenant-fixture", database="database-fixture", get_settings=lambda: settings
+    )
+    clients: list[httpx.AsyncClient] = []
+    lookup = MagicMock(
+        side_effect=lambda request: httpx.Response(
+            200, json={"id": "11111111-2222-4333-8444-555555555555"}
+        )
+    )
+    close = AsyncMock()
+    async_client = httpx.AsyncClient
+
+    def create_client(**options):
+        transport = httpx.MockTransport(lookup)
+        monkeypatch.setattr(transport, "aclose", close)
+        client = async_client(**options, transport=transport)
+        clients.append(client)
+        return client
+
+    monkeypatch.setattr(retriever_module, "_get_chroma_client", lambda: sdk)
+    monkeypatch.setattr(retriever_module, "CHROMA_HOST", "chroma.invalid")
+    monkeypatch.setattr(retriever_module, "CHROMA_PORT", 8000)
+    monkeypatch.setattr(retriever_module, "CHROMA_COLLECTION_NAME", "collection-fixture")
+    monkeypatch.setattr(retriever_module, "CHROMA_QUERY_TIMEOUT_SECONDS", 30.0)
+    monkeypatch.setattr(retriever_module.httpx, "AsyncClient", create_client)
+    monkeypatch.setattr(main_module, "open_chroma_query", retriever_module.open_chroma_query)
+    return settings, clients, lookup, close
 
 
 # ---------------------------------------------------------------------------
@@ -401,6 +466,7 @@ async def test_lifespan_sets_app_state_graph_to_the_same_object_as_module_graph(
     async with main_module.lifespan(main_module.app):
         assert main_module._graph is not None
         assert main_module.app.state.graph is main_module._graph
+        assert main_module.app.state.conversation_locks is main_module.CONVERSATION_LOCKS
 
 
 @pytest.mark.anyio
@@ -415,6 +481,7 @@ async def test_lifespan_resets_both_graph_references_to_none_after_normal_shutdo
 
     assert main_module._graph is None
     assert main_module.app.state.graph is None
+    assert main_module.app.state.conversation_locks is None
 
 
 @pytest.mark.anyio
@@ -430,6 +497,7 @@ async def test_lifespan_resets_both_graph_references_to_none_when_server_body_ra
 
     assert main_module._graph is None
     assert main_module.app.state.graph is None
+    assert main_module.app.state.conversation_locks is None
 
 
 @pytest.mark.anyio
@@ -454,3 +522,89 @@ async def test_lifespan_double_cycle_does_not_reuse_a_closed_graph(
         assert main_module.app.state.graph is second_graph
     assert main_module._graph is None
     assert main_module.app.state.graph is None
+
+
+def test_chroma_http_lifespan_uses_distinct_clients_across_event_loops(
+    monkeypatch: pytest.MonkeyPatch, _chroma_http
+) -> None:
+    import rag.core.agent as agent_module
+
+    _init_db_mock, engine_dispose = _patch_lifespan_startup(monkeypatch)
+    _settings, clients, lookup, close = _chroma_http
+
+    async def cycle() -> None:
+        async with main_module.lifespan(main_module.app):
+            adapter = agent_module.build_graph.call_args.kwargs["chroma_query"]
+            assert adapter.client is clients[-1]
+            assert adapter.collection_url == (
+                "tenants/tenant-fixture/databases/database-fixture/collections/"
+                "11111111-2222-4333-8444-555555555555/query"
+            )
+            assert not clients[-1].is_closed
+        assert clients[-1].is_closed
+        assert main_module._graph is None
+        assert main_module.app.state.graph is None
+
+    asyncio.run(cycle())
+    asyncio.run(cycle())
+
+    assert len(clients) == 2
+    assert clients[0] is not clients[1]
+    assert lookup.call_count == close.await_count == engine_dispose.await_count == 2
+    for call in lookup.call_args_list:
+        (request,) = call.args
+        assert request.method == "GET"
+        assert (
+            request.url.path
+            == "/api/v2/tenants/tenant-fixture/databases/database-fixture/collections/collection-fixture"
+        )
+
+
+@pytest.mark.anyio
+@pytest.mark.parametrize("failure", ["catálogo", "compilación", "cierre HTTP"])
+async def test_chroma_http_lifespan_frees_resources_after_failure(
+    monkeypatch: pytest.MonkeyPatch, _chroma_http, failure: str
+) -> None:
+    import rag.core.agent as agent_module
+
+    _init_db_mock, engine_dispose = _patch_lifespan_startup(monkeypatch)
+    _settings, clients, lookup, close = _chroma_http
+    close_retrievers_mock = MagicMock()
+    monkeypatch.setattr(main_module, "close_retrievers", close_retrievers_mock)
+    error = RuntimeError(f"fallo simulado de {failure}")
+    if failure == "catálogo":
+        lookup.side_effect = error
+    elif failure == "compilación":
+        agent_module.build_graph.side_effect = error
+    else:
+        close.side_effect = error
+
+    with pytest.raises(RuntimeError, match=str(error)):
+        async with main_module.lifespan(main_module.app):
+            assert failure == "cierre HTTP"
+
+    (client,) = clients
+    assert client.is_closed
+    close.assert_awaited_once()
+    close_retrievers_mock.assert_called_once()
+    engine_dispose.assert_awaited_once()
+    assert main_module._graph is None
+    assert main_module.app.state.graph is None
+
+
+@pytest.mark.anyio
+async def test_lifespan_with_sdk_auth_keeps_legacy_graph(
+    monkeypatch: pytest.MonkeyPatch, _chroma_http
+) -> None:
+    import rag.core.agent as agent_module
+
+    _patch_lifespan_startup(monkeypatch)
+    settings, clients, lookup, close = _chroma_http
+    settings.chroma_client_auth_provider = "auth-fixture"
+
+    async with main_module.lifespan(main_module.app):
+        agent_module.build_graph.assert_called_once_with(chroma_query=None)
+
+    assert clients == []
+    lookup.assert_not_called()
+    close.assert_not_awaited()

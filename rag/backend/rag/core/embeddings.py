@@ -1,12 +1,65 @@
 # src/backend/embeddings.py
 
+from collections.abc import AsyncIterator, Awaitable, Callable
+from contextlib import asynccontextmanager
+from functools import partial
 from typing import cast
 
+import httpx
 import requests
 from chromadb.api.types import Documents, EmbeddingFunction, Embeddings
 from langchain_core.embeddings import Embeddings as LCEmbeddings
 
 from rag.config import OLLAMA_BASE_URL, OLLAMA_EMBEDDING_MODEL
+
+QueryEmbedder = Callable[[str], Awaitable[list[float]]]
+
+
+def _parse_embedding(data: object) -> list[float]:
+    embedding = data.get("embedding") if isinstance(data, dict) else None
+    if (
+        not isinstance(embedding, list)
+        or not embedding
+        or not all(isinstance(value, int | float) for value in embedding)
+    ):
+        raise RuntimeError(
+            "Ollama devolvió un embedding con forma inesperada (se esperaba una "
+            f"lista no vacía de números): {embedding!r}"
+        )
+    return [float(value) for value in embedding]
+
+
+async def embed_query_async(client: httpx.AsyncClient, text: str) -> list[float]:
+    """Consulta Ollama con E/S cancelable y el contrato de vector existente."""
+    try:
+        response = await client.post(
+            f"{OLLAMA_BASE_URL}/api/embeddings",
+            json={"model": OLLAMA_EMBEDDING_MODEL, "prompt": text},
+            timeout=30,
+        )
+    except (httpx.ConnectError, httpx.ConnectTimeout) as exc:
+        raise RuntimeError(
+            "No fue posible conectar con Ollama para calcular embeddings. "
+            f"Verifica que el servicio esté activo en {OLLAMA_BASE_URL} "
+            f"y que el modelo '{OLLAMA_EMBEDDING_MODEL}' esté disponible."
+        ) from exc
+    # Requests no considera un 3xx final como error HTTP.
+    if 400 <= response.status_code < 600:
+        response.raise_for_status()
+    try:
+        data = response.json()
+    except ValueError as exc:
+        raise RuntimeError(
+            "Ollama devolvió una respuesta que no es JSON válido al calcular un embedding."
+        ) from exc
+    return _parse_embedding(data)
+
+
+@asynccontextmanager
+async def open_query_embeddings() -> AsyncIterator[QueryEmbedder]:
+    """Cliente propio del lifespan; no comparte el transporte de Chroma."""
+    async with httpx.AsyncClient(timeout=30, follow_redirects=True) as client:
+        yield partial(embed_query_async, client)
 
 
 class OllamaEmbeddingClient:
@@ -68,17 +121,7 @@ class OllamaEmbeddingClient:
                 "Ollama devolvió una respuesta que no es JSON válido al calcular un embedding."
             ) from exc
 
-        embedding = data.get("embedding") if isinstance(data, dict) else None
-        if (
-            not isinstance(embedding, list)
-            or not embedding
-            or not all(isinstance(value, int | float) for value in embedding)
-        ):
-            raise RuntimeError(
-                "Ollama devolvió un embedding con forma inesperada (se esperaba una "
-                f"lista no vacía de números): {embedding!r}"
-            )
-        return [float(value) for value in embedding]
+        return _parse_embedding(data)
 
     def embed(self, texts: list[str]) -> list[list[float]]:
         """Compatibilidad retroactiva: acepta EXACTAMENTE un texto.

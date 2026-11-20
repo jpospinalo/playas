@@ -44,6 +44,7 @@ from sqlalchemy.ext.asyncio import AsyncEngine, async_sessionmaker, create_async
 import rag.api.database as database_module
 import rag.core.agent as agent_module
 import rag.core.query_enricher as query_enricher_module
+from rag.api.conversation_lock import ConversationLockRegistry
 from rag.api.models import Base, Conversation, User
 from rag.api.query_support import _conversation_thread_id
 from rag.api.schemas import QueryRequest
@@ -263,6 +264,9 @@ async def test_deleting_a_conversation_also_removes_its_checkpoint(
     # que existía antes. `raising=False`: en este entorno de pruebas el
     # lifespan nunca corrió, así que `app.state` puede no tener `graph` aún.
     monkeypatch.setattr(main_module.app.state, "graph", graph, raising=False)
+    monkeypatch.setattr(
+        main_module.app.state, "conversation_locks", main_module.CONVERSATION_LOCKS, raising=False
+    )
     fake_request = Request(scope={"type": "http", "app": main_module.app, "headers": []})
 
     session_factory = await _fresh_db_session_factory()
@@ -316,7 +320,8 @@ async def test_conversation_delete_succeeds_even_if_checkpoint_cleanup_fails(
     # `request.app.state` sin atributo `graph` — `Request` sigue siendo
     # obligatorio (v1.2/C3), pero nada garantiza que el lifespan ya haya
     # poblado `app.state.graph` en el momento del borrado.
-    fake_request_no_graph = SimpleNamespace(app=SimpleNamespace(state=SimpleNamespace()))
+    state = SimpleNamespace(conversation_locks=ConversationLockRegistry())
+    fake_request_no_graph = SimpleNamespace(app=SimpleNamespace(state=state))
 
     session_factory = await _fresh_db_session_factory()
     async with session_factory() as session:

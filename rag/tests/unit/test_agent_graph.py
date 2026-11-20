@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from types import SimpleNamespace
+from unittest.mock import AsyncMock
 
 import pytest
 from langchain_core.documents import Document
@@ -62,8 +63,10 @@ async def test_out_of_scope_route_does_not_retrieve(monkeypatch: pytest.MonkeyPa
 
 
 @pytest.mark.anyio
+@pytest.mark.parametrize("injected", [False, True])
 async def test_in_scope_route_uses_enrichment_limits_k_and_validates_citations(
     monkeypatch: pytest.MonkeyPatch,
+    injected: bool,
 ) -> None:
     async def analyze(question: str, history: str) -> EnrichedQuery:
         del question, history
@@ -107,12 +110,15 @@ async def test_in_scope_route_uses_enrichment_limits_k_and_validates_citations(
         lambda: FakeListChatModel(responses=["El acceso no puede cerrarse [doc1]."]),
     )
 
-    result = await agent_module.build_graph().ainvoke(
+    embed = AsyncMock(return_value=[0.25])
+    chroma_query = object()
+    options = {"chroma_query": chroma_query, "query_embedder": embed} if injected else {}
+    result = await agent_module.build_graph(**options).ainvoke(
         _state("¿Puede cerrarse?"),
         config={"configurable": {"thread_id": "in-scope"}},
     )
 
-    assert captured == {
+    expected = {
         "k": 2,
         "k_candidates": 5,
         "doc_types": ["jurisprudencia", "normativa"],
@@ -122,6 +128,9 @@ async def test_in_scope_route_uses_enrichment_limits_k_and_validates_citations(
             "hotel acceso público playa cierre derecho uso",
         ],
     }
+    expected.update(options)
+    assert captured == expected
+    embed.assert_not_awaited()  # Este contrato observa wiring, no sustituye el control del pool.
     assert len(result["sources"]) == 2
     assert result["messages"][-1].content == "El acceso no puede cerrarse [doc1]."
 

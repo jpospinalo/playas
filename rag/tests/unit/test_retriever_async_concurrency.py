@@ -22,15 +22,21 @@ El camino síncrono (`.invoke()`) se conserva sin cambios de comportamiento
 
 from __future__ import annotations
 
+import asyncio
 import inspect
+import json
 import time
+from types import SimpleNamespace
+from unittest.mock import AsyncMock
 
+import httpx
 import pytest
 from langchain_core.callbacks import CallbackManagerForRetrieverRun
 from langchain_core.documents import Document
 from langchain_core.retrievers import BaseRetriever
 
 import rag.core.retriever as retriever_module
+from rag.core.chroma_query import ChromaQuery
 from rag.core.retriever import HybridEnsembleRetriever
 
 
@@ -107,6 +113,83 @@ async def test_ainvoke_runs_subretrievers_concurrently_not_sequentially() -> Non
     # Secuencial habría tomado ~0.30s; concurrente, ~0.15s. Margen generoso
     # para no ser un test frágil en CI, pero suficiente para distinguir ambos.
     assert elapsed < 0.27, f"tardó {elapsed:.3f}s — no parece concurrente"
+
+
+@pytest.mark.anyio
+async def test_lexical_failure_cancels_the_running_vector_query() -> None:
+    started, finished = asyncio.Event(), asyncio.Event()
+    original_error = RuntimeError("BM25 falló")
+
+    class VectorRetriever(_StaticRetriever):
+        async def _aget_relevant_documents(self, query, *, run_manager):
+            started.set()
+            try:
+                await asyncio.Event().wait()
+            finally:
+                finished.set()
+
+    class LexicalRetriever(_StaticRetriever):
+        async def _aget_relevant_documents(self, query, *, run_manager):
+            await started.wait()
+            raise original_error
+
+    retriever = HybridEnsembleRetriever(
+        retrievers=[LexicalRetriever(docs=[]), VectorRetriever(docs=[])], weights=[0.3, 0.7]
+    )
+    with pytest.raises(RuntimeError) as error:
+        await asyncio.wait_for(retriever.ainvoke("consulta"), timeout=5)
+    assert error.value is original_error
+    assert finished.is_set()
+
+
+@pytest.mark.anyio
+@pytest.mark.parametrize("injected", [False, True])
+async def test_vector_query_uses_rest_only_when_invoked_asynchronously(
+    monkeypatch, injected
+) -> None:
+    legacy = _StaticRetriever(docs=[_doc("legacy")])
+    store = SimpleNamespace(as_retriever=lambda **kwargs: legacy)
+    monkeypatch.setattr(retriever_module, "_get_chroma_vectorstore", lambda: store)
+    monkeypatch.setattr(
+        retriever_module, "get_bm25_retriever", lambda **kwargs: _StaticRetriever(docs=[])
+    )
+    embed = AsyncMock(return_value=[0.25])
+    legacy_embed = (
+        AsyncMock(side_effect=AssertionError("Injected path must not use a worker"))
+        if injected
+        else embed
+    )
+    monkeypatch.setattr(retriever_module.EMBEDDINGS, "aembed_query", legacy_embed)
+
+    def respond(request):
+        payload = json.loads(request.content)
+        assert payload["where"] == {"doc_type": "normativa"}
+        assert payload["n_results"] == 8
+        assert payload["query_embeddings"] == [[0.25]]
+        return httpx.Response(
+            200,
+            json={
+                "ids": [["rest"]],
+                "documents": [["Pasaje"]],
+                "metadatas": [[{"chunk_id": "rest"}]],
+                "distances": [[0.2]],
+            },
+        )
+
+    async with httpx.AsyncClient(transport=httpx.MockTransport(respond)) as client:
+        options = {"query_embedder": embed} if injected else {}
+        retriever = retriever_module.get_ensemble_retriever(
+            k=4,
+            k_candidates=8,
+            doc_types=["normativa"],
+            chroma_query=ChromaQuery(client, "http://chroma.invalid/query", 1),
+            **options,
+        )
+        assert [doc.id for doc in await retriever.ainvoke("consulta")] == ["rest"]
+        assert retriever.invoke("consulta") == legacy.docs
+    embed.assert_awaited_once_with("consulta")
+    if injected:
+        legacy_embed.assert_not_awaited()
 
 
 @pytest.mark.anyio

@@ -2,8 +2,10 @@
 
 from __future__ import annotations
 
+import asyncio
 import logging
 import uuid
+from contextlib import AsyncExitStack
 from datetime import UTC, datetime
 from typing import Any, Literal
 
@@ -23,6 +25,7 @@ from rag.core.llm_factory import get_provider
 
 router = APIRouter(prefix="/api/conversations", tags=["conversations"])
 logger = logging.getLogger(__name__)
+_DELETE_LOCK_TIMEOUT_SECONDS = 5.0
 
 # A3.4 — límite de tamaño serializado de `sources` al persistir un mensaje.
 #
@@ -307,34 +310,47 @@ async def delete_conversation(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Conversación no encontrada.",
         )
-    # C4 — capturado ANTES de borrar la fila: es el identificador histórico
-    # de checkpoint (ver _cleanup_checkpoint_after_delete más abajo), no
-    # accesible una vez que `conv` se borra y expira de la sesión.
     legacy_thread_id = conv.thread_id
-    result = await session.execute(
-        select(Message).where(Message.conversation_id == conversation_id)
-    )
-    for msg in result.scalars().all():
-        await session.delete(msg)
-    await session.delete(conv)
-    await session.commit()
+    # La espera por un turno no debe retener una conexión SQL. Volvemos a
+    # autorizar dentro de los locks porque otro DELETE puede adelantarse.
+    await session.rollback()
+    thread_ids = {
+        _conversation_thread_id(user["sub"], conversation_id),
+        _conversation_thread_id(user["sub"], legacy_thread_id),
+    }
+    async with AsyncExitStack() as resources:
+        try:
+            async with asyncio.timeout(_DELETE_LOCK_TIMEOUT_SECONDS):
+                for thread_id in sorted(thread_ids):
+                    await resources.enter_async_context(
+                        request.app.state.conversation_locks.hold(thread_id)
+                    )
+        except TimeoutError as exc:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail=(
+                    "La conversación está en uso. Espera a que termine la operación "
+                    "e inténtalo de nuevo."
+                ),
+            ) from exc
+        conv = await session.get(Conversation, conversation_id, populate_existing=True)
+        if conv is None or conv.user_id != user["sub"]:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Conversación no encontrada.",
+            )
+        result = await session.execute(
+            select(Message).where(Message.conversation_id == conversation_id)
+        )
+        for msg in result.scalars().all():
+            await session.delete(msg)
+        await session.delete(conv)
+        await session.commit()
 
-    # C4 — el grafo se lee de `request.app.state.graph` (poblado por el
-    # lifespan corregido en C3, siempre el mismo objeto que el singleton
-    # `_graph` de `api/main.py`) en vez de importar `get_graph` desde
-    # `api/main.py`: ese import diferido existía solo para evitar el ciclo
-    # de importación con `api/main.py` (que importa este router), y
-    # `Request` — inyectado estándar de FastAPI, excluido automáticamente
-    # del schema de OpenAPI — logra lo mismo sin ningún import cruzado ni
-    # registro global nuevo. `Request` es un parámetro obligatorio de este
-    # endpoint (v1.2/C3): toda invocación real de FastAPI siempre lo inyecta,
-    # así que `getattr(..., "graph", None)` solo cubre la ausencia del
-    # atributo `graph` en sí (p. ej. arranque en curso, antes de que el
-    # lifespan lo asigne) — no la ausencia del propio `request`. Las pruebas
-    # que invocan esta función directamente deben construir un `Request`
-    # válido (con o sin `app.state.graph`, según el escenario a probar).
-    graph = getattr(request.app.state, "graph", None)
-    await _cleanup_checkpoint_after_delete(graph, user["sub"], conversation_id, legacy_thread_id)
+        graph = getattr(request.app.state, "graph", None)
+        await _cleanup_checkpoint_after_delete(
+            graph, user["sub"], conversation_id, legacy_thread_id
+        )
 
 
 async def _cleanup_checkpoint_after_delete(
