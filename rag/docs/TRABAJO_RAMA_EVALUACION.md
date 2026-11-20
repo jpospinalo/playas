@@ -104,7 +104,8 @@ La rama empezó como la **línea base de calidad** de ATLAS frente al ground tru
 
 ## 6. Verificación
 
-- Suite: **1338 pruebas de backend** y **245 de frontend**; ruff, formato y mypy sin errores.
+- Suite: **1402 pruebas de backend** y **245 de frontend**; ruff, formato y mypy sin errores. (Las 4 de `test_corpus_deploy_contract.py` fallan solo en copias cuya ruta tiene espacios, por el shebang del `.venv`; no dependen del código.)
+- Fusión con `corpus` hasta `b4346fc` (2026-11-19): consultas a Chroma acotadas, borrado de conversaciones coordinado con las consultas activas y embeddings cancelables. La recuperación multiconsulta de esta rama adopta la misma cancelación (`_gather_cancelling`).
 - Fusión con `corpus` (2026-11-16): recuperación idéntica a la de la rama (0,741, fuga 0); API de punta a punta 15/15 con la resolución encendida; infraestructura validada en un emulador local de AWS (con la opción apagada, la tarea lleva `REGISTER_ENABLED`; encendida, además las dos variables de procedencia). Preguntas de radicado reales: 6 de 8 resueltas con cita textual y 2 controles rechazados.
 - Compatibilidad con la rama de ingesta (fusión de prueba, no versionada): las funciones del RAG que usa siguen intactas y su nivel 0 mejora con el retriever de esta rama (`document_hit@4` 0,725 → 0,975).
 - Carga sin LLM: ~6.000 peticiones, hasta 200 simultáneas, **0 errores 5xx**; memoria estable.
