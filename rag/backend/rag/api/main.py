@@ -54,6 +54,7 @@ from rag.core.retriever import (
     close_retrievers,
     init_retrievers,
     open_chroma_query,
+    retriever_initialization_scope,
 )
 
 # Timeout corto por defecto para el chequeo de base de datos en /api/ready
@@ -158,6 +159,8 @@ async def lifespan(app: FastAPI):
     abiertos, descartar recuperadores y disponer el motor SQL, incluso si falla
     el arranque. El alcance de close_retrievers() se documenta en esa función.
     Cancelar la espera de asyncio.to_thread(init_retrievers) no detiene su hilo.
+    La identidad se captura antes del despacho: el cierre invalida sus futuras
+    publicaciones y una salida normal se valida antes de continuar al grafo.
     """
     import asyncio
 
@@ -168,7 +171,8 @@ async def lifespan(app: FastAPI):
     resources = AsyncExitStack()
     try:
         await init_db()
-        await asyncio.to_thread(init_retrievers)
+        with retriever_initialization_scope():
+            await asyncio.to_thread(init_retrievers)
         chroma_query = await resources.enter_async_context(open_chroma_query())
         if chroma_query is None:
             _graph = build_graph(chroma_query=None)
