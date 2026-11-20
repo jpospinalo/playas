@@ -281,17 +281,15 @@ async def open_chroma_query() -> AsyncIterator[ChromaQuery | None]:
 
 
 def close_retrievers() -> None:
-    """Libera los singletons del retriever al apagar la aplicación.
+    """Cierra el cliente síncrono de embeddings y descarta los recuperadores.
 
-    Cierra la sesión HTTP del cliente de embeddings compartido (``EMBEDDINGS``,
-    la única conexión propia que este módulo mantiene abierta) y resetea los
-    singletons de módulo (cliente Chroma, vectorstore, índice BM25) a
-    ``None`` para que un ``init_retrievers()`` posterior — por ejemplo entre
-    pruebas — los reconstruya desde cero. No invoca ningún método privado o
-    no documentado del cliente de Chroma: su conexión HTTP se libera junto
-    con el objeto en cuanto pierde todas las referencias. Idempotente: llamar
-    dos veces no falla (``EMBEDDINGS.close()`` ya lo es, y resetear a
-    ``None`` un singleton que ya es ``None`` es un no-op).
+    Cierra la sesión HTTP de ``EMBEDDINGS`` y restablece cliente SDK de Chroma,
+    vectorstore e índice BM25 a ``None`` para permitir su reconstrucción.
+    Descartar esas referencias no acredita el cierre de los transportes
+    internos del SDK; no se invocan métodos privados para forzarlo.
+
+    Los clientes HTTP asíncronos de la API pertenecen al lifespan. Esta función
+    es idempotente: repetir el cierre de embeddings y los resets no falla.
     """
     global _chroma_client, _chroma_vectorstore, _bm25_base
     EMBEDDINGS.close()

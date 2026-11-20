@@ -16,12 +16,14 @@ backend/rag/
 │   ├── agent.py               # LangGraph: grafo único determinista (§2)
 │   ├── tools.py                # build_context_block + sanitize_replacement_chars
 │   ├── prompts.py              # Prompts de sistema/humano del agente + enricher
-│   ├── embeddings.py           # Cliente de embeddings Ollama (ChromaDB + LangChain)
+│   ├── embeddings.py           # Adaptadores Chroma/LangChain + embeddings async de consulta Ollama
+│   ├── chroma_query.py         # Búsqueda REST v2 asíncrona con cliente propio de la API
 │   ├── vectorstore.py          # Build/update de la colección ChromaDB desde gold
 │   ├── retriever.py            # BM25 + vector + HybridEnsembleRetriever (RRF c=160)
 │   ├── query_enricher.py       # Construcción del prompt del enricher, parseo JSON, API pública enrich_query/enrich_query_async
 │   ├── domain_scope.py         # Esquema EnrichedQuery + clasificador determinista de alcance costero/jurídico
-│   ├── generator.py            # Adaptador para scripts de evaluación offline (invoca el mismo grafo real)
+│   ├── legal_resolution.py     # Resolución documental sobre el snapshot BM25 con procedencia verificada
+│   ├── generator.py            # Adaptador de evaluación: mismo grafo, aislado por pregunta (§10)
 │   ├── observability.py        # Instrumentación de logging (etapas del grafo, conteos, sin filtrar contenido)
 │   └── llm_factory.py          # OpenAI → OpenRouter → Gemini → error
 └── api/
@@ -48,30 +50,35 @@ backend/rag/
 ## 2. Agente RAG (LangGraph)
 
 El sistema **no es tool-calling / ReAct**: `build_graph()` (`core/agent.py`)
-compila un único grafo determinista, el mismo para cualquier proveedor LLM —
-no hay ramas por `supports_structured_output` ni por ninguna otra capacidad
-del proveedor, y el LLM nunca decide si recuperar documentos.
+compila los mismos nodos para cualquier proveedor LLM. Las capacidades del
+proveedor adaptan las llamadas dentro de los nodos; la ruta de recuperación
+se elige a partir del análisis de la consulta, sin invocación de herramientas
+decidida por el LLM.
 
 ```
 START → enrich_query → route_after_analysis → {retrieve_forced → generate, respond_without_retrieval} → END
 ```
 
-- **`enrich_query`** reescribe la consulta con terminología jurídica (mejora
-  el recall) y la clasifica en una de cuatro rutas: `in_scope`,
+- **`enrich_query`** reformula la consulta con terminología jurídica para la
+  búsqueda y la clasifica en una de cuatro rutas: `in_scope`,
   `out_of_scope`, `conversation`, `needs_clarification`.
 - **`route_after_analysis`** es un edge condicional simple: `in_scope` →
   `retrieve_forced`; cualquier otra ruta → `respond_without_retrieval`.
-- **`retrieve_forced`** ejecuta el `HybridEnsembleRetriever` exactamente una
-  vez, solo para consultas `in_scope` — la recuperación no es opcional, a
-  diferencia de un agente ReAct que podría invocar una herramienta cero, una
-  o varias veces. Llena `sources` y, vía `tools.build_context_block`, el
-  contexto formateado que ve el LLM.
-- **`generate`** construye la respuesta a partir de `sources`, valida sus
-  citas (`_validate_citations`) y, si la validación falla o no hay
-  evidencia, cae a una respuesta fija de "sin evidencia/citas inválidas".
+- **`retrieve_forced`** atiende consultas `in_scope`. Si la verificación
+  documental está configurada, puede resolver preguntas explícitas de
+  jurisprudencia con procedencia y snapshot BM25 verificados, o abstenerse
+  por falta de evidencia, antes del híbrido. Cuando procede la búsqueda,
+  ejecuta el `HybridEnsembleRetriever` una vez y llena `sources`; la consulta
+  conserva el original y añade las reformulaciones sin duplicados exactos.
+- **`generate`** devuelve `documentary_answer` si existe, o una respuesta
+  fija si no hay `sources`, sin llamar al LLM de generación. En los demás
+  casos construye el contexto con `tools.build_context_block`, genera la
+  respuesta y valida sus citas (`_validate_citations`); si fallan, devuelve
+  la respuesta fija de citas inválidas.
 - **`respond_without_retrieval`** responde saludos/meta-preguntas, pide
-  aclaración o devuelve la respuesta fija de fuera de alcance — sin llamar
-  nunca al retriever ni al LLM de generación.
+  aclaración o devuelve la respuesta fija de fuera de alcance. También puede
+  resolver preguntas explícitas por radicado con el índice documental
+  verificado, sin llamar al híbrido ni al LLM de generación.
 
 ## 3. Retrieval híbrido
 
@@ -81,6 +88,15 @@ embeddings `embeddinggemma:latest` vía Ollama) mediante
 Fusion (constante `c=160`). Filtra por `doc_type` (`jurisprudencia` /
 `normativa`) cuando la consulta lo especifica.
 
+El arranque de la API usa el SDK síncrono de Chroma para preparar el
+vectorstore y el snapshot de documentos de BM25. El lifespan abre clientes
+HTTP asíncronos propios para búsquedas REST v2 de Chroma y embeddings de
+Ollama y los inyecta al grafo. Si Chroma tiene un proveedor de autenticación
+del SDK, conserva la ruta SDK/LangChain y los embeddings heredados en vez
+de abrir esos clientes. La E/S de los clientes propios admite cancelación
+y sus contextos se cierran al salir del lifespan; esto no garantiza cancelar
+el respaldo SDK ni la inicialización mediante `to_thread(init_retrievers)`.
+
 ## 4. Memoria y persistencia de conversación
 
 Dos mecanismos independientes, con propósitos distintos:
@@ -88,8 +104,8 @@ Dos mecanismos independientes, con propósitos distintos:
 - **`MemorySaver`** (LangGraph, en memoria del proceso) — el checkpointer
   que mantiene el estado del grafo (`state["messages"]`) mientras el
   servidor vive, indexado por `thread_id` (UUID generado en el frontend).
-  Es lo que permite que un turno 2+ de la misma conversación no tenga que
-  releer nada de SQL: el grafo ya tiene el estado en memoria.
+  Un checkpoint con mensajes evita recargar el historial; solo se añade
+  la pregunta nueva al estado existente.
 - **Base de datos SQL** (Postgres en prod, SQLite de respaldo local, vía
   SQLAlchemy async) — persiste cada mensaje de forma independiente al
   grafo. El frontend hace `POST /api/conversations/{id}/messages` tanto
@@ -97,17 +113,25 @@ Dos mecanismos independientes, con propósitos distintos:
   escritura ocurre siempre, tenga o no el servidor un checkpoint en memoria
   para esa conversación.
 
-`api/query_support.py::_get_initial_messages()` es el único lugar que lee de
-SQL para alimentar el grafo — `api/main.py` la importa desde ahí (extraída
-de `main.py` por organización interna, sin cambio de comportamiento) — y
-solo lo hace cuando `MemorySaver` no tiene estado para ese `thread_id` — típicamente el primer turno de una conversación tras un
-reinicio del servidor. En ese caso, hace un `SELECT` de **todos** los
-mensajes de la conversación (sin límite) y los inyecta como
-`HumanMessage`/`AIMessage` en el estado inicial. Este historial completo
-**nunca llega al LLM de generación**: `generate_node` no recibe
-`state["messages"]`, solo `context` (fragmentos recuperados) y `question`.
-El único consumidor del historial es `enrich_query_node`, y ya está acotado
-internamente a los últimos ~4000 caracteres (`_MAX_ANALYSIS_HISTORY_CHARS`).
+`api/query_support.py::_get_initial_messages()`, usada por `api/main.py`,
+consulta SQL cuando hay `conversation_id` para comprobar la pertenencia
+al usuario. Si se aporta `current_message_id`, valida además que pertenece
+a esa conversación, tiene rol `user` y coincide con la pregunta. Estas
+validaciones ocurren **también con un checkpoint caliente**.
+
+Sin checkpoint, carga el historial persistido como
+`HumanMessage`/`AIMessage` y añade la pregunta nueva. Con
+`current_message_id`, carga solo el prefijo anterior al mensaje actual,
+ordenado por `(created_at, id)`; sin ese ID, carga **todos** los mensajes de
+la conversación, sin límite. Sin `conversation_id`, comienza con la
+pregunta nueva y no admite `current_message_id`.
+
+El LLM de generación no recibe directamente `state["messages"]`, sino el
+contexto recuperado y la pregunta, incluida su reformulación contextual si
+existe. `enrich_query_node` consume una ventana reciente de los últimos
+~4000 caracteres del historial (`_MAX_ANALYSIS_HISTORY_CHARS`). Esa ventana
+no limita el historial persistido ni el estado del grafo: no hay una
+política de retención ni un tope global de RAM implementados aquí.
 
 El campo de respuesta `context_tokens` sí depende de cuántos mensajes trae
 `state["messages"]` en ese momento — es una función directa del tamaño de
@@ -155,19 +179,23 @@ cerrar la sesión en memoria — con un chequeo de que el token que recibió el
 anterior no pueda cerrar la sesión de un usuario distinto que ya inició
 sesión después en la misma pestaña.
 
-## 7. Fallback de proveedor LLM
+## 7. Selección de proveedor LLM
 
-`core/llm_factory.py` intenta proveedores en orden: **OpenAI** →
+`core/llm_factory.py` selecciona proveedor en orden: **OpenAI** →
 **OpenRouter** → **Gemini** → error. Gana el primero con API key
-configurada. El soporte de salida estructurada y de rol de sistema se
+configurada; un fallo de ese proveedor no hace que pruebe el siguiente.
+El soporte de salida estructurada y de rol de sistema se
 detecta automáticamente por nombre de modelo (las variantes Gemma carecen
 de ambos vía Google GenAI).
 
 ## 8. Infraestructura externa (AWS)
 
 - **ChromaDB + Ollama** — EC2, provisionadas por Terraform en
-  `../../vector-infraestructura/` (colección `rag_playas`, puerto 8000;
+  `../../vector-infraestructura/` (Chroma en el puerto 8000;
   modelo de embeddings `embeddinggemma:latest` en el puerto 11434).
+  La colección es configurable con `CHROMA_COLLECTION` (alias legado
+  `CHROMA_COLLECTION_NAME`); `rag_playas` es el valor por defecto legado.
+  Para Gold A, consultar la [configuración existente](DESPLIEGUE.md#conectar-el-rag-a-gold-a).
   Reranker opcional (`OllamaReranker`, no usado en el flujo principal):
   requiere `OLLAMA_RERANK_BASE_URL` y `OLLAMA_RERANK_MODEL` (o su alias
   legado `OLLAMA_RERANKER_MODEL`) explícitos — `config.py` no define un
@@ -204,10 +232,14 @@ respuesta.
 ## 10. Evaluación del RAG (`evaluation/`)
 
 Los comandos de evaluación se ejecutan aparte del servicio. Los adaptadores
-de RAGAS usan `rag.core.generator.generate_answer` para invocar el grafo del
-RAG y evaluar su contexto y su respuesta. La corrida completa requiere
-servicios configurados. El modo `--validate-only` comprueba el banco y la
-configuración local.
+de RAGAS usan `rag.core.generator.generate_answer` para invocar el mismo
+grafo del RAG, con un grafo nuevo y un `thread_id` efímero por pregunta.
+Si la resolución documental está configurada, precarga el snapshot BM25
+antes de compilarlo. No ejecuta el lifespan de la API ni inyecta sus
+clientes REST de búsqueda y embeddings. La corrida completa evalúa el
+contexto y la respuesta con llamadas a modelos y requiere servicios
+configurados. El modo `--validate-only` comprueba el banco y la configuración
+local.
 
 El banco `evaluation/data/legal-ground-truth-v0.1.json` está versionado y
 pendiente de validación final. `evaluation/ground_truth.py` comprueba su

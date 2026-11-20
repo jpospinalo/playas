@@ -148,16 +148,16 @@ async def _cleanup_ephemeral_checkpoint(graph: Any, request: QueryRequest, threa
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Pre-calienta los componentes costosos al arrancar:
-    - Tablas de la base de datos (create_all idempotente)
-    - Conexión HTTP a Chroma (singleton)
-    - Índice BM25 completo (construido una sola vez desde el corpus de Chroma)
-    - Vectorstore LangChain-Chroma (singleton)
-    - Grafo LangGraph compilado (singleton con MemorySaver)
+    """Inicializa SQL, recuperadores y el grafo con MemorySaver al arrancar.
 
-    Los clientes REST de búsqueda y embeddings pertenecen a este ciclo de
-    vida. Las dos referencias al grafo se liberan juntas al salir. Los
-    clientes, recuperadores y SQLAlchemy se cierran incluso si falla el arranque.
+    La precarga usa el SDK de Chroma para el vectorstore y la instantánea BM25.
+    Los contextos HTTP asíncronos de búsqueda y embeddings, cuando se abren,
+    pertenecen a este lifespan y se inyectan en el grafo.
+
+    El finally libera las referencias al grafo e intenta cerrar los contextos
+    abiertos, descartar recuperadores y disponer el motor SQL, incluso si falla
+    el arranque. El alcance de close_retrievers() se documenta en esa función.
+    Cancelar la espera de asyncio.to_thread(init_retrievers) no detiene su hilo.
     """
     import asyncio
 
