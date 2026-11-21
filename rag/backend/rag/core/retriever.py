@@ -45,9 +45,10 @@ import requests
 from chromadb.api.base_http_client import BaseHTTPClient
 from chromadb.types import Where
 from langchain_chroma import Chroma
-from langchain_core.callbacks import CallbackManagerForRetrieverRun
+from langchain_core.callbacks import AsyncCallbackManager, CallbackManagerForRetrieverRun
 from langchain_core.documents import Document
 from langchain_core.retrievers import BaseRetriever
+from langchain_core.runnables import RunnableConfig, ensure_config
 from pydantic import ConfigDict, Field, model_validator
 
 from rag.config import CHROMA_COLLECTION as CHROMA_COLLECTION_NAME
@@ -859,7 +860,9 @@ class HybridEnsembleRetriever(BaseRetriever):
                 normalized.append(value)
         return normalized
 
-    async def afuse_queries(self, queries: Sequence[str]) -> list[Document]:
+    async def afuse_queries(
+        self, queries: Sequence[str], config: RunnableConfig | None = None
+    ) -> list[Document]:
         """Recupera con cada consulta y fusiona todas las listas con RRF.
 
         Cada sub-recuperador recibe cada consulta una sola vez (los duplicados
@@ -869,18 +872,45 @@ class HybridEnsembleRetriever(BaseRetriever):
         con la misma fórmula y el mismo filtro post-fusión que la ruta de una
         sola consulta, aplicando a cada lista el peso del sub-recuperador que
         la produjo.
+
+        Trazas: igual que ``ainvoke``, abre una ejecución de recuperador propia
+        (con los callbacks, etiquetas y metadatos de ``config`` o, si se omite,
+        del contexto del grafo) y pasa a cada sub-recuperador sus callbacks
+        hijos, así que las búsquedas cuelgan de esta ejecución en la traza.
         """
         normalized = self._normalize_queries(queries)
         if not normalized:
             return []
 
-        all_results = await _gather_cancelling(
-            [r.ainvoke(query) for query in normalized for r in self.retrievers]
+        config = ensure_config(config)
+        callback_manager = AsyncCallbackManager.configure(
+            config.get("callbacks"),
+            None,
+            inheritable_tags=config.get("tags"),
+            local_tags=self.tags,
+            inheritable_metadata=config.get("metadata"),
+            local_metadata=self.metadata,
         )
-        # Orden query-major, igual que el productorio de arriba: por cada
-        # consulta se repite la secuencia de pesos de self.retrievers.
-        weights = list(self.weights) * len(normalized)
-        return self._fuse(list(all_results), weights=weights, queries=normalized)
+        run_manager = await callback_manager.on_retriever_start(
+            None, "\n".join(normalized), name=config.get("run_name") or self.get_name()
+        )
+        try:
+            all_results = await _gather_cancelling(
+                [
+                    r.ainvoke(query, config={"callbacks": run_manager.get_child()})
+                    for query in normalized
+                    for r in self.retrievers
+                ]
+            )
+            # Orden query-major, igual que el productorio de arriba: por cada
+            # consulta se repite la secuencia de pesos de self.retrievers.
+            weights = list(self.weights) * len(normalized)
+            result = self._fuse(list(all_results), weights=weights, queries=normalized)
+        except Exception as error:
+            await run_manager.on_retriever_error(error)
+            raise
+        await run_manager.on_retriever_end(result)
+        return result
 
 
 def get_ensemble_retriever(
