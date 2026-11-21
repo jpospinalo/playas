@@ -58,6 +58,12 @@ from rag.config import (
     CHROMA_QUERY_TIMEOUT_SECONDS,
     OLLAMA_RERANK_BASE_URL,
     OLLAMA_RERANK_MODEL,
+    RETRIEVAL_BM25_WEIGHT,
+    RETRIEVAL_CUPOS_NORMATIVA,
+    RETRIEVAL_FRAGMENTOS_POR_NORMA,
+    RETRIEVAL_FRAGMENTOS_POR_SENTENCIA,
+    RETRIEVAL_RRF_C,
+    RETRIEVAL_VECTOR_WEIGHT,
 )
 
 from .chroma_query import ChromaQuery
@@ -91,15 +97,21 @@ logger = logging.getLogger(__name__)
 # 0.6/0.4. La elección se validó con 200 particiones aleatorias por mitades
 # (ganancia en la mitad reservada de +0.022 en hit@4; 112 particiones mejor,
 # 30 peor). ``RRF_C`` se mantiene en 2.
-RRF_C = 2
-BM25_WEIGHT = 0.8
-VECTOR_WEIGHT = 0.2
+#
+# Todas las constantes de esta sección se pueden ajustar por entorno
+# (``RAG_RRF_C``, ``RAG_BM25_WEIGHT``, ``RAG_VECTOR_WEIGHT``,
+# ``RAG_CUPOS_NORMATIVA``, ``RAG_FRAGMENTOS_POR_SENTENCIA``,
+# ``RAG_FRAGMENTOS_POR_NORMA``; ver ``rag.config``) para re-medirlas tras un
+# cambio de corpus sin tocar código. Los valores por defecto son los medidos.
+RRF_C = RETRIEVAL_RRF_C
+BM25_WEIGHT = RETRIEVAL_BM25_WEIGHT
+VECTOR_WEIGHT = RETRIEVAL_VECTOR_WEIGHT
 
 # Puestos del top-k reservados a normas aplicables (si hay candidatas). Medido
 # sobre el ground truth v0.2 (k=4): con 0 cupos solo se reordena y el acierto
 # no cambia (0.724); con 1 sube a 0.741 y normativa 7→8/18, sin bajar
 # jurisprudencia (0.875); 2 cupos no añaden nada, así que se queda en 1.
-CUPOS_NORMATIVA = 1
+CUPOS_NORMATIVA = RETRIEVAL_CUPOS_NORMATIVA
 
 # Tope de fragmentos por norma antes del recorte (misma idea que
 # ``fragmentos_por_sentencia``). Sin él, una norma local larga (el reglamento de
@@ -109,7 +121,10 @@ CUPOS_NORMATIVA = 1
 # jurisprudencia 0.900 sin cambio, fuga territorial 0; cuesta artículos
 # 0.130→0.126. Sobre otras tres cachés de consultas enriquecidas es neutro o
 # mejora un caso (nunca empeora el acierto).
-FRAGMENTOS_POR_NORMA = 1
+FRAGMENTOS_POR_NORMA: int | None = RETRIEVAL_FRAGMENTOS_POR_NORMA or None
+
+# Tope de fragmentos por sentencia (ver ``HybridEnsembleRetriever``).
+FRAGMENTOS_POR_SENTENCIA: int | None = RETRIEVAL_FRAGMENTOS_POR_SENTENCIA or None
 
 # Palabras vacías del español que no aportan señal léxica al BM25.
 _STOPWORDS_ES: frozenset[str] = frozenset(
@@ -620,12 +635,12 @@ def _has_retrievable_content(text: str) -> bool:
 
 
 def _diversificar_sentencias(
-    docs: list[Document], tope: int, tope_normas: int | None = None
+    docs: list[Document], tope: int | None, tope_normas: int | None = None
 ) -> list[Document]:
     """Partición estable: a partir del fragmento ``tope + 1`` de una misma
     sentencia (o ``tope_normas + 1`` de una misma norma), los siguientes pasan
-    al final (no se descartan). ``tope_normas=None`` deja sin tope a las
-    normas, que conservan todos sus artículos."""
+    al final (no se descartan). ``None`` deja sin tope a ese tipo:
+    ``tope_normas=None`` conserva todos los artículos de una norma."""
     vistos: dict[str, int] = {}
     primeros: list[Document] = []
     extra: list[Document] = []
@@ -730,7 +745,7 @@ class HybridEnsembleRetriever(BaseRetriever):
     # 0.724→0.759, documento en top-20 0.793→0.828, normativa 7→8/18; cuesta
     # artículos 0.201→0.175 (un caso). Las normas tienen su propio tope
     # (``fragmentos_por_norma``).
-    fragmentos_por_sentencia: int | None = 1
+    fragmentos_por_sentencia: int | None = FRAGMENTOS_POR_SENTENCIA
     fragmentos_por_norma: int | None = FRAGMENTOS_POR_NORMA
     # Jerarquía normativa (pedida por el equipo jurídico): la norma aplicable
     # va antes que la jurisprudencia en el contexto, y se le reservan
@@ -808,7 +823,7 @@ class HybridEnsembleRetriever(BaseRetriever):
         # más de max_results documentos.
         sorted_ids = sorted(scores, key=lambda identifier: scores[identifier], reverse=True)
         ordered_docs = [doc_by_id[doc_id] for doc_id in sorted_ids]
-        if self.fragmentos_por_sentencia:
+        if self.fragmentos_por_sentencia or self.fragmentos_por_norma:
             ordered_docs = _diversificar_sentencias(
                 ordered_docs, self.fragmentos_por_sentencia, self.fragmentos_por_norma
             )
