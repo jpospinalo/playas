@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | **Autor** | Julian Esteban Rincón Rodríguez |
-| **Periodo** | 2026-10-08 → 2026-11-16 |
+| **Periodo** | 2026-10-08 → 2026-11-21 |
 | **Rama** | `julian-rincon/evaluacion-ragas-linea-base` |
 | **Punto de partida** | `main` @ `f16586f` (sistema desplegado en AWS el 2026-10-08) |
 | **Revisores** | Juan Pablo Ospina López, Camilo |
@@ -46,6 +46,7 @@ La rama empezó como la **línea base de calidad** de ATLAS frente al ground tru
 | 2026-11-11 | **Gold A corregido + QA completa** | Fusión de `corpus`; ~6.000 peticiones de carga sin errores 5xx; arreglo del agotamiento del pool de conexiones |
 | 2026-11-12 | **`main` al día** | Fusión del registro con tipo de usuario; arreglo de la columna `user_type` en bases existentes; comparación de modelos locales |
 | 2026-11-16 | **Resolución documental de `corpus`** | Fusión de los commits de `corpus` del 2026-11-15 y 16 (hasta 3260bba: REMAC 5 en alcance, radicados parciales, orden de recuperación del predio, instancia verificada, plazos y remisiones citados, citas JSON/SSE, hidratación en frío); convivencia con la multiconsulta; compatibilidad comprobada con la rama de ingesta y su evaluación de nivel 0 |
+| 2026-11-21 | **Contexto normativo verificado de `corpus`** | Fusión de `corpus` hasta 5665e4f (admisión normativa, aclaración ante «ese plan», citas por norma fuente, contexto normativo verificado, sesiones entre pestañas, cierre SSE, siglas en el enriquecimiento); convive con la multiconsulta, la jerarquía normativa y el tope por norma |
 
 ## 3. Cambios por componente
 
@@ -104,7 +105,8 @@ La rama empezó como la **línea base de calidad** de ATLAS frente al ground tru
 
 ## 6. Verificación
 
-- Suite: **1402 pruebas de backend** y **245 de frontend**; ruff, formato y mypy sin errores. (Las 4 de `test_corpus_deploy_contract.py` fallan solo en copias cuya ruta tiene espacios, por el shebang del `.venv`; no dependen del código.)
+- Suite: **1658 pruebas de backend** y **322 de frontend**; ruff, formato, mypy, lint, tsc y build sin errores. (Las 4 de `test_corpus_deploy_contract.py` fallan solo en copias cuya ruta tiene espacios, por el shebang del `.venv`; no dependen del código.)
+- Fusión con `corpus` hasta `5665e4f` (2026-11-21): la selección de contexto normativo verificado va antes del híbrido y, si no selecciona, recupera la multiconsulta de esta rama; la aclaración pide el plan o la norma sin perder los tres datos y los ejemplos; los sub-recuperadores reciben los callbacks de corpus sin perder `_gather_cancelling`. La fusión automática había movido la guarda de sesión de `signIn` a `signUp` en `AuthProvider`; se restauró en ambos. Métricas sin LLM idénticas a las del tope por norma (0,741 / 0,776 / 0,684, fuga 0). API local con gemma4: `tests/integration` 3/3, conversación guiada 8/8 escenarios y SSE hasta `[DONE]`. Suite: 1658 de backend, 322 de frontend.
 - Fusión con `corpus` hasta `b4346fc` (2026-11-19): consultas a Chroma acotadas, borrado de conversaciones coordinado con las consultas activas y embeddings cancelables. La recuperación multiconsulta de esta rama adopta la misma cancelación (`_gather_cancelling`).
 - Tope de un fragmento por norma (2026-11-19): ruta de producción `acierto_doc_4` 0,741 → 0,776 con la caché nueva de gemma4; `acierto_doc_4_grafo` 0,561 → 0,684; `fuga_plantilla` 0,215 → 0; referencias sin respaldo 3 → 1 de 65; jurisprudencia y fuga territorial sin cambio. Suite: 1409 pruebas de backend.
 - Fusión con `corpus` (2026-11-16): recuperación idéntica a la de la rama (0,741, fuga 0); API de punta a punta 15/15 con la resolución encendida; infraestructura validada en un emulador local de AWS (con la opción apagada, la tarea lleva `REGISTER_ENABLED`; encendida, además las dos variables de procedencia). Preguntas de radicado reales: 6 de 8 resueltas con cita textual y 2 controles rechazados.
