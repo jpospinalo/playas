@@ -20,6 +20,7 @@ from evaluation.metricas_sin_llm import (
     reporte_markdown,
     resumir,
     resumir_por,
+    tipos_del_corpus,
 )
 
 CARTAGENA = (
@@ -219,6 +220,15 @@ def test_clase_del_documento_esperado():
     assert clase_esperada(["AP X VS DIMAR"]) == "jurisprudencia"
     assert clase_esperada([REMAC, "AP X VS DIMAR"]) == "mixta"
     assert clase_esperada([]) == "sin documento"
+
+
+def test_clase_esperada_usa_el_tipo_del_corpus_y_no_solo_el_prefijo_del_titulo():
+    # La sentencia de segunda instancia no se titula «AP …»: el prefijo solo
+    # la tomaba por normativa; el doc_type de la capa gold la reconoce.
+    segunda = "SENTENCIA DE SEGUNDA INSTANCIA 47001-2332-000-2011-08425-02- GABRIEL CARRERO"
+    assert tipos_del_corpus()[segunda] == "jurisprudencia"
+    assert clase_esperada([segunda]) == "jurisprudencia"
+    assert set(tipos_del_corpus().values()) <= {"jurisprudencia", "normativa"}
 
 
 # ── grafo (caché) ────────────────────────────────────────────────────────────
@@ -440,6 +450,49 @@ def test_cli_sin_linea_base_no_compara(monkeypatch, tmp_path):
     reporte = _cli(monkeypatch, tmp_path, _respuestas(inventadas=0))
     assert "comparacion" not in reporte
     assert reporte["respuesta"]["global"]["citas_validas"]["valor"] == 1.0
+
+
+def test_cli_compara_contra_el_reporte_de_otra_corrida(monkeypatch, tmp_path):
+    # «Antes/después» de integrar un update: la referencia es el reporte
+    # completo de la corrida anterior, no la línea base versionada.
+    import json
+
+    antes = _cli(monkeypatch, tmp_path, _respuestas(inventadas=2))
+    assert antes["corpus"]["recuperacion"]["cupos_normativa"] >= 0
+    referencia = tmp_path / "antes.json"
+    referencia.write_text(json.dumps(antes), encoding="utf-8")
+    despues = _cli(
+        monkeypatch, tmp_path, _respuestas(inventadas=20), "--linea-base", str(referencia)
+    )
+    c = despues["comparacion"]["respuestas_con_refs_sin_respaldo"]
+    assert c["estado"] == "regresion" and len(c["casos_peor"]) == 18
+    assert "aviso_corpus" not in despues
+
+
+def test_cli_avisa_si_la_referencia_es_de_otro_corpus(monkeypatch, tmp_path, capsys):
+    import json
+
+    _cli(monkeypatch, tmp_path, _respuestas(inventadas=2), "--guardar-linea-base")
+    ruta = tmp_path / "base.json"
+    base = json.loads(ruta.read_text(encoding="utf-8"))
+    base["corpus"] = {**base["corpus"], "coleccion": "otra_coleccion"}
+    ruta.write_text(json.dumps(base), encoding="utf-8")
+    capsys.readouterr()
+    reporte = _cli(monkeypatch, tmp_path, _respuestas(inventadas=2))
+    assert "otra colección" in reporte["aviso_corpus"]
+    assert "AVISO:" in capsys.readouterr().out
+    assert "**Aviso:**" in (tmp_path / "reporte.md").read_text(encoding="utf-8")
+
+
+def test_cli_puede_fallar_ante_una_regresion(monkeypatch, tmp_path):
+    import sys
+
+    import evaluation.metricas_sin_llm as m
+
+    _cli(monkeypatch, tmp_path, _respuestas(inventadas=2), "--guardar-linea-base")
+    _cli(monkeypatch, tmp_path, _respuestas(inventadas=20))  # sin la opción: 0
+    monkeypatch.setattr(sys, "argv", [*sys.argv, "--fallar-si-regresion"])
+    assert m.main() == 1
 
 
 def test_cli_rechaza_una_etiqueta_invalida_antes_de_correr(monkeypatch):

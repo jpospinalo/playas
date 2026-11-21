@@ -20,6 +20,7 @@ import pytest
 from evaluation.ground_truth_v02 import (
     CASE_FIELDS,
     DOC_REFERENCE_TO_CORPUS_TITLE,
+    EXPECTED_CASE_COUNT,
     TIPOS,
     GroundTruthV02Error,
     build_cases,
@@ -107,12 +108,12 @@ def test_compara_titulos_sin_importar_la_forma_unicode() -> None:
 def test_lee_la_hoja_registros_del_xlsx_sin_dependencias() -> None:
     filas = read_registros_xlsx(default_xlsx_path())
     completas = [f for f in filas if f["pregunta"] and f["respuesta"]]
-    assert len(completas) == 66
+    assert len(completas) == EXPECTED_CASE_COUNT
 
 
 def test_construye_66_casos_con_el_contrato_exacto() -> None:
     cases = build_cases(read_registros_xlsx(default_xlsx_path()))
-    assert len(cases) == 66
+    assert len(cases) == EXPECTED_CASE_COUNT
     for case in cases:
         assert tuple(case.keys()) == CASE_FIELDS
         for key in _FORBIDDEN_KEYS:
@@ -146,7 +147,7 @@ def test_documentos_esperados_son_titulos_del_corpus() -> None:
     con_documento = [c for c in cases if c["documentos_esperados"]]
     # 8 casos sin ninguna referencia. Los registros 017–019 tienen "No aplica"
     # como principal pero sí un documento secundario (Decreto 2324).
-    assert len(con_documento) == 66 - 8
+    assert len(con_documento) == EXPECTED_CASE_COUNT - 8
     validos = set(DOC_REFERENCE_TO_CORPUS_TITLE.values())
     for case in con_documento:
         assert set(case["documentos_esperados"]) <= validos

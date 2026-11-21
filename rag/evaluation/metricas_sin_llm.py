@@ -73,6 +73,7 @@ import unicodedata
 from collections.abc import Iterable
 from dataclasses import dataclass
 from datetime import UTC, datetime
+from functools import lru_cache
 from itertools import dropwhile
 from pathlib import Path
 from typing import Any
@@ -170,12 +171,45 @@ def norma_local(fragmento: dict[str, Any]) -> str | None:
     return lugar_de_norma(fragmento)
 
 
+GOLD_DIR = Path(__file__).resolve().parents[2] / "data" / "documents" / "gold"
+
+
+@lru_cache(maxsize=1)
+def tipos_del_corpus(gold_dir: Path = GOLD_DIR) -> dict[str, str]:
+    """Título (NFC) → ``doc_type`` de cada documento de la capa gold.
+
+    Se lee del corpus versionado (primer fragmento de cada ``.jsonl``), así
+    que un documento nuevo o un cambio de tipo en una actualización del
+    corpus se refleja sin tocar este módulo. Sin capa gold, devuelve ``{}``.
+    """
+    tipos: dict[str, str] = {}
+    for path in sorted(gold_dir.glob("*/*.jsonl")):
+        with path.open(encoding="utf-8") as stream:
+            primera = stream.readline()
+        if not primera.strip():
+            continue
+        meta = json.loads(primera).get("metadata") or {}
+        titulo = unicodedata.normalize("NFC", str(meta.get("title", "")))
+        tipos[titulo] = str(meta.get("doc_type") or path.parent.name)
+    return tipos
+
+
 def clase_esperada(documentos: list[str]) -> str:
-    """Clase de los documentos esperados: las sentencias del corpus se
-    titulan ``AP <demandante> VS <demandado>``; el resto es normativa."""
+    """Clase de los documentos esperados según su ``doc_type`` en el corpus.
+
+    Si un título no está en la capa gold se usa la convención de nombres:
+    las sentencias se titulan ``AP <demandante> VS <demandado>``. (Esa sola
+    regla clasificaba como normativa la sentencia de segunda instancia,
+    cuyo título no empieza por «AP».)
+    """
     if not documentos:
         return "sin documento"
-    clases = {"jurisprudencia" if d.startswith("AP ") else "normativa" for d in documentos}
+    tipos = tipos_del_corpus()
+    clases = {
+        tipos.get(unicodedata.normalize("NFC", d))
+        or ("jurisprudencia" if d.startswith("AP ") else "normativa")
+        for d in documentos
+    }
     return clases.pop() if len(clases) == 1 else "mixta"
 
 
@@ -483,6 +517,7 @@ def linea_base(
         "fecha": reporte["fecha"],
         "git": reporte["git"],
         "cache": reporte.get("respuesta", {}).get("cache"),
+        "corpus": reporte.get("corpus"),
         "inestables": inestables or {},
         "global": global_,
         "casos": casos,
@@ -514,8 +549,15 @@ def reporte_markdown(reporte: dict[str, Any]) -> str:
         + (" (con cambios sin commit)" if git.get("dirty") else ""),
         f"- Caché de generación: `{reporte.get('respuesta', {}).get('cache', '—')}`",
         "- Intervalos: bootstrap del 95 % sobre los casos, semilla fija.",
-        "",
     ]
+    if corpus := reporte.get("corpus"):
+        lineas.append(
+            f"- Colección: `{corpus.get('coleccion')}`; recuperación: "
+            + ", ".join(f"{k}={v}" for k, v in (corpus.get("recuperacion") or {}).items())
+        )
+    if aviso := reporte.get("aviso_corpus"):
+        lineas.append(f"- **Aviso:** {aviso}")
+    lineas.append("")
     comparacion = reporte.get("comparacion", {})
     for seccion, titulo in (
         ("recuperacion", "Recuperación con la pregunta original"),
@@ -648,6 +690,40 @@ def _seccion(filas: list[dict[str, Any]]) -> dict[str, Any]:
     }
 
 
+def configuracion_corpus() -> dict[str, Any]:
+    """Colección y parámetros de recuperación con que se mide (ver ``rag.config``).
+
+    Se guarda en cada reporte y en la línea base: si dos corridas difieren en
+    esto, sus diferencias mezclan corpus o ajuste con cambios de código.
+    """
+    from rag import config
+
+    return {
+        "coleccion": config.CHROMA_COLLECTION,
+        "modelo_embeddings": config.OLLAMA_EMBEDDING_MODEL,
+        "recuperacion": {
+            "rrf_c": config.RETRIEVAL_RRF_C,
+            "bm25_weight": config.RETRIEVAL_BM25_WEIGHT,
+            "vector_weight": config.RETRIEVAL_VECTOR_WEIGHT,
+            "cupos_normativa": config.RETRIEVAL_CUPOS_NORMATIVA,
+            "fragmentos_por_sentencia": config.RETRIEVAL_FRAGMENTOS_POR_SENTENCIA,
+            "fragmentos_por_norma": config.RETRIEVAL_FRAGMENTOS_POR_NORMA,
+        },
+    }
+
+
+def cargar_referencia(ruta: Path) -> dict[str, Any]:
+    """Línea base versionada, o un reporte completo de otra corrida.
+
+    Aceptar un reporte permite comparar «antes» y «después» de integrar una
+    actualización del corpus sin reescribir la línea base oficial.
+    """
+    datos = json.loads(ruta.read_text(encoding="utf-8"))
+    if "recuperacion" in datos or "respuesta" in datos:
+        return linea_base(datos)
+    return dict(datos)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--tag", default=None, help="etiqueta de la corrida")
@@ -663,6 +739,11 @@ def main() -> int:
         action="store_true",
         help="guardar esta corrida como la nueva línea base (versionada)",
     )
+    parser.add_argument(
+        "--fallar-si-regresion",
+        action="store_true",
+        help="salir con código 1 si alguna métrica es regresión frente a la referencia",
+    )
     args = parser.parse_args()
     ruta = tagged(REPORT_PATH, args.tag)  # valida la etiqueta antes de correr
 
@@ -673,6 +754,7 @@ def main() -> int:
         "fecha": datetime.now(UTC).isoformat(),
         "git": git_state(),
         "tag": args.tag,
+        "corpus": configuracion_corpus(),
     }
     # La caché se carga antes de recuperar: de ahí salen las consultas
     # enriquecidas con las que se mide la ruta real de producción.
@@ -711,7 +793,13 @@ def main() -> int:
         )
         print(f"Línea base guardada: {args.linea_base}")
     elif args.linea_base.exists():
-        base = json.loads(args.linea_base.read_text(encoding="utf-8"))
+        base = cargar_referencia(args.linea_base)
+        if base.get("corpus") and base["corpus"] != reporte["corpus"]:
+            reporte["aviso_corpus"] = (
+                "La referencia se midió con otra colección o con otros parámetros de "
+                "recuperación: las diferencias no son solo del código."
+            )
+            print(f"AVISO: {reporte['aviso_corpus']}")
         actual = {**reporte.get("recuperacion", {}).get("global", {})}
         actual.update(reporte.get("respuesta", {}).get("global", {}))
         filas = {f["case_id"]: dict(f) for f in reporte.get("recuperacion", {}).get("casos", [])}
@@ -738,7 +826,7 @@ def main() -> int:
     if en_margen:
         print(f"Empeora dentro del margen (revisar casos): {', '.join(en_margen)}")
     print(f"Reporte: {ruta} y {ruta_md}")
-    return 0
+    return 1 if args.fallar_si_regresion and regresiones else 0
 
 
 if __name__ == "__main__":
