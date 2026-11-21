@@ -133,10 +133,13 @@ servicio. El alcance de la herramienta se describe en
 [Arquitectura](ARCHITECTURE.md#10-evaluación-del-rag-evaluation).
 
 **⚠️ Requiere autorización explícita antes de correrse de verdad.** Una
-corrida real invoca el grafo real de producción pregunta por pregunta y
-llama a un LLM/juez externo (Gemini u Ollama) por cada métrica — no es un
+corrida real usa `rag.core.generator`, adaptador del grafo común del RAG:
+precarga BM25 cuando hay procedencia documental configurada y crea un
+grafo y un `thread_id` propios por pregunta. No usa el lifespan de la API
+ni sus clientes REST/embeddings inyectados. Ejecuta el RAG con sus modelos
+y llama a un LLM/juez (Gemini u Ollama) para las métricas — no es un
 comando inocuo para ejecutar "para probar". `--validate-only` (más abajo)
-no tiene ese costo ni ese riesgo.
+valida datos y configuración sin red, sin ese costo ni ese riesgo.
 
 Hay dos flujos independientes:
 
@@ -356,7 +359,7 @@ servido en `localhost` se registra como 0.
 
 ### RAGAS y `langchain-community`
 
-`ragas==0.4.3` (última versión publicada) importa
+`ragas==0.4.3` (versión bloqueada en `uv.lock`) importa
 `ChatVertexAI` desde `langchain_community.chat_models.vertexai`, símbolo
 que `langchain-community` retiró en 0.4.x. El grupo `dev` de
 `pyproject.toml` fija `langchain-community==0.3.31` (que sí lo expone)

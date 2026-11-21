@@ -184,10 +184,12 @@ _EXPLICIT_COASTAL_RE = re.compile(
     re.IGNORECASE,
 )
 
+_COASTAL_INSTRUMENT_RE = re.compile(r"\bpomiuac\b", re.IGNORECASE)
+
 
 def _has_explicit_coastal_signal(text: str) -> bool:
     """Familia #1: contexto costero/marítimo explícito e inequívoco."""
-    return bool(_EXPLICIT_COASTAL_RE.search(text))
+    return bool(_EXPLICIT_COASTAL_RE.search(text) or _COASTAL_INSTRUMENT_RE.search(text))
 
 
 # --- Familia #2: actividad acuática o marítima ambigua ---------------------
@@ -322,6 +324,14 @@ _NORMATIVE_REFERENCE_RE = re.compile(
     re.IGNORECASE,
 )
 
+# Una cita numerada indica propósito jurídico, no conexión costera ni
+# existencia de la norma en el corpus. Sigue requiriendo la familia #1-#3.
+_NUMBERED_NORM_REFERENCE_RE = re.compile(
+    r"\b(?:ley|decreto(?:[- ]ley)?|resoluci[oó]n)\s+"
+    r"(?:n(?:[úu]mero|ro\.?)?\.?\s*)?\d+\b",
+    re.IGNORECASE,
+)
+
 _REMAC_5_REFERENCE_RE = re.compile(
     r"\b(?:seg[uú]n\s+(?:el\s+)?|conforme\s+(?:al|a)\s+|"
     r"de\s+acuerdo\s+con\s+(?:el\s+)?)remac\s+5\b",
@@ -339,6 +349,7 @@ _LEGAL_INTENT_PATTERNS: tuple[re.Pattern[str], ...] = (
     _SANCTION_OBLIGATION_RE,
     _PARTICIPATION_PROTECTION_RE,
     _NORMATIVE_REFERENCE_RE,
+    _NUMBERED_NORM_REFERENCE_RE,
 )
 
 # "Puedo/puede/debo... practicar/realizar/vender/instalar..." — un modal de
@@ -483,6 +494,31 @@ _STRONG_FOLLOW_UP_RE = re.compile(
     re.IGNORECASE,
 )
 _WEAK_FOLLOW_UP_RE = re.compile(r"^\s*[¿?¡!]*\s*y\b", re.IGNORECASE)
+_PLAN_REFERENCE_RE = re.compile(r"\b(?:ese|dicho)\s+plan\b", re.IGNORECASE)
+_EXPLICIT_PLAN_NAME_RE = re.compile(
+    r"\b(?:ese|dicho)\s+plan\s+(?:"
+    r"(?:denominado|llamado|titulado)\s+(?:[«\"“']\s*)?\w"
+    r"|[«\"“']\s*\w[^»\"”'\n]*[»\"”']"
+    r"|(?-i:de\s+[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+"
+    r"(?:\s+(?:de|del|la|el|las|los|y))*\s+[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+)\b"
+    r")",
+    re.IGNORECASE,
+)
+
+
+def _is_contextual_plan_reference(question: str) -> bool:
+    """Detecta el seguimiento acotado que necesita identificar un plan.
+
+    La cita normativa o el instrumento nombrado en la propia pregunta
+    permiten buscar evidencia sin exigir un historial anterior. No se
+    interpreta cualquier demostrativo como una referencia ambigua.
+    """
+    return bool(
+        _PLAN_REFERENCE_RE.search(question)
+        and not _NUMBERED_NORM_REFERENCE_RE.search(question)
+        and not _COASTAL_INSTRUMENT_RE.search(question)
+        and not _EXPLICIT_PLAN_NAME_RE.search(question)
+    )
 
 
 def _inherit_context_from_history(
@@ -554,13 +590,15 @@ def _fallback(question: str, history_context: str = "") -> EnrichedQuery:
     1. solicitud inequívocamente ajena (familia #5) -> ``out_of_scope``
        SIEMPRE, sin excepción por combinación costera+jurídica.
     2. saludo/meta-pregunta completa (familia #6) -> ``conversation``.
-    3. consulta regulatoria referida al REMAC 5 -> ``in_scope``, con normativa.
-    4. seguimiento que hereda contexto del historial (familia #7).
-    5. contexto costero (familias #1-#3) + intención jurídica/regulatoria
+    3. referencia a un plan sin identificación propia ni historial
+       jurídico-costero pertinente -> ``needs_clarification``.
+    4. consulta regulatoria referida al REMAC 5 -> ``in_scope``, con normativa.
+    5. seguimiento que hereda contexto del historial (familia #7).
+    6. contexto costero (familias #1-#3) + intención jurídica/regulatoria
        (familia #4) -> ``in_scope``.
-    6. una sola señal (costera o jurídica, sin la otra) ->
+    7. una sola señal (costera o jurídica, sin la otra) ->
        ``needs_clarification``.
-    7. ausencia de cualquier señal pertinente -> ``out_of_scope``.
+    8. ausencia de cualquier señal pertinente -> ``out_of_scope``.
     """
     clean_question = question.strip()
 
@@ -579,6 +617,19 @@ def _fallback(question: str, history_context: str = "") -> EnrichedQuery:
             expanded_query=clean_question,
             doc_types=[],
         )
+
+    if _is_contextual_plan_reference(clean_question):
+        # El historial pertinente permite al analizador resolver la
+        # referencia; no acredita por sí mismo un plan o un plazo únicos.
+        history_coastal = _has_coastal_signal(history_context)
+        history_legal = _has_legal_signal(history_context, coastal=history_coastal)
+        if not (history_coastal and history_legal):
+            return EnrichedQuery(
+                route="needs_clarification",
+                standalone_question=clean_question,
+                expanded_query=clean_question,
+                doc_types=[],
+            )
 
     if (
         _REMAC_5_REFERENCE_RE.search(clean_question)
@@ -632,17 +683,19 @@ def _apply_domain_guard(
        ni siquiera examina ``result.route``, así que la mera aparición de
        términos jurídicos o costeros dentro de una solicitud creativa no
        puede anular un ``out_of_scope`` correcto del modelo.
-    3. Una combinación de alta confianza entre contexto costero (familias
+    3. Una referencia a un plan sin contexto suficiente solicita aclaración;
+       con historial pertinente conserva la aclaración del modelo.
+    4. Una combinación de alta confianza entre contexto costero (familias
        #1-#3) y propósito jurídico (familia #4) corrige un falso negativo
        del modelo a ``in_scope``.
-    4. Una actividad acuática ambigua con contexto interior (familias #2+#3)
+    5. Una actividad acuática ambigua con contexto interior (familias #2+#3)
        nunca produce ``in_scope`` en la heurística — por construcción de
-       ``_has_coastal_signal()`` — así que la regla 3 nunca puede forzar
+       ``_has_coastal_signal()`` — así que la regla 4 nunca puede forzar
        ``in_scope`` en ese caso.
-    5. Si la heurística encuentra una sola señal (``needs_clarification``) y
+    6. Si la heurística encuentra una sola señal (``needs_clarification``) y
        el modelo dijo ``out_of_scope``, se degrada a ``needs_clarification``
        para pedir el dato que falta en vez de cerrar la consulta.
-    6. Si la heurística no tiene suficiente certeza (``needs_clarification``
+    7. Si la heurística no tiene suficiente certeza (``needs_clarification``
        con un modelo que no dijo ``out_of_scope``, o un ``out_of_scope`` que no
        proviene de una señal ajena inequívoca), se conserva el análisis
        semántico del LLM tal cual, incluyendo un ``in_scope`` del modelo para
@@ -656,6 +709,11 @@ def _apply_domain_guard(
 
     if _has_unambiguous_off_topic_intent(clean_question):
         return heuristic
+
+    if _is_contextual_plan_reference(clean_question) and heuristic.route == "needs_clarification":
+        return heuristic
+    if _PLAN_REFERENCE_RE.search(clean_question) and result.route == "needs_clarification":
+        return result
 
     # Una sola señal presente (costera o jurídica, no ambas) y ninguna
     # intención inequívocamente ajena: la pregunta es al menos plausible dentro

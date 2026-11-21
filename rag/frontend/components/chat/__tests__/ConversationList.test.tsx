@@ -4,8 +4,13 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ConversationList } from "@/components/chat/ConversationList";
 import type { Conversation } from "@/hooks/useConversations";
 
+vi.mock("@/components/providers/AuthProvider", () => ({
+	useAuth: () => ({ user: { user_id: "test-user", email: "test@example.test", display_name: null, role: "admin" } }),
+}));
+
 vi.mock("@/lib/auth", () => ({
 	getToken: vi.fn(() => "test-token"),
+	getTokenForUser: vi.fn(() => "test-token"),
 	expireAuthSession: vi.fn(),
 }));
 

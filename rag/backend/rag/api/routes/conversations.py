@@ -29,15 +29,12 @@ _DELETE_LOCK_TIMEOUT_SECONDS = 5.0
 
 # A3.4 — límite de tamaño serializado de `sources` al persistir un mensaje.
 #
-# Medido sobre el caso realista más grande de hoy: k=8 fragmentos (tope
-# actual de `QueryRequest.k`), en el peor caso cada uno en su propio
-# `SourceGroup` (sin agrupar por archivo fuente), con `content` recortado a
-# 500 caracteres (ver `SourceFragment` en `api/schemas.py`) más metadata
-# típica por fragmento (Corporación, Radicado, Magistrado, Tema — o para
-# normativa: norma/titulo/capitulo/articulo). Eso serializa en la práctica a
-# ~10-15 KB. El valor de abajo deja un margen amplio (~7-10x ese máximo
-# observado) para no rechazar payloads legítimos con algo más de metadata,
-# sin permitir que una fila JSON crezca sin límite.
+# Se persisten los mismos `SourceGroup` que devuelve la consulta, con el
+# cuerpo completo del fragmento seleccionado y su metadata. La medición
+# offline de Gold A sitúa ocho grupos independientes conservadoramente
+# mayores (tope de `QueryRequest.k`) en unos 35.000 caracteres serializados.
+# Se mantiene el límite existente para admitir esos cuerpos completos sin
+# permitir que una fila JSON crezca sin límite.
 _MAX_SOURCES_SERIALIZED_CHARS = 100_000
 
 _TITLE_PROMPT = (

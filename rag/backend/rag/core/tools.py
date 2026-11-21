@@ -1,17 +1,12 @@
 # rag/core/tools.py
 """Utilidades de recuperación y formateo de contexto del agente RAG.
 
-El flujo del agente (ver core/agent.py) es determinista: enrich_query →
-route_after_analysis → {retrieve_forced → generate, respond_without_retrieval}.
-No hay tool-calling ni ReAct — el LLM nunca decide si buscar o no. La
-recuperación (retrieve_forced) se ejecuta exactamente una vez, pero solo para
-consultas que enrich_query clasifica como `in_scope`; conversación
-(saludos/meta-preguntas), aclaración y fuera de alcance van directo a
-respond_without_retrieval y no recuperan documentos. Este módulo conserva las
-funciones que ese flujo determinista reutiliza: `build_context_block`
-formatea los documentos recuperados en el bloque de contexto que ve el LLM,
-y `sanitize_replacement_chars` limpia caracteres U+FFFD del pipeline de
-ingesta (ver docs/INGEST_ENCODING_BUG.md).
+El grafo de core/agent.py decide la ruta y obtiene documentos mediante el
+recuperador o los selectores de procedencia verificada; este módulo no realiza
+búsquedas ni decide la ruta. `build_context_block` formatea esos documentos
+en el contexto que ve el LLM, y `sanitize_replacement_chars` conserva
+compatibilidad con entradas históricas
+que contengan U+FFFD (ver data/README.md para el corpus y su representación).
 """
 
 from __future__ import annotations
@@ -21,20 +16,19 @@ from langchain_core.documents import Document
 from .territorio import describir_ambito, lugar_de_norma
 
 # ---------------------------------------------------------------------------
-# Sanitización (parche temporal)
+# Compatibilidad de texto histórico
 # ---------------------------------------------------------------------------
 #
-# El pipeline bronze → silver actualmente produce caracteres U+FFFD (`�`) en
-# metadatos y contenido de chunks (ver docs/INGEST_ENCODING_BUG.md). Hasta que
-# se corrija la raíz y se re-ingeste el corpus, eliminamos esos caracteres antes
-# de exponer el texto al LLM y al frontend.
+# Algunas entradas históricas pueden contener U+FFFD (`�`) en metadata o
+# cuerpos. Se limpia su presentación al LLM y al frontend sin modificar los
+# archivos del corpus ni exigir una nueva ingesta.
 
 
 def sanitize_replacement_chars(value):
     """Elimina recursivamente U+FFFD de strings y estructuras anidadas.
 
-    Aplica sobre str, list y dict. Otros tipos pasan sin cambios. Cuando el bug
-    de ingestión se arregle y se re-ingeste, esta función puede eliminarse.
+    Aplica sobre str, list y dict. Otros tipos pasan sin cambios. Es una
+    compatibilidad de presentación; no certifica ni repara el archivo origen.
     """
     if isinstance(value, str):
         return value.replace("\ufffd", "")
@@ -72,9 +66,10 @@ def build_context_block(docs: list[Document], *, include_source_identifiers: boo
 
         if doc_type == "normativa":
             # Cabecera para normas: nombre de la norma + jerarquía (título, capítulo,
-            # artículo). No aplican corporación ni magistrado.
+            # artículo). La identidad explícita prevalece sobre el título descriptivo.
+            # No aplican corporación ni magistrado.
             norma = sanitize_replacement_chars(
-                meta.get("title") or meta.get("norma") or meta.get("source", "desconocido")
+                meta.get("norma") or meta.get("title") or meta.get("source", "desconocido")
             )
             titulo = sanitize_replacement_chars(meta.get("titulo", ""))
             capitulo = sanitize_replacement_chars(meta.get("capitulo", ""))

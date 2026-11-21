@@ -106,7 +106,7 @@ describe("lib/api.ts — cada operación REST finita pasa una señal de withRest
 		const encoder = new TextEncoder();
 		const stream = new ReadableStream<Uint8Array>({
 			start(controller) {
-				controller.enqueue(encoder.encode("data: [DONE]\n\n"));
+				controller.enqueue(encoder.encode('data: {"type":"sources","sources":[]}\n\ndata: [DONE]\n\n'));
 				controller.close();
 			},
 		});
@@ -122,6 +122,6 @@ describe("lib/api.ts — cada operación REST finita pasa una señal de withRest
 		// Sin `signal` explícita en la llamada, no hay señal en absoluto —
 		// `queryRagStream` queda deliberadamente fuera del timeout común.
 		expect(init.signal).toBeUndefined();
-		expect(events).toEqual([]);
+		expect(events).toEqual([{ type: "sources", sources: [] }]);
 	});
 });

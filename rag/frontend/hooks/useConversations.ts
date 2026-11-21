@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { expireAuthSession, getToken } from "@/lib/auth";
+import { expireAuthSession, getTokenForUser } from "@/lib/auth";
 import { throwIfSessionExpired } from "@/lib/api";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { API_URL } from "@/lib/config";
@@ -41,7 +41,7 @@ export function useConversations(): {
 	const abortRef = useRef<AbortController | null>(null);
 
 	const refresh = useCallback(async () => {
-		const token = getToken();
+		const token = user ? getTokenForUser(user.user_id) : null;
 		if (!token) {
 			// Si el hook todavía cree que hay un usuario autenticado pero el
 			// token ya no está (p. ej. otra pestaña cerró sesión), notifica para
@@ -53,6 +53,7 @@ export function useConversations(): {
 			abortRef.current = null;
 			if (user) expireAuthSession(null);
 			setConversations([]);
+			setLoading(false);
 			setError(null);
 			return;
 		}
@@ -60,6 +61,7 @@ export function useConversations(): {
 			abortRef.current?.abort();
 			abortRef.current = null;
 			setConversations([]);
+			setLoading(false);
 			setError(null);
 			return;
 		}

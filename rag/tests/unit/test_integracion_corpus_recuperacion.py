@@ -123,6 +123,10 @@ class _Evidencia:
 
 
 class _Indice:
+    # Como ResolutionIndex: la evidencia de un radicado solo existe con la
+    # instantánea BM25 verificada.
+    snapshot_verified = True
+
     def __init__(self, evidencia: _Evidencia) -> None:
         self.evidencia = evidencia
 

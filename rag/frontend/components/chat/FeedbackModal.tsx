@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { submitConversationFeedback } from "@/lib/api";
+import { useAuth } from "@/components/providers/AuthProvider";
+import { getTokenForUser } from "@/lib/auth";
 import { useDialog } from "@/components/common/useDialog";
 
 interface FeedbackModalProps {
@@ -67,6 +69,7 @@ export function FeedbackModal({
 	conversationId,
 	onClose,
 }: FeedbackModalProps) {
+	const { user } = useAuth();
 	const [selected, setSelected] = useState<DimensionState>({
 		tone: 0,
 		length: 0,
@@ -112,7 +115,7 @@ export function FeedbackModal({
 				ratings: selected,
 				comment: comment.trim() || undefined,
 				conversation_id: conversationId ?? undefined,
-			});
+			}, getTokenForUser(user?.user_id ?? ""));
 			setSubmitState("success");
 		} catch {
 			setSubmitState("error");

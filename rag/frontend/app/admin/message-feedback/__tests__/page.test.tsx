@@ -3,8 +3,13 @@ import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import MessageFeedbackPage from "@/app/admin/message-feedback/page";
 
+vi.mock("@/components/providers/AuthProvider", () => ({
+	useAuth: () => ({ user: { user_id: "test-user", email: "test@example.test", display_name: null, role: "admin" } }),
+}));
+
 vi.mock("@/lib/auth", () => ({
 	getToken: vi.fn(() => "test-token"),
+	getTokenForUser: vi.fn(() => "test-token"),
 	expireAuthSession: vi.fn(),
 }));
 

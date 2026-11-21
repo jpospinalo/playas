@@ -5,6 +5,7 @@ import { MAX_QUESTION_CHARS } from "@/lib/contracts";
 
 vi.mock("@/lib/auth", () => ({
 	getToken: vi.fn(() => "test-token"),
+	getTokenForUser: vi.fn(() => "test-token"),
 	expireAuthSession: vi.fn(),
 }));
 

@@ -29,9 +29,11 @@ from __future__ import annotations
 import asyncio
 import logging
 import re
-from collections.abc import AsyncIterator, Sequence
-from contextlib import asynccontextmanager
+from collections.abc import AsyncIterator, Iterator, Sequence
+from contextlib import asynccontextmanager, contextmanager
+from contextvars import ContextVar
 from math import isfinite
+from threading import Lock
 from typing import Any, cast
 from urllib.parse import quote
 from uuid import UUID
@@ -128,6 +130,43 @@ tiene tienen todo todos tu tus un una unas uno unos y ya yo
 _chroma_client: Any | None = None
 _chroma_vectorstore: Chroma | None = None
 _bm25_base: BM25Retriever | None = None
+_initialization_lock = Lock()
+_initialization_identity = object()
+_initialization_context: ContextVar[object | None] = ContextVar(
+    "retriever_initialization_identity", default=None
+)
+
+
+class _RetrieverInitializationInvalidated(RuntimeError):
+    def __init__(self) -> None:
+        super().__init__("Retriever initialization was invalidated")
+
+
+def _validate_initialization(identity: object) -> None:
+    """Comprueba la identidad mientras el llamador mantiene el lock."""
+    if identity is not _initialization_identity:
+        raise _RetrieverInitializationInvalidated()
+
+
+@contextmanager
+def retriever_initialization_scope() -> Iterator[object]:
+    """Conserva el ciclo de inicialización, incluso al copiarlo a otro hilo.
+
+    Una llamada anidada conserva su identidad original. Solo la salida normal
+    vuelve a validarla; los errores y la cancelación mantienen su propagación.
+    """
+    inherited = _initialization_context.get()
+    with _initialization_lock:
+        identity = _initialization_identity if inherited is None else inherited
+        _validate_initialization(identity)
+    marker = _initialization_context.set(identity) if inherited is None else None
+    try:
+        yield identity
+        with _initialization_lock:
+            _validate_initialization(identity)
+    finally:
+        if marker is not None:
+            _initialization_context.reset(marker)
 
 
 def _tokenize_bm25(text: str) -> list[str]:
@@ -228,21 +267,43 @@ class BM25Retriever(BaseRetriever):
 
 def _get_chroma_client() -> Any:
     global _chroma_client
-    if _chroma_client is None:
-        _chroma_client = chromadb.HttpClient(host=CHROMA_HOST, port=CHROMA_PORT)
-    return _chroma_client
+    with retriever_initialization_scope() as identity:
+        with _initialization_lock:
+            _validate_initialization(identity)
+            client = _chroma_client
+        if client is not None:
+            return client
+
+        candidate = chromadb.HttpClient(host=CHROMA_HOST, port=CHROMA_PORT)
+        with _initialization_lock:
+            _validate_initialization(identity)
+            if _chroma_client is None:
+                _chroma_client = candidate
+            client = _chroma_client
+        return client
 
 
 def _get_chroma_vectorstore() -> Chroma:
     global _chroma_vectorstore
-    if _chroma_vectorstore is None:
-        _chroma_vectorstore = Chroma(
+    with retriever_initialization_scope() as identity:
+        with _initialization_lock:
+            _validate_initialization(identity)
+            store = _chroma_vectorstore
+        if store is not None:
+            return store
+
+        candidate = Chroma(
             client=_get_chroma_client(),
             collection_name=CHROMA_COLLECTION_NAME,
             embedding_function=EMBEDDINGS,
             create_collection_if_not_exists=False,
         )
-    return _chroma_vectorstore
+        with _initialization_lock:
+            _validate_initialization(identity)
+            if _chroma_vectorstore is None:
+                _chroma_vectorstore = candidate
+            store = _chroma_vectorstore
+        return store
 
 
 def _get_bm25_base() -> BM25Retriever:
@@ -261,30 +322,41 @@ def _get_bm25_base() -> BM25Retriever:
     de la app (``init_retrievers()``) no falla por tener la colección vacía.
     """
     global _bm25_base
-    if _bm25_base is None:
+    with retriever_initialization_scope() as identity:
+        with _initialization_lock:
+            _validate_initialization(identity)
+            base = _bm25_base
+        if base is not None:
+            return base
+
         docs = load_all_docs_from_chroma()
 
         if not docs:
-            _bm25_base = BM25Retriever(vectorizer=None, docs=[], k=50)
-            return _bm25_base
+            candidate = BM25Retriever(vectorizer=None, docs=[], k=50)
+        else:
+            from rank_bm25 import BM25Okapi
 
-        from rank_bm25 import BM25Okapi
+            augmented_texts: list[str] = []
+            for d in docs:
+                meta = d.metadata or {}
+                parts = [d.page_content]
+                if kw := meta.get("keywords_str", ""):
+                    parts.append(kw)
+                if sm := meta.get("summary", ""):
+                    parts.append(sm)
+                augmented_texts.append(" ".join(parts))
 
-        augmented_texts: list[str] = []
-        for d in docs:
-            meta = d.metadata or {}
-            parts = [d.page_content]
-            if kw := meta.get("keywords_str", ""):
-                parts.append(kw)
-            if sm := meta.get("summary", ""):
-                parts.append(sm)
-            augmented_texts.append(" ".join(parts))
+            corpus = [_tokenize_bm25(t) for t in augmented_texts]
+            vectorizer = BM25Okapi(corpus)
+            # k=50 como techo máximo; se limita en get_bm25_retriever()
+            candidate = BM25Retriever(vectorizer=vectorizer, docs=docs, k=50)
 
-        corpus = [_tokenize_bm25(t) for t in augmented_texts]
-        vectorizer = BM25Okapi(corpus)
-        # k=50 como techo máximo; se limita en get_bm25_retriever()
-        _bm25_base = BM25Retriever(vectorizer=vectorizer, docs=docs, k=50)
-    return _bm25_base
+        with _initialization_lock:
+            _validate_initialization(identity)
+            if _bm25_base is None:
+                _bm25_base = candidate
+            base = _bm25_base
+        return base
 
 
 def bm25_index_is_empty() -> bool:
@@ -309,9 +381,10 @@ def init_retrievers() -> None:
     Pre-calienta todos los singletons del retriever.
     Debe llamarse en el evento de arranque de la aplicación (lifespan).
     """
-    _get_chroma_client()
-    _get_chroma_vectorstore()
-    _get_bm25_base()
+    with retriever_initialization_scope():
+        _get_chroma_client()
+        _get_chroma_vectorstore()
+        _get_bm25_base()
 
 
 @asynccontextmanager
@@ -360,23 +433,25 @@ async def open_chroma_query() -> AsyncIterator[ChromaQuery | None]:
 
 
 def close_retrievers() -> None:
-    """Libera los singletons del retriever al apagar la aplicación.
+    """Cierra el cliente síncrono de embeddings y descarta los recuperadores.
 
-    Cierra la sesión HTTP del cliente de embeddings compartido (``EMBEDDINGS``,
-    la única conexión propia que este módulo mantiene abierta) y resetea los
-    singletons de módulo (cliente Chroma, vectorstore, índice BM25) a
-    ``None`` para que un ``init_retrievers()`` posterior — por ejemplo entre
-    pruebas — los reconstruya desde cero. No invoca ningún método privado o
-    no documentado del cliente de Chroma: su conexión HTTP se libera junto
-    con el objeto en cuanto pierde todas las referencias. Idempotente: llamar
-    dos veces no falla (``EMBEDDINGS.close()`` ya lo es, y resetear a
-    ``None`` un singleton que ya es ``None`` es un no-op).
+    Invalida la inicialización y restablece cliente SDK de Chroma, vectorstore
+    e índice BM25 a ``None`` antes de cerrar la sesión HTTP de ``EMBEDDINGS``.
+    Los trabajadores del ciclo anterior no pueden republicar sus resultados.
+    Construcción y cierre de transportes se ejecutan fuera del lock.
+    Descartar esas referencias no acredita el cierre de los transportes
+    internos del SDK; no se invocan métodos privados para forzarlo.
+
+    Los clientes HTTP asíncronos de la API pertenecen al lifespan. Esta función
+    es idempotente: repetir el cierre de embeddings y los resets no falla.
     """
-    global _chroma_client, _chroma_vectorstore, _bm25_base
+    global _initialization_identity, _chroma_client, _chroma_vectorstore, _bm25_base
+    with _initialization_lock:
+        _initialization_identity = object()
+        _chroma_client = None
+        _chroma_vectorstore = None
+        _bm25_base = None
     EMBEDDINGS.close()
-    _chroma_client = None
-    _chroma_vectorstore = None
-    _bm25_base = None
 
 
 # ---------------------------------------------------------------------
@@ -451,7 +526,7 @@ class _AsyncChromaRetriever(BaseRetriever):
     def _get_relevant_documents(
         self, query: str, *, run_manager: CallbackManagerForRetrieverRun
     ) -> list[Document]:
-        return self.sync_retriever.invoke(query)
+        return self.sync_retriever.invoke(query, config={"callbacks": run_manager.get_child()})
 
     async def _aget_relevant_documents(self, query: str, *, run_manager: Any) -> list[Document]:
         embed = self.query_embedder if self.query_embedder is not None else EMBEDDINGS.aembed_query
@@ -522,8 +597,7 @@ class _FilteredRetriever(BaseRetriever):
         *,
         run_manager: CallbackManagerForRetrieverRun,
     ) -> list[Document]:
-        del run_manager
-        docs = self.inner.invoke(query)
+        docs = self.inner.invoke(query, config={"callbacks": run_manager.get_child()})
         allowed = set(self.doc_types)
         return [d for d in docs if (d.metadata or {}).get("doc_type") in allowed]
 
@@ -752,8 +826,9 @@ class HybridEnsembleRetriever(BaseRetriever):
         *,
         run_manager: CallbackManagerForRetrieverRun,
     ) -> list[Document]:
-        del run_manager
-        all_results: list[list[Document]] = [r.invoke(query) for r in self.retrievers]
+        all_results: list[list[Document]] = [
+            r.invoke(query, config={"callbacks": run_manager.get_child()}) for r in self.retrievers
+        ]
         return self._fuse(all_results, queries=(query,))
 
     async def _aget_relevant_documents(
@@ -762,9 +837,13 @@ class HybridEnsembleRetriever(BaseRetriever):
         *,
         run_manager: Any,
     ) -> list[Document]:
-        del run_manager
         return self._fuse(
-            await _gather_cancelling([r.ainvoke(query) for r in self.retrievers]),
+            await _gather_cancelling(
+                [
+                    r.ainvoke(query, config={"callbacks": run_manager.get_child()})
+                    for r in self.retrievers
+                ]
+            ),
             queries=(query,),
         )
 

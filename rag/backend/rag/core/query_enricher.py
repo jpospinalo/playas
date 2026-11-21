@@ -177,8 +177,11 @@ def enrich_query(question: str, history_context: str = "") -> EnrichedQuery:
             logger.warning("Enrichment returned an empty expanded_query; using fallback.")
             return _fallback(question, history_context)
         return _apply_domain_guard(result, question, history_context)
-    except Exception:
-        logger.warning("Query enrichment failed; falling back to original query.", exc_info=True)
+    except Exception as exc:
+        logger.warning(
+            "query_enrichment_failed exception_class=%s fallback_used=true",
+            type(exc).__name__,
+        )
         return _fallback(question, history_context)
 
 
@@ -218,6 +221,9 @@ async def enrich_query_async(question: str, history_context: str = "") -> Enrich
             logger.warning("Enrichment returned an empty expanded_query; using fallback.")
             return _fallback(question, history_context)
         return _apply_domain_guard(result, question, history_context)
-    except Exception:
-        logger.warning("Query enrichment failed; falling back to original query.", exc_info=True)
+    except Exception as exc:
+        logger.warning(
+            "query_enrichment_failed exception_class=%s fallback_used=true",
+            type(exc).__name__,
+        )
         return _fallback(question, history_context)

@@ -69,11 +69,11 @@ describe("queryRagStream — cancelación del reader", () => {
 	it("una terminación normal ([DONE]) NO cancela el reader, solo libera el lock", async () => {
 		const read = vi
 			.fn()
-			.mockResolvedValueOnce({ done: false, value: encode("data: [DONE]\n\n") });
+			.mockResolvedValueOnce({ done: false, value: encode('data: {"type":"sources","sources":[]}\n\ndata: [DONE]\n\n') });
 		const { res, cancelSpy, releaseLockSpy } = mockStreamResponse({ read });
 		vi.stubGlobal("fetch", vi.fn().mockResolvedValue(res));
 
-		await expect(collectAll(QUESTION)).resolves.toEqual([]);
+		await expect(collectAll(QUESTION)).resolves.toEqual([{ type: "sources", sources: [] }]);
 
 		expect(cancelSpy).not.toHaveBeenCalled();
 		expect(releaseLockSpy).toHaveBeenCalledTimes(1);

@@ -43,6 +43,10 @@ from .legal_resolution import (
     requires_operative_proof,
 )
 from .llm_factory import get_active_provider, get_generation_llm
+from .normative_context import (
+    select_verified_article_context,
+    select_verified_plan_adoption_context,
+)
 from .observability import (
     log_citation_format_error,
     log_context_budget_warning,
@@ -50,7 +54,12 @@ from .observability import (
     stage_timer,
 )
 from .prompts import AGENT_FALLBACK_HUMAN_TEMPLATE, AGENT_SYSTEM
-from .query_enricher import EnrichedQuery, QueryRoute, enrich_query_async
+from .query_enricher import (
+    EnrichedQuery,
+    QueryRoute,
+    _normalize_expanded_query,
+    enrich_query_async,
+)
 from .retriever import HybridEnsembleRetriever, bm25_documents, get_ensemble_retriever
 from .tools import build_context_block
 
@@ -123,8 +132,9 @@ _OUT_OF_SCOPE_RESPONSE = (
 )
 _CLARIFICATION_RESPONSE = (
     "Tu consulta puede estar dentro del ámbito, pero necesito un poco más de contexto para "
-    "buscar en las normas y sentencias que apliquen.\n\n"
-    "Dime cualquiera de estos tres y sigo:\n" + _DATOS_QUE_FALTAN + "\n\n"
+    "buscar en las normas y sentencias que apliquen sin asumir datos.\n\n"
+    "Si te refieres a un plan, norma, permiso o actuación concreta, precisa cuál. Si no, "
+    "dime cualquiera de estos tres y sigo:\n" + _DATOS_QUE_FALTAN + "\n\n"
     "Así se ven las consultas que puedo responder:\n" + _EJEMPLOS_CONSULTA
 )
 _PROVIDENCIA_CLARIFICATION_RESPONSE = (
@@ -306,7 +316,22 @@ def _validate_citations(answer: str, doc_count: int) -> bool:
     return bool(references) and all(1 <= value <= doc_count for value in references)
 
 
-async def enrich_query_node(state: AgentState, *, capture_filter: bool = False) -> dict:
+def _is_first_question(state: AgentState) -> bool:
+    """Keep the named-plan proof limited to a first turn without inherited context."""
+    messages = state.get("messages") or []
+    return (
+        len(messages) == 1
+        and isinstance(messages[0], HumanMessage)
+        and messages[0].content == state["question"]
+    )
+
+
+async def enrich_query_node(
+    state: AgentState,
+    *,
+    capture_filter: bool = False,
+    verified_documents: tuple[Document, ...] | None = None,
+) -> dict:
     _emit_status("enriching", "Analizando el alcance y contexto de tu pregunta…")
     requested_doc_types = state.get("doc_types")
     with stage_timer("enrich_query") as fields:
@@ -318,19 +343,45 @@ async def enrich_query_node(state: AgentState, *, capture_filter: bool = False) 
             and _permits_jurisprudence(requested_doc_types)
             and needs_providencia_clarification(state["question"])
         )
-        route: QueryRoute = "needs_clarification" if clarify_providencia else analysis.route
+        plan_context: list[Document] | None = None
+        if (
+            capture_filter
+            and verified_documents is not None
+            and not clarify_providencia
+            and analysis.route in {"needs_clarification", "in_scope"}
+            and _is_first_question(state)
+        ):
+            plan_context = select_verified_plan_adoption_context(
+                state["question"],
+                requested_doc_types,
+                verified_documents,
+                min(max(int(state.get("k", 4)), 1), 8),
+            )
+        route: QueryRoute = (
+            "in_scope"
+            if plan_context is not None
+            else "needs_clarification"
+            if clarify_providencia
+            else analysis.route
+        )
         # `route` es un enum cerrado (QueryRoute), no texto libre de la
         # pregunta — seguro de loguear.
         fields["route"] = route
 
-    effective_doc_types = requested_doc_types or analysis.doc_types
+    effective_doc_types = requested_doc_types or (
+        ["normativa"] if plan_context is not None else analysis.doc_types
+    )
     if route != "in_scope":
         effective_doc_types = []
 
     update: dict[str, Any] = {
         "query_route": route,
-        "standalone_question": analysis.standalone_question,
-        "enriched_query": analysis.expanded_query,
+        "standalone_question": state["question"]
+        if plan_context is not None
+        else analysis.standalone_question,
+        "enriched_query": _normalize_expanded_query(state["question"])
+        if plan_context is not None
+        else analysis.expanded_query,
         "doc_types": effective_doc_types,
         "sources": [],
     }
@@ -404,6 +455,7 @@ async def retrieve_forced_node(
     *,
     verify_docket: bool = False,
     resolution_index: ResolutionIndex | None = None,
+    verified_documents: tuple[Document, ...] | None = None,
     chroma_query: ChromaQuery | None = None,
     query_embedder: QueryEmbedder | None = None,
 ) -> dict:
@@ -430,35 +482,64 @@ async def retrieve_forced_node(
         k = min(max(int(state.get("k", 4)), 1), 8)
         k_candidates = min(max(int(state.get("k_candidates", 8)), k), 20)
 
-        factory = (
-            partial(get_ensemble_retriever, chroma_query=chroma_query)
-            if chroma_query is not None
-            else get_ensemble_retriever
-        )
-        if query_embedder is not None:
-            factory = partial(factory, query_embedder=query_embedder)
-        retriever = factory(
-            k=k_candidates if evidence else k,
-            k_candidates=k_candidates,
-            doc_types=["jurisprudencia"] if evidence else doc_types,
-        )
-        # Una sola capa de concurrencia: ni afuse_queries() ni ainvoke() se
-        # envuelven en asyncio.to_thread(retriever.invoke, ...).
-        queries = _retrieval_queries(state)
-        if evidence:
-            # Radicado verificado: una consulta compuesta basta para traer los
-            # fragmentos de esa sentencia; evidence filtra los verificados.
-            # Aquí se buscan VARIOS fragmentos de una misma sentencia, así que
-            # se quita el tope de un fragmento por sentencia (sobre una copia).
-            if isinstance(retriever, HybridEnsembleRetriever):
-                retriever = retriever.model_copy(update={"fragmentos_por_sentencia": None})
-            docs = await retriever.ainvoke("\n".join(queries))
-            selected, documentary_answer = evidence.select_for_question(state["question"], docs, k)
+        selected = None
+        plan_selected = False
+        if (
+            verify_docket
+            and resolution_index is not None
+            and resolution_index.snapshot_verified
+            and verified_documents is not None
+            and evidence is None
+            and state.get("verified_docket") is None
+            and state.get("verified_instance") is None
+            and "requested_doc_types" in state
+        ):
+            selected = select_verified_article_context(
+                state["question"], state.get("requested_doc_types"), verified_documents, k
+            )
+            if (
+                selected is None
+                and state.get("query_route") == "in_scope"
+                and _is_first_question(state)
+            ):
+                selected = select_verified_plan_adoption_context(
+                    state["question"], state.get("requested_doc_types"), verified_documents, k
+                )
+                plan_selected = selected is not None
+        if selected is None:
+            factory = (
+                partial(get_ensemble_retriever, chroma_query=chroma_query)
+                if chroma_query is not None
+                else get_ensemble_retriever
+            )
+            if query_embedder is not None:
+                factory = partial(factory, query_embedder=query_embedder)
+            retriever = factory(
+                k=k_candidates if evidence else k,
+                k_candidates=k_candidates,
+                doc_types=["jurisprudencia"] if evidence else doc_types,
+            )
+            # Una sola capa de concurrencia: ni afuse_queries() ni ainvoke() se
+            # envuelven en asyncio.to_thread(retriever.invoke, ...).
+            queries = _retrieval_queries(state)
+            if evidence:
+                # Radicado verificado: una consulta compuesta basta para traer los
+                # fragmentos de esa sentencia; evidence filtra los verificados.
+                # Aquí se buscan VARIOS fragmentos de una misma sentencia, así que
+                # se quita el tope de un fragmento por sentencia (sobre una copia).
+                if isinstance(retriever, HybridEnsembleRetriever):
+                    retriever = retriever.model_copy(update={"fragmentos_por_sentencia": None})
+                docs = await retriever.ainvoke("\n".join(queries))
+                selected, documentary_answer = evidence.select_for_question(
+                    state["question"], docs, k
+                )
+            else:
+                # Resto de preguntas: original, autosuficiente y enriquecida se
+                # recuperan por separado y se fusionan (afuse_queries).
+                docs = await retriever.afuse_queries(queries)
+                selected, documentary_answer = docs[:k], None
         else:
-            # Resto de preguntas: original, autosuficiente y enriquecida se
-            # recuperan por separado y se fusionan (afuse_queries).
-            docs = await retriever.afuse_queries(queries)
-            selected, documentary_answer = docs[:k], None
+            documentary_answer = None
         # Conteo, no contenido: cuántos documentos, no cuáles ni su texto.
         fields["doc_count"] = len(selected)
     if verify_docket:
@@ -466,12 +547,18 @@ async def retrieve_forced_node(
             documentary_answer, len(selected)
         ):
             return {"sources": []}
-        return {
+        update: dict[str, Any] = {
             "sources": selected,
             "verified_docket": evidence.docket if evidence else None,
             "verified_instance": evidence.instance if evidence else None,
             "documentary_answer": documentary_answer,
         }
+        if plan_selected:
+            update.update(
+                standalone_question=state["question"],
+                enriched_query=_normalize_expanded_query(state["question"]),
+            )
+        return update
     return {"sources": selected}
 
 
@@ -540,14 +627,20 @@ def build_graph(
     checkpointer = MemorySaver()
     verify_docket = LEGAL_RESOLUTION_PROVENANCE_PATH is not None
     resolution_index = None
+    verified_documents: tuple[Document, ...] | None = None
+    legal_resolution_state = "not_configured"
     if LEGAL_RESOLUTION_PROVENANCE_PATH:
+        legal_resolution_state = "unavailable"
         try:
             provenance = load_provenance(
                 Path(LEGAL_RESOLUTION_PROVENANCE_PATH), LEGAL_RESOLUTION_PROVENANCE_SHA256
             )
-            index = ResolutionIndex(bm25_documents(), provenance)
+            snapshot = bm25_documents()
+            index = ResolutionIndex(snapshot, provenance)
             if index.snapshot_verified:
                 resolution_index = index
+                verified_documents = tuple(snapshot)
+                legal_resolution_state = "snapshot_verified"
                 logger.info("legal_resolution_snapshot_verified records=%d", len(provenance))
             else:
                 logger.warning("legal_resolution_snapshot_unverified")
@@ -555,9 +648,16 @@ def build_graph(
             logger.warning(
                 "legal_resolution_provenance_unavailable error_type=%s", type(exc).__name__
             )
-    return (
+    graph = (
         StateGraph(AgentState)
-        .add_node("enrich_query", partial(enrich_query_node, capture_filter=verify_docket))
+        .add_node(
+            "enrich_query",
+            partial(
+                enrich_query_node,
+                capture_filter=verify_docket,
+                verified_documents=verified_documents,
+            ),
+        )
         .add_node(
             "respond_without_retrieval",
             partial(respond_without_retrieval_node, resolution_index=resolution_index),
@@ -568,6 +668,7 @@ def build_graph(
                 retrieve_forced_node,
                 verify_docket=verify_docket,
                 resolution_index=resolution_index,
+                verified_documents=verified_documents,
                 chroma_query=chroma_query,
                 query_embedder=query_embedder,
             ),
@@ -584,3 +685,5 @@ def build_graph(
         .add_edge("generate", END)
         .compile(checkpointer=checkpointer)
     )
+    logger.info("legal_resolution_state=%s", legal_resolution_state)
+    return graph

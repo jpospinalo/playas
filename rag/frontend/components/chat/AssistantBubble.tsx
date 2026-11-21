@@ -19,6 +19,7 @@ import type {
 } from "@/lib/types";
 import { SourcesAccordion } from "@/components/chat/SourcesAccordion";
 import { MessageRatingPopover } from "@/components/chat/MessageRatingPopover";
+import { normativeAttribution } from "@/lib/sourceAttribution";
 
 interface AssistantBubbleProps {
 	text: string;
@@ -63,13 +64,6 @@ const POPOVER_JURIS_META: Array<[string, string]> = [
 	["Tema principal", "Tema"],
 ];
 
-// Etiquetas del popover para normativa.
-const POPOVER_NORMA_META: Array<[string, string]> = [
-	["titulo", "Título"],
-	["capitulo", "Capítulo"],
-	["articulo", "Artículo"],
-];
-
 function metaString(meta: Record<string, unknown>, key: string): string {
 	const v = meta[key];
 	return typeof v === "string" ? v : "";
@@ -109,7 +103,7 @@ function prepareMarkdown(raw: string): string {
 	text = text.replace(/^(\*\*[^*\n]+\*\*[^\n]*)\n([^\n])/gm, "$1\n\n$2");
 	// [docN] → markdown link intercepted by components.a
 	text = text.replace(
-		/\[doc(\d+)\]/g,
+		/\[doc(\d+)\]/gi,
 		(match, n) => `[${match}](#docref-${n})`,
 	);
 	return text;
@@ -358,12 +352,13 @@ export function AssistantBubble({
 			: active.group.title;
 	}, [active, activeDocType]);
 
-	// Metadatos del documento que existen y son no vacíos.
+	// La jerarquía normativa corresponde al fragmento activo.
 	const docMeta = useMemo(() => {
 		if (!active) return [];
-		const labels =
-			activeDocType === "normativa" ? POPOVER_NORMA_META : POPOVER_JURIS_META;
-		return labels
+		if (activeDocType === "normativa") {
+			return normativeAttribution(active.fragment.metadata, active.group.metadata);
+		}
+		return POPOVER_JURIS_META
 			.map(([key, label]) => {
 				const value = metaString(active.group.metadata, key);
 				return value ? { label, value } : null;

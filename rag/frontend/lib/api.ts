@@ -13,6 +13,13 @@ function authHeaders(token: string | null): Record<string, string> {
 	return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
+// Un null explícito significa que la UI no pudo vincular su identidad a una
+// credencial. Solo undefined conserva la interfaz legacy de lectura local.
+function resolveRequestToken(token: string | null | undefined): string | null {
+	if (token === null) throw new Error("La sesión no es válida. Inicia sesión nuevamente.");
+	return token === undefined ? getToken() : token;
+}
+
 /**
  * Comprueba si `response` es un 401 y, de serlo, invalida la sesión asociada
  * a `requestToken` (solo si ese token sigue coincidiendo con el activo — ver
@@ -45,9 +52,10 @@ export async function throwIfSessionExpired(
 export async function generateConversationTitle(
 	firstMessage: string,
 	conversationId: string,
+	requestToken?: string | null,
 ): Promise<string> {
-	const token = getToken();
 	try {
+		const token = resolveRequestToken(requestToken);
 		const res = await fetch(`${API_URL}/api/conversations/generate-title`, {
 			method: "POST",
 			headers: {
@@ -172,8 +180,8 @@ export interface AdminUserRow {
 	createdAt: string;
 }
 
-export async function listAdminUsers(): Promise<AdminUserRow[]> {
-	const token = getToken();
+export async function listAdminUsers(requestToken?: string | null): Promise<AdminUserRow[]> {
+	const token = resolveRequestToken(requestToken);
 	const res = await fetch(`${API_URL}/api/admin/users`, {
 		headers: { ...authHeaders(token) },
 		signal: withRestTimeout(),
@@ -188,8 +196,8 @@ export async function createAdminUser(input: {
 	email: string;
 	password: string;
 	displayName?: string | null;
-}): Promise<AdminUserRow> {
-	const token = getToken();
+}, requestToken?: string | null): Promise<AdminUserRow> {
+	const token = resolveRequestToken(requestToken);
 	const res = await fetch(`${API_URL}/api/admin/users`, {
 		method: "POST",
 		headers: { "Content-Type": "application/json", ...authHeaders(token) },
@@ -208,8 +216,9 @@ export async function createAdminUser(input: {
 export async function updateAdminUserPassword(
 	uid: string,
 	password: string,
+	requestToken?: string | null,
 ): Promise<void> {
-	const token = getToken();
+	const token = resolveRequestToken(requestToken);
 	const res = await fetch(`${API_URL}/api/admin/users/${uid}/password`, {
 		method: "PATCH",
 		headers: { "Content-Type": "application/json", ...authHeaders(token) },
@@ -222,8 +231,9 @@ export async function updateAdminUserPassword(
 
 export async function submitConversationFeedback(
 	request: FeedbackRequest,
+	requestToken?: string | null,
 ): Promise<{ id: string }> {
-	const token = getToken();
+	const token = resolveRequestToken(requestToken);
 	const res = await fetch(`${API_URL}/api/feedback`, {
 		method: "POST",
 		headers: { "Content-Type": "application/json", ...authHeaders(token) },
@@ -241,8 +251,9 @@ export async function submitConversationFeedback(
 
 export async function submitMessageFeedback(
 	request: MessageFeedbackRequest,
+	requestToken?: string | null,
 ): Promise<{ id: string }> {
-	const token = getToken();
+	const token = resolveRequestToken(requestToken);
 	const res = await fetch(`${API_URL}/api/feedback/message`, {
 		method: "POST",
 		headers: { "Content-Type": "application/json", ...authHeaders(token) },
@@ -269,8 +280,9 @@ export async function submitMessageFeedback(
 export async function* queryRagStream(
 	request: QueryRequest,
 	signal?: AbortSignal,
+	requestToken?: string | null,
 ): AsyncGenerator<StreamEvent> {
-	const token = getToken();
+	const token = resolveRequestToken(requestToken);
 	if (!token) {
 		// El flujo que llega hasta aquí (submit() en useChat) solo es alcanzable
 		// estando autenticado, así que un token ausente significa que se perdió
@@ -306,6 +318,8 @@ export async function* queryRagStream(
 	// `[DONE]`, así que corresponde cancelar la lectura subyacente en vez
 	// de solo soltar el lock.
 	let finishedByDone = false;
+	let sourcesSeen = false;
+	let errorSeen = false;
 
 	try {
 		while (true) {
@@ -319,8 +333,24 @@ export async function* queryRagStream(
 				const parsed = parseStreamEvent(raw);
 				if (parsed === null) continue; // tipo desconocido: se ignora, no rompe el stream
 				if (parsed === SSE_DONE) {
+					if (!sourcesSeen && !errorSeen) {
+						throw new Error("El flujo de respuesta terminó sin las fuentes.");
+					}
 					finishedByDone = true;
 					return;
+				}
+				if (errorSeen) {
+					throw new Error("El servidor envió eventos fuera de orden tras un error.");
+				}
+				if (parsed.type === "sources") {
+					if (sourcesSeen) {
+						throw new Error("El servidor envió fuentes duplicadas.");
+					}
+					sourcesSeen = true;
+				} else if (parsed.type === "error") {
+					errorSeen = true;
+				} else if (sourcesSeen) {
+					throw new Error("El servidor envió eventos fuera de orden tras las fuentes.");
 				}
 				yield parsed;
 			}

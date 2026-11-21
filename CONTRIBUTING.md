@@ -56,6 +56,9 @@ En `rag/`: `make quality` reúne lint, formato, tipos, pruebas Python y controle
 del frontend. Incluye un build y genera artefactos locales. Para evitar que
 `uv run` modifique el lock durante los controles, usar `UV_FROZEN=1 make quality`
 (o los targets individuales). Los comandos del frontend necesitan Bun.
+`UV_FROZEN=1` impide actualizar el lock, pero no impide sincronizar el entorno
+ni acceder a la red. Un control estrictamente offline debe usar dependencias
+ya preparadas y declarar qué comandos ejecutó y qué artefactos generó.
 
 Las pruebas de humo del RAG requieren configuración y servicios desplegados;
 ver [SMOKE_TESTS.md](rag/docs/SMOKE_TESTS.md). La CI y los controles locales no

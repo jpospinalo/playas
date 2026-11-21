@@ -127,12 +127,13 @@ describe("queryRagStream — contrato vigente del parser SSE (casos ya soportado
 		vi.stubGlobal(
 			"fetch",
 			vi.fn().mockResolvedValue(
-				sseResponse(['data: {"type":"token","content":"Hola"}\n\ndata: [DONE]\n\n']),
+				sseResponse(['data: {"type":"token","content":"Hola"}\n\ndata: {"type":"sources","sources":[]}\n\ndata: [DONE]\n\n']),
 			),
 		);
 		try {
 			await expect(collect(QUESTION)).resolves.toEqual([
 				{ type: "token", content: "Hola" },
+				{ type: "sources", sources: [] },
 			]);
 		} finally {
 			vi.unstubAllGlobals();
@@ -145,13 +146,14 @@ describe("queryRagStream — contrato vigente del parser SSE (casos ya soportado
 			vi.fn().mockResolvedValue(
 				sseResponse([
 					'data: {"type":"token","content":"Hola"}',
-					"\n\ndata: [DONE]\n\n",
+					'\n\ndata: {"type":"sources","sources":[]}\n\ndata: [DONE]\n\n',
 				]),
 			),
 		);
 		try {
 			await expect(collect(QUESTION)).resolves.toEqual([
 				{ type: "token", content: "Hola" },
+				{ type: "sources", sources: [] },
 			]);
 		} finally {
 			vi.unstubAllGlobals();
@@ -165,6 +167,7 @@ describe("queryRagStream — contrato vigente del parser SSE (casos ya soportado
 				sseResponse([
 					'data: {"type":"status","stage":"retrieving"}\n\n' +
 						'data: {"type":"token","content":"a"}\n\n' +
+						'data: {"type":"sources","sources":[]}\n\n' +
 						"data: [DONE]\n\n",
 				]),
 			),
@@ -173,6 +176,7 @@ describe("queryRagStream — contrato vigente del parser SSE (casos ya soportado
 			await expect(collect(QUESTION)).resolves.toEqual([
 				{ type: "status", stage: "retrieving" },
 				{ type: "token", content: "a" },
+				{ type: "sources", sources: [] },
 			]);
 		} finally {
 			vi.unstubAllGlobals();
