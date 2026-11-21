@@ -53,43 +53,147 @@ def _counts(**overrides):
 # Expectations describe the repaired behavior, including every zero boundary.
 # They are source data, not counts inferred from a run or conditional xfails.
 CASE_EXPECTATIONS = {
-    "cancel-sdk": ("red", _counts(sql_init=1, sql_dispose=1, sdk=1,
-                                 embedding_close=1, cancel_requests=1, worker=1)),
-    "cancel-store": ("red", _counts(sql_init=1, sql_dispose=1, sdk=1, store=1,
-                                   embedding_close=1, cancel_requests=1, worker=1)),
-    "cancel-bm25-nonempty": ("red", _counts(sql_init=1, sql_dispose=1, sdk=1, store=1,
-                                           documents=1, embedding_close=1,
-                                           cancel_requests=1, worker=1)),
-    "cancel-bm25-empty": ("red", _counts(sql_init=1, sql_dispose=1, sdk=1, store=1,
-                                        documents=1, embedding_close=1,
-                                        cancel_requests=1, worker=1)),
-    "entry-after-close": ("red", _counts(sql_init=1, sql_dispose=1, embedding_close=1,
-                                        cancel_requests=1, worker=1)),
-    "restart-blocked-bm25": ("red", _counts(
-        sql_init=2, sql_dispose=2, sdk=2, store=2, documents=2, embedding_close=2,
-        chroma_enter=1, chroma_exit=1, embedding_enter=1, embedding_exit=1,
-        graph=1, cancel_requests=1, worker=2)),
-    "restart-cached-cycle": ("red", _counts(
-        sql_init=2, sql_dispose=2, sdk=1, store=1, documents=1, embedding_close=2,
-        chroma_enter=1, chroma_exit=1, embedding_enter=1, embedding_exit=1,
-        graph=1, cancel_requests=1, worker=2)),
-    "waiting-blocked-bm25": ("red", _counts(
-        sql_init=1, sql_dispose=1, sdk=1, store=1, documents=1, embedding_close=2,
-        worker=1)),
-    "waiting-after-real-return": ("red", _counts(
-        sql_init=1, sql_dispose=1, sdk=1, store=1, documents=1, embedding_close=2,
-        worker=1)),
-    "embedding-close-error": ("red", _counts(
-        sql_init=1, sql_dispose=1, sdk=1, store=1, documents=1, embedding_close=1,
-        cancel_requests=1, worker=1)),
-    "context-success": ("green", _counts(
-        sql_init=1, sql_dispose=1, sdk=2, store=2, documents=2, embedding_close=2,
-        chroma_enter=1, chroma_exit=1, embedding_enter=1, embedding_exit=1,
-        graph=1, worker=1)),
-    "context-real-error": ("green", _counts(
-        sql_init=1, sql_dispose=1, sdk=2, store=2, documents=2, embedding_close=2,
-        chroma_enter=1, chroma_exit=1, embedding_enter=1, embedding_exit=1,
-        graph=1, worker=1)),
+    "cancel-sdk": (
+        "red",
+        _counts(sql_init=1, sql_dispose=1, sdk=1, embedding_close=1, cancel_requests=1, worker=1),
+    ),
+    "cancel-store": (
+        "red",
+        _counts(
+            sql_init=1,
+            sql_dispose=1,
+            sdk=1,
+            store=1,
+            embedding_close=1,
+            cancel_requests=1,
+            worker=1,
+        ),
+    ),
+    "cancel-bm25-nonempty": (
+        "red",
+        _counts(
+            sql_init=1,
+            sql_dispose=1,
+            sdk=1,
+            store=1,
+            documents=1,
+            embedding_close=1,
+            cancel_requests=1,
+            worker=1,
+        ),
+    ),
+    "cancel-bm25-empty": (
+        "red",
+        _counts(
+            sql_init=1,
+            sql_dispose=1,
+            sdk=1,
+            store=1,
+            documents=1,
+            embedding_close=1,
+            cancel_requests=1,
+            worker=1,
+        ),
+    ),
+    "entry-after-close": (
+        "red",
+        _counts(sql_init=1, sql_dispose=1, embedding_close=1, cancel_requests=1, worker=1),
+    ),
+    "restart-blocked-bm25": (
+        "red",
+        _counts(
+            sql_init=2,
+            sql_dispose=2,
+            sdk=2,
+            store=2,
+            documents=2,
+            embedding_close=2,
+            chroma_enter=1,
+            chroma_exit=1,
+            embedding_enter=1,
+            embedding_exit=1,
+            graph=1,
+            cancel_requests=1,
+            worker=2,
+        ),
+    ),
+    "restart-cached-cycle": (
+        "red",
+        _counts(
+            sql_init=2,
+            sql_dispose=2,
+            sdk=1,
+            store=1,
+            documents=1,
+            embedding_close=2,
+            chroma_enter=1,
+            chroma_exit=1,
+            embedding_enter=1,
+            embedding_exit=1,
+            graph=1,
+            cancel_requests=1,
+            worker=2,
+        ),
+    ),
+    "waiting-blocked-bm25": (
+        "red",
+        _counts(
+            sql_init=1, sql_dispose=1, sdk=1, store=1, documents=1, embedding_close=2, worker=1
+        ),
+    ),
+    "waiting-after-real-return": (
+        "red",
+        _counts(
+            sql_init=1, sql_dispose=1, sdk=1, store=1, documents=1, embedding_close=2, worker=1
+        ),
+    ),
+    "embedding-close-error": (
+        "red",
+        _counts(
+            sql_init=1,
+            sql_dispose=1,
+            sdk=1,
+            store=1,
+            documents=1,
+            embedding_close=1,
+            cancel_requests=1,
+            worker=1,
+        ),
+    ),
+    "context-success": (
+        "green",
+        _counts(
+            sql_init=1,
+            sql_dispose=1,
+            sdk=2,
+            store=2,
+            documents=2,
+            embedding_close=2,
+            chroma_enter=1,
+            chroma_exit=1,
+            embedding_enter=1,
+            embedding_exit=1,
+            graph=1,
+            worker=1,
+        ),
+    ),
+    "context-real-error": (
+        "green",
+        _counts(
+            sql_init=1,
+            sql_dispose=1,
+            sdk=2,
+            store=2,
+            documents=2,
+            embedding_close=2,
+            chroma_enter=1,
+            chroma_exit=1,
+            embedding_enter=1,
+            embedding_exit=1,
+            graph=1,
+            worker=1,
+        ),
+    ),
 }
 
 
@@ -169,11 +273,12 @@ class _Run:
 class _Harness:
     def __init__(self, case, *, boundary=None, empty=False):
         # Product imports happen only when a reviewed test body runs.
+        from langchain_core.documents import Document
+
         import rag.api.database as database
         import rag.api.main as main
         import rag.core.agent as agent
         import rag.core.retriever as retriever
-        from langchain_core.documents import Document
 
         self.case = case
         self.boundary = boundary
@@ -194,10 +299,14 @@ class _Harness:
         }
         _require(main.init_retrievers is self.real["init"], "initializer_alias_mismatch")
         _require(main.close_retrievers is self.real["close"], "cleanup_alias_mismatch")
-        self.documents = [] if empty else [
-            Document(page_content="Playa sintética alfa", metadata={"source": "p05-alfa"}),
-            Document(page_content="Costa sintética beta", metadata={"source": "p05-beta"}),
-        ]
+        self.documents = (
+            []
+            if empty
+            else [
+                Document(page_content="Playa sintética alfa", metadata={"source": "p05-alfa"}),
+                Document(page_content="Costa sintética beta", metadata={"source": "p05-beta"}),
+            ]
+        )
         self.calls = _counts()
         self.counter_lock = threading.Lock()
         self.pending_workers = deque()
@@ -212,8 +321,10 @@ class _Harness:
         self.document_error = None
         self.allowed_errors = []
         self.embeddings = SimpleNamespace(close=self.close_embeddings)
-        self.gates = {name: _Gate(self.loop, name) for name in
-                      ("sdk", "store", "bm25", "before-init", "after-real-return")}
+        self.gates = {
+            name: _Gate(self.loop, name)
+            for name in ("sdk", "store", "bm25", "before-init", "after-real-return")
+        }
 
     def bump(self, key):
         with self.counter_lock:
@@ -242,16 +353,21 @@ class _Harness:
         self.require_real_functions()
 
     def require_real_functions(self):
-        _require(all((
-            self.retriever.init_retrievers is self.real["init"],
-            self.retriever._get_chroma_client is self.real["client"],
-            self.retriever._get_chroma_vectorstore is self.real["store"],
-            self.retriever._get_bm25_base is self.real["bm25"],
-            self.retriever.close_retrievers is self.real["close"],
-            self.main.close_retrievers is self.real["close"],
-            self.main.lifespan is self.real["lifespan"],
-            asyncio.to_thread is self.real["to_thread"],
-        )), "real_function_replaced")
+        _require(
+            all(
+                (
+                    self.retriever.init_retrievers is self.real["init"],
+                    self.retriever._get_chroma_client is self.real["client"],
+                    self.retriever._get_chroma_vectorstore is self.real["store"],
+                    self.retriever._get_bm25_base is self.real["bm25"],
+                    self.retriever.close_retrievers is self.real["close"],
+                    self.main.close_retrievers is self.real["close"],
+                    self.main.lifespan is self.real["lifespan"],
+                    asyncio.to_thread is self.real["to_thread"],
+                )
+            ),
+            "real_function_replaced",
+        )
 
     async def init_sql(self):
         self.bump("sql_init")
@@ -276,11 +392,14 @@ class _Harness:
     def make_store(self, *args, **kwargs):
         del args
         number = self.bump("store")
-        _require(any(kwargs.get("client") is client for client in self.clients),
-                 "unknown_synthetic_client")
+        _require(
+            any(kwargs.get("client") is client for client in self.clients),
+            "unknown_synthetic_client",
+        )
         _require(kwargs.get("embedding_function") is self.embeddings, "wrong_embeddings")
-        _require(kwargs.get("create_collection_if_not_exists") is False,
-                 "collection_creation_enabled")
+        _require(
+            kwargs.get("create_collection_if_not_exists") is False, "collection_creation_enabled"
+        )
         store = object()
         self.stores.append(store)
         if self.boundary == "store" and number == 1:
@@ -314,8 +433,7 @@ class _Harness:
     def build_graph(self, **kwargs):
         self.bump("graph")
         _require(kwargs.get("chroma_query") is self.query, "wrong_query_boundary")
-        _require(kwargs.get("query_embedder") is self.query_embedder,
-                 "wrong_embedding_boundary")
+        _require(kwargs.get("query_embedder") is self.query_embedder, "wrong_embedding_boundary")
         graph = object()
         self.graphs.append(graph)
         return graph
@@ -377,8 +495,10 @@ class _Harness:
         _require(run.worker.product_done.is_set(), "worker_final_marker_missing")
         _require(run.worker.different_thread, "initializer_not_in_worker_thread")
         if run.worker.error is not None:
-            _require(self.is_allowed_error(run.worker.error), "unexpected_worker_exception_"
-                     + type(run.worker.error).__name__)
+            _require(
+                self.is_allowed_error(run.worker.error),
+                "unexpected_worker_exception_" + type(run.worker.error).__name__,
+            )
 
     async def wait_startup(self, run):
         await self.wait_event(run.resolved, "startup_result")
@@ -392,20 +512,23 @@ class _Harness:
         return expected is not None and type(error) is expected
 
     def is_allowed_error(self, error):
-        return self.is_invalidated(error) or any(error is allowed for allowed in
-                                                self.allowed_errors)
+        return self.is_invalidated(error) or any(
+            error is allowed for allowed in self.allowed_errors
+        )
 
     def require_invalidated(self, error, label):
         if error is not None and not self.is_invalidated(error):
             raise _HarnessFailure("P05_HARNESS unexpected_signal_" + type(error).__name__)
         _contract(error is not None, label + "_returned_without_invalidation")
-        _contract(type(error).__name__ == INVALIDATED_CLASS,
-                  label + "_wrong_invalidation_class")
+        _contract(type(error).__name__ == INVALIDATED_CLASS, label + "_wrong_invalidation_class")
         _contract(str(error) == INVALIDATED_MESSAGE, label + "_wrong_invalidation_message")
 
     def state(self):
-        return (self.retriever._chroma_client, self.retriever._chroma_vectorstore,
-                self.retriever._bm25_base)
+        return (
+            self.retriever._chroma_client,
+            self.retriever._chroma_vectorstore,
+            self.retriever._bm25_base,
+        )
 
     def require_empty(self, label):
         _contract(all(value is None for value in self.state()), label + "_singletons_repopulated")
@@ -413,26 +536,43 @@ class _Harness:
     def require_no_graph(self, run, label):
         _contract(not run.entered, label + "_entered_lifespan_body")
         _contract(self.main._graph is None, label + "_global_graph_published")
-        _contract(getattr(run.app.state, "graph", None) is None,
-                  label + "_application_graph_published")
-        _contract(getattr(run.app.state, "conversation_locks", None) is None,
-                  label + "_application_locks_published")
-        _contract(all(self.calls[key] == 0 for key in
-                      ("chroma_enter", "embedding_enter", "graph")),
-                  label + "_continued_to_http_or_graph")
+        _contract(
+            getattr(run.app.state, "graph", None) is None, label + "_application_graph_published"
+        )
+        _contract(
+            getattr(run.app.state, "conversation_locks", None) is None,
+            label + "_application_locks_published",
+        )
+        _contract(
+            all(self.calls[key] == 0 for key in ("chroma_enter", "embedding_enter", "graph")),
+            label + "_continued_to_http_or_graph",
+        )
 
     def require_counts(self):
         expected = CASE_EXPECTATIONS[self.case][1]
-        _contract(self.calls == expected, self.case + "_boundary_counts_"
-                  + json.dumps({"actual": self.calls, "expected": expected}, sort_keys=True))
+        _contract(
+            self.calls == expected,
+            self.case
+            + "_boundary_counts_"
+            + json.dumps({"actual": self.calls, "expected": expected}, sort_keys=True),
+        )
 
     def emergency(self, label):
-        evidence = {"event": "P05_HARNESS_INCONCLUSIVE", "case": self.case,
-                    "reason": label, "restored": False, "calls": self.calls,
-                    "runs": [{"task_done": run.task.done(),
-                              "worker_started": run.worker.started.is_set(),
-                              "product_done": run.worker.product_done.is_set()}
-                             for run in self.runs]}
+        evidence = {
+            "event": "P05_HARNESS_INCONCLUSIVE",
+            "case": self.case,
+            "reason": label,
+            "restored": False,
+            "calls": self.calls,
+            "runs": [
+                {
+                    "task_done": run.task.done(),
+                    "worker_started": run.worker.started.is_set(),
+                    "product_done": run.worker.product_done.is_set(),
+                }
+                for run in self.runs
+            ],
+        }
         try:
             os.write(2, (json.dumps(evidence, sort_keys=True) + "\n").encode("utf-8"))
         finally:
@@ -455,16 +595,21 @@ class _Harness:
                 await self.wait_done(run)
                 await self.wait_worker(run)
             except BaseException as exc:
-                if (not run.task.done() or not run.worker.product_done.is_set()
-                        or not run.worker.completed.is_set()):
+                if (
+                    not run.task.done()
+                    or not run.worker.product_done.is_set()
+                    or not run.worker.completed.is_set()
+                ):
                     self.emergency(type(exc).__name__)
                 # Completion is certain, but classification may still be bad.
                 # Restore only after checking *all* owners below.
-                drain_errors.append(str(exc) if isinstance(exc, _HarnessFailure)
-                                    else type(exc).__name__)
-        all_done = all(run.task.done() and run.worker.product_done.is_set()
-                       and run.worker.completed.is_set()
-                       for run in self.runs)
+                drain_errors.append(
+                    str(exc) if isinstance(exc, _HarnessFailure) else type(exc).__name__
+                )
+        all_done = all(
+            run.task.done() and run.worker.product_done.is_set() and run.worker.completed.is_set()
+            for run in self.runs
+        )
         if not all_done:
             self.emergency("owner_completion_not_confirmed")
         errors = drain_errors
@@ -482,8 +627,10 @@ class _Harness:
             errors.append(str(exc))
         for owner, name, original in reversed(self.originals):
             setattr(owner, name, original)
-        _require(all(getattr(owner, name) is original for owner, name, original in self.originals),
-                 "reference_restoration_failed")
+        _require(
+            all(getattr(owner, name) is original for owner, name, original in self.originals),
+            "reference_restoration_failed",
+        )
         _require(not errors, ";".join(errors))
 
 
@@ -527,8 +674,10 @@ def test_cancelled_startup_rejects_late_publication(boundary, empty, case):
         _contract(run.task.cancelled(), "caller_cancellation_not_preserved")
         h.require_empty("cancelled_cleanup")
         h.require_no_graph(run, "cancelled_cleanup")
-        _require(not gate.release.is_set() and not run.worker.product_done.is_set(),
-                 "cleanup_not_observed_while_worker_held")
+        _require(
+            not gate.release.is_set() and not run.worker.product_done.is_set(),
+            "cleanup_not_observed_while_worker_held",
+        )
         gate.release.set()
         await h.wait_worker(run)
         h.require_empty("late_" + boundary)
@@ -583,22 +732,36 @@ def test_previous_worker_preserves_later_cycle(boundary, case):
         await h.wait_worker(current)
         current_state = h.state()
         _contract(all(value is not None for value in current_state), "later_cycle_missing_state")
-        _contract(all(new is not old for new, old in zip(current_state, previous_state, strict=True)
-                      if old is not None), "later_cycle_reused_old_reference")
+        _contract(
+            all(
+                new is not old
+                for new, old in zip(current_state, previous_state, strict=True)
+                if old is not None
+            ),
+            "later_cycle_reused_old_reference",
+        )
         _contract(h.real["client"]() is current_state[0], "later_cycle_client_cache_changed")
         _contract(h.real["store"]() is current_state[1], "later_cycle_store_cache_changed")
         _contract(h.real["bm25"]() is current_state[2], "later_cycle_bm25_cache_changed")
         graph = h.main._graph
-        _contract(current.app.state.graph is graph and graph is h.graphs[-1],
-                  "later_cycle_graph_identity_changed")
+        _contract(
+            current.app.state.graph is graph and graph is h.graphs[-1],
+            "later_cycle_graph_identity_changed",
+        )
         gate.release.set()
         await h.wait_worker(previous)
-        _contract(all(actual is expected for actual, expected in
-                      zip(h.state(), current_state, strict=True)),
-                  "previous_worker_replaced_or_cleared_later_cycle")
+        _contract(
+            all(
+                actual is expected
+                for actual, expected in zip(h.state(), current_state, strict=True)
+            ),
+            "previous_worker_replaced_or_cleared_later_cycle",
+        )
         h.require_invalidated(previous.worker.error, "previous_worker_cached_cycle")
-        _contract(h.main._graph is graph and current.app.state.graph is graph,
-                  "previous_worker_cleared_later_graph")
+        _contract(
+            h.main._graph is graph and current.app.state.graph is graph,
+            "previous_worker_cleared_later_graph",
+        )
         current.stop.set()
         await h.wait_done(current)
         _contract(current.error is None, "later_cycle_shutdown_failed")
@@ -633,8 +796,10 @@ def test_waiting_caller_rejects_invalidated_initialization(boundary, case):
         h.require_empty("waiting_caller_invalidation")
         h.require_invalidated(run.error, "waiting_caller")
         if boundary == "after-real-return":
-            _contract(run.worker.error is None and run.worker.real_returned,
-                      "outer_validation_replaced_worker_result")
+            _contract(
+                run.worker.error is None and run.worker.real_returned,
+                "outer_validation_replaced_worker_result",
+            )
         else:
             h.require_invalidated(run.worker.error, "waiting_worker")
         _contract(h.calls["cancel_requests"] == 0, "waiting_caller_was_cancelled")
@@ -681,8 +846,9 @@ def test_real_initialization_restores_context(first_error):
                 h.real["init"]()
             except BaseException as exc:
                 if exc is not marker and not h.is_invalidated(exc):
-                    raise _HarnessFailure("P05_HARNESS unexpected_dependency_error_"
-                                          + type(exc).__name__) from exc
+                    raise _HarnessFailure(
+                        "P05_HARNESS unexpected_dependency_error_" + type(exc).__name__
+                    ) from exc
                 _contract(exc is marker, "real_error_replaced_by_invalidation")
             else:
                 _contract(False, "real_dependency_error_was_suppressed")
@@ -700,15 +866,28 @@ def test_real_initialization_restores_context(first_error):
                 raise _ContractFailure("P05_CONTRACT initialization_context_not_restored") from exc
             raise
         current_state = h.state()
-        _contract(all(value is not None for value in current_state), "positive_reinitialization_empty")
-        _contract(all(new is not old for new, old in zip(current_state, previous_state, strict=True)
-                      if old is not None), "positive_reinitialization_reused_closed_reference")
+        _contract(
+            all(value is not None for value in current_state), "positive_reinitialization_empty"
+        )
+        _contract(
+            all(
+                new is not old
+                for new, old in zip(current_state, previous_state, strict=True)
+                if old is not None
+            ),
+            "positive_reinitialization_reused_closed_reference",
+        )
         run = h.start()
         await h.wait_startup(run)
         _contract(run.entered and run.error is None, "positive_real_startup_failed")
         await h.wait_worker(run)
-        _contract(all(actual is expected for actual, expected in
-                      zip(h.state(), current_state, strict=True)), "positive_cache_not_reused")
+        _contract(
+            all(
+                actual is expected
+                for actual, expected in zip(h.state(), current_state, strict=True)
+            ),
+            "positive_cache_not_reused",
+        )
         run.stop.set()
         await h.wait_done(run)
         _contract(run.error is None, "positive_real_shutdown_failed")

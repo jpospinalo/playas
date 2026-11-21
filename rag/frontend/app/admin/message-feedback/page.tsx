@@ -1,6 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useAuth } from "@/components/providers/AuthProvider";
+import { expireAuthSession, getTokenForUser } from "@/lib/auth";
 import { API_URL } from "@/lib/config";
 import { restErrorMessage, withRestTimeout } from "@/lib/httpTimeout";
 import { throwIfSessionExpired } from "@/lib/api";
@@ -101,6 +103,7 @@ function truncate(text: string | null, maxLen: number = 50): string {
 }
 
 export default function MessageFeedbackPage() {
+	const { user } = useAuth();
 	const [items, setItems] = useState<MessageFeedbackItem[]>([]);
 	const [total, setTotal] = useState(0);
 	const [page, setPage] = useState(1);
@@ -141,8 +144,7 @@ export default function MessageFeedbackPage() {
 			setLoading(true);
 			setError(null);
 			try {
-				const { expireAuthSession, getToken } = await import("@/lib/auth");
-				const token = getToken();
+				const token = getTokenForUser(user?.user_id ?? "");
 				if (!token) {
 					// Página administrativa: solo se llega aquí ya autenticado, así
 					// que un token ausente es una sesión perdida en otro lado, no el
@@ -205,7 +207,7 @@ export default function MessageFeedbackPage() {
 				}
 			}
 		},
-		[appliedFilters],
+		[appliedFilters, user?.user_id],
 	);
 
 	useEffect(() => {

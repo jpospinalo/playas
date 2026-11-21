@@ -12,8 +12,10 @@ en orden.
 
 Genera la respuesta de cada caso con ``generate_answer()`` (una sola vez
 por pregunta) y conserva TODOS los documentos que retornó el grafo, sin
-truncar la lista después: la evaluación debe observar exactamente el
-mismo contexto que produce el flujo real, no una muestra recortada.
+truncar la lista después: la evaluación observa el contexto completo de esa
+invocación directa. Comparte grafo con la API, pero no su lifespan ni sus
+clientes REST de búsqueda y embeddings; no acredita por sí sola paridad de
+timeout, cancelación o presentación JSON/SSE. Ver docs/ARCHITECTURE.md.
 
 Cada puntaje de RAGAS queda asociado a su ``case_id`` explícitamente
 (``scores_by_case``), nunca por posición implícita en el ``Dataset`` — ver

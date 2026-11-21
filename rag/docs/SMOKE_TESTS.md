@@ -18,7 +18,12 @@ uv run pytest tests/integration/test_api_smoke.py -m integration
 ```
 
 El conjunto verifica rechazo de preguntas ajenas, aceptación de pesca y
-turismo relacionados con playas, recuperación de fuentes y citas válidas.
+turismo relacionados con playas, fuentes no vacías y presencia de marcadores
+con formato `[docN]`. No demuestra que cada índice exista ni que el pasaje
+respalde semánticamente la respuesta, y no coteja JSON con SSE. Para evaluar
+recuperación, citas, omisiones y abstenciones, seguir el
+[procedimiento de evaluación](SCRIPTS.md#evaluación-del-rag) y registrar el
+commit, Gold A, modelo y perfil de procedencia usados.
 
 ## Guion manual del frontend
 
@@ -49,10 +54,10 @@ documento ni en un reporte).
    (`Entendiendo tu pregunta…` / `Buscando evidencia…` / `Construyendo una
    respuesta…`) sí se actualiza en vivo. La respuesta en sí, en cambio, NO
    se genera token a token desde el LLM: el backend espera el resultado
-   completo, lo valida (citas, fuentes) y solo entonces lo entrega en
+   completo, comprueba el formato y rango de sus citas y solo entonces lo entrega en
    fragmentos de hasta 120 caracteres. Lo que hay que confirmar es que el
    indicador de etapa avanza durante la espera y que la respuesta aparece
-   completa y validada al terminar — no que haya un efecto de escritura en
+   completa al terminar y que los pasajes respalden sus afirmaciones — no que haya un efecto de escritura en
    vivo proveniente del modelo.
 4. **Verificar respuesta y fuentes.** Al terminar, la respuesta debe
    incluir citas `[docN]` y una sección de fuentes agrupadas y

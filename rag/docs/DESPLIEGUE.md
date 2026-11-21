@@ -27,6 +27,35 @@ endpoints autorizados de Chroma y Ollama y las credenciales del proveedor LLM.
 Para una evaluación, registrar el commit, la entrega Gold y el modelo de
 generación utilizados.
 
+### Perfiles de Gold A
+
+**Conexión básica:** seleccionar `CHROMA_COLLECTION` y el modelo de embeddings
+correctos permite recuperación general sobre Gold A. Esto no activa por sí
+solo la resolución documental ni la selección normativa: requieren además
+la procedencia verificada del mismo snapshot.
+
+**Perfil optativo con procedencia:** configurar `LEGAL_RESOLUTION_PROVENANCE_PATH`
+con la ruta legible de `PROCEDENCIA_GOLD_A.json` del paquete usado y
+`LEGAL_RESOLUTION_PROVENANCE_SHA256` con el hash publicado en su `manifest.json`.
+El backend verifica los cuerpos, metadata e IDs del snapshot antes de habilitar
+ese contexto. La capacidad y sus límites se describen en
+[Arquitectura](ARCHITECTURE.md#2-agente-rag-langgraph).
+
+En ECS, `legal_resolution_enabled` conserva el valor **false** por defecto.
+El contexto de imagen que prepara `infrastructure/scripts/push_images.sh`
+incluye la procedencia; al habilitar expresamente la variable, Terraform fija
+su ruta y hash. Véanse [la configuración de ECS](../infrastructure/ecs.tf) y
+[su variable de activación](../infrastructure/variables.tf).
+
+El Docker Compose estándar y `docker/Dockerfile.backend` no montan ni incluyen
+esa procedencia. Para usar el perfil optativo en ese entorno, el responsable
+debe suministrar el archivo de solo lectura y las dos variables; añadirlas al
+entorno sin que exista la ruta no basta. Esta guía no cambia Compose ni activa
+la capacidad. El registro `legal_resolution_state=snapshot_verified` confirma
+su habilitación al arrancar; `/api/ready` comprueba grafo, BM25 y SQL y no
+sustituye ese control. Confirmar ambos datos antes de atribuir resultados al
+perfil optativo.
+
 ---
 
 ## Requisitos previos

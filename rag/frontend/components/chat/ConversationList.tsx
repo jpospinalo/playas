@@ -8,7 +8,8 @@ import {
   type MouseEvent,
 } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { expireAuthSession, getToken } from "@/lib/auth";
+import { expireAuthSession, getTokenForUser } from "@/lib/auth";
+import { useAuth } from "@/components/providers/AuthProvider";
 import { readErrorDetail, throwIfSessionExpired } from "@/lib/api";
 import type { Conversation } from "@/hooks/useConversations";
 import { formatConversationDate } from "@/components/chat/conversationSidebarUtils";
@@ -49,6 +50,7 @@ export function ConversationList({
   onNewChat,
   onConversationsRefresh,
 }: ConversationListProps) {
+  const { user } = useAuth();
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editTitle, setEditTitle] = useState("");
   const [editError, setEditError] = useState<string | null>(null);
@@ -125,7 +127,7 @@ export function ConversationList({
       return;
     }
 
-    const token = getToken();
+    const token = getTokenForUser(user?.user_id ?? "");
     if (!token) {
       // Este componente solo se renderiza autenticado: si el token ya no
       // está, notifica para que la UI se actualice en vez de descartar la
@@ -192,7 +194,7 @@ export function ConversationList({
     event.stopPropagation();
     if (deletingInFlightRef.current) return;
 
-    const token = getToken();
+    const token = getTokenForUser(user?.user_id ?? "");
     if (!token) {
       // Igual que en saveEdit: notifica si el token ya no está.
       expireAuthSession(null);

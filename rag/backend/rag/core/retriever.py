@@ -447,7 +447,7 @@ class _AsyncChromaRetriever(BaseRetriever):
     def _get_relevant_documents(
         self, query: str, *, run_manager: CallbackManagerForRetrieverRun
     ) -> list[Document]:
-        return self.sync_retriever.invoke(query)
+        return self.sync_retriever.invoke(query, config={"callbacks": run_manager.get_child()})
 
     async def _aget_relevant_documents(self, query: str, *, run_manager: Any) -> list[Document]:
         embed = self.query_embedder if self.query_embedder is not None else EMBEDDINGS.aembed_query
@@ -518,8 +518,7 @@ class _FilteredRetriever(BaseRetriever):
         *,
         run_manager: CallbackManagerForRetrieverRun,
     ) -> list[Document]:
-        del run_manager
-        docs = self.inner.invoke(query)
+        docs = self.inner.invoke(query, config={"callbacks": run_manager.get_child()})
         allowed = set(self.doc_types)
         return [d for d in docs if (d.metadata or {}).get("doc_type") in allowed]
 
@@ -622,8 +621,9 @@ class HybridEnsembleRetriever(BaseRetriever):
         *,
         run_manager: CallbackManagerForRetrieverRun,
     ) -> list[Document]:
-        del run_manager
-        all_results: list[list[Document]] = [r.invoke(query) for r in self.retrievers]
+        all_results: list[list[Document]] = [
+            r.invoke(query, config={"callbacks": run_manager.get_child()}) for r in self.retrievers
+        ]
         return self._fuse(all_results)
 
     async def _aget_relevant_documents(
@@ -632,8 +632,10 @@ class HybridEnsembleRetriever(BaseRetriever):
         *,
         run_manager: Any,
     ) -> list[Document]:
-        del run_manager
-        tasks = [asyncio.create_task(r.ainvoke(query)) for r in self.retrievers]
+        tasks = [
+            asyncio.create_task(r.ainvoke(query, config={"callbacks": run_manager.get_child()}))
+            for r in self.retrievers
+        ]
         try:
             all_results = await asyncio.gather(*tasks)
         except BaseException:

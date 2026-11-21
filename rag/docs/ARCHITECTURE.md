@@ -23,6 +23,7 @@ backend/rag/
 │   ├── query_enricher.py       # Construcción del prompt del enricher, parseo JSON, API pública enrich_query/enrich_query_async
 │   ├── domain_scope.py         # Esquema EnrichedQuery + clasificador determinista de alcance costero/jurídico
 │   ├── legal_resolution.py     # Resolución documental sobre el snapshot BM25 con procedencia verificada
+│   ├── normative_context.py    # Selección acotada de artículos y adopción de planes sobre el mismo snapshot verificado
 │   ├── generator.py            # Adaptador de evaluación: mismo grafo, aislado por pregunta (§10)
 │   ├── observability.py        # Instrumentación de logging (etapas del grafo, conteos, sin filtrar contenido)
 │   └── llm_factory.py          # OpenAI → OpenRouter → Gemini → error
@@ -67,9 +68,11 @@ START → enrich_query → route_after_analysis → {retrieve_forced → generat
 - **`retrieve_forced`** atiende consultas `in_scope`. Si la verificación
   documental está configurada, puede resolver preguntas explícitas de
   jurisprudencia con procedencia y snapshot BM25 verificados, o abstenerse
-  por falta de evidencia, antes del híbrido. Cuando procede la búsqueda,
-  ejecuta el `HybridEnsembleRetriever` una vez y llena `sources`; la consulta
-  conserva el original y añade las reformulaciones sin duplicados exactos.
+  por falta de evidencia, antes del híbrido. El mismo perfil permite seleccionar
+  contexto normativo verificado en los casos acotados descritos abajo. Si no
+  hay una selección directa suficiente, ejecuta `HybridEnsembleRetriever`
+  una vez y llena `sources`; la consulta conserva el original y añade las
+  reformulaciones sin duplicados exactos.
 - **`generate`** devuelve `documentary_answer` si existe, o una respuesta
   fija si no hay `sources`, sin llamar al LLM de generación. En los demás
   casos construye el contexto con `tools.build_context_block`, genera la
@@ -87,6 +90,20 @@ o `unavailable` si la procedencia configurada no permitió habilitarlo.
 Describe el arranque, no la suficiencia jurídica para cada pregunta ni la
 salud permanente. Conserva los diagnósticos existentes y no cambia
 `/api/ready`, que comprueba grafo, BM25 y SQL.
+
+`normative_context.py` usa exclusivamente el snapshot verificado, el filtro
+original de tipos documentales y los cuerpos originales. Puede seleccionar
+contexto taxonómico de un artículo y una norma identificados inequívocamente,
+con sus encabezados y continuaciones dentro de un máximo de cuatro fuentes.
+También admite una pregunta inicial de adopción de un plan nombrado cuando
+el cuerpo prueba su identidad y alias único en la misma fuente y norma y otro
+artículo completo atribuye explícitamente la adopción. No sustituye adopción
+por formulación o ejecución, ni admite por esta vía planes sin prueba,
+historial heredado, filtros excluyentes o rutas terminales ajenas. Conserva la
+pregunta original frente a reformulaciones sobre otro plan. La gramática es
+deliberadamente limitada: si falta o es ambigua la prueba, conserva la
+clasificación y recuperación existentes, sin inventar una atribución. No
+garantiza recuperar íntegro cualquier artículo o plan.
 
 ## 3. Retrieval híbrido
 
@@ -120,6 +137,10 @@ Dos mecanismos independientes, con propósitos distintos:
   para el mensaje del usuario como para la respuesta del asistente; esta
   escritura ocurre siempre, tenga o no el servidor un checkpoint en memoria
   para esa conversación.
+
+SQL permite reconstruir el historial tras un reinicio; no convierte
+`MemorySaver` en un checkpoint durable, no reanuda un nodo interrumpido y no
+coordina checkpoints entre procesos o réplicas.
 
 `api/query_support.py::_get_initial_messages()`, usada por `api/main.py`,
 consulta SQL cuando hay `conversation_id` para comprobar la pertenencia
@@ -161,14 +182,16 @@ de texto de tamaño fijo, emitidos como eventos `token` consecutivos sin
 pausa entre ellos — no es generación incremental real. El endpoint emite
 `status` (etapa del nodo, en vivo vía `get_stream_writer()`), luego esos
 fragmentos `token`, y finalmente un evento `sources` con las fuentes
-agrupadas y las métricas de contexto.
+agrupadas y las métricas de contexto, seguido de `[DONE]` en un cierre normal.
 
-El OpenAPI generado por FastAPI declara el `200` de este endpoint como
-`text/event-stream` (antes declaraba, por defecto, `application/json` con
-un schema vacío — un artefacto de no tener `response_model`, que nunca
-reflejó lo que el endpoint realmente envía). La respuesta real —
-`_ResourceManagedStreamingResponse`, sus headers, sus eventos y el
-terminador `[DONE]` — no cambió; solo su documentación en `/openapi.json`.
+OpenAPI declara la respuesta `200` como `text/event-stream`. Validar el
+formato y rango de las citas no demuestra por sí solo respaldo semántico:
+esa comprobación exige cotejar la respuesta con los pasajes visibles.
+
+En un cierre de éxito, el cliente exige un único evento `sources` (una lista
+vacía es válida) antes de `[DONE]`. Rechaza truncamientos, duplicados y eventos
+conocidos fuera de orden. Un error o una cancelación no se tratan como una
+respuesta completada para persistir.
 
 ## 6. Autenticación
 
@@ -176,16 +199,15 @@ Auth propia con **JWT + PostgreSQL**. `api/auth.py` emite/valida tokens HS256
 (`JWT_SECRET_KEY` / `JWT_ALGORITHM` / `JWT_EXPIRE_MINUTES`); las contraseñas
 se hashean con SHA-256 seguido de bcrypt (`api/passwords.py`).
 
-En el frontend, `lib/auth.ts` guarda el token y el usuario en
-`localStorage` (sin cookies, sin SDK de terceros); `AuthProvider`
-(`components/providers/AuthProvider.tsx`) valida la sesión contra
-`GET /api/auth/me` al montar la app y expone `signIn`/`signOut`. Un `401` en
-cualquier llamada autenticada dispara el evento `atlas:session-expired`
-(ver `lib/api.ts::throwIfSessionExpired`), que `AuthProvider` escucha para
-cerrar la sesión en memoria — con un chequeo de que el token que recibió el
-401 siga siendo el token activo, para que una respuesta tardía de una sesión
-anterior no pueda cerrar la sesión de un usuario distinto que ya inició
-sesión después en la misma pestaña.
+En el frontend, `lib/auth.ts` guarda el token y una caché de usuario ligada
+a ese token en `localStorage` (sin cookies ni SDK de terceros).
+`AuthProvider` valida `/api/auth/me` al montar y al observar un cambio
+efectivo de token entre pestañas. Las operaciones fijan su credencial según
+la identidad mostrada, incluso antes del evento `storage`, y un `401` tardío
+no cierra otra sesión. Estas guardas dan coherencia a la UI; el backend sigue
+verificando JWT, roles y propiedad en cada petición. Véanse la migración de
+caché, cancelación y aislamiento del chat en el
+[contrato del cliente](../frontend/README.md#autenticación-jwt-propio).
 
 ## 7. Selección de proveedor LLM
 
@@ -203,7 +225,8 @@ de ambos vía Google GenAI).
   modelo de embeddings `embeddinggemma:latest` en el puerto 11434).
   La colección es configurable con `CHROMA_COLLECTION` (alias legado
   `CHROMA_COLLECTION_NAME`); `rag_playas` es el valor por defecto legado.
-  Para Gold A, consultar la [configuración existente](DESPLIEGUE.md#conectar-el-rag-a-gold-a).
+  Para Gold A y su perfil optativo de procedencia, consultar la
+  [configuración existente](DESPLIEGUE.md#perfiles-de-gold-a).
   Reranker opcional (`OllamaReranker`, no usado en el flujo principal):
   requiere `OLLAMA_RERANK_BASE_URL` y `OLLAMA_RERANK_MODEL` (o su alias
   legado `OLLAMA_RERANKER_MODEL`) explícitos — `config.py` no define un
@@ -247,7 +270,10 @@ antes de compilarlo. No ejecuta el lifespan de la API ni inyecta sus
 clientes REST de búsqueda y embeddings. La corrida completa evalúa el
 contexto y la respuesta con llamadas a modelos y requiere servicios
 configurados. El modo `--validate-only` comprueba el banco y la configuración
-local.
+local. Compartir grafo no hace idénticos los transportes, presupuestos de
+timeout, cancelación o presentación pública de fuentes. Para medir el
+comportamiento de la aplicación, capturar sus endpoints JSON/SSE y registrar
+el perfil de procedencia activo; el evaluador directo conserva su alcance.
 
 El banco `evaluation/data/legal-ground-truth-v0.1.json` está versionado y
 pendiente de validación final. `evaluation/ground_truth.py` comprueba su

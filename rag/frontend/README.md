@@ -51,14 +51,24 @@ vacío para usar rutas relativas detrás de un proxy como nginx — ver
 
 El flujo actual:
 
-- `lib/auth.ts` — gestiona el token y el usuario en `localStorage`
-  (`atlas_token`, `atlas_user`). Expone `getToken`, `setAuth`, `clearAuth`,
-  y el evento `atlas:session-expired` que dispara cualquier llamada
-  autenticada que reciba un `401`.
+- `lib/auth.ts` — gestiona el token y una caché `{token, user}` en
+  `localStorage` (`atlas_token`, `atlas_user`). `getTokenForUser(user_id)`
+  entrega la credencial del mismo registro solo si corresponde a la identidad
+  mostrada y al token activo; no prueba autorización. Una caché heredada sin
+  vínculo no se reutiliza hasta que `/api/auth/me` confirme la identidad.
 - `components/providers/AuthProvider.tsx` — valida la sesión contra
-  `GET /api/auth/me` al montar la app, escucha `atlas:session-expired` para
-  cerrar sesión en memoria, y expone `signIn`/`signOut`/`user`/`role` vía
-  `useAuth()`. `signIn` llama a `POST /api/auth/login`.
+  `GET /api/auth/me` al montar y cuando `storage` informa un cambio efectivo
+  de token, incluido logout o rotación para el mismo usuario. Limpia la
+  identidad anterior durante la validación, aborta validaciones obsoletas y
+  descarta sus respuestas tardías. Expone `signIn`/`signOut`/`user`/`role`
+  vía `useAuth()`. `signIn` llama a `POST /api/auth/login`.
+- Las operaciones capturan la credencial ligada al usuario antes del primer
+  `await` y la conservan durante esa operación. Así se bloquea una solicitud
+  de A con el token de B incluso antes de recibir `storage`. Un `401` solo
+  dispara `atlas:session-expired` si su token sigue activo; no cierra una
+  sesión posterior. Un fallo transitorio de `/me` conserva únicamente una
+  caché ligada al token vigente. Al cambiar de usuario se desmonta el chat y
+  se descartan sus mensajes, referencias y generación anterior.
 - Las conversaciones y mensajes viven en la base de datos SQL del backend
   (Postgres/SQLite vía SQLAlchemy), no en un store de cliente — el frontend
   llama a `/api/conversations` y `/api/conversations/{id}/messages` por
@@ -75,7 +85,7 @@ El flujo actual:
 
 | Ruta | Archivo | Descripción | Auth |
 |------|---------|-------------|------|
-| `/` | `app/page.tsx` | Chat principal (`ChatInterface`) | Opcional |
+| `/` | `app/page.tsx` | Chat principal (`ChatInterface`); login obligatorio antes de montar el chat | Sí |
 | `/about` | `app/about/page.tsx` | Página informativa estática | No |
 | `/admin` | `app/admin/page.tsx` | Dashboard de feedback (stats + distribuciones) | Admin |
 | `/admin/feedback` | `app/admin/feedback/page.tsx` | Tabla de feedback por conversación | Admin |
@@ -118,7 +128,7 @@ El flujo actual:
 
 | Componente | Responsabilidad |
 |------------|-----------------|
-| `AuthModal` | Modal login/register con tabs. Modos `"recommendation"` (soft) y `"explicit"` (forzado). |
+| `AuthModal` | Formulario de login. `dismissible=false` impide cerrarlo cuando se exige sesión; no ofrece registro ni pestañas de modos. |
 | `ThemeToggle` | Control segmentado de 3 posiciones: claro / sistema / oscuro. |
 | `AtlasWordmark` | Texto "ATLAS" estilizado con letter-spacing. |
 
@@ -151,9 +161,9 @@ Máquina de estados del chat. Gestiona el ciclo completo de una conversación.
 
 **Flujo:**
 1. Genera `thread_id` (UUID) estable por sesión de chat.
-2. Primer mensaje crea la conversación vía `POST /api/conversations` (backend SQL), con el título fijado a los primeros 120 caracteres de la pregunta (o una marca de fecha/hora si está vacía). `generateConversationTitle` existe como función/endpoint (ver tabla de `api.ts` más abajo), pero la UI vigente no lo invoca.
+2. Primer mensaje crea la conversación vía `POST /api/conversations` (backend SQL), con el título fijado a los primeros 120 caracteres de la pregunta. `generateConversationTitle` existe como función/endpoint (ver tabla de `api.ts` más abajo), pero la UI vigente no lo invoca.
 3. Cada turno se persiste con `POST /api/conversations/{id}/messages` (pregunta y respuesta, por separado), con un reintento para errores transitorios (no para `401`, que expira la sesión de inmediato).
-4. Streaming SSE vía `queryRagStream` async generator, actualizando mensajes en tiempo real.
+4. SSE vía `queryRagStream`: las etapas avanzan durante la espera; el texto llega en fragmentos después de generar y validar la respuesta completa, no como tokens en vivo del modelo.
 5. `loadConversation` hidrata desde `GET /api/conversations/{id}/messages`, ordenado por el backend. Cada llamada reclama la propiedad del estado compartido (un id de operación monotónico + el `AbortController` dedicado a la carga, comparados por identidad): detiene de inmediato el estado transitorio de una generación en curso (`isStreaming`/`stage`), pero solo reemplaza los mensajes visibles y libera `loading` si, al resolver, sigue siendo la operación vigente — una respuesta tardía de una selección ya superada nunca pisa la conversación que el usuario ve.
 6. `rateMessage` envía feedback por mensaje (`POST /api/feedback/message`) y marca localmente.
 
@@ -169,7 +179,9 @@ Lista las conversaciones del usuario autenticado vía `GET /api/conversations`, 
 
 ### `auth.ts`
 
-Gestión de sesión JWT en el cliente — token y usuario en `localStorage`, más el mecanismo de expiración de sesión seguro frente a carreras entre pestañas/sesiones (ver comentarios en el archivo). Sin dependencias externas.
+Gestión de sesión JWT en el cliente, sin dependencias externas. El
+[contrato de autenticación](#autenticación-jwt-propio) describe el vínculo
+entre identidad y credencial, la migración de caché y la expiración segura.
 
 ### `api.ts`
 
@@ -177,19 +189,32 @@ Cliente API vigente, con funciones tipadas:
 
 | Función | Endpoint | Descripción |
 |---------|----------|-------------|
-| `queryRagStream(request)` | POST `/api/query/stream` | AsyncGenerator SSE. Yield `StreamEvent` (`token`, `sources`, `status`, `error`). Única vía de consulta usada por la UI. Sin límite de tiempo común (ver abajo); conserva únicamente la señal de cancelación que ya recibía. |
+| `queryRagStream(request, signal?, token?)` | POST `/api/query/stream` | AsyncGenerator de `StreamEvent` (`token`, `sources`, `status`, `error`). Única vía de consulta usada por la UI. Sin límite de tiempo común; conserva la señal de cancelación del llamador. |
 | `generateConversationTitle(...)` | POST `/api/conversations/generate-title` | Título generado por IA, con fallback silencioso a los primeros 50 caracteres del mensaje. Tampoco tiene el límite de tiempo común — llamada al LLM con su propio presupuesto. |
-| `submitConversationFeedback(request)` | POST `/api/feedback` | Feedback multi-dimensión. |
-| `submitMessageFeedback(request)` | POST `/api/feedback/message` | Feedback por mensaje (409 = duplicado). |
-| `listAdminUsers()` | GET `/api/admin/users` | Lista de usuarios. |
-| `createAdminUser(input)` | POST `/api/admin/users` | Crear usuario. |
-| `updateAdminUserPassword(uid, pwd)` | PATCH `/api/admin/users/{uid}/password` | Cambiar contraseña. |
+| `submitConversationFeedback(request, token?)` | POST `/api/feedback` | Feedback multi-dimensión. |
+| `submitMessageFeedback(request, token?)` | POST `/api/feedback/message` | Feedback por mensaje (409 = duplicado). |
+| `listAdminUsers(token?)` | GET `/api/admin/users` | Lista de usuarios. |
+| `createAdminUser(input, token?)` | POST `/api/admin/users` | Crear usuario. |
+| `updateAdminUserPassword(uid, pwd, token?)` | PATCH `/api/admin/users/{uid}/password` | Cambiar contraseña. |
 
-Todas las requests autenticadas usan `Authorization: Bearer <token>` (`lib/auth.ts::getToken()`). Un `401` en cualquiera de ellas pasa por `throwIfSessionExpired`, que expira la sesión de forma segura frente a condiciones de carrera (ver `lib/auth.ts::expireAuthSession`).
+Las llamadas autenticadas usan `Authorization: Bearer <token>`. Los
+componentes pasan la credencial capturada con `getTokenForUser`: `null`
+explícito bloquea el envío y nunca toma el token de otra sesión. Solo omitir
+el argumento (`undefined`) conserva la lectura local por compatibilidad con
+llamadores anteriores; no usar ese modo para una nueva operación de UI.
+El chat conserva el mismo token en creación, persistencia, SSE y feedback.
+Un `401` pasa por `throwIfSessionExpired` y solo expira el token aún activo.
 
 Las operaciones REST de duración finita — autenticación, listar/cargar/crear/renombrar/borrar conversaciones, persistencia de mensajes y feedback, y las pantallas de administración — comparten un límite de tiempo conservador de 60s (`lib/httpTimeout.ts::withRestTimeout`, sobre `AbortSignal.timeout()`/`AbortSignal.any()`), que se combina con cualquier señal de cancelación propia del llamador sin reemplazarla. Quedan fuera, deliberadamente, `queryRagStream` (streaming) y `generateConversationTitle` (ver tabla arriba). El límite aplica POR INTENTO, no por operación completa: `persistMessage` (`hooks/useChat.ts`) hace como máximo dos intentos ante un error transitorio o `5xx`, y cada uno recibe su propio presupuesto completo de 60s — un intento que agota su límite no le resta tiempo al siguiente.
 
 Los mensajes de error HTTP mostrados al usuario pasan por un único lector seguro (`lib/api.ts::readErrorDetail`): intenta `{"detail": "..."}` de un cuerpo JSON, luego texto plano corto y de confianza, y si no hay nada usable (cuerpo vacío, JSON sin `detail`, HTML de un proxy, o un cuerpo demasiado largo) usa un mensaje por código — nunca muestra JSON serializado ni un cuerpo sin acotar.
+
+Un cierre SSE de éxito requiere un único evento `sources` antes de `[DONE]`;
+`sources: []` es válido para una abstención. El cliente rechaza fuentes
+ausentes o duplicadas, tokens/etapas posteriores a las fuentes y eventos
+conocidos posteriores a un error. Un flujo truncado, un error o una
+cancelación no se persisten como respuesta completada. Los comentarios SSE,
+UTF-8 fragmentado y eventos desconocidos inocuos siguen admitidos.
 
 ### `types.ts`
 
@@ -197,9 +222,19 @@ Interfaces TypeScript: `Message`, `SourceGroup`, `SourceFragment`, `QueryRequest
 
 Función `normalizeSources(raw)` para convertir conversaciones antiguas guardadas en el shape plano legado al shape actual (`SourceGroup[]`).
 
+`SourceGroup.metadata` contiene la identidad del documento;
+`SourceFragment.metadata` contiene la atribución del pasaje, incluidos
+artículo, título y capítulo normativos. `lib/sourceAttribution.ts` reúne su
+lectura compatible para el acordeón y el popover: no atribuir el artículo de
+un fragmento a todo el grupo. Los índices `[docN]` conservan el orden global
+de los fragmentos, no un índice independiente por grupo.
+
 ### `config.ts`
 
-`API_URL` — `process.env.NEXT_PUBLIC_API_URL` con fallback a `http://localhost:8080`.
+`API_URL` normaliza `NEXT_PUBLIC_API_URL`: ausente usa
+`http://localhost:8080`; definida como cadena vacía conserva rutas relativas
+`/api/...` detrás del proxy; una URL explícita pierde solo sus barras finales.
+No configurar `/api` como prefijo: cada llamada ya añade ese segmento.
 
 ---
 
@@ -227,6 +262,6 @@ El sistema visual de ATLAS está definido en `globals.css` con tokens OKLCH y do
 - **Sin API routes** — el frontend es un SPA puro que habla directamente con el backend Python vía `NEXT_PUBLIC_API_URL`. No hay directorio `app/api/`.
 - **Sin tailwind.config** — Tailwind v4 usa configuración CSS-first vía `@theme inline` en `globals.css`.
 - **SSE streaming** — `queryRagStream` es un async generator que lee el `ReadableStream` de `fetch` y yield `StreamEvent` tipados. El reensamblado de bloques SSE y su interpretación viven en `lib/sseParser.ts` (`SseEventAccumulator`/`parseStreamEvent`): tolera separadores `\n`/`\r\n`/`\r` mezclados y fragmentados en cualquier punto entre chunks, líneas de comentario (`:...`), varias líneas `data:` por bloque (unidas con `\n`), e ignora tipos de evento desconocidos sin romper el stream. Si el consumidor abandona el generador antes de `[DONE]` (cancelación del usuario, un error de parseo, o una nueva selección de conversación), `queryRagStream` cancela el `reader` subyacente además de soltar su lock — un fallo al cancelar nunca reemplaza el error real ni produce uno nuevo si no lo había.
-- **Sesión sin backend de terceros** — token JWT + datos de usuario en `localStorage`; el backend es la única fuente de verdad de identidad y roles (ver "Autenticación" arriba).
+- **Sesión sin backend de terceros** — credencial y caché de usuario vinculadas en `localStorage`; el backend verifica identidad, roles y propiedad (ver "Autenticación" arriba).
 - **Conversaciones en SQL del backend** — no en un store de cliente. El frontend recibe `conversation_id`/`thread_id` y persiste/lee cada turno vía REST.
 - **Acceso admin por roles** — el `role` viene de la respuesta de auth del backend (`/api/auth/me`, `/api/auth/login`) y se revalida server-side en cada endpoint `/api/admin/*` vía `require_admin`.

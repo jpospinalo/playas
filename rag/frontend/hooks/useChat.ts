@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { queryRagStream, throwIfSessionExpired } from "@/lib/api";
-import { expireAuthSession, getToken } from "@/lib/auth";
+import { expireAuthSession, getTokenForUser } from "@/lib/auth";
 import { API_URL } from "@/lib/config";
 import { restErrorMessage, withRestTimeout } from "@/lib/httpTimeout";
 import { MAX_QUESTION_CHARS } from "@/lib/contracts";
@@ -217,8 +217,7 @@ export function useChat({ onConversationChanged }: UseChatOptions = {}): UseChat
 	}
 
 	/** Crea la conversación en la base de datos vía API al enviar el primer mensaje. */
-	async function _createConversation(firstQuestion: string): Promise<string> {
-		const token = getToken();
+	async function _createConversation(firstQuestion: string, token: string): Promise<string> {
 		if (!user || !token) {
 			// Si React todavía cree que hay un usuario pero el token ya no está
 			// (p. ej. otra pestaña cerró sesión), notifica para que la UI se
@@ -277,7 +276,7 @@ export function useChat({ onConversationChanged }: UseChatOptions = {}): UseChat
 			);
 			return;
 		}
-		const token = getToken();
+		const token = user ? getTokenForUser(user.user_id) : null;
 		if (!user || !token) {
 			// Mismo caso que en _createConversation: notifica si React aún cree
 			// que hay sesión activa.
@@ -320,7 +319,7 @@ export function useChat({ onConversationChanged }: UseChatOptions = {}): UseChat
 
 		if (isFirstMessage) {
 			try {
-				const newConvId = await _createConversation(q);
+				const newConvId = await _createConversation(q, token);
 				if (!isCurrentRun()) return;
 				_setConversationId(newConvId);
 			} catch (err) {
@@ -410,6 +409,7 @@ export function useChat({ onConversationChanged }: UseChatOptions = {}): UseChat
 					current_message_id: userMsgId,
 				},
 				controller.signal,
+				token,
 			);
 			for await (const event of stream) {
 				// G2.1 — defensa adicional: si otra operación reclamó la
@@ -597,7 +597,7 @@ export function useChat({ onConversationChanged }: UseChatOptions = {}): UseChat
 		// se actualiza sincrónicamente más abajo, antes del primer `await`.
 		if (persistingRetryRef.current.has(messageId)) return;
 
-		const token = getToken();
+		const token = user ? getTokenForUser(user.user_id) : null;
 		const activeConvId = conversationIdRef.current;
 		const target = messages.find((m) => m.id === messageId);
 		if (!activeConvId || !target || target.persistenceStatus !== "failed") {
@@ -686,7 +686,7 @@ export function useChat({ onConversationChanged }: UseChatOptions = {}): UseChat
 		// en curso mientras la solicitud está en vuelo.
 		setLoading(true);
 
-		const token = getToken();
+		const token = user ? getTokenForUser(user.user_id) : null;
 		if (!token) {
 			// Igual que arriba: si React aún cree que hay sesión, notifica.
 			if (user) expireAuthSession(null);
@@ -784,7 +784,8 @@ export function useChat({ onConversationChanged }: UseChatOptions = {}): UseChat
 		ratings: { pertinence: number; accuracy: number },
 		expectedAnswer?: string,
 	): Promise<void> {
-		if (!user || !conversationIdRef.current) return;
+		const token = user ? getTokenForUser(user.user_id) : null;
+		if (!token || !conversationIdRef.current) return;
 
 		const { submitMessageFeedback } = await import("@/lib/api");
 		await submitMessageFeedback({
@@ -792,7 +793,7 @@ export function useChat({ onConversationChanged }: UseChatOptions = {}): UseChat
 			message_id: messageId,
 			ratings: { pertinence: ratings.pertinence, accuracy: ratings.accuracy },
 			expected_answer: expectedAnswer,
-		});
+		}, token);
 
 		setRatedMessageIds((prev) => new Set(prev).add(messageId));
 	}

@@ -37,7 +37,7 @@ frontend-test:  ## Ejecutar tests unitarios del frontend (Vitest)
 frontend-build:  ## Build de producción del frontend
 	cd frontend && bun run build
 
-quality:  ## Ejecutar todos los checks de calidad (backend + frontend), sin modificar archivos
+quality:  ## Ejecutar checks de backend y frontend; el build genera artefactos locales
 	$(MAKE) lint
 	$(MAKE) format-check
 	$(MAKE) typecheck

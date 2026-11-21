@@ -6,6 +6,7 @@ import type { Conversation } from "@/hooks/useConversations";
 
 vi.mock("@/lib/auth", () => ({
 	getToken: vi.fn(() => "test-token"),
+	getTokenForUser: vi.fn(() => "test-token"),
 	expireAuthSession: vi.fn(),
 }));
 

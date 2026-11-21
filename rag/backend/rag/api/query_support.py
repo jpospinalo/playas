@@ -88,8 +88,8 @@ def _docs_to_source_groups(docs: list[Document]) -> list[SourceGroup]:
     order: list[str] = []
 
     for i, doc in enumerate(docs):
-        # Parche temporal: limpiar U+FFFD antes de exponer al frontend.
-        # Ver docs/INGEST_ENCODING_BUG.md.
+        # Compatibilidad con entradas históricas que contengan U+FFFD.
+        # El corpus y su representación actual se describen en data/README.md.
         meta = sanitize_replacement_chars(dict(doc.metadata or {}))
         source = meta.get("source", "") or f"__unknown_{i}__"
 

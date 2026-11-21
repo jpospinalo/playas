@@ -4,6 +4,12 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { FeedbackModal } from "@/components/chat/FeedbackModal";
 import { submitConversationFeedback } from "@/lib/api";
 
+vi.mock("@/components/providers/AuthProvider", () => ({
+	useAuth: () => ({ user: { user_id: "test-user", email: "test@example.test", display_name: null, role: "admin" } }),
+}));
+
+vi.mock("@/lib/auth", () => ({ getTokenForUser: vi.fn(() => "test-token") }));
+
 vi.mock("@/lib/api", () => ({
 	submitConversationFeedback: vi.fn(),
 }));

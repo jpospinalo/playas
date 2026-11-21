@@ -2,6 +2,7 @@
 
 import { useId, useState } from "react";
 import type { DocType, SourceGroup, SourceMetadata } from "@/lib/types";
+import { normativeAttribution } from "@/lib/sourceAttribution";
 
 interface SourcesAccordionProps {
   sources: SourceGroup[];
@@ -13,14 +14,6 @@ const JURIS_META_LABELS: Array<[string, string]> = [
   ["Radicado", "Radicado"],
   ["Magistrado ponente", "Magistrado ponente"],
   ["Tema principal", "Tema"],
-];
-
-// Atribución para normativa. La norma se muestra como título del grupo, así que
-// aquí solo van Título / Capítulo / Artículo.
-const NORMA_META_LABELS: Array<[string, string]> = [
-  ["titulo", "Título"],
-  ["capitulo", "Capítulo"],
-  ["articulo", "Artículo"],
 ];
 
 function metaString(meta: Record<string, unknown>, key: string): string {
@@ -131,7 +124,7 @@ export function SourcesAccordion({ sources }: SourcesAccordionProps) {
                 ? metaString(group.metadata, "norma") || group.title
                 : group.title;
 
-              const metaLabels = isNorma ? NORMA_META_LABELS : JURIS_META_LABELS;
+              const metaLabels = isNorma ? [] : JURIS_META_LABELS;
               const docMeta = metaLabels
                 .map(([key, label]) => {
                   const value = metaString(group.metadata, key);
@@ -175,6 +168,9 @@ export function SourcesAccordion({ sources }: SourcesAccordionProps) {
 
                   <ul className="mt-2.5 flex flex-col gap-2" role="list">
                     {group.fragments.map((frag) => {
+                      const fragmentMeta = isNorma
+                        ? normativeAttribution(frag.metadata, group.metadata)
+                        : [];
                       const section =
                         metaString(frag.metadata, "section_name") ||
                         metaString(frag.metadata, "section_heading");
@@ -187,6 +183,16 @@ export function SourcesAccordion({ sources }: SourcesAccordionProps) {
                             {frag.index}
                           </span>
                           <div className="min-w-0 border-l border-border pl-3">
+                            {fragmentMeta.length > 0 && (
+                              <dl className="mb-1 grid grid-cols-[auto_1fr] gap-x-2 gap-y-0.5 text-[11px] text-muted">
+                                {fragmentMeta.map(({ label, value }) => (
+                                  <div key={label} className="contents">
+                                    <dt className="font-medium text-muted/70">{label}:</dt>
+                                    <dd className="truncate" translate="no">{value}</dd>
+                                  </div>
+                                ))}
+                              </dl>
+                            )}
                             {section && (
                               <span
                                 className="mb-0.5 block truncate text-[10px] text-muted/80"

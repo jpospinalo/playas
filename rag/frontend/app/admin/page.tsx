@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useAuth } from "@/components/providers/AuthProvider";
+import { expireAuthSession, getTokenForUser } from "@/lib/auth";
 import { API_URL } from "@/lib/config";
 import { restErrorMessage, withRestTimeout } from "@/lib/httpTimeout";
 import { throwIfSessionExpired } from "@/lib/api";
@@ -163,6 +165,7 @@ async function fetchMessageStats(token: string): Promise<MessageFeedbackStats> {
 }
 
 export default function AdminPage() {
+	const { user } = useAuth();
 	const [convStats, setConvStats] = useState<ConversationFeedbackStats | null>(
 		null,
 	);
@@ -173,8 +176,7 @@ export default function AdminPage() {
 	useEffect(() => {
 		async function load() {
 			try {
-				const { expireAuthSession, getToken } = await import("@/lib/auth");
-				const token = getToken();
+				const token = getTokenForUser(user?.user_id ?? "");
 				if (!token) {
 					// Página administrativa: solo se llega aquí ya autenticado, así
 					// que un token ausente es una sesión perdida en otro lado, no el
@@ -195,7 +197,7 @@ export default function AdminPage() {
 			}
 		}
 		load();
-	}, []);
+	}, [user?.user_id]);
 
 	if (loading) {
 		return (

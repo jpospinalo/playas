@@ -22,6 +22,7 @@ import type { Conversation } from "@/hooks/useConversations";
 
 vi.mock("@/lib/auth", () => ({
 	getToken: vi.fn(() => "test-token"),
+	getTokenForUser: vi.fn(() => "test-token"),
 	expireAuthSession: vi.fn(),
 }));
 
@@ -41,7 +42,7 @@ vi.mock("@/lib/api", () => ({
 	throwIfSessionExpired: vi.fn(async () => {}),
 }));
 
-import { getToken } from "@/lib/auth";
+import { getTokenForUser } from "@/lib/auth";
 
 function jsonResponse(body: unknown, status = 200) {
 	return {
@@ -233,7 +234,7 @@ describe("useChat — ciclo de vida de loadConversation", () => {
 	});
 
 	it("sin token, ningún estado queda atascado: loading/isStreaming/canCancel vuelven a su valor de reposo", async () => {
-		(getToken as unknown as ReturnType<typeof vi.fn>).mockReturnValueOnce(null);
+		(getTokenForUser as unknown as ReturnType<typeof vi.fn>).mockReturnValueOnce(null);
 		const fetchMock = fetch as unknown as ReturnType<typeof vi.fn>;
 
 		const { result } = renderHook(() => useChat());

@@ -4,7 +4,7 @@ Expone estos endpoints sobre el agente LangGraph:
   GET  /api/health          — liveness check
   GET  /api/ready            — readiness check (ver docstring de `ready()`)
   POST /api/query           — respuesta completa (JSON)
-  POST /api/query/stream    — streaming SSE con tokens del LLM
+  POST /api/query/stream    — SSE con etapas y fragmentos de la respuesta ya validada
 
 Run with:
     uv run uvicorn rag.api.main:app --reload --port 8080

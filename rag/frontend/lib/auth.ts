@@ -39,7 +39,14 @@ export function getToken(): string | null {
 
 export function setAuth(token: string, user: AuthUser): void {
 	localStorage.setItem(TOKEN_KEY, token);
-	localStorage.setItem(USER_KEY, JSON.stringify(user));
+	// La caché solo es reutilizable con la sesión que confirmó esta identidad.
+	localStorage.setItem(USER_KEY, JSON.stringify({ token, user }));
+}
+
+/** Solo los cambios de token en localStorage pueden cambiar la sesión. */
+export function isAuthStorageEvent(event: StorageEvent): boolean {
+	return event.storageArea === localStorage &&
+		(event.key === TOKEN_KEY || event.key === null);
 }
 
 export function clearAuth(): void {
@@ -79,15 +86,38 @@ export function expireAuthSession(
 	return true;
 }
 
-export function getStoredUser(): AuthUser | null {
+function readBoundIdentity(): { token: string; user: AuthUser } | null {
 	if (typeof window === "undefined") return null;
 	const raw = localStorage.getItem(USER_KEY);
 	if (!raw) return null;
 	try {
-		return JSON.parse(raw) as AuthUser;
+		const cached = JSON.parse(raw) as { token?: unknown; user?: AuthUser } | null;
+		const token = getToken();
+		// Las versiones anteriores guardaban solo AuthUser, sin vínculo de
+		// sesión: /me debe confirmarlo antes de reutilizar esa caché heredada.
+		if (!token || !cached || typeof cached.token !== "string" ||
+			cached.token !== token || !cached.user) return null;
+		const user = cached.user;
+		if (typeof user.user_id !== "string" || typeof user.email !== "string" ||
+			typeof user.role !== "string" ||
+			(user.display_name !== null && typeof user.display_name !== "string")) return null;
+		return { token: cached.token, user };
 	} catch {
 		return null;
 	}
+}
+
+export function getStoredUser(): AuthUser | null {
+	return readBoundIdentity()?.user ?? null;
+}
+
+/**
+ * Credencial de la misma identidad mostrada, sin mezclar lecturas de sesión.
+ * Es coherencia de UI; el backend sigue verificando JWT, roles y propiedad.
+ */
+export function getTokenForUser(expectedUserId: string): string | null {
+	const cached = readBoundIdentity();
+	return cached?.user.user_id === expectedUserId ? cached.token : null;
 }
 
 /**

@@ -4,6 +4,12 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import UsuariosPage from "@/app/admin/usuarios/page";
 import { createAdminUser, listAdminUsers, updateAdminUserPassword } from "@/lib/api";
 
+vi.mock("@/components/providers/AuthProvider", () => ({
+	useAuth: () => ({ user: { user_id: "test-user", email: "test@example.test", display_name: null, role: "admin" } }),
+}));
+
+vi.mock("@/lib/auth", () => ({ getTokenForUser: vi.fn(() => "test-token") }));
+
 vi.mock("@/lib/api", () => ({
 	listAdminUsers: vi.fn(),
 	createAdminUser: vi.fn(),

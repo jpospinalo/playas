@@ -1,6 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useAuth } from "@/components/providers/AuthProvider";
+import { getTokenForUser } from "@/lib/auth";
+import { useCallback, useEffect, useState } from "react";
 import {
   type AdminUserRow,
   createAdminUser,
@@ -48,6 +50,7 @@ const modalInputMonoClass =
   "mt-1 block w-full rounded-2xl border border-border bg-surface px-3.5 py-2.5 font-mono text-sm text-foreground transition-[border-color,box-shadow] duration-150 focus:border-accent focus:outline-none focus:shadow-[0_0_0_3px_var(--accent-soft)]";
 
 export default function UsuariosPage() {
+  const { user } = useAuth();
   const [users, setUsers] = useState<AdminUserRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -55,9 +58,9 @@ export default function UsuariosPage() {
   const [createOpen, setCreateOpen] = useState(false);
   const [pwdTarget, setPwdTarget] = useState<AdminUserRow | null>(null);
 
-  async function refresh() {
+  const refresh = useCallback(async () => {
     try {
-      const items = await listAdminUsers();
+      const items = await listAdminUsers(getTokenForUser(user?.user_id ?? ""));
       setUsers(items);
       setError(null);
     } catch (e) {
@@ -65,11 +68,11 @@ export default function UsuariosPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [user?.user_id]);
 
   useEffect(() => {
     refresh();
-  }, []);
+  }, [refresh]);
 
   function showBanner(msg: string) {
     setBanner(msg);
@@ -274,6 +277,7 @@ function CreateUserModal({
   onClose: () => void;
   onCreated: (u: AdminUserRow) => void;
 }) {
+  const { user } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
@@ -300,7 +304,7 @@ function CreateUserModal({
         email: email.trim(),
         password,
         displayName: displayName.trim() || null,
-      });
+      }, getTokenForUser(user?.user_id ?? ""));
       onCreated(u);
     } catch (ex) {
       setErr(restErrorMessage(ex, "Error desconocido"));
@@ -401,6 +405,7 @@ function ChangePasswordModal({
   onClose: () => void;
   onUpdated: () => void;
 }) {
+  const { user } = useAuth();
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [showPwd, setShowPwd] = useState(false);
@@ -417,7 +422,7 @@ function ChangePasswordModal({
     setErr(null);
     setSubmitting(true);
     try {
-      await updateAdminUserPassword(target.uid, password);
+      await updateAdminUserPassword(target.uid, password, getTokenForUser(user?.user_id ?? ""));
       onUpdated();
     } catch (ex) {
       setErr(restErrorMessage(ex, "Error desconocido"));

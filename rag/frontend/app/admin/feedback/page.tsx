@@ -1,6 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useAuth } from "@/components/providers/AuthProvider";
+import { expireAuthSession, getTokenForUser } from "@/lib/auth";
 import { API_URL } from "@/lib/config";
 import { restErrorMessage, withRestTimeout } from "@/lib/httpTimeout";
 import { throwIfSessionExpired } from "@/lib/api";
@@ -91,6 +93,7 @@ function formatDate(iso: string): string {
 }
 
 export default function FeedbackPage() {
+	const { user } = useAuth();
 	const [items, setItems] = useState<FeedbackItem[]>([]);
 	const [total, setTotal] = useState(0);
 	const [avgRatings, setAvgRatings] = useState<RatingDimensions>({
@@ -131,8 +134,7 @@ export default function FeedbackPage() {
 			setLoading(true);
 			setError(null);
 			try {
-				const { expireAuthSession, getToken } = await import("@/lib/auth");
-				const token = getToken();
+				const token = getTokenForUser(user?.user_id ?? "");
 				if (!token) {
 					// Página administrativa: solo se llega aquí ya autenticado, así
 					// que un token ausente es una sesión perdida en otro lado, no el
@@ -191,7 +193,7 @@ export default function FeedbackPage() {
 				}
 			}
 		},
-		[appliedFilters],
+		[appliedFilters, user?.user_id],
 	);
 
 	useEffect(() => {

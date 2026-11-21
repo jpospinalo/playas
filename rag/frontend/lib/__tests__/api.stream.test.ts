@@ -4,8 +4,7 @@ import type { QueryRequest } from "@/lib/types";
 
 /**
  * Pruebas de integración de `queryRagStream` con el parser SSE de
- * `lib/sseParser.ts`. A diferencia de `lib/__tests__/api.test.ts` (que
- * caracteriza el contrato YA existente y no debe modificarse), estos casos
+ * `lib/sseParser.ts`. Además de los casos básicos de `api.test.ts`, estos casos
  * son justamente los que un parser ingenuo (`buffer.split("\n\n")`, una
  * sola línea `data:` por bloque, sin soporte de CRLF/comentarios) no
  * soportaría — demuestran el comportamiento robusto del parser actual.
@@ -49,12 +48,13 @@ describe("queryRagStream — casos que el parser SSE ingenuo anterior no soporta
 			"fetch",
 			vi.fn().mockResolvedValue(
 				sseResponse([
-					'data: {"type":"token","content":"Hola"}\r\n\r\ndata: [DONE]\r\n\r\n',
+					'data: {"type":"token","content":"Hola"}\r\n\r\ndata: {"type":"sources","sources":[]}\r\n\r\ndata: [DONE]\r\n\r\n',
 				]),
 			),
 		);
 		await expect(collect(QUESTION)).resolves.toEqual([
 			{ type: "token", content: "Hola" },
+			{ type: "sources", sources: [] },
 		]);
 	});
 
@@ -63,12 +63,13 @@ describe("queryRagStream — casos que el parser SSE ingenuo anterior no soporta
 			"fetch",
 			vi.fn().mockResolvedValue(
 				sseResponse([
-					':ping\n\ndata: {"type":"token","content":"Hola"}\n\n:ping\n\ndata: [DONE]\n\n',
+					':ping\n\ndata: {"type":"token","content":"Hola"}\n\n:ping\n\ndata: {"type":"sources","sources":[]}\n\ndata: [DONE]\n\n',
 				]),
 			),
 		);
 		await expect(collect(QUESTION)).resolves.toEqual([
 			{ type: "token", content: "Hola" },
+			{ type: "sources", sources: [] },
 		]);
 	});
 
@@ -98,12 +99,14 @@ describe("queryRagStream — casos que el parser SSE ingenuo anterior no soporta
 				sseResponse([
 					'data: {"type":"heartbeat","ping":true}\n\n' +
 						'data: {"type":"token","content":"Hola"}\n\n' +
+						'data: {"type":"sources","sources":[]}\n\n' +
 						"data: [DONE]\n\n",
 				]),
 			),
 		);
 		await expect(collect(QUESTION)).resolves.toEqual([
 			{ type: "token", content: "Hola" },
+			{ type: "sources", sources: [] },
 		]);
 	});
 
