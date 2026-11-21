@@ -40,6 +40,144 @@ def test_normativa_header_shows_norma_and_articulo_not_corporacion() -> None:
     assert block.endswith("Texto del fragmento:\n" + doc.page_content)
 
 
+@pytest.mark.parametrize("include_source_identifiers", [True, False])
+def test_explicit_norma_precedes_title_that_mentions_another_norm(
+    include_source_identifiers: bool,
+) -> None:
+    doc = Document(
+        page_content=(
+            "Artículo 4. Modifícase el artículo 12 de la Ley 87 de 1993.\nTexto conservado."
+        ),
+        metadata={
+            "doc_type": "normativa",
+            "norma": "Decreto 321 de 2020",
+            "title": "Por el cual se modifica el artículo 12 de la Ley 87 de 1993",
+            "articulo": "4",
+            "source": "norma_modificatoria.md",
+            "chunk_id": "norma_modificatoria_4",
+            "summary": "Describe la modificación sin sustituir el texto del artículo.",
+        },
+    )
+    before = (doc.page_content, deepcopy(doc.metadata))
+
+    block = build_context_block([doc], include_source_identifiers=include_source_identifiers)
+
+    expected_header = (
+        "[doc1 | source=norma_modificatoria.md | chunk_id=norma_modificatoria_4]"
+        if include_source_identifiers
+        else "[doc1]"
+    )
+    assert block.startswith(expected_header + "\nNorma: Decreto 321 de 2020\n")
+    assert "Artículo: 4\n" in block
+    assert (
+        "Resumen auxiliar (contrastar con el cuerpo): " + doc.metadata["summary"] + "\n"
+    ) in block
+    assert block.endswith("Texto del fragmento:\n" + doc.page_content)
+    assert (doc.page_content, doc.metadata) == before
+
+
+@pytest.mark.parametrize("norma", [None, ""])
+@pytest.mark.parametrize("title", ["Título descriptivo sin identidad acreditada", ""])
+def test_missing_or_empty_norma_keeps_fallback_without_inferring_identity(
+    norma: str | None, title: str
+) -> None:
+    metadata = {
+        "doc_type": "normativa",
+        "source": "fragmento_sin_identidad.md",
+        "title": title,
+        "summary": "Menciona el artículo 9 del Decreto 654 de 2018 como referencia.",
+    }
+    if norma is not None:
+        metadata["norma"] = norma
+    doc = Document(
+        page_content="Artículo 9. Se hace referencia al Decreto 654 de 2018.",
+        metadata=metadata,
+    )
+    before = (doc.page_content, deepcopy(doc.metadata))
+
+    block = build_context_block([doc])
+
+    attribution, _, body = block.partition("Texto del fragmento:\n")
+    assert f"Norma: {title or metadata['source']}\n" in attribution
+    assert "Norma: Decreto 654 de 2018" not in attribution
+    assert "Artículo:" not in attribution
+    assert "Resumen auxiliar (contrastar con el cuerpo): " + metadata["summary"] in attribution
+    assert body == doc.page_content
+    assert (doc.page_content, doc.metadata) == before
+
+
+def test_identity_precedence_keeps_document_order_and_numbers_without_source_identifiers() -> None:
+    docs = [
+        Document(
+            page_content="  Cuerpo de la primera norma.\nSegundo párrafo.  \n",
+            metadata={
+                "doc_type": "normativa",
+                "norma": "Decreto 321 de 2020",
+                "title": "Título descriptivo de la primera norma",
+                "chunk_id": "primera_norma",
+            },
+        ),
+        Document(
+            page_content="Continuación de una segunda norma.\nTexto final.",
+            metadata={
+                "doc_type": "normativa",
+                "title": "Título descriptivo de la segunda norma",
+                "chunk_id": "segunda_norma",
+            },
+        ),
+    ]
+    before = [(doc.page_content, deepcopy(doc.metadata)) for doc in docs]
+
+    block = build_context_block(docs, include_source_identifiers=False)
+
+    first_block, separator, second_block = block.partition("\n\n[doc2]\n")
+    assert first_block.startswith("[doc1]\nNorma: Decreto 321 de 2020\n")
+    assert separator
+    assert second_block.startswith("Norma: Título descriptivo de la segunda norma\n")
+    assert "source=" not in block
+    assert "chunk_id=" not in block
+    assert block.count("Texto del fragmento:") == 2
+    assert first_block.endswith("Texto del fragmento:\n" + docs[0].page_content)
+    assert second_block.endswith("Texto del fragmento:\n" + docs[1].page_content)
+    assert [(doc.page_content, doc.metadata) for doc in docs] == before
+
+
+@pytest.mark.parametrize("include_source_identifiers", [True, False])
+def test_norma_field_does_not_change_jurisprudencia_context(
+    include_source_identifiers: bool,
+) -> None:
+    original = Document(
+        page_content="La Sala estudia la apelación.\nSe conserva el pasaje original.",
+        metadata={
+            "doc_type": "jurisprudencia",
+            "source": "sentencia_sintetica.md",
+            "chunk_id": "sentencia_sintetica_2",
+            "Corporación": "Tribunal de prueba",
+            "Magistrado ponente": "Ponente de prueba",
+            "Tema principal": "Acceso a bienes de uso público",
+            "section_name": "Análisis",
+            "section_heading": "CONSIDERACIONES",
+            "summary": "Resumen auxiliar del razonamiento.",
+        },
+    )
+    with_norma = Document(
+        page_content=original.page_content,
+        metadata={**deepcopy(original.metadata), "norma": "Decreto 321 de 2020"},
+    )
+    before = (with_norma.page_content, deepcopy(with_norma.metadata))
+
+    expected = build_context_block(
+        [original], include_source_identifiers=include_source_identifiers
+    )
+    actual = build_context_block(
+        [with_norma], include_source_identifiers=include_source_identifiers
+    )
+
+    assert actual == expected
+    assert "Norma:" not in actual
+    assert (with_norma.page_content, with_norma.metadata) == before
+
+
 def test_jurisprudencia_header_keeps_corporacion_and_magistrado() -> None:
     doc = Document(
         page_content="Razonamiento de la Sala.",

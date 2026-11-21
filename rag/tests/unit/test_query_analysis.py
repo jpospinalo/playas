@@ -1134,3 +1134,312 @@ def test_general_contrastive_pairs_domain_guard(
             assert guarded.route == simulated_route, (
                 f"{caso_id} negativo(inland) sim={simulated_route}"
             )
+
+
+@pytest.mark.parametrize(
+    "question",
+    [
+        "Según el artículo 5 del Decreto 1504 de 1998, ¿cómo se clasifican las playas "
+        "marinas y las canecas para reciclar basuras dentro del espacio público?",
+        "En el artículo 12 de la Ley 881 de 2006, ¿cómo se clasifican los rompeolas "
+        "situados en aguas marítimas?",
+        "Según la Resolución 731 de 2021, ¿cómo se define una playa artificial?",
+        "En el artículo 7 del Decreto 1875 de 1979, ¿qué garantía se exige a las naves "
+        "que realizan investigación sísmica?",
+        "¿Qué autoridad debe adoptar el POMIUAC Insular y dentro de qué plazo?",
+        "Según el artículo 2.2.4.2.3.5 del Decreto 415 de 2017, ¿quién expide la guía "
+        "técnica del POMIUAC Insular y dentro de qué plazo?",
+        "Conforme al Decreto 415 de 2017, ¿qué áreas incorpora el POMIUAC Insular?",
+    ],
+)
+def test_documentary_coastal_references_admit_normative_questions(question: str) -> None:
+    """La cita concreta aporta intención jurídica; el contexto aporta el ámbito.
+
+    Las numeraciones alternativas son sintéticas: se evalúa admisión, nunca
+    existencia de esas normas ni una respuesta jurídica sobre su contenido.
+    """
+    fallback = _fallback(question)
+    assert fallback.route == "in_scope"
+    assert "normativa" in fallback.doc_types
+
+    for simulated_route in ("out_of_scope", "needs_clarification"):
+        rejected = EnrichedQuery(
+            route=simulated_route,
+            standalone_question=question,
+            expanded_query=question,
+        )
+        result = _apply_domain_guard(rejected, question, "")
+        assert result.route == "in_scope"
+        assert "normativa" in result.doc_types
+        assert result.standalone_question == question
+
+
+@pytest.mark.parametrize(
+    ("question", "terminal"),
+    [
+        (
+            "Según el Decreto 315 de 2016, ¿cómo se calcula el impuesto predial?",
+            False,
+        ),
+        (
+            "En la Ley 802 de 2003, ¿qué categoría corresponde a estos ingresos?",
+            False,
+        ),
+        (
+            "Según el artículo 8 del Decreto 771 de 2010, ¿qué requisitos rigen "
+            "para una nave espacial?",
+            False,
+        ),
+        (
+            "En el Decreto 771 de 2010, ¿cómo se clasifica una embarcación que "
+            "opera únicamente en una represa?",
+            False,
+        ),
+        (
+            "Según el Decreto 4440 de 2008, dibuja una imagen de una playa.",
+            True,
+        ),
+        (
+            "Escribe un poema sobre los permisos del POMIUAC Insular.",
+            True,
+        ),
+    ],
+)
+def test_documentary_references_do_not_bypass_scope_limits(question: str, terminal: bool) -> None:
+    assert _fallback(question).route != "in_scope"
+    rejected = EnrichedQuery(
+        route="out_of_scope", standalone_question=question, expanded_query=question
+    )
+    assert _apply_domain_guard(rejected, question, "").route != "in_scope"
+    if terminal:
+        accepted = EnrichedQuery(
+            route="in_scope",
+            standalone_question=question,
+            expanded_query=question,
+            doc_types=["normativa"],
+        )
+        assert _apply_domain_guard(accepted, question, "").route == "out_of_scope"
+
+
+@pytest.mark.parametrize(
+    "question",
+    [
+        "En ese plan costero, ¿cuánto tiempo tiene la entidad para terminarlo?",
+        "¿Quién debe aprobar dicho plan de manejo de playas?",
+    ],
+)
+@pytest.mark.parametrize(
+    "history",
+    [
+        "",
+        "Usuario: ¿Qué retenciones fiscales debo declarar?\nAsistente: Respuesta tributaria.",
+    ],
+)
+def test_plan_reference_without_relevant_history_requires_clarification(
+    question: str, history: str
+) -> None:
+    fallback = _fallback(question, history)
+    assert fallback.route == "needs_clarification"
+    assert fallback.doc_types == []
+
+    invented = EnrichedQuery(
+        route="in_scope",
+        standalone_question="¿Cuál es el plazo para formular el POMIUAC Insular?",
+        expanded_query="plazo formulación POMIUAC Insular",
+        doc_types=["normativa"],
+    )
+    guarded = _apply_domain_guard(invented, question, history)
+    assert guarded.route == "needs_clarification"
+    assert guarded.doc_types == []
+    assert guarded.standalone_question == question
+
+
+def test_plan_reference_preserves_a_contextual_rewrite_supported_by_history() -> None:
+    history = "Usuario: ¿Qué requisitos debe cumplir el Plan de Recuperación de la Playa Brisa?"
+    question = "¿En qué plazo debe formularse ese plan?"
+    rewritten = "¿En qué plazo debe formularse el Plan de Recuperación de la Playa Brisa?"
+    result = EnrichedQuery(
+        route="in_scope",
+        standalone_question=rewritten,
+        expanded_query=rewritten,
+        doc_types=["normativa"],
+    )
+    assert _apply_domain_guard(result, question, history) == result
+
+
+@pytest.mark.parametrize(
+    "history",
+    [
+        "Usuario: ¿Qué requisitos debe cumplir el Plan de Recuperación de la Playa Brisa?",
+        "Usuario: ¿Qué plazos rigen para el plan de manejo de playas y para el plan "
+        "de restauración del litoral?",
+    ],
+)
+def test_plan_reference_keeps_model_clarification_with_relevant_history(history: str) -> None:
+    """No acredita resolver dos planes: impide anular una aclaración válida."""
+    question = "¿En qué plazo debe ejecutarse ese plan costero?"
+    result = EnrichedQuery(
+        route="needs_clarification",
+        standalone_question=question,
+        expanded_query=question,
+    )
+    assert _apply_domain_guard(result, question, history) == result
+
+
+@pytest.mark.parametrize(
+    "question",
+    [
+        "¿En qué plazo debe formularse ese plan costero previsto en el artículo 12 "
+        "del Decreto 881 de 2006?",
+        "¿Qué autoridad debe adoptar dicho plan POMIUAC Insular?",
+    ],
+)
+def test_plan_reference_identified_in_question_does_not_require_history(question: str) -> None:
+    assert _fallback(question).route == "in_scope"
+    result = EnrichedQuery(
+        route="in_scope",
+        standalone_question=question,
+        expanded_query=question,
+        doc_types=["normativa"],
+    )
+    assert _apply_domain_guard(result, question, "") == result
+
+
+@pytest.mark.parametrize(
+    "question",
+    [
+        "¿Quién debe aprobar ese plan denominado «Plan de Recuperación de la Playa Brisa»?",
+        '¿Qué requisitos debe cumplir dicho plan llamado "Plan de Restauración del Litoral"?',
+        "¿Qué plazo tiene ese plan «Programa de Recuperación Costera»?",
+    ],
+)
+def test_explicit_plan_name_in_question_is_not_discarded(question: str) -> None:
+    result = EnrichedQuery(
+        route="in_scope",
+        standalone_question=question,
+        expanded_query=question,
+        doc_types=["normativa"],
+    )
+    assert _fallback(question).route == "in_scope"
+    assert _apply_domain_guard(result, question, "") == result
+
+
+def test_earlier_unrelated_turn_does_not_erase_relevant_plan_history() -> None:
+    history = (
+        "Usuario: Dame una receta de cocina.\nAsistente: Ese asunto es ajeno al ámbito.\n"
+        "Usuario: ¿Qué requisitos debe cumplir el Plan de Recuperación de la Playa Brisa?"
+    )
+    question = "¿En qué plazo debe formularse ese plan?"
+    rewritten = "¿En qué plazo debe formularse el Plan de Recuperación de la Playa Brisa?"
+    result = EnrichedQuery(
+        route="in_scope",
+        standalone_question=rewritten,
+        expanded_query=rewritten,
+        doc_types=["normativa"],
+    )
+    assert _fallback(question, history).route == "in_scope"
+    assert _apply_domain_guard(result, question, history) == result
+
+
+@pytest.mark.parametrize(
+    "question",
+    [
+        "¿Quién debe aprobar ese Plan de Recuperación de la Playa Brisa?",
+        "¿Qué autoridad debe adoptar dicho Plan de Restauración del Litoral del Puerto Azul?",
+    ],
+)
+def test_complete_plan_name_without_quotes_does_not_require_history(question: str) -> None:
+    result = EnrichedQuery(
+        route="in_scope",
+        standalone_question=question,
+        expanded_query=question,
+        doc_types=["normativa"],
+    )
+
+    assert _fallback(question).route == "in_scope"
+    assert _apply_domain_guard(result, question, "") == result
+
+
+@pytest.mark.parametrize(
+    ("question", "ambiguous"),
+    [
+        (
+            "Entre el plan de manejo de playas y el plan de restauración costera, "
+            "¿qué plazo tiene ese plan según el Decreto 881 de 2006?",
+            True,
+        ),
+        (
+            "¿Qué plazo tiene ese Plan de Recuperación de la Playa Brisa previsto "
+            "en el Decreto 881 de 2006?",
+            False,
+        ),
+        (
+            "Entre el POMIUAC Insular y el Plan de Recuperación de la Playa Brisa, "
+            "sin haber elegido uno, ¿qué plazo tiene ese plan?",
+            True,
+        ),
+        (
+            "¿Qué plazo tiene ese plan POMIUAC Insular?",
+            False,
+        ),
+        (
+            "Se comparan ese plan denominado «Plan de Recuperación de la Playa Brisa» "
+            "y el Plan de Restauración del Litoral del Puerto Azul. "
+            "Sin elegir uno, ¿qué plazo tiene ese plan?",
+            True,
+        ),
+        (
+            "¿Qué plazo tiene ese plan denominado «Plan de Recuperación de la Playa Brisa»?",
+            False,
+        ),
+    ],
+    ids=[
+        "normative-citation-ambiguous",
+        "normative-citation-identified",
+        "instrument-ambiguous",
+        "instrument-identified",
+        "explicit-name-ambiguous",
+        "explicit-name-identified",
+    ],
+)
+def test_plan_identity_signals_preserve_the_model_reference_analysis(
+    question: str, ambiguous: bool
+) -> None:
+    """Una señal de identidad no invalida una aclaración semántica correcta."""
+    result = EnrichedQuery(
+        route="needs_clarification" if ambiguous else "in_scope",
+        standalone_question=question,
+        expanded_query=question,
+        doc_types=[] if ambiguous else ["normativa"],
+    )
+
+    assert _apply_domain_guard(result, question, "") == result
+    if not ambiguous:
+        assert _fallback(question).route == "in_scope"
+
+
+@pytest.mark.parametrize(
+    ("question", "expected_route"),
+    [
+        ("¿Quién debe aprobar ese Plan Costero?", "needs_clarification"),
+        (
+            "Escribe un poema sobre ese Plan de Recuperación de la Playa Brisa.",
+            "out_of_scope",
+        ),
+    ],
+)
+def test_plan_name_controls_keep_missing_reference_and_off_topic_precedence(
+    question: str, expected_route: str
+) -> None:
+    invented = EnrichedQuery(
+        route="in_scope",
+        standalone_question="¿Quién debe aprobar el POMIUAC Insular?",
+        expanded_query="autoridad aprobación POMIUAC Insular",
+        doc_types=["normativa"],
+    )
+
+    assert _fallback(question).route == expected_route
+    guarded = _apply_domain_guard(invented, question, "")
+    assert guarded.route == expected_route
+    assert guarded.doc_types == []
+    assert guarded.standalone_question == question

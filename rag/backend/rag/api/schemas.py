@@ -84,7 +84,9 @@ class SourceFragment(BaseModel):
     index: int = Field(
         ..., description="Posición global 1-based del fragmento en la recuperación; mapea a [docN]"
     )
-    content: str = Field(..., description="Contenido del fragmento (recortado a 500 caracteres)")
+    content: str = Field(
+        ..., description="Cuerpo completo del fragmento seleccionado para la respuesta"
+    )
     metadata: dict = Field(
         default_factory=dict,
         description="Metadatos del fragmento (sección, summary, keywords, ...)",

@@ -69,12 +69,9 @@ def _resolve_title(meta: dict) -> str:
     return Path(source_path).stem.replace("_", " ") if source_path else ""
 
 
-def _truncate_content(text: str) -> str:
-    """Trunca contenido de fragmento a 500 caracteres (para respuesta al frontend)."""
-    content = (text or "").strip().replace("\n", " ")
-    if len(content) > 500:
-        content = content[:500] + "..."
-    return content
+def _clean_source_content(text: str) -> str:
+    """Prepara el cuerpo seleccionado para presentarlo sin recorte adicional."""
+    return (text or "").strip().replace("\n", " ")
 
 
 def _docs_to_source_groups(docs: list[Document]) -> list[SourceGroup]:
@@ -101,7 +98,7 @@ def _docs_to_source_groups(docs: list[Document]) -> list[SourceGroup]:
         }
         fragment = SourceFragment(
             index=i + 1,
-            content=_truncate_content(sanitize_replacement_chars(doc.page_content or "")),
+            content=_clean_source_content(sanitize_replacement_chars(doc.page_content or "")),
             metadata=fragment_meta,
         )
 

@@ -69,9 +69,10 @@ def build_context_block(docs: list[Document], *, include_source_identifiers: boo
 
         if doc_type == "normativa":
             # Cabecera para normas: nombre de la norma + jerarquía (título, capítulo,
-            # artículo). No aplican corporación ni magistrado.
+            # artículo). La identidad explícita prevalece sobre el título descriptivo.
+            # No aplican corporación ni magistrado.
             norma = sanitize_replacement_chars(
-                meta.get("title") or meta.get("norma") or meta.get("source", "desconocido")
+                meta.get("norma") or meta.get("title") or meta.get("source", "desconocido")
             )
             titulo = sanitize_replacement_chars(meta.get("titulo", ""))
             capitulo = sanitize_replacement_chars(meta.get("capitulo", ""))

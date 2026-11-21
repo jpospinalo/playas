@@ -97,9 +97,9 @@ _OUT_OF_SCOPE_RESPONSE = (
     "turismo, derechos, permisos y procedimientos cuando estén vinculados con esos espacios."
 )
 _CLARIFICATION_RESPONSE = (
-    "La consulta podría estar dentro del ámbito, pero necesito que indiques su "
-    "conexión con playas, zonas costeras, aguas marítimas o bienes de uso público. Por ejemplo, "
-    "puedes precisar el lugar, la actividad, el permiso, la autoridad o el derecho que deseas revisar."
+    "Para responder sin asumir datos, precisa el plan, norma, permiso, autoridad o actuación "
+    "que quieres revisar. Si su conexión con playas, zonas costeras, aguas marítimas o bienes "
+    "de uso público no está indicada, descríbela también."
 )
 _PROVIDENCIA_CLARIFICATION_RESPONSE = (
     "¿Puedes indicar el radicado completo, la instancia o la providencia concreta? "
