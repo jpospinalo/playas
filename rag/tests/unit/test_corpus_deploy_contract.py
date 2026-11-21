@@ -10,6 +10,7 @@ import hashlib
 import json
 import os
 import re
+import shlex
 import subprocess
 import sys
 import tempfile
@@ -46,10 +47,9 @@ class CorpusDeploymentContracts(unittest.TestCase):
         deny = '#!/bin/sh\nprintf "%s\\n" "$0" >> "$CORPUS_FORBIDDEN_LOG"\nexit 97\n'
         for name in ("aws", "ssh", "scp", "terraform", "curl", "docker", "uv", "sudo", "ollama"):
             self.executable(self.bin / name, deny)
-        self.executable(
+        self.python_double(
             self.bin / "git",
-            f"#!{sys.executable}\n"
-            + """import json, os, sys
+            """import json, os, sys
 args = sys.argv[1:]
 with open(os.environ['CORPUS_CONTRACT_LOG'], 'a') as f:
     f.write(json.dumps({'program': 'git', 'args': args}) + '\\n')
@@ -79,12 +79,27 @@ else:
         path.write_text(text, encoding="utf-8")
         path.chmod(0o700)
 
+    def python_double(self, path, body):
+        """Doble ejecutable en Python sin depender del shebang.
+
+        Un shebang no admite espacios: con ``#!{sys.executable}`` las pruebas
+        fallaban si la copia del repo vivía en una ruta con espacios. El doble
+        es un ``sh`` que ejecuta ``sys.executable`` sobre el cuerpo guardado
+        aparte, con los mismos argumentos.
+        """
+        script = self.work / "doubles" / (path.name + ".py")
+        script.parent.mkdir(exist_ok=True)
+        script.write_text(body, encoding="utf-8")
+        self.executable(
+            path,
+            f'#!/bin/sh\nexec {shlex.quote(sys.executable)} {shlex.quote(str(script))} "$@"\n',
+        )
+
     def fake_restore_python(self, returncode=0):
         self.env["CORPUS_TEST_PYTHON_RC"] = str(returncode)
-        self.executable(
+        self.python_double(
             self.repo / "rag/.venv/bin/python",
-            f"#!{sys.executable}\n"
-            + """import json, os, sys
+            """import json, os, sys
 with open(os.environ['CORPUS_CONTRACT_LOG'], 'a') as f:
     f.write(json.dumps({'program': 'python', 'args': sys.argv[1:]}) + '\\n')
 raise SystemExit(int(os.environ.get('CORPUS_TEST_PYTHON_RC', '0')))
