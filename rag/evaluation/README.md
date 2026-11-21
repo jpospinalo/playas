@@ -102,6 +102,18 @@ genera respuestas nuevas):
 - **Actualizar la línea base.** Cuando un cambio se acepta,
   `uv run python -m evaluation.metricas_sin_llm --guardar-linea-base` y se
   versiona el JSON en el mismo commit (los `inestables` se conservan).
+- **Comparar antes y después de un update del corpus.** `--linea-base`
+  acepta también el reporte JSON de otra corrida, así que se puede comparar
+  la rama antes y después de fusionar sin reescribir la línea base:
+  `--linea-base evaluation/results/metricas-sin-llm-v0.2-antes-<commit>.json`.
+  `scripts/integrar_corpus.sh` (raíz del repo) lo hace solo, en la misma
+  sesión de ChromaDB. Cada reporte y la línea base guardan la colección, el
+  modelo de embeddings y los parámetros de recuperación (`RAG_*`, ver
+  `rag.config`); si la referencia se midió con otros, el reporte lo avisa.
+  `--fallar-si-regresion` sale con código 1 ante una regresión.
+- **Clase del documento esperado.** Sale del `doc_type` de la capa gold
+  (`data/documents/gold/`), no del título: un documento nuevo del corpus se
+  clasifica sin tocar el código.
 
 ### Qué no miden
 

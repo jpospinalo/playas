@@ -47,6 +47,7 @@ La rama empezó como la **línea base de calidad** de ATLAS frente al ground tru
 | 2026-11-12 | **`main` al día** | Fusión del registro con tipo de usuario; arreglo de la columna `user_type` en bases existentes; comparación de modelos locales |
 | 2026-11-16 | **Resolución documental de `corpus`** | Fusión de los commits de `corpus` del 2026-11-15 y 16 (hasta 3260bba: REMAC 5 en alcance, radicados parciales, orden de recuperación del predio, instancia verificada, plazos y remisiones citados, citas JSON/SSE, hidratación en frío); convivencia con la multiconsulta; compatibilidad comprobada con la rama de ingesta y su evaluación de nivel 0 |
 | 2026-11-21 | **Contexto normativo verificado de `corpus`** | Fusión de `corpus` hasta 5665e4f (admisión normativa, aclaración ante «ese plan», citas por norma fuente, contexto normativo verificado, sesiones entre pestañas, cierre SSE, siglas en el enriquecimiento); convive con la multiconsulta, la jerarquía normativa y el tope por norma |
+| 2026-11-21 | **Mantenimiento adaptativo** | Parámetros de recuperación por entorno, listas fijas contrastadas con la capa gold, métricas «antes/después» y `scripts/integrar_corpus.sh` para el próximo update; Python 3.12 fijado; trazas de la multiconsulta |
 
 ## 3. Cambios por componente
 
@@ -59,6 +60,7 @@ La rama empezó como la **línea base de calidad** de ATLAS frente al ground tru
 | `metricas_sin_llm.py`, `data/linea-base-sin-llm-v0.2.json` | Métricas fijas sin LLM (recuperación, citas, fuga territorial, evidencia insuficiente) con IC 95 % y línea base versionada |
 | `baseline_report.py`, `registro.py`, `registro/evaluaciones.csv` | Reporte consolidado y registro versionado de cada corrida |
 | `indexar_gold_local.py` | Indexa el Gold A en un ChromaDB local para medir sin tocar AWS |
+| `metricas_sin_llm.py` (2026-11-21) | Cada reporte guarda colección, modelo de embeddings y parámetros de recuperación, y avisa si la referencia es de otro corpus; `--linea-base` acepta el reporte de otra corrida (antes/después) y `--fallar-si-regresion` sale con 1; la clase del documento esperado sale del `doc_type` de la capa gold |
 
 ### Recuperación (`rag/backend/rag/core/`)
 
@@ -71,6 +73,8 @@ La rama empezó como la **línea base de calidad** de ATLAS frente al ground tru
 | `territorio.py` (nuevo) | Prioridad territorial | Evita traer normas locales de otra ciudad |
 | `retriever.py` | Jerarquía normativa (`CUPOS_NORMATIVA=1`) | Reserva un lugar para la norma (REMAC 5, Decreto 2324) antes que la jurisprudencia |
 | `agent.py` (fusión con `corpus`) | Con radicado verificado se usa la consulta compuesta y la selección verificada de `corpus`; el resto, `afuse_queries` | La resolución documental elige los fragmentos de una sola sentencia; las demás preguntas conservan la recuperación multiconsulta |
+| `config.py`, `retriever.py` (2026-11-21) | `RRF_C`, pesos, cupos de normativa y topes por sentencia y por norma se leen de `RAG_*` con los valores medidos por defecto | Re-medirlos tras un update del corpus sin tocar código (ver [§9](#9-cómo-reproducir)) |
+| `retriever.py` (`afuse_queries`, 2026-11-21) | Abre su propia ejecución de recuperador y pasa callbacks hijos a cada búsqueda | La multiconsulta queda en las trazas igual que `ainvoke` |
 | `tools.py` (fusión con `corpus`) | Con identidad verificada se omite también la línea «Radicado» de la metadata | Mismo objetivo que `corpus`: no reintroducir radicados históricos en el contexto |
 
 ### Respuesta (`agent.py`, `prompts.py`, `domain_scope.py`)
@@ -83,6 +87,13 @@ La rama empezó como la **línea base de calidad** de ATLAS frente al ground tru
 
 - `auth.py`: `get_current_user` cierra la sesión tras leer el perfil. Antes retenía una conexión durante toda la consulta (LLM incluido) y con más de 15 consultas simultáneas el pool se agotaba (500 a los 30 s).
 - `database.py`: `init_db` agrega las columnas opcionales nuevas del modelo a tablas existentes. Sin esto, `users.user_type` (registro con tipo de usuario) rompía el login en bases ya desplegadas.
+
+### Mantenimiento
+
+- `scripts/integrar_corpus.sh`: integra el próximo update de `corpus` y reporta diferencias (ver [§9](#9-cómo-reproducir)).
+- `tests/unit/test_recuperacion_adaptativa.py`: los parámetros por entorno y una prueba que recorre la capa gold y exige que toda norma de ámbito local (distrito, municipio, balneario…) tenga lugar en `territorio.LUGARES`. Si Juan agrega la norma de una ciudad nueva, la prueba dice qué añadir en vez de que la prioridad territorial la ignore en silencio.
+- `.python-version` (3.12) en `rag/` e `ingesta/`, como CI y las imágenes Docker: con 3.14 fallan 27 pruebas de `test_chroma_snapshot_export.py`.
+- `test_corpus_deploy_contract.py`: los dobles de `git` y `python` ya no dependen del shebang, que no admite rutas con espacios.
 
 ## 4. Resultados
 
@@ -102,10 +113,14 @@ La rama empezó como la **línea base de calidad** de ATLAS frente al ground tru
 | Cambios en código de `main` (auth, base de datos) solo con prueba que falla antes y pasa después | Son arreglos de fallos reales encontrados en la QA, no cambios de diseño |
 | La resolución documental queda como la deja `corpus` (apagada por defecto) | Su activación en despliegue la decide el equipo; aquí solo se verificó que convive con la recuperación de la rama |
 | Se protege con una prueba de contrato lo que la ingesta y el nivel 0 usan del RAG | Otros módulos del repositorio importan el retriever directamente; un cambio de firma los rompería sin aviso |
+| Parámetros por entorno, sin auto-ajuste | Cambiar la recuperación sigue siendo una decisión medida; el entorno solo evita tocar código para medir y aplicar el cambio |
+| Comparar antes contra después de cada update, no contra cifras fijas | La línea base versionada es de otro corpus y otra caché; antes y después en la misma sesión de ChromaDB aíslan el efecto del update (y el ruido de HNSW entre reinicios) |
+| Las listas que dependen del corpus se prueban contra la capa gold | Fallan con un mensaje que dice qué añadir cuando el corpus cambia, en vez de degradar la recuperación sin aviso |
 
 ## 6. Verificación
 
-- Suite: **1658 pruebas de backend** y **322 de frontend**; ruff, formato, mypy, lint, tsc y build sin errores. (Las 4 de `test_corpus_deploy_contract.py` fallan solo en copias cuya ruta tiene espacios, por el shebang del `.venv`; no dependen del código.)
+- Suite (2026-11-21, `scripts/integrar_corpus.sh --solo-verificar`): **1679 pruebas de backend**, **322 de frontend** y **1360 de ingesta** (11 omitidas) más 2 contratos entre etapas; ruff, formato, mypy, lint, tsc y build sin errores. También en una ruta con espacios.
+- Mantenimiento adaptativo (2026-11-21): métricas sin LLM idénticas a las del 19-nov con la caché de gemma4 (`acierto_doc_4` 0,741, `acierto_doc_4_multi` 0,776, `acierto_doc_4_grafo` 0,684, fuga territorial 0, referencias sin respaldo 1 de 65, fuga de plantilla 0). API local con gemma4: `tests/integration` 3/3, conversación guiada 8/8 escenarios (aclaración en el primer turno y 4 fuentes en el segundo; el saludo solo recibe la guía) y SSE hasta `[DONE]`. El ciclo de integración se probó en una copia aparte con un update simulado que bajaba los cupos de normativa a 0: el script fusionó, la suite falló en la prueba del valor por defecto, y las métricas antes/después marcaron `acierto_doc_4` 0,741 → 0,724 (peor en margen) con el aviso de parámetros distintos.
 - Fusión con `corpus` hasta `5665e4f` (2026-11-21): la selección de contexto normativo verificado va antes del híbrido y, si no selecciona, recupera la multiconsulta de esta rama; la aclaración pide el plan o la norma sin perder los tres datos y los ejemplos; los sub-recuperadores reciben los callbacks de corpus sin perder `_gather_cancelling`. La fusión automática había movido la guarda de sesión de `signIn` a `signUp` en `AuthProvider`; se restauró en ambos. Métricas sin LLM idénticas a las del tope por norma (0,741 / 0,776 / 0,684, fuga 0). API local con gemma4: `tests/integration` 3/3, conversación guiada 8/8 escenarios y SSE hasta `[DONE]`. Suite: 1658 de backend, 322 de frontend.
 - Fusión con `corpus` hasta `b4346fc` (2026-11-19): consultas a Chroma acotadas, borrado de conversaciones coordinado con las consultas activas y embeddings cancelables. La recuperación multiconsulta de esta rama adopta la misma cancelación (`_gather_cancelling`).
 - Tope de un fragmento por norma (2026-11-19): ruta de producción `acierto_doc_4` 0,741 → 0,776 con la caché nueva de gemma4; `acierto_doc_4_grafo` 0,561 → 0,684; `fuga_plantilla` 0,215 → 0; referencias sin respaldo 3 → 1 de 65; jurisprudencia y fuga territorial sin cambio. Suite: 1409 pruebas de backend.
@@ -139,6 +154,59 @@ La rama empezó como la **línea base de calidad** de ATLAS frente al ground tru
 | 2026-11-11 | QA completa antes del lanzamiento (carga, estrés, revisión de código) |
 
 ## 9. Cómo reproducir
+
+### Correr todo
+
+Python 3.12 (`.python-version`), uv y Bun. Desde la raíz del repo, en la rama de integración y con el árbol limpio:
+
+```bash
+scripts/integrar_corpus.sh --solo-verificar   # rag, frontend, ingesta y métricas sin LLM
+scripts/integrar_corpus.sh --solo-verificar --sin-metricas   # sin ChromaDB ni Ollama
+```
+
+Pasos sueltos: `cd rag && UV_FROZEN=1 make quality` (ruff, formato, mypy, pytest, lint, tsc, vitest y build) y, en `ingesta/`, `make lint format-check test test-integration`. Las métricas sin LLM necesitan un ChromaDB con el Gold A (`CHROMA_HOST`, `CHROMA_PORT`; la colección por defecto es la publicada en `scripts/corpus_release.sh`) y Ollama con `embeddinggemma` (`OLLAMA_BASE_URL`). La caché de generación para las métricas de la ruta de producción es `CACHE_METRICAS` o la más reciente de `rag/evaluation/results/`.
+
+### Integrar el próximo update de `corpus`
+
+```bash
+export CHROMA_HOST=localhost CHROMA_PORT=8001 OLLAMA_BASE_URL=http://localhost:11434
+scripts/integrar_corpus.sh
+```
+
+1. Descarga `origin/corpus` y lista los commits nuevos y los archivos que cambian ambos lados (donde hay que mirar la fusión: hoy `agent.py`, `retriever.py`, `prompts.py`).
+2. Guarda la rama en `respaldo-local/integracion-antes-corpus-<fecha>` y mide las métricas sin LLM **antes**.
+3. Fusiona (`merge: corpus hasta <commit>`). Si hay conflictos se detiene y los lista: resolverlos, hacer commit y volver a correr con `--solo-verificar` (o `git merge --abort`).
+4. Corre rag, frontend e ingesta, y mide las métricas **después** contra las de antes, en la misma sesión de ChromaDB. Cualquier `REGRESIÓN` hace salir con 1; los casos que cambian están en el reporte `.md`.
+5. Si el update publica otra colección Gold (`CORPUS_RELEASE_COLLECTION`), avisa: hay que restaurarla en el ChromaDB local ([`data/chroma-releases/README.md`](../../data/chroma-releases/README.md)) y volver a medir.
+
+No hace push ni toca `main` ni `corpus`. Lo que queda a mano: revisar los conflictos, decidir si una regresión se acepta y, si se acepta un cambio de comportamiento, `--guardar-linea-base` y actualizar las cifras de este documento.
+
+### Qué es configurable
+
+| Variable | Defecto | Qué controla |
+|---|---:|---|
+| `RAG_RRF_C` | 2 | Constante de la fusión RRF |
+| `RAG_BM25_WEIGHT` / `RAG_VECTOR_WEIGHT` | 0,8 / 0,2 | Peso de cada lista en la fusión |
+| `RAG_CUPOS_NORMATIVA` | 1 | Puestos del top-k reservados a normas aplicables |
+| `RAG_FRAGMENTOS_POR_SENTENCIA` | 1 | Fragmentos por sentencia antes del recorte (0 = sin tope) |
+| `RAG_FRAGMENTOS_POR_NORMA` | 1 | Fragmentos por norma antes del recorte (0 = sin tope) |
+
+Los valores por defecto son los medidos sobre el ground truth v0.2 (la medición de cada uno está junto a su uso en `core/retriever.py`). Un valor inválido detiene el arranque nombrando la variable. Para re-medir uno: `RAG_CUPOS_NORMATIVA=2 uv run python -m evaluation.metricas_sin_llm --tag cupos2 --linea-base evaluation/results/metricas-sin-llm-v0.2-<referencia>.json` desde `rag/`. `k` y `k_candidates` siguen llegando por la API (4 y 8).
+
+Lo que no es configurable pero se contrasta con el corpus en las pruebas: los lugares de las normas locales (`core/territorio.py`), el tipo de los documentos esperados del ground truth (capa gold) y los títulos que mapea el ground truth. Las frases de la métrica `fuga_plantilla` ya se derivan del prompt.
+
+### Cifras vigentes (2026-11-21)
+
+| Indicador | Valor |
+|---|---:|
+| `acierto_doc_4` (pregunta original) | 0,741 |
+| `acierto_doc_4_multi` (ruta de producción, caché gemma4) | 0,776 |
+| `acierto_doc_4_grafo` | 0,684 |
+| Fuga territorial | 0 |
+| Respuestas con referencias sin respaldo | 1 de 65 |
+| Pruebas: backend / frontend / ingesta | 1679 / 322 / 1360 |
+
+### Más detalle
 
 - Métricas sin LLM, línea base y comparación: [`evaluation/README.md`](../evaluation/README.md).
 - Comandos de evaluación, Gold local y modelos locales: [`SCRIPTS.md`](SCRIPTS.md#evaluación-del-rag).
