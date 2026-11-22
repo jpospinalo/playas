@@ -53,6 +53,7 @@ from .observability import (
     log_full_context_size,
     stage_timer,
 )
+from .plan_attribution_context import requested_act, select_plan_attribution_context
 from .prompts import AGENT_FALLBACK_HUMAN_TEMPLATE, AGENT_SYSTEM
 from .query_enricher import (
     EnrichedQuery,
@@ -60,7 +61,7 @@ from .query_enricher import (
     _normalize_expanded_query,
     enrich_query_async,
 )
-from .retriever import bm25_documents, get_ensemble_retriever
+from .retriever import CandidateSelector, bm25_documents, get_ensemble_retriever
 from .tools import build_context_block
 
 
@@ -316,6 +317,53 @@ def _permits_jurisprudence(requested: list[str] | None) -> bool:
     return requested is None or "jurisprudencia" in requested
 
 
+def _plan_attribution_selector(
+    state: AgentState, verified_documents: tuple[Document, ...]
+) -> CandidateSelector | None:
+    """Bind a pure selector locally after the caller verifies the profile gates."""
+    for filters in (state.get("requested_doc_types"), state.get("doc_types")):
+        if filters is not None and (
+            not isinstance(filters, list)
+            or "normativa" not in filters
+            or any(value not in ("normativa", "jurisprudencia") for value in filters)
+        ):
+            return None
+    question = state["question"]
+    standalone = state.get("standalone_question") or ""
+    action = requested_act(question)
+    if action is None or requested_act(standalone) != action:
+        return None
+    messages = list(state.get("messages") or [])
+    if messages and isinstance(messages[-1], HumanMessage) and messages[-1].content == question:
+        messages.pop()
+    history = []
+    for message in messages:
+        if not isinstance(message, (HumanMessage, AIMessage)) or not isinstance(
+            message.content, str
+        ):
+            return None
+        history.append(
+            {
+                "role": "user" if isinstance(message, HumanMessage) else "assistant",
+                "content": message.content,
+            }
+        )
+
+    def choose(current: list[Document], candidates: tuple[Document, ...]) -> list[Document]:
+        return select_plan_attribution_context(
+            question=question,
+            history=history,
+            standalone_question=standalone,
+            original_doc_types=state.get("requested_doc_types"),
+            current_selected=current,
+            candidate_pool=candidates,
+            verified_documents=verified_documents,
+            k=4,
+        )
+
+    return choose
+
+
 async def _resolve_documentary(state: AgentState, index: ResolutionIndex) -> Resolution | None:
     try:
         resolution = await asyncio.to_thread(
@@ -432,7 +480,28 @@ async def retrieve_forced_node(
                 k_candidates=k_candidates,
                 doc_types=["jurisprudencia"] if evidence else doc_types,
             )
-            docs = await retriever.ainvoke(query)
+            candidate_selector = None
+            if (
+                verify_docket
+                and resolution_index is not None
+                and resolution_index.snapshot_verified
+                and verified_documents is not None
+                and evidence is None
+                and state.get("verified_docket") is None
+                and state.get("verified_instance") is None
+                and not state.get("clarify_providencia")
+                and "requested_doc_types" in state
+                and state.get("query_route") == "in_scope"
+                and k == 4
+                and not has_docket_intent(state["question"])
+                and not requires_operative_proof(state["question"])
+            ):
+                candidate_selector = _plan_attribution_selector(state, verified_documents)
+            docs = (
+                await retriever.ainvoke(query, candidate_selector=candidate_selector)
+                if candidate_selector is not None
+                else await retriever.ainvoke(query)
+            )
             selected, documentary_answer = (
                 evidence.select_for_question(state["question"], docs, k)
                 if evidence

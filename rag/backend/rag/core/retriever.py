@@ -27,7 +27,7 @@ from __future__ import annotations
 import asyncio
 import logging
 import re
-from collections.abc import AsyncIterator, Iterator
+from collections.abc import AsyncIterator, Callable, Iterator
 from contextlib import asynccontextmanager, contextmanager
 from contextvars import ContextVar
 from math import isfinite
@@ -59,6 +59,8 @@ from rag.config import (
 
 from .chroma_query import ChromaQuery
 from .embeddings import OllamaEmbeddings, QueryEmbedder
+
+CandidateSelector = Callable[[list[Document], tuple[Document, ...]], list[Document]]
 
 # ---------------------------------------------------------------------
 # Configuración
@@ -576,7 +578,12 @@ class HybridEnsembleRetriever(BaseRetriever):
             )
         return self
 
-    def _fuse(self, all_results: list[list[Document]]) -> list[Document]:
+    def _fuse(
+        self,
+        all_results: list[list[Document]],
+        *,
+        candidate_selector: CandidateSelector | None = None,
+    ) -> list[Document]:
         """Fusión RRF ponderada, común a las rutas síncrona y asíncrona."""
         if len(all_results) != len(self.weights):
             raise ValueError(
@@ -613,6 +620,34 @@ class HybridEnsembleRetriever(BaseRetriever):
             if not _has_retrievable_content(doc.page_content or ""):
                 continue
             selected.append(doc)
+        if candidate_selector is None or not selected:
+            return selected
+
+        # The optional pure selector sees only existing, deduplicated candidates.
+        # Keep the protected baseline even if its shallow copy is changed or the
+        # selector fails. Document bodies and metadata remain caller-owned.
+        candidates = tuple(
+            doc_by_id[ident]
+            for ident in sorted_ids
+            if _has_retrievable_content(doc_by_id[ident].page_content or "")
+        )
+        candidate_objects = {id(doc) for doc in candidates}
+        try:
+            proposed = candidate_selector(list(selected), candidates)
+            if (
+                isinstance(proposed, list)
+                and len(proposed) == len(selected)
+                and len({id(doc) for doc in proposed}) == len(proposed)
+                and all(id(doc) in candidate_objects for doc in proposed)
+            ):
+                if all(
+                    original is replacement
+                    for original, replacement in zip(selected, proposed, strict=True)
+                ):
+                    return selected
+                return proposed
+        except Exception as exc:
+            logger.warning("candidate_selection_failed error_type=%s", type(exc).__name__)
         return selected
 
     def _get_relevant_documents(
@@ -620,17 +655,21 @@ class HybridEnsembleRetriever(BaseRetriever):
         query: str,
         *,
         run_manager: CallbackManagerForRetrieverRun,
+        candidate_selector: CandidateSelector | None = None,
+        **_ignored_kwargs: Any,
     ) -> list[Document]:
         all_results: list[list[Document]] = [
             r.invoke(query, config={"callbacks": run_manager.get_child()}) for r in self.retrievers
         ]
-        return self._fuse(all_results)
+        return self._fuse(all_results, candidate_selector=candidate_selector)
 
     async def _aget_relevant_documents(
         self,
         query: str,
         *,
         run_manager: Any,
+        candidate_selector: CandidateSelector | None = None,
+        **_ignored_kwargs: Any,
     ) -> list[Document]:
         tasks = [
             asyncio.create_task(r.ainvoke(query, config={"callbacks": run_manager.get_child()}))
@@ -644,7 +683,7 @@ class HybridEnsembleRetriever(BaseRetriever):
                     task.cancel()
             await asyncio.gather(*tasks, return_exceptions=True)
             raise
-        return self._fuse(all_results)
+        return self._fuse(all_results, candidate_selector=candidate_selector)
 
 
 def get_ensemble_retriever(
