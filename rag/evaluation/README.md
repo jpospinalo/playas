@@ -22,9 +22,11 @@ Infraestructura offline para medir la calidad de ATLAS. Nunca forma parte de la 
 | `ragas_eval_ollama.py` | Adaptador con juez Ollama: `answer_relevancy` |
 | `citation_coverage.py` | Diagnóstico offline de cobertura de citas en las respuestas |
 | `rrf_diagnostic.py` | Diagnóstico offline de la fusión RRF del retriever híbrido |
+| `preguntas_reales.py` | Corre el set de preguntas de gente real contra la API local (`POST /api/query`), mide latencia por turno y guarda la transcripción; no juzga |
 | `data/legal-ground-truth-v0.1.json` | Dataset jurídico v0.1 (21 casos) |
 | `data/legal-ground-truth-v0.2.xlsx` | Dataset jurídico v0.2 construido por el equipo jurídico (fuente) |
 | `data/legal-ground-truth-v0.2.json` | Dataset v0.2 versionado, generado por `ground_truth_v02.py` (66 casos) |
+| `data/preguntas-reales-v1.json` | Set de 40 preguntas de gente real (34 individuales y 6 conversaciones de 2–3 turnos): vagas, con errores de ortografía, sin lugar ni norma, fuera de tema, sobre normas ausentes y sobre multas/sanciones |
 | `data/linea-base-sin-llm-v0.2.json` | Línea base versionada de las métricas sin LLM (global, IC 95 % y valor por caso) |
 | `results/` | Reportes de cada corrida (no versionados, ver `.gitignore`) |
 
@@ -353,3 +355,41 @@ Fracción de casos en que el documento llega a los 4 fragmentos, con la pregunta
 - Comparación frente al modelo local, sobre el corpus anterior: **[`docs/INFORME_EVALUACION_ATLAS.md`](../docs/INFORME_EVALUACION_ATLAS.md)**.
 - Cómo leer las métricas, con el detalle de la corrida anterior: **[`docs/EVALUACION_LINEA_BASE.md`](../docs/EVALUACION_LINEA_BASE.md)**.
 - Comandos: [`docs/SCRIPTS.md` § Línea base](../docs/SCRIPTS.md#línea-base-sobre-legal-ground-truth-v02).
+
+## Preguntas de gente real (`data/preguntas-reales-v1.json`)
+
+Set complementario al ground truth jurídico: 40 casos escritos como
+preguntaría gente sin conocimiento del dominio (bañistas, pescadores,
+vendedores de playa, turistas y un funcionario novato). No reemplaza los 66
+casos bien formulados; mide otra cosa: si el sistema entiende la pregunta,
+pide el dato que falta, declara lo que no tiene y responde lo práctico.
+
+| Categoría | Casos | Qué mide |
+|---|---:|---|
+| `vaga` | 6 | Pregunta sin actividad, lugar ni hechos: debe pedir aclaración |
+| `ortografia` | 6 | Errores, abreviaturas y jerga dentro del ámbito |
+| `sin_contexto` | 5 | Sin lugar ni norma: regla nacional y límite local |
+| `fuera_de_tema` | 5 | Debe rechazar sin recuperar |
+| `norma_ausente` | 6 | Ley 1437/2011, Ley 21/1991 y Decreto 1066/2015 ausentes; Decreto 2324/1984 con OCR dañado |
+| `multa_sancion` | 6 | Multas, decomisos, competencia y cobros ilegales |
+| `conversacion` | 6 | 2–3 turnos: mantener el hilo y no repetir datos ya dados |
+
+Cada caso declara `esperado` (`responde`, `responde_con_advertencia`,
+`pide_aclaracion`, `declara_ausencia`, `rechaza_fuera_de_tema`) y criterios
+verificables. La corrida no juzga: guarda ruta, latencia, fuentes, citas y
+texto. El juicio se hace después, con esos criterios.
+
+```bash
+# Desde rag/, con la API local y el modelo levantados:
+uv run python -m evaluation.preguntas_reales \
+    --token-file ~/.local/share/atlas-demo/.token --tag local-gemma4
+
+# Repetir solo los casos dudosos, para medir varianza:
+uv run python -m evaluation.preguntas_reales \
+    --token-file ~/.local/share/atlas-demo/.token \
+    --solo PR-08 PR-13 PR-34 --tag varianza-1
+```
+
+Los resultados van a `evaluation/results/preguntas-reales-<tag>.json` y `.md`
+(no versionados). El token de la demo caduca: si la API responde 401, hay que
+volver a iniciar sesión y pasar un JWT nuevo.

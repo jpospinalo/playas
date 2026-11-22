@@ -1,0 +1,650 @@
+{
+  "version": "1.0",
+  "fecha": "2026-11-21",
+  "descripcion": "Set de preguntas de gente real para ATLAS. Personas sin conocimiento del dominio (banistas, pescadores, vendedores de playa, turistas y un funcionario novato) que preguntan como se pregunta en la calle: vagamente, con errores de ortografia, sin nombrar la playa ni la norma, fuera de tema o sobre normas que el corpus no contiene. Complementa el ground truth juridico v0.2 (66 casos bien formulados) y la conversacion guiada de 8 escenarios.",
+  "uso": "Se corre contra la API local (POST /api/query) con el modelo de generacion configurado. Cada item declara la conducta esperada y criterios verificables. La corrida completa y las repeticiones se hacen con rag/evaluation/preguntas_reales.py.",
+  "convencion_resultado": {
+    "responde": "Debe responder la pregunta con evidencia del corpus y citas [docN] validas.",
+    "responde_con_advertencia": "Puede responder, pero debe declarar el limite documental (OCR danado, norma incompleta o dato que no esta).",
+    "pide_aclaracion": "Debe pedir el dato que falta (que actividad, donde, quien) antes de responder o negarse.",
+    "declara_ausencia": "No debe inventar la norma ni su contenido. Debe decir que no tiene esa norma o que la evidencia es insuficiente.",
+    "rechaza_fuera_de_tema": "Debe rechazar por fuera de alcance, sin recuperar ni citar normas de playas."
+  },
+  "categorias": {
+    "vaga": "Pregunta sin actividad, lugar ni hechos. La conducta correcta es pedir aclaracion, no adivinar.",
+    "ortografia": "Pregunta dentro del ambito con errores de ortografia, abreviaturas o emojis. Debe entenderla igual.",
+    "sin_contexto": "Pregunta juridicamente respondible pero sin nombrar playa, ciudad ni norma. Debe responder con la regla nacional y decir que la respuesta depende del lugar.",
+    "fuera_de_tema": "Pregunta ajena al dominio. Debe rechazarse sin recuperacion.",
+    "norma_ausente": "Pregunta sobre una norma que el corpus no contiene (Ley 1437 de 2011, Ley 21 de 1991, Decreto 1066 de 2015) o que esta con OCR danado (Decreto 2324 de 1984). No debe inventar contenido.",
+    "multa_sancion": "Pregunta sobre multas, decomisos, competencia sancionatoria o cobros ilegales. Debe distinguir autoridad publica de guardia privado y no inventar montos.",
+    "conversacion": "Varios turnos con el mismo thread_id. Debe mantener el hilo, no repetir preguntas ya respondidas y consolidar los hechos."
+  },
+  "items": [
+    {
+      "id": "PR-01",
+      "categoria": "vaga",
+      "persona": "banista",
+      "pregunta": "ola, puedo aser esto en la playa?",
+      "esperado": "pide_aclaracion",
+      "criterios": [
+        "Pide que actividad es 'esto' o donde ocurre",
+        "No inventa una actividad ni responde con normas al azar",
+        "No se limita a decir 'reformula'"
+      ],
+      "notas": "Vaga pura: no hay actividad, lugar ni hechos."
+    },
+    {
+      "id": "PR-02",
+      "categoria": "vaga",
+      "persona": "turista",
+      "pregunta": "¿está permitido?",
+      "esperado": "pide_aclaracion",
+      "criterios": [
+        "Pide el que y el donde antes de responder",
+        "No asume que se trata de una actividad concreta"
+      ],
+      "notas": "Dos palabras. El sistema no tiene con que buscar."
+    },
+    {
+      "id": "PR-03",
+      "categoria": "vaga",
+      "persona": "banista",
+      "pregunta": "necesito ayuda con un problema en la playa",
+      "esperado": "pide_aclaracion",
+      "criterios": [
+        "Pide que paso y en que lugar",
+        "Ofrece ejemplos utiles sin dar asesoria a ciegas"
+      ],
+      "notas": "Dentro del ambito por la palabra playa, pero sin hechos."
+    },
+    {
+      "id": "PR-04",
+      "categoria": "vaga",
+      "persona": "vendedor",
+      "pregunta": "¿me pueden decir si eso es legal?",
+      "esperado": "pide_aclaracion",
+      "criterios": [
+        "Pide a que se refiere con 'eso'",
+        "No responde con una norma generica de playas"
+      ],
+      "notas": "Pronombre sin antecedente."
+    },
+    {
+      "id": "PR-05",
+      "categoria": "vaga",
+      "persona": "turista",
+      "pregunta": "quiero hacer algo en la costa, ¿se puede?",
+      "esperado": "pide_aclaracion",
+      "criterios": [
+        "Pide la actividad y el lugar",
+        "No confunde 'costa' con una consulta concreta"
+      ],
+      "notas": "Vaga con senal costera debil."
+    },
+    {
+      "id": "PR-06",
+      "categoria": "vaga",
+      "persona": "pescador",
+      "pregunta": "tengo un lío con la playa, ¿qué hago?",
+      "esperado": "pide_aclaracion",
+      "criterios": [
+        "Pide el hecho concreto (multa, acceso, permiso, conflicto)",
+        "No da una lista de tramites sin saber el caso"
+      ],
+      "notas": "Vaga con tono de urgencia."
+    },
+    {
+      "id": "PR-07",
+      "categoria": "ortografia",
+      "persona": "banista",
+      "pregunta": "ola kiero saver si puedo aser una fogata en la playa",
+      "esperado": "responde",
+      "criterios": [
+        "Entiende 'fogata' pese a la ortografia",
+        "Responde sobre fuego/fogatas en playa con evidencia o declara que no hay norma especifica",
+        "Si depende del municipio, lo dice"
+      ],
+      "notas": "Errores en todas las palabras clave."
+    },
+    {
+      "id": "PR-08",
+      "categoria": "ortografia",
+      "persona": "turista",
+      "pregunta": "me pueden cobrar por entra a la playa??",
+      "esperado": "responde",
+      "criterios": [
+        "Distingue playa publica de acceso privado",
+        "Dice quien puede cobrar y quien no",
+        "No inventa una tarifa"
+      ],
+      "notas": "Error 'entra' por 'entrar'; pregunta de turista comun."
+    },
+    {
+      "id": "PR-09",
+      "categoria": "ortografia",
+      "persona": "turista",
+      "pregunta": "puedo llevar a mi perro a la playa d taganga",
+      "esperado": "responde",
+      "criterios": [
+        "Responde sobre mascotas en playa con la norma que exista",
+        "Si la regla es local, la ubica en Taganga/Santa Marta o dice que falta",
+        "No inventa prohibicion nacional"
+      ],
+      "notas": "Abreviatura 'd' y sin signos."
+    },
+    {
+      "id": "PR-10",
+      "categoria": "ortografia",
+      "persona": "vendedor",
+      "pregunta": "aki en cartagena un man me kite la sombrilla y me dijo q la playa era privada q puedo aser",
+      "esperado": "responde",
+      "criterios": [
+        "Identifica el conflicto: playa publica vs. pretension de privacidad",
+        "Dice que un particular no puede declarar privada la playa",
+        "Indica a donde acudir"
+      ],
+      "notas": "Jerga costena, sin puntuacion."
+    },
+    {
+      "id": "PR-11",
+      "categoria": "ortografia",
+      "persona": "banista",
+      "pregunta": "se puede bañarse d noche en el rodadero?",
+      "esperado": "responde_con_advertencia",
+      "criterios": [
+        "Busca la regla de horario de playa en El Rodadero/Santa Marta",
+        "No inventa un horario nacional",
+        "Si no hay norma, lo dice"
+      ],
+      "notas": "Error 'bañarse d noche'; la regla de horario es local."
+    },
+    {
+      "id": "PR-12",
+      "categoria": "ortografia",
+      "persona": "vendedor",
+      "pregunta": "kiero vender cocadas en la playa me sacan?",
+      "esperado": "responde",
+      "criterios": [
+        "Explica que la venta requiere permiso/zona autorizada",
+        "No promete que no lo sacan",
+        "Distingue vendedor informal de kiosco"
+      ],
+      "notas": "Pregunta binaria con ortografia rota."
+    },
+    {
+      "id": "PR-13",
+      "categoria": "sin_contexto",
+      "persona": "turista",
+      "pregunta": "¿Me pueden prohibir la entrada a la zona de arena si no consumo nada en el restaurante?",
+      "esperado": "responde",
+      "criterios": [
+        "Responde con la regla de uso publico de playas",
+        "Dice que la respuesta puede cambiar segun el municipio",
+        "No exige el nombre de la playa para dar la regla general"
+      ],
+      "notas": "No nombra playa ni norma."
+    },
+    {
+      "id": "PR-14",
+      "categoria": "sin_contexto",
+      "persona": "vendedor",
+      "pregunta": "¿Quién es la autoridad que autoriza poner un kiosco en la arena?",
+      "esperado": "responde",
+      "criterios": [
+        "Menciona la autoridad competente (DIMAR, alcaldia o autoridad ambiental) con respaldo",
+        "Aclara que depende del tipo de ocupacion y del municipio",
+        "No da un unico responsable inventado"
+      ],
+      "notas": "Sin lugar; la competencia puede variar."
+    },
+    {
+      "id": "PR-15",
+      "categoria": "sin_contexto",
+      "persona": "banista",
+      "pregunta": "¿Se puede cercar una parte de la arena para un evento privado?",
+      "esperado": "responde",
+      "criterios": [
+        "Explica que la playa es bien de uso publico",
+        "Dice que se requiere autorizacion y que no puede excluirse el acceso general",
+        "No confunde evento privado con concesion"
+      ],
+      "notas": "Pregunta de acceso y ocupacion, sin lugar."
+    },
+    {
+      "id": "PR-16",
+      "categoria": "sin_contexto",
+      "persona": "pescador",
+      "pregunta": "¿Los pescadores necesitan permiso para sacar redes desde la orilla?",
+      "esperado": "responde",
+      "criterios": [
+        "Distingue pesca artesanal de comercial",
+        "Menciona permiso/registro y autoridad con respaldo",
+        "No inventa un tramite que el corpus no tiene"
+      ],
+      "notas": "Sin lugar ni tipo de pesca."
+    },
+    {
+      "id": "PR-17",
+      "categoria": "sin_contexto",
+      "persona": "funcionario_novato",
+      "pregunta": "¿Cuánto cuesta una concesión de playa?",
+      "esperado": "declara_ausencia",
+      "criterios": [
+        "No inventa una cifra",
+        "Explica de que depende (tasas, municipio, tipo de concesion) o dice que no esta en el corpus",
+        "Ofrece el marco general si lo hay"
+      ],
+      "notas": "Pide un monto que probablemente no esta en el corpus."
+    },
+    {
+      "id": "PR-18",
+      "categoria": "fuera_de_tema",
+      "persona": "turista",
+      "pregunta": "¿Cuál es la mejor receta de arepas de huevo?",
+      "esperado": "rechaza_fuera_de_tema",
+      "criterios": [
+        "Rechaza por fuera de alcance",
+        "No recupera ni cita normas de playas",
+        "No da la receta"
+      ],
+      "notas": "Fuera de tema evidente."
+    },
+    {
+      "id": "PR-19",
+      "categoria": "fuera_de_tema",
+      "persona": "banista",
+      "pregunta": "¿Quién ganó el partido de Colombia ayer?",
+      "esperado": "rechaza_fuera_de_tema",
+      "criterios": [
+        "Rechaza por fuera de alcance",
+        "No inventa un resultado"
+      ],
+      "notas": "Actualidad deportiva."
+    },
+    {
+      "id": "PR-20",
+      "categoria": "fuera_de_tema",
+      "persona": "funcionario_novato",
+      "pregunta": "Explícame cómo resolver una integral por partes.",
+      "esperado": "rechaza_fuera_de_tema",
+      "criterios": [
+        "Rechaza por fuera de alcance",
+        "No intenta resolver la integral"
+      ],
+      "notas": "Tarea de calculo."
+    },
+    {
+      "id": "PR-21",
+      "categoria": "fuera_de_tema",
+      "persona": "turista",
+      "pregunta": "¿Cómo hago para cambiar la contraseña de mi correo?",
+      "esperado": "rechaza_fuera_de_tema",
+      "criterios": [
+        "Rechaza por fuera de alcance",
+        "No da instrucciones tecnicas"
+      ],
+      "notas": "Soporte tecnico."
+    },
+    {
+      "id": "PR-22",
+      "categoria": "fuera_de_tema",
+      "persona": "banista",
+      "pregunta": "Dame un plan de entrenamiento para correr 10 km.",
+      "esperado": "rechaza_fuera_de_tema",
+      "criterios": [
+        "Rechaza por fuera de alcance",
+        "No arma el plan"
+      ],
+      "notas": "Deporte."
+    },
+    {
+      "id": "PR-23",
+      "categoria": "norma_ausente",
+      "persona": "funcionario_novato",
+      "pregunta": "¿Qué dice la Ley 1437 de 2011 sobre la caducidad de los actos administrativos en playas?",
+      "esperado": "declara_ausencia",
+      "criterios": [
+        "No atribuye articulos ni contenido a la Ley 1437 si no estan en el corpus",
+        "Distingue que puede haber menciones de la ley en jurisprudencia de una copia de la ley",
+        "No inventa plazos de caducidad"
+      ],
+      "notas": "La Ley 1437 (CPACA) no esta como norma en el corpus; solo se menciona en fallos."
+    },
+    {
+      "id": "PR-24",
+      "categoria": "norma_ausente",
+      "persona": "funcionario_novato",
+      "pregunta": "¿La Ley 21 de 1991 exige consulta previa para una concesión en playa de una comunidad indígena?",
+      "esperado": "declara_ausencia",
+      "criterios": [
+        "No inventa el texto ni los articulos de la Ley 21 de 1991",
+        "Si usa la sentencia que la menciona, la presenta como mencion jurisprudencial, no como copia de la ley",
+        "No afirma un procedimiento que el corpus no respalde"
+      ],
+      "notas": "La Ley 21 de 1991 no esta en el corpus; aparece citada en la sentencia TU-039/2024."
+    },
+    {
+      "id": "PR-25",
+      "categoria": "norma_ausente",
+      "persona": "funcionario_novato",
+      "pregunta": "¿Qué dice el Decreto 1066 de 2015 sobre el uso de playas?",
+      "esperado": "declara_ausencia",
+      "criterios": [
+        "Dice que no tiene esa norma o que no esta en el corpus",
+        "No inventa articulos del Decreto 1066",
+        "No lo confunde con el Decreto 1076 de 2015"
+      ],
+      "notas": "Decreto 1066 de 2015 no aparece en el corpus."
+    },
+    {
+      "id": "PR-26",
+      "categoria": "norma_ausente",
+      "persona": "funcionario_novato",
+      "pregunta": "¿El Decreto 2324 de 1984 permite que DIMAR cobre por el uso de la playa? Cítame el artículo exacto.",
+      "esperado": "responde_con_advertencia",
+      "criterios": [
+        "No inventa un articulo que autorice cobrar por el uso de la playa",
+        "Si cita el articulo 5, lo hace por la funcion de fijar tarifas de servicios conexos, no por un cobro de acceso",
+        "Declara el limite del texto disponible (OCR danado o falta de articulo)"
+      ],
+      "notas": "Decreto 2324 esta en el corpus con OCR danado y no contiene una autorizacion de cobro de acceso."
+    },
+    {
+      "id": "PR-27",
+      "categoria": "norma_ausente",
+      "persona": "funcionario_novato",
+      "pregunta": "Según el artículo 5 del Decreto 2324, ¿DIMAR puede autorizar rellenos en playas? Transcríbeme el numeral.",
+      "esperado": "responde_con_advertencia",
+      "criterios": [
+        "Encuentra el numeral 26 del articulo 5 (obras de dragado, relleno y demas obras de ingenieria oceanica en playas)",
+        "No inventa el numeral",
+        "Si el OCR impide la transcripcion literal, lo advierte"
+      ],
+      "notas": "El numeral existe pero el OCR parte palabras; obliga a citar con cuidado."
+    },
+    {
+      "id": "PR-28",
+      "categoria": "norma_ausente",
+      "persona": "funcionario_novato",
+      "pregunta": "¿Qué artículo del Decreto 1066 de 2015 regula las playas y qué sanciones trae?",
+      "esperado": "declara_ausencia",
+      "criterios": [
+        "Dice que no tiene el Decreto 1066 de 2015",
+        "No inventa articulo ni sanciones",
+        "No sustituye la respuesta con el Decreto 1076 sin explicar"
+      ],
+      "notas": "Norma ausente mas sanciones: doble tentacion de inventar."
+    },
+    {
+      "id": "PR-29",
+      "categoria": "multa_sancion",
+      "persona": "turista",
+      "pregunta": "me pusieron una multa por bañarme en una playa prohibida, ¿cuánto es?",
+      "esperado": "responde_con_advertencia",
+      "criterios": [
+        "No inventa un monto unico",
+        "Explica que depende de la norma local y de la autoridad",
+        "Distingue multa de llamado de atencion"
+      ],
+      "notas": "Pide cifra; el corpus tiene montos dispersos y locales."
+    },
+    {
+      "id": "PR-30",
+      "categoria": "multa_sancion",
+      "persona": "banista",
+      "pregunta": "¿Quién impone las multas en las playas, la alcaldía o la DIMAR?",
+      "esperado": "responde",
+      "criterios": [
+        "Distingue competencias (DIMAR en lo maritimo, alcaldia en lo local/policivo)",
+        "Cita con respaldo",
+        "No dice que solo una de las dos puede sancionar"
+      ],
+      "notas": "Competencia compartida."
+    },
+    {
+      "id": "PR-31",
+      "categoria": "multa_sancion",
+      "persona": "vendedor",
+      "pregunta": "Me decomisaron las sillas y la carpa por vender en la playa, ¿pueden hacerlo?",
+      "esperado": "responde",
+      "criterios": [
+        "Explica si el decomiso esta previsto y por quien",
+        "Distingue decomiso de retencion arbitraria",
+        "Indica como reclamar o defenderse"
+      ],
+      "notas": "Decomiso de bienes de un vendedor informal."
+    },
+    {
+      "id": "PR-32",
+      "categoria": "multa_sancion",
+      "persona": "turista",
+      "pregunta": "¿Qué pasa si un hotel me cobra por usar la playa?",
+      "esperado": "responde",
+      "criterios": [
+        "Dice que la playa es bien de uso publico y que el cobro por acceso no es legal",
+        "Distingue servicios (sombrilla, silla) de acceso a la arena",
+        "Indica donde denunciar"
+      ],
+      "notas": "Cobro de acceso vs. servicio."
+    },
+    {
+      "id": "PR-33",
+      "categoria": "multa_sancion",
+      "persona": "turista",
+      "pregunta": "¿Hay cárcel por hacer fogatas en la playa?",
+      "esperado": "responde_con_advertencia",
+      "criterios": [
+        "Distingue sancion administrativa de sancion penal",
+        "No inventa penas ni articulos del codigo penal",
+        "Dice que depende de la norma local y del dano causado"
+      ],
+      "notas": "Pregunta por pena privativa de libertad."
+    },
+    {
+      "id": "PR-34",
+      "categoria": "multa_sancion",
+      "persona": "banista",
+      "pregunta": "¿Puedo reclamar una multa que me puso un guardia privado?",
+      "esperado": "responde",
+      "criterios": [
+        "Dice que un guardia privado no es autoridad sancionatoria",
+        "Distingue cobro privado de multa administrativa",
+        "Indica la via de reclamacion"
+      ],
+      "notas": "Confusion entre seguridad privada y autoridad publica."
+    },
+    {
+      "id": "PR-35",
+      "categoria": "conversacion",
+      "persona": "banista",
+      "turnos": [
+        {
+          "pregunta": "hola, un hotel puso una cerca y no deja pasar a la playa",
+          "esperado": "pide_aclaracion",
+          "criterios": [
+            "Reconoce el caso y pide el lugar",
+            "No responde aun sin saber el municipio"
+          ]
+        },
+        {
+          "pregunta": "es en El Rodadero, Santa Marta",
+          "esperado": "responde",
+          "criterios": [
+            "Usa el lugar del turno anterior sin volver a preguntarlo",
+            "Responde sobre acceso a playa publica y competencia local"
+          ]
+        },
+        {
+          "pregunta": "¿y qué puedo hacer si no la quitan?",
+          "esperado": "responde",
+          "criterios": [
+            "Mantiene el hilo del hotel y El Rodadero",
+            "Da pasos concretos de reclamacion",
+            "No reinicia la conversacion ni pide otra vez los hechos"
+          ]
+        }
+      ],
+      "notas": "Conversacion de acceso; el lugar llega en el turno 2."
+    },
+    {
+      "id": "PR-36",
+      "categoria": "conversacion",
+      "persona": "pescador",
+      "turnos": [
+        {
+          "pregunta": "¿puedo pescar en el Tayrona?",
+          "esperado": "responde_con_advertencia",
+          "criterios": [
+            "Responde con la regla de pesca en parques nacionales o dice que falta el tipo de pesca",
+            "No da un si o no absoluto sin condiciones"
+          ]
+        },
+        {
+          "pregunta": "soy pescador artesanal de Taganga, con lancha",
+          "esperado": "responde",
+          "criterios": [
+            "Incorpora el rol y el lugar al analisis",
+            "Distingue pesca artesanal de comercial"
+          ]
+        },
+        {
+          "pregunta": "¿necesito permiso de la DIMAR o del parque?",
+          "esperado": "responde",
+          "criterios": [
+            "Distingue las dos autoridades y sus competencias",
+            "No inventa un tramite unico"
+          ]
+        }
+      ],
+      "notas": "Conversacion de pesca; el rol llega en el turno 2."
+    },
+    {
+      "id": "PR-37",
+      "categoria": "conversacion",
+      "persona": "vendedor",
+      "turnos": [
+        {
+          "pregunta": "quiero vender cocteles en la playa",
+          "esperado": "pide_aclaracion",
+          "criterios": [
+            "Pide el lugar antes de responder",
+            "No asume que puede vender sin permiso"
+          ]
+        },
+        {
+          "pregunta": "en Bocagrande, Cartagena",
+          "esperado": "responde",
+          "criterios": [
+            "Usa Cartagena/Bocagrande y la norma local que exista",
+            "Explica permisos y zona autorizada"
+          ]
+        },
+        {
+          "pregunta": "¿me pueden quitar la mercancía si no tengo permiso?",
+          "esperado": "responde",
+          "criterios": [
+            "Responde sobre decomiso sin perder el hilo de cocteles/Bocagrande",
+            "Distingue autoridad publica de particular"
+          ]
+        }
+      ],
+      "notas": "Conversacion de venta; el lugar llega en el turno 2."
+    },
+    {
+      "id": "PR-38",
+      "categoria": "conversacion",
+      "persona": "funcionario_novato",
+      "turnos": [
+        {
+          "pregunta": "¿quién autoriza un evento con música en la playa?",
+          "esperado": "pide_aclaracion",
+          "criterios": [
+            "Pide el municipio y el tipo de evento",
+            "No da una autoridad unica sin esos datos"
+          ]
+        },
+        {
+          "pregunta": "es un concierto privado en Santa Marta",
+          "esperado": "responde",
+          "criterios": [
+            "Usa Santa Marta y evento privado",
+            "Menciona permisos de ocupacion y autoridad local"
+          ]
+        },
+        {
+          "pregunta": "¿qué pasa si el organizador no pide permiso?",
+          "esperado": "responde",
+          "criterios": [
+            "Responde sobre consecuencias sin reiniciar la conversacion",
+            "Distingue sancion administrativa de suspension del evento"
+          ]
+        }
+      ],
+      "notas": "Conversacion de funcionario; el caso se concreta en el turno 2."
+    },
+    {
+      "id": "PR-39",
+      "categoria": "conversacion",
+      "persona": "turista",
+      "turnos": [
+        {
+          "pregunta": "me cobraron para entrar a la playa",
+          "esperado": "pide_aclaracion",
+          "criterios": [
+            "Pide el lugar y quien cobro",
+            "No afirma de entrada que es legal o ilegal"
+          ]
+        },
+        {
+          "pregunta": "fue en Cartagena, un hombre con chaleco",
+          "esperado": "responde",
+          "criterios": [
+            "Distingue cobro de un particular de tarifa oficial",
+            "Responde sobre playa publica"
+          ]
+        },
+        {
+          "pregunta": "¿es legal ese cobro y dónde denuncio?",
+          "esperado": "responde",
+          "criterios": [
+            "Mantiene el hilo del cobro en Cartagena",
+            "Indica autoridad o canal de denuncia con respaldo"
+          ]
+        }
+      ],
+      "notas": "Conversacion de cobro; el lugar y el cobrador llegan en el turno 2."
+    },
+    {
+      "id": "PR-40",
+      "categoria": "conversacion",
+      "persona": "banista",
+      "turnos": [
+        {
+          "pregunta": "¿me puedo bañar de noche en la playa?",
+          "esperado": "pide_aclaracion",
+          "criterios": [
+            "Pide el lugar o el horario",
+            "No inventa una prohibicion nacional"
+          ]
+        },
+        {
+          "pregunta": "en Santa Marta, después de las 8 pm",
+          "esperado": "responde_con_advertencia",
+          "criterios": [
+            "Busca la regla local de horario",
+            "Si no la tiene, lo dice"
+          ]
+        },
+        {
+          "pregunta": "¿y si hay salvavidas?",
+          "esperado": "responde",
+          "criterios": [
+            "Mantiene el hilo de Santa Marta y el horario",
+            "No promete seguridad por presencia de salvavidas"
+          ]
+        }
+      ],
+      "notas": "Conversacion de horario; el lugar llega en el turno 2."
+    }
+  ]
+}
