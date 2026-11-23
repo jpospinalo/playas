@@ -37,6 +37,8 @@ interface ConversationListProps {
   onRetryLoad?: () => Promise<void>;
   onSelectConversation: (conv: Conversation) => Promise<void>;
   onNewChat: () => void;
+  /** Delega al dueño del chat la selección vigente al confirmar el borrado. */
+  onConversationDeleted?: (conversationId: string) => void;
   onConversationsRefresh?: () => Promise<void>;
 }
 
@@ -48,6 +50,7 @@ export function ConversationList({
   onRetryLoad,
   onSelectConversation,
   onNewChat,
+  onConversationDeleted,
   onConversationsRefresh,
 }: ConversationListProps) {
   const { user } = useAuth();
@@ -220,9 +223,9 @@ export function ConversationList({
       setDeleteError(null);
       // A2.7 — refrescar solo tras éxito confirmado.
       await onConversationsRefresh?.();
-      // A2.4 — onNewChat() solo se dispara después de eliminar con éxito
-      // la conversación que estaba activa, nunca antes ni ante un fallo.
-      if (convId === activeConversationId) onNewChat();
+      // El dueño del chat decide sobre su selección vigente tras el éxito.
+      if (onConversationDeleted) onConversationDeleted(convId);
+      else if (convId === activeConversationId) onNewChat();
     } catch (error) {
       setDeleteError(restErrorMessage(error, "No fue posible eliminar la conversación."));
     } finally {

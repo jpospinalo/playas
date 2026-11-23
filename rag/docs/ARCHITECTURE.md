@@ -150,6 +150,11 @@ Dos mecanismos independientes, con propósitos distintos:
   escritura ocurre siempre, tenga o no el servidor un checkpoint en memoria
   para esa conversación.
 
+El INSERT del mensaje y el incremento SQL atómico del contador comparten
+transacción. Repetir un ID con la misma conversación, rol, texto y fuentes
+devuelve el mensaje existente; un contenido distinto produce 409. El listado
+ordena por `(created_at, id)` para resolver empates de fecha.
+
 SQL permite reconstruir el historial tras un reinicio; no convierte
 `MemorySaver` en un checkpoint durable, no reanuda un nodo interrumpido y no
 coordina checkpoints entre procesos o réplicas.

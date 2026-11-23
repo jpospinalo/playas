@@ -4,15 +4,18 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import sqlite3
 import uuid
 from contextlib import AsyncExitStack
 from datetime import UTC, datetime
-from typing import Any, Literal
+from typing import Any, Literal, cast
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from langchain_core.messages import HumanMessage
 from pydantic import BaseModel, ConfigDict, Field, field_validator
-from sqlalchemy import select
+from sqlalchemy import func, select, update
+from sqlalchemy.engine import CursorResult
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from rag.api.auth import get_current_user
@@ -183,7 +186,7 @@ async def list_messages(
     result = await session.execute(
         select(Message)
         .where(Message.conversation_id == conversation_id)
-        .order_by(Message.created_at)
+        .order_by(Message.created_at, Message.id)
     )
     msgs = result.scalars().all()
     return [
@@ -196,6 +199,50 @@ async def list_messages(
         )
         for m in msgs
     ]
+
+
+def _is_message_primary_key_conflict(error: IntegrityError) -> bool:
+    """Recognize only the ID collision from the message INSERT being flushed."""
+    orig = error.orig
+    if orig is None:
+        return False
+    if isinstance(orig, sqlite3.IntegrityError):
+        return (
+            getattr(orig, "sqlite_errorcode", None) == sqlite3.SQLITE_CONSTRAINT_PRIMARYKEY
+            and str(orig) == "UNIQUE constraint failed: messages.id"
+        )
+    # SQLAlchemy's asyncpg adapter retains the server diagnostic as its cause.
+    diagnostic = orig.__cause__
+    return (
+        getattr(orig, "sqlstate", None) == "23505"
+        and getattr(diagnostic, "table_name", None) == "messages"
+        and getattr(diagnostic, "constraint_name", None) == "messages_pkey"
+    )
+
+
+def _replay_message(
+    existing: Message,
+    conversation_id: str,
+    payload: AddMessageRequest,
+    sources_payload: list[dict[str, Any]] | None,
+) -> MessageOut:
+    if (
+        existing.conversation_id != conversation_id
+        or existing.role != payload.role
+        or existing.text != payload.text
+        or existing.sources != sources_payload
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="El identificador del mensaje ya está en uso.",
+        )
+    return MessageOut(
+        id=existing.id,
+        role=existing.role,
+        text=existing.text,
+        sources=existing.sources,
+        created_at=existing.created_at.isoformat(),
+    )
 
 
 @router.post(
@@ -226,23 +273,7 @@ async def add_message(
     if payload.message_id:
         existing = await session.get(Message, payload.message_id)
         if existing is not None:
-            if (
-                existing.conversation_id == conversation_id
-                and existing.role == payload.role
-                and existing.text == payload.text
-                and existing.sources == sources_payload
-            ):
-                return MessageOut(
-                    id=existing.id,
-                    role=existing.role,
-                    text=existing.text,
-                    sources=existing.sources,
-                    created_at=existing.created_at.isoformat(),
-                )
-            raise HTTPException(
-                status_code=status.HTTP_409_CONFLICT,
-                detail="El identificador del mensaje ya está en uso.",
-            )
+            return _replay_message(existing, conversation_id, payload, sources_payload)
     now = datetime.now(UTC)
     msg = Message(
         id=payload.message_id or str(uuid.uuid4()),
@@ -252,9 +283,38 @@ async def add_message(
         sources=sources_payload,
         created_at=now,
     )
-    conv.message_count = (conv.message_count or 0) + 1
-    conv.updated_at = now
     session.add(msg)
+    try:
+        await session.flush()
+    except IntegrityError as exc:
+        await session.rollback()
+        if not payload.message_id or not _is_message_primary_key_conflict(exc):
+            raise
+        # Rollback expires ORM state. Re-authorize before returning any replay.
+        current = await session.get(Conversation, conversation_id, populate_existing=True)
+        if current is None or current.user_id != user["sub"]:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Conversación no encontrada.",
+            ) from exc
+        existing = await session.get(Message, payload.message_id, populate_existing=True)
+        if existing is None:
+            raise
+        return _replay_message(existing, conversation_id, payload, sources_payload)
+
+    # The database increments its current value, not the stale ORM snapshot.
+    result = await session.execute(
+        update(Conversation)
+        .where(Conversation.id == conversation_id, Conversation.user_id == user["sub"])
+        .values(message_count=func.coalesce(Conversation.message_count, 0) + 1, updated_at=now)
+        .execution_options(synchronize_session=False)
+    )
+    if cast(CursorResult[Any], result).rowcount != 1:
+        await session.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Conversación no encontrada.",
+        )
     await session.commit()
     return MessageOut(
         id=msg.id,

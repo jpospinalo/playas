@@ -161,8 +161,8 @@ Máquina de estados del chat. Gestiona el ciclo completo de una conversación.
 
 - Vista: `messages`, `input`, `loading`, `isStreaming`, `stage`, `stageMessage`,
   `error` y `contextPercent`.
-- Conversación: `conversationId`, `setInput`, `submit`, `resetChat` y
-  `loadConversation`.
+- Conversación: `conversationId`, `setInput`, `submit`, `resetChat`,
+  `loadConversation` y `handleConversationDeleted`.
 - Acciones: `cancel`/`canCancel`, `generationStopped`, `generationFinished`,
   `persistingMessageIds`/`retryPersistMessage` y `ratedMessageIds`/`rateMessage`.
 
@@ -172,6 +172,11 @@ Máquina de estados del chat. Gestiona el ciclo completo de una conversación.
 ni un guardado. Una generación cancelada no se persiste como respuesta completa.
 `retryPersistMessage()` reintenta guardar una respuesta ya generada cuyo guardado
 falló; no vuelve a consultar el RAG.
+
+Desmontar el chat invalida los envíos pendientes, incluso antes de iniciar SSE.
+Las listas notifican los borrados confirmados mediante `handleConversationDeleted`:
+el hook decide con la vista y carga vigentes, sin cancelar otra selección ni
+restaurar una conversación eliminada si esa carga falla.
 
 **Flujo:**
 1. Genera `thread_id` (UUID) estable por sesión de chat.

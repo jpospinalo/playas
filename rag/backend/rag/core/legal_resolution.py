@@ -1695,8 +1695,8 @@ def _admission_qualifiers_match(question: str, docket: str, case: _Case) -> bool
     markers = [
         i
         for i, line in enumerate(lines)
-        if (marker := _PRINTED_DOCKET.fullmatch(line))
-        and _docket(marker[1] or (lines[i + 1] if i + 1 < len(lines) else ""))
+        if (printed_marker := _PRINTED_DOCKET.fullmatch(line))
+        and _docket(printed_marker[1] or (lines[i + 1] if i + 1 < len(lines) else ""))
         == (docket, case.reference)
     ]
     if len(markers) != 1:
