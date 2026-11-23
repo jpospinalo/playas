@@ -234,6 +234,12 @@ Auth propia con **JWT + PostgreSQL**. `api/auth.py` emite/valida tokens HS256
 (`JWT_SECRET_KEY` / `JWT_ALGORITHM` / `JWT_EXPIRE_MINUTES`); las contraseñas
 se hashean con SHA-256 seguido de bcrypt (`api/passwords.py`).
 
+Tras un login válido, un hash heredado se actualiza sólo si sigue coincidiendo
+con el que se verificó: el rehash no sobrescribe un cambio de contraseña
+confirmado por otra solicitud. Omitir esa actualización conserva el login ya
+validado. Este control no cambia la política de JWT: cambiar la contraseña
+no revoca por sí solo los tokens ya emitidos.
+
 En el frontend, `lib/auth.ts` guarda el token y una caché de usuario ligada
 a ese token en `localStorage` (sin cookies ni SDK de terceros).
 `AuthProvider` valida `/api/auth/me` al montar y al observar un cambio

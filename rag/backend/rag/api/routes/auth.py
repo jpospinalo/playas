@@ -8,7 +8,7 @@ import uuid
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from pydantic import BaseModel, Field, field_validator
-from sqlalchemy import func, select
+from sqlalchemy import func, select, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -103,23 +103,26 @@ def _login_rate_limit_key(email: str, request: Request) -> str:
     return hashlib.sha256(raw.encode("utf-8")).hexdigest()
 
 
-async def _opportunistically_rehash(user: User, password: str, session: AsyncSession) -> None:
-    """Tras un login exitoso con un hash heredado, intenta re-hashearlo al
-    formato actual (ver ``rag.api.passwords``).
+async def _opportunistically_rehash(
+    user_id: str, verified_hash: str, password: str, session: AsyncSession
+) -> None:
+    """Actualiza un hash heredado sólo si sigue siendo el que validó el login.
 
-    La contraseña ya fue validada contra el hash heredado antes de llegar
-    aquí — ese hash heredado sigue siendo válido indefinidamente aunque esta
-    actualización falle. Por eso un fallo exclusivamente en este paso
-    (calcular el nuevo hash o confirmarlo en la base de datos) nunca debe
-    impedir el login: se registra el fallo, se revierte solo esta
-    actualización (``session.rollback()``) y se conserva el hash anterior sin
-    tocar. El llamador no debe leer ningún atributo de ``user`` después de
-    invocar esta función — ``session.rollback()`` expira todos los objetos
-    de la sesión, y leerlos aquí en un ``AsyncSession`` dispararía una carga
-    perezosa implícita no soportada fuera de un ``await`` explícito.
+    Un cambio concurrente omite el rehash sin alterar el login ya validado.
+    Los fallos de cálculo, actualización o commit se registran y revierten;
+    si falla el rollback, ese error se propaga. La cancelación no se captura.
+    El llamador debe usar la identidad previamente capturada: el rollback
+    expira los objetos ORM. Esta operación no revoca tokens.
     """
     try:
-        user.password_hash = await hash_password_async(password)
+        replacement = await hash_password_async(password)
+        await session.execute(
+            update(User)
+            .where(User.id == user_id, User.password_hash == verified_hash)
+            .values(password_hash=replacement)
+            .execution_options(synchronize_session=False)
+        )
+        # Cero filas es una omisión benigna; el commit termina la transacción.
         await session.commit()
     except Exception as exc:
         logger.warning("opportunistic_password_rehash_failed error_type=%s", type(exc).__name__)
@@ -161,8 +164,8 @@ async def login(
     user_display_name = user.display_name
     user_role = user.role
 
-    if needs_rehash(user.password_hash):
-        await _opportunistically_rehash(user, payload.password, session)
+    if needs_rehash(password_hash_to_check):
+        await _opportunistically_rehash(user_id, password_hash_to_check, payload.password, session)
 
     token = create_access_token(user_id, user_email, user_role)
     return TokenResponse(

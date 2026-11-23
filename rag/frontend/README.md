@@ -129,6 +129,10 @@ El flujo actual:
 | `FeedbackModal` | Formulario de feedback de conversación: 4 dimensiones (tono, longitud, usabilidad, general) + comentario. |
 | `MessageRatingPopover` | Feedback por mensaje: pertinencia + accuracy + respuesta esperada. |
 
+En las respuestas Markdown, las imágenes se muestran sólo como texto alternativo
+(o se omiten si no lo tienen), sin crear imágenes ni precargas automáticas.
+Las citas y los enlaces activados por el usuario conservan su funcionamiento.
+
 ### `components/common/` — Componentes compartidos
 
 | Componente | Responsabilidad |

@@ -265,6 +265,9 @@ export function AssistantBubble({
 	// dependency — ver el efecto de arriba).
 	const components = useMemo<Components>(
 		() => ({
+			img({ alt }) {
+				return alt ? <span>{alt}</span> : null;
+			},
 			// Intercept links whose href matches the #docref-N pattern we injected.
 			a({ href, children }) {
 				const match = href?.match(/^#docref-(\d+)$/);
