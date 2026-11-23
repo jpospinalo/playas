@@ -6,11 +6,13 @@ POST /api/feedback/message   — Feedback de mensaje individual (pertinencia + p
 
 from __future__ import annotations
 
+import sqlite3
 import uuid
 from datetime import UTC, datetime
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from rag.api.auth import get_current_user
@@ -58,6 +60,46 @@ async def submit_feedback(
     return FeedbackResponse(id=feedback.id)
 
 
+def _is_message_feedback_pair_conflict(error: IntegrityError) -> bool:
+    """Recognize only the unique user/message pair from the canonical index."""
+    orig = error.orig
+    if orig is None:
+        return False
+    if isinstance(orig, sqlite3.IntegrityError):
+        return (
+            getattr(orig, "sqlite_errorcode", None) == sqlite3.SQLITE_CONSTRAINT_UNIQUE
+            and str(orig)
+            == "UNIQUE constraint failed: message_feedback.user_id, message_feedback.message_id"
+        )
+    diagnostic = orig.__cause__
+    return (
+        getattr(orig, "sqlstate", None) == "23505"
+        and getattr(diagnostic, "table_name", None) == "message_feedback"
+        and getattr(diagnostic, "constraint_name", None) == "uq_message_feedback_user_message"
+    )
+
+
+async def _validate_message_feedback_target(
+    request: MessageFeedbackRequest, user_id: str, session: AsyncSession
+) -> None:
+    conv = await session.get(Conversation, request.conversation_id, populate_existing=True)
+    if conv is None or conv.user_id != user_id:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Conversación no encontrada.",
+        )
+    message = await session.get(Message, request.message_id, populate_existing=True)
+    if (
+        message is None
+        or message.conversation_id != request.conversation_id
+        or message.role != "assistant"
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Mensaje no encontrado.",
+        )
+
+
 @router.post(
     "/message", response_model=MessageFeedbackResponse, status_code=status.HTTP_201_CREATED
 )
@@ -70,29 +112,15 @@ async def submit_message_feedback(
 
     Previene duplicados: un usuario solo puede calificar cada mensaje una vez.
     """
-    conv = await session.get(Conversation, request.conversation_id)
-    if conv is None or conv.user_id != user["sub"]:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Conversación no encontrada.",
-        )
-
-    message = await session.get(Message, request.message_id)
-    if (
-        message is None
-        or message.conversation_id != request.conversation_id
-        or message.role != "assistant"
-    ):
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Mensaje no encontrado.",
-        )
+    await _validate_message_feedback_target(request, user["sub"], session)
 
     dup = await session.execute(
-        select(MessageFeedback).where(
+        select(MessageFeedback.id)
+        .where(
             MessageFeedback.user_id == user["sub"],
             MessageFeedback.message_id == request.message_id,
         )
+        .limit(1)
     )
     if dup.scalar_one_or_none() is not None:
         raise HTTPException(
@@ -111,5 +139,15 @@ async def submit_message_feedback(
         created_at=datetime.now(UTC),
     )
     session.add(msg_feedback)
-    await session.commit()
+    try:
+        await session.commit()
+    except IntegrityError as exc:
+        await session.rollback()
+        if not _is_message_feedback_pair_conflict(exc):
+            raise
+        await _validate_message_feedback_target(request, user["sub"], session)
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Ya existe feedback para este mensaje.",
+        ) from exc
     return MessageFeedbackResponse(id=msg_feedback.id)

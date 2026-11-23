@@ -244,6 +244,15 @@ verificando JWT, roles y propiedad en cada petición. Véanse la migración de
 caché, cancelación y aislamiento del chat en el
 [contrato del cliente](../frontend/README.md#autenticación-jwt-propio).
 
+El feedback de mensaje admite una calificación por `(user_id, message_id)`:
+el primer envío devuelve 201 y los duplicados 409, incluso si son idénticos.
+La tabla nueva incorpora el índice único `uq_message_feedback_user_message`;
+una tabla existente necesita la [migración explícita](SCRIPTS.md#mantenimiento-sql).
+`create_all()` no la migra. La aplicación no sobrescribe calificaciones ni
+resuelve duplicados históricos. El feedback general/de conversación sigue
+admitiendo varias entregas. La escritura exige propiedad de la conversación;
+los listados globales requieren un rol administrativo vigente en SQL.
+
 ## 7. Selección de proveedor LLM
 
 `core/llm_factory.py` selecciona proveedor en orden: **OpenAI** →

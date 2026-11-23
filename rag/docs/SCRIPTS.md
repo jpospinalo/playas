@@ -30,6 +30,40 @@ sudo bash rag/scripts/install-docker-ubuntu.sh
 
 ---
 
+## Mantenimiento SQL
+
+### `scripts/migrate_message_feedback_unique.py`
+
+Comprueba o añade únicamente el índice único de calificación por usuario/mensaje.
+No se ejecuta desde el arranque ni el despliegue. Necesita `DATABASE_URL` explícita
+en el entorno: no carga `.env` ni selecciona `atlas.db` por defecto. No pasar
+credenciales como argumentos ni pegarlas en informes.
+
+Desde `rag/`, con el entorno existente preparado:
+
+```bash
+.venv/bin/python -B scripts/migrate_message_feedback_unique.py
+```
+
+Por defecto sólo comprueba. `ready` con `index_verified: false` significa que
+el esquema admite la migración y falta el índice; no garantiza la unicidad.
+`verified` confirma el índice exacto. Sólo después de autorizar una ventana
+sin escrituras y disponer de respaldo recuperable, añadir `--apply` para
+crearlo; `applied` confirma la creación y comprobación. No regenera la base.
+
+La salida contiene estado y conteos, sin filas ni credenciales. `blocked` o
+un error devuelven salida no exitosa: detenerse y diagnosticar. Si hay
+duplicados, otra unicidad equivalente o un índice/esquema incompatible, no
+borra, fusiona, renombra ni elige registros. El responsable de los datos debe
+decidir el tratamiento de cualquier duplicado antes de reintentar.
+
+Sólo admite PostgreSQL con `asyncpg` o un archivo SQLite existente con
+`aiosqlite`. SQLite se abre sin crear archivos y con lectura sola al comprobar;
+el modo `--apply` usa una transacción efectiva para que un fallo revierta el DDL.
+Las cotas locales son 5 s de espera por bloqueo SQLite/locks PostgreSQL y, para PostgreSQL,
+10 s de conexión y 30 s por comando. No son un SLA físico de limpieza. Las
+pruebas temporales SQLite no certifican una migración PostgreSQL desplegada.
+
 ## SageMaker
 
 ### `scripts/sagemaker-on_start_lifecycle.sh`
