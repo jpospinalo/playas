@@ -36,6 +36,7 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator, model_valida
 
 QueryRoute = Literal["in_scope", "out_of_scope", "conversation", "needs_clarification"]
 DocumentType = Literal["jurisprudencia", "normativa"]
+ClarificationReason = Literal["start_date", "judicial_reference"]
 
 
 # Límites de ``expanded_query``: única fuente de verdad, referenciada tanto
@@ -281,6 +282,7 @@ _PROHIBITION_RE = re.compile(
 # Competencia de una autoridad o a quién corresponde actuar.
 _AUTHORITY_COMPETENCE_RE = re.compile(
     r"\b(autoridad(?:es)?|"
+    r"competencias?\s+administrativas?|"
     r"qui[eé]n\s+(?:debe|tiene\s+que|es\s+responsable|autoriza))\b",
     re.IGNORECASE,
 )
@@ -332,6 +334,23 @@ _NUMBERED_NORM_REFERENCE_RE = re.compile(
     re.IGNORECASE,
 )
 
+# El artículo debe estar ligado a un Código con denominación, no a «código»
+# aislado. La referencia acredita propósito jurídico, no existencia o vigencia.
+_CODE_ARTICLE_REFERENCE_RE = re.compile(
+    r"\bart[ií]culo\s+\d+(?:\.\d+)*[a-z]?\s+del\s+c[oó]digo\s+"
+    r"(?:(?:de|del)\s+)?(?!(?:de|del)\b)[a-záéíóúñ]+\b",
+    re.IGNORECASE,
+)
+_NUMBERED_CONCEPT_REFERENCE_RE = re.compile(
+    r"\bconcepto(?:\s+jur[ií]dico)?\s+(?:n(?:[úu]mero|ro\.?)?\.?\s*)?\d+\b",
+    re.IGNORECASE,
+)
+_CONCEPT_AUTHORITY_CONTEXT_RE = re.compile(
+    r"\b(?:dimar|capitan[ií]a\s+de\s+puerto|consejo\s+de\s+estado|"
+    r"sala\s+de\s+consulta|autoridad(?:es)?|jur[ií]dic[oa]s?|administrativ[oa]s?)\b",
+    re.IGNORECASE,
+)
+
 _REMAC_5_REFERENCE_RE = re.compile(
     r"\b(?:seg[uú]n\s+(?:el\s+)?|conforme\s+(?:al|a)\s+|"
     r"de\s+acuerdo\s+con\s+(?:el\s+)?)remac\s+5\b",
@@ -350,6 +369,7 @@ _LEGAL_INTENT_PATTERNS: tuple[re.Pattern[str], ...] = (
     _PARTICIPATION_PROTECTION_RE,
     _NORMATIVE_REFERENCE_RE,
     _NUMBERED_NORM_REFERENCE_RE,
+    _CODE_ARTICLE_REFERENCE_RE,
 )
 
 # "Puedo/puede/debo... practicar/realizar/vender/instalar..." — un modal de
@@ -369,8 +389,10 @@ _MODAL_ACTIVITY_RE = re.compile(
 
 def _has_legal_intent(text: str) -> bool:
     """Familia #4 (componente léxico, sin el modal de actividad): cualquiera
-    de las subfamilias de intención jurídica/regulatoria."""
-    return any(pattern.search(text) for pattern in _LEGAL_INTENT_PATTERNS)
+    de las subfamilias jurídicas o un concepto identificado con contexto de autoridad."""
+    return any(pattern.search(text) for pattern in _LEGAL_INTENT_PATTERNS) or bool(
+        _NUMBERED_CONCEPT_REFERENCE_RE.search(text) and _CONCEPT_AUTHORITY_CONTEXT_RE.search(text)
+    )
 
 
 def _has_legal_signal(text: str, *, coastal: bool) -> bool:
@@ -411,7 +433,9 @@ _CREATIVE_WRITING_RE = re.compile(
 _PROGRAMMING_RE = re.compile(
     r"\bprogr[aá]ma\w*\s+(?:un[ao]?\s+)?(?:api|aplicaci[oó]n\w*|software|c[oó]digo|scripts?|programa\w*)\b"
     r"|\b(?:desarroll\w*|escr[ií]b\w*)\s+(?:un[ao]?\s+)?(?:software|c[oó]digo|scripts?)\b"
-    r"|c[oó]digo\s+(?:python|javascript)\b",
+    r"|c[oó]digo\s+(?:python|javascript)\b"
+    r"|\b(?:python|javascript)\b[^.!?]{0,100}\bc[oó]mo\s+(?:puedo\s+)?(?:programo|programar)\b"
+    r"|\bc[oó]mo\s+(?:puedo\s+)?(?:programo|programar)\b[^.!?]{0,100}\b(?:python|javascript)\b",
     re.IGNORECASE,
 )
 _WEATHER_FORECAST_RE = re.compile(
@@ -563,6 +587,83 @@ def _inherit_context_from_history(
     return coastal, legal
 
 
+_CALENDAR_DEADLINE_RE = re.compile(
+    r"\b(?:qu[eé]\s+d[ií]a|(?:en\s+)?qu[eé]\s+fecha|fecha\s+exacta|"
+    r"fecha(?=\s+de\s+vencimiento))\b[^?.!]{0,100}"
+    r"\b(?:vence|vencimiento|expira|termina)\b",
+    re.IGNORECASE,
+)
+_MISSING_START_DATE_RE = re.compile(
+    r"\b(?:no\s+(?:tengo|conozco|recuerdo|s[eé])|desconozco)\s+la\s+fecha\s+"
+    r"(?:de(?:l|\s+(?:ese|este|dicho))?\s+requerimiento|"
+    r"de\s+(?:la\s+)?notificaci[oó]n\s+"
+    r"de(?:l|\s+(?:ese|este|dicho))?\s+requerimiento)\b",
+    re.IGNORECASE,
+)
+_JUDICIAL_REFERENCE_RE = re.compile(
+    r"\b(?:aquell[ao]|es[ae]|dich[oa]|mencionad[oa])\s+"
+    r"(?:acci[oó]n\s+popular|sentencia|providencia|fallo)\b",
+    re.IGNORECASE,
+)
+_JUDICIAL_ORDER_RE = re.compile(
+    r"\b(?:orden(?:[oó]|[ea]s?)?|imparti[oó]|plazo|mandat[oa]s?)\b", re.IGNORECASE
+)
+# Identificadores aportados, no prueba de identidad o instancia documental.
+_FULL_JUDICIAL_DOCKET_RE = re.compile(r"(?<![\w-])\d(?:[- ]?\d){21,22}(?![\w-])")
+_NAMED_JUDICIAL_DECISION_RE = re.compile(
+    r"\b(?:sentencia|fallo|providencia)\s+de\s+"
+    r"(?!(?:la\s+)?(?:(?:primera|segunda|[uú]nica)\s+instancia|"
+    r"apelaci[oó]n|casaci[oó]n|revisi[oó]n|fecha)\s+del?\s+\d{1,2}\b)"
+    r"[^\n.?!;]{3,160}?\s+"
+    r"del?\s+\d{1,2}\s+de\s+[a-záéíóú]+\s+de\s+\d{4}\b",
+    re.IGNORECASE,
+)
+_ATTACHED_DOCKET_LABEL_RE = re.compile(
+    r"\s*[,;(]?\s*(?:con\s+)?(?:el\s+)?radicado\s*:?\s*", re.IGNORECASE
+)
+
+
+def _judicial_reference_keys(text: str) -> set[str]:
+    """Cuenta referencias aportadas, uniendo sólo el radicado adjunto explícito."""
+    dockets = list(_FULL_JUDICIAL_DOCKET_RE.finditer(text))
+    references = {re.sub(r"[- ]", "", match.group()) for match in dockets}
+    for named in _NAMED_JUDICIAL_DECISION_RE.finditer(text):
+        attached = any(
+            docket.start() >= named.end()
+            and _ATTACHED_DOCKET_LABEL_RE.fullmatch(text[named.end() : docket.start()])
+            for docket in dockets
+        )
+        if not attached:
+            references.add(" ".join(named.group().casefold().split()))
+    return references
+
+
+def clarification_reason(question: str, history_context: str = "") -> ClarificationReason | None:
+    """Pide sólo datos explícitamente ausentes en preguntas jurídico-costeras.
+
+    La pregunta original conserva precedencia sobre expansiones e historial.
+    No calcula plazos ni acredita que una providencia exista en el corpus.
+    """
+    if _has_unambiguous_off_topic_intent(question) or _is_meta_question(question):
+        return None
+    coastal = _has_coastal_signal(question)
+    legal = _has_legal_signal(question, coastal=coastal)
+    coastal, legal = _inherit_context_from_history(
+        question, history_context, coastal=coastal, legal=legal
+    )
+    if not (coastal and legal):
+        return None
+    if _CALENDAR_DEADLINE_RE.search(question) and _MISSING_START_DATE_RE.search(question):
+        return "start_date"
+    if not (_JUDICIAL_REFERENCE_RE.search(question) and _JUDICIAL_ORDER_RE.search(question)):
+        return None
+    references = _judicial_reference_keys(question)
+    if references:
+        return None if len(references) == 1 else "judicial_reference"
+    references = _judicial_reference_keys(history_context)
+    return None if len(references) == 1 else "judicial_reference"
+
+
 def _is_deterministic_terminal(question: str) -> bool:
     """``True`` cuando ``_fallback()`` produce, para ``question`` sola, una
     ruta terminal determinista que NO depende del historial: familia #5
@@ -630,6 +731,14 @@ def _fallback(question: str, history_context: str = "") -> EnrichedQuery:
                 expanded_query=clean_question,
                 doc_types=[],
             )
+
+    if clarification_reason(clean_question, history_context) is not None:
+        return EnrichedQuery(
+            route="needs_clarification",
+            standalone_question=clean_question,
+            expanded_query=clean_question,
+            doc_types=[],
+        )
 
     if (
         _REMAC_5_REFERENCE_RE.search(clean_question)
@@ -705,6 +814,9 @@ def _apply_domain_guard(
         return heuristic
 
     if _has_unambiguous_off_topic_intent(clean_question):
+        return heuristic
+
+    if clarification_reason(clean_question, history_context) is not None:
         return heuristic
 
     if _is_contextual_plan_reference(clean_question) and heuristic.route == "needs_clarification":

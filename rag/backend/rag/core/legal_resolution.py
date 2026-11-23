@@ -1664,6 +1664,89 @@ def _review_grant_evidence(case: _Case, right: str) -> tuple[Passage, ...]:
     return (selected,) if selected else ()
 
 
+_ADMISSION_COAST = re.compile(
+    r"\b(?:playas?|litoral(?:es)?|coster[oa]s?|terrenos de bajamar|aguas maritimas|mar territorial)\b"
+)
+_ADMISSION_REFERENCE = re.compile(r"\b(?:sentencia|fallo|providencia)\b(?P<label>[^,;¿?\n]{0,200})")
+_ADMISSION_COVER_DATE = re.compile(
+    r"(?<!\d)(\d{1,2})\)? de "
+    r"(enero|febrero|marzo|abril|mayo|junio|julio|agosto|septiembre|octubre|noviembre|diciembre) "
+    r"de (?:[a-z]+ ){0,6}\(?(\d{4})\)?(?!\d)"
+)
+_ADMISSION_REFERENCE_PREFIX = re.compile(
+    r"^(?:(?:de|del|en)(?:\s+|$))?"
+    r"(?:(?:apelacion|primera instancia|segunda instancia|unica instancia)"
+    r"(?:\s+(?:de|del))?(?:\s+|$))?"
+)
+
+
+def _admission_qualifiers_match(question: str, docket: str, case: _Case) -> bool:
+    """Check supplied reference labels against the ruling's own verified cover.
+
+    This deliberately accepts only verifiable labels, not a general entity/date
+    interpretation. Dates from the appealed ruling cannot authorize admission.
+    """
+    instances = set(re.findall(_QUESTION_INSTANCE, question))
+    if re.search(r"\bapelacion\b", question):
+        instances.add("segunda instancia")
+    if instances and instances != {case.instance}:
+        return False
+    lines = _header_lines([_flat(p.text).lstrip("# ") for p in case.opening])
+    markers = [
+        i
+        for i, line in enumerate(lines)
+        if (marker := _PRINTED_DOCKET.fullmatch(line))
+        and _docket(marker[1] or (lines[i + 1] if i + 1 < len(lines) else ""))
+        == (docket, case.reference)
+    ]
+    if len(markers) != 1:
+        return False
+    marker = markers[0]
+    dates = list(_ADMISSION_COVER_DATE.finditer(lines[marker - 1])) if marker else []
+    own_date = dates[0].groups() if len(dates) == 1 else None
+    corporation = _flat(next(iter(case.verified_documents.values()))[0].metadata["Corporación"])
+    start = max((i for i in range(marker) if lines[i] == corporation), default=0)
+    end = next(
+        (i for i in range(marker + 1, len(lines)) if _APPEAL_OPENING.match(lines[i])),
+        len(lines),
+    )
+    cover = "\n".join(lines[start:end])
+    labels = [m["label"] for m in _ADMISSION_REFERENCE.finditer(question)]
+    # A qualifier after the docket is just as binding as one before it.
+    for match in _DOCKET.finditer(question):
+        if (identity := _docket(match.group())) and len(identity[0]) in {22, 23}:
+            tail = question[match.end() :]
+            factual = tail.find("¿")
+            if factual >= 0:
+                labels.extend(re.split(r"[,;\n]", tail[:factual]))
+            else:
+                # Without a boundary, do not guess whether an extra date names
+                # the ruling or belongs to the factual question.
+                if _DATE.search(tail):
+                    return False
+                labels.append(re.split(r"[,;?\n]", tail, maxsplit=1)[0])
+    for label in labels:
+        for date in _DATE.finditer(label):
+            if own_date is None or any(
+                expected is not None
+                and (int(expected) != int(seen) if i != 1 else expected != seen)
+                for i, (expected, seen) in enumerate(zip(date.groups(), own_date, strict=True))
+            ):
+                return False
+        label = _DATE.sub("", label)
+        label = _DOCKET.sub(
+            lambda m: "" if len(re.sub(r"\D", "", m["number"])) in {22, 23} else m.group(),
+            label,
+        )
+        label = re.sub(r"\b(?:radicado|radicacion(?: numero)?|expediente)\b", "", label)
+        label = re.sub(r"^(?:sentencia|fallo|providencia)\b\s*", "", label.strip(" :.-"), count=1)
+        label = _ADMISSION_REFERENCE_PREFIX.sub("", label, count=1)
+        label = re.sub(r"\s+de[l]?$", "", label).strip()
+        if label and (re.search(r"\d", label) or label not in cover):
+            return False
+    return True
+
+
 class ResolutionIndex:
     """A pure index built from the same Document sequence supplied to BM25."""
 
@@ -1768,6 +1851,44 @@ class ResolutionIndex:
                 self._dockets[docket] = DocketEvidence(
                     docket, signature[0], signature[2], fragments, anchored
                 )
+
+    def admits_documentary_question(self, question: str) -> bool:
+        """Allow ordinary retrieval for one complete, revalidated coastal source.
+
+        Only the user's original reference is considered. This returns no order,
+        answer, citations or inferred instance, and leaves equivalent-copy bridges
+        to their existing operative path.
+        """
+        if not self.snapshot_verified or _is_deterministic_terminal(question):
+            return False
+        text = _flat(question)
+        identities = {
+            identity
+            for match in _DOCKET.finditer(text)
+            if (identity := _docket(match.group())) and len(identity[0]) in {22, 23}
+        }
+        if len(identities) != 1 or _ANSWER_SHORT_DOCKET.search(text):
+            return False
+        docket, reference = identities.pop()
+        evidence, case = self._dockets.get(docket), self._cases.get(docket)
+        if (
+            evidence is None
+            or case is None
+            or (reference is not None and reference != case.reference)
+            or evidence.instance != case.instance
+            or set(evidence.fragments) != set(case.verified_documents)
+            or any(
+                not _verified(doc, ident, proof)
+                for ident, (doc, proof) in case.verified_documents.items()
+            )
+        ):
+            return False
+        if not any(
+            _ADMISSION_COAST.search(_flat(doc.page_content))
+            for doc, _ in case.verified_documents.values()
+        ):
+            return False
+        return _admission_qualifiers_match(text, docket, case)
 
     def docket_evidence(self, question: str) -> DocketEvidence | None:
         intent = _resolution_intent(question)

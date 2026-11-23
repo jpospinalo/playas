@@ -31,6 +31,7 @@ from ..config import (
     LEGAL_RESOLUTION_PROVENANCE_SHA256,
 )
 from .chroma_query import ChromaQuery
+from .domain_scope import ClarificationReason, clarification_reason
 from .embeddings import QueryEmbedder
 from .legal_resolution import (
     DocketEvidence,
@@ -75,6 +76,7 @@ class AgentState(TypedDict):
     doc_types: NotRequired[list[str] | None]
     requested_doc_types: NotRequired[list[str] | None]
     clarify_providencia: NotRequired[bool]
+    clarification_reason: NotRequired[ClarificationReason | None]
     verified_docket: NotRequired[str | None]
     verified_instance: NotRequired[str | None]
     documentary_answer: NotRequired[str | None]
@@ -244,12 +246,22 @@ async def enrich_query_node(
     *,
     capture_filter: bool = False,
     verified_documents: tuple[Document, ...] | None = None,
+    resolution_index: ResolutionIndex | None = None,
 ) -> dict:
     _emit_status("enriching", "Analizando el alcance y contexto de tu pregunta…")
     requested_doc_types = state.get("doc_types")
     with stage_timer("enrich_query") as fields:
         history_context = _history_for_analysis(state["messages"], state["question"])
         analysis: EnrichedQuery = await enrich_query_async(state["question"], history_context)
+        reason = clarification_reason(state["question"], history_context)
+        documentary_admission = (
+            capture_filter
+            and resolution_index is not None
+            and analysis.route in {"out_of_scope", "needs_clarification"}
+            and reason is None
+            and _permits_jurisprudence(requested_doc_types)
+            and resolution_index.admits_documentary_question(state["question"])
+        )
         clarify_providencia = (
             capture_filter
             and analysis.route in {"in_scope", "needs_clarification"}
@@ -261,6 +273,7 @@ async def enrich_query_node(
             capture_filter
             and verified_documents is not None
             and not clarify_providencia
+            and reason is None
             and analysis.route in {"needs_clarification", "in_scope"}
             and _is_first_question(state)
         ):
@@ -272,9 +285,9 @@ async def enrich_query_node(
             )
         route: QueryRoute = (
             "in_scope"
-            if plan_context is not None
+            if plan_context is not None or documentary_admission
             else "needs_clarification"
-            if clarify_providencia
+            if clarify_providencia or reason is not None
             else analysis.route
         )
         # `route` es un enum cerrado (QueryRoute), no texto libre de la
@@ -282,7 +295,11 @@ async def enrich_query_node(
         fields["route"] = route
 
     effective_doc_types = requested_doc_types or (
-        ["normativa"] if plan_context is not None else analysis.doc_types
+        ["jurisprudencia"]
+        if documentary_admission
+        else ["normativa"]
+        if plan_context is not None
+        else analysis.doc_types
     )
     if route != "in_scope":
         effective_doc_types = []
@@ -290,13 +307,14 @@ async def enrich_query_node(
     update: dict[str, Any] = {
         "query_route": route,
         "standalone_question": state["question"]
-        if plan_context is not None
+        if plan_context is not None or documentary_admission
         else analysis.standalone_question,
         "enriched_query": _normalize_expanded_query(state["question"])
-        if plan_context is not None
+        if plan_context is not None or documentary_admission
         else analysis.expanded_query,
         "doc_types": effective_doc_types,
         "sources": [],
+        "clarification_reason": reason,
     }
     if capture_filter:
         update.update(
@@ -386,6 +404,26 @@ async def respond_without_retrieval_node(
     route = state.get("query_route")
     if route == "needs_clarification" and state.get("clarify_providencia"):
         return {"messages": [AIMessage(content=_PROVIDENCIA_CLARIFICATION_RESPONSE)], "sources": []}
+    if route == "needs_clarification" and state.get("clarification_reason") == "start_date":
+        return {
+            "messages": [
+                AIMessage(
+                    content="¿Puedes indicar la fecha del requerimiento o de su notificación "
+                    "que mencionas? Sin ese dato no puedo señalar un día concreto de vencimiento."
+                )
+            ],
+            "sources": [],
+        }
+    if route == "needs_clarification" and state.get("clarification_reason") == "judicial_reference":
+        return {
+            "messages": [
+                AIMessage(
+                    content="¿Puedes identificar la providencia con el radicado o con sus partes "
+                    "y fecha? Necesito distinguir el fallo para buscar la orden y su plazo."
+                )
+            ],
+            "sources": [],
+        }
     if (
         route in {"out_of_scope", "needs_clarification"}
         and resolution_index is not None
@@ -625,6 +663,7 @@ def build_graph(
                 enrich_query_node,
                 capture_filter=verify_docket,
                 verified_documents=verified_documents,
+                resolution_index=resolution_index,
             ),
         )
         .add_node(
