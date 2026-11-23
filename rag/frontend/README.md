@@ -157,7 +157,21 @@ El flujo actual:
 
 Máquina de estados del chat. Gestiona el ciclo completo de una conversación.
 
-**Retorna:** `messages`, `input`, `loading`, `isStreaming`, `stage` (`"enriching"` | `"retrieving"` | `"generating"`), `error`, `contextPercent`, `conversationId`, `ratedMessageIds`, `setInput`, `submit`, `resetChat`, `loadConversation`, `rateMessage`.
+**Capacidades y estado:**
+
+- Vista: `messages`, `input`, `loading`, `isStreaming`, `stage`, `stageMessage`,
+  `error` y `contextPercent`.
+- Conversación: `conversationId`, `setInput`, `submit`, `resetChat` y
+  `loadConversation`.
+- Acciones: `cancel`/`canCancel`, `generationStopped`, `generationFinished`,
+  `persistingMessageIds`/`retryPersistMessage` y `ratedMessageIds`/`rateMessage`.
+
+`stage` distingue `"enriching"`, `"retrieving"` y `"generating"`.
+
+`cancel()` detiene solo la generación activa, sin abortar una carga de historial
+ni un guardado. Una generación cancelada no se persiste como respuesta completa.
+`retryPersistMessage()` reintenta guardar una respuesta ya generada cuyo guardado
+falló; no vuelve a consultar el RAG.
 
 **Flujo:**
 1. Genera `thread_id` (UUID) estable por sesión de chat.

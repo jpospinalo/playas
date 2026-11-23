@@ -24,6 +24,7 @@ backend/rag/
 │   ├── domain_scope.py         # Esquema EnrichedQuery + clasificador determinista de alcance costero/jurídico
 │   ├── legal_resolution.py     # Resolución documental sobre el snapshot BM25 con procedencia verificada
 │   ├── normative_context.py    # Selección acotada de artículos y adopción de planes sobre el mismo snapshot verificado
+│   ├── plan_attribution_context.py # Selector puro de atribución de planes entre candidatos ya recuperados
 │   ├── generator.py            # Adaptador de evaluación: mismo grafo, aislado por pregunta (§10)
 │   ├── observability.py        # Instrumentación de logging (etapas del grafo, conteos, sin filtrar contenido)
 │   └── llm_factory.py          # OpenAI → OpenRouter → Gemini → error
@@ -105,6 +106,15 @@ deliberadamente limitada: si falta o es ambigua la prueba, conserva la
 clasificación y recuperación existentes, sin inventar una atribución. No
 garantiza recuperar íntegro cualquier artículo o plan.
 
+`plan_attribution_context.py` actúa después de RRF: puede priorizar el pasaje
+que atribuye explícitamente la formulación, adopción, ejecución o coordinación
+de un plan inequívoco, solo si ya pertenece al conjunto recuperado. La identidad
+y el alias deben constar en los cuerpos y los fragmentos decisivos deben coincidir
+con el snapshot verificado. Respeta el filtro original y las guardas de alcance;
+solo interviene con `k=4`. No añade fuentes desde el snapshot ni modifica cuerpos
+o metadata; tampoco crea clientes. Si falta prueba o hay ambigüedad, conserva la
+selección original.
+
 ## 3. Retrieval híbrido
 
 `core/retriever.py` combina BM25 (léxico) y búsqueda vectorial (ChromaDB,
@@ -128,7 +138,9 @@ Dos mecanismos independientes, con propósitos distintos:
 
 - **`MemorySaver`** (LangGraph, en memoria del proceso) — el checkpointer
   que mantiene el estado del grafo (`state["messages"]`) mientras el
-  servidor vive, indexado por `thread_id` (UUID generado en el frontend).
+  servidor vive. La API construye el `thread_id` de LangGraph con la clave
+  `user:{user_id}:conversation:{logical_id}`; toma `logical_id` de
+  `conversation_id`, luego del `thread_id` de la petición o de un UUID nuevo.
   Un checkpoint con mensajes evita recargar el historial; solo se añade
   la pregunta nueva al estado existente.
 - **Base de datos SQL** (Postgres en prod, SQLite de respaldo local, vía
