@@ -795,11 +795,13 @@ export function useChat({ onConversationChanged }: UseChatOptions = {}): UseChat
 		expectedAnswer?: string,
 	): Promise<void> {
 		const token = user ? getTokenForUser(user.user_id) : null;
-		if (!token || !conversationIdRef.current) return;
+		const activeConversationId = conversationIdRef.current;
+		if (!token) throw new Error("La sesión no es válida. Inicia sesión nuevamente.");
+		if (!activeConversationId) throw new Error("No hay una conversación activa para calificar.");
 
 		const { submitMessageFeedback } = await import("@/lib/api");
 		await submitMessageFeedback({
-			conversation_id: conversationIdRef.current,
+			conversation_id: activeConversationId,
 			message_id: messageId,
 			ratings: { pertinence: ratings.pertinence, accuracy: ratings.accuracy },
 			expected_answer: expectedAnswer,
