@@ -3,16 +3,19 @@ timeout de inactividad de 300s del ALB/Nginx delante de este servicio (no
 es un límite total de duración, ver ``rag.config`` para el razonamiento
 completo):
 
-  - ``/api/query`` (JSON, sin datos intermedios): timeout TOTAL de
-    ``graph.ainvoke(...)`` (``QUERY_TOTAL_TIMEOUT_SECONDS``, default 280s).
-    Al vencer, responde 504 de forma controlada — nunca deja que el proxy
-    corte la conexión sin explicación.
+  - ``/api/query`` (JSON, sin datos intermedios): timeout compartido de
+    hidratación y ``graph.ainvoke(...)`` (``QUERY_TOTAL_TIMEOUT_SECONDS``,
+    default 280s). Al vencer, responde 504 después de la limpieza.
   - ``/api/query/stream`` (SSE): SIN timeout total — los eventos `status`
     intermedios pueden mantener viva una consulta legítimamente más larga
     que 280s. En su lugar, timeout POR ETAPA
     (``QUERY_STREAM_STAGE_TIMEOUT_SECONDS``, default 285s): se mide el
     tiempo ENTRE eventos consecutivos del grafo, no la duración total del
-    stream.
+    stream. Preparación y primer evento comparten el deadline inicial.
+
+El reloj comienza tras adquirir lock/plaza. Los values internos también
+cuentan como eventos; no se acredita un plazo de frames visibles ni de
+autenticación, espera del lock, cierre SQL o envío ASGI.
 
 En ambos casos, el timeout debe liberar el lock de conversación, el slot de
 backpressure y el checkpoint efímero (A3.1) exactamente igual que cualquier
@@ -146,7 +149,7 @@ async def test_query_total_timeout_returns_504_and_releases_all_resources(
 async def test_query_completes_normally_within_the_default_total_timeout(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """El wrapping con `asyncio.wait_for` no debe alterar el camino feliz:
+    """El presupuesto con `asyncio.timeout` no debe alterar el camino feliz:
     una consulta determinista (sin LLM) termina muy por debajo del default
     de producción (280s, aquí sin monkeypatchear)."""
     import rag.api.main as main_module

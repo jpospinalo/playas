@@ -26,7 +26,7 @@ backend/rag/
 │   ├── normative_context.py    # Selección acotada de artículos y adopción de planes sobre el mismo snapshot verificado
 │   ├── plan_attribution_context.py # Selector puro de atribución de planes entre candidatos ya recuperados
 │   ├── generator.py            # Adaptador de evaluación: mismo grafo, aislado por pregunta (§10)
-│   ├── observability.py        # Instrumentación de logging (etapas del grafo, conteos, sin filtrar contenido)
+│   ├── observability.py        # Instrumentación de logging (etapas y conteos, sin registrar contenido sensible)
 │   └── llm_factory.py          # OpenAI → OpenRouter → Gemini → error
 └── api/
     ├── main.py                 # App FastAPI: lifespan (compila grafo + init_db), health, ready, query, query/stream
@@ -209,6 +209,24 @@ En un cierre de éxito, el cliente exige un único evento `sources` (una lista
 vacía es válida) antes de `[DONE]`. Rechaza truncamientos, duplicados y eventos
 conocidos fuera de orden. Un error o una cancelación no se tratan como una
 respuesta completada para persistir.
+
+Los plazos de trabajo empiezan después de adquirir lock y plaza. JSON
+comparte `QUERY_TOTAL_TIMEOUT_SECONDS` entre hidratación y grafo. En SSE,
+preparación y primera lectura del grafo comparten un deadline absoluto de
+`QUERY_STREAM_STAGE_TIMEOUT_SECONDS`; después se limita la espera entre
+eventos, sin un techo total del stream. Los `values` internos cuentan como
+progreso aunque no se envíen al cliente. Si la preparación vence, responde
+HTTP 504 antes de abrir el stream; si vence una lectura, emite el error SSE
+vigente. No son garantías de primer frame visible ni de duración de
+autenticación, espera del lock, cierre SQL o envíos ASGI bloqueados. La
+hidratación espera el cierre de su sesión SQL antes de liberar lock y plaza,
+incluso si el plazo vence o se cancela la petición durante ese cierre. Un error
+del propio cierre se propaga; no acredita que se haya devuelto la conexión.
+
+Los cuatro registros excepcionales de consulta JSON/SSE, generación de título
+y rehash de contraseña usan un evento fijo y la clase de error, sin volcar el
+mensaje externo, traceback o parámetros SQL. Esto no certifica otros loggers o
+middleware; las respuestas públicas genéricas se conservan.
 
 ## 6. Autenticación
 

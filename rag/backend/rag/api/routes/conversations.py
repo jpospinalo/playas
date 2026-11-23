@@ -493,7 +493,7 @@ async def generate_title(
         if not title:
             title = request.first_message[:60]
     except Exception as exc:
-        logger.exception("Error generando el título de la conversación")
+        logger.error("conversation_title_generation_failed error_type=%s", type(exc).__name__)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="No fue posible generar el título.",

@@ -118,12 +118,11 @@ async def _opportunistically_rehash(user: User, password: str, session: AsyncSes
     de la sesión, y leerlos aquí en un ``AsyncSession`` dispararía una carga
     perezosa implícita no soportada fuera de un ``await`` explícito.
     """
-    user_id = user.id
     try:
         user.password_hash = await hash_password_async(password)
         await session.commit()
-    except Exception:
-        logger.warning("opportunistic_password_rehash_failed user_id=%s", user_id, exc_info=True)
+    except Exception as exc:
+        logger.warning("opportunistic_password_rehash_failed error_type=%s", type(exc).__name__)
         await session.rollback()
 
 

@@ -9,11 +9,13 @@ porque `tests/unit/test_conversation_hydration.py` los importa desde ahí
 
 from __future__ import annotations
 
+import asyncio
 import re
 import uuid
 from pathlib import Path
 from typing import Any
 
+from anyio import CancelScope
 from fastapi import HTTPException
 from langchain_core.documents import Document
 from langchain_core.messages import AIMessage, HumanMessage
@@ -212,7 +214,8 @@ async def _get_initial_messages(
     from rag.api.database import async_session_factory
     from rag.api.models import Conversation, Message
 
-    async with async_session_factory() as session:
+    session = async_session_factory()
+    try:
         conversation = await session.get(Conversation, conversation_id)
         if conversation is None or conversation.user_id != user_id:
             raise HTTPException(status_code=404, detail="Conversación no encontrada.")
@@ -253,6 +256,26 @@ async def _get_initial_messages(
             ).order_by(Message.id)
         result = await session.execute(history_query)
         msgs = result.scalars().all()
+    finally:
+        # Own one close task until it finishes. AsyncSession.__aexit__ shields
+        # its task but can leave that task running when this caller is cancelled.
+        close_task = asyncio.create_task(session.close())
+        cancellation: asyncio.CancelledError | None = None
+        with CancelScope(shield=False) as close_scope:
+            while not close_task.done():
+                try:
+                    await asyncio.shield(close_task)
+                except asyncio.CancelledError as exc:
+                    if cancellation is None:
+                        cancellation = exc
+                    # Observe cancellation first, then shield the remaining drain
+                    # from AnyIO level cancellation. Task.cancel still reaches it.
+                    close_scope.shield = True
+        # A close failure still propagates; cancellation is restored only after
+        # a successful drain, including repeated cancellation during that wait.
+        close_task.result()
+        if cancellation is not None:
+            raise cancellation
 
     history: list = []
     for msg in msgs:
