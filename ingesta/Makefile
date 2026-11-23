@@ -1,7 +1,8 @@
 .PHONY: install lint format format-check typecheck test test-cov test-integration pipeline bucket-backup clean help
 
 install:  ## Instalar dependencias (incluidas las de desarrollo)
-	uv sync --group dev
+	env -u UV_FROZEN uv lock --check --no-build --no-python-downloads --python 3.12
+	uv sync --frozen --group dev
 
 lint:  ## Verificar errores de estilo y lógica con ruff
 	uv run ruff check ingest/ tests/ utils/

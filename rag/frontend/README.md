@@ -26,24 +26,29 @@ paquete npm `@fontsource-variable/inter` (licencia OFL, ver
 `app/fonts/Inter-OFL-LICENSE.txt`); Geist Mono viene empaquetada en la
 dependencia `geist` (ver `app/fonts/Geist-OFL-LICENSE.txt`).
 
-Package manager: **bun**. La autenticación es propia (JWT) contra el backend
-FastAPI, ver más abajo.
+Package manager: **Bun 1.3.13**, declarado en el [workspace](../package.json).
+La autenticación es propia (JWT) contra el backend FastAPI, ver más abajo.
 
 ---
 
 ## Desarrollo
 
+Desde `rag/frontend/`, utilizando el lock del workspace `rag/bun.lock`:
+
 ```bash
-bun install
+bun install --frozen-lockfile
 bun dev             # http://localhost:3000
 bun run build       # build de producción
 bun run lint        # eslint
 bun run typecheck   # chequeo de tipos (tsc --noEmit)
+bun run test        # pruebas unitarias (Vitest)
 ```
 
-Requiere `frontend/.env.local` con `NEXT_PUBLIC_API_URL` (URL del backend;
-vacío para usar rutas relativas detrás de un proxy como nginx — ver
-`../docs/DESPLIEGUE.md`).
+`NEXT_PUBLIC_API_URL` puede venir del entorno o de configuración local;
+`next.config.ts` también lee `rag/.env`. `frontend/.env.local` es opcional.
+En producción, Next fija esta variable al construir el frontend: usar un valor
+vacío para rutas relativas detrás del proxy. Ver la
+[guía de despliegue](../docs/DESPLIEGUE.md).
 
 ---
 

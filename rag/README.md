@@ -17,17 +17,24 @@ Para consultar o evaluar la colección, seguir la
 
 ## Empezar aquí
 
+Desde `rag/`, usar Python 3.12 y uv 0.13.4 (perfil de CI). Consultar la
+[política de locks y controles locales](../CONTRIBUTING.md#controles-locales).
+
 ```bash
-make install        # uv sync --all-packages --group dev (workspace: backend/)
-make test            # pytest tests/unit/ -v
-make lint             # ruff check backend/rag/ tests/ evaluation/ scripts/ utils/
-make app              # uvicorn rag.api.main:app --app-dir backend --reload --port 8080 (desde rag/)
+make install              # comprobar lock e instalar sin regenerarlo
+UV_FROZEN=1 make test      # pruebas unitarias
+UV_FROZEN=1 make lint      # Ruff
+UV_FROZEN=1 make app       # API local, puerto 8080
 ```
+
+Para el frontend, usar Bun 1.3.13, declarado en el workspace.
+En otra terminal, desde `rag/`:
 
 ```bash
 cd frontend
-bun install
-bun dev              # http://localhost:3000
+bun install --frozen-lockfile
+bun run test
+bun dev                   # http://localhost:3000
 ```
 
 Configurar `rag/.env` a partir de `.env.example` con los endpoints de ChromaDB
