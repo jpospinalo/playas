@@ -119,7 +119,8 @@ async def public_result(main_module, request, channel):
 @pytest.mark.anyio
 @pytest.mark.parametrize("channel", ["JSON", "SSE"])
 @pytest.mark.parametrize(
-    "scenario", ["followup", "first_adoption", "off", "unverified", "juris_filter"]
+    "scenario",
+    ["followup", "followup_parenthetical", "first_adoption", "off", "unverified", "juris_filter"],
 )
 async def test_bound_plan_evidence_reaches_public_citations(monkeypatch, channel, scenario):
     import rag.api.main as main_module
@@ -137,11 +138,18 @@ async def test_bound_plan_evidence_reaches_public_citations(monkeypatch, channel
     async def analyze(incoming, history):
         assert incoming == question
         history_calls.append(history)
+        standalone = (
+            STANDALONE.replace("?", " (PBC)?")
+            if scenario == "followup_parenthetical"
+            else STANDALONE
+        )
         return EnrichedQuery(
             route="in_scope",
-            standalone_question=question if scenario == "first_adoption" else STANDALONE,
-            expanded_query=question if scenario == "first_adoption" else STANDALONE,
-            doc_types=["normativa"],
+            standalone_question=question if scenario == "first_adoption" else standalone,
+            expanded_query=question if scenario == "first_adoption" else standalone,
+            doc_types=["jurisprudencia", "normativa"]
+            if scenario == "followup_parenthetical"
+            else ["normativa"],
         )
 
     async def initial_messages(
@@ -152,7 +160,11 @@ async def test_bound_plan_evidence_reaches_public_citations(monkeypatch, channel
             return [HumanMessage(content=incoming)]
         # This is a portable, mixed-role seed. It does not claim to exercise SQL hydration.
         return [
-            HumanMessage(content=f"Me refiero al {PLAN}."),
+            HumanMessage(
+                content=ADOPTION
+                if scenario == "followup_parenthetical"
+                else f"Me refiero al {PLAN}."
+            ),
             AIMessage(content="La adopción corresponde al Consejo Local [doc2]."),
             HumanMessage(content=incoming),
         ]
@@ -233,10 +245,12 @@ async def test_bound_plan_evidence_reaches_public_citations(monkeypatch, channel
         for fragment in group["fragments"]
     }
     ids = [fragment["metadata"]["chunk_id"] for fragment in fragments]
-    if scenario == "followup":
+    if scenario in ("followup", "followup_parenthetical"):
         assert ids == ["proof", "guide", "identity", "stages"]
         assert "Dirección Técnica de Bahía Clara" in answer and "[doc1]" in answer
         assert factory_calls and factory_calls[0]["k"] == 4
+        if scenario == "followup_parenthetical":
+            assert factory_calls[0]["doc_types"] == ["jurisprudencia", "normativa"]
     elif scenario == "first_adoption":
         assert ids == ["identity", "proof"]
         assert "Consejo Local" in answer and "[doc2]" in answer

@@ -35,6 +35,10 @@ def _plan_name(text: str) -> str | None:
     return found.group(0).strip() if found else None
 
 
+def _complete_reference(text: str, name: str) -> bool:
+    return _canon(text).rstrip(" ?!.;").endswith(name)
+
+
 def requested_act(question: object) -> str | None:
     """Recognize only the bounded attribution grammar, without inferring actors."""
     text = _canon(question)
@@ -183,8 +187,6 @@ def select_plan_attribution_context(
     if not name:
         return current_selected
     original_name = _plan_name(_canon(question))
-    if original_name and original_name != name:
-        return current_selected
     if not isinstance(history, list) or any(
         not isinstance(message, dict)
         or message.get("role") not in ("user", "assistant")
@@ -192,9 +194,29 @@ def select_plan_attribution_context(
         for message in history
     ):
         return current_selected
-    history_names = [
-        _plan_name(_canon(message["content"])) for message in history if message["role"] == "user"
-    ]
+    user_questions = [message["content"] for message in history if message["role"] == "user"]
+    history_names = [_plan_name(_canon(content)) for content in user_questions]
+    required_alias = None
+    parenthetical = re.fullmatch(r"([^()]+?)\s+\(([a-z][a-z0-9 ]{2,60})\)", name)
+    if parenthetical and _complete_reference(standalone_question, name):
+        base, added_alias = parenthetical.groups()
+        explicit = original_name == base and _complete_reference(question, base)
+        followup = (
+            original_name is None
+            and not re.search(r"\bplan\b", _canon(question))
+            and bool(history_names)
+            and all(previous == base for previous in history_names)
+        )
+        complete_history = all(
+            previous is None or _complete_reference(content, previous)
+            for content, previous in zip(user_questions, history_names, strict=True)
+        )
+        if (explicit or followup) and complete_history:
+            # Provisional equivalence only: candidate bodies must declare this
+            # alias, and identity/attribution still require the snapshot below.
+            name, required_alias = base, added_alias
+    if original_name and original_name != name:
+        return current_selected
     if original_name is None and (
         not history_names or any(previous != name for previous in history_names)
     ):
@@ -232,6 +254,8 @@ def select_plan_attribution_context(
     if len(identities) != 1:
         return current_selected
     source, norma, alias = next(iter(identities))
+    if required_alias is not None and required_alias != alias:
+        return current_selected
     alias_definition = r"\b(?P<name>plan [^.!?;]{8,220}?)\s*[-—]\s*" + re.escape(alias) + r"\s*[-—]"
     for document in eligible:
         if any(

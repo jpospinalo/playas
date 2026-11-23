@@ -3797,3 +3797,153 @@ def test_only_matching_loader_id_normalization_is_allowed(
     assert selected[0] is proof
     assert len(selected) <= 4
     assert all(any(doc is original for original in pool) for doc in selected)
+
+
+def _parenthetical_alias_case():
+    case = copy.deepcopy(next(case for case in _CASES if case["case_id"] == "S01_FORMULAR"))
+    case["question"] = "¿Y quién debe formularlo?"
+    case["standalone_question"] = "¿Quién debe formular el Plan de Restauración de Dunas (PRD)?"
+    case["history"] = [
+        {
+            "role": "user",
+            "content": "¿Qué autoridad debe adoptar el Plan de Restauración de Dunas?",
+        },
+        {"role": "assistant", "content": "La adopción corresponde al Consejo de Restauración."},
+    ]
+    return case
+
+
+def _assert_parenthetical_promotion(case, pool, current, verified):
+    original = list(current)
+    before_pool = [document.model_dump() for document in pool]
+    before_snapshot = [document.model_dump() for document in verified]
+    selected = _invoke(case, pool, current, verified)
+    proof = next(
+        document for document in pool if document.metadata["chunk_id"] in case["promote_ids"]
+    )
+    assert selected is not current and selected[0] is proof
+    tail = original[: case["k"] - 1]
+    assert len(selected) == 1 + len(tail)
+    assert all(actual is expected for actual, expected in zip(selected[1:], tail, strict=True))
+    assert all(actual is expected for actual, expected in zip(current, original, strict=True))
+    assert [document.model_dump() for document in pool] == before_pool
+    assert [document.model_dump() for document in verified] == before_snapshot
+
+
+def test_parenthetical_alias_reproduces_captured_question_and_real_prefix():
+    # Exact public texts from the diagnostic; the pool remains the portable
+    # Gold-derived fixture above, not a replay of the remote process or ranking.
+    case = copy.deepcopy(_q2())
+    case["standalone_question"] = (
+        "¿Quién debe formular el Plan de Ordenación y Manejo Integrado de la Unidad "
+        "Ambiental Costera Caribe Insular (POMIUAC INSULAR)?"
+    )
+    case["history"] = [
+        {
+            "role": "user",
+            "content": "¿Qué autoridad debe adoptar ese Plan de Ordenación y Manejo Integrado "
+            "de la Unidad Ambiental Costera Caribe Insular?",
+        },
+        {
+            "role": "assistant",
+            "content": "La autoridad que debe adoptar el Plan de Ordenación y Manejo Integrado "
+            "de la Unidad Ambiental Costera Caribe Insular (POMIUAC INSULAR) es el Consejo "
+            "Directivo de la Corporación para el Desarrollo Sostenible del Archipiélago "
+            "de San Andrés, Providencia y Santa Catalina, conocida como CORALINA [doc2].",
+        },
+    ]
+    _assert_parenthetical_promotion(case, *_materialize(case))
+
+
+def test_parenthetical_alias_is_supported_by_another_plan_body():
+    case = _parenthetical_alias_case()
+    _assert_parenthetical_promotion(case, *_materialize(case))
+
+
+def test_parenthetical_meaningful_literal_name_keeps_the_existing_exact_path():
+    case = copy.deepcopy(next(case for case in _CASES if case["case_id"] == "S01_FORMULAR"))
+    name = "Plan de Restauración de Dunas (Sector Norte)"
+    case["question"] = case["standalone_question"] = f"¿Quién debe formular el {name}?"
+    pool, current, _ = _materialize(case)
+    identity = next(
+        document for document in pool if document.metadata["chunk_id"].endswith("-identity")
+    )
+    identity.page_content = f"Se establece el {name} -PRD-, como instrumento de ordenación."
+    verified = tuple(document.model_copy(deep=True) for document in pool)
+    _assert_parenthetical_promotion(case, pool, current, verified)
+
+
+@pytest.mark.parametrize(
+    "variant",
+    [
+        "wrong_alias",
+        "meaningful_qualifier",
+        "double_parenthetical",
+        "nested_parenthetical",
+        "truncated_name_with_later_qualifier",
+        "AI_only_identity",
+        "two_plans",
+        "ambiguous_sources",
+        "metadata_mismatch",
+        "proof_absent_from_pool",
+        "no_body_alias_declaration",
+    ],
+)
+def test_parenthetical_alias_keeps_unproven_or_ambiguous_identity_as_fallback(variant):
+    case = _parenthetical_alias_case()
+    pool, current, verified = _materialize(case)
+    identity = next(
+        document for document in pool if document.metadata["chunk_id"].endswith("-identity")
+    )
+    proof = next(document for document in pool if document.metadata["chunk_id"].endswith("-proof"))
+    if variant == "wrong_alias":
+        case["standalone_question"] = case["standalone_question"].replace("(PRD)", "(OTRO)")
+    elif variant == "meaningful_qualifier":
+        case["standalone_question"] = case["standalone_question"].replace("(PRD)", "(Sector Norte)")
+    elif variant == "double_parenthetical":
+        case["standalone_question"] = case["standalone_question"].replace(
+            "(PRD)", "(PRD) (Sector Norte)"
+        )
+    elif variant == "nested_parenthetical":
+        case["standalone_question"] = case["standalone_question"].replace(
+            "(PRD)", "(PRD (Sector Norte))"
+        )
+    elif variant == "truncated_name_with_later_qualifier":
+        # The bounded name ends at the apparent alias, while the question still
+        # has a meaningful qualifier. It must not identify only that prefix.
+        base = "Plan " + "D" * 214
+        case["standalone_question"] = f"¿Quién debe formular el {base} (PRD) del Sector Norte?"
+        case["history"][0]["content"] = f"¿Qué autoridad debe adoptar el {base}?"
+        identity.page_content = f"Se establece el {base} -PRD-, como instrumento de ordenación."
+        verified = tuple(document.model_copy(deep=True) for document in pool)
+    elif variant == "AI_only_identity":
+        case["history"] = [
+            {"role": "user", "content": "Quiero consultar ese instrumento."},
+            {"role": "assistant", "content": "Se trata del Plan de Restauración de Dunas (PRD)."},
+        ]
+    elif variant == "two_plans":
+        case["history"][0]["content"] = (
+            "Compara el Plan de Restauración de Dunas y el Plan de Manejo de Humedales Urbanos."
+        )
+    elif variant == "ambiguous_sources":
+        other = identity.model_copy(deep=True)
+        other.id = other.metadata["chunk_id"] = other.metadata["id"] = "other-identity"
+        other.metadata["source"] = "another_norm.md"
+        pool.append(other)
+        verified = (*verified, other.model_copy(deep=True))
+    elif variant == "metadata_mismatch":
+        proof.metadata["summary"] = "Descripción que no figura en el snapshot verificado."
+    elif variant == "proof_absent_from_pool":
+        pool.remove(proof)
+    else:
+        identity.page_content = identity.page_content.replace("-PRD-", "")
+        verified = tuple(document.model_copy(deep=True) for document in pool)
+    before_current = list(current)
+    before_pool = [document.model_dump() for document in pool]
+    before_snapshot = [document.model_dump() for document in verified]
+
+    assert _invoke(case, pool, current, verified) is current
+
+    assert all(actual is expected for actual, expected in zip(current, before_current, strict=True))
+    assert [document.model_dump() for document in pool] == before_pool
+    assert [document.model_dump() for document in verified] == before_snapshot
