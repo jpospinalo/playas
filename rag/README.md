@@ -19,6 +19,8 @@ Para consultar o evaluar la colección, seguir la
 
 Desde `rag/`, usar Python 3.12 y uv 0.13.4 (perfil de CI). Consultar la
 [política de locks y controles locales](../CONTRIBUTING.md#controles-locales).
+El constructor del paquete está fijado en `backend/pyproject.toml`; el lock
+de dependencias no fija por sí solo todas las transitivas de construcción.
 
 ```bash
 make install              # comprobar lock e instalar sin regenerarlo

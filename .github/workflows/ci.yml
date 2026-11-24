@@ -8,6 +8,9 @@ on:
   pull_request:
     branches: [main]
 
+permissions:
+  contents: read
+
 jobs:
   ingesta-quality:
     name: Ingesta — Lint
@@ -18,17 +21,21 @@ jobs:
       run:
         working-directory: ingesta
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          persist-credentials: false
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
         with:
           python-version: "3.12"
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v3
+        uses: astral-sh/setup-uv@1db35dd8eee11c5894872e0b383ae6c406cf738d # v10.4.0
         with:
           version: "0.13.4"
+          require-checksums: true
+          prune-cache: true
           enable-cache: true
           cache-dependency-glob: "ingesta/uv.lock"
 
@@ -54,17 +61,21 @@ jobs:
       run:
         working-directory: ingesta
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          persist-credentials: false
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
         with:
           python-version: "3.12"
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v3
+        uses: astral-sh/setup-uv@1db35dd8eee11c5894872e0b383ae6c406cf738d # v10.4.0
         with:
           version: "0.13.4"
+          require-checksums: true
+          prune-cache: true
           enable-cache: true
           cache-dependency-glob: "ingesta/uv.lock"
 
@@ -81,9 +92,9 @@ jobs:
         run: uv run pytest tests/integration/test_section_chunk_contract.py -m integration
 
       - name: Upload coverage
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v6.0.2
         with:
-          file: ingesta/coverage.xml
+          files: ingesta/coverage.xml
           flags: ingesta
           fail_ci_if_error: false
 
@@ -96,17 +107,21 @@ jobs:
       run:
         working-directory: rag
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          persist-credentials: false
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
         with:
           python-version: "3.12"
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v3
+        uses: astral-sh/setup-uv@1db35dd8eee11c5894872e0b383ae6c406cf738d # v10.4.0
         with:
           version: "0.13.4"
+          require-checksums: true
+          prune-cache: true
           enable-cache: true
           cache-dependency-glob: "rag/uv.lock"
 
@@ -138,17 +153,21 @@ jobs:
       run:
         working-directory: rag
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          persist-credentials: false
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
         with:
           python-version: "3.12"
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v3
+        uses: astral-sh/setup-uv@1db35dd8eee11c5894872e0b383ae6c406cf738d # v10.4.0
         with:
           version: "0.13.4"
+          require-checksums: true
+          prune-cache: true
           enable-cache: true
           cache-dependency-glob: "rag/uv.lock"
 
@@ -162,9 +181,9 @@ jobs:
         run: uv run pytest tests/unit/ --cov=rag --cov-report=xml --cov-report=term-missing
 
       - name: Upload coverage
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v6.0.2
         with:
-          file: rag/coverage.xml
+          files: rag/coverage.xml
           flags: rag
           fail_ci_if_error: false
 
@@ -175,10 +194,12 @@ jobs:
       run:
         working-directory: rag/frontend
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          persist-credentials: false
 
       - name: Install bun
-        uses: oven-sh/setup-bun@v2
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
         with:
           bun-version: "1.3.13"
 
