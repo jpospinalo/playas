@@ -117,6 +117,11 @@ _PROVIDENCIA_CLARIFICATION_RESPONSE = (
     "¿Puedes indicar el radicado completo, la instancia o la providencia concreta? "
     "Con el número parcial necesito ese dato para identificar la decisión."
 )
+_UNVERIFIED_INSTANCE_RESPONSE = (
+    "La documentación disponible no permite acreditar de forma inequívoca la instancia solicitada. "
+    "Por eso no puedo atribuir órdenes a esa instancia. Comparte el encabezado o el texto de la "
+    "providencia que identifique su instancia para poder verificarla."
+)
 _NO_EVIDENCE_RESPONSE = (
     "**Situación:** evidencia insuficiente.\n\n"
     "**Motivo:** no se recuperaron fragmentos del corpus que permitan sustentar una respuesta "
@@ -438,6 +443,8 @@ async def respond_without_retrieval_node(
                 "query_route": "in_scope",
                 "doc_types": ["jurisprudencia"],
             }
+        if resolution_index.instance_unverified(state["question"]):
+            return {"messages": [AIMessage(content=_UNVERIFIED_INSTANCE_RESPONSE)], "sources": []}
 
     if route == "conversation":
         answer = _conversation_response(state["question"])
@@ -465,6 +472,8 @@ async def retrieve_forced_node(
                 return {"sources": []}
             evidence = resolution_index.docket_evidence(question)
             if evidence is None:
+                if resolution_index.instance_unverified(question):
+                    return {"sources": [], "documentary_answer": _UNVERIFIED_INSTANCE_RESPONSE}
                 return {"sources": []}
             resolution = await _resolve_documentary(state, resolution_index)
             if resolution is not None:

@@ -1793,6 +1793,7 @@ class ResolutionIndex:
 
         self._cases: dict[str, _Case] = {}
         self._dockets: dict[str, DocketEvidence] = {}
+        self._unverified_instances: dict[str, list[tuple[FragmentProvenance, Document]]] = {}
         for docket, matches in candidates.items():
             signature = None
             fragments: dict[str, FragmentProvenance] = {}
@@ -1812,6 +1813,8 @@ class ResolutionIndex:
                     registered_dockets=candidates,
                 )
                 if instance is None:
+                    if len(matches) == 1:
+                        self._unverified_instances[docket] = ordered
                     break
                 source_signature = (
                     reference,
@@ -1851,6 +1854,27 @@ class ResolutionIndex:
                 self._dockets[docket] = DocketEvidence(
                     docket, signature[0], signature[2], fragments, anchored
                 )
+
+    def instance_unverified(self, question: str) -> bool:
+        """Explain an abstention for a complete source; never admit its orders."""
+        if not self.snapshot_verified or (intent := _resolution_intent(question)) is None:
+            return False
+        qualifiers = (intent["subject"] or "") + " " + (intent.groupdict().get("actor") or "")
+        if _ANSWER_SHORT_DOCKET.search(qualifiers) or any(
+            len(match["number"]) > 4 for match in _DOCKET.finditer(qualifiers)
+        ):
+            return False
+        identity = _docket(intent["docket"])
+        if identity is None:
+            return False
+        docket, reference = identity
+        rows = self._unverified_instances.get(docket)
+        if rows is None or any(
+            not _verified(doc, doc.metadata.get("chunk_id", ""), proof) for proof, doc in rows
+        ):
+            return False
+        source = _source_identity(rows)
+        return source is not None and source[:2] == (docket, reference)
 
     def admits_documentary_question(self, question: str) -> bool:
         """Allow ordinary retrieval for one complete, revalidated coastal source.

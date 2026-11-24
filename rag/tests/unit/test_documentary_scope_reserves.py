@@ -129,6 +129,9 @@ def test_snapshot_reserves_do_not_admit_unverified_identity(
     assert _fallback(question).route == "out_of_scope", label
     assert index.resolve(question) is None, label
     assert index.docket_evidence(question) is None, label
+    if label == "G04":
+        assert index.instance_unverified(question)
+        assert not index.admits_documentary_question(question)
 
 
 def _unexpected_retrieval_or_generation(*args: object, **kwargs: object) -> NoReturn:
@@ -192,3 +195,50 @@ async def test_reserves_in_public_handlers_even_if_scope_admits(
             assert len(source_events) == 1, label
             sources = source_events[0]["sources"]
         assert not sources and "[doc" not in answer and answer.strip(), label
+        if label == "G04":
+            assert "no permite acreditar de forma inequívoca la instancia solicitada" in answer
+            assert "no puedo atribuir órdenes a esa instancia" in answer
+            assert "fuera del ámbito" not in answer
+
+
+@pytest.mark.anyio
+@pytest.mark.parametrize("profile", ["disabled", "unverified", "normative_only"])
+async def test_instance_explanation_respects_provenance_and_original_filter(
+    monkeypatch: pytest.MonkeyPatch,
+    reserve_snapshot: tuple[list[Document], ResolutionIndex],
+    profile: str,
+) -> None:
+    from langchain_core.messages import HumanMessage
+
+    import rag.core.agent as agent
+
+    documents, _ = reserve_snapshot
+    monkeypatch.setattr(agent, "bm25_documents", lambda: documents)
+    monkeypatch.setattr(
+        agent,
+        "LEGAL_RESOLUTION_PROVENANCE_PATH",
+        None if profile == "disabled" else str(GOLD / "PROCEDENCIA_GOLD_A.json"),
+    )
+    monkeypatch.setattr(
+        agent,
+        "LEGAL_RESOLUTION_PROVENANCE_SHA256",
+        "0" * 64 if profile == "unverified" else PROOF_SHA,
+    )
+
+    async def analyze(question: str, history: str) -> EnrichedQuery:
+        return EnrichedQuery(
+            route="out_of_scope", standalone_question=question, expanded_query=question
+        )
+
+    monkeypatch.setattr(agent, "enrich_query_async", analyze)
+    monkeypatch.setattr(agent, "get_ensemble_retriever", _unexpected_retrieval_or_generation)
+    monkeypatch.setattr(agent, "get_generation_llm", _unexpected_retrieval_or_generation)
+    question = QUESTIONS[-1][1]
+    state = {
+        "question": question,
+        "messages": [HumanMessage(content=question)],
+        "doc_types": ["normativa"] if profile == "normative_only" else None,
+    }
+    result = await agent.build_graph().ainvoke(state, {"configurable": {"thread_id": profile}})
+    assert result["messages"][-1].content == agent._OUT_OF_SCOPE_RESPONSE
+    assert not result["sources"]

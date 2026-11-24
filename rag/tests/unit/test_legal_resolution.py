@@ -118,6 +118,102 @@ def test_abstains_without_verified_docket_even_if_in_body(documents: list[Docume
     assert ResolutionIndex(documents, _provenance(documents)).resolve(QUERY) is None
 
 
+def _without_instance(documents: list[Document]) -> None:
+    documents[0].page_content = f"## Providencia\nRadicación: {DOCKET}"
+
+
+def test_unverified_instance_explains_but_never_admits_orders(documents: list[Document]) -> None:
+    _without_instance(documents)
+    documents[0].metadata["Instancia"] = "primera instancia"
+    index = ResolutionIndex(documents, _provenance(documents))
+    assert index.instance_unverified(QUERY.replace("segunda", "primera"))
+    assert index.resolve(QUERY) is None
+    assert index.docket_evidence(QUERY) is None
+    assert not index.admits_documentary_question(QUERY)
+
+
+def test_copy_request_also_requires_its_own_verified_instance(documents: list[Document]) -> None:
+    _without_instance(documents)
+    question = (
+        f"¿En segunda instancia del radicado {DOCKET}, a quién se ordenó remitir una copia "
+        "auténtica del fallo y qué debía hacerse con el expediente?"
+    )
+    index = ResolutionIndex(documents, _provenance(documents))
+    assert index.instance_unverified(question)
+    assert index.resolve(question) is None
+
+
+@pytest.mark.parametrize(
+    "question",
+    [
+        QUERY.replace(DOCKET, "13001-23-33-000-2017-02038-01"),
+        QUERY.replace(DOCKET, DOCKET + " (1000)"),
+        QUERY.replace("la sentencia", "el radicado 13001-23-33-000-2017-02038-01 y la sentencia"),
+        QUERY.replace("la sentencia", "el radicado 1234 y la sentencia"),
+        QUERY.replace(
+            "sobre la sentencia", "al radicado 13001-23-33-000-2017-02038-01 sobre la sentencia"
+        ),
+        "¿Cuál es la capital de Francia?",
+    ],
+)
+def test_instance_explanation_requires_unambiguous_original_identity(
+    documents: list[Document], question: str
+) -> None:
+    _without_instance(documents)
+    index = ResolutionIndex(documents, _provenance(documents))
+    assert not index.instance_unverified(question)
+
+
+def test_known_instance_mismatch_is_not_missing_instance(documents: list[Document]) -> None:
+    index = ResolutionIndex(documents, _provenance(documents))
+    assert not index.instance_unverified(QUERY.replace("segunda", "primera"))
+    assert not index.instance_unverified(QUERY)
+
+
+@pytest.mark.parametrize("field", ["page_content", "Radicado", "Instancia", "chunk_id"])
+@pytest.mark.parametrize("timing", ["before", "after"])
+def test_instance_explanation_revalidates_source(
+    documents: list[Document], field: str, timing: str
+) -> None:
+    _without_instance(documents)
+    provenance = _provenance(documents)
+    index = ResolutionIndex(documents, provenance)
+    assert index.instance_unverified(QUERY)
+    if field == "page_content":
+        documents[-1].page_content += " Texto alterado."
+    elif field == "chunk_id":
+        del documents[-1].metadata[field]
+    else:
+        documents[-1].metadata[field] = "alterado"
+    if timing == "before":
+        index = ResolutionIndex(documents, provenance)
+    assert not index.instance_unverified(QUERY)
+
+
+@pytest.mark.parametrize("source_state", ["incomplete", "duplicate", "collision"])
+def test_instance_explanation_rejects_incomplete_or_multiple_sources(
+    documents: list[Document], source_state: str
+) -> None:
+    _without_instance(documents)
+    provenance = _provenance(documents)
+    if source_state == "incomplete":
+        documents.pop()
+    else:
+        copies = [
+            _document("copy-" + str(i), doc.page_content, doc.metadata["section_name"])
+            for i, doc in enumerate(documents)
+        ]
+        if source_state == "collision":
+            copies[0].page_content = "## Sentencia de primera instancia"
+        copy_proof = {
+            key: replace(proof, path="otra-providencia.jsonl")
+            for key, proof in _provenance(copies).items()
+        }
+        provenance.update(copy_proof)
+        documents.extend(copies)
+    assert not ResolutionIndex(documents, provenance).instance_unverified(QUERY)
+
+
 def test_abstains_when_source_budget_is_exceeded(documents: list[Document]) -> None:
     assert ResolutionIndex(documents, _provenance(documents)).resolve(QUERY, max_sources=0) is None
 
