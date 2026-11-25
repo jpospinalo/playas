@@ -6,7 +6,7 @@ on:
     # develop y v2 conservan sus disparadores existentes.
     branches: [main, develop, v2, corpus]
   pull_request:
-    branches: [main]
+    branches: [main, corpus]
 
 permissions:
   contents: read

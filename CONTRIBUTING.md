@@ -3,16 +3,19 @@
 ## Ramas y responsabilidades
 
 Esta entrega se prepara en `corpus`; `main` conserva la versión de producción.
-Para colaborar en ella, acordar la rama y el commit base antes de crear una
-rama de trabajo. La entrega no autoriza por sí sola su integración en `main`.
 
-En el flujo general de integración, crear una rama temporal desde `main`
-actualizada para cada tarea; por ejemplo, `backend/validacion`,
-`frontend/busqueda` o `infrastructure/arranque`. Cada rama contiene el repositorio
-completo: el prefijo describe el trabajo, no restringe los archivos modificables.
+Para cada tarea, acordar el commit base de `corpus` actualizada y crear una rama
+temporal; por ejemplo, `backend/validacion`, `frontend/busqueda` o
+`infrastructure/arranque`. Cada rama contiene el repositorio completo: el prefijo
+describe el trabajo, no restringe los archivos modificables.
 
-Integrar cambios pequeños y revisables mediante pull request a `main`. Retirar
-la rama al completar la integración y confirmar que nadie la sigue utilizando.
+Publicar los cambios en esa rama y abrir un pull request (PR) con `corpus` como
+rama de destino. Antes de integrar, comprobar que los cinco trabajos de CI
+finalicen correctamente y revisar el diff. La integración de `corpus` en `main`
+requiere revisión y autorización separadas.
+
+Retirar la rama de trabajo al completar la integración y confirmar que nadie la
+sigue utilizando.
 No eliminar ramas divergentes por su antigüedad: revisar sus commits exclusivos
 y conservar una referencia recuperable antes de descartarlos.
 
