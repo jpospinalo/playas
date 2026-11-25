@@ -122,6 +122,8 @@ export function useConversations(): {
 	}, [user]);
 
 	useEffect(() => {
+		// La carga externa también limpia la lista al perder sesión; no deriva estado de props.
+		// eslint-disable-next-line react-hooks/set-state-in-effect
 		void refresh();
 	}, [refresh]);
 

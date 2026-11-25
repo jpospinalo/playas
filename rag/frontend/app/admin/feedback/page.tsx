@@ -94,6 +94,7 @@ function formatDate(iso: string): string {
 
 export default function FeedbackPage() {
 	const { user } = useAuth();
+	const userId = user?.user_id ?? "";
 	const [items, setItems] = useState<FeedbackItem[]>([]);
 	const [total, setTotal] = useState(0);
 	const [avgRatings, setAvgRatings] = useState<RatingDimensions>({
@@ -134,7 +135,7 @@ export default function FeedbackPage() {
 			setLoading(true);
 			setError(null);
 			try {
-				const token = getTokenForUser(user?.user_id ?? "");
+				const token = getTokenForUser(userId);
 				if (!token) {
 					// Página administrativa: solo se llega aquí ya autenticado, así
 					// que un token ausente es una sesión perdida en otro lado, no el
@@ -193,10 +194,12 @@ export default function FeedbackPage() {
 				}
 			}
 		},
-		[appliedFilters, user?.user_id],
+		[appliedFilters, userId],
 	);
 
 	useEffect(() => {
+		// La carga externa necesita mostrar loading y limpiar el error al cambiar página o filtros.
+		// eslint-disable-next-line react-hooks/set-state-in-effect
 		load(page);
 		// G2.1 — aborta la solicitud activa al desmontar o antes de que el
 		// efecto se vuelva a ejecutar (cambio de página/filtros), para que

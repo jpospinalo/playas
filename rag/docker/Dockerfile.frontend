@@ -1,5 +1,5 @@
 # Stage 1: build
-FROM node:20-alpine AS builder
+FROM node:24.22.3-alpine3.24@sha256:116b800c3754b440ee0aa3ed2f20f5bf3d99a554bfd9adeea09ea8017f6e85f5 AS builder
 
 WORKDIR /app
 
@@ -19,7 +19,7 @@ RUN node_modules/.bin/next build
 # Stage 2: runner (standalone — sin node_modules externos)
 # Next.js con output:"standalone" genera .next/standalone/ con todo lo necesario.
 # La ruta de server.js refleja la estructura del workspace: frontend/server.js.
-FROM node:20-alpine AS runner
+FROM node:24.22.3-alpine3.24@sha256:116b800c3754b440ee0aa3ed2f20f5bf3d99a554bfd9adeea09ea8017f6e85f5 AS runner
 
 RUN addgroup --system --gid 1001 nodejs && adduser --system --uid 1001 nextjs
 

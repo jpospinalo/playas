@@ -51,6 +51,7 @@ const modalInputMonoClass =
 
 export default function UsuariosPage() {
   const { user } = useAuth();
+  const userId = user?.user_id ?? "";
   const [users, setUsers] = useState<AdminUserRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -60,7 +61,7 @@ export default function UsuariosPage() {
 
   const refresh = useCallback(async () => {
     try {
-      const items = await listAdminUsers(getTokenForUser(user?.user_id ?? ""));
+      const items = await listAdminUsers(getTokenForUser(userId));
       setUsers(items);
       setError(null);
     } catch (e) {
@@ -68,9 +69,11 @@ export default function UsuariosPage() {
     } finally {
       setLoading(false);
     }
-  }, [user?.user_id]);
+  }, [userId]);
 
   useEffect(() => {
+    // Sincroniza la lista con la API al entrar o cambiar de usuario, conservando el estado de error y carga.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     refresh();
   }, [refresh]);
 

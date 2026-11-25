@@ -104,6 +104,7 @@ function truncate(text: string | null, maxLen: number = 50): string {
 
 export default function MessageFeedbackPage() {
 	const { user } = useAuth();
+	const userId = user?.user_id ?? "";
 	const [items, setItems] = useState<MessageFeedbackItem[]>([]);
 	const [total, setTotal] = useState(0);
 	const [page, setPage] = useState(1);
@@ -144,7 +145,7 @@ export default function MessageFeedbackPage() {
 			setLoading(true);
 			setError(null);
 			try {
-				const token = getTokenForUser(user?.user_id ?? "");
+				const token = getTokenForUser(userId);
 				if (!token) {
 					// Página administrativa: solo se llega aquí ya autenticado, así
 					// que un token ausente es una sesión perdida en otro lado, no el
@@ -207,10 +208,12 @@ export default function MessageFeedbackPage() {
 				}
 			}
 		},
-		[appliedFilters, user?.user_id],
+		[appliedFilters, userId],
 	);
 
 	useEffect(() => {
+		// La carga externa necesita mostrar loading y limpiar el error al cambiar página o filtros.
+		// eslint-disable-next-line react-hooks/set-state-in-effect
 		load(page);
 		// G2.1 — aborta la solicitud activa al desmontar o antes de que el
 		// efecto se vuelva a ejecutar (cambio de página/filtros), para que

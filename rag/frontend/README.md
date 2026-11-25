@@ -10,7 +10,7 @@ sistema dual de feedback y panel de administración.
 
 | Paquete | Versión | Propósito |
 |---------|---------|-----------|
-| `next` | 16.2.3 | Framework React (App Router) |
+| `next` | 16.4.5 | Framework React (App Router) |
 | `react` / `react-dom` | 19.2.4 | UI library |
 | `geist` | 1.7.2 | Fuente Geist Mono (monoespaciada, auto-hospedada) |
 | `motion` | 12.38.0 | Animaciones (Framer Motion) |
@@ -27,6 +27,8 @@ paquete npm `@fontsource-variable/inter` (licencia OFL, ver
 dependencia `geist` (ver `app/fonts/Geist-OFL-LICENSE.txt`).
 
 Package manager: **Bun 1.3.13**, declarado en el [workspace](../package.json).
+Perfil Node.js: **24.22.3**, fijado en [CI](../../.github/workflows/ci.yml) y
+[Docker](../docker/Dockerfile.frontend).
 La autenticación es propia (JWT) contra el backend FastAPI, ver más abajo.
 
 ---

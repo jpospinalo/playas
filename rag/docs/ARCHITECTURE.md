@@ -131,6 +131,9 @@ del SDK, conserva la ruta SDK/LangChain y los embeddings heredados en vez
 de abrir esos clientes. La E/S de los clientes propios admite cancelación
 y sus contextos se cierran al salir del lifespan; esto no garantiza cancelar
 el respaldo SDK ni la inicialización mediante `to_thread(init_retrievers)`.
+`close_retrievers()` invalida las referencias al SDK, vectorstore y BM25 y
+cierra el cliente síncrono de embeddings; descartar las referencias no acredita
+el cierre físico de los transportes internos del SDK de Chroma.
 
 ## 4. Memoria y persistencia de conversación
 
