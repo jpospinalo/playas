@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    # main es la rama de integración activa. v2 se conserva en el disparador
-    # por compatibilidad, aunque no recibe trabajo activo actualmente.
-    branches: [main, develop, v2]
+    # main conserva producción; corpus valida la entrega antes de integrarla.
+    # develop y v2 conservan sus disparadores existentes.
+    branches: [main, develop, v2, corpus]
   pull_request:
     branches: [main]
 
