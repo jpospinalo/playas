@@ -106,7 +106,7 @@ async function mountHarness(user: ReturnType<typeof userEvent.setup>, initial = 
 
 async function startDelete(user: ReturnType<typeof userEvent.setup>, conversation: Conversation) {
 	await openMenu(user, conversation);
-	await user.click(screen.getByRole("menuitem", { name: /eliminar/i }));
+	await user.click(screen.getByRole("button", { name: /eliminar/i }));
 	await user.click(screen.getByRole("button", { name: "Eliminar" }));
 }
 
@@ -136,7 +136,7 @@ describe("ConversationList — renombrar y eliminar (A2)", () => {
 		);
 
 		await openMenu(user, conv);
-		await user.click(screen.getByRole("menuitem", { name: /renombrar/i }));
+		await user.click(screen.getByRole("button", { name: /renombrar/i }));
 		const input = screen.getByDisplayValue("Título original");
 		await user.keyboard("{Enter}");
 
@@ -163,7 +163,7 @@ describe("ConversationList — renombrar y eliminar (A2)", () => {
 		);
 
 		await openMenu(user, conv);
-		await user.click(screen.getByRole("menuitem", { name: /renombrar/i }));
+		await user.click(screen.getByRole("button", { name: /renombrar/i }));
 		const input = screen.getByDisplayValue("Título original");
 		await user.clear(input);
 		await user.keyboard("{Enter}");
@@ -203,7 +203,7 @@ describe("ConversationList — renombrar y eliminar (A2)", () => {
 		);
 
 		await openMenu(user, conv);
-		await user.click(screen.getByRole("menuitem", { name: /renombrar/i }));
+		await user.click(screen.getByRole("button", { name: /renombrar/i }));
 		const input = screen.getByDisplayValue("Título original");
 		await user.clear(input);
 		await user.type(input, "Nuevo título");
@@ -236,7 +236,7 @@ describe("ConversationList — renombrar y eliminar (A2)", () => {
 		);
 
 		await openMenu(user, conv);
-		await user.click(screen.getByRole("menuitem", { name: /renombrar/i }));
+		await user.click(screen.getByRole("button", { name: /renombrar/i }));
 		const input = screen.getByDisplayValue("Título original");
 		await user.clear(input);
 		await user.type(input, "Otro título");
@@ -279,7 +279,7 @@ describe("ConversationList — renombrar y eliminar (A2)", () => {
 		);
 
 		await openMenu(user, conv);
-		await user.click(screen.getByRole("menuitem", { name: /eliminar/i }));
+		await user.click(screen.getByRole("button", { name: /eliminar/i }));
 		const confirmButton = screen.getByRole("button", { name: "Eliminar" });
 		await user.click(confirmButton);
 
@@ -313,7 +313,7 @@ describe("ConversationList — renombrar y eliminar (A2)", () => {
 		);
 
 		await openMenu(user, conv);
-		await user.click(screen.getByRole("menuitem", { name: /eliminar/i }));
+		await user.click(screen.getByRole("button", { name: /eliminar/i }));
 		await user.click(screen.getByRole("button", { name: "Eliminar" }));
 
 		expect(await screen.findByRole("alert")).toHaveTextContent("No autorizado");
@@ -448,5 +448,138 @@ describe("ConversationList — renombrar y eliminar (A2)", () => {
 		});
 		expect(screen.getByTestId("active-conversation")).toHaveTextContent("conv-C");
 		expect(screen.getByTestId("chat-messages")).toHaveTextContent("Texto de Conversación C");
+	});
+});
+
+describe("ConversationList — nombres y teclado de acciones ordinarias", () => {
+	beforeEach(() => {
+		vi.stubGlobal("fetch", vi.fn());
+	});
+
+	afterEach(() => {
+		vi.unstubAllGlobals();
+		vi.clearAllMocks();
+	});
+
+	function renderActions() {
+		const conv = makeConversation();
+		const onConversationsRefresh = vi.fn();
+		render(
+			<>
+				<ConversationList
+					conversations={[conv]}
+					activeConversationId={conv.id}
+					loading={false}
+					onSelectConversation={vi.fn()}
+					onNewChat={vi.fn()}
+					onConversationsRefresh={onConversationsRefresh}
+				/>
+				<div role="dialog" aria-label="Otro diálogo">
+					<input aria-label="Campo de otro diálogo" />
+				</div>
+			</>,
+		);
+		return { conv, onConversationsRefresh };
+	}
+
+	it("el renombrado expone un nombre accesible y recibe el foco de la acción", async () => {
+		const user = userEvent.setup();
+		const { conv } = renderActions();
+		await openMenu(user, conv);
+		await user.click(screen.getByText("Renombrar", { exact: true }));
+		const input = screen.getByRole("textbox", { name: "Título de la conversación" });
+		expect(input).toHaveValue(conv.title);
+		expect(input).toHaveFocus();
+	});
+
+	it("las acciones son botones ordinarios recorribles con Tab y Shift+Tab", async () => {
+		const user = userEvent.setup();
+		renderActions();
+		const trigger = screen.getByRole("button", { name: "Opciones para Título original" });
+		expect(trigger).toHaveAttribute("aria-expanded", "false");
+		trigger.focus();
+		await user.keyboard("{Enter}");
+		expect(trigger).toHaveAttribute("aria-expanded", "true");
+		const rename = screen.getByText("Renombrar", { exact: true });
+		const remove = screen.getByText("Eliminar", { exact: true });
+		await user.tab();
+		expect(rename).toHaveFocus();
+		await user.tab();
+		expect(remove).toHaveFocus();
+		await user.tab({ shift: true });
+		expect(rename).toHaveFocus();
+		expect(screen.getByRole("button", { name: "Renombrar" })).toBe(rename);
+		expect(screen.getByRole("button", { name: "Eliminar" })).toBe(remove);
+		expect(screen.queryByRole("menu")).not.toBeInTheDocument();
+		expect(screen.queryAllByRole("menuitem")).toHaveLength(0);
+		expect(trigger).not.toHaveAttribute("aria-haspopup");
+	});
+
+	it("Escape desde una acción cierra el desplegable y devuelve foco al disparador conectado", async () => {
+		const user = userEvent.setup();
+		renderActions();
+		const trigger = screen.getByRole("button", { name: "Opciones para Título original" });
+		trigger.focus();
+		await user.keyboard(" ");
+		expect(trigger).toHaveAttribute("aria-expanded", "true");
+		await user.tab();
+		expect(screen.getByText("Renombrar", { exact: true })).toHaveFocus();
+		await user.keyboard("{Escape}");
+		await waitFor(() => expect(trigger).toHaveAttribute("aria-expanded", "false"));
+		await waitFor(() => expect(trigger).toHaveFocus());
+		expect(fetch).not.toHaveBeenCalled();
+	});
+
+	it("Escape en otro diálogo no roba su foco al cerrar acciones abiertas", async () => {
+		const user = userEvent.setup();
+		const { conv } = renderActions();
+		await openMenu(user, conv);
+		const trigger = screen.getByRole("button", { name: "Opciones para Título original" });
+		const otherInput = screen.getByRole("textbox", { name: "Campo de otro diálogo" });
+		otherInput.focus();
+		expect(trigger).toHaveAttribute("aria-expanded", "true");
+		await user.keyboard("{Escape}");
+		expect(otherInput).toHaveFocus();
+		expect(fetch).not.toHaveBeenCalled();
+	});
+
+	it("Escape al renombrar descarta el borrador sin envío ni devolución de foco a un disparador retirado", async () => {
+		const user = userEvent.setup();
+		const { conv, onConversationsRefresh } = renderActions();
+		await openMenu(user, conv);
+		await user.click(screen.getByText("Renombrar", { exact: true }));
+		const input = screen.getByDisplayValue("Título original");
+		expect(input).toHaveFocus();
+		await user.clear(input);
+		await user.type(input, "Borrador no guardado");
+		await user.keyboard("{Escape}");
+		expect(screen.queryByDisplayValue("Borrador no guardado")).not.toBeInTheDocument();
+		expect(screen.getByRole("button", { name: "Título original" })).toBeInTheDocument();
+		expect(fetch).not.toHaveBeenCalled();
+		expect(onConversationsRefresh).not.toHaveBeenCalled();
+	});
+
+	it("un conflicto 409 al renombrar conserva borrador, selección y error local", async () => {
+		vi.mocked(fetch).mockResolvedValue(new Response(
+			JSON.stringify({ detail: "La conversación está en uso." }),
+			{ status: 409, headers: { "Content-Type": "application/json" } },
+		));
+		const user = userEvent.setup();
+		const { conv, onConversationsRefresh } = renderActions();
+		await openMenu(user, conv);
+		await user.click(screen.getByText("Renombrar", { exact: true }));
+		const input = screen.getByDisplayValue("Título original");
+		await user.clear(input);
+		await user.type(input, "Título pendiente");
+		await user.keyboard("{Enter}");
+		expect(await screen.findByRole("alert")).toHaveTextContent("La conversación está en uso.");
+		expect(input).toHaveValue("Título pendiente");
+		expect(input.closest("li")).toHaveAttribute("aria-current", "true");
+		expect(fetch).toHaveBeenCalledTimes(1);
+		expect(fetch).toHaveBeenCalledWith(
+			expect.stringContaining(`/api/conversations/${conv.id}`),
+			expect.objectContaining({ method: "PATCH", body: JSON.stringify({ title: "Título pendiente" }) }),
+		);
+		expect(onConversationsRefresh).not.toHaveBeenCalled();
 	});
 });

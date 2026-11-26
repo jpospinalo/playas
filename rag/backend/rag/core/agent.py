@@ -63,6 +63,7 @@ from .query_enricher import (
     enrich_query_async,
 )
 from .retriever import CandidateSelector, bm25_documents, get_ensemble_retriever
+from .tools import CITATION_RE as _CITATION_RE
 from .tools import build_context_block
 
 
@@ -94,7 +95,6 @@ PROMPT_NO_SYSTEM = ChatPromptTemplate.from_messages(
     [("human", "INSTRUCCIONES:\n{instructions}\n\n" + AGENT_FALLBACK_HUMAN_TEMPLATE)]
 )
 
-_CITATION_RE = re.compile(r"\[doc(\d+)\]", re.IGNORECASE)
 _MAX_ANALYSIS_HISTORY_CHARS = 4000
 
 _CONVERSATION_RESPONSE = (

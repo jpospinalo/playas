@@ -7,11 +7,16 @@ búsquedas ni decide la ruta. `build_context_block` formatea esos documentos
 en el contexto que ve el LLM, y `sanitize_replacement_chars` conserva
 compatibilidad con entradas históricas
 que contengan U+FFFD (ver data/README.md para el corpus y su representación).
+`CITATION_RE` comparte la gramática de citas entre el agente y la evaluación.
 """
 
 from __future__ import annotations
 
+import re
+
 from langchain_core.documents import Document
+
+CITATION_RE = re.compile(r"\[doc(\d+)\]", re.IGNORECASE)
 
 # ---------------------------------------------------------------------------
 # Compatibilidad de texto histórico

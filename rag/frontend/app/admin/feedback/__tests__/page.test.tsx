@@ -219,4 +219,29 @@ describe("FeedbackPage — filtros administrativos (A3)", () => {
 		// el resultado de la segunda.
 		expect(screen.queryByText(/^Error:/)).not.toBeInTheDocument();
 	});
+
+	it("anuncia el error de carga una vez sin incluir los filtros en la alerta", async () => {
+		vi.mocked(fetch).mockRejectedValue(new Error("No fue posible cargar el feedback."));
+		render(<FeedbackPage />);
+		expect(await screen.findByText("Error: No fue posible cargar el feedback.")).toBeInTheDocument();
+		expect(screen.getAllByRole("alert")).toHaveLength(1);
+		expect(screen.getByRole("alert")).toHaveTextContent("Error: No fue posible cargar el feedback.");
+		expect(screen.getByRole("alert")).not.toContainElement(screen.getByLabelText("Desde"));
+		expect(screen.getByRole("button", { name: "Aplicar filtros" })).toBeEnabled();
+		expect(fetch).toHaveBeenCalledTimes(1);
+	});
+
+	it("la validación de rango conserva un solo aviso local y no dispara otra carga", async () => {
+		vi.mocked(fetch).mockResolvedValue(jsonResponse(emptyResponse()));
+		const user = userEvent.setup();
+		render(<FeedbackPage />);
+		await waitFor(() => expect(fetch).toHaveBeenCalledTimes(1));
+		await user.selectOptions(screen.getByLabelText("General mínimo"), "5");
+		await user.selectOptions(screen.getByLabelText("General máximo"), "2");
+		await user.click(screen.getByRole("button", { name: "Aplicar filtros" }));
+		expect(screen.getAllByRole("alert")).toHaveLength(1);
+		expect(screen.getByRole("alert")).toHaveTextContent(/no puede ser mayor que el máximo/i);
+		expect(screen.getByRole("alert")).not.toContainElement(screen.getByLabelText("General mínimo"));
+		expect(fetch).toHaveBeenCalledTimes(1);
+	});
 });

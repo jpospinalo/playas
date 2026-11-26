@@ -362,7 +362,7 @@ export default function FeedbackPage() {
 			</div>
 
 			{error ? (
-				<div className="rounded-2xl border border-border bg-elevated/40 p-6 text-sm text-muted">
+				<div role="alert" className="rounded-2xl border border-border bg-elevated/40 p-6 text-sm text-muted">
 					Error: {error}
 				</div>
 			) : loading ? (

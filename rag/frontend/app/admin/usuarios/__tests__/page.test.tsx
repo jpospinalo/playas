@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import UsuariosPage from "@/app/admin/usuarios/page";
@@ -158,5 +158,122 @@ describe("app/admin/usuarios — timeout REST en listar, crear y cambiar contras
 			await screen.findByText("La solicitud tardó demasiado. Intenta nuevamente."),
 		).toBeInTheDocument();
 		expect(screen.getByRole("dialog")).toBeInTheDocument();
+	});
+});
+
+describe("app/admin/usuarios — nombres accesibles y anuncios locales", () => {
+	const account = {
+		uid: "u1",
+		email: "usuario@example.com",
+		displayName: null,
+		role: "user",
+		createdAt: "2026-01-01T00:00:00Z",
+	};
+
+	beforeEach(() => {
+		listAdminUsersMock.mockReset();
+		createAdminUserMock.mockReset();
+		updateAdminUserPasswordMock.mockReset();
+		listAdminUsersMock.mockResolvedValue([account]);
+		createAdminUserMock.mockResolvedValue({ ...account, uid: "u2", email: "nueva@example.com" });
+		updateAdminUserPasswordMock.mockResolvedValue(undefined);
+	});
+
+	it.each([
+		{ action: "Crear usuario", label: "Contraseña", submit: "Crear" },
+		{ action: "Cambiar contraseña", label: "Nueva contraseña", submit: "Actualizar" },
+	])("$action conserva el nombre, valor y envío al alternar visibilidad", async ({ action, label, submit }) => {
+		const user = userEvent.setup();
+		render(<UsuariosPage />);
+		await user.click(await screen.findByRole("button", { name: action }));
+		const dialog = within(screen.getByRole("dialog"));
+		const password = dialog.getByLabelText(label, { exact: true });
+		const confirmation = dialog.getByLabelText("Confirmar contraseña", { exact: true });
+		expect(password).toHaveAttribute("type", "password");
+		expect(password.id).not.toBe("");
+		expect(password.id).not.toBe(confirmation.id);
+		await user.type(password, "nuevaClave123");
+		await user.type(confirmation, "nuevaClave123");
+		await user.click(dialog.getByRole("button", { name: "Mostrar contraseña" }));
+		expect(dialog.getByLabelText(label, { exact: true })).toBe(password);
+		expect(password).toHaveAttribute("type", "text");
+		expect(password).toHaveValue("nuevaClave123");
+		expect(confirmation).toHaveValue("nuevaClave123");
+		await user.click(dialog.getByRole("button", { name: "Ocultar contraseña" }));
+		expect(dialog.getByLabelText(label, { exact: true })).toBe(password);
+		expect(password).toHaveAttribute("type", "password");
+		if (action === "Crear usuario") {
+			await user.type(dialog.getByLabelText("Email"), "nueva@example.com");
+		}
+		await user.click(dialog.getByRole("button", { name: submit }));
+		if (action === "Crear usuario") {
+			expect(createAdminUserMock).toHaveBeenCalledTimes(1);
+			expect(createAdminUserMock).toHaveBeenCalledWith(
+				{ email: "nueva@example.com", password: "nuevaClave123", displayName: null },
+				"test-token",
+			);
+		} else {
+			expect(updateAdminUserPasswordMock).toHaveBeenCalledTimes(1);
+			expect(updateAdminUserPasswordMock).toHaveBeenCalledWith(
+				"u1", "nuevaClave123", "test-token",
+			);
+		}
+	});
+
+	it.each([
+		{ action: "Crear usuario", submit: "Crear", success: "Usuario nueva@example.com creado." },
+		{ action: "Cambiar contraseña", submit: "Actualizar", success: "Contraseña actualizada para usuario@example.com." },
+	])("$action anuncia el éxito una vez sin convertir la tabla en región viva", async ({ action, submit, success }) => {
+		const user = userEvent.setup();
+		render(<UsuariosPage />);
+		await user.click(await screen.findByRole("button", { name: action }));
+		const panel = screen.getByRole("dialog");
+		const dialog = within(panel);
+		if (action === "Crear usuario") {
+			await user.type(dialog.getByLabelText("Email"), "nueva@example.com");
+		}
+		// El contrato del anuncio se caracteriza por separado del nombre del input.
+		for (const input of panel.querySelectorAll<HTMLInputElement>('input[type="password"]')) {
+			await user.type(input, "nuevaClave123");
+		}
+		await user.click(dialog.getByRole("button", { name: submit }));
+		expect(await screen.findByText(success)).toBeInTheDocument();
+		expect(screen.getAllByRole("status")).toHaveLength(1);
+		expect(screen.getByRole("status")).toHaveTextContent(success);
+		expect(screen.getByRole("table").closest('[aria-live], [role="status"], [role="alert"]')).toBeNull();
+	});
+
+	it.each([
+		{ action: "Crear usuario", submit: "Crear" },
+		{ action: "Cambiar contraseña", submit: "Actualizar" },
+	])("$action anuncia el error local y conserva el formulario", async ({ action, submit }) => {
+		createAdminUserMock.mockRejectedValue(new Error("No fue posible guardar."));
+		updateAdminUserPasswordMock.mockRejectedValue(new Error("No fue posible guardar."));
+		const user = userEvent.setup();
+		render(<UsuariosPage />);
+		await user.click(await screen.findByRole("button", { name: action }));
+		const panel = screen.getByRole("dialog");
+		const dialog = within(panel);
+		if (action === "Crear usuario") {
+			await user.type(dialog.getByLabelText("Email"), "nueva@example.com");
+		}
+		const passwords = panel.querySelectorAll<HTMLInputElement>('input[type="password"]');
+		for (const input of passwords) await user.type(input, "nuevaClave123");
+		await user.click(dialog.getByRole("button", { name: submit }));
+		expect(await dialog.findByText("No fue posible guardar.")).toBeInTheDocument();
+		expect(dialog.getAllByRole("alert")).toHaveLength(1);
+		expect(dialog.getByRole("alert")).toHaveTextContent("No fue posible guardar.");
+		expect(screen.getByRole("dialog")).toBe(panel);
+		for (const input of passwords) expect(input).toHaveValue("nuevaClave123");
+		expect(screen.queryByRole("status")).not.toBeInTheDocument();
+	});
+
+	it("anuncia el error de carga una vez y conserva disponible Crear usuario", async () => {
+		listAdminUsersMock.mockRejectedValue(new Error("No fue posible cargar los usuarios."));
+		render(<UsuariosPage />);
+		expect(await screen.findByText("Error: No fue posible cargar los usuarios.")).toBeInTheDocument();
+		expect(screen.getAllByRole("alert")).toHaveLength(1);
+		expect(screen.getByRole("alert")).toHaveTextContent("Error: No fue posible cargar los usuarios.");
+		expect(screen.getByRole("button", { name: "Crear usuario" })).toBeEnabled();
 	});
 });

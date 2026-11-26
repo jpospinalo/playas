@@ -323,4 +323,29 @@ describe("MessageFeedbackPage — filtros administrativos (A3)", () => {
 		const verMenos = screen.getByRole("button", { name: "Ver menos" });
 		expect(verMenos.className).toContain("focus-visible:ring-2");
 	});
+
+	it("anuncia el error de carga una vez sin incluir los filtros en la alerta", async () => {
+		vi.mocked(fetch).mockRejectedValue(new Error("No fue posible cargar las valoraciones."));
+		render(<MessageFeedbackPage />);
+		expect(await screen.findByText("Error: No fue posible cargar las valoraciones.")).toBeInTheDocument();
+		expect(screen.getAllByRole("alert")).toHaveLength(1);
+		expect(screen.getByRole("alert")).toHaveTextContent("Error: No fue posible cargar las valoraciones.");
+		expect(screen.getByRole("alert")).not.toContainElement(screen.getByLabelText("Desde"));
+		expect(screen.getByRole("button", { name: "Aplicar filtros" })).toBeEnabled();
+		expect(fetch).toHaveBeenCalledTimes(1);
+	});
+
+	it("la validación de rango conserva un solo aviso local y no dispara otra carga", async () => {
+		vi.mocked(fetch).mockResolvedValue(jsonResponse(emptyResponse()));
+		const user = userEvent.setup();
+		render(<MessageFeedbackPage />);
+		await waitFor(() => expect(fetch).toHaveBeenCalledTimes(1));
+		await user.selectOptions(screen.getByLabelText("Precisión mín"), "5");
+		await user.selectOptions(screen.getByLabelText("Precisión máx"), "2");
+		await user.click(screen.getByRole("button", { name: "Aplicar filtros" }));
+		expect(screen.getAllByRole("alert")).toHaveLength(1);
+		expect(screen.getByRole("alert")).toHaveTextContent(/precisión mínima no puede ser mayor/i);
+		expect(screen.getByRole("alert")).not.toContainElement(screen.getByLabelText("Precisión mín"));
+		expect(fetch).toHaveBeenCalledTimes(1);
+	});
 });
