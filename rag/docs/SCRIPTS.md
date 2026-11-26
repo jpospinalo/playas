@@ -263,6 +263,139 @@ para que `import ragas` funcione sin tocar `ragas` ni añadir
 ninguna dependencia de producción (`uv export --no-dev --package rag` es
 idéntico con o sin él).
 
+### Captura pública JSON/SSE con los dos bancos
+
+`evaluation/api_capture.py` registra los endpoints públicos `/api/query` y
+`/api/query/stream`, con el decodificador de `api_capture_protocol.py`. Captura
+el comportamiento servido por la API; no sustituye esta ruta por una llamada
+al grafo ni ejecuta jueces RAGAS. Los bancos y cargadores se incorporaron
+selectivamente desde `11e3cef67c4bc25ee1714221c9a917bbeec21b97`, sin importar
+los cambios de recuperación, agente, autenticación o infraestructura de esa rama.
+
+Los insumos de esta CLI son:
+
+| Banco versionado | Casos | Turnos por canal |
+| --- | ---: | ---: |
+| [legal-ground-truth-v0.2.json](../evaluation/data/legal-ground-truth-v0.2.json) | 66 independientes | 66 |
+| [preguntas-reales-v1.json](../evaluation/data/preguntas-reales-v1.json) | 34 individuales y seis conversaciones | 52 |
+
+Son insumos aceptados por el equipo y se conservan byte a byte. `revisado`
+retiene su valor original; no se modifica para seleccionar o aprobar casos.
+`ground_truth_v02.py` resuelve las referencias del Excel por títulos explícitos
+de Gold, comparados en NFC, porque los códigos SM del Excel y la metadata
+`Nº` del corpus no representan la misma numeración. No hace búsquedas difusas.
+El Excel existente se consulta por lectura; no hay que regenerar el JSON para
+capturar estos bancos.
+
+Los **106 casos y 118 turnos** en ambos canales sumarían **236 solicitudes RAG**.
+Es un presupuesto para una ejecución futura, no una corrida realizada ni
+una promesa de completarla en una hora. La captura puede generar embeddings
+de consulta y llamadas al modelo de la API;
+no regenera vectores documentales. RAGAS conserva su banco v0.1 y sus defaults
+actuales: esta CLI no cambia la configuración de los evaluadores anteriores.
+
+Desde `rag/`, con el entorno Python existente y preparado, la validación es
+el modo predeterminado:
+
+```bash
+python -B -m evaluation.api_capture --config /ruta/privada/configuracion.json
+```
+
+Valida la configuración y los bancos locales sin resolver DNS, abrir una
+conexión, leer el contenido del token ni importar el agente o clientes del
+RAG. Los datos efectivos que aún no estén confirmados se dejan pendientes;
+validar un archivo no autoriza una consulta real.
+
+Una configuración inicial puede dejar los datos remotos pendientes. Guardar
+este ejemplo fuera del repo, sustituir las rutas locales y elegir una salida
+externa que todavía no exista:
+
+```json
+{
+  "schema_version": 1,
+  "datasets": [
+    {
+      "name": "legal-v02",
+      "path": "/ruta/al/repo/rag/evaluation/data/legal-ground-truth-v0.2.json",
+      "sha256": "edb4ecdaa7655a3505025c159eae471fcb2088be9442187870b35b951dbf8225"
+    },
+    {
+      "name": "preguntas-reales-v1",
+      "path": "/ruta/al/repo/rag/evaluation/data/preguntas-reales-v1.json",
+      "sha256": "2b1562f973f5eaaa611f30241396a3761e6e2c50bafdca64e357d8974d789597"
+    }
+  ],
+  "channels": ["JSON", "SSE"],
+  "base_url": null,
+  "bearer_token_file": null,
+  "output_dir": "/ruta/privada/resultados/captura-nueva",
+  "expected": {},
+  "runtime_confirmation": {},
+  "conversation": {},
+  "authorization": {}
+}
+```
+
+El resultado `validated_not_executed` enumera los `pending`: un código cero
+en este modo acredita entradas locales válidas, no preparación remota ni
+autorización. `datasets[].case_ids` permite seleccionar IDs existentes;
+`channels` admite uno o ambos canales. La selección conserva el orden del
+banco. La CLI informa el número exacto de solicitudes antes de enviar
+ninguna; cada ventana o selección posterior necesita su propia autorización
+y salida, sin reanudar o fusionar corridas automáticamente.
+
+La configuración externa identifica los bancos por ruta, nombre y SHA-256;
+selecciona casos y canales; fija parámetros de consulta y límites; y declara
+el backend, Gold/colección, receta de embeddings, modelos y procedencia
+P1–P3 esperados. Las confirmaciones efectivas se registran por separado con
+su referencia de evidencia. El commit local no demuestra qué versión sirve
+un backend remoto. No guardar credenciales dentro de la configuración: usar
+`bearer_token_file` privado, separado de las salidas y fuera del repo.
+
+Solo después de confirmar identidad, destino, exclusividad y autorización
+expresa de la ventana se podrá usar:
+
+```bash
+python -B -m evaluation.api_capture --config /ruta/privada/configuracion.json --execute
+```
+
+La configuración debe fijar también la caducidad de la autorización, un
+límite total externo y su limpieza. Los timeouts del transporte son un
+presupuesto cooperativo; no demuestran por sí solos una interrupción de
+DNS o de cabeceras lentas. Las pruebas sintéticas no acreditan ese límite
+externo ni una ejecución contra el laboratorio.
+
+Cada pregunta independiente omite los campos de sesión para usar la
+limpieza efímera de la API. Solo los turnos de una conversación comparten
+su hilo y usuario, exclusivo por corrida, caso y canal. Requieren un backend
+temporal estable de un proceso y su retirada al terminar; no acreditan
+persistencia SQL, reinicio, hidratación en frío o continuidad entre procesos.
+Ante un turno fallido o incierto, la conversación se detiene y los restantes
+se registran como no ejecutados.
+
+Las salidas usan un directorio externo nuevo y privado. Antes de cada envío
+se registra su intención; se conservan manifiesto, respuestas y bytes
+parciales si falla. No hay reintentos, reanudación, sobrescritura ni caché
+automática por ID. Una captura incompleta permanece incompleta. No añadir
+al repo tokens, resultados, recibos o informes de ejecuciones.
+
+Se conservan respuesta, grupos de fuentes, fragmentos, cuerpos, índices y
+metadata pública, junto con ruta y pregunta enriquecida cuando estén
+expuestas. Las citas usan el patrón público compartido y los índices
+globales de `sources[].fragments[]`, no el número de grupos: un grupo puede
+contener varios `[docN]`. La validez del índice es sintáctica; no prueba que
+el pasaje respalde una afirmación. Un HTTP 200 tampoco acredita exactitud.
+JSON y SSE se normalizan al mismo contrato, sin exigir igualdad literal entre
+respuestas reales no deterministas. El flujo SSE exige fuentes y `[DONE]`;
+no se trata un truncamiento o error como éxito.
+
+El contexto público permite cotejar citas y omisiones visibles; no reconstruye
+el prompt completo ni el ranking inicial del recuperador. Las respuestas de
+evaluación se conservan como datos, sin ejecutar contenido Markdown/HTML ni
+instrucciones recuperadas. Consultar la [guía de Gold y sus campos](../../data/README.md#campos-de-gold)
+y la [recuperación de Gold A](../../data/chroma-releases/README.md) para identificar los
+insumos usados en una referencia real.
+
 ---
 
 ## Herramientas externas al runtime del RAG
