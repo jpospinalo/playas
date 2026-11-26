@@ -26,13 +26,16 @@
 
 La rama empezó como la **línea base de calidad** de ATLAS frente al ground truth del equipo jurídico y terminó mejorando la **recuperación**, la **forma de responder** y la **estabilidad de la API**, siempre medido contra esa misma línea base.
 
-| Indicador (66 casos del ground truth v0.2) | Línea base 2026-11-01 | Esta rama |
+| Indicador (66 casos del ground truth v0.2) | Línea base 2026-11-01 | Rama hasta 2026-11-21 (`11e3cef`) |
 |---|---:|---:|
 | Documento esperado en el top-4 de la búsqueda | 0,586 | **0,741** |
 | Documento esperado en los fragmentos que llegan al modelo | 0,53 | **0,75–0,79** |
 | Normativa en el top-4 con la pregunta original | 0 de 18 | **8 de 18** |
 | Fuga territorial (norma local de otra ciudad) | 0,045 | **0** |
 | Respuestas con referencias sin respaldo (generador Claude) | 12,3 % | **3,1 %** |
+
+
+> **Desde el 2026-11-26 la rama usa el RAG de `corpus` tal cual** (ver punto 9 del README raíz). La columna de la derecha es la de nuestro retriever hasta `11e3cef`; con el de `corpus`, el documento esperado en el top-4 vuelve a **0,586** (fuga territorial 0,045, normativa 0 de 18), igual que la línea base.
 
 ## 2. Cronología
 
@@ -47,6 +50,7 @@ La rama empezó como la **línea base de calidad** de ATLAS frente al ground tru
 | 2026-11-12 | **`main` al día** | Fusión del registro con tipo de usuario; arreglo de la columna `user_type` en bases existentes; comparación de modelos locales |
 | 2026-11-16 | **Resolución documental de `corpus`** | Fusión de los commits de `corpus` del 2026-11-15 y 16 (hasta 3260bba: REMAC 5 en alcance, radicados parciales, orden de recuperación del predio, instancia verificada, plazos y remisiones citados, citas JSON/SSE, hidratación en frío); convivencia con la multiconsulta; compatibilidad comprobada con la rama de ingesta y su evaluación de nivel 0 |
 | 2026-11-21 | **Contexto normativo verificado de `corpus`** | Fusión de `corpus` hasta 5665e4f (admisión normativa, aclaración ante «ese plan», citas por norma fuente, contexto normativo verificado, sesiones entre pestañas, cierre SSE, siglas en el enriquecimiento); convive con la multiconsulta, la jerarquía normativa y el tope por norma |
+| 2026-11-26 | **`corpus` manda** | Fusión de `corpus` hasta 6d868f2 tomando su RAG tal cual (agente, retriever, prompts, configuración); nuestro retriever queda en `11e3cef` como propuesta; evaluación adaptada a la consulta compuesta del grafo; documento esperado en el top-4 0,741 → 0,586 |
 | 2026-11-21 | **Mantenimiento adaptativo** | Parámetros de recuperación por entorno, listas fijas contrastadas con la capa gold, métricas «antes/después» y `scripts/integrar_corpus.sh` para el próximo update; Python 3.12 fijado; trazas de la multiconsulta |
 
 ## 3. Cambios por componente

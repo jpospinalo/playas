@@ -7,13 +7,16 @@ búsquedas ni decide la ruta. `build_context_block` formatea esos documentos
 en el contexto que ve el LLM, y `sanitize_replacement_chars` conserva
 compatibilidad con entradas históricas
 que contengan U+FFFD (ver data/README.md para el corpus y su representación).
+`CITATION_RE` comparte la gramática de citas entre el agente y la evaluación.
 """
 
 from __future__ import annotations
 
+import re
+
 from langchain_core.documents import Document
 
-from .territorio import describir_ambito, lugar_de_norma
+CITATION_RE = re.compile(r"\[doc(\d+)\]", re.IGNORECASE)
 
 # ---------------------------------------------------------------------------
 # Compatibilidad de texto histórico
@@ -47,10 +50,9 @@ def sanitize_replacement_chars(value):
 def build_context_block(docs: list[Document], *, include_source_identifiers: bool = True) -> str:
     """Convierte una lista de documentos en un bloque de contexto legible.
 
-    Incluye metadatos de atribución (corporación, radicado, magistrado, tema, sección
+    Incluye metadatos de atribución (corporación, magistrado, tema, sección
     y resumen) para que el LLM pueda citar correctamente las fuentes.
-    Con identidad ya verificada (``include_source_identifiers=False``) omite
-    los nombres históricos de la cabecera y la línea «Radicado» de la metadata.
+    Con identidad ya verificada, omite los nombres históricos de la cabecera.
     """
     bloques: list[str] = []
     for i, d in enumerate(docs, start=1):
@@ -76,8 +78,6 @@ def build_context_block(docs: list[Document], *, include_source_identifiers: boo
             articulo = sanitize_replacement_chars(meta.get("articulo", ""))
 
             meta_lines = [f"Norma: {norma}"]
-            if lugar := lugar_de_norma(meta):
-                meta_lines.append(f"Ámbito territorial: {describir_ambito(lugar)}")
             if titulo:
                 meta_lines.append(f"Título: {titulo}")
             if capitulo:
@@ -92,7 +92,6 @@ def build_context_block(docs: list[Document], *, include_source_identifiers: boo
             corporacion = sanitize_replacement_chars(
                 meta.get("Corporación") or meta.get("CorporaciÃ³n") or meta.get("Corporacion", "")
             )
-            radicado = sanitize_replacement_chars(meta.get("Radicado", "") or "").strip()
             magistrado = sanitize_replacement_chars(meta.get("Magistrado ponente", ""))
             tema = sanitize_replacement_chars(meta.get("Tema principal", ""))
             section = sanitize_replacement_chars(meta.get("section_name", ""))
@@ -101,8 +100,6 @@ def build_context_block(docs: list[Document], *, include_source_identifiers: boo
             meta_lines = []
             if corporacion:
                 meta_lines.append(f"Corporación: {corporacion}")
-            if radicado and include_source_identifiers:
-                meta_lines.append(f"Radicado: {radicado}")
             if magistrado:
                 meta_lines.append(f"Magistrado ponente: {magistrado}")
             if tema:

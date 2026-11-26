@@ -34,6 +34,7 @@ interface ConversationSidebarProps {
   transitionEnabled: boolean;
   onSelectConversation: (conv: Conversation) => Promise<void>;
   onNewChat: () => void;
+  onConversationDeleted?: (conversationId: string) => void;
   /** Alterna el panel relevante para el viewport actual (riel de escritorio o panel móvil). */
   onToggleSidebar: () => void;
   /** Cierra específicamente el panel móvil (backdrop, botón de cierre, Escape). */
@@ -67,6 +68,7 @@ export function ConversationSidebar({
   transitionEnabled,
   onSelectConversation,
   onNewChat,
+  onConversationDeleted,
   onToggleSidebar,
   onCloseMobile,
   onMobileExitComplete,
@@ -212,6 +214,7 @@ export function ConversationSidebar({
         loadError={loadError}
         onToggleSidebar={handleToggleSidebar}
         onNewChat={handleNewChat}
+        onConversationDeleted={onConversationDeleted}
         onOpenSearch={openSearch}
         onCollapsedSearch={openSearch}
         onToggleProfile={() => {
@@ -238,6 +241,7 @@ export function ConversationSidebar({
         loadError={loadError}
         onToggleSidebar={closeMobilePanel}
         onNewChat={handleNewChat}
+        onConversationDeleted={onConversationDeleted}
         onOpenSearch={openSearch}
         onToggleProfile={() => {
           setSearchOpen(false);
@@ -275,6 +279,7 @@ interface SidebarContentProps {
   loadError?: string | null;
   onToggleSidebar: () => void;
   onNewChat: () => void;
+  onConversationDeleted?: (conversationId: string) => void;
   onOpenSearch: () => void;
   onToggleProfile: () => void;
   onCloseProfile: () => void;
@@ -296,6 +301,7 @@ function DesktopSidebar({
   loadError,
   onToggleSidebar,
   onNewChat,
+  onConversationDeleted,
   onOpenSearch,
   onCollapsedSearch,
   onToggleProfile,
@@ -343,6 +349,7 @@ function DesktopSidebar({
               loadError={loadError}
               onToggleSidebar={onToggleSidebar}
               onNewChat={onNewChat}
+              onConversationDeleted={onConversationDeleted}
               onOpenSearch={onOpenSearch}
               onToggleProfile={onToggleProfile}
               onCloseProfile={onCloseProfile}
@@ -385,6 +392,7 @@ function MobileSidebar({
   loadError,
   onToggleSidebar,
   onNewChat,
+  onConversationDeleted,
   onOpenSearch,
   onToggleProfile,
   onCloseProfile,
@@ -478,6 +486,7 @@ function MobileSidebar({
             loadError={loadError}
             onToggleSidebar={onToggleSidebar}
             onNewChat={onNewChat}
+            onConversationDeleted={onConversationDeleted}
             onOpenSearch={onOpenSearch}
             onToggleProfile={onToggleProfile}
             onCloseProfile={onCloseProfile}
@@ -502,6 +511,7 @@ function ExpandedSidebarContent({
   loadError,
   onToggleSidebar,
   onNewChat,
+  onConversationDeleted,
   onOpenSearch,
   onToggleProfile,
   onCloseProfile,
@@ -549,6 +559,7 @@ function ExpandedSidebarContent({
           onRetryLoad={onConversationsRefresh}
           onSelectConversation={onSelectConversation}
           onNewChat={onNewChat}
+          onConversationDeleted={onConversationDeleted}
           onConversationsRefresh={onConversationsRefresh}
         />
       </div>

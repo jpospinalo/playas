@@ -118,6 +118,102 @@ def test_abstains_without_verified_docket_even_if_in_body(documents: list[Docume
     assert ResolutionIndex(documents, _provenance(documents)).resolve(QUERY) is None
 
 
+def _without_instance(documents: list[Document]) -> None:
+    documents[0].page_content = f"## Providencia\nRadicación: {DOCKET}"
+
+
+def test_unverified_instance_explains_but_never_admits_orders(documents: list[Document]) -> None:
+    _without_instance(documents)
+    documents[0].metadata["Instancia"] = "primera instancia"
+    index = ResolutionIndex(documents, _provenance(documents))
+    assert index.instance_unverified(QUERY.replace("segunda", "primera"))
+    assert index.resolve(QUERY) is None
+    assert index.docket_evidence(QUERY) is None
+    assert not index.admits_documentary_question(QUERY)
+
+
+def test_copy_request_also_requires_its_own_verified_instance(documents: list[Document]) -> None:
+    _without_instance(documents)
+    question = (
+        f"¿En segunda instancia del radicado {DOCKET}, a quién se ordenó remitir una copia "
+        "auténtica del fallo y qué debía hacerse con el expediente?"
+    )
+    index = ResolutionIndex(documents, _provenance(documents))
+    assert index.instance_unverified(question)
+    assert index.resolve(question) is None
+
+
+@pytest.mark.parametrize(
+    "question",
+    [
+        QUERY.replace(DOCKET, "13001-23-33-000-2017-02038-01"),
+        QUERY.replace(DOCKET, DOCKET + " (1000)"),
+        QUERY.replace("la sentencia", "el radicado 13001-23-33-000-2017-02038-01 y la sentencia"),
+        QUERY.replace("la sentencia", "el radicado 1234 y la sentencia"),
+        QUERY.replace(
+            "sobre la sentencia", "al radicado 13001-23-33-000-2017-02038-01 sobre la sentencia"
+        ),
+        "¿Cuál es la capital de Francia?",
+    ],
+)
+def test_instance_explanation_requires_unambiguous_original_identity(
+    documents: list[Document], question: str
+) -> None:
+    _without_instance(documents)
+    index = ResolutionIndex(documents, _provenance(documents))
+    assert not index.instance_unverified(question)
+
+
+def test_known_instance_mismatch_is_not_missing_instance(documents: list[Document]) -> None:
+    index = ResolutionIndex(documents, _provenance(documents))
+    assert not index.instance_unverified(QUERY.replace("segunda", "primera"))
+    assert not index.instance_unverified(QUERY)
+
+
+@pytest.mark.parametrize("field", ["page_content", "Radicado", "Instancia", "chunk_id"])
+@pytest.mark.parametrize("timing", ["before", "after"])
+def test_instance_explanation_revalidates_source(
+    documents: list[Document], field: str, timing: str
+) -> None:
+    _without_instance(documents)
+    provenance = _provenance(documents)
+    index = ResolutionIndex(documents, provenance)
+    assert index.instance_unverified(QUERY)
+    if field == "page_content":
+        documents[-1].page_content += " Texto alterado."
+    elif field == "chunk_id":
+        del documents[-1].metadata[field]
+    else:
+        documents[-1].metadata[field] = "alterado"
+    if timing == "before":
+        index = ResolutionIndex(documents, provenance)
+    assert not index.instance_unverified(QUERY)
+
+
+@pytest.mark.parametrize("source_state", ["incomplete", "duplicate", "collision"])
+def test_instance_explanation_rejects_incomplete_or_multiple_sources(
+    documents: list[Document], source_state: str
+) -> None:
+    _without_instance(documents)
+    provenance = _provenance(documents)
+    if source_state == "incomplete":
+        documents.pop()
+    else:
+        copies = [
+            _document("copy-" + str(i), doc.page_content, doc.metadata["section_name"])
+            for i, doc in enumerate(documents)
+        ]
+        if source_state == "collision":
+            copies[0].page_content = "## Sentencia de primera instancia"
+        copy_proof = {
+            key: replace(proof, path="otra-providencia.jsonl")
+            for key, proof in _provenance(copies).items()
+        }
+        provenance.update(copy_proof)
+        documents.extend(copies)
+    assert not ResolutionIndex(documents, provenance).instance_unverified(QUERY)
+
+
 def test_abstains_when_source_budget_is_exceeded(documents: list[Document]) -> None:
     assert ResolutionIndex(documents, _provenance(documents)).resolve(QUERY, max_sources=0) is None
 
@@ -1016,3 +1112,246 @@ def test_caller_cannot_raise_the_four_source_limit(documents: list[Document]) ->
     index = ResolutionIndex(docs, _provenance(docs))
     assert index.resolve(_order_question(" y ".join(subjects[:4])), max_sources=6) is not None
     assert index.resolve(_order_question(" y ".join(subjects)), max_sources=6) is None
+
+
+@pytest.fixture
+def documentary_admission_documents() -> list[Document]:
+    return [
+        _document(
+            "documentary-header",
+            "## Consejo de Estado\n## Sentencia de segunda instancia\n"
+            "Fecha: 9 de julio de 2009\n"
+            f"Radicación número: {DOCKET}\nActor: Marina del Norte\n"
+            "Demandado: Ministerio de Defensa Nacional\n"
+            "Procede la Sala a decidir el recurso de apelación interpuesto contra la "
+            "sentencia del 8 de agosto de 2003.\n## Antecedentes",
+            "Contexto del caso",
+        ),
+        _document(
+            "documentary-analysis",
+            "La actora no probó que las construcciones de la playa fueran anteriores al "
+            "Decreto 2324 de 1984. El permiso especial de construcción no obra en el expediente.",
+            "Análisis del caso",
+        ),
+        _document(
+            "documentary-order",
+            "PRIMERO: Confirmar la sentencia del 8 de agosto de 2024.",
+            "Decisión",
+        ),
+    ]
+
+
+@pytest.mark.parametrize(
+    "question",
+    [
+        f"En el radicado {DOCKET}, ¿se probó la antigüedad de las construcciones?",
+        f"En el radicado {DOCKET.replace('-', '')}, ¿constaba el permiso especial?",
+        f"En la sentencia de segunda instancia del radicado {DOCKET}, ¿constaba el permiso?",
+        f"En la sentencia de apelación del radicado {DOCKET}, ¿qué se probó sobre las obras?",
+        f"En la sentencia de 9 de julio de 2009, radicado {DOCKET}, ¿constaba el permiso?",
+        f"En el radicado {DOCKET}, sentencia de 9 de julio de 2009, ¿constaba el permiso?",
+        f"En la sentencia de Marina del Norte, radicado {DOCKET}, ¿constaba el permiso?",
+        f"En el radicado {DOCKET}, sentencia de Marina del Norte, ¿constaba el permiso?",
+    ],
+)
+def test_documentary_admission_keeps_factual_questions_out_of_the_order_resolver(
+    documentary_admission_documents: list[Document], question: str
+) -> None:
+    documents = documentary_admission_documents
+    before = [(doc.page_content, json.dumps(doc.metadata, sort_keys=True)) for doc in documents]
+    index = ResolutionIndex(documents, _provenance(documents))
+    assert index.snapshot_verified
+    assert index.admits_documentary_question(question) is True
+    assert index.resolve(question) is None
+    assert index.docket_evidence(question) is None
+    assert [
+        (doc.page_content, json.dumps(doc.metadata, sort_keys=True)) for doc in documents
+    ] == before
+
+
+@pytest.mark.parametrize(
+    "question",
+    [
+        "¿Constaba el permiso especial en el expediente?",
+        "En el radicado 1038, ¿constaba el permiso especial?",
+        "En el radicado 13001-23-33-000-2017-09999-01, ¿constaba el permiso especial?",
+        f"En los radicados {DOCKET} y 13001-23-33-000-2017-09999-01, ¿constaba el permiso?",
+        f"En primera instancia del radicado {DOCKET}, ¿constaba el permiso?",
+        f"En el radicado {DOCKET}, sentencia de primera instancia, ¿constaba el permiso?",
+        f"En única instancia del radicado {DOCKET}, ¿constaba el permiso?",
+        f"En la sentencia de 10 de julio de 2009, radicado {DOCKET}, ¿constaba el permiso?",
+        f"En el radicado {DOCKET}, sentencia de 10 de julio de 2009, ¿constaba el permiso?",
+        f"En la sentencia de 8 de agosto de 2003, radicado {DOCKET}, ¿constaba el permiso?",
+        f"En la sentencia de 1998, radicado {DOCKET}, ¿constaba el permiso?",
+        f"En la sentencia de Otra Sociedad, radicado {DOCKET}, ¿constaba el permiso?",
+        f"En el radicado {DOCKET}, sentencia de Otra Sociedad, ¿constaba el permiso?",
+        f"En la sentencia de la Corte Constitucional, radicado {DOCKET}, ¿constaba el permiso?",
+        f"En el radicado {DOCKET}, sentencia de la Corte Constitucional, ¿constaba el permiso?",
+        f"En Python, ¿cómo programo una clase para procesar el radicado {DOCKET}?",
+    ],
+)
+def test_documentary_admission_requires_one_compatible_original_identity(
+    documentary_admission_documents: list[Document], question: str
+) -> None:
+    documents = documentary_admission_documents
+    index = ResolutionIndex(documents, _provenance(documents))
+    assert index.admits_documentary_question(question) is False
+
+
+@pytest.mark.parametrize("timing", ["before_index", "after_index"])
+@pytest.mark.parametrize("field", ["body", "metadata", "id"])
+def test_documentary_admission_revalidates_every_fragment(
+    documentary_admission_documents: list[Document], timing: str, field: str
+) -> None:
+    documents = documentary_admission_documents
+    proof = _provenance(documents)
+    index = ResolutionIndex(documents, proof) if timing == "after_index" else None
+    document = documents[-1]
+    if field == "body":
+        document.page_content += " Se altera una parte no solicitada de la decisión."
+    elif field == "metadata":
+        document.metadata["summary"] = "Campo agregado después de fijar la procedencia."
+    else:
+        document.metadata["chunk_id"] = "otro-identificador"
+    if index is None:
+        index = ResolutionIndex(documents, proof)
+    assert (
+        index.admits_documentary_question(f"En el radicado {DOCKET}, ¿constaba el permiso?")
+        is False
+    )
+
+
+@pytest.mark.parametrize("gap", ["missing_document", "missing_proof", "extra_document", "empty"])
+def test_documentary_admission_requires_a_complete_snapshot(
+    documentary_admission_documents: list[Document], gap: str
+) -> None:
+    documents = documentary_admission_documents
+    proof = _provenance(documents)
+    if gap == "missing_document":
+        documents = documents[:-1]
+    elif gap == "missing_proof":
+        proof.pop("documentary-order")
+    elif gap == "extra_document":
+        documents.append(_document("unproved", "Otra fuente.", "Análisis del caso"))
+    else:
+        documents, proof = [], {}
+    index = ResolutionIndex(documents, proof)
+    assert not index.snapshot_verified
+    assert (
+        index.admits_documentary_question(f"En el radicado {DOCKET}, ¿constaba el permiso?")
+        is False
+    )
+
+
+@pytest.mark.parametrize("coastal_hint", ["none", "metadata", "title"])
+def test_documentary_admission_requires_coastal_evidence_in_the_body(
+    documentary_admission_documents: list[Document], coastal_hint: str
+) -> None:
+    documents = documentary_admission_documents
+    documents[1].page_content = "No se probó la antigüedad de las obras. No consta el permiso."
+    if coastal_hint == "metadata":
+        documents[1].metadata["summary"] = "El litigio versa sobre una playa."
+    elif coastal_hint == "title":
+        for document in documents:
+            document.metadata["title"] = "Construcciones sobre una playa"
+    index = ResolutionIndex(documents, _provenance(documents))
+    assert index.snapshot_verified
+    assert (
+        index.admits_documentary_question(f"En el radicado {DOCKET}, ¿constaba el permiso?")
+        is False
+    )
+
+
+def test_documentary_admission_does_not_borrow_a_date_from_the_appealed_judgment(
+    documentary_admission_documents: list[Document],
+) -> None:
+    documents = documentary_admission_documents
+    documents[0].page_content = documents[0].page_content.replace("Fecha: 9 de julio de 2009\n", "")
+    index = ResolutionIndex(documents, _provenance(documents))
+    question = f"En la sentencia de 8 de agosto de 2003, radicado {DOCKET}, ¿constaba el permiso?"
+    assert index.admits_documentary_question(question) is False
+
+
+@pytest.mark.parametrize("equivalent", [True, False])
+def test_documentary_admission_keeps_the_existing_collision_policy(
+    documentary_admission_documents: list[Document], equivalent: bool
+) -> None:
+    documents = documentary_admission_documents
+    copies = [
+        _document(doc.metadata["id"] + "-copy", doc.page_content, doc.metadata["section_name"])
+        for doc in documents
+    ]
+    for document in copies:
+        document.metadata["source"] = "copia.pdf"
+    if not equivalent:
+        copies[1].page_content += " En esta copia sí se acreditó la antigüedad."
+    proof = _provenance(documents)
+    proof.update(
+        {ident: replace(value, path="copia.jsonl") for ident, value in _provenance(copies).items()}
+    )
+    index = ResolutionIndex([*documents, *copies], proof)
+    assert index.snapshot_verified
+    assert (
+        index.admits_documentary_question(f"En el radicado {DOCKET}, ¿constaba el permiso?")
+        is False
+    )
+    assert index.resolve(QUERY) is None
+    assert (index.docket_evidence(QUERY) is not None) is equivalent
+
+
+@pytest.mark.parametrize(
+    "question,terminal",
+    [
+        (f"En Python, ¿cómo programo una clase para el radicado {DOCKET}?", True),
+        (f"¿Cómo programo una clase en JavaScript para el radicado {DOCKET}?", True),
+        (f"En el radicado {DOCKET}, ¿cómo programar la reunión de seguimiento de la playa?", False),
+        (f"¿Se puede programar la inspección de la playa en el radicado {DOCKET}?", False),
+        (
+            f"En el radicado {DOCKET}, ¿qué ordenó la Sala sobre el programa de capacitación en Python?",
+            False,
+        ),
+    ],
+)
+def test_documentary_admission_preserves_the_shared_programming_boundary(
+    documentary_admission_documents: list[Document], question: str, terminal: bool
+) -> None:
+    from rag.core.domain_scope import _is_deterministic_terminal
+
+    assert _is_deterministic_terminal(question) is terminal
+    if terminal:
+        documents = documentary_admission_documents
+        index = ResolutionIndex(documents, _provenance(documents))
+        assert index.admits_documentary_question(question) is False
+
+
+@pytest.mark.parametrize(
+    "qualifier,admitted",
+    [
+        ("de 9 de julio de 2009", True),
+        ("de 10 de julio de 2009", False),
+        ("de 1998", False),
+        ("de Otra Sociedad", False),
+        ("sentencia de La Providencia", False),
+        ("de Marina del Norte", True),
+        ("de primera instancia", False),
+    ],
+)
+def test_documentary_admission_checks_comma_separated_qualifiers_after_the_docket(
+    documentary_admission_documents: list[Document], qualifier: str, admitted: bool
+) -> None:
+    documents = documentary_admission_documents
+    index = ResolutionIndex(documents, _provenance(documents))
+    question = f"En la sentencia del radicado {DOCKET}, {qualifier}, ¿constaba el permiso?"
+    assert index.admits_documentary_question(question) is admitted
+
+
+@pytest.mark.parametrize(
+    "coastal_body", ["El litigio versa sobre el litoral.", "El litigio versa sobre los litorales."]
+)
+def test_documentary_admission_accepts_explicit_littoral_body(
+    documentary_admission_documents: list[Document], coastal_body: str
+) -> None:
+    documents = documentary_admission_documents
+    documents[1].page_content = coastal_body
+    index = ResolutionIndex(documents, _provenance(documents))
+    assert index.admits_documentary_question(f"En el radicado {DOCKET}, ¿constaba el permiso?")

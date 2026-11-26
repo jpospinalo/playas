@@ -14,11 +14,10 @@ puramente sintácticas — nunca semánticas, no requiere ningún LLM adicional:
 - párrafos jurídicos sin cita (¿qué párrafos de la respuesta no incluyen
   ninguna cita?).
 
-Reutiliza el mismo patrón de cita, ``_CITATION_RE`` de ``core/agent.py`` —
-la única fuente de la verdad de lo que production reconoce como cita, usada
-hoy por ``_validate_citations()`` en la ruta online (gate binario:
-pasa/no-pasa) — para que esta utilidad offline nunca pueda divergir en
-silencio de lo que el backend realmente reconoce como cita. A diferencia de
+Reutiliza ``core/tools.py::CITATION_RE`` con el alias local ``_CITATION_RE``,
+igual que ``core/agent.py``. Esa definición compartida evita importar el
+agente al calcular métricas y conserva la gramática que reconoce
+``_validate_citations()`` en la ruta online. A diferencia de
 ``_validate_citations()``, esta utilidad no decide pasa/no-pasa: reporta
 métricas descriptivas por respuesta y agregadas sobre un dataset sintético,
 pensadas como evidencia de evaluación offline, no
@@ -33,7 +32,7 @@ import os
 from dataclasses import asdict, dataclass, field
 from typing import Any
 
-from rag.core.agent import _CITATION_RE
+from rag.core.tools import CITATION_RE as _CITATION_RE
 
 # ============================================================
 #  1. Análisis sintáctico de una sola respuesta

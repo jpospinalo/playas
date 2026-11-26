@@ -2,13 +2,20 @@
 
 ## Ramas y responsabilidades
 
-`main` es la rama de integración. Crear una rama temporal desde `main`
-actualizada para cada tarea; por ejemplo, `backend/validacion`,
-`frontend/busqueda` o `infrastructure/arranque`. Cada rama contiene el repositorio
-completo: el prefijo describe el trabajo, no restringe los archivos modificables.
+Esta entrega se prepara en `corpus`; `main` conserva la versión de producción.
 
-Integrar cambios pequeños y revisables mediante pull request a `main`. Retirar
-la rama al completar la integración y confirmar que nadie la sigue utilizando.
+Para cada tarea, acordar el commit base de `corpus` actualizada y crear una rama
+temporal; por ejemplo, `backend/validacion`, `frontend/busqueda` o
+`infrastructure/arranque`. Cada rama contiene el repositorio completo: el prefijo
+describe el trabajo, no restringe los archivos modificables.
+
+Publicar los cambios en esa rama y abrir un pull request (PR) con `corpus` como
+rama de destino. Antes de integrar, comprobar que los cinco trabajos de CI
+finalicen correctamente y revisar el diff. La integración de `corpus` en `main`
+requiere revisión y autorización separadas.
+
+Retirar la rama de trabajo al completar la integración y confirmar que nadie la
+sigue utilizando.
 No eliminar ramas divergentes por su antigüedad: revisar sus commits exclusivos
 y conservar una referencia recuperable antes de descartarlos.
 
@@ -42,10 +49,14 @@ y conservar una referencia recuperable antes de descartarlos.
 
 ## Controles locales
 
-Utilizar Python 3.12 para reproducir el entorno de CI. Los locks se versionan;
-sincronizar con `uv sync --frozen --group dev --python 3.12` desde `ingesta/` y
-con `uv sync --frozen --all-packages --group dev --python 3.12` desde `rag/`.
-Estos comandos modifican el entorno local, no deben modificar el lock.
+Utilizar Python 3.12 y uv 0.13.4, el perfil declarado en CI. Los locks se
+versionan. Ejecutar `make install` desde `ingesta/` o `rag/`: primero comprueba
+su frescura con `uv lock --check` sin `UV_FROZEN` y después sincroniza las
+dependencias de desarrollo con `uv sync --frozen` (todo el workspace en RAG).
+El comando modifica el entorno local y debe conservar el lock. Puede consultar
+el registro y descargar dependencias; no es un control estrictamente offline.
+`--frozen` conserva el lock durante la sincronización, pero no comprueba por
+sí solo que corresponda a los manifiestos actuales.
 
 En `ingesta/`: `make lint`, `make format-check`, `make test` y
 `make test-integration`. Esta última suite comprueba contratos offline entre

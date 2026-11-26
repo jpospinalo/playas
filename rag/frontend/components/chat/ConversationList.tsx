@@ -37,6 +37,8 @@ interface ConversationListProps {
   onRetryLoad?: () => Promise<void>;
   onSelectConversation: (conv: Conversation) => Promise<void>;
   onNewChat: () => void;
+  /** Delega al dueño del chat la selección vigente al confirmar el borrado. */
+  onConversationDeleted?: (conversationId: string) => void;
   onConversationsRefresh?: () => Promise<void>;
 }
 
@@ -48,6 +50,7 @@ export function ConversationList({
   onRetryLoad,
   onSelectConversation,
   onNewChat,
+  onConversationDeleted,
   onConversationsRefresh,
 }: ConversationListProps) {
   const { user } = useAuth();
@@ -220,9 +223,9 @@ export function ConversationList({
       setDeleteError(null);
       // A2.7 — refrescar solo tras éxito confirmado.
       await onConversationsRefresh?.();
-      // A2.4 — onNewChat() solo se dispara después de eliminar con éxito
-      // la conversación que estaba activa, nunca antes ni ante un fallo.
-      if (convId === activeConversationId) onNewChat();
+      // El dueño del chat decide sobre su selección vigente tras el éxito.
+      if (onConversationDeleted) onConversationDeleted(convId);
+      else if (convId === activeConversationId) onNewChat();
     } catch (error) {
       setDeleteError(restErrorMessage(error, "No fue posible eliminar la conversación."));
     } finally {
@@ -315,6 +318,7 @@ export function ConversationList({
                 <div className="min-w-0">
                   <input
                     ref={editInputRef}
+                    aria-label="Título de la conversación"
                     value={editTitle}
                     onChange={(event) => setEditTitle(event.target.value)}
                     onBlur={() => saveEdit(conv.id)}
@@ -388,16 +392,27 @@ function ConversationActionsMenu({
   onRename: (conv: Conversation, event: MouseEvent) => void;
   onDelete: (convId: string, event: MouseEvent) => void;
 }) {
+  const triggerRef = useRef<HTMLButtonElement>(null);
+
   return (
-    <div className="relative shrink-0" data-conversation-menu-root>
+    <div
+      className="relative shrink-0"
+      data-conversation-menu-root
+      onKeyDown={(event) => {
+        if (event.key !== "Escape" || !isOpen) return;
+        event.stopPropagation();
+        onToggle();
+        if (triggerRef.current?.isConnected) triggerRef.current.focus();
+      }}
+    >
       <button
+        ref={triggerRef}
         type="button"
         onClick={(event) => {
           event.stopPropagation();
           onToggle();
         }}
         aria-label={`Opciones para ${conversation.title ?? "conversación"}`}
-        aria-haspopup="menu"
         aria-expanded={isOpen}
         className="flex h-7 w-7 items-center justify-center rounded-full text-muted opacity-0 transition-[background-color,color,opacity] duration-150 hover:bg-surface hover:text-foreground focus:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent group-hover:opacity-100 group-focus-within:opacity-100"
       >
@@ -407,7 +422,6 @@ function ConversationActionsMenu({
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            role="menu"
             className="absolute right-0 top-8 z-50 w-40 rounded-xl border border-border bg-elevated p-1 shadow-lg shadow-secondary-turquoise/15"
             initial={{ opacity: 0, y: -4, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -417,7 +431,6 @@ function ConversationActionsMenu({
           >
             <button
               type="button"
-              role="menuitem"
               onClick={(event) => onRename(conversation, event)}
               className="flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-left text-xs text-muted transition-colors hover:bg-accent/8 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
             >
@@ -426,7 +439,6 @@ function ConversationActionsMenu({
             </button>
             <button
               type="button"
-              role="menuitem"
               onClick={(event) => onDelete(conversation.id, event)}
               className="flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-left text-xs text-danger transition-colors hover:bg-danger-bg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-danger"
             >

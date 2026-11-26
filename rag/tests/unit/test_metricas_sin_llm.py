@@ -458,7 +458,7 @@ def test_cli_compara_contra_el_reporte_de_otra_corrida(monkeypatch, tmp_path):
     import json
 
     antes = _cli(monkeypatch, tmp_path, _respuestas(inventadas=2))
-    assert antes["corpus"]["recuperacion"]["cupos_normativa"] >= 0
+    assert antes["corpus"]["recuperacion"]["k"] >= 1
     referencia = tmp_path / "antes.json"
     referencia.write_text(json.dumps(antes), encoding="utf-8")
     despues = _cli(

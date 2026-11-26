@@ -16,7 +16,7 @@ modifica):
 - Se agrega ``documentos_esperados``: títulos de la capa gold del corpus. El
   cruce es **por título**, con una tabla explícita, porque la numeración
   SM-XX del Excel no coincide con el metadato ``Nº`` del corpus (ver
-  ``docs/EVALUACION_LINEA_BASE.md``, hallazgo D1). No se hace búsqueda difusa: una
+  ``docs/SCRIPTS.md``). No se hace búsqueda difusa: una
   referencia desconocida es un error.
 
 El Excel se lee solo con la biblioteca estándar (un ``.xlsx`` es un ZIP de

@@ -294,10 +294,7 @@ async def test_node_gates_preserve_existing_retrieval(monkeypatch, variant):
     fallback = Document(
         id="fallback", page_content="Existing hybrid context.", metadata={"doc_type": "normativa"}
     )
-    retriever = SimpleNamespace(
-        ainvoke=AsyncMock(return_value=[fallback]),
-        afuse_queries=AsyncMock(return_value=[fallback]),
-    )
+    retriever = SimpleNamespace(ainvoke=AsyncMock(return_value=[fallback]))
     calls = []
 
     def observed_factory(**kwargs):
@@ -323,9 +320,7 @@ async def test_node_gates_preserve_existing_retrieval(monkeypatch, variant):
         verified_documents=None if variant == "missing_snapshot" else tuple(docs),
     )
     assert result["sources"] == [fallback]
-    # Una sola recuperación híbrida: multiconsulta (afuse_queries) o, con
-    # radicado verificado, consulta compuesta (ainvoke).
-    assert retriever.afuse_queries.await_count + retriever.ainvoke.await_count == 1
+    assert retriever.ainvoke.await_count == 1
     assert calls[0]["k"] == 4 and calls[0]["k_candidates"] == 8
     assert calls[0]["doc_types"] == incoming["doc_types"]
 
@@ -377,7 +372,11 @@ async def test_unverified_docket_is_rejected_before_normative_context(monkeypatc
     monkeypatch.setattr(
         agent, "get_ensemble_retriever", lambda **kwargs: pytest.fail("No unverified docket search")
     )
-    index = SimpleNamespace(snapshot_verified=True, docket_evidence=lambda question: None)
+    index = SimpleNamespace(
+        snapshot_verified=True,
+        docket_evidence=lambda question: None,
+        instance_unverified=lambda question: False,
+    )
     result = await agent.retrieve_forced_node(
         incoming, verify_docket=True, resolution_index=index, verified_documents=tuple(article())
     )

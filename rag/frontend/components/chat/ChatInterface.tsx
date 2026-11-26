@@ -101,6 +101,7 @@ function AuthenticatedChat() {
 		setInput,
 		submit,
 		resetChat,
+		handleConversationDeleted,
 		loadConversation,
 		retryPersistMessage,
 		cancel,
@@ -307,6 +308,9 @@ function AuthenticatedChat() {
 				onNewChat={() => {
 					resetChat();
 					closeSidebarOnMobile();
+				}}
+				onConversationDeleted={(deletedId) => {
+					if (handleConversationDeleted(deletedId)) closeSidebarOnMobile();
 				}}
 				onToggleSidebar={toggleSidebar}
 				onCloseMobile={closeMobileSidebar}

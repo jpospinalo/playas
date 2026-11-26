@@ -2,7 +2,7 @@
 
 import { useAuth } from "@/components/providers/AuthProvider";
 import { getTokenForUser } from "@/lib/auth";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useId, useState } from "react";
 import {
   type AdminUserRow,
   createAdminUser,
@@ -51,6 +51,7 @@ const modalInputMonoClass =
 
 export default function UsuariosPage() {
   const { user } = useAuth();
+  const userId = user?.user_id ?? "";
   const [users, setUsers] = useState<AdminUserRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -60,7 +61,7 @@ export default function UsuariosPage() {
 
   const refresh = useCallback(async () => {
     try {
-      const items = await listAdminUsers(getTokenForUser(user?.user_id ?? ""));
+      const items = await listAdminUsers(getTokenForUser(userId));
       setUsers(items);
       setError(null);
     } catch (e) {
@@ -68,9 +69,11 @@ export default function UsuariosPage() {
     } finally {
       setLoading(false);
     }
-  }, [user?.user_id]);
+  }, [userId]);
 
   useEffect(() => {
+    // Sincroniza la lista con la API al entrar o cambiar de usuario, conservando el estado de error y carga.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     refresh();
   }, [refresh]);
 
@@ -119,13 +122,13 @@ export default function UsuariosPage() {
       </div>
 
       {banner ? (
-        <div className="rounded-full border border-accent/30 bg-accent-soft px-4 py-2 text-sm text-accent">
+        <div role="status" className="rounded-full border border-accent/30 bg-accent-soft px-4 py-2 text-sm text-accent">
           {banner}
         </div>
       ) : null}
 
       {error ? (
-        <div className="rounded-2xl border border-border bg-elevated/40 p-6 text-sm text-muted">
+        <div role="alert" className="rounded-2xl border border-border bg-elevated/40 p-6 text-sm text-muted">
           Error: {error}
         </div>
       ) : loading ? (
@@ -285,6 +288,7 @@ function CreateUserModal({
   const [displayName, setDisplayName] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [err, setErr] = useState<string | null>(null);
+  const passwordId = useId();
   // Este modal está siempre "abierto" mientras existe (el padre lo desmonta
   // al cerrar, en vez de ocultarlo con `open`), así que `open: true` es
   // correcto aquí: el hook igual reclama foco inicial y activa Escape/trap
@@ -331,9 +335,10 @@ function CreateUserModal({
           />
         </label>
         <div className="block text-xs font-medium text-muted">
-          Contraseña
+          <label htmlFor={passwordId}>Contraseña</label>
           <div className="relative mt-1">
             <input
+              id={passwordId}
               type={showPwd ? "text" : "password"}
               required
               minLength={8}
@@ -369,7 +374,7 @@ function CreateUserModal({
         </label>
 
         {err ? (
-          <div className="rounded-2xl border border-danger/30 bg-danger-bg px-3.5 py-2.5 text-xs text-danger">
+          <div role="alert" className="rounded-2xl border border-danger/30 bg-danger-bg px-3.5 py-2.5 text-xs text-danger">
             {err}
           </div>
         ) : null}
@@ -411,6 +416,7 @@ function ChangePasswordModal({
   const [showPwd, setShowPwd] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [err, setErr] = useState<string | null>(null);
+  const passwordId = useId();
   const { panelRef, titleId } = useDialog({ open: true, onClose, closeBlocked: submitting });
 
   async function handleSubmit(e: React.FormEvent) {
@@ -440,9 +446,10 @@ function ChangePasswordModal({
       </p>
       <form onSubmit={handleSubmit} className="mt-5 space-y-3.5">
         <div className="block text-xs font-medium text-muted">
-          Nueva contraseña
+          <label htmlFor={passwordId}>Nueva contraseña</label>
           <div className="relative mt-1">
             <input
+              id={passwordId}
               type={showPwd ? "text" : "password"}
               required
               minLength={8}
@@ -470,7 +477,7 @@ function ChangePasswordModal({
         </label>
 
         {err ? (
-          <div className="rounded-2xl border border-danger/30 bg-danger-bg px-3.5 py-2.5 text-xs text-danger">
+          <div role="alert" className="rounded-2xl border border-danger/30 bg-danger-bg px-3.5 py-2.5 text-xs text-danger">
             {err}
           </div>
         ) : null}

@@ -10,7 +10,7 @@ sistema dual de feedback y panel de administración.
 
 | Paquete | Versión | Propósito |
 |---------|---------|-----------|
-| `next` | 16.2.3 | Framework React (App Router) |
+| `next` | 16.4.5 | Framework React (App Router) |
 | `react` / `react-dom` | 19.2.4 | UI library |
 | `geist` | 1.7.2 | Fuente Geist Mono (monoespaciada, auto-hospedada) |
 | `motion` | 12.38.0 | Animaciones (Framer Motion) |
@@ -26,24 +26,31 @@ paquete npm `@fontsource-variable/inter` (licencia OFL, ver
 `app/fonts/Inter-OFL-LICENSE.txt`); Geist Mono viene empaquetada en la
 dependencia `geist` (ver `app/fonts/Geist-OFL-LICENSE.txt`).
 
-Package manager: **bun**. La autenticación es propia (JWT) contra el backend
-FastAPI, ver más abajo.
+Package manager: **Bun 1.3.13**, declarado en el [workspace](../package.json).
+Perfil Node.js: **24.22.3**, fijado en [CI](../../.github/workflows/ci.yml) y
+[Docker](../docker/Dockerfile.frontend).
+La autenticación es propia (JWT) contra el backend FastAPI, ver más abajo.
 
 ---
 
 ## Desarrollo
 
+Desde `rag/frontend/`, utilizando el lock del workspace `rag/bun.lock`:
+
 ```bash
-bun install
+bun install --frozen-lockfile
 bun dev             # http://localhost:3000
 bun run build       # build de producción
 bun run lint        # eslint
 bun run typecheck   # chequeo de tipos (tsc --noEmit)
+bun run test        # pruebas unitarias (Vitest)
 ```
 
-Requiere `frontend/.env.local` con `NEXT_PUBLIC_API_URL` (URL del backend;
-vacío para usar rutas relativas detrás de un proxy como nginx — ver
-`../docs/DESPLIEGUE.md`).
+`NEXT_PUBLIC_API_URL` puede venir del entorno o de configuración local;
+`next.config.ts` también lee `rag/.env`. `frontend/.env.local` es opcional.
+En producción, Next fija esta variable al construir el frontend: usar un valor
+vacío para rutas relativas detrás del proxy. Ver la
+[guía de despliegue](../docs/DESPLIEGUE.md).
 
 ---
 
@@ -124,6 +131,10 @@ El flujo actual:
 | `FeedbackModal` | Formulario de feedback de conversación: 4 dimensiones (tono, longitud, usabilidad, general) + comentario. |
 | `MessageRatingPopover` | Feedback por mensaje: pertinencia + accuracy + respuesta esperada. |
 
+En las respuestas Markdown, las imágenes se muestran sólo como texto alternativo
+(o se omiten si no lo tienen), sin crear imágenes ni precargas automáticas.
+Las citas y los enlaces activados por el usuario conservan su funcionamiento.
+
 ### `components/common/` — Componentes compartidos
 
 | Componente | Responsabilidad |
@@ -157,7 +168,26 @@ El flujo actual:
 
 Máquina de estados del chat. Gestiona el ciclo completo de una conversación.
 
-**Retorna:** `messages`, `input`, `loading`, `isStreaming`, `stage` (`"enriching"` | `"retrieving"` | `"generating"`), `error`, `contextPercent`, `conversationId`, `ratedMessageIds`, `setInput`, `submit`, `resetChat`, `loadConversation`, `rateMessage`.
+**Capacidades y estado:**
+
+- Vista: `messages`, `input`, `loading`, `isStreaming`, `stage`, `stageMessage`,
+  `error` y `contextPercent`.
+- Conversación: `conversationId`, `setInput`, `submit`, `resetChat`,
+  `loadConversation` y `handleConversationDeleted`.
+- Acciones: `cancel`/`canCancel`, `generationStopped`, `generationFinished`,
+  `persistingMessageIds`/`retryPersistMessage` y `ratedMessageIds`/`rateMessage`.
+
+`stage` distingue `"enriching"`, `"retrieving"` y `"generating"`.
+
+`cancel()` detiene solo la generación activa, sin abortar una carga de historial
+ni un guardado. Una generación cancelada no se persiste como respuesta completa.
+`retryPersistMessage()` reintenta guardar una respuesta ya generada cuyo guardado
+falló; no vuelve a consultar el RAG.
+
+Desmontar el chat invalida los envíos pendientes, incluso antes de iniciar SSE.
+Las listas notifican los borrados confirmados mediante `handleConversationDeleted`:
+el hook decide con la vista y carga vigentes, sin cancelar otra selección ni
+restaurar una conversación eliminada si esa carga falla.
 
 **Flujo:**
 1. Genera `thread_id` (UUID) estable por sesión de chat.

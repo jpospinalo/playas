@@ -118,7 +118,9 @@ describe("frontera de sesión antes de recibir storage", () => {
 		await act(async () => { await result.current.chat.submit("Pregunta de A"); });
 		fetchMock.mockClear();
 		setAuth("token-B", B);
-		await act(async () => { await result.current.chat.rateMessage("message-A", { pertinence: 4, accuracy: 4 }); });
+		await act(async () => {
+			await expect(result.current.chat.rateMessage("message-A", { pertinence: 4, accuracy: 4 })).rejects.toThrow();
+		});
 		expect(fetchMock).not.toHaveBeenCalled();
 	});
 });

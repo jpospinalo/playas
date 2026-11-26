@@ -145,6 +145,64 @@ async def test_hydration_checks_owner_and_excludes_current_message(
 
 
 @pytest.mark.anyio
+async def test_cold_hydration_without_current_message_orders_ties_by_id(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    engine = create_async_engine("sqlite+aiosqlite:///:memory:")
+    session_factory = async_sessionmaker(engine, expire_on_commit=False)
+    now = datetime(2026, 1, 1, tzinfo=UTC)
+    rows = [
+        ("a-late", "assistant", "Respuesta posterior", now + timedelta(seconds=1)),
+        ("z-tie", "assistant", "Respuesta Z", now),
+        ("z-early", "user", "Pregunta anterior", now - timedelta(seconds=1)),
+        ("m-tie", "assistant", "Respuesta M", now),
+        ("a-tie", "user", "Pregunta A", now),
+    ]
+    question = "Nueva pregunta"
+    try:
+        async with engine.begin() as connection:
+            await connection.run_sync(Base.metadata.create_all)
+        async with session_factory() as session:
+            session.add_all(
+                [
+                    User(id="user-1", email="u1@example.com", password_hash="hash", role="user"),
+                    Conversation(id="conv-ties", user_id="user-1", thread_id="thread-ties"),
+                    *[
+                        Message(
+                            id=ident,
+                            conversation_id="conv-ties",
+                            role=role,
+                            text=text,
+                            created_at=created_at,
+                        )
+                        for ident, role, text, created_at in rows
+                    ],
+                ]
+            )
+            await session.commit()
+
+        monkeypatch.setattr(database_module, "async_session_factory", session_factory)
+        messages = await _get_initial_messages(
+            _GraphWithoutCheckpoint(),
+            _make_config("user-1", "conv-ties", "thread-ties"),
+            "conv-ties",
+            question,
+            "user-1",
+        )
+
+        assert [(type(message), message.content) for message in messages] == [
+            (HumanMessage, "Pregunta anterior"),
+            (HumanMessage, "Pregunta A"),
+            (AIMessage, "Respuesta M"),
+            (AIMessage, "Respuesta Z"),
+            (AIMessage, "Respuesta posterior"),
+            (HumanMessage, question),
+        ]
+    finally:
+        await engine.dispose()
+
+
+@pytest.mark.anyio
 @pytest.mark.parametrize("endpoint", ["json", "sse"])
 async def test_two_tabs_and_restart_use_the_expected_history(
     monkeypatch: pytest.MonkeyPatch, endpoint: str

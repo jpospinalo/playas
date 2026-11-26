@@ -2,96 +2,131 @@ name: CI
 
 on:
   push:
-    # main es la rama de integración activa. v2 se conserva en el disparador
-    # por compatibilidad, aunque no recibe trabajo activo actualmente.
-    branches: [main, develop, v2]
+    # main conserva producción; corpus valida la entrega antes de integrarla.
+    # develop y v2 conservan sus disparadores existentes.
+    branches: [main, develop, v2, corpus]
   pull_request:
-    branches: [main]
+    branches: [main, corpus]
+
+permissions:
+  contents: read
 
 jobs:
   ingesta-quality:
     name: Ingesta — Lint
     runs-on: ubuntu-latest
+    env:
+      UV_FROZEN: "1"
     defaults:
       run:
         working-directory: ingesta
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          persist-credentials: false
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
         with:
           python-version: "3.12"
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v3
+        uses: astral-sh/setup-uv@1db35dd8eee11c5894872e0b383ae6c406cf738d # v10.4.0
         with:
+          version: "0.13.4"
+          require-checksums: true
+          prune-cache: true
           enable-cache: true
           cache-dependency-glob: "ingesta/uv.lock"
 
+      - name: Check lock freshness
+        run: env -u UV_FROZEN uv lock --check --no-build --no-python-downloads --python 3.12
+
       - name: Install dependencies
-        run: uv sync --group dev
+        run: uv sync --frozen --group dev
 
       - name: Ruff lint
-        run: uv run ruff check ingest/ tests/
+        run: uv run ruff check ingest/ tests/ utils/
 
       - name: Ruff format check
-        run: uv run ruff format --check ingest/ tests/
+        run: uv run ruff format --check ingest/ tests/ utils/
 
   ingesta-test:
     name: Ingesta — Unit Tests
     runs-on: ubuntu-latest
     needs: ingesta-quality
+    env:
+      UV_FROZEN: "1"
     defaults:
       run:
         working-directory: ingesta
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          persist-credentials: false
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
         with:
           python-version: "3.12"
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v3
+        uses: astral-sh/setup-uv@1db35dd8eee11c5894872e0b383ae6c406cf738d # v10.4.0
         with:
+          version: "0.13.4"
+          require-checksums: true
+          prune-cache: true
           enable-cache: true
           cache-dependency-glob: "ingesta/uv.lock"
 
+      - name: Check lock freshness
+        run: env -u UV_FROZEN uv lock --check --no-build --no-python-downloads --python 3.12
+
       - name: Install dependencies
-        run: uv sync --group dev
+        run: uv sync --frozen --group dev
 
       - name: Run unit tests
         run: uv run pytest tests/unit/ --cov=ingest --cov-report=xml --cov-report=term-missing
 
+      - name: Run offline section contract
+        run: uv run pytest tests/integration/test_section_chunk_contract.py -m integration
+
       - name: Upload coverage
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v6.0.2
         with:
-          file: ingesta/coverage.xml
+          files: ingesta/coverage.xml
           flags: ingesta
           fail_ci_if_error: false
 
   rag-quality:
     name: RAG — Lint
     runs-on: ubuntu-latest
+    env:
+      UV_FROZEN: "1"
     defaults:
       run:
         working-directory: rag
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          persist-credentials: false
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
         with:
           python-version: "3.12"
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v3
+        uses: astral-sh/setup-uv@1db35dd8eee11c5894872e0b383ae6c406cf738d # v10.4.0
         with:
-          version: "0.12.3"
+          version: "0.13.4"
+          require-checksums: true
+          prune-cache: true
           enable-cache: true
           cache-dependency-glob: "rag/uv.lock"
+
+      - name: Check lock freshness
+        run: env -u UV_FROZEN uv lock --check --no-build --no-python-downloads --python 3.12
 
       - name: Install dependencies
         run: uv sync --frozen --all-packages --group dev
@@ -102,33 +137,42 @@ jobs:
       - name: Ruff format check
         run: uv run ruff format --check backend/rag/ tests/ evaluation/ scripts/ utils/
 
-      # Mypy de este job comprueba backend/rag/.
+      # Mypy de este job comprueba backend/rag/ y el migrador de feedback.
       # Mypy global de ingesta se verifica por separado; sus imports de
       # boto3/botocore carecen de stubs en el entorno de ingesta.
       - name: Mypy
-        run: uv run mypy backend/rag/
+        run: uv run mypy backend/rag/ scripts/migrate_message_feedback_unique.py
 
   rag-test:
     name: RAG — Unit Tests
     runs-on: ubuntu-latest
     needs: rag-quality
+    env:
+      UV_FROZEN: "1"
     defaults:
       run:
         working-directory: rag
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          persist-credentials: false
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
         with:
           python-version: "3.12"
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v3
+        uses: astral-sh/setup-uv@1db35dd8eee11c5894872e0b383ae6c406cf738d # v10.4.0
         with:
-          version: "0.12.3"
+          version: "0.13.4"
+          require-checksums: true
+          prune-cache: true
           enable-cache: true
           cache-dependency-glob: "rag/uv.lock"
+
+      - name: Check lock freshness
+        run: env -u UV_FROZEN uv lock --check --no-build --no-python-downloads --python 3.12
 
       - name: Install dependencies
         run: uv sync --frozen --all-packages --group dev
@@ -137,9 +181,9 @@ jobs:
         run: uv run pytest tests/unit/ --cov=rag --cov-report=xml --cov-report=term-missing
 
       - name: Upload coverage
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v6.0.2
         with:
-          file: rag/coverage.xml
+          files: rag/coverage.xml
           flags: rag
           fail_ci_if_error: false
 
@@ -150,10 +194,18 @@ jobs:
       run:
         working-directory: rag/frontend
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: "24.22.3"
+          package-manager-cache: false
 
       - name: Install bun
-        uses: oven-sh/setup-bun@v2
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
         with:
           bun-version: "1.3.13"
 

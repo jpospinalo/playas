@@ -19,12 +19,7 @@ import pytest
 from langchain_core.documents import Document
 
 from rag.core import retriever as retriever_module
-from rag.core.retriever import (
-    BM25Retriever,
-    _get_bm25_base,
-    _tokenize_bm25,
-    bm25_index_is_empty,
-)
+from rag.core.retriever import BM25Retriever, _get_bm25_base, bm25_index_is_empty
 
 
 @pytest.fixture(autouse=True)
@@ -149,8 +144,8 @@ def test_nonempty_corpus_augments_text_with_keywords_and_summary(
 
     _get_bm25_base()
 
-    assert captured_corpus[0] == _tokenize_bm25("concesión de playa dominio marítimo terrestre")
-    assert captured_corpus[1] == _tokenize_bm25("otro fragmento sin relación")
+    assert captured_corpus[0] == "concesión de playa dominio marítimo terrestre".split()
+    assert captured_corpus[1] == "otro fragmento sin relación".split()
 
 
 # ---------------------------------------------------------------------------
@@ -174,9 +169,7 @@ def test_bm25_index_is_empty_true_after_building_with_empty_corpus(
 def test_bm25_index_is_empty_false_after_building_with_real_corpus(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    # Texto con contenido léxico real: "algo" es palabra vacía para el
-    # tokenizador español y dejaría el corpus sin tokens.
-    docs = [Document(page_content="playa", metadata={"id": "1"})]
+    docs = [Document(page_content="algo", metadata={"id": "1"})]
     monkeypatch.setattr(retriever_module, "load_all_docs_from_chroma", lambda: docs)
     _get_bm25_base()
     assert bm25_index_is_empty() is False

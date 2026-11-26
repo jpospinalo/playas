@@ -6,13 +6,16 @@ export const SIDEBAR_TRANSITION = {
 } as const;
 
 export function formatConversationDate(date: Date): string {
+  const timestamp = date.getTime();
+  if (!Number.isFinite(timestamp)) return "Fecha no disponible";
+
   const now = new Date();
-  const diff = now.getTime() - date.getTime();
+  const diff = now.getTime() - timestamp;
   const days = Math.floor(diff / 86_400_000);
 
   if (days === 0) return "Hoy";
   if (days === 1) return "Ayer";
-  if (days < 7) return `Hace ${days} días`;
+  if (days >= 2 && days < 7) return `Hace ${days} días`;
 
   return date.toLocaleDateString("es-CO", {
     day: "numeric",

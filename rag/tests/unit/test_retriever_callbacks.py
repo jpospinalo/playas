@@ -117,9 +117,7 @@ def build(kind: str, *, fail: bool = False):
             HybridEnsembleRetriever(
                 name="hybrid-root", retrievers=[inner, vector], weights=[0.3, 0.7], max_results=2
             ),
-            # RRF pone b primero, pero la jerarquía normativa
-            # (``normativa_primero``) adelanta la norma ``a`` a la sentencia.
-            [a, b],
+            [b, a],
             ["inner", "vector"],
         )
     if kind == "chroma_sync":
@@ -209,8 +207,7 @@ async def test_nested_filter_preserves_its_own_parent_not_the_ensemble_ancestor(
         result = retriever.invoke("Synthetic query", config=config(recorder))
     else:
         result = await retriever.ainvoke("Synthetic query", config=config(recorder))
-    # La norma ``a`` sigue primero por la jerarquía normativa.
-    assert result == expected
+    assert result == list(reversed(expected))
     starts = {e["name"]: e for e in recorder.events if e["event"] == "start"}
     assert set(starts) == {"hybrid-root", "filtered-child", "inner", "vector"}
     assert starts["hybrid-root"]["parent_run_id"] is None
@@ -305,39 +302,3 @@ async def test_native_async_chroma_port_does_not_invoke_the_sync_fallback(monkey
     starts = [e for e in recorder.events if e["event"] == "start"]
     assert len(starts) == 1 and starts[0]["name"] == "chroma-root"
     retriever.query_embedder.assert_awaited_once_with("Synthetic query")
-
-
-@pytest.mark.anyio
-async def test_multiquery_fusion_hangs_every_search_from_one_hybrid_run(recorder):
-    retriever, expected, _ = build("hybrid")
-    result = await retriever.afuse_queries(
-        ["Synthetic query", "Reformulated query", "Synthetic query", " "],
-        config=config(recorder),
-    )
-    assert result == expected and all(a is b for a, b in zip(result, expected, strict=True))
-    starts = [e for e in recorder.events if e["event"] == "start"]
-    roots = [e for e in starts if e["parent_run_id"] is None]
-    assert len(roots) == 1 and roots[0]["name"] == "hybrid-root"
-    children = [e for e in starts if e["parent_run_id"] == roots[0]["run_id"]]
-    # Dos consultas distintas (el duplicado y la vacía se descartan) × dos
-    # sub-recuperadores, todas colgadas de la misma ejecución raíz.
-    assert sorted(e["name"] for e in children) == ["inner", "inner", "vector", "vector"]
-    assert all("fixture-trace" in e["tags"] and e["marker"] == "safe-fixture" for e in children)
-    ends = {e["run_id"]: e for e in recorder.events if e["event"] == "end"}
-    assert ends[roots[0]["run_id"]]["documents"] == len(expected)
-    assert all(e["run_id"] in ends for e in children)
-
-
-@pytest.mark.anyio
-async def test_multiquery_fusion_child_failure_reaches_the_same_callback_tree(recorder):
-    retriever, _, _ = build("hybrid", fail=True)
-    with pytest.raises(ValueError, match="Synthetic retriever failure"):
-        await retriever.afuse_queries(["Synthetic query"], config=config(recorder))
-    assert_children(recorder, ["inner"], error=True)
-
-
-@pytest.mark.anyio
-async def test_multiquery_fusion_without_queries_opens_no_run(recorder):
-    retriever, _, _ = build("hybrid")
-    assert await retriever.afuse_queries(["", "  "], config=config(recorder)) == []
-    assert recorder.events == []

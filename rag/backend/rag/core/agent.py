@@ -31,6 +31,7 @@ from ..config import (
     LEGAL_RESOLUTION_PROVENANCE_SHA256,
 )
 from .chroma_query import ChromaQuery
+from .domain_scope import ClarificationReason, clarification_reason
 from .embeddings import QueryEmbedder
 from .legal_resolution import (
     DocketEvidence,
@@ -53,6 +54,7 @@ from .observability import (
     log_full_context_size,
     stage_timer,
 )
+from .plan_attribution_context import requested_act, select_plan_attribution_context
 from .prompts import AGENT_FALLBACK_HUMAN_TEMPLATE, AGENT_SYSTEM
 from .query_enricher import (
     EnrichedQuery,
@@ -60,7 +62,8 @@ from .query_enricher import (
     _normalize_expanded_query,
     enrich_query_async,
 )
-from .retriever import HybridEnsembleRetriever, bm25_documents, get_ensemble_retriever
+from .retriever import CandidateSelector, bm25_documents, get_ensemble_retriever
+from .tools import CITATION_RE as _CITATION_RE
 from .tools import build_context_block
 
 
@@ -74,6 +77,7 @@ class AgentState(TypedDict):
     doc_types: NotRequired[list[str] | None]
     requested_doc_types: NotRequired[list[str] | None]
     clarify_providencia: NotRequired[bool]
+    clarification_reason: NotRequired[ClarificationReason | None]
     verified_docket: NotRequired[str | None]
     verified_instance: NotRequired[str | None]
     documentary_answer: NotRequired[str | None]
@@ -91,88 +95,44 @@ PROMPT_NO_SYSTEM = ChatPromptTemplate.from_messages(
     [("human", "INSTRUCCIONES:\n{instructions}\n\n" + AGENT_FALLBACK_HUMAN_TEMPLATE)]
 )
 
-_CITATION_RE = re.compile(r"\[doc(\d+)\]", re.IGNORECASE)
 _MAX_ANALYSIS_HISTORY_CHARS = 4000
-
-# Respuestas sin recuperación. Las cuatro guían al usuario en vez de limitarse
-# a describir el ámbito en abstracto: quien no sabe cómo preguntar no sale de
-# una descripción de alcance, pero sí sale de un ejemplo concreto y de los tres
-# datos que de verdad hacen falta para buscar en el corpus. Los ejemplos tienen
-# la forma de las consultas reales del ground truth (lugar + actividad +
-# autoridad), y los lugares nombrados existen en el corpus.
-
-_EJEMPLOS_CONSULTA = (
-    "- «Un hotel con concesión cerró el paso a la playa frente a mi casa en El Rodadero, "
-    "¿puede hacerlo?»\n"
-    "- «¿Qué exige DIMAR para operar motos acuáticas en una playa de Santa Marta?»\n"
-    "- «La Alcaldía autorizó un concierto en la playa, ¿qué requisitos debía cumplir?»"
-)
-
-_DATOS_QUE_FALTAN = (
-    "- **Dónde**: la playa, el municipio o el distrito (El Rodadero, Taganga, Cartagena, "
-    "Turbo…).\n"
-    "- **Qué actividad o trámite**: acceso, ocupación, construcción, concesión, permiso, "
-    "sanción, deslinde, evento.\n"
-    "- **Quién intervino**: DIMAR, la alcaldía, la autoridad ambiental, un juez."
-)
 
 _CONVERSATION_RESPONSE = (
     "Puedo responder consultas sobre jurisprudencia y normatividad colombiana relacionada con "
     "playas, zonas costeras y aguas marítimas, incluidos derechos, usos permitidos o prohibidos, "
     "pesca, turismo, permisos, concesiones, sanciones, autoridades y procedimientos vinculados "
-    "con esos espacios.\n\n"
-    "Por ejemplo:\n" + _EJEMPLOS_CONSULTA + "\n\n"
-    "Cuéntame tu caso con el lugar y la actividad y busco la jurisprudencia y la normativa "
-    "que apliquen."
+    "con esos espacios."
 )
 _OUT_OF_SCOPE_RESPONSE = (
     "La consulta está fuera del ámbito jurídico y normativo relacionado con playas, zonas "
-    "costeras, aguas marítimas y bienes de uso público en Colombia.\n\n"
-    "Si tu caso sí tiene un lado costero, planteámelo así:\n" + _EJEMPLOS_CONSULTA
+    "costeras, aguas marítimas y bienes de uso público en Colombia. Puedo responder sobre pesca, "
+    "turismo, derechos, permisos y procedimientos cuando estén vinculados con esos espacios."
 )
 _CLARIFICATION_RESPONSE = (
-    "Tu consulta puede estar dentro del ámbito, pero necesito un poco más de contexto para "
-    "buscar en las normas y sentencias que apliquen sin asumir datos.\n\n"
-    "Si te refieres a un plan, norma, permiso o actuación concreta, precisa cuál. Si no, "
-    "dime cualquiera de estos tres y sigo:\n" + _DATOS_QUE_FALTAN + "\n\n"
-    "Así se ven las consultas que puedo responder:\n" + _EJEMPLOS_CONSULTA
+    "Para responder sin asumir datos, precisa el plan, norma, permiso, autoridad o actuación "
+    "que quieres revisar. Si su conexión con playas, zonas costeras, aguas marítimas o bienes "
+    "de uso público no está indicada, descríbela también."
 )
 _PROVIDENCIA_CLARIFICATION_RESPONSE = (
     "¿Puedes indicar el radicado completo, la instancia o la providencia concreta? "
     "Con el número parcial necesito ese dato para identificar la decisión."
 )
+_UNVERIFIED_INSTANCE_RESPONSE = (
+    "La documentación disponible no permite acreditar de forma inequívoca la instancia solicitada. "
+    "Por eso no puedo atribuir órdenes a esa instancia. Comparte el encabezado o el texto de la "
+    "providencia que identifique su instancia para poder verificarla."
+)
 _NO_EVIDENCE_RESPONSE = (
     "**Situación:** evidencia insuficiente.\n\n"
     "**Motivo:** no se recuperaron fragmentos del corpus que permitan sustentar una respuesta "
     "jurídica verificable.\n\n"
-    "**Cómo reformular:** añade cualquiera de estos tres datos y vuelvo a buscar:\n"
-    + _DATOS_QUE_FALTAN
-    + "\n\nTambién ayuda nombrar la norma, el expediente o el magistrado ponente si los conoces."
+    "**Cómo reformular:** precisa la actividad, autoridad, norma, procedimiento, lugar o derecho "
+    "relacionado con la playa o zona costera."
 )
 _INVALID_CITATIONS_RESPONSE = (
     "**Situación:** no fue posible producir una respuesta verificable.\n\n"
     "**Motivo:** la respuesta generada no quedó respaldada por citas válidas de los fragmentos "
     "recuperados. Para evitar presentar una conclusión jurídica sin fuente, no se muestra ese contenido."
-)
-
-
-_SALUDOS = (
-    "hola",
-    "buenos días",
-    "buenos dias",
-    "buenas tardes",
-    "buenas noches",
-    "buen día",
-    "buen dia",
-    "buenas",
-)
-_CORTESIAS = frozenset(
-    "cómo como estás estas está esta qué que tal vas va todo bien buenas buenos días dias tardes".split()
-)
-_GREETING_RESPONSE = (
-    "Hola. Cuéntame tu caso y busco las normas y sentencias que apliquen.\n\n"
-    "Me ayuda saber:\n" + _DATOS_QUE_FALTAN + "\n\n"
-    "Por ejemplo:\n" + _EJEMPLOS_CONSULTA
 )
 
 
@@ -183,33 +143,24 @@ def _conversation_response(question: str) -> str:
         return "Con gusto."
     if any(term in normalized for term in ("adiós", "adios", "hasta luego")):
         return "Hasta luego."
-    for saludo in _SALUDOS:
-        if normalized.startswith(saludo):
-            # Un saludo seguido de un asunto («hola, tengo un problema con la
-            # playa») ya es una consulta: se pide el dato que falta en vez de
-            # obligar a repetirla. Un saludo solo, o con cortesías («hola,
-            # ¿cómo estás?»), recibe la guía con ejemplos.
-            resto = [w for w in normalized[len(saludo) :].split() if w not in _CORTESIAS]
-            return _CLARIFICATION_RESPONSE if len(resto) >= 2 else _GREETING_RESPONSE
+    if normalized.startswith(("hola", "buenos días", "buenas tardes", "buenas noches")):
+        return "Hola. ¿Cuál es tu consulta?"
     return _CONVERSATION_RESPONSE
 
 
-def _retrieval_queries(state: AgentState) -> list[str]:
-    """Consultas a recuperar por separado: original, autosuficiente y enriquecida.
-
-    Conserva el orden, recorta espacios, descarta vacías y deduplica. Si la
-    pregunta original queda vacía, no se inventa ninguna consulta.
-    """
-    question = (state["question"] or "").strip()
-    if not question:
-        return []
-
-    queries = [question]
-    for candidate in (state.get("standalone_question"), state.get("enriched_query")):
+def _compose_retrieval_query(state: AgentState) -> str:
+    """Conserva la consulta original y añade reformulaciones sin duplicarlas."""
+    candidates = (
+        state["question"],
+        state.get("standalone_question"),
+        state.get("enriched_query"),
+    )
+    parts: list[str] = []
+    for candidate in candidates:
         value = (candidate or "").strip()
-        if value and value not in queries:
-            queries.append(value)
-    return queries
+        if value and value not in parts:
+            parts.append(value)
+    return "\n".join(parts)
 
 
 def _compose_generation_question(state: AgentState) -> str:
@@ -279,37 +230,6 @@ def extract_answer_from_state(state: dict) -> str:
     return ""
 
 
-_SOLO_CITAS_RE = re.compile(r"^\s*(?:\[doc\d+\]\s*)+$", re.IGNORECASE)
-_TITULO_RE = re.compile(r"^\s*\*\*[^*\n]+\*\*\s*$")
-
-
-def _tidy_answer(answer: str) -> str:
-    """Limpia defectos de formato de la respuesta generada sin tocar su contenido.
-
-    - Quita las líneas que solo contienen marcadores ``[docN]``: no respaldan
-      ninguna frase (algunos modelos «etiquetan» así una sección).
-    - Quita los títulos de sección en negrita repetidos; el contenido que
-      seguía al duplicado se conserva bajo el primero.
-    - Colapsa las líneas en blanco consecutivas que dejan esas supresiones.
-    """
-    lineas: list[str] = []
-    titulos: set[str] = set()
-    for linea in answer.splitlines():
-        if _SOLO_CITAS_RE.match(linea):
-            continue
-        if _TITULO_RE.match(linea):
-            clave = linea.strip().casefold()
-            if clave in titulos:
-                continue
-            titulos.add(clave)
-        if not linea.strip() and (not lineas or not lineas[-1].strip()):
-            continue
-        lineas.append(linea)
-    while lineas and not lineas[-1].strip():
-        lineas.pop()
-    return "\n".join(lineas)
-
-
 def _validate_citations(answer: str, doc_count: int) -> bool:
     """Comprueba que una respuesta jurídica cite al menos un documento existente."""
     references = [int(value) for value in _CITATION_RE.findall(answer)]
@@ -331,12 +251,22 @@ async def enrich_query_node(
     *,
     capture_filter: bool = False,
     verified_documents: tuple[Document, ...] | None = None,
+    resolution_index: ResolutionIndex | None = None,
 ) -> dict:
     _emit_status("enriching", "Analizando el alcance y contexto de tu pregunta…")
     requested_doc_types = state.get("doc_types")
     with stage_timer("enrich_query") as fields:
         history_context = _history_for_analysis(state["messages"], state["question"])
         analysis: EnrichedQuery = await enrich_query_async(state["question"], history_context)
+        reason = clarification_reason(state["question"], history_context)
+        documentary_admission = (
+            capture_filter
+            and resolution_index is not None
+            and analysis.route in {"out_of_scope", "needs_clarification"}
+            and reason is None
+            and _permits_jurisprudence(requested_doc_types)
+            and resolution_index.admits_documentary_question(state["question"])
+        )
         clarify_providencia = (
             capture_filter
             and analysis.route in {"in_scope", "needs_clarification"}
@@ -348,6 +278,7 @@ async def enrich_query_node(
             capture_filter
             and verified_documents is not None
             and not clarify_providencia
+            and reason is None
             and analysis.route in {"needs_clarification", "in_scope"}
             and _is_first_question(state)
         ):
@@ -359,9 +290,9 @@ async def enrich_query_node(
             )
         route: QueryRoute = (
             "in_scope"
-            if plan_context is not None
+            if plan_context is not None or documentary_admission
             else "needs_clarification"
-            if clarify_providencia
+            if clarify_providencia or reason is not None
             else analysis.route
         )
         # `route` es un enum cerrado (QueryRoute), no texto libre de la
@@ -369,7 +300,11 @@ async def enrich_query_node(
         fields["route"] = route
 
     effective_doc_types = requested_doc_types or (
-        ["normativa"] if plan_context is not None else analysis.doc_types
+        ["jurisprudencia"]
+        if documentary_admission
+        else ["normativa"]
+        if plan_context is not None
+        else analysis.doc_types
     )
     if route != "in_scope":
         effective_doc_types = []
@@ -377,13 +312,14 @@ async def enrich_query_node(
     update: dict[str, Any] = {
         "query_route": route,
         "standalone_question": state["question"]
-        if plan_context is not None
+        if plan_context is not None or documentary_admission
         else analysis.standalone_question,
         "enriched_query": _normalize_expanded_query(state["question"])
-        if plan_context is not None
+        if plan_context is not None or documentary_admission
         else analysis.expanded_query,
         "doc_types": effective_doc_types,
         "sources": [],
+        "clarification_reason": reason,
     }
     if capture_filter:
         update.update(
@@ -402,6 +338,53 @@ def route_after_analysis(state: AgentState) -> str:
 
 def _permits_jurisprudence(requested: list[str] | None) -> bool:
     return requested is None or "jurisprudencia" in requested
+
+
+def _plan_attribution_selector(
+    state: AgentState, verified_documents: tuple[Document, ...]
+) -> CandidateSelector | None:
+    """Bind a pure selector locally after the caller verifies the profile gates."""
+    for filters in (state.get("requested_doc_types"), state.get("doc_types")):
+        if filters is not None and (
+            not isinstance(filters, list)
+            or "normativa" not in filters
+            or any(value not in ("normativa", "jurisprudencia") for value in filters)
+        ):
+            return None
+    question = state["question"]
+    standalone = state.get("standalone_question") or ""
+    action = requested_act(question)
+    if action is None or requested_act(standalone) != action:
+        return None
+    messages = list(state.get("messages") or [])
+    if messages and isinstance(messages[-1], HumanMessage) and messages[-1].content == question:
+        messages.pop()
+    history = []
+    for message in messages:
+        if not isinstance(message, (HumanMessage, AIMessage)) or not isinstance(
+            message.content, str
+        ):
+            return None
+        history.append(
+            {
+                "role": "user" if isinstance(message, HumanMessage) else "assistant",
+                "content": message.content,
+            }
+        )
+
+    def choose(current: list[Document], candidates: tuple[Document, ...]) -> list[Document]:
+        return select_plan_attribution_context(
+            question=question,
+            history=history,
+            standalone_question=standalone,
+            original_doc_types=state.get("requested_doc_types"),
+            current_selected=current,
+            candidate_pool=candidates,
+            verified_documents=verified_documents,
+            k=4,
+        )
+
+    return choose
 
 
 async def _resolve_documentary(state: AgentState, index: ResolutionIndex) -> Resolution | None:
@@ -426,6 +409,26 @@ async def respond_without_retrieval_node(
     route = state.get("query_route")
     if route == "needs_clarification" and state.get("clarify_providencia"):
         return {"messages": [AIMessage(content=_PROVIDENCIA_CLARIFICATION_RESPONSE)], "sources": []}
+    if route == "needs_clarification" and state.get("clarification_reason") == "start_date":
+        return {
+            "messages": [
+                AIMessage(
+                    content="¿Puedes indicar la fecha del requerimiento o de su notificación "
+                    "que mencionas? Sin ese dato no puedo señalar un día concreto de vencimiento."
+                )
+            ],
+            "sources": [],
+        }
+    if route == "needs_clarification" and state.get("clarification_reason") == "judicial_reference":
+        return {
+            "messages": [
+                AIMessage(
+                    content="¿Puedes identificar la providencia con el radicado o con sus partes "
+                    "y fecha? Necesito distinguir el fallo para buscar la orden y su plazo."
+                )
+            ],
+            "sources": [],
+        }
     if (
         route in {"out_of_scope", "needs_clarification"}
         and resolution_index is not None
@@ -440,6 +443,8 @@ async def respond_without_retrieval_node(
                 "query_route": "in_scope",
                 "doc_types": ["jurisprudencia"],
             }
+        if resolution_index.instance_unverified(state["question"]):
+            return {"messages": [AIMessage(content=_UNVERIFIED_INSTANCE_RESPONSE)], "sources": []}
 
     if route == "conversation":
         answer = _conversation_response(state["question"])
@@ -467,6 +472,8 @@ async def retrieve_forced_node(
                 return {"sources": []}
             evidence = resolution_index.docket_evidence(question)
             if evidence is None:
+                if resolution_index.instance_unverified(question):
+                    return {"sources": [], "documentary_answer": _UNVERIFIED_INSTANCE_RESPONSE}
                 return {"sources": []}
             resolution = await _resolve_documentary(state, resolution_index)
             if resolution is not None:
@@ -478,6 +485,7 @@ async def retrieve_forced_node(
             return {"sources": []}
     _emit_status("retrieving", "Buscando evidencia en jurisprudencia y normatividad…")
     with stage_timer("retrieve_forced") as fields:
+        query = _compose_retrieval_query(state)
         doc_types = state.get("doc_types") or None
         k = min(max(int(state.get("k", 4)), 1), 8)
         k_candidates = min(max(int(state.get("k_candidates", 8)), k), 20)
@@ -519,25 +527,33 @@ async def retrieve_forced_node(
                 k_candidates=k_candidates,
                 doc_types=["jurisprudencia"] if evidence else doc_types,
             )
-            # Una sola capa de concurrencia: ni afuse_queries() ni ainvoke() se
-            # envuelven en asyncio.to_thread(retriever.invoke, ...).
-            queries = _retrieval_queries(state)
-            if evidence:
-                # Radicado verificado: una consulta compuesta basta para traer los
-                # fragmentos de esa sentencia; evidence filtra los verificados.
-                # Aquí se buscan VARIOS fragmentos de una misma sentencia, así que
-                # se quita el tope de un fragmento por sentencia (sobre una copia).
-                if isinstance(retriever, HybridEnsembleRetriever):
-                    retriever = retriever.model_copy(update={"fragmentos_por_sentencia": None})
-                docs = await retriever.ainvoke("\n".join(queries))
-                selected, documentary_answer = evidence.select_for_question(
-                    state["question"], docs, k
-                )
-            else:
-                # Resto de preguntas: original, autosuficiente y enriquecida se
-                # recuperan por separado y se fusionan (afuse_queries).
-                docs = await retriever.afuse_queries(queries)
-                selected, documentary_answer = docs[:k], None
+            candidate_selector = None
+            if (
+                verify_docket
+                and resolution_index is not None
+                and resolution_index.snapshot_verified
+                and verified_documents is not None
+                and evidence is None
+                and state.get("verified_docket") is None
+                and state.get("verified_instance") is None
+                and not state.get("clarify_providencia")
+                and "requested_doc_types" in state
+                and state.get("query_route") == "in_scope"
+                and k == 4
+                and not has_docket_intent(state["question"])
+                and not requires_operative_proof(state["question"])
+            ):
+                candidate_selector = _plan_attribution_selector(state, verified_documents)
+            docs = (
+                await retriever.ainvoke(query, candidate_selector=candidate_selector)
+                if candidate_selector is not None
+                else await retriever.ainvoke(query)
+            )
+            selected, documentary_answer = (
+                evidence.select_for_question(state["question"], docs, k)
+                if evidence
+                else (docs[:k], None)
+            )
         else:
             documentary_answer = None
         # Conteo, no contenido: cuántos documentos, no cuáles ni su texto.
@@ -608,7 +624,7 @@ async def generate_node(state: AgentState) -> dict:
             log_context_budget_warning(
                 chars=full_context_chars, doc_count=len(docs), stage="generate"
             )
-        answer = _tidy_answer(str(await chain.ainvoke(prompt_value)).strip())
+        answer = str(await chain.ainvoke(prompt_value)).strip()
 
         if docket and instance and not matches_answer_attribution(answer, docket, instance):
             return {"messages": [AIMessage(content=_INVALID_CITATIONS_RESPONSE)], "sources": []}
@@ -656,6 +672,7 @@ def build_graph(
                 enrich_query_node,
                 capture_filter=verify_docket,
                 verified_documents=verified_documents,
+                resolution_index=resolution_index,
             ),
         )
         .add_node(

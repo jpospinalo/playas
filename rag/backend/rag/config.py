@@ -41,7 +41,6 @@ comportamiento histórico de python-dotenv cuando no encuentra nada; las
 variables ya presentes en el proceso (Docker, ECS, CI) siguen funcionando.
 """
 
-import math
 import os
 from pathlib import Path
 from typing import Literal, cast
@@ -145,39 +144,6 @@ CHROMA_QUERY_TIMEOUT_SECONDS: float = float(os.getenv("RAG_CHROMA_QUERY_TIMEOUT_
 # Activación optativa con un sidecar local autenticado.
 LEGAL_RESOLUTION_PROVENANCE_PATH: str | None = _env("LEGAL_RESOLUTION_PROVENANCE_PATH")
 LEGAL_RESOLUTION_PROVENANCE_SHA256: str | None = _env("LEGAL_RESOLUTION_PROVENANCE_SHA256")
-
-# ── Recuperación híbrida ───────────────────────────────────────────────────
-# Constantes de fusión y de selección del top-k de ``core/retriever.py``. Los
-# valores por defecto son los medidos sobre el ground truth v0.2 (la medición
-# de cada uno está junto a su uso en el retriever). Se leen del entorno para
-# poder re-medirlas tras una actualización del corpus con las métricas sin
-# LLM (``make eval-sin-llm``) sin tocar código. En los topes, 0 = sin tope.
-
-
-def _parse_number(env_var: str, default: str, kind: type[int] | type[float]) -> float:
-    """Número no negativo y finito de ``env_var`` (vacía = ``default``).
-
-    Un valor mal escrito falla nombrando la variable en vez de caer en
-    silencio al valor por defecto, igual que ``_parse_mode``.
-    """
-    raw = _env(env_var, default=default)
-    try:
-        value = kind(cast(str, raw).strip())
-    except ValueError:
-        raise ValueError(f"{env_var} debe ser un número {kind.__name__}: {raw!r}.") from None
-    if not math.isfinite(value) or value < 0:
-        raise ValueError(f"{env_var} debe ser un número finito y no negativo: {raw!r}.")
-    return value
-
-
-RETRIEVAL_RRF_C: int = int(_parse_number("RAG_RRF_C", "2", int))
-RETRIEVAL_BM25_WEIGHT: float = _parse_number("RAG_BM25_WEIGHT", "0.8", float)
-RETRIEVAL_VECTOR_WEIGHT: float = _parse_number("RAG_VECTOR_WEIGHT", "0.2", float)
-RETRIEVAL_CUPOS_NORMATIVA: int = int(_parse_number("RAG_CUPOS_NORMATIVA", "1", int))
-RETRIEVAL_FRAGMENTOS_POR_SENTENCIA: int = int(
-    _parse_number("RAG_FRAGMENTOS_POR_SENTENCIA", "1", int)
-)
-RETRIEVAL_FRAGMENTOS_POR_NORMA: int = int(_parse_number("RAG_FRAGMENTOS_POR_NORMA", "1", int))
 
 # ── Ollama ─────────────────────────────────────────────────────────────────
 # OLLAMA_BASE_URL/OLLAMA_EMBEDDING_MODEL tienen precedencia sobre los alias
@@ -349,27 +315,27 @@ if PASSWORD_HASH_MAX_CONCURRENT < 1:
 # El ALB y Nginx delante de este servicio tienen 300s de timeout de
 # INACTIVIDAD (sin bytes nuevos en la conexión) — no un límite total de
 # duración. Los defaults de aquí son deliberadamente conservadores
-# (280/285s), pensados solo para producir un corte CONTROLADO (504 JSON /
-# evento SSE de error) unos segundos ANTES de que el proxy externo mate la
-# conexión sin avisar — no para acortar consultas legítimas. Valores
+# (280/285s), pensados para producir un corte CONTROLADO del trabajo
+# (504 JSON / evento SSE de error), no para acortar consultas legítimas.
+# El reloj empieza tras adquirir lock/plaza; no acota autenticación, espera
+# del lock, cierre SQL o envío ASGI ni garantiza el primer byte visible. Valores
 # menores (90, 60, 240s) se descartaron como defaults iniciales: quedan
 # como candidatos para una calibración posterior con datos reales de
 # producción. Usar valores pequeños solo en pruebas, nunca como default de
 # despliegue.
 
 # /api/query (JSON, sin datos intermedios): timeout TOTAL de
-# `graph.ainvoke(...)` (enrich → retrieve → generate). Al vencer, el
-# endpoint responde 504 de forma controlada en vez de dejar que el proxy
-# corte la conexión sin explicación en el cliente.
+# hidratación + `graph.ainvoke(...)` (enrich → retrieve → generate), dentro
+# de un mismo presupuesto. Al vencer, el endpoint termina con 504 tras
+# completar la limpieza; un cierre lento puede demorar esa respuesta.
 QUERY_TOTAL_TIMEOUT_SECONDS: float = float(os.getenv("RAG_QUERY_TOTAL_TIMEOUT_SECONDS", "280"))
 
 # /api/query/stream (SSE): deliberadamente SIN timeout total — los eventos
 # intermedios (`status`) mantienen viva la conexión más allá de 280s de
 # forma legítima; imponer un techo total cortaría consultas SSE largas pero
-# sanas. En su lugar, timeout POR ETAPA: si el grafo no produce NINGÚN
-# evento nuevo (ni `status` ni una actualización de estado) durante este
-# tiempo, se asume una etapa colgada y se corta de forma controlada — antes
-# de que esa inactividad llegue a los 300s del proxy externo.
+# sanas. La preparación y el primer evento del grafo comparten un deadline.
+# Después se limita la espera ENTRE eventos del grafo, incluidos los values
+# internos que no se envían al cliente. No es un plazo de frames visibles.
 QUERY_STREAM_STAGE_TIMEOUT_SECONDS: float = float(
     os.getenv("RAG_QUERY_STREAM_STAGE_TIMEOUT_SECONDS", "285")
 )

@@ -62,6 +62,8 @@ export interface UseChatReturn {
 	setInput: (value: string) => void;
 	submit: (question: string) => Promise<void>;
 	resetChat: () => void;
+	/** Retira una conversación eliminada sin cancelar otra selección vigente. */
+	handleConversationDeleted: (conversationId: string) => boolean;
 	loadConversation: (conv: Conversation) => Promise<void>;
 	/** A5 — reintenta guardar una respuesta con `persistenceStatus: "failed"`. */
 	retryPersistMessage: (messageId: string) => Promise<void>;
@@ -203,11 +205,14 @@ export function useChat({ onConversationChanged }: UseChatOptions = {}): UseChat
 	// usuario selecciona otra conversación antes de que la anterior termine
 	// de cargar, la que llegue tarde nunca debe pisar la vigente.
 	const loadConversationAbortRef = useRef<AbortController | null>(null);
+	const loadingConversationIdRef = useRef<string | null>(null);
 
 	useEffect(() => {
 		return () => {
+			chatRunIdRef.current += 1;
 			abortControllerRef.current?.abort();
 			loadConversationAbortRef.current?.abort();
+			loadingConversationIdRef.current = null;
 		};
 	}, []);
 
@@ -300,6 +305,7 @@ export function useChat({ onConversationChanged }: UseChatOptions = {}): UseChat
 		// el chat que se está empezando ahora.
 		loadConversationAbortRef.current?.abort();
 		loadConversationAbortRef.current = null;
+		loadingConversationIdRef.current = null;
 
 		setLoading(true);
 		setIsStreaming(false);
@@ -680,6 +686,7 @@ export function useChat({ onConversationChanged }: UseChatOptions = {}): UseChat
 		loadConversationAbortRef.current?.abort();
 		const controller = new AbortController();
 		loadConversationAbortRef.current = controller;
+		loadingConversationIdRef.current = conv.id;
 
 		// Marca este intento como la carga activa desde este punto (no
 		// solo al terminar), para que la UI pueda reflejar que hay una carga
@@ -700,6 +707,7 @@ export function useChat({ onConversationChanged }: UseChatOptions = {}): UseChat
 			// — no hubo ningún `await` entre crearla y este punto).
 			if (loadConversationAbortRef.current === controller) {
 				loadConversationAbortRef.current = null;
+				loadingConversationIdRef.current = null;
 			}
 			return;
 		}
@@ -757,6 +765,7 @@ export function useChat({ onConversationChanged }: UseChatOptions = {}): UseChat
 			// debe borrar el controller de esa carga posterior.
 			if (loadConversationAbortRef.current === controller) {
 				loadConversationAbortRef.current = null;
+				loadingConversationIdRef.current = null;
 			}
 		} catch (err) {
 			// Una cancelación deliberada (superada por otra selección) no es un
@@ -775,6 +784,7 @@ export function useChat({ onConversationChanged }: UseChatOptions = {}): UseChat
 			setLoading(false);
 			if (loadConversationAbortRef.current === controller) {
 				loadConversationAbortRef.current = null;
+				loadingConversationIdRef.current = null;
 			}
 		}
 	}
@@ -785,17 +795,56 @@ export function useChat({ onConversationChanged }: UseChatOptions = {}): UseChat
 		expectedAnswer?: string,
 	): Promise<void> {
 		const token = user ? getTokenForUser(user.user_id) : null;
-		if (!token || !conversationIdRef.current) return;
+		const activeConversationId = conversationIdRef.current;
+		if (!token) throw new Error("La sesión no es válida. Inicia sesión nuevamente.");
+		if (!activeConversationId) throw new Error("No hay una conversación activa para calificar.");
 
 		const { submitMessageFeedback } = await import("@/lib/api");
 		await submitMessageFeedback({
-			conversation_id: conversationIdRef.current,
+			conversation_id: activeConversationId,
 			message_id: messageId,
 			ratings: { pertinence: ratings.pertinence, accuracy: ratings.accuracy },
 			expected_answer: expectedAnswer,
 		}, token);
 
 		setRatedMessageIds((prev) => new Set(prev).add(messageId));
+	}
+
+	function clearConversationView(): void {
+		setMessages([]);
+		setInput("");
+		setIsStreaming(false);
+		setStage(null);
+		setStageMessage(null);
+		setError(null);
+		setGenerationStopped(false);
+		setGenerationFinished(false);
+		setCanCancel(false);
+		setContextPercent(0);
+		_setConversationId(null);
+		streamingStartedRef.current = false;
+		setRatedMessageIds(new Set());
+		setPersistingMessageIds(new Set());
+		persistingRetryRef.current = new Set();
+		threadIdRef.current = generateId();
+	}
+
+	function handleConversationDeleted(deletedId: string): boolean {
+		if (loadingConversationIdRef.current === deletedId) {
+			chatRunIdRef.current += 1;
+			loadConversationAbortRef.current?.abort();
+			loadConversationAbortRef.current = null;
+			loadingConversationIdRef.current = null;
+			setLoading(false);
+		}
+		if (conversationIdRef.current !== deletedId) return false;
+		if (loadingConversationIdRef.current) {
+			// La vista eliminada no puede reaparecer si la otra carga falla.
+			clearConversationView();
+		} else {
+			resetChat();
+		}
+		return true;
 	}
 
 	function resetChat(): void {
@@ -816,23 +865,9 @@ export function useChat({ onConversationChanged }: UseChatOptions = {}): UseChat
 		// mensajes de la conversación anterior sobre un chat ya reiniciado.
 		loadConversationAbortRef.current?.abort();
 		loadConversationAbortRef.current = null;
-		setMessages([]);
-		setInput("");
+		loadingConversationIdRef.current = null;
 		setLoading(false);
-		setIsStreaming(false);
-		setStage(null);
-		setStageMessage(null);
-		setError(null);
-		setGenerationStopped(false);
-		setGenerationFinished(false);
-		setCanCancel(false);
-		setContextPercent(0);
-		_setConversationId(null);
-		streamingStartedRef.current = false;
-		setRatedMessageIds(new Set());
-		setPersistingMessageIds(new Set());
-		persistingRetryRef.current = new Set();
-		threadIdRef.current = generateId();
+		clearConversationView();
 	}
 
 	return {
@@ -853,6 +888,7 @@ export function useChat({ onConversationChanged }: UseChatOptions = {}): UseChat
 		setInput,
 		submit,
 		resetChat,
+		handleConversationDeleted,
 		loadConversation,
 		retryPersistMessage,
 		cancel,

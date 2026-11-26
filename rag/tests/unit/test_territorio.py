@@ -7,7 +7,7 @@ from collections import Counter
 
 from langchain_core.documents import Document
 
-from rag.core.territorio import (
+from evaluation.territorio import (
     LUGARES,
     lugar_de_norma,
     lugares_mencionados,
@@ -141,7 +141,7 @@ def test_no_se_descarta_ningun_documento():
 
 def test_lugares_mencionados_exige_palabra_completa():
     """«turbocompresor» no es Turbo ni «barullo» es Barú."""
-    from rag.core.territorio import lugares_mencionados
+    from evaluation.territorio import lugares_mencionados
 
     assert lugares_mencionados(["la lancha tiene un turbocompresor"]) == set()
     assert lugares_mencionados(["hubo mucho barullo en la playa"]) == set()

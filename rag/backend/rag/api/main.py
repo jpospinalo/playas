@@ -334,26 +334,22 @@ async def query(
         async with backpressure.slot():
             with ACTIVE_QUERIES.track():
                 try:
-                    initial_messages = await _get_initial_messages(
-                        graph,
-                        config,
-                        request.conversation_id,
-                        request.question,
-                        user["sub"],
-                        request.current_message_id,
-                    )
-                    final_state = await asyncio.wait_for(
-                        graph.ainvoke(
+                    async with asyncio.timeout(QUERY_TOTAL_TIMEOUT_SECONDS):
+                        initial_messages = await _get_initial_messages(
+                            graph,
+                            config,
+                            request.conversation_id,
+                            request.question,
+                            user["sub"],
+                            request.current_message_id,
+                        )
+                        final_state = await graph.ainvoke(
                             _build_graph_input(request, initial_messages),
                             config=config,
-                        ),
-                        timeout=QUERY_TOTAL_TIMEOUT_SECONDS,
-                    )
+                        )
                 except TimeoutError as exc:
-                    # Corte CONTROLADO (504) antes de que el ALB/Nginx
-                    # delante de este servicio corten la conexión por
-                    # inactividad a los 300s (A3.3) — sin este timeout, el
-                    # cliente vería la conexión morir sin ninguna respuesta.
+                    # Presupuesto compartido de hidratación y grafo, posterior
+                    # al lock/plaza; no es un SLA de autenticación, espera o cierre SQL.
                     if isinstance(exc, ChromaQueryTimeout):
                         logger.warning("chroma_query_timeout")
                     else:
@@ -368,7 +364,7 @@ async def query(
                 except Exception as exc:
                     if isinstance(exc, HTTPException):
                         raise
-                    logger.exception("Error procesando una consulta RAG")
+                    logger.error("query_failed error_type=%s", type(exc).__name__)
                     raise HTTPException(
                         status_code=500,
                         detail="No fue posible procesar la consulta.",
@@ -485,15 +481,24 @@ async def query_stream(
     except BaseException:
         await resource_stack.aclose()
         raise
+    loop = asyncio.get_running_loop()
+    preparation_deadline = loop.time() + QUERY_STREAM_STAGE_TIMEOUT_SECONDS
     try:
-        initial_messages = await _get_initial_messages(
-            graph,
-            config,
-            request.conversation_id,
-            request.question,
-            user["sub"],
-            request.current_message_id,
-        )
+        async with asyncio.timeout_at(preparation_deadline):
+            initial_messages = await _get_initial_messages(
+                graph,
+                config,
+                request.conversation_id,
+                request.question,
+                user["sub"],
+                request.current_message_id,
+            )
+    except TimeoutError as exc:
+        await resource_stack.aclose()
+        raise HTTPException(
+            status_code=504,
+            detail="La consulta superó el tiempo máximo permitido.",
+        ) from exc
     except BaseException:
         await resource_stack.aclose()
         raise
@@ -505,25 +510,29 @@ async def query_stream(
                 # La generación se valida dentro del grafo antes de exponerla. Por eso
                 # conservamos el último snapshot de este stream y emitimos su texto validado.
                 values: dict[str, Any] = {}
-                # Timeout POR ETAPA (A3.3), no total: se mide el tiempo ENTRE
-                # eventos consecutivos del grafo (`__anext__()` en vez de
-                # `async for` directo), no la duración completa del stream —
-                # los eventos `status` intermedios pueden mantener viva una
-                # consulta más larga que QUERY_STREAM_STAGE_TIMEOUT_SECONDS
-                # legítimamente. Si el grafo se queda sin producir NINGÚN
-                # evento nuevo durante ese tiempo, se asume una etapa colgada.
+                # El primer evento del grafo comparte plazo con la preparación;
+                # values también cuenta. Después se limita cada lectura, no
+                # el stream completo ni la duración de los envíos ASGI.
+                if loop.time() >= preparation_deadline:
+                    raise TimeoutError
                 stream_iterator = graph.astream(
                     _build_graph_input(request, initial_messages),
                     config=config,
                     stream_mode=["values", "custom"],
                 ).__aiter__()
+                first_event = True
                 while True:
+                    timeout = QUERY_STREAM_STAGE_TIMEOUT_SECONDS
+                    if first_event:
+                        timeout = preparation_deadline - loop.time()
+                        if timeout <= 0:
+                            raise TimeoutError
                     # Completa el cierre del grafo aun si ASGI cancela el stream.
                     next_event = asyncio.ensure_future(anext(stream_iterator))
                     try:
                         mode, payload = await asyncio.wait_for(
                             asyncio.shield(next_event),
-                            timeout=QUERY_STREAM_STAGE_TIMEOUT_SECONDS,
+                            timeout=timeout,
                         )
                     except StopAsyncIteration:
                         break
@@ -532,6 +541,7 @@ async def query_stream(
                             next_event.cancel()
                             with CancelScope(shield=True):
                                 await asyncio.gather(next_event, return_exceptions=True)
+                    first_event = False
                     if mode == "custom":
                         # Eventos de estado emitidos por los nodos
                         if isinstance(payload, dict) and payload.get("type") == "status":
@@ -564,10 +574,7 @@ async def query_stream(
                 yield "data: [DONE]\n\n"
 
             except TimeoutError as exc:
-                # Corte CONTROLADO antes de que el ALB/Nginx delante de este
-                # servicio corten la conexión por inactividad a los 300s
-                # (A3.3) — la etapa actual del grafo no produjo ningún
-                # evento nuevo dentro del timeout configurado.
+                # Expiró el plazo inicial o la espera de un nuevo evento del grafo.
                 if isinstance(exc, ChromaQueryTimeout):
                     logger.warning("chroma_query_timeout")
                 else:
@@ -582,8 +589,8 @@ async def query_stream(
                     }
                 )
                 yield f"data: {event}\n\n"
-            except Exception:
-                logger.exception("Error durante una consulta RAG por streaming")
+            except Exception as exc:
+                logger.error("query_stream_failed error_type=%s", type(exc).__name__)
                 event = json.dumps(
                     {"type": "error", "detail": "No fue posible procesar la consulta."}
                 )

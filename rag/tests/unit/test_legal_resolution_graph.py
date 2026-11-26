@@ -1198,3 +1198,164 @@ async def test_in_scope_without_documentary_identity_stops_before_generation(
     state = await _invoke(agent.build_graph(), question=question)
     assert state["sources"] == []
     assert "evidencia insuficiente" in agent.extract_answer_from_state(state)
+
+
+_DOCUMENTARY_ADMISSION_QUESTION = (
+    "En la sentencia de apelación de Flury Valencia de 9 de julio de 2009, "
+    f"radicado {DOCKET}, ¿la Sala tuvo por probadas construcciones anteriores al Decreto "
+    "2324 de 1984 y encontró en el expediente el permiso especial de construcción?"
+)
+
+
+def _documentary_admission_source() -> list[Document]:
+    documents = _source("documentary-admission")
+    documents[0].page_content = (
+        "Sentencia de segunda instancia\nFecha: 9 de julio de 2009\n"
+        f"Radicado: {DOCKET}\nPartes: Flury Valencia contra DIMAR"
+    )
+    documents[1].page_content = (
+        "En la playa no se acreditaron construcciones anteriores al Decreto 2324 de 1984 "
+        "y no se encontró el permiso especial de construcción en el expediente."
+    )
+    return documents
+
+
+@pytest.mark.anyio
+@pytest.mark.parametrize("route", ["out_of_scope", "needs_clarification"])
+async def test_documentary_admission_uses_normal_retrieval_and_citations_in_json_and_sse(
+    monkeypatch, tmp_path, route
+):
+    documents = _documentary_admission_source()
+    _configured(monkeypatch, tmp_path, documents)
+    _enrichment(monkeypatch, route)
+    calls = []
+
+    class Retriever:
+        async def ainvoke(self, query):
+            calls.append(("retrieve", query))
+            return [documents[1]]
+
+    def get_retriever(**kwargs):
+        assert kwargs["doc_types"] == ["jurisprudencia"]
+        return Retriever()
+
+    def generation_llm():
+        calls.append(("generate", None))
+        return FakeListChatModel(
+            responses=[
+                "No se acreditaron las construcciones anteriores a 1984 ni se encontró "
+                "el permiso especial de construcción [doc1]."
+            ]
+        )
+
+    monkeypatch.setattr(agent, "get_ensemble_retriever", get_retriever)
+    monkeypatch.setattr(agent, "get_generation_llm", generation_llm)
+    monkeypatch.setattr(
+        agent, "get_active_provider", lambda: SimpleNamespace(supports_system_role=True)
+    )
+    response = await _public_query(
+        monkeypatch, QueryRequest(question=_DOCUMENTARY_ADMISSION_QUESTION)
+    )
+    assert response.query_route == "in_scope"
+    assert "[doc1]" in response.answer and "[doc2]" not in response.answer
+    assert sum(kind == "retrieve" for kind, _ in calls) == 2
+    assert sum(kind == "generate" for kind, _ in calls) == 2
+    assert [
+        fragment.metadata["chunk_id"] for group in response.sources for fragment in group.fragments
+    ] == [documents[1].id]
+    assert response.sources[0].fragments[0].index == 1
+    assert response.sources[0].fragments[0].content == documents[1].page_content
+
+
+@pytest.mark.anyio
+@pytest.mark.parametrize("route", ["out_of_scope", "needs_clarification"])
+async def test_documentary_admission_does_not_create_a_verified_order_or_instance(
+    monkeypatch, tmp_path, route
+):
+    documents = _documentary_admission_source()
+    path = _configured(monkeypatch, tmp_path, documents)
+    _enrichment(monkeypatch, route)
+    proof = agent.load_provenance(path, agent.LEGAL_RESOLUTION_PROVENANCE_SHA256)
+    index = ResolutionIndex(documents, proof)
+    assert index.snapshot_verified
+    request = QueryRequest(question=_DOCUMENTARY_ADMISSION_QUESTION)
+    state = _build_graph_input(request, [HumanMessage(content=request.question)])
+    state.update(
+        verified_docket="stale-docket",
+        verified_instance="primera instancia",
+        documentary_answer="stale answer",
+    )
+    update = await agent.enrich_query_node(
+        state,
+        capture_filter=True,
+        verified_documents=tuple(documents),
+        resolution_index=index,
+    )
+    assert update["query_route"] == "in_scope"
+    assert update["sources"] == []
+    assert update["verified_docket"] is None
+    assert update["verified_instance"] is None
+    assert update["documentary_answer"] is None
+    assert update["standalone_question"] == request.question
+
+
+@pytest.mark.anyio
+@pytest.mark.parametrize(
+    "variant",
+    [
+        "original-filter",
+        "disabled-provenance",
+        "unverified-snapshot",
+        "missing-date",
+        "programming",
+        "model-only-docket",
+    ],
+)
+async def test_documentary_admission_keeps_original_filters_clarifications_and_profile_gates(
+    monkeypatch, tmp_path, variant
+):
+    documents = _documentary_admission_source()
+    _configured(monkeypatch, tmp_path, documents)
+    question = _DOCUMENTARY_ADMISSION_QUESTION
+    requested = None
+    expected_route = "out_of_scope"
+    if variant == "original-filter":
+        requested = ["normativa"]
+    elif variant == "disabled-provenance":
+        monkeypatch.setattr(agent, "LEGAL_RESOLUTION_PROVENANCE_PATH", None)
+    elif variant == "unverified-snapshot":
+        documents[1].page_content += " Cuerpo cambiado después de fijar su procedencia."
+    elif variant == "missing-date":
+        question += (
+            " En ese trámite sobre la playa, ¿qué día exacto vence mi plazo "
+            "si no tengo la fecha del requerimiento?"
+        )
+        expected_route = "needs_clarification"
+    elif variant == "programming":
+        question = f"Escribe código Python para editar una foto de playa del radicado {DOCKET}."
+    else:
+        question = (
+            "En la sentencia de apelación de Flury Valencia, ¿se halló en el expediente "
+            "el permiso especial de construcción?"
+        )
+    _enrichment(monkeypatch, "out_of_scope")
+    if variant == "model-only-docket":
+
+        async def expanded_analysis(original: str, history: str) -> EnrichedQuery:
+            return EnrichedQuery(
+                route="out_of_scope",
+                standalone_question=_DOCUMENTARY_ADMISSION_QUESTION,
+                expanded_query=_DOCUMENTARY_ADMISSION_QUESTION,
+                doc_types=[],
+            )
+
+        monkeypatch.setattr(agent, "enrich_query_async", expanded_analysis)
+    _no_calls(monkeypatch)
+    response = await _public_query(
+        monkeypatch, QueryRequest(question=question, doc_types=requested)
+    )
+    assert response.query_route == expected_route
+    assert response.sources == [] and "[doc" not in response.answer
+    if variant == "missing-date":
+        assert "fecha" in response.answer.casefold()
+        assert "requerimiento" in response.answer.casefold()

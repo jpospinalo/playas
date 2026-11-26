@@ -6,7 +6,7 @@ para reportar la línea base por tipo) y agrega, por caso, la bandera
 ``revisado`` y los títulos del corpus de los documentos esperados. El mapeo
 de documentos se hace por **título**, nunca por el código SM-XX: la
 numeración del Excel no coincide con el metadato ``Nº`` del corpus (ver
-``docs/EVALUACION_LINEA_BASE.md``, hallazgo D1).
+``docs/SCRIPTS.md``).
 """
 
 from __future__ import annotations
@@ -16,7 +16,6 @@ import unicodedata
 from pathlib import Path
 
 import pytest
-
 from evaluation.ground_truth_v02 import (
     CASE_FIELDS,
     DOC_REFERENCE_TO_CORPUS_TITLE,

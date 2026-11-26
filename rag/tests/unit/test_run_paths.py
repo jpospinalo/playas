@@ -5,7 +5,6 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
-
 from evaluation.run_paths import tagged
 
 _BASE = Path("evaluation/results/generation-cache-v0.2.jsonl")

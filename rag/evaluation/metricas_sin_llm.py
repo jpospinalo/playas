@@ -26,7 +26,7 @@ Recuperación por la ruta real de producción (sufijo ``_multi``):
 
 El grafo no recupera con la pregunta cruda: recupera con la pregunta original
 y con la consulta enriquecida por separado y fusiona las listas (ver
-``HybridEnsembleRetriever.afuse_queries``). Medir solo la pregunta cruda deja
+``agent._compose_retrieval_query``). Medir solo la pregunta cruda deja
 fuera ese efecto, así que ``acierto_doc_4_multi``, ``mrr_doc_20_multi`` y
 ``articulos_4_multi`` repiten las tres métricas centrales por esa ruta,
 reusando la ``enriched_query`` que la caché de generación ya guardó —sin
@@ -89,9 +89,28 @@ from evaluation.retrieval_baseline import (
     first_relevant_rank,
 )
 from evaluation.run_paths import tagged
+from evaluation.territorio import LUGARES, lugar_de_norma
+from rag.core import prompts as _prompts
 from rag.core.agent import _validate_citations
-from rag.core.prompts import AGENT_RESPONSE_SECTIONS
-from rag.core.territorio import LUGARES, lugar_de_norma
+
+# Secciones guiadas del prompt con que se generó la línea base (caché de
+# generación). Se congelan aquí para seguir detectando esas fugas en las
+# respuestas ya guardadas; si el prompt vigente define otras, se usan esas.
+_SECCIONES_LINEA_BASE: dict[str, str] = {
+    "Criterio principal": "la regla jurídica central, en dos a cuatro oraciones",
+    "Desarrollo jurídico": (
+        "el razonamiento de la Sala, los hechos procesales relevantes, las normas "
+        "aplicadas y las condiciones de aplicabilidad"
+    ),
+    "Síntesis jurisprudencial": (
+        "convergencias, divergencias o evolución del criterio entre las fuentes; "
+        "se omite cuando hay un solo documento"
+    ),
+    "Límites de evidencia": ("qué aspectos no cubre el contexto y qué completaría la respuesta"),
+}
+AGENT_RESPONSE_SECTIONS: dict[str, str] = getattr(
+    _prompts, "AGENT_RESPONSE_SECTIONS", _SECCIONES_LINEA_BASE
+)
 
 REPORT_PATH = Path("evaluation/results/metricas-sin-llm-v0.2.json")
 BASELINE_PATH = Path("evaluation/data/linea-base-sin-llm-v0.2.json")
@@ -661,7 +680,8 @@ def correr_recuperacion(
     # El top-20 diagnostica la fusión: sin la jerarquía normativa, que movería
     # todas las normas de los 20 al frente y falsearía el MRR. La jerarquía se
     # mide en el top-4 de producción (``prod``).
-    deep.normativa_primero = False
+    if "normativa_primero" in type(deep).model_fields:
+        setattr(deep, "normativa_primero", False)  # noqa: B010  (solo en retrievers que lo definen)
     extra = consultas_extra or {}
     filas = []
     for caso in casos:
@@ -670,9 +690,20 @@ def correr_recuperacion(
         fila = metricas_recuperacion(caso, top4, titulos_20)
         consultas = [caso["pregunta"], *extra.get(caso["id"], ())]
         if len(consultas) > 1:
-            top4_multi = _fragmentos(asyncio.run(prod.afuse_queries(consultas)))
+            # Ruta real del grafo: la pregunta y sus reformulaciones se unen en
+            # una sola consulta (``agent._compose_retrieval_query``).
+            from rag.core.agent import _compose_retrieval_query
+
+            consulta = _compose_retrieval_query(
+                {
+                    "question": consultas[0],
+                    "standalone_question": None,
+                    "enriched_query": "\n".join(consultas[1:]),
+                }  # type: ignore[typeddict-item]
+            )
+            top4_multi = _fragmentos(asyncio.run(prod.ainvoke(consulta)))
             titulos_20_multi = [
-                f["title"] for f in _fragmentos(asyncio.run(deep.afuse_queries(consultas)))
+                f["title"] for f in _fragmentos(asyncio.run(deep.ainvoke(consulta)))
             ]
             fila.update(metricas_multiconsulta(caso, top4_multi, titulos_20_multi))
         else:
@@ -696,19 +727,23 @@ def configuracion_corpus() -> dict[str, Any]:
     Se guarda en cada reporte y en la línea base: si dos corridas difieren en
     esto, sus diferencias mezclan corpus o ajuste con cambios de código.
     """
-    from rag import config
+    import inspect
 
+    from rag import config
+    from rag.core.retriever import HybridEnsembleRetriever, get_ensemble_retriever
+
+    # Los parámetros viven en el código del retriever (no en variables de
+    # entorno): se leen de sus valores por defecto para que el reporte refleje
+    # exactamente lo que se midió.
+    por_defecto = {
+        nombre: p.default
+        for nombre, p in inspect.signature(get_ensemble_retriever).parameters.items()
+        if p.default is not inspect.Parameter.empty
+    }
     return {
         "coleccion": config.CHROMA_COLLECTION,
         "modelo_embeddings": config.OLLAMA_EMBEDDING_MODEL,
-        "recuperacion": {
-            "rrf_c": config.RETRIEVAL_RRF_C,
-            "bm25_weight": config.RETRIEVAL_BM25_WEIGHT,
-            "vector_weight": config.RETRIEVAL_VECTOR_WEIGHT,
-            "cupos_normativa": config.RETRIEVAL_CUPOS_NORMATIVA,
-            "fragmentos_por_sentencia": config.RETRIEVAL_FRAGMENTOS_POR_SENTENCIA,
-            "fragmentos_por_norma": config.RETRIEVAL_FRAGMENTOS_POR_NORMA,
-        },
+        "recuperacion": {"rrf_c": HybridEnsembleRetriever.model_fields["c"].default, **por_defecto},
     }
 
 

@@ -1443,3 +1443,643 @@ def test_plan_name_controls_keep_missing_reference_and_off_topic_precedence(
     assert guarded.route == expected_route
     assert guarded.doc_types == []
     assert guarded.standalone_question == question
+
+
+# L1: qualified legal purpose, independent of retrieval or factual sufficiency.
+_QUALIFIED_LEGAL_N05 = (
+    "En la definición del artículo 1429 del Código de Comercio incluido en el corpus, "
+    "¿las actividades marítimas se reducen a navegar en el mar territorial, o abarcan "
+    "también otros espacios y actividades de pesca, investigación y extracción? "
+    "Precisa ese alcance."
+)
+_QUALIFIED_LEGAL_J01 = (
+    "En la respuesta sobre manglares del concepto 1682 de 2 de noviembre de 2005, "
+    "¿la investigación corresponde exclusivamente a DIMAR o cómo se reparten y "
+    "coordinan las competencias?"
+)
+_QUALIFIED_LEGAL_QUERIES = [
+    pytest.param(_QUALIFIED_LEGAL_N05, id="N05-code-article"),
+    pytest.param(_QUALIFIED_LEGAL_J01, id="J01-concept-authority"),
+    pytest.param(
+        "Según el artículo 77 del Código Civil, ¿qué comprende el uso de playas marinas?",
+        id="other-code-and-article",
+    ),
+    pytest.param(
+        "En el artículo 305 del Código Aduanero, ¿cómo se define el transporte marítimo?",
+        id="independent-code-title",
+    ),
+    pytest.param(
+        "En el concepto 904 de 2007, ¿la investigación de manglares corresponde "
+        "exclusivamente a DIMAR?",
+        id="other-concept-and-authority",
+    ),
+    pytest.param(
+        "¿Cómo se distribuyen las competencias administrativas de DIMAR en las playas?",
+        id="administrative-competence",
+    ),
+]
+
+
+@pytest.mark.parametrize("question", _QUALIFIED_LEGAL_QUERIES)
+def test_qualified_legal_fallback_admits_identified_queries(question: str) -> None:
+    result = _fallback(question)
+
+    assert result.route == "in_scope"
+    assert result.doc_types == ["jurisprudencia", "normativa"]
+    assert result.standalone_question == question
+    assert result.expanded_query == query_enricher._normalize_expanded_query(question)
+
+
+@pytest.mark.parametrize("question", _QUALIFIED_LEGAL_QUERIES)
+@pytest.mark.parametrize("rejected_route", ["out_of_scope", "needs_clarification"])
+def test_qualified_legal_guard_recovers_model_false_negative(
+    question: str, rejected_route: str
+) -> None:
+    rejected = EnrichedQuery(
+        route=rejected_route,
+        standalone_question=question,
+        expanded_query=question,
+    )
+    expected_expanded = rejected.expanded_query
+
+    result = _apply_domain_guard(rejected, question, "")
+
+    assert result.route == "in_scope"
+    assert result.doc_types == ["jurisprudencia", "normativa"]
+    assert result.standalone_question == question
+    assert result.expanded_query == expected_expanded
+    assert rejected.route == rejected_route
+    assert rejected.doc_types == []
+
+
+@pytest.mark.parametrize("question", [_QUALIFIED_LEGAL_N05, _QUALIFIED_LEGAL_J01])
+@pytest.mark.parametrize("mode", ["disabled", "provider_failure"])
+def test_qualified_legal_async_fallback_keeps_identified_queries(
+    monkeypatch: pytest.MonkeyPatch, question: str, mode: str
+) -> None:
+    def unavailable_provider():
+        if mode == "disabled":
+            pytest.fail("Disabled enrichment must not instantiate a provider")
+        raise RuntimeError("Offline qualified legal provider failure")
+
+    monkeypatch.setattr(query_enricher, "ENRICHMENT_ENABLED", mode != "disabled")
+    monkeypatch.setattr(query_enricher, "get_active_provider", unavailable_provider)
+    monkeypatch.setattr(
+        query_enricher,
+        "get_enrichment_llm",
+        lambda: pytest.fail("The fallback must not instantiate a model"),
+    )
+
+    result = asyncio.run(query_enricher.enrich_query_async(question))
+
+    assert result.route == "in_scope"
+    assert result.doc_types == ["jurisprudencia", "normativa"]
+    assert result.standalone_question == question
+    assert result.expanded_query == query_enricher._normalize_expanded_query(question)
+
+
+@pytest.mark.parametrize("question", [_QUALIFIED_LEGAL_N05, _QUALIFIED_LEGAL_J01])
+@pytest.mark.parametrize("rejected_route", ["out_of_scope", "needs_clarification"])
+def test_qualified_legal_async_guard_recovers_structured_false_negative(
+    monkeypatch: pytest.MonkeyPatch, question: str, rejected_route: str
+) -> None:
+    rejected = EnrichedQuery(
+        route=rejected_route,
+        standalone_question=question,
+        expanded_query=question,
+    )
+
+    async def analyze(_value):
+        return rejected
+
+    runnable = RunnableLambda(lambda _value: rejected, afunc=analyze)
+
+    def structured_output(schema):
+        assert schema is EnrichedQuery
+        return runnable
+
+    monkeypatch.setattr(query_enricher, "ENRICHMENT_ENABLED", True)
+    monkeypatch.setattr(
+        query_enricher,
+        "get_active_provider",
+        lambda: SimpleNamespace(supports_system_role=True, supports_structured_output=True),
+    )
+    monkeypatch.setattr(
+        query_enricher,
+        "get_enrichment_llm",
+        lambda: SimpleNamespace(with_structured_output=structured_output),
+    )
+
+    result = asyncio.run(query_enricher.enrich_query_async(question))
+
+    assert result.route == "in_scope"
+    assert result.doc_types == ["jurisprudencia", "normativa"]
+    assert result.standalone_question == question
+    assert result.expanded_query == rejected.expanded_query
+    assert rejected.route == rejected_route
+
+
+@pytest.mark.parametrize(
+    "question",
+    [
+        pytest.param(
+            "Según el artículo 77 del Código Civil, escribe código Python "
+            "para filtrar una foto de la playa.",
+            id="programming-with-qualified-reference",
+        ),
+        pytest.param(
+            "Según el concepto 904 de 2007 de DIMAR, escribe un poema sobre la playa.",
+            id="poem-with-concept-and-authority",
+        ),
+        pytest.param("¿Cómo entrenar para una competencia de kayak?", id="sports-training"),
+        pytest.param(
+            "¿Cómo se reparten las competencias de kayak en una playa?",
+            id="sport-competence-is-not-administrative",
+        ),
+        pytest.param(
+            "¿Qué comprende el artículo 77 del Código Civil sobre contratos privados?",
+            id="legal-reference-without-coastal-connection",
+        ),
+        pytest.param("¿Qué código tiene esa playa?", id="bare-code"),
+        pytest.param(
+            "En una playa, ¿qué comprende el artículo 77 del Código de?",
+            id="code-reference-truncated-after-de",
+        ),
+        pytest.param(
+            "En una playa, ¿qué comprende el artículo 77 del Código del?",
+            id="code-reference-truncated-after-del",
+        ),
+        pytest.param("¿Cuál es la definición de mar?", id="bare-definition"),
+        pytest.param(
+            "¿Qué código comercial llevan las tablas de surf?",
+            id="commercial-product-code",
+        ),
+    ],
+)
+def test_qualified_legal_controls_do_not_expand_scope(question: str) -> None:
+    rejected = EnrichedQuery(
+        route="out_of_scope",
+        standalone_question=question,
+        expanded_query=question,
+    )
+
+    assert _fallback(question).route != "in_scope"
+    assert _apply_domain_guard(rejected, question, "") == rejected
+
+
+@pytest.mark.parametrize(
+    "question",
+    [
+        "En el texto del artículo 2 del Decreto 1875 de 1979, ¿por qué conducto se "
+        "presenta una solicitud de vertimiento al mar, quién puede autorizarla y qué "
+        "límite deben respetar su cantidad y concentración?",
+        "Según el artículo 278 del Código de Recursos Naturales de 1974 recogido "
+        "en el corpus, ¿el uso de playas marinas por los pescadores durante sus "
+        "faenas es incondicional? Identifica las tres clases de áreas que el "
+        "artículo exceptúa.",
+        "En el artículo 28 del Decreto 804 de 2001 del corpus, ¿se sigue el mismo "
+        "trámite para una empresa habilitada de transporte marítimo internacional "
+        "y para una empresa colombiana de cabotaje que va a fletar una nave de "
+        "bandera extranjera? Distingue el trámite previo en cada supuesto.",
+        "Conforme al texto del artículo 141 del Decreto 2256 de 1991, ¿qué entidad "
+        "matricula las embarcaciones pesqueras y expide sus patentes de navegación, "
+        "y qué funciones de control marítimo le atribuye ese artículo?",
+        "Según el artículo 1 del Decreto 803 de 2004 del corpus, ¿quién debe ofrecer "
+        "públicamente la concesión portuaria del muelle departamental del Archipiélago "
+        "y qué diferencia establece el texto entre el terreno del muelle y su zona accesoria?",
+        "Según la respuesta 9 del concepto 1682 de 2005 sobre playas y bajamar, "
+        "¿quién realiza la restitución física y se necesita después otro acto "
+        "para que el bien vuelva al uso general?",
+        "Con una autorización temporal para ocupar una playa en actividades portuarias, "
+        "¿ya tengo asegurada la concesión que solicité y qué derecho me da esa "
+        "autorización mientras dura, según el artículo 26 del Decreto 474 de 2015 del corpus?",
+    ],
+    ids=["N01", "N02", "N03", "N04", "N06", "J02", "C03"],
+)
+def test_qualified_legal_keeps_approved_bank_queries(question: str) -> None:
+    admitted = EnrichedQuery(
+        route="in_scope",
+        standalone_question=question,
+        expanded_query=question,
+        doc_types=["jurisprudencia", "normativa"],
+    )
+
+    assert _fallback(question).route != "out_of_scope"
+    assert _apply_domain_guard(admitted, question, "") == admitted
+
+
+@pytest.mark.parametrize(
+    ("question", "expected_route"),
+    [
+        (
+            "¿A qué despacho le corresponde dar el visto bueno a dicho plan "
+            "para ordenar la franja de playa?",
+            "needs_clarification",
+        ),
+        (
+            "Escribe código Python que aplique un filtro azul a una foto de la playa.",
+            "out_of_scope",
+        ),
+    ],
+    ids=["C01", "C05"],
+)
+def test_qualified_legal_keeps_plan_and_programming_controls(
+    question: str, expected_route: str
+) -> None:
+    admitted = EnrichedQuery(
+        route="in_scope",
+        standalone_question=question,
+        expanded_query=question,
+        doc_types=["normativa"],
+    )
+
+    assert _fallback(question).route == expected_route
+    guarded = _apply_domain_guard(admitted, question, "")
+    assert guarded.route == expected_route
+    assert guarded.doc_types == []
+    assert guarded.standalone_question == question
+
+
+def test_qualified_legal_guard_ignores_invented_coastal_expansion() -> None:
+    question = "¿Qué comprende el artículo 77 del Código Civil?"
+    rejected = EnrichedQuery(
+        route="out_of_scope",
+        standalone_question="¿Qué comprende el artículo 77 del Código Civil en una playa?",
+        expanded_query="artículo 77 Código Civil competencia DIMAR playas marítimas",
+    )
+
+    assert _fallback(question).route != "in_scope"
+    assert _apply_domain_guard(rejected, question, "") == rejected
+
+
+# L2: clarify only a necessary missing datum or an unidentified singular decision.
+_NECESSARY_CLARIFICATION_C02 = (
+    "En el trámite de reversión de una autorización temporal sobre una playa me "
+    "requirieron reparar daños. Según el artículo 28 del Decreto 474 de 2015 del "
+    "corpus, ¿qué día exacto vence mi plazo si no tengo la fecha de ese requerimiento?"
+)
+_NECESSARY_CLARIFICATION_C04 = (
+    "Sobre aquella acción popular contra DIMAR relacionada con el uso de una playa, "
+    "¿qué orden impartió el juez en primera instancia y en qué plazo?"
+)
+_NECESSARY_CLARIFICATION_QUERIES = [
+    pytest.param(_NECESSARY_CLARIFICATION_C02, id="C02-missing-start-date"),
+    pytest.param(_NECESSARY_CLARIFICATION_C04, id="C04-unidentified-judicial-reference"),
+    pytest.param(
+        "¿Qué día vence mi plazo para reparar daños en la playa? Desconozco la "
+        "fecha de notificación del requerimiento.",
+        id="missing-notification-date",
+    ),
+    pytest.param(
+        "Tengo un requerimiento para reparar daños en una playa. No sé la fecha "
+        "del requerimiento. ¿Cuál es la fecha exacta de vencimiento?",
+        id="missing-request-date-paraphrase",
+    ),
+    pytest.param(
+        "En ese fallo sobre una playa, ¿qué ordenó el juez y en qué plazo?",
+        id="unidentified-fallo-and-term",
+    ),
+    pytest.param(
+        "Respecto de aquella sentencia sobre el litoral, ¿qué ordenó el Tribunal "
+        "y qué plazo concedió?",
+        id="unidentified-sentence-and-term",
+    ),
+]
+
+
+@pytest.mark.parametrize("question", _NECESSARY_CLARIFICATION_QUERIES)
+def test_necessary_clarification_fallback_precedes_domain_admission(question: str) -> None:
+    result = _fallback(question)
+
+    assert result.route == "needs_clarification"
+    assert result.doc_types == []
+    assert result.standalone_question == question
+    assert result.expanded_query == query_enricher._normalize_expanded_query(question)
+
+
+@pytest.mark.parametrize("question", [_NECESSARY_CLARIFICATION_C02, _NECESSARY_CLARIFICATION_C04])
+@pytest.mark.parametrize("model_route", ["in_scope", "needs_clarification"])
+def test_necessary_clarification_guard_is_not_overridden_by_domain_signals(
+    question: str, model_route: str
+) -> None:
+    analysis = EnrichedQuery(
+        route=model_route,
+        standalone_question=question,
+        expanded_query=question,
+        doc_types=["normativa", "jurisprudencia"] if model_route == "in_scope" else [],
+    )
+
+    guarded = _apply_domain_guard(analysis, question, "")
+
+    assert guarded.route == "needs_clarification"
+    assert guarded.doc_types == []
+    assert guarded.standalone_question == question
+    assert guarded.expanded_query == query_enricher._normalize_expanded_query(question)
+    assert analysis.route == model_route
+
+
+@pytest.mark.parametrize(
+    "question",
+    [
+        pytest.param(
+            "Según el artículo 28 del Decreto 474 de 2015, ¿qué plazo se prevé "
+            "para reparar daños en una playa?",
+            id="abstract-legal-term",
+        ),
+        pytest.param(
+            "Recibí el requerimiento de reparación de daños en la playa el 4 de "
+            "febrero de 2025. ¿Qué día exacto vence el plazo?",
+            id="request-date-already-provided",
+        ),
+        pytest.param(
+            "En aquella sentencia de segunda instancia sobre una playa, radicado "
+            "47001233100020110842502, ¿qué ordenó el juez y en qué plazo?",
+            id="judicial-reference-with-complete-docket",
+        ),
+        pytest.param(
+            "En aquella sentencia de Flury Valencia de 9 de julio de 2009 sobre "
+            "una construcción en la costa, ¿qué ordenó la Sala?",
+            id="judicial-reference-with-name-and-date",
+        ),
+        pytest.param(
+            "¿Qué órdenes suelen impartir los jueces en acciones populares sobre "
+            "el uso público de las playas?",
+            id="general-jurisprudence-not-a-singular-decision",
+        ),
+        pytest.param(
+            "Según aquella norma que regula las playas, ¿qué obligaciones "
+            "existen para los concesionarios?",
+            id="demonstrative-is-not-a-judicial-reference",
+        ),
+        pytest.param(
+            "Recibí el requerimiento de reparación de daños en la playa el 4 de "
+            "febrero de 2025. No tengo la fecha de la fotografía de la playa. "
+            "¿Qué día exacto vence mi plazo?",
+            id="different-missing-date-is-not-the-start-date",
+        ),
+        pytest.param(_QUALIFIED_LEGAL_J01, id="J01-identified-concept-keeps-L1-admission"),
+    ],
+)
+def test_necessary_clarification_does_not_ask_for_sufficient_or_irrelevant_data(
+    question: str,
+) -> None:
+    analysis = EnrichedQuery(
+        route="needs_clarification",
+        standalone_question=question,
+        expanded_query=question,
+    )
+
+    assert _fallback(question).route == "in_scope"
+    guarded = _apply_domain_guard(analysis, question, "")
+    assert guarded.route == "in_scope"
+    assert guarded.doc_types
+    assert guarded.standalone_question == question
+
+
+@pytest.mark.parametrize(
+    ("question", "history", "expected_route"),
+    [
+        pytest.param(
+            "Sobre aquella acción popular contra DIMAR relacionada con el uso de "
+            "una playa, ¿qué orden impartió el juez en segunda instancia y en qué plazo?",
+            "Usuario: Revisemos la sentencia de segunda instancia de Gabriel Carrero, "
+            "radicado 47001233100020110842502.",
+            "in_scope",
+            id="one-judicial-identity-in-history",
+        ),
+        pytest.param(
+            _NECESSARY_CLARIFICATION_C04,
+            "Usuario: Revisemos los fallos radicados 47001233100020110842502 "
+            "y 47001233300020160027000, relacionados con playas.",
+            "needs_clarification",
+            id="two-judicial-identities-in-history",
+        ),
+        pytest.param(
+            "En aquella sentencia de segunda instancia sobre una playa, radicado "
+            "47001233100020110842502, ¿qué ordenó el juez y en qué plazo?",
+            "Usuario: Revisemos los fallos radicados 47001233100020110842502 "
+            "y 47001233300020160027000, relacionados con playas.",
+            "in_scope",
+            id="current-complete-reference-resolves-two-history-cases",
+        ),
+        pytest.param(
+            "En aquella sentencia de Flury Valencia de 9 de julio de 2009 sobre "
+            "una construcción en la costa, ¿qué ordenó la Sala?",
+            "Usuario: Revisemos los fallos radicados 47001233100020110842502 "
+            "y 47001233300020160027000, relacionados con playas.",
+            "in_scope",
+            id="current-name-and-date-are-not-erased-by-history",
+        ),
+        pytest.param(
+            _NECESSARY_CLARIFICATION_C02,
+            "Usuario: La fotografía de la playa fue tomada el 4 de febrero de 2025.",
+            "needs_clarification",
+            id="unrelated-history-date-does-not-supply-the-start",
+        ),
+        pytest.param(
+            _NECESSARY_CLARIFICATION_C02,
+            "Usuario: No sé si la notificación del requerimiento de reparación "
+            "fue el 4 o el 7 de febrero de 2025.",
+            "needs_clarification",
+            id="uncertain-history-date-does-not-supply-the-start",
+        ),
+    ],
+)
+def test_necessary_clarification_uses_only_resolved_relevant_history(
+    question: str, history: str, expected_route: str
+) -> None:
+    analysis = EnrichedQuery(
+        route="in_scope",
+        standalone_question=question,
+        expanded_query=question,
+        doc_types=["jurisprudencia", "normativa"],
+    )
+
+    fallback = _fallback(question, history)
+    guarded = _apply_domain_guard(analysis, question, history)
+    assert fallback.route == expected_route
+    assert guarded.route == expected_route
+    if expected_route == "needs_clarification":
+        assert fallback.doc_types == guarded.doc_types == []
+    else:
+        assert fallback.doc_types and guarded.doc_types
+    assert guarded.standalone_question == question
+
+
+@pytest.mark.parametrize("question", [_NECESSARY_CLARIFICATION_C02, _NECESSARY_CLARIFICATION_C04])
+@pytest.mark.parametrize("mode", ["disabled", "provider_failure"])
+def test_necessary_clarification_async_fallback_keeps_the_missing_data_contract(
+    monkeypatch: pytest.MonkeyPatch, question: str, mode: str
+) -> None:
+    def unavailable_provider():
+        if mode == "disabled":
+            pytest.fail("Disabled enrichment must not instantiate a provider")
+        raise RuntimeError("Offline necessary clarification provider failure")
+
+    monkeypatch.setattr(query_enricher, "ENRICHMENT_ENABLED", mode != "disabled")
+    monkeypatch.setattr(query_enricher, "get_active_provider", unavailable_provider)
+    monkeypatch.setattr(
+        query_enricher,
+        "get_enrichment_llm",
+        lambda: pytest.fail("The fallback must not instantiate a model"),
+    )
+
+    result = asyncio.run(query_enricher.enrich_query_async(question))
+
+    assert result.route == "needs_clarification"
+    assert result.doc_types == []
+    assert result.standalone_question == question
+    assert result.expanded_query == query_enricher._normalize_expanded_query(question)
+
+
+@pytest.mark.parametrize(
+    ("question", "expected_route"),
+    [
+        pytest.param(
+            "Sobre aquella acción popular de una playa, escribe código Python "
+            "para calcular el día exacto de vencimiento aunque no tengo la fecha "
+            "del requerimiento.",
+            "out_of_scope",
+            id="programming-precedes-a-missing-start-date",
+        ),
+        pytest.param("¿Qué puedes hacer?", "conversation", id="meta-precedes-clarification"),
+    ],
+)
+def test_necessary_clarification_keeps_off_topic_and_meta_precedence(
+    question: str, expected_route: str
+) -> None:
+    admitted = EnrichedQuery(
+        route="in_scope",
+        standalone_question=question,
+        expanded_query=question,
+        doc_types=["normativa"],
+    )
+
+    assert _fallback(question).route == expected_route
+    guarded = _apply_domain_guard(admitted, question, "")
+    assert guarded.route == expected_route
+    assert guarded.doc_types == []
+
+
+@pytest.mark.parametrize(
+    ("question", "history", "expected_reason"),
+    [
+        pytest.param(
+            "En la autorización temporal de la playa, ¿qué día se firmó el permiso? "
+            "No tengo la fecha del requerimiento.",
+            "",
+            None,
+            id="signature-day-is-not-a-deadline",
+        ),
+        pytest.param(
+            "¿Qué día aprobaron el plazo de la concesión en una playa? "
+            "No tengo la fecha del requerimiento.",
+            "",
+            None,
+            id="approval-day-is-not-deadline-even-with-plazo",
+        ),
+        pytest.param(
+            "En aquella sentencia de apelación del 10 de junio de 2020 sobre una playa, "
+            "¿qué ordenó la Sala y en qué plazo?",
+            "",
+            "judicial_reference",
+            id="appeal-description-and-date-do-not-identify-the-parties",
+        ),
+        pytest.param(
+            "En aquella sentencia de apelación de Flury Valencia del 9 de julio de 2009 "
+            "sobre una playa, ¿qué ordenó la Sala y en qué plazo?",
+            "",
+            None,
+            id="appeal-description-with-parties-and-date-supplies-reference",
+        ),
+        pytest.param(
+            "Recibí el requerimiento de reparación de daños en la playa el 4 de febrero "
+            "de 2025. No tengo la fecha de notificación de la resolución de archivo. "
+            "¿Qué día vence el plazo para reparar los daños?",
+            "",
+            None,
+            id="unrelated-notification-is-not-the-deadline-start",
+        ),
+        pytest.param(
+            "En aquella sentencia de primera instancia del 9 de julio de 2009 sobre "
+            "una playa, ¿qué ordenó el juez y en qué plazo?",
+            "",
+            "judicial_reference",
+            id="instance-and-date-alone-do-not-identify-current-case",
+        ),
+        pytest.param(
+            _NECESSARY_CLARIFICATION_C04,
+            "Usuario: Revisemos aquella sentencia de primera instancia del 9 de julio de 2009.",
+            "judicial_reference",
+            id="instance-and-date-alone-do-not-identify-history-case",
+        ),
+        pytest.param(
+            _NECESSARY_CLARIFICATION_C04.replace("primera instancia", "segunda instancia"),
+            "Usuario: Revisemos la sentencia de Flury Valencia de 9 de julio de 2009, "
+            "radicado 23001233100019981029001.",
+            None,
+            id="history-name-date-and-adjacent-docket-identify-one-case",
+        ),
+        pytest.param(
+            _NECESSARY_CLARIFICATION_C04,
+            "Usuario: Revisemos la sentencia de Flury Valencia de 9 de julio de 2009, "
+            "radicado 23001233100019981029001, y la sentencia de Inversiones E y D "
+            "de 9 de noviembre de 2022, radicado 47001233300020160027000.",
+            "judicial_reference",
+            id="two-named-history-cases-remain-ambiguous",
+        ),
+        pytest.param(
+            "Entre aquella sentencia de Flury Valencia de 9 de julio de 2009, radicado "
+            "23001233100019981029001, y aquel fallo de Inversiones E y D de 9 de noviembre "
+            "de 2022, radicado 47001233300020160027000, sin elegir uno, ¿qué ordenó "
+            "el juez sobre la playa y en qué plazo?",
+            "",
+            "judicial_reference",
+            id="two-current-cases-do-not-supply-a-unique-referent",
+        ),
+        pytest.param(
+            "En aquella sentencia sobre una playa, radicado 23001-23-31-000-1998-10290-01 "
+            "(23001233100019981029001), ¿qué ordenó la Sala y en qué plazo?",
+            "",
+            None,
+            id="current-docket-with-and-without-hyphens-is-one-reference",
+        ),
+        pytest.param(
+            _NECESSARY_CLARIFICATION_C04.replace("primera instancia", "segunda instancia"),
+            "Usuario: Revisemos el radicado 23001-23-31-000-1998-10290-01 "
+            "(23001233100019981029001), sobre una playa.",
+            None,
+            id="history-docket-with-and-without-hyphens-is-one-reference",
+        ),
+        pytest.param(
+            "En aquella sentencia de Flury Valencia de 9 de julio de 2009, radicado "
+            "23001233100019981029001, ¿qué ordenó la Sala sobre la construcción "
+            "en la costa y en qué plazo?",
+            "",
+            None,
+            id="current-name-date-and-adjacent-docket-identify-one-case",
+        ),
+    ],
+)
+def test_necessary_clarification_identifier_and_date_boundaries(
+    question: str, history: str, expected_reason: str | None
+) -> None:
+    from rag.core.domain_scope import clarification_reason
+
+    assert clarification_reason(question, history) == expected_reason
+    expected_route = "needs_clarification" if expected_reason is not None else "in_scope"
+    admitted = EnrichedQuery(
+        route="in_scope",
+        standalone_question=question,
+        expanded_query=question,
+        doc_types=["jurisprudencia", "normativa"],
+    )
+
+    fallback = _fallback(question, history)
+    guarded = _apply_domain_guard(admitted, question, history)
+    assert fallback.route == guarded.route == expected_route
+    if expected_reason is not None:
+        assert fallback.doc_types == guarded.doc_types == []
+    else:
+        assert fallback.doc_types and guarded.doc_types
+    assert guarded.standalone_question == question

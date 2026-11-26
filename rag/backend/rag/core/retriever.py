@@ -3,10 +3,8 @@
 
 Combina búsqueda léxica (BM25 sobre texto aumentado con keywords y resumen)
 con búsqueda semántica (embeddings de Ollama vía ChromaDB) usando Weighted
-Reciprocal Rank Fusion (RRF, c=2). Los sub-retrievers se ejecutan en
-paralelo con ``ainvoke()`` desde una única capa de concurrencia async
-(``asyncio.gather`` sobre tareas que se cancelan juntas si una falla, sin
-``asyncio.to_thread`` ni ``ThreadPoolExecutor`` propios); ``invoke()`` (síncrono)
+Reciprocal Rank Fusion (RRF, c=160). Los sub-retrievers se ejecutan en
+paralelo con ``ainvoke()``; ``invoke()`` (síncrono)
 sigue disponible y produce el mismo resultado, ejecutando los sub-retrievers
 secuencialmente.
 
@@ -29,7 +27,7 @@ from __future__ import annotations
 import asyncio
 import logging
 import re
-from collections.abc import AsyncIterator, Iterator, Sequence
+from collections.abc import AsyncIterator, Callable, Iterator
 from contextlib import asynccontextmanager, contextmanager
 from contextvars import ContextVar
 from math import isfinite
@@ -45,10 +43,9 @@ import requests
 from chromadb.api.base_http_client import BaseHTTPClient
 from chromadb.types import Where
 from langchain_chroma import Chroma
-from langchain_core.callbacks import AsyncCallbackManager, CallbackManagerForRetrieverRun
+from langchain_core.callbacks import CallbackManagerForRetrieverRun
 from langchain_core.documents import Document
 from langchain_core.retrievers import BaseRetriever
-from langchain_core.runnables import RunnableConfig, ensure_config
 from pydantic import ConfigDict, Field, model_validator
 
 from rag.config import CHROMA_COLLECTION as CHROMA_COLLECTION_NAME
@@ -58,18 +55,12 @@ from rag.config import (
     CHROMA_QUERY_TIMEOUT_SECONDS,
     OLLAMA_RERANK_BASE_URL,
     OLLAMA_RERANK_MODEL,
-    RETRIEVAL_BM25_WEIGHT,
-    RETRIEVAL_CUPOS_NORMATIVA,
-    RETRIEVAL_FRAGMENTOS_POR_NORMA,
-    RETRIEVAL_FRAGMENTOS_POR_SENTENCIA,
-    RETRIEVAL_RRF_C,
-    RETRIEVAL_VECTOR_WEIGHT,
 )
 
 from .chroma_query import ChromaQuery
 from .embeddings import OllamaEmbeddings, QueryEmbedder
-from .territorio import lugar_de_norma, lugares_mencionados, plano
-from .territorio import priorizar_territorio as _priorizar_territorio
+
+CandidateSelector = Callable[[list[Document], tuple[Document, ...]], list[Document]]
 
 # ---------------------------------------------------------------------
 # Configuración
@@ -82,62 +73,6 @@ from .territorio import priorizar_territorio as _priorizar_territorio
 
 EMBEDDINGS = OllamaEmbeddings()
 logger = logging.getLogger(__name__)
-
-# Constantes de fusión.
-#
-# Salen de la medición offline sobre el ground truth v0.2 del propio repo
-# (validación holdout de 200 particiones: 183 mejoran, 4 empeoran), no de una
-# elección arbitraria. Con c=160 cualquier candidato vectorial superaba a
-# cualquier candidato léxico y la lista final era siempre el top-4 vectorial;
-# c=2, BM25 0.6 y vector 0.4 recuperan el comportamiento híbrido y suben el
-# acierto de documento en top-4 de 0.586 a 0.690 sin degradar el MRR.
-#
-# Con el tokenizador español (ver ``_tokenize_bm25``) la señal léxica es mucho
-# más limpia y BM25 pasa a llevar la mayor parte del peso: 0.8/0.2 frente a
-# 0.6/0.4. La elección se validó con 200 particiones aleatorias por mitades
-# (ganancia en la mitad reservada de +0.022 en hit@4; 112 particiones mejor,
-# 30 peor). ``RRF_C`` se mantiene en 2.
-#
-# Todas las constantes de esta sección se pueden ajustar por entorno
-# (``RAG_RRF_C``, ``RAG_BM25_WEIGHT``, ``RAG_VECTOR_WEIGHT``,
-# ``RAG_CUPOS_NORMATIVA``, ``RAG_FRAGMENTOS_POR_SENTENCIA``,
-# ``RAG_FRAGMENTOS_POR_NORMA``; ver ``rag.config``) para re-medirlas tras un
-# cambio de corpus sin tocar código. Los valores por defecto son los medidos.
-RRF_C = RETRIEVAL_RRF_C
-BM25_WEIGHT = RETRIEVAL_BM25_WEIGHT
-VECTOR_WEIGHT = RETRIEVAL_VECTOR_WEIGHT
-
-# Puestos del top-k reservados a normas aplicables (si hay candidatas). Medido
-# sobre el ground truth v0.2 (k=4): con 0 cupos solo se reordena y el acierto
-# no cambia (0.724); con 1 sube a 0.741 y normativa 7→8/18, sin bajar
-# jurisprudencia (0.875); 2 cupos no añaden nada, así que se queda en 1.
-CUPOS_NORMATIVA = RETRIEVAL_CUPOS_NORMATIVA
-
-# Tope de fragmentos por norma antes del recorte (misma idea que
-# ``fragmentos_por_sentencia``). Sin él, una norma local larga (el reglamento de
-# Cartagena) ocupaba tres de los cuatro puestos y dejaba fuera al REMAC o al
-# Decreto 2324, que estaban en el top-10. Medido sobre el ground truth v0.2 por
-# la ruta de producción (multiconsulta): normativa 7→8/18, global 0.741→0.759,
-# jurisprudencia 0.900 sin cambio, fuga territorial 0; cuesta artículos
-# 0.130→0.126. Sobre otras tres cachés de consultas enriquecidas es neutro o
-# mejora un caso (nunca empeora el acierto).
-FRAGMENTOS_POR_NORMA: int | None = RETRIEVAL_FRAGMENTOS_POR_NORMA or None
-
-# Tope de fragmentos por sentencia (ver ``HybridEnsembleRetriever``).
-FRAGMENTOS_POR_SENTENCIA: int | None = RETRIEVAL_FRAGMENTOS_POR_SENTENCIA or None
-
-# Palabras vacías del español que no aportan señal léxica al BM25.
-_STOPWORDS_ES: frozenset[str] = frozenset(
-    """
-a al algo algun alguna algunas alguno algunos ante antes aqui asi aun cada como con
-contra cual cuales cuando de del desde donde dos e el ella ellas ello ellos en entre
-era eran es esa esas ese eso esos esta estaba estado estan estar estas este esto
-estos fue fueron ha habia han hasta hay la las le les lo los mas me mi mis mucho muy
-nada ni no nos nosotros o otra otras otro otros para pero poco por porque que quien
-se sea segun ser si sido siempre sin sobre solo son su sus tambien tan tanto te
-tiene tienen todo todos tu tus un una unas uno unos y ya yo
-""".split()
-)
 
 # ---------------------------------------------------------------------
 # Singletons de módulo — reutilizados entre requests
@@ -186,36 +121,8 @@ def retriever_initialization_scope() -> Iterator[object]:
 
 
 def _tokenize_bm25(text: str) -> list[str]:
-    """Tokenizador léxico español para el índice BM25 y para las consultas.
-
-    ``str.split()`` separaba solo por espacios, así que "Playa," y "playa", o
-    "DIMAR" y "dimar", eran términos distintos y la señal léxica se perdía por
-    mayúsculas, tildes, puntuación y plurales. Aquí se normaliza con
-    ``plano`` (minúsculas y sin tildes), se extraen palabras con
-    ``\\w+``, se descartan las palabras vacías del español y los tokens de
-    una sola letra, y se reduce un plural ligero final ("playas" → "playa",
-    "concesiones" → "concesion"; "parque" y "parques" → "parqu").
-
-    Medido sobre el corpus congelado (ground truth v0.2, 66 casos) junto con
-    el cambio de pesos a BM25 0.8 / vector 0.2: hit@4 de la ruta de producción
-    0.690→0.724, MRR 0.549→0.640, artículos 0.088→0.201, normativa 5→7/18.
-    La misma función se usa para indexar y para consultar.
-    """
-    tokens = re.findall(r"\w+", plano(text))
-    resultado: list[str] = []
-    for token in tokens:
-        if token in _STOPWORDS_ES or len(token) == 1:
-            continue
-        if len(token) > 4 and token.endswith("es"):
-            token = token[:-2]
-        elif len(token) > 4 and token.endswith("s"):
-            token = token[:-1]
-        elif len(token) > 3 and token.endswith("e"):
-            # «parque»/«parques» → «parqu»: sin esto el singular conservaba la
-            # «e» y el plural la perdía al quitar «es», y nunca coincidían.
-            token = token[:-1]
-        resultado.append(token)
-    return resultado
+    """Replica el preprocesamiento histórico de BM25Retriever: ``str.split``."""
+    return text.split()
 
 
 class BM25Retriever(BaseRetriever):
@@ -634,95 +541,6 @@ def _has_retrievable_content(text: str) -> bool:
 # ---------------------------------------------------------------------
 
 
-def _diversificar_sentencias(
-    docs: list[Document], tope: int | None, tope_normas: int | None = None
-) -> list[Document]:
-    """Partición estable: a partir del fragmento ``tope + 1`` de una misma
-    sentencia (o ``tope_normas + 1`` de una misma norma), los siguientes pasan
-    al final (no se descartan). ``None`` deja sin tope a ese tipo:
-    ``tope_normas=None`` conserva todos los artículos de una norma."""
-    vistos: dict[str, int] = {}
-    primeros: list[Document] = []
-    extra: list[Document] = []
-    for doc in docs:
-        meta = doc.metadata or {}
-        tipo = meta.get("doc_type")
-        limite = tope if tipo == "jurisprudencia" else tope_normas if tipo == "normativa" else None
-        if limite is None:
-            primeros.append(doc)
-            continue
-        clave = str(meta.get("source") or meta.get("title") or doc.page_content)
-        vistos[clave] = vistos.get(clave, 0) + 1
-        (primeros if vistos[clave] <= limite else extra).append(doc)
-    return [*primeros, *extra]
-
-
-def _es_norma_aplicable(doc: Document, lugares: set[str]) -> bool:
-    """Norma nacional, o norma local de un lugar que la consulta menciona.
-
-    Las normas locales de otras ciudades no cuentan: la prioridad territorial
-    ya las posterga y la jerarquía no debe devolverlas al frente.
-    """
-    meta = doc.metadata or {}
-    if meta.get("doc_type") != "normativa":
-        return False
-    lugar = lugar_de_norma(meta)
-    return lugar is None or lugar in lugares
-
-
-def _priorizar_normativa(
-    seleccion: list[Document],
-    candidatos: Sequence[Document],
-    queries: Sequence[str],
-    cupos: int,
-) -> list[Document]:
-    """Jerarquía normativa: la norma va antes que la jurisprudencia.
-
-    1. Si la selección tiene menos de ``cupos`` normas aplicables y quedan
-       normas aplicables entre los ``candidatos`` no seleccionados, cada una
-       reemplaza a la jurisprudencia peor ubicada de la selección. Nunca
-       cambia el tamaño de la selección ni quita normas.
-    2. Partición estable: las normas aplicables primero, luego el resto, cada
-       grupo en su orden de fusión. Así el modelo lee la norma (REMAC,
-       decretos, leyes) antes que las sentencias que la interpretan.
-    """
-    lugares = lugares_mencionados(queries)
-    seleccion = list(seleccion)
-    faltan = cupos - sum(_es_norma_aplicable(d, lugares) for d in seleccion)
-    if faltan > 0:
-        ya = {id(d) for d in seleccion}
-        reservas = [d for d in candidatos if id(d) not in ya and _es_norma_aplicable(d, lugares)]
-        for norma in reservas[:faltan]:
-            juris = [
-                i
-                for i, d in enumerate(seleccion)
-                if (d.metadata or {}).get("doc_type") == "jurisprudencia"
-            ]
-            if not juris:
-                break
-            seleccion[juris[-1]] = norma
-    normas = [d for d in seleccion if _es_norma_aplicable(d, lugares)]
-    resto = [d for d in seleccion if not _es_norma_aplicable(d, lugares)]
-    return [*normas, *resto]
-
-
-async def _gather_cancelling(coros: Sequence[Any]) -> list[Any]:
-    """``asyncio.gather`` que cancela y espera las tareas pendientes si una falla.
-
-    Así una consulta cancelada (p. ej. el cliente cierra el SSE) no deja
-    búsquedas BM25/Chroma corriendo en segundo plano.
-    """
-    tasks = [asyncio.create_task(c) for c in coros]
-    try:
-        return list(await asyncio.gather(*tasks))
-    except BaseException:
-        for task in tasks:
-            if not task.done():
-                task.cancel()
-        await asyncio.gather(*tasks, return_exceptions=True)
-        raise
-
-
 class HybridEnsembleRetriever(BaseRetriever):
     """
     Retriever híbrido que combina varios sub-retrievers usando
@@ -735,24 +553,9 @@ class HybridEnsembleRetriever(BaseRetriever):
 
     retrievers: list[BaseRetriever]
     weights: list[float]
-    c: int = RRF_C  # constante RRF; ver RRF_C para la medición que la fija
+    c: int = 160  # constante RRF
     id_key: str | None = "chunk_id"
     max_results: int = 4
-    priorizar_territorio: bool = True
-    # Tope de fragmentos por sentencia antes del recorte (None = sin tope).
-    # Sin él, el top-4 se llenaba con cuatro fragmentos de una misma
-    # sentencia. Medido sobre el ground truth v0.2: hit@4 de producción
-    # 0.724→0.759, documento en top-20 0.793→0.828, normativa 7→8/18; cuesta
-    # artículos 0.201→0.175 (un caso). Las normas tienen su propio tope
-    # (``fragmentos_por_norma``).
-    fragmentos_por_sentencia: int | None = FRAGMENTOS_POR_SENTENCIA
-    fragmentos_por_norma: int | None = FRAGMENTOS_POR_NORMA
-    # Jerarquía normativa (pedida por el equipo jurídico): la norma aplicable
-    # va antes que la jurisprudencia en el contexto, y se le reservan
-    # ``cupos_normativa`` puestos si hay normas entre los candidatos. Ver
-    # ``_priorizar_normativa`` y CUPOS_NORMATIVA para la medición.
-    normativa_primero: bool = True
-    cupos_normativa: int = CUPOS_NORMATIVA
 
     @model_validator(mode="after")
     def _validate_retrievers_and_weights_match(self) -> HybridEnsembleRetriever:
@@ -778,32 +581,21 @@ class HybridEnsembleRetriever(BaseRetriever):
     def _fuse(
         self,
         all_results: list[list[Document]],
-        weights: Sequence[float] | None = None,
-        queries: Sequence[str] = (),
+        *,
+        candidate_selector: CandidateSelector | None = None,
     ) -> list[Document]:
-        """Fusión RRF ponderada, común a las rutas síncrona, asíncrona y multiconsulta.
-
-        ``weights`` permite reutilizar esta misma fórmula cuando una ruta
-        produce varias listas por sub-recuperador (multiconsulta). Si se omite,
-        se usan los pesos de la instancia, que es el caso de una sola consulta.
-
-        ``queries`` habilita la prioridad territorial: antes de recortar a
-        ``max_results`` se demotan las normas locales de ciudades que las
-        consultas no mencionan, de modo que los puestos liberados los ocupan
-        los siguientes candidatos. Con ``queries`` vacío no se reordena nada.
-        """
-        effective_weights = list(self.weights if weights is None else weights)
-        if len(all_results) != len(effective_weights):
+        """Fusión RRF ponderada, común a las rutas síncrona y asíncrona."""
+        if len(all_results) != len(self.weights):
             raise ValueError(
                 "HybridEnsembleRetriever._fuse(): el número de listas de resultados "
                 f"({len(all_results)}) no coincide con el número de pesos "
-                f"({len(effective_weights)}) — configuración estructural inválida antes "
+                f"({len(self.weights)}) — configuración estructural inválida antes "
                 "de fusionar."
             )
         scores: dict[str, float] = {}
         doc_by_id: dict[str, Document] = {}
 
-        for docs, w in zip(all_results, effective_weights, strict=False):
+        for docs, w in zip(all_results, self.weights, strict=False):
             for rank, doc in enumerate(docs, start=1):
                 if self.id_key and self.id_key in (doc.metadata or {}):
                     doc_id = str(doc.metadata[self.id_key])
@@ -813,27 +605,49 @@ class HybridEnsembleRetriever(BaseRetriever):
                 doc_by_id.setdefault(doc_id, doc)
                 scores[doc_id] = scores.get(doc_id, 0.0) + w / (rank + self.c)
 
-        # Se recorre en orden de score descendente. Antes de descartar los
+        # Se recorre en orden de score descendente y se descartan los
         # candidatos sin contenido alfanumérico (basura estructural del
-        # corpus) y de truncar a max_results, se demotan las normas locales de
-        # ciudades no mencionadas: así el recorte final se hace sobre el orden
-        # territorial y los puestos liberados los ocupan los siguientes
-        # candidatos. No afecta a BM25, al vector store, a los pesos ni a k:
-        # opera solo sobre el resultado ya fusionado, así que nunca devuelve
-        # más de max_results documentos.
+        # corpus), rellenando con el siguiente mejor candidato en vez de
+        # simplemente truncar a max_results. No afecta a BM25, al vector
+        # store, a los pesos ni a k: opera solo sobre el resultado ya
+        # fusionado, así que nunca devuelve más de max_results documentos.
         sorted_ids = sorted(scores, key=lambda identifier: scores[identifier], reverse=True)
-        ordered_docs = [doc_by_id[doc_id] for doc_id in sorted_ids]
-        if self.fragmentos_por_sentencia or self.fragmentos_por_norma:
-            ordered_docs = _diversificar_sentencias(
-                ordered_docs, self.fragmentos_por_sentencia, self.fragmentos_por_norma
-            )
-        if self.priorizar_territorio and queries:
-            ordered_docs = _priorizar_territorio(ordered_docs, queries)
+        selected: list[Document] = []
+        for doc_id in sorted_ids:
+            if len(selected) >= self.max_results:
+                break
+            doc = doc_by_id[doc_id]
+            if not _has_retrievable_content(doc.page_content or ""):
+                continue
+            selected.append(doc)
+        if candidate_selector is None or not selected:
+            return selected
 
-        candidatos = [d for d in ordered_docs if _has_retrievable_content(d.page_content or "")]
-        selected = candidatos[: self.max_results]
-        if self.normativa_primero and queries:
-            selected = _priorizar_normativa(selected, candidatos, queries, self.cupos_normativa)
+        # The optional pure selector sees only existing, deduplicated candidates.
+        # Keep the protected baseline even if its shallow copy is changed or the
+        # selector fails. Document bodies and metadata remain caller-owned.
+        candidates = tuple(
+            doc_by_id[ident]
+            for ident in sorted_ids
+            if _has_retrievable_content(doc_by_id[ident].page_content or "")
+        )
+        candidate_objects = {id(doc) for doc in candidates}
+        try:
+            proposed = candidate_selector(list(selected), candidates)
+            if (
+                isinstance(proposed, list)
+                and len(proposed) == len(selected)
+                and len({id(doc) for doc in proposed}) == len(proposed)
+                and all(id(doc) in candidate_objects for doc in proposed)
+            ):
+                if all(
+                    original is replacement
+                    for original, replacement in zip(selected, proposed, strict=True)
+                ):
+                    return selected
+                return proposed
+        except Exception as exc:
+            logger.warning("candidate_selection_failed error_type=%s", type(exc).__name__)
         return selected
 
     def _get_relevant_documents(
@@ -841,98 +655,42 @@ class HybridEnsembleRetriever(BaseRetriever):
         query: str,
         *,
         run_manager: CallbackManagerForRetrieverRun,
+        candidate_selector: CandidateSelector | None = None,
+        **_ignored_kwargs: Any,
     ) -> list[Document]:
         all_results: list[list[Document]] = [
             r.invoke(query, config={"callbacks": run_manager.get_child()}) for r in self.retrievers
         ]
-        return self._fuse(all_results, queries=(query,))
+        return self._fuse(all_results, candidate_selector=candidate_selector)
 
     async def _aget_relevant_documents(
         self,
         query: str,
         *,
         run_manager: Any,
+        candidate_selector: CandidateSelector | None = None,
+        **_ignored_kwargs: Any,
     ) -> list[Document]:
-        return self._fuse(
-            await _gather_cancelling(
-                [
-                    r.ainvoke(query, config={"callbacks": run_manager.get_child()})
-                    for r in self.retrievers
-                ]
-            ),
-            queries=(query,),
-        )
-
-    @staticmethod
-    def _normalize_queries(queries: Sequence[str]) -> list[str]:
-        """Descarta consultas vacías o de solo espacios y deduplica por orden."""
-        normalized: list[str] = []
-        seen: set[str] = set()
-        for query in queries:
-            value = (query or "").strip()
-            if value and value not in seen:
-                seen.add(value)
-                normalized.append(value)
-        return normalized
-
-    async def afuse_queries(
-        self, queries: Sequence[str], config: RunnableConfig | None = None
-    ) -> list[Document]:
-        """Recupera con cada consulta y fusiona todas las listas con RRF.
-
-        Cada sub-recuperador recibe cada consulta una sola vez (los duplicados
-        y las cadenas vacías se descartan antes de llamar). Todas las llamadas
-        se lanzan juntas con ``_gather_cancelling`` sobre ``ainvoke`` — sin
-        ``asyncio.to_thread`` ni ``ThreadPoolExecutor`` anidados — y se fusionan
-        con la misma fórmula y el mismo filtro post-fusión que la ruta de una
-        sola consulta, aplicando a cada lista el peso del sub-recuperador que
-        la produjo.
-
-        Trazas: igual que ``ainvoke``, abre una ejecución de recuperador propia
-        (con los callbacks, etiquetas y metadatos de ``config`` o, si se omite,
-        del contexto del grafo) y pasa a cada sub-recuperador sus callbacks
-        hijos, así que las búsquedas cuelgan de esta ejecución en la traza.
-        """
-        normalized = self._normalize_queries(queries)
-        if not normalized:
-            return []
-
-        config = ensure_config(config)
-        callback_manager = AsyncCallbackManager.configure(
-            config.get("callbacks"),
-            None,
-            inheritable_tags=config.get("tags"),
-            local_tags=self.tags,
-            inheritable_metadata=config.get("metadata"),
-            local_metadata=self.metadata,
-        )
-        run_manager = await callback_manager.on_retriever_start(
-            None, "\n".join(normalized), name=config.get("run_name") or self.get_name()
-        )
+        tasks = [
+            asyncio.create_task(r.ainvoke(query, config={"callbacks": run_manager.get_child()}))
+            for r in self.retrievers
+        ]
         try:
-            all_results = await _gather_cancelling(
-                [
-                    r.ainvoke(query, config={"callbacks": run_manager.get_child()})
-                    for query in normalized
-                    for r in self.retrievers
-                ]
-            )
-            # Orden query-major, igual que el productorio de arriba: por cada
-            # consulta se repite la secuencia de pesos de self.retrievers.
-            weights = list(self.weights) * len(normalized)
-            result = self._fuse(list(all_results), weights=weights, queries=normalized)
-        except Exception as error:
-            await run_manager.on_retriever_error(error)
+            all_results = await asyncio.gather(*tasks)
+        except BaseException:
+            for task in tasks:
+                if not task.done():
+                    task.cancel()
+            await asyncio.gather(*tasks, return_exceptions=True)
             raise
-        await run_manager.on_retriever_end(result)
-        return result
+        return self._fuse(all_results, candidate_selector=candidate_selector)
 
 
 def get_ensemble_retriever(
     k: int = 4,
     k_candidates: int | None = None,
-    bm25_weight: float = BM25_WEIGHT,
-    vector_weight: float = VECTOR_WEIGHT,
+    bm25_weight: float = 0.3,
+    vector_weight: float = 0.7,
     doc_types: list[str] | None = None,
     *,
     chroma_query: ChromaQuery | None = None,

@@ -6,9 +6,9 @@ from langchain_core.messages import AIMessage, HumanMessage
 
 from rag.core.agent import (
     _compose_generation_question,
+    _compose_retrieval_query,
     _conversation_response,
     _history_for_analysis,
-    _retrieval_queries,
     _validate_citations,
     route_after_analysis,
 )
@@ -45,18 +45,15 @@ def test_original_question_is_preserved_in_retrieval_and_generation() -> None:
         "standalone_question": "¿Cuál es el plazo del permiso de ocupación de una playa?",
         "enriched_query": "plazo permiso ocupación playa",
     }
-    retrieval_queries = _retrieval_queries(state)
+    retrieval_query = _compose_retrieval_query(state)
     generation_question = _compose_generation_question(state)
-    assert retrieval_queries[0] == "¿Y cuál es el plazo?"
-    assert "¿Cuál es el plazo del permiso de ocupación de una playa?" in retrieval_queries
-    assert "plazo permiso ocupación playa" in retrieval_queries
+    assert retrieval_query.startswith("¿Y cuál es el plazo?\n")
+    assert "permiso de ocupación" in retrieval_query
     assert "Pregunta original: ¿Y cuál es el plazo?" in generation_question
     assert "Reformulación contextual" in generation_question
 
 
 def test_social_responses_do_not_present_an_assistant_identity() -> None:
-    saludo = _conversation_response("Hola")
-    assert saludo.startswith("Hola.")
-    assert "ATLAS" not in saludo and "soy " not in saludo.casefold()
+    assert _conversation_response("Hola") == "Hola. ¿Cuál es tu consulta?"
     assert _conversation_response("Gracias") == "Con gusto."
     assert "ATLAS" not in _conversation_response("¿Qué puedes hacer?")

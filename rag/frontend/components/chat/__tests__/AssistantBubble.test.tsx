@@ -188,3 +188,125 @@ describe("AssistantBubble — badges de cita", () => {
 		expect(badge2).toBe(screen.getByRole("button", { name: "Ver fuente 2" }));
 	});
 });
+
+describe("AssistantBubble — imágenes Markdown como texto", () => {
+	function expectNoImageResources() {
+		expect(document.querySelector("img")).not.toBeInTheDocument();
+		expect(
+			document.querySelector('link[rel~="preload"][as="image"]'),
+		).not.toBeInTheDocument();
+	}
+
+	it.each([
+		["HTTPS", "https://imagenes.example.test/mapa.png"],
+		["relativa", "/mapa.png"],
+		["sin protocolo", "//imagenes.example.test/mapa.png"],
+	])("conserva el alt sin crear recursos de imagen con URL %s", (_, url) => {
+		const { container } = setup(`Antes ![Mapa de la playa](${url}) después.`);
+
+		expectNoImageResources();
+		expect(container.querySelector(".rag-prose")).toHaveTextContent(
+			"Antes Mapa de la playa después.",
+		);
+	});
+
+	it("omite la imagen sin alt sin inventar texto ni enlaces", () => {
+		const { container } = setup(
+			"Antes ![](https://imagenes.example.test/vacia.png) después.",
+		);
+
+		expectNoImageResources();
+		expect(container.querySelector(".rag-prose")).toHaveTextContent(
+			"Antes después.",
+		);
+		expect(screen.queryByRole("link")).not.toBeInTheDocument();
+	});
+
+	it("conserva el enlace explícito que contiene la imagen, sin enlazar su recurso", () => {
+		setup(
+			"[![Detalle cartográfico](https://imagenes.example.test/mapa.png)](https://documentos.example.test/fallo)",
+		);
+
+		expectNoImageResources();
+		const link = screen.getByRole("link", { name: "Detalle cartográfico" });
+		expect(link).toHaveAttribute("href", "https://documentos.example.test/fallo");
+		expect(link).toHaveTextContent("Detalle cartográfico");
+		expect(screen.getAllByRole("link")).toHaveLength(1);
+	});
+
+	it("mantiene el alt inline en párrafos y tablas junto a citas y enlaces", async () => {
+		const user = userEvent.setup();
+		const { container } = setup(
+			"Antes ![Croquis de la costa](/croquis.png) después.\n\n" +
+				"| Elemento | Referencia |\n| --- | --- |\n" +
+				"| Playa | ![Mapa del sector](/sector.png) |\n\n" +
+				"Evidencia [doc1]; [Sitio](https://documentos.example.test/ayuda).",
+		);
+
+		expectNoImageResources();
+		const paragraph = container.querySelector(".rag-prose > p");
+		expect(paragraph).toHaveTextContent("Antes Croquis de la costa después.");
+		expect(paragraph?.querySelector("div, p, table")).toBeNull();
+		expect(screen.getByRole("table")).toBeInTheDocument();
+		expect(screen.getByRole("cell", { name: "Mapa del sector" })).toBeInTheDocument();
+		expect(screen.getByRole("link", { name: "Sitio" })).toHaveAttribute(
+			"href",
+			"https://documentos.example.test/ayuda",
+		);
+		await user.click(screen.getByRole("button", { name: "Ver fuente 1" }));
+		expect(container.querySelector(".doc-popover-content--scroll")).toHaveTextContent(
+			"Contenido del fragmento citado.",
+		);
+		expectNoImageResources();
+	});
+
+	it("no crea imágenes ni precargas en los estados comprobados del streaming", () => {
+		const { container, rerender, onRate } = setup("Inicio");
+		expectNoImageResources();
+		for (const text of [
+			"Inicio ![Mapa",
+			"Inicio ![Mapa](/mapa.png)",
+			"Inicio ![Mapa](/mapa.png) y ![Costa](https://imagenes.example.test/costa.png).",
+		]) {
+			rerender(
+				<AssistantBubble
+					text={text}
+					sources={sources}
+					messageId="msg-1"
+					isRated={false}
+					onRate={onRate}
+				/>,
+			);
+			expectNoImageResources();
+		}
+		expect(container.querySelector(".rag-prose")).toHaveTextContent(
+			"Inicio Mapa y Costa.",
+		);
+	});
+
+	it("conserva etiquetas y Markdown del alt como texto sin reinterpretarlos", () => {
+		const alt = '<b>Mapa</b> **costero** <script>alert("x")</script>';
+		const { container } = setup(
+			'![<b>Mapa</b> \\*\\*costero\\*\\* <script>alert("x")</script>](/mapa.png)',
+		);
+
+		expectNoImageResources();
+		const prose = container.querySelector(".rag-prose");
+		expect(prose).toHaveTextContent(alt);
+		expect(prose?.querySelector("b, strong, script")).toBeNull();
+	});
+
+	it("mantiene HTML crudo como texto y bloquea protocolos inseguros en enlaces", () => {
+		const { container } = setup(
+			'<script>alert("x")</script>\n\n[Enlace no seguro](javascript:alert%281%29)',
+		);
+		const prose = container.querySelector(".rag-prose");
+
+		expect(prose).toHaveTextContent('<script>alert("x")</script>');
+		expect(prose?.querySelector("script")).toBeNull();
+		expect(screen.getByText("Enlace no seguro").closest("a")).not.toHaveAttribute(
+			"href",
+			expect.stringMatching(/^javascript:/i),
+		);
+	});
+});

@@ -2,7 +2,8 @@
 	frontend-lint frontend-typecheck frontend-test frontend-build quality app frontend clean help
 
 install:  ## Instalar dependencias de todo el workspace (incluidas las de desarrollo)
-	uv sync --all-packages --group dev
+	env -u UV_FROZEN uv lock --check --no-build --no-python-downloads --python 3.12
+	uv sync --frozen --all-packages --group dev
 
 lint:  ## Verificar errores de estilo y lógica con ruff
 	uv run ruff check backend/rag/ tests/ evaluation/ scripts/ utils/
@@ -14,7 +15,7 @@ format-check:  ## Verificar formato sin modificar archivos (usado en CI)
 	uv run ruff format --check backend/rag/ tests/ evaluation/ scripts/ utils/
 
 typecheck:  ## Verificar tipos con mypy
-	uv run mypy backend/rag/ evaluation/
+	uv run mypy backend/rag/ evaluation/ scripts/migrate_message_feedback_unique.py
 
 test:  ## Ejecutar tests unitarios
 	uv run pytest tests/unit/
