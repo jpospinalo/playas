@@ -242,7 +242,7 @@ async def _get_initial_messages(
         history_query = (
             select(Message)
             .where(Message.conversation_id == conversation_id)
-            .order_by(Message.created_at)
+            .order_by(Message.created_at, Message.id)
         )
         if current_message is not None:
             history_query = history_query.where(
@@ -253,7 +253,7 @@ async def _get_initial_messages(
                         Message.id < current_message.id,
                     ),
                 )
-            ).order_by(Message.id)
+            )
         result = await session.execute(history_query)
         msgs = result.scalars().all()
     finally:
