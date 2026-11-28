@@ -448,9 +448,9 @@ async def query_stream(
       data: {"type": "sources", "sources": [...], "enriched_query": "..."}
       data: [DONE]
 
-    La respuesta se valida antes de exponerla para impedir citas inexistentes o
-    conclusiones jurídicas sin respaldo. Al finalizar se envían las fuentes y
-    la consulta enriquecida.
+    Los índices de cita se comprueban antes de exponer la respuesta; ese control
+    no acredita por sí solo el respaldo semántico de sus afirmaciones. Al finalizar
+    se envían las fuentes y la consulta enriquecida.
     """
     graph = get_graph()
     config = _make_config(user["sub"], request.conversation_id, request.thread_id)

@@ -36,7 +36,7 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator, model_valida
 
 QueryRoute = Literal["in_scope", "out_of_scope", "conversation", "needs_clarification"]
 DocumentType = Literal["jurisprudencia", "normativa"]
-ClarificationReason = Literal["start_date", "judicial_reference"]
+ClarificationReason = Literal["start_date", "judicial_reference", "activity", "access_location"]
 
 
 # Límites de ``expanded_query``: única fuente de verdad, referenciada tanto
@@ -304,6 +304,17 @@ _ACCESS_PROPERTY_RE = re.compile(
     re.IGNORECASE,
 )
 
+# Cobro por entrada y obstrucción del paso: intención, no prueba de ilegalidad.
+_ACCESS_ENTRY_RE = re.compile(
+    r"\bcobr\w*\s+(?:por\s+)?(?:entr(?:ar|a|ada)|pasar|acceder)\b",
+    re.IGNORECASE,
+)
+_ACCESS_BLOCK_RE = re.compile(
+    r"\b(?:no\s+(?:me\s+|nos\s+)?dej\w*\s+pasar|"
+    r"(?:cerr\w*|bloque\w*|impid\w*|impide\w*)\s+(?:el\s+)?(?:paso|acceso))\b",
+    re.IGNORECASE,
+)
+
 # Sanciones, multas y obligaciones/responsabilidades.
 _SANCTION_OBLIGATION_RE = re.compile(
     r"\b(sanci[oó]n\w*|multa\w*|oblig\w*|responsab\w*)\b",
@@ -365,6 +376,8 @@ _LEGAL_INTENT_PATTERNS: tuple[re.Pattern[str], ...] = (
     _AUTHORITY_COMPETENCE_RE,
     _COMPLAINT_RISK_RE,
     _ACCESS_PROPERTY_RE,
+    _ACCESS_ENTRY_RE,
+    _ACCESS_BLOCK_RE,
     _SANCTION_OBLIGATION_RE,
     _PARTICIPATION_PROTECTION_RE,
     _NORMATIVE_REFERENCE_RE,
@@ -638,6 +651,241 @@ def _judicial_reference_keys(text: str) -> set[str]:
     return references
 
 
+# Estos intercambios son locales: no heredan hechos del asistente ni de una
+# expansión. El serializador del grafo mantiene cada cuerpo en una sola línea.
+_UNSPECIFIED_ACTIVITY_RE = re.compile(
+    r"^[¿?¡!\s]*(?:(?:hola|ola)[,\s]+)?(?:puedo|podemos|se\s+puede)\s+"
+    r"(?:hacer|aser|realizar)\s+(?:esto|eso|aquello)"
+    r"(?:\s+en\s+(?:la|una|esa)\s+(?:playa|zona\s+costera))?[?!.\s]*$",
+    re.IGNORECASE,
+)
+_CONCRETE_ACCESS_RE = re.compile(
+    r"^[¿?\s]*(?:(?:hola|ola)[,\s]+)?(?:un|una|el|la|mi)\s+"
+    r"(?:hotel|particular|empresa|vecino|propietario)\b.*"
+    r"\b(?:puso|coloc[oó]|instal[oó]|cerr[oó]|bloque[oó]|no\s+deja|impide)\b",
+    re.IGNORECASE,
+)
+_ACCESS_PLACE_REPLY_RE = re.compile(
+    r"^\s*(?:(?:es|est[aá]|ocurre|sucede)\s+)?en\s+([^?\n]{2,100}?)[.!]?\s*$",
+    re.IGNORECASE,
+)
+_ACCESS_PLACE_REQUEST_RE = re.compile(
+    r"(?:en\s+qu[eé]\s+(?:municipio|playa|lugar)|"
+    r"d[oó]nde\s+(?:ocurre|est[aá]|se\s+encuentra)|ubicaci[oó]n)",
+    re.IGNORECASE,
+)
+_ACCESS_FOLLOWUP_RE = re.compile(
+    r"^[¿?\s]*(?:y\s+)?(?:qu[eé]\s+puedo\s+hacer|qu[eé]\s+hago)"
+    r"(?:\s+si\s+no\s+(?:la|lo|las|los)\s+(?:quitan|retiran|abren)|"
+    r"\s+(?:con|sobre)\s+(?:esa|la)\s+(?:cerca|barrera))?[?!.\s]*$",
+    re.IGNORECASE,
+)
+_ACCESS_CASE_PLACE_RE = re.compile(
+    r"\b(?:en|(?:playa|municipio|ciudad|distrito)\s+de)\s+([^?!.\n]+?)"
+    r"(?=\s+(?:puso|coloc[oó]|instal[oó]|cerr[oó]|bloque[oó]|(?:y\s+)?no\s+deja|impide)\b|"
+    r"\s*(?:[,;]\s*)?¿|[,;]\s*(?:qu[eé]|c[oó]mo|d[oó]nde|qui[eé]n|cu[aá]l(?:es)?)\b|"
+    r"[?!.\n]|$)",
+    re.IGNORECASE,
+)
+_MULTIPLE_ACCESS_CASES_RE = re.compile(
+    r"\b(?:otro|otra|dos|ambos|ambas)\s+(?:hoteles?|playas?|casos?|cercas?|barreras?|"
+    r"particulares?|empresas?|vecinos?|propietarios?)\b",
+    re.IGNORECASE,
+)
+
+
+def _history_turns(history_context: str) -> list[tuple[str, str]]:
+    return [
+        ("Truncado" if truncated else role, text)
+        for role, truncated, text in re.findall(
+            r"^(Usuario|Asistente)( \(truncado\))?: ([^\n]*)", history_context, re.MULTILINE
+        )
+    ]
+
+
+_EXPLANATORY_ACTION_PATTERN = r"explic\w*|interpret\w*|analiz\w*|compar\w*|resum\w*|describ\w*"
+_ACCESS_NEW_QUERY_RE = re.compile(
+    rf"\b(?:{_EXPLANATORY_ACTION_PATTERN}|dime|dinos|indica\w*|aclara\w*|"
+    r"quiero|quisiera|pued[eo]|podemos|debo|debe|necesit\w*)\b",
+    re.IGNORECASE,
+)
+_ARTICLE_NUMBER_RE = re.compile(r"\bart[ií]culo\s+\d+(?:\.\d+)*\b", re.IGNORECASE)
+_GENERAL_NORMATIVE_EFFECT_RE = re.compile(
+    rf"\b(?:{_EXPLANATORY_ACTION_PATTERN}|dice|establece|dispone|prev[eé]|permite|"
+    r"proh[ií]be|conced\w*|otorg\w*|signific\w*|mencion\w*|puede(?:n)?|"
+    r"derech\w*|propiedad|dominio|efect\w*|alcance)\b",
+    re.IGNORECASE,
+)
+_LOCAL_PROCEDURE_NOUN_PATTERN = (
+    r"(?:tr[aá]mites?|requisitos?|procedimientos?)\s+(?:municipal\w*|local\w*)"
+)
+# These are current request frames, not past descriptions embedded in prose.
+_LOCAL_PROCEDURE_REQUEST_RE = re.compile(
+    r"(?:^|[¿?!;.,\n]|\by\b)\s*"
+    r"(?:(?:dime|dinos|indica(?:me)?)\s+(?:(?:qu[eé]|cu[aá]l(?:es)?)\s+(?:(?:es|son)\s+)?)?|"
+    r"(?:qu[eé]|cu[aá]l(?:es)?)\s+(?:(?:es|son)\s+)?|"
+    r"(?:necesito|quiero|quisiera|debo)\s+(?:(?:conocer|saber|cumplir|seguir|iniciar|presentar|realizar)\s+)?"
+    r"(?:(?:qu[eé]|cu[aá]l(?:es)?)\s+(?:(?:es|son)\s+)?)?|"
+    r"c[oó]mo\s+(?:se\s+)?(?:(?:debo|debe|puedo|puede)\s+)?"
+    r"(?:iniciar|inicio|inicia|inician|cumplir|cumplo|cumple|cumplen|"
+    r"presentar|presento|presenta|presentan|realizar|realizo|realiza|realizan)\s+|"
+    r"(?:explica|explique|interpreta|interprete|analiza|analice|compara|compare|"
+    r"resume|resuma|describe|describa)\s+(?:(?:qu[eé]|cu[aá]les\s+son)\s+)?)"
+    rf"(?:(?:el|la|los|las|un|una|unos|unas)\s+)?{_LOCAL_PROCEDURE_NOUN_PATTERN}\b",
+    re.IGNORECASE,
+)
+_LOCAL_ACCESS_ACTION_RE = re.compile(
+    r"\b(?:(?:ante|a)\s+(?:qu[eé]\s+(?:autoridad|entidad|oficina)|qui[eé]n)|"
+    r"(?:d[oó]nde|c[oó]mo)\s+(?:(?:debo|puedo|hay\s+que)\s+)?"
+    r"(?:denunci\w*|reclam\w*|present\w*|retir\w*|quit\w*)|"
+    r"qu[eé]\s+(?:puedo|debo)\s+hacer|"
+    r"(?:qui[eé]n|qu[eé]\s+(?:autoridad|entidad))\s+"
+    r"(?:(?:debe|puede|tiene\s+que)\s+)?(?:retirar|quitar|intervenir|"
+    r"ordenar\s+(?:que\s+(?:la|lo|las|los)\s+(?:quite[n]?|retire[n]?|abra[n]?)|"
+    r"(?:el|la)\s+(?:retiro|retirada|apertura))))\b",
+    re.IGNORECASE,
+)
+
+
+_ACCESS_NON_LOCATION_VALUES = frozenset(
+    [
+        "la playa",
+        "una playa",
+        "el hotel",
+        "un hotel",
+        "ese lugar",
+        "el otro caso",
+        "general",
+        "particular",
+        "este caso",
+        "temporada alta",
+        "temporada baja",
+        "vacaciones",
+    ]
+)
+
+
+def _general_normative_access_question(question: str) -> bool:
+    """A named rule/effect does not need a town; a request for local action can."""
+    return bool(
+        (_NUMBERED_NORM_REFERENCE_RE.search(question) or _ARTICLE_NUMBER_RE.search(question))
+        and _GENERAL_NORMATIVE_EFFECT_RE.search(question)
+        and not (
+            _LOCAL_PROCEDURE_REQUEST_RE.search(question) or _LOCAL_ACCESS_ACTION_RE.search(question)
+        )
+    )
+
+
+def _access_place_value(place: str) -> str | None:
+    """Validate only a location value, not an entire case or new request."""
+    place = place.strip(" .!")
+    if (
+        _has_inland_or_unrelated_context(place)
+        or _has_legal_intent(place)
+        or _ACCESS_NEW_QUERY_RE.search(place)
+        or re.search(
+            r"\b(?:ley|decreto|resoluci[oó]n|sentencia|providencia|fallo|radicado|art[ií]culo|concepto)\b",
+            place,
+            re.IGNORECASE,
+        )
+        or re.fullmatch(
+            r"(?:pocas\s+palabras|palabras\s+(?:sencillas?|simples?|claras?)|"
+            r"t[eé]rminos\s+(?:sencillos?|simples?|generales?))",
+            place,
+            re.IGNORECASE,
+        )
+        or not re.search(r"[a-záéíóúñ]", place, re.IGNORECASE)
+        or place.casefold() in _ACCESS_NON_LOCATION_VALUES
+    ):
+        return None
+    return place
+
+
+def _access_place_reply(question: str) -> str | None:
+    """A complete reply must contain only the supplied location."""
+    match = _ACCESS_PLACE_REPLY_RE.fullmatch(question)
+    return _access_place_value(match[1]) if match else None
+
+
+def _concrete_access_case(question: str) -> bool:
+    return bool(
+        _CONCRETE_ACCESS_RE.search(question)
+        and _ACCESS_BLOCK_RE.search(question)
+        and _has_coastal_signal(question)
+        and not _MULTIPLE_ACCESS_CASES_RE.search(question)
+    )
+
+
+def _has_access_place(question: str) -> bool:
+    """A request tail does not erase a place already present in the case."""
+    for candidate in _ACCESS_CASE_PLACE_RE.findall(question):
+        request = _ACCESS_NEW_QUERY_RE.search(candidate)
+        if request is not None:
+            prefix = candidate[: request.start()].rstrip()
+            if not prefix.endswith((",", ";")):
+                continue
+            candidate = prefix.rstrip(",; ")
+        if _access_place_value(candidate) is not None:
+            return True
+    return False
+
+
+def _pending_access_case(turns: list[tuple[str, str]]) -> str | None:
+    """Walk only a contiguous chain of complete location clarifications."""
+    end = len(turns)
+    while end >= 2:
+        prior = turns[end - 2 : end]
+        if [role for role, _ in prior] != [
+            "Usuario",
+            "Asistente",
+        ] or not _ACCESS_PLACE_REQUEST_RE.search(prior[1][1]):
+            return None
+        question = prior[0][1]
+        if _MULTIPLE_ACCESS_CASES_RE.search(question):
+            return None
+        if _concrete_access_case(question):
+            return question
+        reply = _ACCESS_PLACE_REPLY_RE.fullmatch(question)
+        if reply is None or reply[1].strip(" .!").casefold() not in _ACCESS_NON_LOCATION_VALUES:
+            return None
+        end -= 2
+    return None
+
+
+def _is_access_place_fragment(question: str, history_context: str) -> bool:
+    if _access_place_reply(question) is not None:
+        return True
+    match = _ACCESS_PLACE_REPLY_RE.fullmatch(question)
+    return bool(
+        match
+        and _pending_access_case(_history_turns(history_context))
+        and (
+            match[1].strip(" .!").casefold() in _ACCESS_NON_LOCATION_VALUES
+            or _has_inland_or_unrelated_context(match[1])
+        )
+    )
+
+
+def _access_contextual_question(question: str, history_context: str) -> str | None:
+    """Resolve a place or follow-up through contiguous clarification replies."""
+    turns = _history_turns(history_context)
+    if _access_place_reply(question) is not None:
+        if prior_case := _pending_access_case(turns):
+            contextual = prior_case + "\nUbicación indicada por el usuario: " + question
+            return contextual if len(contextual) <= 4000 else None
+    elif _ACCESS_FOLLOWUP_RE.fullmatch(question):
+        prior = turns[-2:]
+        if (
+            len(prior) == 2
+            and [role for role, _ in prior] == ["Usuario", "Asistente"]
+            and _access_place_reply(prior[0][1]) is not None
+            and (prior_case := _pending_access_case(turns[:-2])) is not None
+        ):
+            contextual = prior_case + "\n" + prior[0][1] + "\nSeguimiento: " + question
+            return contextual if len(contextual) <= 4000 else None
+    return None
+
+
 def clarification_reason(question: str, history_context: str = "") -> ClarificationReason | None:
     """Pide sólo datos explícitamente ausentes en preguntas jurídico-costeras.
 
@@ -646,6 +894,43 @@ def clarification_reason(question: str, history_context: str = "") -> Clarificat
     """
     if _has_unambiguous_off_topic_intent(question) or _is_meta_question(question):
         return None
+    contextual = _access_contextual_question(question, history_context)
+    turns = _history_turns(history_context)
+    if _is_access_place_fragment(question, history_context) and contextual is None:
+        return (
+            "access_location"
+            if _pending_access_case(turns) and not _has_inland_or_unrelated_context(question)
+            else "activity"
+        )
+    if _ACCESS_FOLLOWUP_RE.fullmatch(question) and any(
+        role == "Truncado" for role, _ in turns[-4:]
+    ):
+        return "activity"
+    previous_activity = bool(
+        turns
+        and any(
+            role == "Usuario"
+            and _has_coastal_signal(text)
+            and _MODAL_ACTIVITY_RE.search(text)
+            and not _UNSPECIFIED_ACTIVITY_RE.fullmatch(text)
+            and not re.search(r"\b(?:o|u|dos|ambos|ambas)\b", text, re.IGNORECASE)
+            for role, text in turns[-2:]
+        )
+    )
+    if (
+        _has_coastal_signal(question)
+        and _UNSPECIFIED_ACTIVITY_RE.fullmatch(question)
+        and not previous_activity
+    ):
+        return "activity"
+    effective_question = contextual or question
+    if (
+        contextual is None
+        and _concrete_access_case(effective_question)
+        and not _has_access_place(effective_question)
+        and not _general_normative_access_question(effective_question)
+    ):
+        return "access_location"
     coastal = _has_coastal_signal(question)
     legal = _has_legal_signal(question, coastal=coastal)
     coastal, legal = _inherit_context_from_history(
@@ -752,8 +1037,10 @@ def _fallback(question: str, history_context: str = "") -> EnrichedQuery:
             doc_types=["normativa"],
         )
 
-    coastal = _has_coastal_signal(clean_question)
-    legal = _has_legal_signal(clean_question, coastal=coastal)
+    contextual = _access_contextual_question(clean_question, history_context)
+    effective_question = contextual or clean_question
+    coastal = _has_coastal_signal(effective_question)
+    legal = _has_legal_signal(effective_question, coastal=coastal)
     coastal, legal = _inherit_context_from_history(
         clean_question, history_context, coastal=coastal, legal=legal
     )
@@ -767,8 +1054,8 @@ def _fallback(question: str, history_context: str = "") -> EnrichedQuery:
 
     return EnrichedQuery(
         route=route,
-        standalone_question=clean_question,
-        expanded_query=clean_question,
+        standalone_question=effective_question,
+        expanded_query=effective_question,
         doc_types=["jurisprudencia", "normativa"] if route == "in_scope" else [],
     )
 
@@ -823,6 +1110,18 @@ def _apply_domain_guard(
         return heuristic
     if _PLAN_REFERENCE_RE.search(clean_question) and result.route == "needs_clarification":
         return result
+
+    if contextual := _access_contextual_question(question, history_context):
+        return EnrichedQuery(
+            route=heuristic.route,
+            standalone_question=contextual,
+            expanded_query=contextual,
+            doc_types=(result.doc_types or heuristic.doc_types)
+            if heuristic.route == "in_scope"
+            else [],
+        )
+    if _is_access_place_fragment(question, history_context):
+        return heuristic
 
     if heuristic.route == "in_scope" and result.route != "in_scope":
         return EnrichedQuery(

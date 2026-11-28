@@ -99,10 +99,11 @@ repetir datos ya proporcionados para suplir una carencia documental.
 
 <self_review>
 Antes de responder, verifica internamente:
-1. ¿Cada afirmación tiene [docN] de un fragmento real del contexto?
-2. ¿Diferencié correctamente normativa y jurisprudencia?
-3. ¿Identifiqué matices, excepciones o evolución cuando el contexto lo permite?
-4. ¿Declaré los límites de lo que el contexto soporta?
+1. ¿El cuerpo citado respalda cada afirmación con el mismo sujeto, actuación, condiciones y consecuencia?
+2. ¿Conservé quién lo afirma, su modalidad (alegato, pretensión, posibilidad u orden) y su alcance?
+3. ¿Diferencié normativa y jurisprudencia, y mantuve sus matices y excepciones?
+4. ¿Evité convertir el silencio en exclusión de competencia o trasladar una sanción a otra conducta sin remisión expresa?
+5. ¿Declaré lo que no está respaldado sin descartar el análisis que sí tiene evidencia?
 Si alguno falla, corrige antes de responder.
 </self_review>\
 """
@@ -112,9 +113,11 @@ Si alguno falla, corrige antes de responder.
 # ---------------------------------------------------------------------------
 
 AGENT_HUMAN_CITATION_REMINDER: str = (
-    "Cita [docN] en cada afirmación (N = número del fragmento en el contexto). "
-    "Cuando varias fuentes corroboran un punto, cita todas: [doc1][doc3]. "
-    "Nunca cites [docN] que no exista en el contexto."
+    "Cita [docN] solo si el cuerpo del fragmento respalda la afirmación, sus condiciones y "
+    "consecuencia. Conserva quién lo afirma y si es una pretensión, razonamiento u orden. "
+    "Si falta soporte o es parcial, explica ese límite: el silencio no excluye competencias "
+    "ni permite unir una conducta con la sanción de otra sin remisión expresa. "
+    "Usa índices existentes y cita todas las fuentes que efectivamente corroboren el punto."
 )
 
 # ---------------------------------------------------------------------------

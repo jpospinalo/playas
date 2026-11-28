@@ -202,10 +202,14 @@ def _history_for_analysis(messages: list[BaseMessage], question: str) -> str:
         if not isinstance(message.content, str) or not message.content.strip():
             continue
         role = "Usuario" if isinstance(message, HumanMessage) else "Asistente"
-        content = message.content.strip()
+        # One real message per serialized line: embedded role labels cannot
+        # manufacture another user's turn. This does not alter checkpoint data.
+        content = r"\n".join(message.content.strip().splitlines())
         remaining = _MAX_ANALYSIS_HISTORY_CHARS - used
         if remaining <= 0:
             break
+        if len(content) > remaining:
+            role += " (truncado)"
         line = f"{role}: {content[:remaining]}"
         selected.append(line)
         used += len(line)
@@ -449,7 +453,14 @@ async def respond_without_retrieval_node(
     if route == "conversation":
         answer = _conversation_response(state["question"])
     elif route == "needs_clarification":
-        answer = _CLARIFICATION_RESPONSE
+        if state.get("clarification_reason") == "activity":
+            answer = (
+                "¿Qué actividad quieres realizar o qué situación necesitas revisar en la playa?"
+            )
+        elif state.get("clarification_reason") == "access_location":
+            answer = "¿En qué municipio o playa ocurre el bloqueo del acceso que describes?"
+        else:
+            answer = _CLARIFICATION_RESPONSE
     else:
         answer = _OUT_OF_SCOPE_RESPONSE
     return {"messages": [AIMessage(content=answer)], "sources": []}

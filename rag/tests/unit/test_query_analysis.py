@@ -2083,3 +2083,727 @@ def test_necessary_clarification_identifier_and_date_boundaries(
     else:
         assert fallback.doc_types and guarded.doc_types
     assert guarded.standalone_question == question
+
+
+@pytest.mark.parametrize(
+    "question",
+    [
+        "ola, puedo aser esto en la playa?",
+        "¿Puedo hacer eso en una playa?",
+    ],
+    ids=["PR01-typos", "independent-missing-activity"],
+)
+def test_coastal_access_missing_activity_overrides_terminal_model_route(question: str) -> None:
+    model_result = EnrichedQuery(
+        route="conversation", standalone_question=question, expanded_query=question
+    )
+    guarded = _apply_domain_guard(model_result, question, "")
+    assert guarded.route == "needs_clarification"
+    assert guarded.doc_types == []
+
+
+@pytest.mark.parametrize(
+    "question",
+    [
+        "me pueden cobrar por entra a la playa??",
+        "¿Pueden cobrarme por pasar a una playa pública?",
+    ],
+    ids=["PR08-typos", "independent-public-entry"],
+)
+def test_coastal_access_entry_payment_is_admitted_without_municipality(question: str) -> None:
+    rejected = EnrichedQuery(
+        route="needs_clarification", standalone_question=question, expanded_query=question
+    )
+    assert _fallback(question).route == "in_scope"
+    guarded = _apply_domain_guard(rejected, question, "")
+    assert guarded.route == "in_scope"
+    assert set(guarded.doc_types) == {"normativa", "jurisprudencia"}
+
+
+def test_coastal_access_concrete_obstruction_asks_for_place_before_search() -> None:
+    question = "hola, un hotel puso una cerca y no deja pasar a la playa"
+    eager = EnrichedQuery(
+        route="in_scope",
+        standalone_question=question,
+        expanded_query="Un hotel impide el acceso a una playa. ¿Qué norma o permiso lo regula?",
+        doc_types=["normativa"],
+    )
+    guarded = _apply_domain_guard(eager, question, "")
+    assert guarded.route == "needs_clarification"
+    assert guarded.doc_types == []
+
+
+@pytest.mark.parametrize(
+    "place", ["El Rodadero, Santa Marta", "Coveñas", "el rodadero, santa marta", "coveñas"]
+)
+def test_coastal_access_place_reply_completes_a_specific_previous_case(place: str) -> None:
+    question = f"Es en {place}."
+    history = (
+        "Usuario: Un hotel puso una cerca y no deja pasar a la playa.\n"
+        "Asistente: ¿En qué municipio o playa ocurre el bloqueo del hotel?"
+    )
+    rejected = EnrichedQuery(
+        route="needs_clarification", standalone_question=question, expanded_query=question
+    )
+    guarded = _apply_domain_guard(rejected, question, history)
+    assert guarded.route == "in_scope"
+    assert guarded.doc_types
+
+
+@pytest.mark.parametrize(
+    "history",
+    [
+        "",
+        "Asistente: Un hotel puso una cerca y no deja pasar a la playa. ¿En qué municipio ocurre?",
+        (
+            "Usuario: Un hotel puso una cerca en una playa y otro hotel cerró otra playa.\n"
+            "Asistente: ¿Cuál de los dos casos y en qué municipio?"
+        ),
+    ],
+    ids=["no-case", "assistant-only-facts", "two-unidentified-cases"],
+)
+def test_coastal_access_expansion_cannot_create_the_case_for_a_place_reply(history: str) -> None:
+    question = "Es en El Rodadero, Santa Marta."
+    invented = "Un hotel puso una cerca y bloqueó el acceso a la playa en El Rodadero, Santa Marta."
+    model_result = EnrichedQuery(
+        route="in_scope",
+        standalone_question=invented,
+        expanded_query=invented,
+        doc_types=["normativa"],
+    )
+    assert _apply_domain_guard(model_result, question, history).route != "in_scope"
+
+
+@pytest.mark.parametrize(
+    "question",
+    [
+        "¿Cuánto cobra el hotel por una habitación?",
+        "¿Dónde puedo comprar un almuerzo?",
+        "Me cobraron por estacionar en un centro comercial, ¿es legal?",
+    ],
+)
+def test_coastal_access_payment_words_do_not_supply_coastal_context(question: str) -> None:
+    assert _fallback(question).route != "in_scope"
+
+
+def test_coastal_access_service_payment_does_not_become_a_public_entry_question() -> None:
+    question = "¿Qué permiso se exige para cobrar por estacionamiento junto a una playa?"
+    result = _fallback(question)
+    assert result.route == "in_scope"
+    assert result.standalone_question == question
+    assert "estacionamiento" in result.expanded_query
+
+
+def test_coastal_access_unrelated_turn_does_not_complete_pending_place() -> None:
+    history = (
+        "Usuario: Un hotel puso una cerca y no deja pasar a la playa.\n"
+        "Asistente: ¿En qué municipio ocurre?"
+    )
+    question = "¿Cuál es la mejor receta de arepas de huevo?"
+    eager = EnrichedQuery(
+        route="in_scope",
+        standalone_question=question,
+        expanded_query=question,
+        doc_types=["normativa"],
+    )
+    assert _apply_domain_guard(eager, question, history).route == "out_of_scope"
+
+
+def test_coastal_access_missing_source_is_not_missing_user_context() -> None:
+    question = (
+        "¿Qué dice la Ley 1437 de 2011 sobre la caducidad de los actos administrativos en playas?"
+    )
+    rejected = EnrichedQuery(
+        route="needs_clarification", standalone_question=question, expanded_query=question
+    )
+    assert _apply_domain_guard(rejected, question, "").route == "in_scope"
+
+
+@pytest.mark.parametrize("place", ["santa marta", "bahía azul"])
+def test_coastal_access_initial_place_is_not_asked_again_when_lowercase(place: str) -> None:
+    question = f"Un hotel puso una cerca y no deja pasar a la playa en {place}."
+    rejected = EnrichedQuery(
+        route="needs_clarification", standalone_question=question, expanded_query=question
+    )
+    assert _apply_domain_guard(rejected, question, "").route == "in_scope"
+
+
+def test_coastal_access_changed_topic_does_not_complete_an_older_case() -> None:
+    history = (
+        "Usuario: Un hotel puso una cerca y no deja pasar a la playa.\n"
+        "Asistente: ¿En qué municipio ocurre el bloqueo?\n"
+        "Usuario: Ahora quiero saber qué permiso requiere un muelle en la playa.\n"
+        "Asistente: El permiso se examina según sus condiciones."
+    )
+    question = "Es en Coveñas."
+    eager = EnrichedQuery(
+        route="in_scope",
+        standalone_question=question,
+        expanded_query=question,
+        doc_types=["normativa"],
+    )
+    assert _apply_domain_guard(eager, question, history).route != "in_scope"
+
+
+def test_coastal_access_vague_place_does_not_license_invented_location() -> None:
+    history = (
+        "Usuario: Un hotel puso una cerca y no deja pasar a la playa.\n"
+        "Asistente: ¿En qué municipio ocurre el bloqueo?"
+    )
+    question = "Es en la playa."
+    eager = EnrichedQuery(
+        route="in_scope",
+        standalone_question="En Santa Marta",
+        expanded_query="En Santa Marta",
+        doc_types=["normativa"],
+    )
+    assert _apply_domain_guard(eager, question, history).route == "needs_clarification"
+
+
+@pytest.mark.parametrize(
+    "question",
+    [
+        "En el Decreto 2324 de 1984, explica los permisos de playa.",
+        "En la sentencia sobre la playa, explica la competencia de DIMAR.",
+    ],
+)
+def test_coastal_access_legal_introduction_is_not_a_location_reply(question: str) -> None:
+    admitted = EnrichedQuery(
+        route="in_scope",
+        standalone_question=question,
+        expanded_query=question,
+        doc_types=["jurisprudencia"],
+    )
+    assert _apply_domain_guard(admitted, question, "").route == "in_scope"
+
+
+@pytest.mark.parametrize("ambiguous", [False, True])
+def test_coastal_access_activity_antecedent_must_be_unique(ambiguous: bool) -> None:
+    prior = "¿Puedo vender artesanías en la playa"
+    prior += " o instalar una caseta?" if ambiguous else "?"
+    history = f"Usuario: {prior}\nAsistente: Respuesta sobre esa actividad."
+    question = "¿Puedo hacer esto en la playa?"
+    model_result = EnrichedQuery(
+        route="in_scope",
+        standalone_question=question,
+        expanded_query=question,
+        doc_types=["normativa"],
+    )
+    assert _apply_domain_guard(model_result, question, history).route == (
+        "needs_clarification" if ambiguous else "in_scope"
+    )
+
+
+def test_coastal_access_oversized_context_is_not_used_as_a_standalone_question() -> None:
+    prior = "Un hotel puso una cerca y no deja pasar a la playa. " + "detalle " * 550
+    history = f"Usuario: {prior}\nAsistente: ¿En qué municipio ocurre el bloqueo?"
+    question = "Es en Coveñas."
+    model_result = EnrichedQuery(
+        route="in_scope",
+        standalone_question=question,
+        expanded_query=question,
+        doc_types=["normativa"],
+    )
+    result = _apply_domain_guard(model_result, question, history)
+    assert result.route == "needs_clarification" and len(result.standalone_question) <= 4000
+
+
+@pytest.mark.parametrize(
+    "question",
+    [
+        "Un hotel bloqueó el acceso a una playa. Según el artículo 166 del Decreto 2324 de 1984, ¿puede apropiarse del suelo o solo usarlo mediante permiso?",
+        "Un vecino colocó una barrera e impide el paso a la playa. Explica qué derechos concede el artículo 166 del Decreto 2324 de 1984.",
+    ],
+)
+def test_precommit_guard_general_normative_effect_does_not_require_municipality(question):
+    admitted = EnrichedQuery(
+        route="in_scope",
+        standalone_question=question,
+        expanded_query=question,
+        doc_types=["normativa"],
+    )
+    assert _apply_domain_guard(admitted, question, "").route == "in_scope"
+    assert _fallback(question).route == "in_scope"
+
+
+def test_precommit_guard_explanatory_introduction_preserves_semantic_admission():
+    question = "En lenguaje sencillo, interpreta lo relativo a pescar en una playa."
+    admitted = EnrichedQuery(
+        route="in_scope",
+        standalone_question=question,
+        expanded_query=question,
+        doc_types=["normativa"],
+    )
+    assert _apply_domain_guard(admitted, question, "").route == "in_scope"
+
+
+def test_precommit_guard_named_norm_does_not_remove_local_authority_clarification():
+    question = "Un hotel bloqueó el acceso a una playa. Según el artículo 166 del Decreto 2324 de 1984, ¿ante qué autoridad debo denunciar esta cerca?"
+    admitted = EnrichedQuery(
+        route="in_scope",
+        standalone_question=question,
+        expanded_query=question,
+        doc_types=["normativa"],
+    )
+    assert _apply_domain_guard(admitted, question, "").route == "needs_clarification"
+
+
+@pytest.mark.parametrize(
+    "question",
+    [
+        pytest.param(
+            "Un hotel puso una cerca y no deja pasar a la playa en Coveñas, dime qué opinas.",
+            id="known-place-before-request",
+        ),
+        pytest.param(
+            "Un hotel puso una cerca y no deja pasar a la playa en Santa Marta, "
+            "Magdalena, dime qué opinas.",
+            id="comma-in-known-place-before-request",
+        ),
+        pytest.param(
+            "Un hotel bloqueó el acceso a una playa. Ya inicié un trámite municipal. "
+            "Según el artículo 166 del Decreto 2324 de 1984, ¿puede apropiarse "
+            "del suelo o solo usarlo mediante permiso?",
+            id="past-local-procedure-national-question",
+        ),
+        *[
+            pytest.param(
+                "Un hotel bloqueó el acceso a una playa. "
+                f"{verb} el artículo 166 del Decreto 2324 de 1984.",
+                id=f"named-national-rule-{verb.casefold()}",
+            )
+            for verb in ("Explica", "Resume", "Describe")
+        ],
+    ],
+)
+def test_tres_rechazos_admitted_question_survives_fallback_and_guard(question: str) -> None:
+    from rag.core.domain_scope import clarification_reason
+
+    model_result = EnrichedQuery(
+        route="in_scope",
+        standalone_question=question,
+        expanded_query=question,
+        doc_types=["normativa"],
+    )
+    assert clarification_reason(question) is None
+    assert _fallback(question).route == "in_scope"
+    guarded = _apply_domain_guard(model_result, question, "")
+    assert guarded.route == "in_scope"
+    assert guarded.standalone_question == guarded.expanded_query == question
+
+
+@pytest.mark.parametrize(
+    "local_request",
+    [
+        "¿qué trámite municipal debo iniciar para retirar la cerca?",
+        "¿ante qué autoridad debo denunciar esta cerca?",
+    ],
+    ids=["requested-local-procedure", "requested-local-authority"],
+)
+def test_tres_rechazos_requested_local_action_retains_location_guard(local_request: str) -> None:
+    from rag.core.domain_scope import clarification_reason
+
+    question = (
+        "Un hotel bloqueó el acceso a una playa. Según el artículo 166 del "
+        "Decreto 2324 de 1984, " + local_request
+    )
+    admitted = EnrichedQuery(
+        route="in_scope",
+        standalone_question=question,
+        expanded_query=question,
+        doc_types=["normativa"],
+    )
+    assert clarification_reason(question) == "access_location"
+    assert _fallback(question).route == "needs_clarification"
+    guarded = _apply_domain_guard(admitted, question, "")
+    assert guarded.route == "needs_clarification" and guarded.doc_types == []
+
+
+@pytest.mark.parametrize("pending_location", [False, True], ids=["no-case", "pending-case"])
+def test_tres_rechazos_explanatory_introduction_is_never_a_place(
+    pending_location: bool,
+) -> None:
+    from rag.core.domain_scope import _access_place_reply, clarification_reason
+
+    question = "En palabras sencillas, explica si puedo pescar en la playa."
+    history = (
+        "Usuario: Un vecino colocó una barrera y no deja pasar a la playa.\n"
+        "Asistente: ¿En qué municipio ocurre el bloqueo?"
+        if pending_location
+        else ""
+    )
+    admitted = EnrichedQuery(
+        route="in_scope",
+        standalone_question=question,
+        expanded_query=question,
+        doc_types=["normativa"],
+    )
+    assert _access_place_reply(question) is None
+    assert clarification_reason(question, history) is None
+    guarded = _apply_domain_guard(admitted, question, history)
+    assert guarded.route == "in_scope"
+    assert guarded.standalone_question == guarded.expanded_query == question
+
+
+def test_tres_rechazos_vague_place_does_not_resolve_pending_case() -> None:
+    from rag.core.domain_scope import _access_place_reply, clarification_reason
+
+    question = "Es en la playa."
+    history = (
+        "Usuario: Un hotel puso una cerca y no deja pasar a la playa.\n"
+        "Asistente: ¿En qué municipio ocurre el bloqueo?"
+    )
+    admitted = EnrichedQuery(
+        route="in_scope",
+        standalone_question=question,
+        expanded_query=question,
+        doc_types=["normativa"],
+    )
+    assert _access_place_reply(question) is None
+    assert clarification_reason(question, history) == "access_location"
+    assert _fallback(question, history).route == "needs_clarification"
+    assert _apply_domain_guard(admitted, question, history).route == "needs_clarification"
+
+
+def test_tres_rechazos_comma_is_preserved_inside_actual_place_reply() -> None:
+    from rag.core.domain_scope import _access_place_reply
+
+    question = "Es en Santa Marta, Magdalena."
+    history = (
+        "Usuario: Un hotel puso una cerca y no deja pasar a la playa.\n"
+        "Asistente: ¿En qué municipio ocurre el bloqueo?"
+    )
+    rejected = EnrichedQuery(
+        route="needs_clarification", standalone_question=question, expanded_query=question
+    )
+    assert _access_place_reply(question) == "Santa Marta, Magdalena"
+    assert _fallback(question, history).route == "in_scope"
+    guarded = _apply_domain_guard(rejected, question, history)
+    assert guarded.route == "in_scope"
+    assert "Santa Marta, Magdalena" in guarded.standalone_question
+    assert "Santa Marta, Magdalena" in guarded.expanded_query
+
+
+def test_tres_rechazos_past_local_procedure_in_history_is_not_a_current_request() -> None:
+    question = (
+        "Un hotel bloqueó el acceso a una playa. Según el artículo 166 del "
+        "Decreto 2324 de 1984, ¿puede apropiarse del suelo o solo usarlo mediante permiso?"
+    )
+    history = (
+        "Usuario: Ya inicié un trámite municipal.\nAsistente: Has indicado una actuación anterior."
+    )
+    admitted = EnrichedQuery(
+        route="in_scope",
+        standalone_question=question,
+        expanded_query=question,
+        doc_types=["normativa"],
+    )
+    assert _fallback(question, history).route == "in_scope"
+    guarded = _apply_domain_guard(admitted, question, history)
+    assert guarded.route == "in_scope"
+    assert guarded.standalone_question == guarded.expanded_query == question
+
+
+def test_tres_rechazos_style_modifier_inside_case_does_not_invent_a_location():
+    from rag.core.domain_scope import clarification_reason
+
+    question = "Un hotel puso una cerca y no deja pasar a la playa. En palabras sencillas, dime qué opinas."
+    assert clarification_reason(question) == "access_location"
+
+
+@pytest.mark.parametrize(
+    "local_query",
+    [
+        "Necesito conocer los requisitos municipales.",
+        "¿Cómo se inicia el trámite municipal?",
+        "Describe los requisitos municipales.",
+    ],
+)
+def test_tres_rechazos_current_procedure_frames_keep_local_clarification(local_query):
+    from rag.core.domain_scope import clarification_reason
+
+    question = (
+        "Un hotel bloqueó el acceso a una playa. Explica el efecto del artículo 166 del Decreto 2324 de 1984; "
+        + local_query
+    )
+    assert clarification_reason(question) == "access_location"
+
+
+def test_tres_rechazos_past_description_is_not_a_present_local_request():
+    from rag.core.domain_scope import clarification_reason
+
+    question = "Un hotel bloqueó el acceso a una playa. Ya describí los requisitos municipales. Resume el artículo 166 del Decreto 2324 de 1984."
+    assert clarification_reason(question) is None
+
+
+def test_tres_rechazos_reported_how_is_not_a_current_request():
+    from rag.core.domain_scope import clarification_reason
+
+    question = "Un hotel bloqueó el acceso a una playa. Ya relaté cómo se inicia el trámite municipal. Resume el artículo 166 del Decreto 2324 de 1984."
+    assert clarification_reason(question) is None
+
+
+@pytest.mark.parametrize(
+    ("tail", "local"),
+    [
+        (
+            "Resume el artículo 166 del Decreto 2324 de 1984 y dime qué trámite municipal debo iniciar.",
+            True,
+        ),
+        (
+            "Describe el artículo 166 del Decreto 2324 de 1984 y necesito conocer los requisitos municipales.",
+            True,
+        ),
+        (
+            "Resume el artículo 166 del Decreto 2324 de 1984 y ya describí los requisitos municipales.",
+            False,
+        ),
+    ],
+)
+def test_tres_rechazos_coordinated_current_request_is_not_lost(tail, local):
+    from rag.core.domain_scope import clarification_reason
+
+    question = "Un hotel puso una cerca y bloqueó el acceso a la playa. " + tail
+    assert clarification_reason(question) == ("access_location" if local else None)
+
+
+@pytest.mark.parametrize(
+    ("tail", "local"),
+    [
+        ("Quiero saber qué trámite municipal debo iniciar.", True),
+        ("Dime los requisitos municipales.", True),
+        ("Ya quería saber qué trámite municipal debía iniciar.", False),
+        ("Ya indiqué los requisitos municipales.", False),
+    ],
+)
+def test_tres_rechazos_direct_local_requests_and_past_reports(tail, local):
+    from rag.core.domain_scope import clarification_reason
+
+    question = (
+        "Un hotel bloqueó el acceso a una playa. Resume el artículo 166 del Decreto 2324 de 1984. "
+        + tail
+    )
+    assert clarification_reason(question) == ("access_location" if local else None)
+
+
+@pytest.mark.parametrize("model_route", ["in_scope", "needs_clarification"])
+@pytest.mark.parametrize(
+    ("question", "local"),
+    [
+        (
+            "Un hotel bloqueó el acceso a una playa. Explica el artículo 166 del Decreto 2324 de 1984. Quisiera saber qué trámite municipal debo iniciar.",
+            True,
+        ),
+        (
+            "Un hotel bloqueó el acceso a una playa. Ya había querido saber qué trámite municipal debía iniciar. Resume el artículo 166 del Decreto 2324 de 1984.",
+            False,
+        ),
+    ],
+    ids=["current-request", "past-report"],
+)
+def test_quisiera_current_request_and_past_report(question, local, model_route):
+    from rag.core.domain_scope import clarification_reason
+
+    expected = "needs_clarification" if local else "in_scope"
+    analyzed = EnrichedQuery(
+        route=model_route,
+        standalone_question=question,
+        expanded_query=question,
+        doc_types=["normativa"] if model_route == "in_scope" else [],
+    )
+    assert clarification_reason(question) == ("access_location" if local else None)
+    assert _fallback(question).route == expected
+    guarded = _apply_domain_guard(analyzed, question, "")
+    assert guarded.route == expected
+    assert guarded.standalone_question == guarded.expanded_query == question
+    if local:
+        assert guarded.doc_types == []
+    else:
+        expected_types = (
+            {"normativa"} if model_route == "in_scope" else {"jurisprudencia", "normativa"}
+        )
+        assert set(guarded.doc_types) == expected_types
+
+
+@pytest.mark.parametrize("model_route", ["in_scope", "needs_clarification"])
+@pytest.mark.parametrize(
+    ("question", "has_place"),
+    [
+        ("Un hotel puso una cerca y no deja pasar a la playa en Coveñas, ¿qué puedo hacer?", True),
+        ("Un hotel puso una cerca y no deja pasar a la playa en Coveñas; ¿qué puedo hacer?", True),
+        ("Un hotel puso una cerca y no deja pasar a la playa en Coveñas ¿qué puedo hacer?", True),
+        (
+            "Un hotel puso una cerca y no deja pasar a la playa en Santa Marta, Magdalena, ¿qué puedo hacer?",
+            True,
+        ),
+        ("Un hotel puso una cerca y no deja pasar a la playa en Coveñas, qué puedo hacer?", True),
+        ("Un hotel puso una cerca y no deja pasar a la playa, ¿qué puedo hacer?", False),
+        (
+            "Un hotel puso una cerca y no deja pasar a la playa. En palabras sencillas, ¿qué puedo hacer?",
+            False,
+        ),
+        (
+            "Un hotel puso una cerca y no deja pasar a la playa. En general, ¿qué puedo hacer?",
+            False,
+        ),
+        (
+            "Un hotel puso una cerca y no deja pasar a la playa. En particular, qué puedo hacer?",
+            False,
+        ),
+        (
+            "Un hotel puso una cerca y no deja pasar a la playa. En este caso, ¿qué puedo hacer?",
+            False,
+        ),
+    ],
+    ids=[
+        "comma",
+        "semicolon",
+        "space",
+        "compound",
+        "no-opening-mark",
+        "missing",
+        "style",
+        "general",
+        "particular",
+        "this-case",
+    ],
+)
+def test_ubicacion_interrogativa_preserves_place_not_style(question, has_place, model_route):
+    from rag.core.domain_scope import _access_place_reply, clarification_reason
+
+    analyzed = EnrichedQuery(
+        route=model_route,
+        standalone_question=question,
+        expanded_query=question,
+        doc_types=["normativa"] if model_route == "in_scope" else [],
+    )
+    expected = "in_scope" if has_place else "needs_clarification"
+    assert clarification_reason(question) == (None if has_place else "access_location")
+    assert _fallback(question).route == expected
+    guarded = _apply_domain_guard(analyzed, question, "")
+    assert guarded.route == expected
+    assert guarded.standalone_question == guarded.expanded_query == question
+    assert _access_place_reply(question) is None
+    if not has_place:
+        assert guarded.doc_types == []
+
+
+@pytest.mark.parametrize("model_route", ["in_scope", "needs_clarification"])
+@pytest.mark.parametrize(
+    "question",
+    [
+        "Un hotel puso una cerca y no deja pasar a la playa en temporada alta, ¿qué puedo hacer?",
+        "Un hotel puso una cerca y no deja pasar a la playa en temporada baja, qué puedo hacer?",
+        "Un hotel puso una cerca y no deja pasar a la playa en vacaciones; ¿qué puedo hacer?",
+    ],
+    ids=["high-season", "low-season", "holidays"],
+)
+def test_ubicacion_interrogativa_temporal_modifier_is_not_a_place(question, model_route):
+    from rag.core.domain_scope import clarification_reason
+
+    analyzed = EnrichedQuery(
+        route=model_route,
+        standalone_question=question,
+        expanded_query=question,
+        doc_types=["normativa"] if model_route == "in_scope" else [],
+    )
+    assert clarification_reason(question) == "access_location"
+    assert _fallback(question).route == "needs_clarification"
+    assert _apply_domain_guard(analyzed, question, "").route == "needs_clarification"
+
+
+@pytest.mark.parametrize("model_route", ["in_scope", "needs_clarification"])
+@pytest.mark.parametrize("reply", ["En general.", "Es en vacaciones."])
+def test_ubicacion_interrogativa_non_place_reply_keeps_case_pending(reply, model_route):
+    from rag.core.domain_scope import _access_place_reply, clarification_reason
+
+    history = "Usuario: Un hotel puso una cerca y no deja pasar a la playa.\nAsistente: ¿En qué municipio o playa ocurre el bloqueo del acceso que describes?"
+    analyzed = EnrichedQuery(
+        route=model_route,
+        standalone_question=reply,
+        expanded_query=reply,
+        doc_types=["normativa"] if model_route == "in_scope" else [],
+    )
+    assert _access_place_reply(reply) is None
+    assert clarification_reason(reply, "") is None
+    assert clarification_reason(reply, history) == "access_location"
+    guarded = _apply_domain_guard(analyzed, reply, history)
+    assert guarded.route == "needs_clarification" and guarded.doc_types == []
+
+
+@pytest.mark.parametrize("model_route", ["in_scope", "needs_clarification"])
+@pytest.mark.parametrize(
+    ("history", "expected_case"),
+    [
+        (
+            "Usuario: Un hotel puso una cerca y no deja pasar a la playa.\nAsistente: ¿En qué municipio o playa ocurre el bloqueo del acceso que describes?\nUsuario: En general.\nAsistente: ¿En qué municipio o playa ocurre el bloqueo del acceso que describes?",
+            "Un hotel puso una cerca y no deja pasar a la playa.",
+        ),
+        (
+            "Usuario: Un hotel puso una cerca y no deja pasar a la playa.\nAsistente: ¿En qué municipio o playa ocurre el bloqueo del acceso que describes?\nUsuario: Es en vacaciones.\nAsistente: ¿En qué municipio o playa ocurre el bloqueo del acceso que describes?",
+            "Un hotel puso una cerca y no deja pasar a la playa.",
+        ),
+        (
+            "Usuario: Un hotel puso una cerca y no deja pasar a la playa.\nAsistente: ¿En qué municipio o playa ocurre el bloqueo del acceso que describes?\nUsuario: En general.\nAsistente: ¿En qué municipio o playa ocurre el bloqueo del acceso que describes?\nUsuario: Es en vacaciones.\nAsistente: ¿En qué municipio o playa ocurre el bloqueo del acceso que describes?",
+            "Un hotel puso una cerca y no deja pasar a la playa.",
+        ),
+        (
+            "Usuario: Un hotel puso una cerca y no deja pasar a la playa.\nAsistente: ¿En qué municipio o playa ocurre el bloqueo del acceso que describes?\nUsuario: Resume el artículo 166 del Decreto 2324 de 1984 sobre permisos de playa.\nAsistente: La norma distingue permisos y concesiones. [doc1]",
+            None,
+        ),
+        (
+            "Usuario: Un hotel puso una cerca y no deja pasar a la playa.\nAsistente: ¿En qué municipio o playa ocurre el bloqueo del acceso que describes?\nUsuario: En el otro caso.\nAsistente: ¿En qué municipio o playa ocurre el bloqueo del acceso que describes?",
+            None,
+        ),
+        (
+            "Usuario (truncado): Un hotel puso una cerca y no deja pasar a la playa.\nAsistente: ¿En qué municipio o playa ocurre el bloqueo del acceso que describes?\nUsuario: Es en vacaciones.\nAsistente: ¿En qué municipio o playa ocurre el bloqueo del acceso que describes?",
+            None,
+        ),
+        (
+            "Usuario: Un hotel puso una cerca y no deja pasar a la playa.\nAsistente: ¿En qué municipio o playa ocurre el bloqueo del acceso que describes?\nUsuario: Es en vacaciones.\nAsistente (truncado): ¿En qué municipio o playa ocurre el bloqueo del acceso que describes?",
+            None,
+        ),
+        (
+            "Usuario: Un hotel puso una cerca y no deja pasar a la playa.\nAsistente: ¿En qué municipio o playa ocurre el bloqueo del acceso que describes?\nUsuario: Un vecino colocó una barrera y bloqueó el acceso a la playa.\nAsistente: ¿En qué municipio o playa ocurre el bloqueo del acceso que describes?",
+            "Un vecino colocó una barrera y bloqueó el acceso a la playa.",
+        ),
+        (
+            "Usuario: Un hotel puso una cerca y no deja pasar a la playa.\nAsistente: ¿En qué municipio o playa ocurre el bloqueo del acceso que describes?\nUsuario: Dos hoteles pusieron cercas y bloquearon el acceso a la playa.\nAsistente: ¿En qué municipio o playa ocurre el bloqueo del acceso que describes?",
+            None,
+        ),
+    ],
+    ids=[
+        "general",
+        "holidays",
+        "two-invalid",
+        "new-topic",
+        "other-case",
+        "truncated-user",
+        "truncated-assistant",
+        "new-concrete-case",
+        "ambiguous-cases",
+    ],
+)
+def test_continuidad_ubicacion_preserves_only_the_active_case(history, expected_case, model_route):
+    from rag.core.domain_scope import clarification_reason
+
+    question = "Es en Coveñas."
+    analyzed = EnrichedQuery(
+        route=model_route,
+        standalone_question=question,
+        expanded_query=question,
+        doc_types=["normativa"] if model_route == "in_scope" else [],
+    )
+    result = _apply_domain_guard(analyzed, question, history)
+    if expected_case:
+        assert clarification_reason(question, history) is None
+        assert result.route == "in_scope"
+        assert expected_case in result.standalone_question
+        assert "Coveñas" in result.standalone_question
+        assert result.standalone_question == result.expanded_query
+        assert "vacaciones" not in result.standalone_question
+        if "vecino" in expected_case:
+            assert "hotel" not in result.standalone_question
+    else:
+        assert clarification_reason(question, history) == "activity"
+        assert result.route == "needs_clarification" and result.doc_types == []
