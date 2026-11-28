@@ -2420,8 +2420,10 @@ def test_tres_rechazos_requested_local_action_retains_location_guard(local_reque
 
 
 @pytest.mark.parametrize("pending_location", [False, True], ids=["no-case", "pending-case"])
+@pytest.mark.parametrize("initial_route", ["out_of_scope", "needs_clarification", "in_scope"])
 def test_tres_rechazos_explanatory_introduction_is_never_a_place(
     pending_location: bool,
+    initial_route: str,
 ) -> None:
     from rag.core.domain_scope import _access_place_reply, clarification_reason
 
@@ -2432,15 +2434,15 @@ def test_tres_rechazos_explanatory_introduction_is_never_a_place(
         if pending_location
         else ""
     )
-    admitted = EnrichedQuery(
-        route="in_scope",
+    model_result = EnrichedQuery(
+        route=initial_route,
         standalone_question=question,
         expanded_query=question,
-        doc_types=["normativa"],
+        doc_types=["normativa"] if initial_route == "in_scope" else [],
     )
     assert _access_place_reply(question) is None
     assert clarification_reason(question, history) is None
-    guarded = _apply_domain_guard(admitted, question, history)
+    guarded = _apply_domain_guard(model_result, question, history)
     assert guarded.route == "in_scope"
     assert guarded.standalone_question == guarded.expanded_query == question
 
@@ -2807,3 +2809,66 @@ def test_continuidad_ubicacion_preserves_only_the_active_case(history, expected_
     else:
         assert clarification_reason(question, history) == "activity"
         assert result.route == "needs_clarification" and result.doc_types == []
+
+
+@pytest.mark.parametrize(
+    "question",
+    [
+        pytest.param(
+            "En palabras sencillas, explica si puedo pescar en la playa.",
+            id="exact-question",
+        ),
+        pytest.param("¿Se puede pescar en el mar?", id="independent-formulation"),
+    ],
+)
+def test_fishing_modal_scope_fallback(question: str) -> None:
+    result = _fallback(question)
+
+    assert result.route == "in_scope"
+    assert result.doc_types
+    assert result.standalone_question == question
+    assert result.expanded_query == question
+
+
+@pytest.mark.parametrize(
+    ("question", "initial_route", "expected_route"),
+    [
+        pytest.param(
+            "¿Puedo pescar en un río de montaña?",
+            "out_of_scope",
+            "out_of_scope",
+            id="inland-out",
+        ),
+        pytest.param(
+            "¿Puedo pescar en un río de montaña?",
+            "needs_clarification",
+            "needs_clarification",
+            id="inland-needs",
+        ),
+        *[
+            pytest.param(question, initial_route, "out_of_scope", id=f"{label}-{initial_route}")
+            for label, question in [
+                ("poem", "Escribe un poema sobre pescar en la playa."),
+                ("recipe", "Dame una receta para cocinar pescado en la playa."),
+            ]
+            for initial_route in ["out_of_scope", "needs_clarification", "in_scope"]
+        ],
+    ],
+)
+def test_fishing_modal_scope_preserves_negative_precedence(
+    question: str,
+    initial_route: str,
+    expected_route: str,
+) -> None:
+    model_result = EnrichedQuery(
+        route=initial_route,
+        standalone_question=question,
+        expanded_query="¿Qué permisos necesito para pescar en una playa?",
+        doc_types=["normativa"] if initial_route == "in_scope" else [],
+    )
+    assert _fallback(question).route != "in_scope"
+
+    guarded = _apply_domain_guard(model_result, question, "")
+
+    assert guarded.route == expected_route
+    assert guarded.doc_types == []

@@ -914,15 +914,19 @@ async def test_tres_rechazos_actual_local_request_still_asks_for_place(
 @pytest.mark.anyio
 @pytest.mark.parametrize("channel", ["JSON", "SSE"])
 @pytest.mark.parametrize("pending_location", [False, True], ids=["no-case", "pending-case"])
+@pytest.mark.parametrize("initial_route", ["out_of_scope", "needs_clarification", "in_scope"])
 async def test_tres_rechazos_explanatory_introduction_does_not_supply_a_place(
-    monkeypatch: pytest.MonkeyPatch, channel: str, pending_location: bool
+    monkeypatch: pytest.MonkeyPatch,
+    channel: str,
+    pending_location: bool,
+    initial_route: str,
 ) -> None:
     first = "Un vecino colocó una barrera y no deja pasar a la playa."
     question = "En palabras sencillas, explica si puedo pescar en la playa."
     main_module, calls = _coastal_access_graph(
-        monkeypatch, model_routes={first: "in_scope", question: "in_scope"}
+        monkeypatch, model_routes={first: "in_scope", question: initial_route}
     )
-    thread = f"tres-rechazos-explanation-{channel}-{pending_location}"
+    thread = f"tres-rechazos-explanation-{channel}-{pending_location}-{initial_route}"
     if pending_location:
         route, _, sources = await _public_result(
             main_module, QueryRequest(question=first, thread_id=thread), channel

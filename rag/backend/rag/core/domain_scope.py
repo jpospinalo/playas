@@ -394,7 +394,7 @@ _LEGAL_INTENT_PATTERNS: tuple[re.Pattern[str], ...] = (
 _MODAL_ACTIVITY_RE = re.compile(
     r"\b(?:puedo|puede|podemos|podr[ií]an?|debo|debe|deben|deber[ií]a)\b"
     r"(?:\s+\w+){0,2}\s+(?:practicar|realizar|hacer(?:lo|la|los|las)?|iniciar|"
-    r"organizar|operar|ejercer|desarrollar|instalar|construir|vender|"
+    r"organizar|operar|ejercer|desarrollar|instalar|construir|vender|pescar|"
     r"retirar(?:lo|la|los|las)?)\b",
     re.IGNORECASE,
 )
